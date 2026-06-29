@@ -1,0 +1,13 @@
+{
+  "name": "cdv-proxy",
+  "version": "1.0.0",
+  "description": "CORS proxy para o Painel de Compras Bonificadas do CDV",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.7.0"
+  }
+}
