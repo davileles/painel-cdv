@@ -10,22 +10,21 @@
     --bg:#0d0d14;--surface:#13131f;--card:#1a1a2e;--border:#252540;
     --text:#e8e8f0;--muted:#6b6b8a;
     --livelo:#df0979;--livelo-dim:rgba(223,9,121,0.15);
+    --esfera:#e8371b;--esfera-dim:rgba(232,55,27,0.15);
     --green:#34d399;--dollar:#60a5fa;--dollar-dim:rgba(96,165,250,0.12);
     --red:#f87171;
-    /* CDV brand */
-    --cdv-navy:#2a3246;--cdv-coral:#ff585e;--cdv-blue:#126eff;
+    --cdv-navy:#2a3246;--cdv-coral:#ff585e;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh}
+
   header{background:var(--cdv-navy);border-bottom:3px solid var(--cdv-coral);padding:14px 22px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  .logo-area{display:flex;align-items:center;gap:10px}
-  .logo-dot{width:32px;height:32px;background:var(--cdv-coral);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;flex-shrink:0;letter-spacing:-1px}
-  .title-block{}
+  .logo-dot{width:32px;height:32px;background:var(--cdv-coral);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;flex-shrink:0}
   .title-main{font-size:15px;font-weight:800;color:#fff;line-height:1.2}
-  .title-sub{font-size:11px;color:rgba(255,255,255,.5);font-weight:500}
+  .title-sub{font-size:11px;color:rgba(255,255,255,.5)}
   .badge{font-size:11px;color:var(--muted);background:var(--card);border:1px solid var(--border);padding:3px 10px;border-radius:20px}
   .badge strong{color:var(--green)}
-  .hright{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .hright{margin-left:auto}
   .refresh-btn{background:var(--cdv-coral);border:none;color:#fff;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .2s}
   .refresh-btn:hover{opacity:.85}
   .refresh-btn:disabled{opacity:.5;cursor:not-allowed}
@@ -51,26 +50,62 @@
   .sdot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px}
 
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;padding:18px 22px}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+
+  /* CARD */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s,transform .15s}
   .card:hover{transform:translateY(-2px)}
-  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--livelo)}
-  .card:hover{border-color:var(--livelo)}
-  .card.is-dollar::before{background:var(--dollar)}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .card.winner-livelo::before{background:var(--livelo)}
+  .card.winner-esfera::before{background:var(--esfera)}
+  .card.winner-both::before{background:linear-gradient(90deg,var(--livelo),var(--esfera))}
+  .card.winner-livelo:hover{border-color:var(--livelo)}
+  .card.winner-esfera:hover{border-color:var(--esfera)}
+  .card.winner-both:hover{border-color:var(--cdv-coral)}
   .card.is-dollar:hover{border-color:var(--dollar)}
+
   .pname{font-size:13px;font-weight:700;line-height:1.3}
   .pts-row{display:flex;align-items:baseline;gap:4px}
-  .pts-val{font-size:26px;font-weight:900;color:var(--livelo);line-height:1}
-  .card.is-dollar .pts-val{color:var(--dollar)}
+  .pts-val{font-size:26px;font-weight:900;line-height:1}
+  .winner-livelo .pts-val{color:var(--livelo)}
+  .winner-esfera .pts-val{color:var(--esfera)}
+  .winner-both .pts-val{color:var(--cdv-coral)}
   .pts-lbl{font-size:11px;color:var(--muted)}
-  .tag{border-radius:5px;padding:2px 7px;font-size:10px;font-weight:600;width:fit-content}
-  .tag-dollar{background:var(--dollar-dim);border:1px solid rgba(96,165,250,.2);color:var(--dollar)}
-  .tag-ate{background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);color:#818cf8}
+
+  .prog-badges{display:flex;gap:4px;flex-wrap:wrap}
+  .pbdg{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;white-space:nowrap}
+  .pbdg-livelo{background:var(--livelo-dim);color:var(--livelo);border:1px solid rgba(223,9,121,.3)}
+  .pbdg-esfera{background:var(--esfera-dim);color:var(--esfera);border:1px solid rgba(232,55,27,.3)}
+
+  .tag-dollar{background:var(--dollar-dim);border:1px solid rgba(96,165,250,.2);border-radius:5px;padding:2px 7px;font-size:10px;color:var(--dollar);font-weight:600;width:fit-content}
   .card-foot{margin-top:auto;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
 
+  /* STATUS */
   .status-box{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:16px;grid-column:1/-1;text-align:center}
   .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--cdv-coral);border-radius:50%;animation:spin 0.7s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
   .error-box{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);border-radius:10px;padding:16px 20px;color:var(--red);font-size:13px;grid-column:1/-1;text-align:center;line-height:1.8}
+
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center;padding:20px}
+  .modal-overlay.open{display:flex}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:420px;width:100%;position:relative}
+  .modal-close{position:absolute;top:14px;right:16px;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1}
+  .modal-close:hover{color:var(--text)}
+  .modal-name{font-size:18px;font-weight:800;margin-bottom:4px}
+  .modal-cat{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:20px}
+  .modal-rows{display:flex;flex-direction:column;gap:10px}
+  .modal-row{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;transition:border-color .15s,background .15s}
+  .modal-row:hover{background:#1f1f38;border-color:var(--muted)}
+  .modal-row.best:hover{border-color:var(--cdv-coral);background:#1f1f38}
+  .modal-row.best{border-color:var(--cdv-coral)}
+  .modal-prog{display:flex;align-items:center;gap:8px}
+  .modal-prog-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .modal-prog-name{font-size:13px;font-weight:600}
+  .modal-pts{font-size:22px;font-weight:900}
+  .modal-pts-lbl{font-size:11px;color:var(--muted);margin-top:1px;text-align:right}
+  .best-badge{font-size:10px;font-weight:700;color:var(--cdv-coral);margin-top:4px}
+  .modal-url{display:block;margin-top:16px;text-align:center;font-size:12px;color:var(--cdv-coral);text-decoration:none;padding:10px;border:1px solid rgba(255,88,94,.3);border-radius:8px;transition:background .15s}
+  .modal-url:hover{background:rgba(255,88,94,.08)}
 
   @media(max-width:600px){
     header,.controls{padding:10px 14px}
@@ -85,12 +120,10 @@
 <body>
 
 <header>
-  <div class="logo-area">
-    <div class="logo-dot">CDV</div>
-    <div class="title-block">
-      <div class="title-main">Compras Bonificadas</div>
-      <div class="title-sub">Clube do Viajante · Livelo</div>
-    </div>
+  <div class="logo-dot">CDV</div>
+  <div>
+    <div class="title-main">Compras Bonificadas</div>
+    <div class="title-sub">Clube do Viajante · Livelo & Esfera</div>
   </div>
   <div class="badge" id="update-badge">Carregando…</div>
   <div class="hright">
@@ -115,11 +148,25 @@
   <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Buscando parceiros…</div></div>
 </div>
 
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-name" id="modal-name"></div>
+    <div class="modal-cat" id="modal-cat"></div>
+    <div class="modal-rows" id="modal-rows"></div>
+    <a class="modal-url" id="modal-url" href="#" target="_blank">↗ Ver melhor oferta</a>
+  </div>
+</div>
+
 <script>
-// ─── CONFIGURAÇÃO — substitua pela URL do seu proxy no Railway ────────────────
-// Exemplo: https://cdv-proxy.up.railway.app/fetch
-const PROXY_URL = 'https://cdv-proxy-production.up.railway.app/fetch';
-const TARGET    = 'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-livelo';
+const PROXY = 'https://cdv-proxy-production.up.railway.app/fetch';
+const PROGRAMS = [
+  { id:'livelo', name:'Livelo', color:'#df0979', dim:'rgba(223,9,121,0.15)',
+    url:'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-livelo' },
+  { id:'esfera', name:'Esfera', color:'#e8371b', dim:'rgba(232,55,27,0.15)',
+    url:'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-santander-esfera' },
+];
 
 // ─── Categorias ───────────────────────────────────────────────────────────────
 const CAT_RULES=[
@@ -152,7 +199,7 @@ const CAT_ICONS={'Marketplace':'🛒','Eletrônicos':'💻','Moda':'👗','Belez
 function categorize(n){for(const[re,c]of CAT_RULES)if(re.test(n))return c;return'Outros';}
 
 // ─── Parser ───────────────────────────────────────────────────────────────────
-function parse(html){
+function parseHTML(html, progId){
   const doc=new DOMParser().parseFromString(html,'text/html');
   const out=[];
   doc.querySelectorAll('table tr').forEach(tr=>{
@@ -166,42 +213,72 @@ function parse(html){
     if(!pts||!name)return;
     const pm=g.match(/por\s+(\d+)\s+real/i);
     const dollar=/kaligo|hertz|decolar|aliexpress|rental.cars|rentcars|localiza.int/i.test(name);
-    out.push({name,pts,per:pm?+pm[1]:1,ate:!!am,dollar,cat:categorize(name),url:na.href||'#'});
+    out.push({name,pts,per:pm?+pm[1]:1,ate:!!am,dollar,cat:categorize(name),url:na.href||'#',prog:progId});
   });
   return out;
+}
+
+// ─── Merge: maior pts por parceiro ───────────────────────────────────────────
+function mergePartners(allData){
+  const map={};
+  for(const [progId, items] of Object.entries(allData)){
+    for(const p of items){
+      const key=p.name.toLowerCase().trim();
+      if(!map[key]){
+        map[key]={name:p.name,cat:p.cat,dollar:p.dollar,ate:p.ate,per:p.per,programs:{}};
+      }
+      map[key].programs[progId]={pts:p.pts,ate:p.ate,per:p.per,url:p.url};
+      // mantém dollar/ate se qualquer programa tiver
+      if(p.dollar)map[key].dollar=true;
+      if(p.ate)map[key].ate=true;
+    }
+  }
+  // calcula melhor programa
+  return Object.values(map).map(p=>{
+    let bestPts=0,bestProg=null;
+    for(const[pid,data] of Object.entries(p.programs)){
+      if(data.pts>bestPts){bestPts=data.pts;bestProg=pid;}
+      else if(data.pts===bestPts&&bestProg)bestProg='both';
+    }
+    return {...p,bestPts,bestProg};
+  });
+}
+
+// ─── Fetch ────────────────────────────────────────────────────────────────────
+async function fetchProg(prog, onLog){
+  onLog(`Consultando ${prog.name}…`);
+  const res=await fetch(`${PROXY}?url=${encodeURIComponent(prog.url)}`,{signal:AbortSignal.timeout(15000)});
+  if(!res.ok) throw new Error(`${prog.name}: servidor retornou ${res.status}`);
+  const html=await res.text();
+  if(!html.includes('ponto(s)')) throw new Error(`${prog.name}: resposta inesperada`);
+  const items=parseHTML(html,prog.id);
+  onLog(`${prog.name}: ${items.length} parceiros ✓`);
+  return items;
 }
 
 // ─── State ────────────────────────────────────────────────────────────────────
 let partners=[],activeCat='all',activeFilters=new Set();
 
-// ─── Load ─────────────────────────────────────────────────────────────────────
 async function loadData(){
   const btn=document.getElementById('refresh-btn');
   btn.disabled=true;btn.textContent='⟳ Buscando…';
   document.getElementById('update-badge').textContent='Buscando…';
-  document.getElementById('update-badge').style.borderColor='';
-  document.getElementById('grid').innerHTML='<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Buscando parceiros…</div></div>';
+  document.getElementById('grid').innerHTML='<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px" id="load-msg">Iniciando consulta…</div></div>';
   document.getElementById('cat-bar').innerHTML='';
   document.getElementById('stats').innerHTML='';
 
+  const log=msg=>{const el=document.getElementById('load-msg');if(el)el.textContent=msg;};
+
   try{
-    const proxyEndpoint = PROXY_URL.includes('SEU-PROXY')
-      ? null  // proxy ainda não configurado
-      : `${PROXY_URL}?url=${encodeURIComponent(TARGET)}`;
-
-    if(!proxyEndpoint) throw new Error('Configure a URL do proxy no arquivo HTML (variável PROXY_URL).');
-
-    const res=await fetch(proxyEndpoint,{signal:AbortSignal.timeout(15000)});
-    if(!res.ok) throw new Error(`Servidor retornou ${res.status}`);
-    const html=await res.text();
-    if(!html.includes('ponto(s)')) throw new Error('Resposta inesperada do servidor.');
-
-    partners=parse(html);
+    const allData={};
+    for(const prog of PROGRAMS){
+      allData[prog.id]=await fetchProg(prog,log);
+    }
+    partners=mergePartners(allData);
     if(!partners.length) throw new Error('Nenhum parceiro encontrado.');
 
     const now=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
     document.getElementById('update-badge').innerHTML=`Atualizado em <strong>${now}</strong>`;
-    document.getElementById('update-badge').style.borderColor='rgba(52,211,153,.4)';
     buildCatBar();render();
   }catch(e){
     document.getElementById('grid').innerHTML=`<div class="error-box">⚠️ ${e.message}</div>`;
@@ -222,41 +299,110 @@ function pool(){
     return true;
   });
 }
+
 function buildCatBar(){
   const cnt={};partners.forEach(p=>{cnt[p.cat]=(cnt[p.cat]||0)+1;});
   document.getElementById('cat-bar').innerHTML=
     `<button class="cbtn active" data-cat="all">Todas <span class="cc">${partners.length}</span></button>`+
     Object.keys(cnt).sort().map(c=>`<button class="cbtn" data-cat="${c}">${CAT_ICONS[c]||'•'} ${c} <span class="cc">${cnt[c]}</span></button>`).join('');
 }
+
 function render(){
   const sort=document.getElementById('sort').value;
   const list=pool().sort((a,b)=>{
     if(sort==='name')return a.name.localeCompare(b.name);
-    const va=a.pts/(a.per||1),vb=b.pts/(b.per||1);
-    return sort==='pts_asc'?va-vb:vb-va;
+    return sort==='pts_asc'?a.bestPts-b.bestPts:b.bestPts-a.bestPts;
   });
+
   document.getElementById('stats').innerHTML=
     `<span><span class="sdot" style="background:var(--text)"></span>Total: <strong>${partners.length}</strong></span>`+
     `<span><span class="sdot" style="background:var(--cdv-coral)"></span>Exibindo: <strong>${list.length}</strong></span>`+
     `<span><span class="sdot" style="background:var(--dollar)"></span>Em dólar: <strong>${partners.filter(p=>p.dollar).length}</strong></span>`;
+
   document.querySelectorAll('.cbtn').forEach(b=>b.classList.toggle('active',b.dataset.cat===activeCat));
+
   if(!list.length){document.getElementById('grid').innerHTML='<div class="status-box" style="color:var(--muted)">Nenhum parceiro encontrado.</div>';return;}
-  const lbl=p=>p.per>1?`R$${p.per}`:p.dollar?'U$1':'R$1';
+
+  const lbl=p=>{
+    const bp=p.programs[p.bestProg==='both'?Object.keys(p.programs)[0]:p.bestProg]||{};
+    return (bp.per>1)?`R$${bp.per}`:p.dollar?'U$1':'R$1';
+  };
+
+  // badges dos programas
+  const progBadges=p=>Object.entries(p.programs).map(([pid,d])=>{
+    const pr=PROGRAMS.find(x=>x.id===pid);
+    return `<span class="pbdg pbdg-${pid}">${pr.name} ${d.pts}</span>`;
+  }).join('');
+
+  const winnerClass=p=>p.bestProg==='both'?'winner-both':`winner-${p.bestProg}`;
+
   document.getElementById('grid').innerHTML=list.map(p=>`
-    <a class="card ${p.dollar?'is-dollar':''}" href="${p.url}" target="_blank">
+    <div class="card ${winnerClass(p)} ${p.dollar?'is-dollar':''}" data-name="${encodeURIComponent(p.name)}">
       <div class="pname">${p.name}</div>
-      <div class="pts-row"><span class="pts-val">${p.pts}</span><span class="pts-lbl">pts/${lbl(p)}</span></div>
-      ${p.ate?'<span class="tag tag-ate">até X pts</span>':''}
-      ${p.dollar?'<span class="tag tag-dollar">em U$ turismo</span>':''}
+      <div class="pts-row">
+        <span class="pts-val">${p.bestPts}</span>
+        <span class="pts-lbl">${p.ate?'pts até/':'pts/'}${lbl(p)}</span>
+      </div>
+      <div class="prog-badges">${progBadges(p)}</div>
+      ${p.dollar?'<span class="tag-dollar">em U$ turismo</span>':''}
       <div class="card-foot">${p.cat}</div>
-    </a>`).join('');
+    </div>`).join('');
 }
+
+// ─── Modal ────────────────────────────────────────────────────────────────────
+function openModal(name){
+  const p=partners.find(x=>x.name===name);
+  if(!p)return;
+  document.getElementById('modal-name').textContent=p.name;
+  document.getElementById('modal-cat').textContent=p.cat;
+
+  const rows=Object.entries(p.programs).sort((a,b)=>b[1].pts-a[1].pts).map(([pid,data])=>{
+    const prog=PROGRAMS.find(x=>x.id===pid);
+    const isBest=data.pts===p.bestPts;
+    const lbl=(data.per>1)?`R$${data.per}`:p.dollar?'U$1':'R$1';
+    return `<a class="modal-row ${isBest?'best':''}" href="${data.url}" target="_blank" style="text-decoration:none;color:inherit;cursor:pointer">
+      <div class="modal-prog">
+        <div class="modal-prog-dot" style="background:${prog.color}"></div>
+        <div>
+          <div class="modal-prog-name">${prog.name}</div>
+          ${isBest?'<div class="best-badge">✓ Melhor opção</div>':''}<div style="font-size:10px;color:var(--muted);margin-top:2px">↗ Ir para o parceiro</div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div class="modal-pts" style="color:${prog.color}">${data.pts}</div>
+        <div class="modal-pts-lbl">${data.ate?'pts até/':'pts/'}${lbl}</div>
+      </div>
+    </a>`;
+  }).join('');
+
+  document.getElementById('modal-rows').innerHTML=rows;
+
+  // link para o melhor programa
+  const bestPid=p.bestProg==='both'?Object.keys(p.programs)[0]:p.bestProg;
+  const bestUrl=p.programs[bestPid]?.url||'#';
+  document.getElementById('modal-url').href=bestUrl;
+
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e){
+  if(!e||e.target===document.getElementById('modal-overlay')||e.currentTarget.classList.contains('modal-close')){
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+}
+
+// ─── Events ───────────────────────────────────────────────────────────────────
 document.addEventListener('click',e=>{
   const fb=e.target.closest('[data-filter]');
   if(fb){const f=fb.dataset.filter;activeFilters.has(f)?activeFilters.delete(f):activeFilters.add(f);fb.classList.toggle('active');render();return;}
   const cb=e.target.closest('[data-cat]');
-  if(cb){activeCat=(activeCat===cb.dataset.cat&&cb.dataset.cat!=='all')?'all':cb.dataset.cat;render();}
+  if(cb){activeCat=(activeCat===cb.dataset.cat&&cb.dataset.cat!=='all')?'all':cb.dataset.cat;render();return;}
+  const card=e.target.closest('.card[data-name]');
+  if(card){openModal(decodeURIComponent(card.dataset.name));}
 });
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal({target:document.getElementById('modal-overlay')});});
+
 loadData();
 </script>
 </body>
