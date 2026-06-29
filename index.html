@@ -11,6 +11,9 @@
     --text:#e8e8f0;--muted:#6b6b8a;
     --livelo:#df0979;--livelo-dim:rgba(223,9,121,0.15);
     --esfera:#e8371b;--esfera-dim:rgba(232,55,27,0.15);
+    --smiles:#f97316;--smiles-dim:rgba(249,115,22,0.15);
+    --azul:#0ea5e9;--azul-dim:rgba(14,165,233,0.15);
+    --latam:#dc2626;--latam-dim:rgba(220,38,38,0.15);
     --green:#34d399;--dollar:#60a5fa;--dollar-dim:rgba(96,165,250,0.12);
     --red:#f87171;
     --cdv-navy:#2a3246;--cdv-coral:#ff585e;
@@ -57,9 +60,15 @@
   .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
   .card.winner-livelo::before{background:var(--livelo)}
   .card.winner-esfera::before{background:var(--esfera)}
-  .card.winner-both::before{background:linear-gradient(90deg,var(--livelo),var(--esfera))}
+  .card.winner-smiles::before{background:var(--smiles)}
+  .card.winner-azul::before{background:var(--azul)}
+  .card.winner-latam::before{background:var(--latam)}
+  .card.winner-both::before{background:linear-gradient(90deg,var(--cdv-coral),#f97316)}
   .card.winner-livelo:hover{border-color:var(--livelo)}
   .card.winner-esfera:hover{border-color:var(--esfera)}
+  .card.winner-smiles:hover{border-color:var(--smiles)}
+  .card.winner-azul:hover{border-color:var(--azul)}
+  .card.winner-latam:hover{border-color:var(--latam)}
   .card.winner-both:hover{border-color:var(--cdv-coral)}
   .card.is-dollar:hover{border-color:var(--dollar)}
 
@@ -68,6 +77,9 @@
   .pts-val{font-size:26px;font-weight:900;line-height:1}
   .winner-livelo .pts-val{color:var(--livelo)}
   .winner-esfera .pts-val{color:var(--esfera)}
+  .winner-smiles .pts-val{color:var(--smiles)}
+  .winner-azul .pts-val{color:var(--azul)}
+  .winner-latam .pts-val{color:var(--latam)}
   .winner-both .pts-val{color:var(--cdv-coral)}
   .pts-lbl{font-size:11px;color:var(--muted)}
 
@@ -75,6 +87,9 @@
   .pbdg{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;white-space:nowrap}
   .pbdg-livelo{background:var(--livelo-dim);color:var(--livelo);border:1px solid rgba(223,9,121,.3)}
   .pbdg-esfera{background:var(--esfera-dim);color:var(--esfera);border:1px solid rgba(232,55,27,.3)}
+  .pbdg-smiles{background:var(--smiles-dim);color:var(--smiles);border:1px solid rgba(249,115,22,.3)}
+  .pbdg-azul{background:var(--azul-dim);color:var(--azul);border:1px solid rgba(14,165,233,.3)}
+  .pbdg-latam{background:var(--latam-dim);color:var(--latam);border:1px solid rgba(220,38,38,.3)}
 
   .tag-dollar{background:var(--dollar-dim);border:1px solid rgba(96,165,250,.2);border-radius:5px;padding:2px 7px;font-size:10px;color:var(--dollar);font-weight:600;width:fit-content}
   .card-foot{margin-top:auto;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
@@ -123,7 +138,7 @@
   <div class="logo-dot">CDV</div>
   <div>
     <div class="title-main">Compras Bonificadas</div>
-    <div class="title-sub">Clube do Viajante · Livelo & Esfera</div>
+    <div class="title-sub">Clube do Viajante · Livelo, Esfera, Smiles, Azul & LATAM</div>
   </div>
   <div class="badge" id="update-badge">Carregando…</div>
   <div class="hright">
@@ -162,10 +177,16 @@
 <script>
 const PROXY = 'https://cdv-proxy-production.up.railway.app/fetch';
 const PROGRAMS = [
-  { id:'livelo', name:'Livelo', color:'#df0979', dim:'rgba(223,9,121,0.15)',
+  { id:'livelo',  name:'Livelo',      color:'#df0979', dim:'rgba(223,9,121,0.15)',
     url:'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-livelo' },
-  { id:'esfera', name:'Esfera', color:'#e8371b', dim:'rgba(232,55,27,0.15)',
+  { id:'esfera',  name:'Esfera',      color:'#e8371b', dim:'rgba(232,55,27,0.15)',
     url:'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-santander-esfera' },
+  { id:'smiles',  name:'Smiles',      color:'#f97316', dim:'rgba(249,115,22,0.15)',
+    url:'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-smiles' },
+  { id:'azul',    name:'Azul',        color:'#0ea5e9', dim:'rgba(14,165,233,0.15)',
+    url:'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-azul' },
+  { id:'latam',   name:'LATAM Pass',  color:'#dc2626', dim:'rgba(220,38,38,0.15)',
+    url:'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-latam-pass' },
 ];
 
 // ─── Categorias ───────────────────────────────────────────────────────────────
@@ -198,7 +219,23 @@ const CAT_RULES=[
 const CAT_ICONS={'Marketplace':'🛒','Eletrônicos':'💻','Moda':'👗','Beleza':'💄','Viagem':'✈️','Esportes':'🏅','Farmácia':'💊','Supermercado':'🛍️','Pet':'🐾','Telecom':'📱','Casa':'🏠','Alimentação':'☕','Entretenimento':'🎬','Seguros':'🛡️','Financeiro':'💰','Acessórios':'⌚','Saúde':'🏋️','Lazer':'🎡','Transporte':'🚌','Automotivo':'🔧','Infantil':'🧸','Serviços':'⚙️','Outros':'📦'};
 function categorize(n){for(const[re,c]of CAT_RULES)if(re.test(n))return c;return'Outros';}
 
-// ─── Parser ───────────────────────────────────────────────────────────────────
+// ─── Parser — suporta múltiplos formatos da Comparemania ─────────────────────
+function extractPts(g){
+  // Livelo/Esfera: "= 5 ponto(s) por 1 real" ou "até 84 ponto(s) por 1 real"
+  const ate=g.match(/até\s+(\d+)/i);
+  const eq=g.match(/=\s+(\d+)/i);
+  // Azul: "5 pt/R$" ou "4,5 pt/R$"
+  const azul=g.match(/(\d+[,.]?\d*)\s*pt\//i);
+  // LATAM: "Cada 1 real gastos = 3 ponto(s) Latam Pass"
+  const latam=g.match(/=\s*(\d+)\s*ponto/i);
+  // Smiles: "você ganha até 26 Smiles"
+  const smiles=g.match(/ganha\s+(?:até\s+)?(\d+)\s+smiles/i);
+  const raw=ate||eq||latam||smiles||azul;
+  if(!raw) return null;
+  const pts=parseFloat((raw[1]||'').replace(',','.'));
+  return {pts:Math.round(pts)||pts, ate:!!(ate||smiles)};
+}
+
 function parseHTML(html, progId){
   const doc=new DOMParser().parseFromString(html,'text/html');
   const out=[];
@@ -208,14 +245,14 @@ function parseHTML(html, progId){
     const na=td[0].querySelector('a'),ga=td[1].querySelector('a');
     if(!na||!ga)return;
     const name=na.textContent.trim(),g=ga.textContent.trim();
-    const am=g.match(/até\s+(\d+)/i),em=g.match(/=\s+(\d+)/i);
-    const pts=am?+am[1]:em?+em[1]:null;
-    if(!pts||!name)return;
+    const parsed=extractPts(g);
+    if(!parsed||!name)return;
+    const {pts,ate}=parsed;
     const pm=g.match(/por\s+(\d+)\s+real/i);
-    const dollar=/kaligo|hertz|decolar|aliexpress|rental.cars|rentcars|localiza.int/i.test(name);
+    const dollar=/u\$|dólar|dollar|kaligo|hertz|decolar|aliexpress|rental.cars|rentcars|localiza.int/i.test(g+name);
     const rawHref=na.getAttribute("href")||"#";
     const url=rawHref.startsWith("http")?rawHref:"https://www.comparemania.com.br"+rawHref;
-    out.push({name,pts,per:pm?+pm[1]:1,ate:!!am,dollar,cat:categorize(name),url,prog:progId});
+    out.push({name,pts,per:pm?+pm[1]:1,ate,dollar,cat:categorize(name),url,prog:progId});
   });
   return out;
 }
@@ -252,10 +289,46 @@ async function fetchProg(prog, onLog){
   const res=await fetch(`${PROXY}?url=${encodeURIComponent(prog.url)}`,{signal:AbortSignal.timeout(15000)});
   if(!res.ok) throw new Error(`${prog.name}: servidor retornou ${res.status}`);
   const html=await res.text();
-  if(!html.includes('ponto(s)')) throw new Error(`${prog.name}: resposta inesperada`);
+  if(!html.includes('ponto(s)')&&!html.includes('Smiles')&&!html.includes('pt/R$')) throw new Error(`${prog.name}: resposta inesperada`);
   const items=parseHTML(html,prog.id);
   onLog(`${prog.name}: ${items.length} parceiros ✓`);
   return items;
+}
+
+// ─── Extrai links diretos da página individual do parceiro ───────────────────
+function parseRedirectLinks(html){
+  const links={};
+  const doc=new DOMParser().parseFromString(html,'text/html');
+  // Procura headings h5/h4/h3 com nome do programa e acha link "Ir para loja" no bloco pai
+  doc.querySelectorAll('h5,h4,h3').forEach(h=>{
+    const progName=h.textContent.trim().toLowerCase();
+    if(!/^(livelo|esfera|smiles|latam pass|tudo azul)$/.test(progName)) return;
+    let el=h.parentElement;
+    for(let i=0;i<8;i++){
+      if(!el) break;
+      const link=[...el.querySelectorAll('a')].find(a=>{
+        const text=a.textContent.trim().toLowerCase();
+        const href=a.getAttribute('href')||'';
+        return (text.includes('ir para')||text.includes('loja')) && href.includes('redirecionar/oferta');
+      });
+      if(link){
+        const raw=link.getAttribute('href');
+        links[progName]=raw.startsWith('http')?raw:'https://www.comparemania.com.br'+raw;
+        break;
+      }
+      el=el.parentElement;
+    }
+  });
+  return links;
+}
+
+async function fetchRedirectLinks(partnerUrl){
+  try{
+    const res=await fetch(`${PROXY}?url=${encodeURIComponent(partnerUrl)}`,{signal:AbortSignal.timeout(12000)});
+    if(!res.ok) return {};
+    const html=await res.text();
+    return parseRedirectLinks(html);
+  }catch{return {};}
 }
 
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -272,6 +345,7 @@ async function loadData(){
   const log=msg=>{const el=document.getElementById('load-msg');if(el)el.textContent=msg;};
 
   try{
+    // 1. Busca listas dos dois programas
     const allData={};
     for(const prog of PROGRAMS){
       allData[prog.id]=await fetchProg(prog,log);
@@ -279,9 +353,11 @@ async function loadData(){
     partners=mergePartners(allData);
     if(!partners.length) throw new Error('Nenhum parceiro encontrado.');
 
+    // 2. Renderiza imediatamente
+    buildCatBar();render();
+
     const now=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
     document.getElementById('update-badge').innerHTML=`Atualizado em <strong>${now}</strong>`;
-    buildCatBar();render();
   }catch(e){
     document.getElementById('grid').innerHTML=`<div class="error-box">⚠️ ${e.message}</div>`;
     document.getElementById('update-badge').textContent='Erro';
@@ -352,22 +428,32 @@ function render(){
 }
 
 // ─── Modal ────────────────────────────────────────────────────────────────────
-function openModal(name){
-  const p=partners.find(x=>x.name===name);
-  if(!p)return;
-  document.getElementById('modal-name').textContent=p.name;
-  document.getElementById('modal-cat').textContent=p.cat;
+const directUrlCache={};
 
-  const rows=Object.entries(p.programs).sort((a,b)=>b[1].pts-a[1].pts).map(([pid,data])=>{
+// Mapa entre IDs internos e nomes usados pela Comparemania nos headings
+const PROG_NAME_MAP={azul:'tudo azul','latam':'latam pass',livelo:'livelo',esfera:'esfera',smiles:'smiles'};
+
+function resolveLink(pid, links){
+  const key=PROG_NAME_MAP[pid]||pid;
+  return links[key]||links[pid]||'';
+}
+
+function renderModalRows(p, links={}){
+  return Object.entries(p.programs).sort((a,b)=>b[1].pts-a[1].pts).map(([pid,data])=>{
     const prog=PROGRAMS.find(x=>x.id===pid);
     const isBest=data.pts===p.bestPts;
     const lbl=(data.per>1)?`R$${data.per}`:p.dollar?'U$1':'R$1';
-    return `<a class="modal-row ${isBest?'best':''}" href="${data.url}" target="_blank" style="text-decoration:none;color:inherit;cursor:pointer">
+    const destUrl=resolveLink(pid,links);
+    const loading=!destUrl;
+    return `<a class="modal-row ${isBest?'best':''} ${loading?'loading':''}" 
+      ${loading?'href="#" onclick="return false;"':`href="${destUrl}" target="_blank"`}
+      style="text-decoration:none;color:inherit;cursor:${loading?'not-allowed':'pointer'};opacity:${loading?'0.6':'1'}">
       <div class="modal-prog">
         <div class="modal-prog-dot" style="background:${prog.color}"></div>
         <div>
           <div class="modal-prog-name">${prog.name}</div>
-          ${isBest?'<div class="best-badge">✓ Melhor opção</div>':''}<div style="font-size:10px;color:var(--muted);margin-top:2px">↗ Ir para o parceiro</div>
+          ${isBest?'<div class="best-badge">✓ Melhor opção</div>':''}
+          <div style="font-size:10px;color:var(--muted);margin-top:2px">${loading?'⟳ carregando link…':'↗ Ir para o parceiro'}</div>
         </div>
       </div>
       <div style="text-align:right">
@@ -376,15 +462,39 @@ function openModal(name){
       </div>
     </a>`;
   }).join('');
+}
 
-  document.getElementById('modal-rows').innerHTML=rows;
+async function openModal(name){
+  const p=partners.find(x=>x.name===name);
+  if(!p)return;
 
-  // link para o melhor programa
+  document.getElementById('modal-name').textContent=p.name;
+  document.getElementById('modal-cat').textContent=p.cat;
+
+  // Usa cache se já buscou
+  const cached=directUrlCache[name];
+  document.getElementById('modal-rows').innerHTML=renderModalRows(p, cached||{});
+
   const bestPid=p.bestProg==='both'?Object.keys(p.programs)[0]:p.bestProg;
-  const bestUrl=p.programs[bestPid]?.url||'#';
-  document.getElementById('modal-url').href=bestUrl;
-
+  document.getElementById('modal-url').href=resolveLink(bestPid,cached||{})||p.programs[bestPid]?.url||'#';
   document.getElementById('modal-overlay').classList.add('open');
+
+  // Se ainda não buscou, busca agora
+  if(!cached){
+    // Usa a URL da página individual (cashback-xxx), preferindo qualquer programa
+    const anyProgUrl=Object.values(p.programs)[0]?.url;
+    console.log('[CDV] Buscando links para:', name, '| URL:', anyProgUrl);
+    if(anyProgUrl){
+      const links=await fetchRedirectLinks(anyProgUrl);
+      console.log('[CDV] Links encontrados:', JSON.stringify(links));
+      directUrlCache[name]=links;
+      // Atualiza o modal se ainda estiver aberto para este parceiro
+      if(document.getElementById('modal-name').textContent===name){
+        document.getElementById('modal-rows').innerHTML=renderModalRows(p,links);
+        document.getElementById('modal-url').href=resolveLink(bestPid,links)||p.programs[bestPid]?.url||'#';
+      }
+    }
+  }
 }
 
 function closeModal(e){
@@ -400,7 +510,7 @@ document.addEventListener('click',e=>{
   const cb=e.target.closest('[data-cat]');
   if(cb){activeCat=(activeCat===cb.dataset.cat&&cb.dataset.cat!=='all')?'all':cb.dataset.cat;render();return;}
   const card=e.target.closest('.card[data-name]');
-  if(card){openModal(decodeURIComponent(card.dataset.name));}
+  if(card){openModal(decodeURIComponent(card.dataset.name));} // async, fire & forget
 });
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal({target:document.getElementById('modal-overlay')});});
