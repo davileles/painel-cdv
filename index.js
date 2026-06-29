@@ -4,14 +4,16 @@ const fetch = require('node-fetch');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// URLs permitidas (whitelist de segurança)
-const ALLOWED = [
-  'comparemania.com.br'
-];
+const ALLOWED = ['comparemania.com.br'];
 
+// CORS completo — aceita qualquer origem, trata preflight OPTIONS
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
   next();
 });
 
@@ -22,7 +24,6 @@ app.get('/fetch', async (req, res) => {
     return res.status(400).json({ error: 'Parâmetro ?url= obrigatório' });
   }
 
-  // Valida que a URL é permitida
   const isAllowed = ALLOWED.some(domain => target.includes(domain));
   if (!isAllowed) {
     return res.status(403).json({ error: 'Domínio não permitido' });
@@ -31,9 +32,11 @@ app.get('/fetch', async (req, res) => {
   try {
     const response = await fetch(target, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; CDV-Panel/1.0)',
-        'Accept': 'text/html,application/xhtml+xml',
-        'Accept-Language': 'pt-BR,pt;q=0.9'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'pt-BR,pt;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Cache-Control': 'no-cache'
       },
       timeout: 15000
     });
@@ -43,7 +46,7 @@ app.get('/fetch', async (req, res) => {
     }
 
     const html = await response.text();
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(html);
 
   } catch (err) {
@@ -51,6 +54,6 @@ app.get('/fetch', async (req, res) => {
   }
 });
 
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
 app.listen(PORT, () => console.log(`CDV Proxy rodando na porta ${PORT}`));
