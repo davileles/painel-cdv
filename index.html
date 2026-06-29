@@ -114,6 +114,7 @@
   .modal-name{font-size:18px;font-weight:800;margin-bottom:4px}
   .modal-cat{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:20px}
   .modal-rows{display:flex;flex-direction:column;gap:10px}
+  #hist-chart{height:200px!important}
   .modal-row{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;transition:border-color .15s,background .15s}
   .modal-row:hover{background:var(--card);border-color:var(--muted)}
   .modal-row.best:hover{border-color:var(--cdv-coral);background:#1f1f38}
@@ -124,7 +125,7 @@
   .modal-pts{font-size:22px;font-weight:900}
   .modal-pts-lbl{font-size:11px;color:var(--muted);margin-top:1px;text-align:right}
   .best-badge{font-size:10px;font-weight:700;color:var(--cdv-coral);margin-top:4px}
-  .modal-url{display:block;margin-top:16px;text-align:center;font-size:12px;color:var(--cdv-coral);text-decoration:none;padding:10px;border:1px solid rgba(255,88,94,.3);border-radius:8px;transition:background .15s}
+  .modal-url{display:block;margin-top:16px;text-align:center;font-size:12px;color:var(--cdv-coral);background:transparent;cursor:pointer;padding:10px;border:1px solid rgba(255,88,94,.3);border-radius:8px;transition:background .15s;font-family:'Montserrat',sans-serif;font-weight:700;width:100%}
   .modal-url:hover{background:rgba(255,88,94,.08)}
 
   @media(max-width:600px){
@@ -136,6 +137,7 @@
     .controls{top:72px}
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -166,13 +168,17 @@
 </div>
 
 <!-- MODAL -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal-overlay" id="modal-overlay">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal()">×</button>
+    <button class="modal-close" id="modal-close-btn">×</button>
     <div class="modal-name" id="modal-name"></div>
     <div class="modal-cat" id="modal-cat"></div>
     <div class="modal-rows" id="modal-rows"></div>
-    <a class="modal-url" id="modal-url" href="#" target="_blank">↗ Ver melhor oferta</a>
+    <button class="modal-url" id="modal-hist-btn" onclick="toggleHistorico()">📈 Ver histórico</button>
+  <div id="modal-hist" style="display:none;margin-top:14px">
+    <canvas id="hist-chart" style="width:100%;height:200px"></canvas>
+    <div id="hist-empty" style="display:none;text-align:center;font-size:12px;color:var(--muted);padding:20px 0">Histórico ainda sendo construído — volte amanhã 📅</div>
+  </div>
   </div>
 </div>
 
@@ -565,6 +571,14 @@ async function openModal(name){
   const p=partners.find(x=>x.name===name);
   if(!p)return;
 
+  // Reset histórico ao abrir novo parceiro
+  currentModalPartner=name;
+  const histDiv=document.getElementById('modal-hist');
+  const histBtn=document.getElementById('modal-hist-btn');
+  if(histDiv){histDiv.style.display='none';}
+  if(histBtn){histBtn.textContent='📈 Ver histórico';}
+  if(histChart){histChart.destroy();histChart=null;}
+
   document.getElementById('modal-name').textContent=p.name;
   document.getElementById('modal-cat').textContent=p.cat;
 
@@ -594,14 +608,147 @@ async function openModal(name){
   }
 }
 
-function closeModal(e){
-  if(!e||e.target===document.getElementById('modal-overlay')||e.currentTarget.classList.contains('modal-close')){
-    document.getElementById('modal-overlay').classList.remove('open');
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  if(histChart){histChart.destroy();histChart=null;}
+  const histDiv=document.getElementById('modal-hist');
+  const histBtn=document.getElementById('modal-hist-btn');
+  if(histDiv) histDiv.style.display='none';
+  if(histBtn) histBtn.textContent='📈 Ver histórico';
+}
+
+// ─── Gráfico de histórico ─────────────────────────────────────────────────────
+let histChart = null;
+let currentModalPartner = null;
+
+function toggleHistorico(){
+  const div = document.getElementById('modal-hist');
+  const btn = document.getElementById('modal-hist-btn');
+  const isOpen = div.style.display !== 'none';
+  if(isOpen){
+    div.style.display='none';
+    btn.textContent='📈 Ver histórico';
+  } else {
+    div.style.display='block';
+    btn.textContent='✕ Fechar histórico';
+    renderHistChart(currentModalPartner);
   }
+}
+
+function renderHistChart(partnerName){
+  if(!partnerName) return;
+  const key = partnerName.toLowerCase().trim();
+  const canvas = document.getElementById('hist-chart');
+  const emptyEl = document.getElementById('hist-empty');
+
+  // Coleta dados históricos por programa
+  const PROG_COLORS = {
+    livelo:'#df0979', esfera:'#e8371b', smiles:'#f97316',
+    azul:'#0ea5e9', latam:'#dc2626'
+  };
+  const PROG_NAMES = {
+    livelo:'Livelo', esfera:'Esfera', smiles:'Smiles',
+    azul:'Azul', latam:'LATAM Pass'
+  };
+
+  // Monta série temporal por programa
+  const datas = Object.keys(historico).sort();
+  if(datas.length < 2){
+    canvas.style.display='none';
+    emptyEl.style.display='block';
+    return;
+  }
+  canvas.style.display='block';
+  emptyEl.style.display='none';
+
+  // Labels: últimos 30 dias (ou todos se menos)
+  const ultimos = datas.slice(-180);
+  const labels = ultimos.map(d => {
+    const [,m,dia] = d.split('-');
+    return `${dia}/${m}`;
+  });
+
+  // Datasets por programa
+  const datasets = [];
+  for(const [pid, pname] of Object.entries(PROG_NAMES)){
+    const vals = ultimos.map(d => {
+      const snap = historico[d];
+      if(!snap || !snap[key]) return null;
+      return snap[key].programs?.[pid] || null;
+    });
+    // Só inclui se tiver algum dado
+    if(vals.some(v=>v!==null)){
+      datasets.push({
+        label: pname,
+        data: vals,
+        borderColor: PROG_COLORS[pid],
+        backgroundColor: PROG_COLORS[pid]+'22',
+        borderWidth: 2,
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        spanGaps: true,
+        tension: 0.3,
+      });
+    }
+  }
+
+  if(!datasets.length){
+    canvas.style.display='none';
+    emptyEl.style.display='block';
+    return;
+  }
+
+  // Destrói chart anterior
+  if(histChart) { histChart.destroy(); histChart=null; }
+
+  const ctx = canvas.getContext('2d');
+  histChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 300 },
+      plugins: {
+        legend: {
+          labels: {
+            color: '#8a9bbf',
+            font: { family: 'Montserrat', size: 11 },
+            boxWidth: 12, padding: 10
+          }
+        },
+        tooltip: {
+          backgroundColor: '#2a3246',
+          titleColor: '#eeeeee',
+          bodyColor: '#8a9bbf',
+          borderColor: '#3d4a66',
+          borderWidth: 1,
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y ?? '—'} pts/R$`
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color:'#5a6a8a', font:{family:'Montserrat',size:10}, maxRotation:45 },
+          grid: { color:'#3d4a6633' }
+        },
+        y: {
+          ticks: { color:'#5a6a8a', font:{family:'Montserrat',size:10} },
+          grid: { color:'#3d4a6633' },
+          beginAtZero: false
+        }
+      }
+    }
+  });
 }
 
 // ─── Events ───────────────────────────────────────────────────────────────────
 document.addEventListener('click',e=>{
+  // Fechar modal ao clicar no overlay ou no botão fechar
+  if(e.target.id==='modal-overlay'||e.target.id==='modal-close-btn'){closeModal();return;}
+  // Não propaga cliques dentro do modal para os cards
+  if(e.target.closest('.modal')){return;}
   const pf=e.target.closest('[data-prog]');
   if(pf){
     const pid=pf.dataset.prog;
@@ -624,7 +771,7 @@ document.addEventListener('click',e=>{
   if(card){openModal(decodeURIComponent(card.dataset.name));} // async, fire & forget
 });
 
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal({target:document.getElementById('modal-overlay')});});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 loadData();
 </script>
