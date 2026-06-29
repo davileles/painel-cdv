@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const PROXY = 'https://cdv-proxy-production.up.railway.app/fetch';
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const RESEND_FROM = 'davileles@gmail.com'; // ou seu domínio verificado no Resend
+const RESEND_FROM = 'alertas@clubedoviajante.com.br'; // ou seu domínio verificado no Resend
 
 const PROGRAMS = [
   { id: 'livelo', name: 'Livelo',     url: 'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-livelo' },
@@ -141,6 +141,34 @@ function buildEmailHtml(alerta, parceiro, pts, progName, url) {
 </html>`;
 }
 
+// ── Resolve link direto do parceiro no programa ──────────────────────────────
+const PROG_HEADING_MAP = { livelo:'livelo', esfera:'esfera', smiles:'smiles', azul:'tudo azul', latam:'latam pass' };
+
+async function resolveDirectUrl(partnerCashbackUrl, progId) {
+  try {
+    const html = await httpGet(`${PROXY}?url=${encodeURIComponent(partnerCashbackUrl)}`);
+    const heading = PROG_HEADING_MAP[progId] || progId;
+    // Acha link de redirecionar próximo ao heading do programa
+    const idx = html.toLowerCase().indexOf(`>${heading}<`);
+    if (idx < 0) return null;
+    const chunk = html.slice(idx, idx + 2000);
+    const rm = chunk.match(/redirecionar\/oferta\/[\d]+\/[\d]+\/[a-z0-9-]+/i);
+    if (!rm) return null;
+    const redirectUrl = 'https://www.comparemania.com.br/' + rm[0];
+    const rhtml = await httpGet(`${PROXY}?url=${encodeURIComponent(redirectUrl)}`);
+    // Link direto via <a href>
+    const lm = rhtml.match(/href="(https?:\/\/(?:(?!comparemania)[^"]+)(?:esfera\.com|livelo\.com|smiles\.com|viajemais\.voeazul|latamairlines)[^"]*)"/i);
+    if (lm) return lm[1];
+    // Fallback JSON encoded
+    const jm = rhtml.match(/https?:%5C%5Cu002F%5C%5Cu002F[^"<\s]*/i) || rhtml.match(/https?:\\u002F\\u002F[^"<\s]*/i);
+    if (jm) return decodeURIComponent(jm[0].replace(/\\u002F/g,'/').replace(/\\u0026/g,'&'));
+    return null;
+  } catch(e) {
+    console.log('[resolveDirectUrl] erro:', e.message);
+    return null;
+  }
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 async function main() {
   const hoje = new Date().toISOString().split('T')[0];
@@ -201,12 +229,18 @@ async function main() {
     if (!pts) continue;
     if (pts >= alerta.minPts) {
       const prog = PROGRAMS.find(p => p.id === progId);
-      const url = snap.urls[progId] || '';
-      console.log(`🔔 Alerta! ${alerta.email} → ${alerta.parceiro} ${pts} pts (mín: ${alerta.minPts}) via ${prog.name}`);
+      const cashbackUrl = snap.urls[progId] || '';
+      console.log(`🔔 Alerta! ${alerta.email} → ${alerta.parceiro} ${pts} pts via ${prog.name}`);
+      // Resolve link direto do programa
+      let directUrl = cashbackUrl;
+      if (cashbackUrl) {
+        const resolved = await resolveDirectUrl(cashbackUrl, progId);
+        if (resolved) { directUrl = resolved; console.log(`  Link direto: ${resolved}`); }
+      }
       await enviarEmail(
         alerta.email,
-        `🔔 ${alerta.parceiro} atingiu ${pts} pts/${alerta.programa === 'azul' ? 'R$' : 'R$'} no ${prog.name}`,
-        buildEmailHtml(alerta, snap.name, pts, prog.name, url)
+        `🔔 ${snap.name} atingiu ${pts} pts/R$ no ${prog.name}`,
+        buildEmailHtml(alerta, snap.name, pts, prog.name, directUrl)
       );
       alertasDisparados.push({ ...alerta, ptsAtingido: pts, data: hoje });
     }
