@@ -1,0 +1,32 @@
+name: Coletar histórico de pontuações
+
+on:
+  schedule:
+    - cron: '0 11 * * *'  # 8h horário de Brasília (UTC-3)
+  workflow_dispatch:       # permite rodar manualmente
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Coletar pontuações
+        run: node coletar.js
+
+      - name: Salvar historico.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add historico.json
+          git diff --staged --quiet || git commit -m "chore: atualiza histórico de pontuações $(date -u +'%Y-%m-%d')"
+          git push
