@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3000;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO || 'davileles/cdv-compras-bonificadas';
 
-const ALLOWED = ['comparemania.com.br'];
+const ALLOWED = ['comparemania.com.br', 'passageirodeprimeira.com'];
 
 app.use(express.json());
 
