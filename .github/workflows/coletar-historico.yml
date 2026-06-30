@@ -1,10 +1,9 @@
-name: Coletar dados CDV
+name: Coletar histórico de pontuações
 
 on:
   schedule:
-    # De 2 em 2 horas das 8h às 20h (SP = UTC-3): 11,13,15,17,19,21,23 UTC
-    - cron: '15 11,13,15,17,19,21,23 * * *'
-  workflow_dispatch: # permite rodar manualmente
+    - cron: '15 13 * * *'  # 10h15 horário de Brasília (UTC-3)
+  workflow_dispatch:       # permite rodar manualmente
 
 jobs:
   coletar:
@@ -19,18 +18,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '20'
 
-      - name: Coletar dados
+      - name: Coletar pontuações e disparar alertas
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node coletar.js
 
-      - name: Salvar arquivos
+      - name: Salvar historico.json
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add historico.json ofertas.json
-          git diff --staged --quiet || git commit -m "chore: atualiza dados $(date -u +'%Y-%m-%d %H:%M')"
+          git add historico.json
+          git diff --staged --quiet || git commit -m "chore: atualiza histórico $(date -u +'%Y-%m-%d')"
           git push
