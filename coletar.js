@@ -141,7 +141,7 @@ function parseRSS(xml, catId, catLabel, catEmoji) {
     if (!title || !link) continue;
     const date = pubDate ? new Date(pubDate).toISOString() : new Date().toISOString();
     const slug = link.replace(/^https?:\/\/[^/]+\//, '').replace(/\/$/, '');
-    items.push({ id:slug, cat:catId, catLabel, catEmoji, title, link, date, rawText:plainText.slice(0,4000) });
+    items.push({ id:slug, cat:catId, catLabel, catEmoji, title, link, date, rawText:plainText.slice(0,8000) });
   }
   return items;
 }
@@ -165,26 +165,28 @@ async function reescreverOferta(item) {
     // Fallback sem IA: usa título e primeiras frases do texto bruto
     return {
       titulo: item.title,
-      resumo: item.rawText.slice(0,220),
+      resumo: item.rawText.slice(0,600),
       bonus: '',
       prazo: '',
       programa: ''
     };
   }
 
-  const prompt = `Você vai reescrever uma notícia sobre promoção de pontos/milhas em formato de post próprio, SEM citar nomes de sites, portais, blogs ou veículos de imprensa. Não use frases como "segundo o site", "de acordo com o portal" etc.
+  const prompt = `Você vai reescrever uma notícia sobre promoção de pontos/milhas em formato de post próprio, SEM citar nomes de sites, portais, blogs ou veículos de imprensa. Não use frases como "segundo o site", "de acordo com o portal", "confira no link" etc. Não inclua links nem menções a "matéria", "artigo" ou "publicação".
+
+Sua tarefa é extrair e reescrever TODAS as informações relevantes do texto original, de forma completa, para que o leitor tenha ciência total das regras sem precisar consultar outra fonte. Não resuma demais — inclua todos os detalhes práticos disponíveis no texto: percentuais de bônus (inclusive escalonados por faixa, se houver), prazos de início e término, valor mínimo/máximo de transferência ou compra, cupons e códigos promocionais, limites por CPF ou por período, prazo de crédito dos pontos/validade dos pontos bônus, condições de elegibilidade (ex: assinantes de clube, cartão específico), e qualquer restrição ou observação importante mencionada no texto.
 
 Notícia original (título + texto):
 TÍTULO: ${item.title}
 TEXTO: ${item.rawText}
 
 Responda SOMENTE em JSON válido, sem markdown, neste formato exato:
-{"titulo":"título reescrito, direto, sem citar fontes","resumo":"resumo de 2-3 frases com os dados mais importantes (programa, bônus %, prazo, condições principais)","bonus":"percentual de bônus se houver, ex: '80%' ou vazio","prazo":"prazo da oferta se houver, ex: 'até 30/06' ou vazio","programa":"nome do programa de fidelidade principal envolvido, ex: 'Livelo', 'Azul Fidelidade', ou vazio"}`;
+{"titulo":"título reescrito, direto, sem citar fontes","resumo":"texto completo reescrito em parágrafos corridos (ou bullets com '-') cobrindo TODAS as regras, condições, prazos, cupons e limitações encontradas no texto original — não limite o tamanho artificialmente, inclua tudo que for relevante","bonus":"percentual de bônus se houver, ex: '80%' ou vazio","prazo":"prazo da oferta se houver, ex: 'até 30/06' ou vazio","programa":"nome do programa de fidelidade principal envolvido, ex: 'Livelo', 'Azul Fidelidade', ou vazio"}`;
 
   try {
     const payload = JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 500,
+      max_tokens: 1500,
       messages: [{ role:'user', content:prompt }]
     });
 
@@ -216,7 +218,7 @@ Responda SOMENTE em JSON válido, sem markdown, neste formato exato:
     console.error('  [IA] erro ao reescrever, usando fallback:', e.message);
     return {
       titulo: item.title,
-      resumo: item.rawText.slice(0,220),
+      resumo: item.rawText.slice(0,600),
       bonus: '', prazo: '', programa: ''
     };
   }
@@ -318,6 +320,12 @@ async function main() {
     }
   }
 
+  // Descarta qualquer item no formato antigo (sem campo "titulo") — migração de versão
+  const itemsValidos = ofertas.items.filter(i => i && typeof i.titulo === 'string' && i.titulo.length > 0);
+  if (itemsValidos.length !== ofertas.items.length) {
+    console.log(`Descartando ${ofertas.items.length - itemsValidos.length} item(ns) em formato antigo`);
+  }
+
   console.log(`${candidatosNovos.length} artigo(s) novo(s) — reescrevendo com IA...`);
   const novosProcessados = [];
   for (const item of candidatosNovos) {
@@ -338,24 +346,18 @@ async function main() {
     await new Promise(r => setTimeout(r, 300));
   }
 
-  const isPrimeiraPopulacao = ofertas.items.length === 0 && slugsExistentes.size === novosProcessados.length;
-  const limite7dias = new Date();
-  limite7dias.setDate(limite7dias.getDate() - 7);
+  // Janela de exibição: mantém sempre apenas os últimos 3 dias de ofertas
+  const limiteOfertas = new Date();
+  limiteOfertas.setDate(limiteOfertas.getDate() - 3);
 
-  let itemsFinais = [...novosProcessados, ...ofertas.items.filter(i => new Date(i.date) > limite7dias)];
-
-  if (isPrimeiraPopulacao) {
-    const limite3dias = new Date();
-    limite3dias.setDate(limite3dias.getDate() - 3);
-    itemsFinais = itemsFinais.filter(i => new Date(i.date) > limite3dias);
-    console.log('Primeira população: filtrando para últimos 3 dias');
-  }
+  const itemsFinais = [...novosProcessados, ...itemsValidos]
+    .filter(i => new Date(i.date) > limiteOfertas);
 
   ofertas.items = itemsFinais.sort((a,b) => new Date(b.date) - new Date(a.date));
   ofertas.atualizadoEm = new Date().toISOString();
 
   fs.writeFileSync('ofertas.json', JSON.stringify(ofertas, null, 2));
-  console.log(`Ofertas salvas: ${ofertas.items.length} total, ${novosProcessados.length} novas`);
+  console.log(`Ofertas salvas: ${ofertas.items.length} total (últimos 3 dias), ${novosProcessados.length} novas`);
 
   // ── Histórico de pontuações (apenas 1ª execução do dia) ────────────────────
   if (isFirstRunOfDay()) {
