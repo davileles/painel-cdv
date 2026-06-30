@@ -551,7 +551,7 @@ function renderOfertas(){
     <div class="pp-header">
       <div>
         <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:2px">📡 Radar de Ofertas</div>
-        <div class="pp-update">Última atualização: ${atualizado} · Últimos 7 dias</div>
+        <div class="pp-update">Última atualização: ${atualizado} · Últimos 3 dias</div>
       </div>
 
     </div>
@@ -580,7 +580,7 @@ function renderOfertas(){
                    ${oferta.catEmoji} ${oferta.catLabel}
                  </div>
                  <div class="oferta-titulo">${oferta.titulo}</div>
-                 ${oferta.resumo?`<div class="oferta-desc">${oferta.resumo.slice(0,150)}${oferta.resumo.length>150?'…':''}</div>`:''}
+                 ${oferta.resumo?`<div class="oferta-desc">${oferta.resumo.replace(/\n+/g,' ').slice(0,220)}${oferta.resumo.length>220?'…':''}</div>`:''}
                </div>
                <div class="oferta-card-foot">
                  <span>${data}</span>
@@ -608,7 +608,13 @@ function openOfertaModal(idx){
   document.getElementById('oferta-modal-cat').innerHTML=
     `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${cor}"></span> ${oferta.catEmoji} ${oferta.catLabel}`;
   document.getElementById('oferta-modal-titulo').textContent=oferta.titulo;
-  document.getElementById('oferta-modal-resumo').textContent=oferta.resumo||'Detalhes não disponíveis.';
+  const resumoHtml=(oferta.resumo||'Detalhes não disponíveis.')
+    .split(/\n+/)
+    .map(linha=>linha.trim())
+    .filter(Boolean)
+    .map(linha=>linha.startsWith('-')?`<div style="margin-bottom:6px">• ${linha.replace(/^-\s*/,'')}</div>`:`<p style="margin:0 0 10px">${linha}</p>`)
+    .join('');
+  document.getElementById('oferta-modal-resumo').innerHTML=resumoHtml;
 
   const badges=[];
   if(oferta.programa) badges.push(`<span class="pbdg" style="background:${cor}22;color:${cor};border:1px solid ${cor}55">${oferta.programa}</span>`);
