@@ -74,16 +74,39 @@ function decodeEntities(s) {
 // ── Extrai o texto principal do artigo a partir do HTML completo ─────────────
 function extractArticleText(html) {
   let body = html;
-  // Tenta isolar a tag <article>; cai para <body> se não encontrar
-  const articleMatch = body.match(/<article[\s\S]*?<\/article>/i);
-  if (articleMatch) body = articleMatch[0];
+
+  // O tema usa <article> em vários lugares da página (cards de "Leia também",
+  // posts recentes, etc.) — pegamos o MAIOR bloco <article>, que é o corpo
+  // da notícia, em vez do primeiro (que pode ser um card pequeno).
+  const articleBlocks = html.match(/<article[\s\S]*?<\/article>/gi) || [];
+  if (articleBlocks.length) {
+    body = articleBlocks.reduce((a, b) => (b.length > a.length ? b : a));
+  } else {
+    // Sem <article>: tenta isolar pela área de conteúdo principal do WordPress
+    const mainMatch = html.match(/<main[\s\S]*?<\/main>/i);
+    if (mainMatch) body = mainMatch[0];
+  }
+
   body = body
     .replace(/<script[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style[\s\S]*?<\/style>/gi, ' ')
     .replace(/<!--[\s\S]*?-->/g, ' ');
-  const text = decodeEntities(stripTags(body));
+  let text = decodeEntities(stripTags(body));
+
+  // Se mesmo assim veio pouco texto, cai para o body inteiro da página como
+  // último recurso (mais ruído, mas evita descartar a notícia à toa).
+  if (text.length < 200 && articleBlocks.length) {
+    const bodyMatch = html.match(/<body[\s\S]*?<\/body>/i);
+    const fallbackHtml = (bodyMatch ? bodyMatch[0] : html)
+      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<!--[\s\S]*?-->/g, ' ');
+    const fallbackText = decodeEntities(stripTags(fallbackHtml));
+    if (fallbackText.length > text.length) text = fallbackText;
+  }
+
   // Limita tamanho para não estourar o contexto da chamada de IA
-  return text.slice(0, 12000);
+  return text.slice(0, 14000);
 }
 
 // ── Chamada à API Anthropic para reescrever a notícia ─────────────────────────
@@ -191,9 +214,10 @@ async function main() {
       const html = await fetchViaProxy(c.link);
       const texto = extractArticleText(html);
       if (texto.length < 200) {
-        console.log(`[Radar] Conteúdo insuficiente, pulando: ${c.title}`);
+        console.log(`[Radar] Conteúdo insuficiente (extraído=${texto.length} chars, html=${html.length} chars), pulando: ${c.title}`);
         continue;
       }
+      console.log(`[Radar] Texto extraído: ${texto.length} chars`);
       const ia = await reescreverComIA(c.title, texto);
       novosItens.push({
         id: c.id,
