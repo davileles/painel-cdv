@@ -1,276 +1,434 @@
-// Script executado pelo GitHub Action para coletar pontuações diárias
-// e disparar alertas de email quando pontuações mínimas são atingidas
+// coletar-radar.js
+// Executado pelo GitHub Action periodicamente.
+// 1. Lê feeds RSS de categorias de promoções de milhas/pontos
+// 2. Para cada postagem nova, busca o artigo completo (via proxy) e reescreve
+//    com IA como conteúdo 100% original — sem citar a fonte em nenhum momento
+// 3. Salva o resultado em ofertas.json (lido pela aba "Radar de Ofertas" do painel)
+//
+// Variáveis de ambiente necessárias:
+//   ANTHROPIC_API_KEY  → chave da API Anthropic (Claude)
+//
+// Uso: node coletar-radar.js
 
-const https = require('https');
 const fs = require('fs');
+const path = require('path');
 
 const PROXY = 'https://cdv-proxy-production.up.railway.app/fetch';
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const RESEND_FROM = 'alertas@clubedoviajante.com.br'; // ou seu domínio verificado no Resend
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const OUT_FILE = path.join(__dirname, 'ofertas.json');
 
-const PROGRAMS = [
-  { id: 'livelo', name: 'Livelo',     url: 'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-livelo' },
-  { id: 'esfera', name: 'Esfera',     url: 'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-santander-esfera' },
-  { id: 'smiles', name: 'Smiles',     url: 'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-smiles' },
-  { id: 'azul',   name: 'Azul',       url: 'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-azul' },
-  { id: 'latam',  name: 'LATAM Pass', url: 'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-latam-pass' },
+// IMPORTANTE: a fonte nunca é exibida no painel nem mencionada nos textos
+// gerados pela IA — esses valores ficam só aqui, internos ao coletor.
+const FEEDS = [
+  { categoria: 'transferencia',     url: 'https://passageirodeprimeira.com/categorias/promocoes/transferencia-de-pontos/feed/' },
+  { categoria: 'compra',            url: 'https://passageirodeprimeira.com/categorias/promocoes/compra-de-pontos/feed/' },
+  { categoria: 'compra_bonificada', url: 'https://passageirodeprimeira.com/categorias/promocoes/compre-e-pontue/feed/' },
+  { categoria: 'clube',             url: 'https://passageirodeprimeira.com/categorias/promocoes/clube-de-pontos/feed/' },
+  { categoria: 'cartao',            url: 'https://passageirodeprimeira.com/categorias/promocoes/bancos-e-cartoes/feed/' },
 ];
 
-const EQUIV = { livelo:1, esfera:1, smiles:1/1.8, azul:1/1.9, latam:1/1.25 };
+const MAX_ITEMS_GUARDADOS = 60;      // mantém no máximo N ofertas no JSON final
+const MAX_DIAS_RETENCAO = 21;        // remove ofertas mais antigas que isso
+const MAX_NOVOS_POR_EXECUCAO = 8;    // limite de chamadas de IA por execução (custo/tempo)
 
-// ── HTTP helpers ──────────────────────────────────────────────────────────────
-function httpGet(url) {
-  return new Promise((resolve, reject) => {
-    https.get(url, res => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => resolve(data));
-    }).on('error', reject);
-  });
+// ── HTTP helper via proxy ─────────────────────────────────────────────────────
+async function fetchViaProxy(url, timeoutMs = 20000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(`${PROXY}?url=${encodeURIComponent(url)}`, { signal: ctrl.signal });
+    if (!res.ok) throw new Error(`proxy retornou ${res.status} para ${url}`);
+    return await res.text();
+  } finally {
+    clearTimeout(t);
+  }
 }
 
-function httpPost(hostname, path, body, headers) {
-  return new Promise((resolve, reject) => {
-    const payload = JSON.stringify(body);
-    const req = https.request({ hostname, path, method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload), ...headers }
-    }, res => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => resolve({ status: res.statusCode, body: data }));
-    });
-    req.on('error', reject);
-    req.write(payload);
-    req.end();
-  });
+// ── Parser RSS simples (sem dependências externas) ───────────────────────────
+function parseRSS(xml) {
+  const items = [];
+  const itemBlocks = xml.match(/<item[\s\S]*?<\/item>/g) || [];
+  for (const block of itemBlocks) {
+    const get = (tag) => {
+      const m = block.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i'));
+      if (!m) return '';
+      return m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/, '$1').trim();
+    };
+    const link = get('link') || (block.match(/<guid[^>]*>([\s\S]*?)<\/guid>/i) || [])[1] || '';
+    const title = decodeEntities(stripTags(get('title')));
+    const pubDate = get('pubDate');
+    if (link && title) items.push({ link: link.trim(), title, pubDate });
+  }
+  return items;
 }
 
-// ── Parser ────────────────────────────────────────────────────────────────────
-function extractPts(g) {
-  const ate    = g.match(/até\s+(\d+)/i);
-  const eq     = g.match(/=\s+(\d+)/i);
-  const azul   = g.match(/(\d+[,.]?\d*)\s*pt\//i);
-  const latam  = g.match(/=\s*(\d+)\s*ponto/i);
-  const smiles = g.match(/ganha\s+(?:até\s+)?(\d+)\s+smiles/i);
-  const raw    = ate || eq || latam || smiles || azul;
-  if (!raw) return null;
-  const pts = parseFloat((raw[1]||'').replace(',','.'));
-  return { pts: Math.round(pts) || pts, ate: !!(ate || smiles) };
+function stripTags(html) {
+  return (html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-function parseHTML(html, progId) {
-  const out = [];
-  const rowRe = /<tr[\s\S]*?<\/tr>/gi;
-  const cellRe = /<td[\s\S]*?<\/td>/gi;
-  const linkRe = /<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i;
-  const textRe = /<[^>]+>/g;
-  let rowMatch;
-  while ((rowMatch = rowRe.exec(html)) !== null) {
-    const row = rowMatch[0];
-    const cells = row.match(cellRe);
-    if (!cells || cells.length < 2) continue;
-    const nameLink = cells[0].match(linkRe);
-    const gainLink = cells[1].match(linkRe);
-    if (!nameLink || !gainLink) continue;
-    const name = nameLink[2].replace(textRe, '').trim();
-    const g = gainLink[2].replace(textRe, '').trim() + ' ' + cells[1].replace(textRe, '');
-    const parsed = extractPts(g);
-    if (!parsed || !name) continue;
-    const rawHref = nameLink[1];
-    const url = rawHref.startsWith('http') ? rawHref : 'https://www.comparemania.com.br' + rawHref;
-    out.push({ name, pts: parsed.pts, ate: parsed.ate, url, prog: progId });
+function decodeEntities(s) {
+  let prev = s || '';
+  let out = prev;
+  for (let i = 0; i < 4; i++) {
+    out = out
+      .replace(/&amp;/g, '&').replace(/&#0?38;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&nbsp;/g, ' ');
+    if (out === prev) break;
+    prev = out;
   }
   return out;
 }
 
-async function fetchProg(prog) {
-  console.log(`Consultando ${prog.id}...`);
-  const url = `${PROXY}?url=${encodeURIComponent(prog.url)}`;
-  const html = await httpGet(url);
-  // Checagem de sanidade: aceita formatos antigos e o formato atual da Comparemania
-  // (ex: "R$ 1 = 3 PONTOS"), além de validar que existe uma <table> com linhas.
-  const hasKnownText = html.includes('ponto') || html.includes('PONTOS') || html.includes('pt/R$') || /=\s*\d+\s*PONTOS?/i.test(html);
-  const hasTable = /<table[\s\S]*?<tr/i.test(html);
-  if (!hasKnownText && !hasTable) {
-    const snippet = html.replace(/\s+/g, ' ').trim().slice(0, 200);
-    console.log(`  ⚠️ resposta inesperada (len=${html.length}) — início: "${snippet}"`);
-    throw new Error(`${prog.id}: resposta inesperada (len=${html.length})`);
+// ── Extrai o texto principal do artigo a partir do HTML completo ─────────────
+function extractArticleText(html) {
+  let body = html;
+
+  // O tema usa <article> em vários lugares da página (cards de "Leia também",
+  // posts recentes, etc.) — pegamos o MAIOR bloco <article>, que é o corpo
+  // da notícia, em vez do primeiro (que pode ser um card pequeno).
+  const articleBlocks = html.match(/<article[\s\S]*?<\/article>/gi) || [];
+  if (articleBlocks.length) {
+    body = articleBlocks.reduce((a, b) => (b.length > a.length ? b : a));
+  } else {
+    // Sem <article>: tenta isolar pela área de conteúdo principal do WordPress
+    const mainMatch = html.match(/<main[\s\S]*?<\/main>/i);
+    if (mainMatch) body = mainMatch[0];
   }
-  const items = parseHTML(html, prog.id);
-  if (items.length === 0) {
-    console.log(`  ⚠️ 0 parceiros encontrados (len=${html.length}) — verifique formato da página`);
+
+  body = body
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<!--[\s\S]*?-->/g, ' ');
+  let text = decodeEntities(stripTags(body));
+
+  // Se mesmo assim veio pouco texto, cai para o body inteiro da página como
+  // último recurso (mais ruído, mas evita descartar a notícia à toa).
+  if (text.length < 200 && articleBlocks.length) {
+    const bodyMatch = html.match(/<body[\s\S]*?<\/body>/i);
+    const fallbackHtml = (bodyMatch ? bodyMatch[0] : html)
+      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<!--[\s\S]*?-->/g, ' ');
+    const fallbackText = decodeEntities(stripTags(fallbackHtml));
+    if (fallbackText.length > text.length) text = fallbackText;
   }
-  console.log(`  → ${items.length} parceiros`);
-  return items;
+
+  // Limita tamanho para não estourar o contexto da chamada de IA
+  return text.slice(0, 24000);
 }
 
-// ── Email via Resend ──────────────────────────────────────────────────────────
-async function enviarEmail(para, assunto, html) {
-  if (!RESEND_API_KEY) { console.log('[email] RESEND_API_KEY não definida, pulando email para', para); return; }
-  const res = await httpPost('api.resend.com', '/emails', {
-    from: RESEND_FROM,
-    to: [para],
-    subject: assunto,
-    html,
-  }, { Authorization: `Bearer ${RESEND_API_KEY}` });
-  console.log(`[email] ${para} → status ${res.status}`);
-  return res;
-}
+// ── Chamada à API Anthropic para reescrever a notícia ─────────────────────────
+// ── Extrai candidatos a "link da oferta" a partir dos <a href> do HTML bruto ──
+// Procura âncoras com texto típico de CTA (clique aqui, acesse, confira, etc.)
+// e também qualquer link que aponte para fora do próprio site da matéria.
+const CTA_TEXT_RE = /clique aqui|acesse|confira|participar|saiba mais|ver oferta|garanta|aproveite|inscreva-se|assine|compre|transferir|cadastr/i;
 
-function buildEmailHtml(alerta, parceiro, pts, progName, url) {
-  return `
-<!DOCTYPE html>
-<html>
-<body style="font-family:sans-serif;background:#1e2535;color:#eee;padding:32px">
-  <div style="max-width:480px;margin:0 auto;background:#2a3246;border-radius:14px;overflow:hidden;border:1px solid #3d4a66">
-    <div style="background:#2a3246;border-bottom:3px solid #ff585e;padding:20px 24px">
-      <span style="font-size:20px;font-weight:800;color:#eee">Clube do Viajante</span><br>
-      <span style="font-size:11px;color:#ff585e;font-weight:600;text-transform:uppercase;letter-spacing:1px">Alerta de Compras Bonificadas</span>
-    </div>
-    <div style="padding:24px">
-      <p style="font-size:16px;color:#8a9bbf;margin:0 0 6px">🔔 Seu alerta foi atingido!</p>
-      <h2 style="margin:0 0 20px;font-size:22px;color:#eee">${parceiro}</h2>
-      <div style="background:#323c54;border-radius:10px;padding:16px;margin-bottom:20px">
-        <div style="font-size:12px;color:#5a6a8a;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Pontuação atual</div>
-        <div style="font-size:36px;font-weight:900;color:#ff585e">${pts} <span style="font-size:14px;color:#8a9bbf">pts/R$</span></div>
-        <div style="font-size:13px;color:#8a9bbf;margin-top:4px">via ${progName}</div>
-      </div>
-      <div style="font-size:13px;color:#8a9bbf;margin-bottom:20px">
-        Seu alerta estava configurado para <strong style="color:#eee">${alerta.minPts} pts</strong> ou mais.
-      </div>
-      <a href="${url}" style="display:block;text-align:center;background:#ff585e;color:#fff;padding:14px;border-radius:10px;text-decoration:none;font-weight:800;font-size:14px">
-        ↗ Aproveitar oferta agora
-      </a>
-    </div>
-    <div style="padding:16px 24px;border-top:1px solid #3d4a66;font-size:11px;color:#5a6a8a;text-align:center">
-      Clube do Viajante · Para cancelar este alerta, acesse o painel.
-    </div>
-  </div>
-</body>
-</html>`;
-}
-
-// ── Resolve link direto do parceiro no programa ──────────────────────────────
-const PROG_HEADING_MAP = { livelo:'livelo', esfera:'esfera', smiles:'smiles', azul:'tudo azul', latam:'latam pass' };
-
-async function resolveDirectUrl(partnerCashbackUrl, progId) {
+function stripUtm(url) {
   try {
-    const html = await httpGet(`${PROXY}?url=${encodeURIComponent(partnerCashbackUrl)}`);
-    const heading = PROG_HEADING_MAP[progId] || progId;
-    // Acha link de redirecionar próximo ao heading do programa
-    const idx = html.toLowerCase().indexOf(`>${heading}<`);
-    if (idx < 0) return null;
-    const chunk = html.slice(idx, idx + 2000);
-    const rm = chunk.match(/redirecionar\/oferta\/[\d]+\/[\d]+\/[a-z0-9-]+/i);
-    if (!rm) return null;
-    const redirectUrl = 'https://www.comparemania.com.br/' + rm[0];
-    const rhtml = await httpGet(`${PROXY}?url=${encodeURIComponent(redirectUrl)}`);
-    // Link direto via <a href>
-    const lm = rhtml.match(/href="(https?:\/\/(?:(?!comparemania)[^"]+)(?:esfera\.com|livelo\.com|smiles\.com|viajemais\.voeazul|latamairlines)[^"]*)"/i);
-    if (lm) return lm[1];
-    // Fallback JSON encoded
-    const jm = rhtml.match(/https?:%5C%5Cu002F%5C%5Cu002F[^"<\s]*/i) || rhtml.match(/https?:\\u002F\\u002F[^"<\s]*/i);
-    if (jm) return decodeURIComponent(jm[0].replace(/\\u002F/g,'/').replace(/\\u0026/g,'&'));
-    return null;
-  } catch(e) {
-    console.log('[resolveDirectUrl] erro:', e.message);
-    return null;
+    // Alguns links do site de origem vêm com artefato "amp;" sem o "&" na frente
+    // (bug de geração de URL no WordPress: "?amp;utm_medium=..." em vez de "?utm_medium=...").
+    // Normaliza esses separadores antes de interpretar a query string.
+    const cleaned = (url || '').replace(/\?amp;/gi, '?').replace(/&amp;/gi, '&');
+    const u = new URL(cleaned);
+    [...u.searchParams.keys()].forEach((k) => {
+      if (/^utm_/i.test(k)) u.searchParams.delete(k);
+    });
+    return u.toString();
+  } catch (e) {
+    return url;
   }
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
+function extractLinkCandidates(html) {
+  const anchors = html.match(/<a\s[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi) || [];
+  const candidatos = [];
+  const vistos = new Set();
+  for (const a of anchors) {
+    const m = a.match(/href="([^"]+)"/i);
+    if (!m) continue;
+    let href = decodeEntities(m[1]); // o HTML traz "&amp;" no lugar de "&" dentro do href
+    if (!/^https?:\/\//i.test(href)) continue;
+    if (href.includes('passageirodeprimeira.com')) continue; // nunca o próprio site
+    if (/facebook\.com|instagram\.com|whatsapp\.com|t\.me|twitter\.com|x\.com|tiktok\.com|youtube\.com|threads\.com|wp-content|cdn-cgi|cookiedatabase/i.test(href)) continue;
+    href = stripUtm(href);
+    if (vistos.has(href)) continue;
+    vistos.add(href);
+    const texto = stripTags(a).trim();
+    candidatos.push({ href, texto, ctaProvavel: CTA_TEXT_RE.test(texto) });
+  }
+  // CTAs prováveis primeiro, depois os demais — máximo 12 para não pesar o prompt
+  candidatos.sort((a, b) => (b.ctaProvavel ? 1 : 0) - (a.ctaProvavel ? 1 : 0));
+  return candidatos.slice(0, 12);
+}
+
+// ── Tabela de fallback: link oficial por programa quando a IA não acha um link confiável ──
+const FALLBACK_LINKS = [
+  [/clube\s*livelo/i, 'https://www.livelo.com.br/clube'],
+  [/livelo.*compra|compra.*livelo/i, 'https://www.livelo.com.br/compre-pontos'],
+  [/livelo/i, 'https://www.livelo.com.br'],
+  [/clube\s*smiles/i, 'https://www.smiles.com.br/clube-smiles/beneficios-clube'],
+  [/smiles/i, 'https://www.smiles.com.br/home'],
+  [/clube\s*latam/i, 'https://latampass.latam.com/pt_br/clube'],
+  [/latam/i, 'https://www.latamairlines.com/br/pt'],
+  [/clube\s*azul|azul\s*fidelidade.*clube/i, 'https://www.voeazul.com.br/br/pt/voeazul/clube-azul'],
+  [/azul\s*pelo\s*mundo/i, 'https://azulpelomundo.voeazul.com.br'],
+  [/azul/i, 'https://www.voeazul.com.br/br/pt/home'],
+  [/clube\s*esfera/i, 'https://www.esfera.com.vc/clube'],
+  [/esfera/i, 'https://www.esfera.com.vc'],
+  [/hoteis\.com|hotéis\.com/i, 'https://www.hoteis.com'],
+  [/magalu|magazine\s*luiza/i, 'https://www.magazineluiza.com.br'],
+  [/iberia/i, 'https://www.iberia.com'],
+  [/suma|air\s*europa/i, 'https://www.aireuropa.com/en/flights/home'],
+  [/aadvantage|american\s*airlines/i, 'https://www.aa.com.br'],
+  [/\btap\b/i, 'https://www.flytap.com'],
+];
+
+function resolverLinkFallback(programa, loja) {
+  const alvo = `${programa || ''} ${loja || ''}`;
+  for (const [re, url] of FALLBACK_LINKS) {
+    if (re.test(alvo)) return url;
+  }
+  return '';
+}
+
+function linkValido(link) {
+  return !!link && /^https?:\/\//i.test(link) && !link.includes('passageirodeprimeira.com');
+}
+
+const TEXTO_IMPORTANTE_COMPRA_BONIFICADA =
+  'Sempre verifique a necessidade de uso de cupom, formas de pagamento e produtos específicos participantes, além do prazo para receber os pontos. ' +
+  'Recomendamos fortemente que todo processo seja gravado para possível reclamação futura. Sem a gravação você não obterá os pontos se eles não forem creditados corretamente.';
+
+async function reescreverComIA(titulo, textoArtigo, categoriaFeed, linkCandidatos) {
+  const systemPrompt = `Você é um redator que escreve posts originais e independentes sobre promoções e oportunidades do mercado de pontos e milhas no Brasil (transferências bonificadas, compra de pontos, compras bonificadas em parceiros, clubes de fidelidade, cartões de crédito).
+
+REGRAS GERAIS OBRIGATÓRIAS:
+- NUNCA mencione, cite ou faça referência a qualquer site, blog, veículo de imprensa ou nome de fonte. O texto deve parecer 100% autoral, como se você tivesse apurado a informação diretamente.
+- NUNCA copie frases literais do texto de origem — reescreva tudo com suas próprias palavras.
+- Se alguma informação não estiver clara no texto de origem, use "não informado" (ou string vazia "" para campos que pedem isso) — nunca invente dados.
+- Retorne APENAS um JSON válido, sem texto antes ou depois, sem blocos de código markdown.
+- categoria deve ser uma destas: transferencia, compra, compra_bonificada, clube, cartao, geral.
+  • "compra_bonificada" = oferta em que a pessoa GANHA pontos/milhas por real ou dólar gasto em um parceiro/loja (ex: "5 pontos por real gasto na Loja X").
+  • "compra" = compra direta de pontos/milhas com dinheiro (ex: desconto na compra de milhas).
+  • "transferencia" = transferência de pontos entre programas com bônus.
+
+REGRAS POR CATEGORIA:
+
+[compra_bonificada]
+- "titulo" DEVE seguir exatamente este template: "[X] pontos por [real/dólar] entre [Parceiro] e [Programa]". Use "Até [X] pontos..." SOMENTE se houver variação de pontuação por perfil/categoria/produto.
+- "resumo" e "restricoes": extraia fielmente o que está no texto de origem. Em "restricoes", liste cada quebra de pontuação por perfil, categoria de produto, condição, cupom necessário e prazo específico de cada condição — cada item começando com hífen, um item por condição.
+- "loja": nome do parceiro/e-commerce onde a compra é feita.
+- "cupom": código do cupom principal necessário, se houver; senão "".
+- "importante": deixe como "" (este texto é adicionado automaticamente pelo sistema, não o escreva).
+- "milheiro": deixe como "" (não se aplica a esta categoria).
+
+[compra] e [transferencia]
+- "resumo" e "restricoes": extraia fielmente, com quebras de pontuação por perfil/categoria/condição/cupom/prazo específico, cada item em "restricoes" como hífen.
+- SEMPRE calcule o custo do milheiro (custo de 1.000 pontos recebidos) quando houver valor pago e quantidade de pontos recebidos no texto.
+  Fórmula: CUSTO_MILHEIRO = (VALOR_TOTAL_PAGO / PONTOS_RECEBIDOS) * 1000, arredondado para 2 casas decimais.
+  Exemplo: pagar R$ 885,60 por 32.000 pontos = R$ 27,65 por 1.000 pontos.
+  Preencha o campo "milheiro" EXATAMENTE no formato: "💰 Custo do milheiro: R$ XX,XX por 1.000 pontos".
+  Se houver mais de um cenário (perfil/quantidade diferentes), calcule para cada um e liste todos no campo "milheiro" separados por quebra de linha (\\n), cada um no mesmo formato.
+  Se não for possível calcular (faltam valor pago ou pontos recebidos), deixe "milheiro" como "".
+- "loja" e "cupom": deixe como "" (não se aplicam, exceto se houver cupom de desconto na compra — nesse caso preencha "cupom").
+- "importante": deixe como "".
+
+[transferencia] — REGRA ADICIONAL OBRIGATÓRIA DO TETO DE BÔNUS:
+- Transferências bonificadas quase sempre têm um TETO MÁXIMO de bônus (ex: "limite de 300.000 milhas bônus por CPF"). Essa informação costuma aparecer em seções como "Informações importantes" ou "Regulamento", geralmente perto do FINAL do texto — procure ativamente por palavras como "limite", "máximo", "até X milhas/pontos por CPF" em todo o conteúdo antes de concluir que não há teto. Quando esse teto existir no texto, calcule o VOLUME MÁXIMO de pontos que a pessoa deve transferir para atingir exatamente esse teto, para CADA percentual de bônus aplicável (cada perfil/categoria).
+  Fórmula: PONTOS_PARA_ATINGIR_TETO = TETO_DE_BONUS_EM_PONTOS / (PERCENTUAL_DE_BONUS / 100)
+  Exemplo: bônus de 80% com teto de 300.000 milhas bônus → transferir até 375.000 pontos (375.000 × 80% = 300.000 milhas de bônus, atingindo o teto). Para o cenário de 50% de bônus com o mesmo teto de 300.000 → transferir até 600.000 pontos.
+  Preencha o campo "tetoTransferencia" com uma linha por cenário/perfil, no formato: "🎯 Bônus de [X]% ([perfil, se houver]): transfira até [N] pontos para atingir o teto de [TETO] milhas/pontos de bônus", uma linha por cenário separada por quebra de linha (\\n).
+  Se não houver teto de bônus explícito no texto, ou não for possível calcular, deixe "tetoTransferencia" como "".
+
+[clube] e [cartao] e [geral]
+- "resumo" e "restricoes" normalmente, sem regras especiais de título.
+- "loja", "cupom", "milheiro", "tetoTransferencia", "importante": deixe "" a menos que claramente aplicável (ex: cupom de assinatura).
+
+REGRA DE PRAZO (todas as categorias):
+- "prazo" = data de ENCERRAMENTO da campanha/promoção em si.
+- NUNCA use prazo de check-in/check-out de hotel, validade de pontos recebidos, ou prazo de crédito dos pontos — essas informações vão em "restricoes", não em "prazo".
+- Se não houver prazo explícito de encerramento da campanha, deixe "prazo" como "".
+
+REGRA DE LINK DA OFERTA (todas as categorias):
+- "link" deve ser o link OFICIAL da oferta (site do programa de fidelidade, banco, companhia aérea ou loja parceira) — NUNCA um link do site/blog onde a notícia foi publicada.
+- Abaixo estão os links encontrados na página, extraídos de âncoras como "clique aqui", "acesse", "confira", "participar" etc. Escolha o mais apropriado para a oferta descrita. Se nenhum candidato for adequado ou não houver confiança suficiente, deixe "link" como "".
+- NUNCA invente um link que não esteja na lista de candidatos.
+
+Formato exato de saída (todos os campos sempre presentes, mesmo que vazios):
+{
+  "titulo": "string",
+  "emoji": "um único emoji",
+  "resumo": "2 a 3 frases",
+  "programa": "nome do(s) programa(s) de fidelidade envolvido(s)",
+  "bonus": "valor do bônus/ganho de forma objetiva",
+  "prazo": "data de encerramento da campanha, ou \"\"",
+  "categoria": "transferencia | compra | compra_bonificada | clube | cartao | geral",
+  "loja": "string ou \"\"",
+  "cupom": "string ou \"\"",
+  "milheiro": "string ou \"\"",
+  "tetoTransferencia": "string ou \"\"",
+  "importante": "",
+  "link": "string ou \"\"",
+  "restricoes": ["item com hífen", "..."]
+}`;
+
+  const candidatosTxt = linkCandidatos.length
+    ? linkCandidatos.map((c) => `- ${c.href}  (texto do link: "${c.texto}")`).join('\n')
+    : '(nenhum link encontrado na página)';
+
+  const userPrompt = `Categoria do feed de origem (pista, mas reavalie pelo conteúdo): ${categoriaFeed}\n\nTítulo original da notícia (apenas para contexto, não usar literalmente): ${titulo}\n\nConteúdo completo extraído da página:\n${textoArtigo}\n\nCandidatos a link da oferta (escolha um destes para "link", ou deixe "" se nenhum servir):\n${candidatosTxt}`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1400,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }],
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Anthropic API ${res.status}: ${errText.slice(0, 300)}`);
+  }
+  const data = await res.json();
+  const textBlock = (data.content || []).find((b) => b.type === 'text');
+  if (!textBlock) throw new Error('Resposta da IA sem bloco de texto');
+
+  const clean = textBlock.text.replace(/```json/g, '').replace(/```/g, '').trim();
+  return JSON.parse(clean);
+}
+
+// ── Hash simples para gerar IDs estáveis a partir do link original ───────────
+function idFromLink(link) {
+  let hash = 0;
+  for (let i = 0; i < link.length; i++) {
+    hash = (hash * 31 + link.charCodeAt(i)) >>> 0;
+  }
+  return hash.toString(36);
+}
+
+function categorizeFallback(categoriaFeed) {
+  return ['transferencia', 'compra', 'compra_bonificada', 'clube', 'cartao'].includes(categoriaFeed) ? categoriaFeed : 'geral';
+}
+
+// ── Main ───────────────────────────────────────────────────────────────────
 async function main() {
-  const hoje = new Date().toISOString().split('T')[0];
-
-  // 1. Carrega histórico
-  let historico = {};
-  if (fs.existsSync('historico.json')) {
-    try { historico = JSON.parse(fs.readFileSync('historico.json', 'utf8')); }
-    catch(e) { console.log('historico.json inválido, iniciando novo'); }
+  if (!ANTHROPIC_API_KEY) {
+    console.error('[Radar] ANTHROPIC_API_KEY não configurada — abortando.');
+    process.exit(1);
   }
 
-  // 2. Carrega alertas
-  let alertas = [];
-  if (fs.existsSync('alertas.json')) {
-    try { alertas = JSON.parse(fs.readFileSync('alertas.json', 'utf8')); }
-    catch(e) { console.log('alertas.json inválido'); }
+  let atual = { geradoEm: null, items: [] };
+  if (fs.existsSync(OUT_FILE)) {
+    try { atual = JSON.parse(fs.readFileSync(OUT_FILE, 'utf8')); } catch (e) { /* arquivo corrompido, recomeça */ }
   }
-  console.log(`Alertas cadastrados: ${alertas.length}`);
+  const existentes = new Map((atual.items || []).map((o) => [o.id, o]));
 
-  // 3. Coleta dados de hoje
-  const allData = {};
-  for (const prog of PROGRAMS) {
-    try { allData[prog.id] = await fetchProg(prog); }
-    catch(e) { console.error(`Erro em ${prog.id}:`, e.message); allData[prog.id] = []; }
-  }
-
-  // 4. Merge por parceiro
-  const map = {};
-  for (const [progId, items] of Object.entries(allData)) {
-    for (const p of items) {
-      const key = p.name.toLowerCase().trim();
-      if (!map[key]) map[key] = { name: p.name, programs: {}, urls: {} };
-      map[key].programs[progId] = p.pts;
-      map[key].urls[progId] = p.url;
-    }
-  }
-
-  // 5. Monta snapshot
-  const snapshot = {};
-  for (const [key, p] of Object.entries(map)) {
-    let bestEquiv = 0, bestPts = 0;
-    for (const [pid, pts] of Object.entries(p.programs)) {
-      const equiv = pts * (EQUIV[pid] || 1);
-      if (equiv > bestEquiv) { bestEquiv = equiv; bestPts = pts; }
-    }
-    snapshot[key] = { name: p.name, pts: bestPts, programs: p.programs, urls: p.urls };
-  }
-
-  // 6. Verifica alertas e dispara emails
-  const alertasDisparados = [];
-  for (const alerta of alertas) {
-    if (!alerta.email || !alerta.parceiro || !alerta.minPts || !alerta.programa) continue;
-    const key = alerta.parceiro.toLowerCase().trim();
-    const snap = snapshot[key];
-    if (!snap) continue;
-    const progId = alerta.programa;
-    const pts = snap.programs[progId];
-    if (!pts) continue;
-    if (pts >= alerta.minPts) {
-      const prog = PROGRAMS.find(p => p.id === progId);
-      const cashbackUrl = snap.urls[progId] || '';
-      console.log(`🔔 Alerta! ${alerta.email} → ${alerta.parceiro} ${pts} pts via ${prog.name}`);
-      // Resolve link direto do programa
-      let directUrl = cashbackUrl;
-      if (cashbackUrl) {
-        const resolved = await resolveDirectUrl(cashbackUrl, progId);
-        if (resolved) { directUrl = resolved; console.log(`  Link direto: ${resolved}`); }
+  // 1. Coleta todos os feeds e monta lista de candidatos
+  const candidatos = [];
+  for (const feed of FEEDS) {
+    try {
+      console.log(`[Radar] Lendo feed: categoria=${feed.categoria}`);
+      const xml = await fetchViaProxy(feed.url);
+      const items = parseRSS(xml);
+      for (const it of items) {
+        const id = idFromLink(it.link);
+        if (existentes.has(id)) continue; // já processado antes
+        candidatos.push({ ...it, categoriaFeed: feed.categoria, id });
       }
-      await enviarEmail(
-        alerta.email,
-        `🔔 ${snap.name} atingiu ${pts} pts/R$ no ${prog.name}`,
-        buildEmailHtml(alerta, snap.name, pts, prog.name, directUrl)
-      );
-      alertasDisparados.push({ ...alerta, ptsAtingido: pts, data: hoje });
+    } catch (e) {
+      console.error(`[Radar] Falha ao ler feed ${feed.categoria}:`, e.message);
     }
   }
 
-  if (alertasDisparados.length > 0) {
-    console.log(`\n${alertasDisparados.length} alerta(s) disparado(s)`);
+  console.log(`[Radar] ${candidatos.length} postagens novas encontradas (limite por execução: ${MAX_NOVOS_POR_EXECUCAO}).`);
+  const aProcessar = candidatos.slice(0, MAX_NOVOS_POR_EXECUCAO);
+
+  const novosItens = [];
+  for (const c of aProcessar) {
+    try {
+      console.log(`[Radar] Processando: ${c.title}`);
+      const html = await fetchViaProxy(c.link);
+      const texto = extractArticleText(html);
+      if (texto.length < 200) {
+        console.log(`[Radar] Conteúdo insuficiente (extraído=${texto.length} chars, html=${html.length} chars), pulando: ${c.title}`);
+        continue;
+      }
+      console.log(`[Radar] Texto extraído: ${texto.length} chars`);
+      const linkCandidatos = extractLinkCandidates(html);
+      const ia = await reescreverComIA(c.title, texto, c.categoriaFeed, linkCandidatos);
+
+      const categoria = ia.categoria || categorizeFallback(c.categoriaFeed);
+      let link = stripUtm(decodeEntities((ia.link || '').trim()));
+      if (!linkValido(link)) {
+        const fb = resolverLinkFallback(ia.programa, ia.loja);
+        if (fb) {
+          console.log(`[Radar] Link não confiável da IA, usando fallback: ${fb}`);
+          link = fb;
+        } else {
+          console.log(`[Radar] Nenhum link confiável encontrado para "${c.title}".`);
+          link = '';
+        }
+      }
+
+      // Ícone fixo por categoria (mais consistente do que deixar a IA escolher)
+      const EMOJI_POR_CATEGORIA = {
+        compra: '💰',
+        transferencia: '🔄',
+        cartao: '💳',
+        compra_bonificada: '🛍️',
+      };
+      const emoji = EMOJI_POR_CATEGORIA[categoria] || ia.emoji || '📰';
+
+      novosItens.push({
+        id: c.id,
+        titulo: ia.titulo || c.title,
+        emoji,
+        resumo: ia.resumo || '',
+        programa: ia.programa || '',
+        bonus: ia.bonus || '',
+        prazo: ia.prazo || '',
+        categoria,
+        loja: categoria === 'compra_bonificada' ? (ia.loja || '') : '',
+        cupom: ia.cupom || '',
+        milheiro: ia.milheiro || '',
+        tetoTransferencia: categoria === 'transferencia' ? (ia.tetoTransferencia || '') : '',
+        importante: categoria === 'compra_bonificada' ? TEXTO_IMPORTANTE_COMPRA_BONIFICADA : '',
+        link,
+        restricoes: Array.isArray(ia.restricoes) ? ia.restricoes : [],
+        publicadoEm: c.pubDate ? new Date(c.pubDate).toISOString() : new Date().toISOString(),
+      });
+    } catch (e) {
+      console.error(`[Radar] Erro ao processar "${c.title}":`, e.message);
+    }
   }
 
-  // 7. Atualiza histórico (mantém 180 dias)
-  historico[hoje] = snapshot;
-  const datas = Object.keys(historico).sort();
-  const limite = new Date();
-  limite.setDate(limite.getDate() - 180);
-  const limiteStr = limite.toISOString().split('T')[0];
-  for (const d of datas) {
-    if (d < limiteStr) delete historico[d];
-  }
+  console.log(`[Radar] ${novosItens.length} ofertas reescritas com sucesso.`);
 
-  fs.writeFileSync('historico.json', JSON.stringify(historico, null, 2));
-  console.log(`\nHistórico salvo: ${Object.keys(historico).length} dias, ${Object.keys(snapshot).length} parceiros`);
+  // 2. Combina com os existentes, remove antigos, ordena por data desc, limita tamanho
+  const corteMs = Date.now() - MAX_DIAS_RETENCAO * 24 * 60 * 60 * 1000;
+  let todos = [...novosItens, ...(atual.items || [])]
+    .filter((o) => !o.publicadoEm || new Date(o.publicadoEm).getTime() >= corteMs)
+    .sort((a, b) => new Date(b.publicadoEm) - new Date(a.publicadoEm))
+    .slice(0, MAX_ITEMS_GUARDADOS);
+
+  // Dedup final por id (segurança)
+  const vistos = new Set();
+  todos = todos.filter((o) => (vistos.has(o.id) ? false : (vistos.add(o.id), true)));
+
+  const saida = { geradoEm: new Date().toISOString(), items: todos };
+  fs.writeFileSync(OUT_FILE, JSON.stringify(saida, null, 2));
+  console.log(`[Radar] ofertas.json salvo com ${todos.length} itens.`);
 }
 
-main().catch(e => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error('[Radar] Erro fatal:', e);
+  process.exit(1);
+});
