@@ -179,6 +179,7 @@
   .oferta-modal-restricoes{margin-top:14px}
   .oferta-modal-restricoes ul{margin:6px 0 0 18px;display:flex;flex-direction:column;gap:4px}
   .oferta-modal-restricoes li{font-size:12px;color:var(--muted);line-height:1.4}
+  .oferta-importante{margin-top:14px;background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);border-radius:8px;padding:10px 12px;font-size:11px;color:#fb923c;line-height:1.5}
   @media(max-width:640px){
     .main-tabs{top:73px;padding:0 10px}
     .main-tab{padding:12px 12px;font-size:12px}
@@ -271,6 +272,8 @@
     <div class="oferta-modal-section" id="oferta-modal-resumo"></div>
     <div class="oferta-modal-grid" id="oferta-modal-fatos"></div>
     <div class="oferta-modal-section" id="oferta-modal-restricoes"></div>
+    <div class="oferta-importante" id="oferta-modal-importante" style="display:none"></div>
+    <a class="modal-url" id="oferta-modal-link" href="#" target="_blank" rel="noopener" style="display:none;margin-top:16px">↗ Acessar oferta</a>
   </div>
 </div>
 
@@ -990,7 +993,7 @@ let ofertasData = null;
 let ofertasLoaded = false;
 let radarActiveCat = 'all';
 const OFERTA_CAT_LABELS = {
-  transferencia:'🔄 Transferência', compra:'🛒 Compra de pontos',
+  transferencia:'🔄 Transferência', compra:'🛒 Compra de pontos', compra_bonificada:'🏷️ Compra bonificada',
   clube:'🎫 Clube', cartao:'💳 Cartões', geral:'📰 Geral'
 };
 
@@ -1105,17 +1108,41 @@ function openOfertaModal(id){
   if(o.bonus) fatos.push(['Bônus / Ganho',o.bonus]);
   if(o.prazo) fatos.push(['Prazo',formatPrazoLimpo(o.prazo)+(encerrada?' (encerrada)':'')]);
   if(o.programa) fatos.push(['Programa',o.programa]);
+  if(o.loja) fatos.push(['Loja',o.loja]);
+  if(o.cupom) fatos.push(['Cupom',o.cupom]);
   if(o.categoria) fatos.push(['Categoria',OFERTA_CAT_LABELS[o.categoria]||o.categoria]);
   document.getElementById('oferta-modal-fatos').innerHTML=fatos.map(([label,val])=>
     `<div class="oferta-fato"><div class="oferta-fato-label">${label}</div><div class="oferta-fato-val">${val}</div></div>`
   ).join('');
 
   const restEl=document.getElementById('oferta-modal-restricoes');
+  let restHtml='';
+  if(o.milheiro){
+    restHtml+='<div style="font-size:13px;font-weight:800;color:var(--text);margin-bottom:8px">'+
+      o.milheiro.split('\n').map(l=>l.trim()).filter(Boolean).join('<br>')+'</div>';
+  }
   if(o.restricoes&&o.restricoes.length){
-    restEl.innerHTML='<strong style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Condições e detalhes</strong><ul>'+
+    restHtml+='<strong style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Condições e detalhes</strong><ul>'+
       o.restricoes.map(r=>`<li>${r}</li>`).join('')+'</ul>';
+  }
+  restEl.innerHTML=restHtml;
+
+  const importanteEl=document.getElementById('oferta-modal-importante');
+  if(o.importante){
+    importanteEl.style.display='block';
+    importanteEl.innerHTML='⚠️ <strong>Importante:</strong> '+o.importante;
   } else {
-    restEl.innerHTML='';
+    importanteEl.style.display='none';
+    importanteEl.innerHTML='';
+  }
+
+  const linkEl=document.getElementById('oferta-modal-link');
+  if(o.link){
+    linkEl.style.display='block';
+    linkEl.href=o.link;
+  } else {
+    linkEl.style.display='none';
+    linkEl.removeAttribute('href');
   }
 
   document.getElementById('oferta-modal-overlay').classList.add('open');
