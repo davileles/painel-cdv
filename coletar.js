@@ -383,7 +383,7 @@ async function main() {
   console.log('\n=== RADAR DE OFERTAS ===');
   const slugsExistentes = new Set(ofertas.items.map(i => i.id));
   const limiteOfertasPre = new Date();
-  limiteOfertasPre.setDate(limiteOfertasPre.getDate() - 3);
+  limiteOfertasPre.setDate(limiteOfertasPre.getDate() - 7);
   const candidatosNovos = [];
   let descartadosPorData = 0;
 
@@ -391,7 +391,7 @@ async function main() {
     const items = await fetchFeed(feed);
     for (const item of items) {
       if (slugsExistentes.has(item.id)) continue;
-      // Descarta já aqui itens fora da janela de 3 dias — evita gastar fetch/IA com eles
+      // Descarta já aqui itens fora da janela de 7 dias — evita gastar fetch/IA com eles
       if (new Date(item.date) <= limiteOfertasPre) {
         descartadosPorData++;
         continue;
@@ -401,7 +401,7 @@ async function main() {
     }
   }
   if (descartadosPorData > 0) {
-    console.log(`${descartadosPorData} artigo(s) do feed já fora da janela de 3 dias — ignorados antes do processamento`);
+    console.log(`${descartadosPorData} artigo(s) do feed já fora da janela de 7 dias — ignorados antes do processamento`);
   }
 
   // Descarta qualquer item no formato antigo (sem campo "titulo") — migração de versão
@@ -439,9 +439,9 @@ async function main() {
     await new Promise(r => setTimeout(r, 300));
   }
 
-  // Janela de exibição: mantém os últimos 3 dias de ofertas (agiliza o processamento)
+  // Janela de exibição: mantém os últimos 7 dias de ofertas
   const limiteOfertas = new Date();
-  limiteOfertas.setDate(limiteOfertas.getDate() - 3);
+  limiteOfertas.setDate(limiteOfertas.getDate() - 7);
 
   const combinados = [...novosProcessados, ...itemsValidos];
   const itemsFinais = combinados.filter(i => new Date(i.date) > limiteOfertas);
