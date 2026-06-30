@@ -144,6 +144,42 @@
   .btn-alerta{width:100%;padding:10px;background:transparent;border:1px solid rgba(255,88,94,.4);color:var(--cdv-coral);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s;margin-top:2px}
   .btn-alerta:hover{background:rgba(255,88,94,.08)}
   .alerta-fb{font-size:12px;font-weight:700;text-align:center;min-height:16px;margin-top:8px}
+
+  /* ── Abas principais ─────────────────────────────────────────────────── */
+  .main-tabs{display:flex;gap:0;padding:0 22px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:81px;z-index:90}
+  .main-tab{background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;padding:14px 18px;cursor:pointer;transition:color .15s,border-color .15s}
+  .main-tab:hover{color:var(--text)}
+  .main-tab.active{color:var(--cdv-coral);border-bottom-color:var(--cdv-coral)}
+  .tab-panel{display:block}
+
+  /* ── Radar de Ofertas ────────────────────────────────────────────────── */
+  .radar-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 22px 0;flex-wrap:wrap}
+  .radar-title{font-size:12px;color:var(--muted);font-weight:600}
+  .oferta-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:border-color .15s,transform .15s}
+  .oferta-card:hover{border-color:var(--cdv-coral);transform:translateY(-2px)}
+  .oferta-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .oferta-emoji{font-size:22px;line-height:1}
+  .oferta-cat-badge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:6px;background:rgba(255,88,94,.12);color:var(--cdv-coral);white-space:nowrap}
+  .oferta-titulo{font-size:14px;font-weight:800;line-height:1.3}
+  .oferta-resumo-mini{font-size:11px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .oferta-card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:6px;border-top:1px solid var(--border)}
+  .oferta-prazo-mini{font-size:10px;color:#f97316;font-weight:700}
+  .oferta-data-mini{font-size:10px;color:var(--muted2)}
+  .oferta-modal{max-width:480px}
+  .oferta-modal-emoji{font-size:30px;margin-bottom:6px}
+  .oferta-modal-section{font-size:13px;color:var(--text);line-height:1.55;margin-top:6px}
+  .oferta-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+  .oferta-fato{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px}
+  .oferta-fato-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700}
+  .oferta-fato-val{font-size:13px;font-weight:800;color:var(--text);margin-top:2px}
+  .oferta-modal-restricoes{margin-top:14px}
+  .oferta-modal-restricoes ul{margin:6px 0 0 18px;display:flex;flex-direction:column;gap:4px}
+  .oferta-modal-restricoes li{font-size:12px;color:var(--muted);line-height:1.4}
+  @media(max-width:640px){
+    .main-tabs{top:73px;padding:0 10px}
+    .main-tab{padding:12px 12px;font-size:12px}
+    .radar-bar{padding:12px 14px 0}
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -159,6 +195,12 @@
   </div>
 </header>
 
+<div class="main-tabs" id="main-tabs">
+  <button class="main-tab active" data-tab="comparador">🏆 Comparador</button>
+  <button class="main-tab" data-tab="radar">📡 Radar de Ofertas</button>
+</div>
+
+<div id="tab-comparador" class="tab-panel">
 <div class="controls">
   <input type="text" id="search" placeholder="Buscar parceiro ou categoria…" oninput="render()">
   <select class="srt" id="sort" onchange="render()">
@@ -173,6 +215,18 @@
 <div class="stats" id="stats"></div>
 <div class="grid" id="grid">
   <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Buscando parceiros…</div></div>
+</div>
+</div>
+
+<div id="tab-radar" class="tab-panel" style="display:none">
+  <div class="radar-bar">
+    <span class="radar-title">Últimas oportunidades de bônus, compra de pontos e cartões</span>
+    <button class="refresh-btn" id="radar-refresh-btn" style="background:transparent;border:1px solid rgba(255,88,94,.4);color:var(--cdv-coral)">↻ Atualizar</button>
+  </div>
+  <div class="cat-bar" id="radar-cat-bar"></div>
+  <div class="grid" id="radar-grid">
+    <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando ofertas…</div></div>
+  </div>
 </div>
 
 <!-- MODAL -->
@@ -200,6 +254,19 @@
     <canvas id="hist-chart" style="width:100%;height:200px"></canvas>
     <div id="hist-empty" style="display:none;text-align:center;font-size:12px;color:var(--muted);padding:20px 0">Histórico ainda sendo construído — volte amanhã 📅</div>
   </div>
+  </div>
+</div>
+
+<!-- MODAL OFERTA -->
+<div class="modal-overlay" id="oferta-modal-overlay">
+  <div class="modal oferta-modal">
+    <button class="modal-close" id="oferta-modal-close-btn">×</button>
+    <div class="oferta-modal-emoji" id="oferta-modal-emoji"></div>
+    <div class="modal-name" id="oferta-modal-titulo"></div>
+    <div class="modal-cat" id="oferta-modal-meta"></div>
+    <div class="oferta-modal-section" id="oferta-modal-resumo"></div>
+    <div class="oferta-modal-grid" id="oferta-modal-fatos"></div>
+    <div class="oferta-modal-section" id="oferta-modal-restricoes"></div>
   </div>
 </div>
 
@@ -396,8 +463,20 @@ async function fetchProg(prog, onLog){
   const res=await fetch(`${PROXY}?url=${encodeURIComponent(prog.url)}`,{signal:AbortSignal.timeout(15000)});
   if(!res.ok) throw new Error(`${prog.name}: servidor retornou ${res.status}`);
   const html=await res.text();
-  if(!html.includes('ponto(s)')&&!html.includes('Smiles')&&!html.includes('pt/R$')) throw new Error(`${prog.name}: resposta inesperada`);
+  // Checagem de sanidade: aceita formatos antigos e o formato atual da Comparemania
+  // (ex: "R$ 1 = 3 PONTOS"). Também valida que existe ao menos uma <table> com linhas,
+  // já que é dali que extraímos os parceiros.
+  const hasKnownText = html.includes('ponto')||html.includes('PONTOS')||html.includes('pt/R$')||/=\s*\d+\s*PONTOS?/i.test(html);
+  const hasTable = /<table[\s\S]*?<tr/i.test(html);
+  if(!hasKnownText && !hasTable){
+    const snippet = html.replace(/\s+/g,' ').trim().slice(0,200);
+    onLog(`${prog.name}: resposta inesperada (len=${html.length}) — início: "${snippet}"`);
+    throw new Error(`${prog.name}: resposta inesperada (len=${html.length})`);
+  }
   const items=parseHTML(html,prog.id);
+  if(items.length===0){
+    onLog(`${prog.name}: 0 parceiros encontrados — verifique formato da página (len=${html.length})`);
+  }
   onLog(`${prog.name}: ${items.length} parceiros ✓`);
   return items;
 }
@@ -900,6 +979,145 @@ document.addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 loadData();
+
+// ─── Radar de Ofertas ───────────────────────────────────────────────────────
+const OFERTAS_URL = 'ofertas.json';
+let ofertasData = null;
+let ofertasLoaded = false;
+let radarActiveCat = 'all';
+const OFERTA_CAT_LABELS = {
+  transferencia:'🔄 Transferência', compra:'🛒 Compra de pontos',
+  clube:'🎫 Clube', cartao:'💳 Cartões', geral:'📰 Geral'
+};
+
+async function loadOfertas(force){
+  if(ofertasLoaded && !force) return;
+  const grid=document.getElementById('radar-grid');
+  grid.innerHTML='<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando ofertas…</div></div>';
+  try{
+    const res=await fetch(OFERTAS_URL+'?t='+Date.now(),{cache:'no-cache'});
+    if(!res.ok) throw new Error('ofertas.json não encontrado');
+    ofertasData=await res.json();
+    ofertasLoaded=true;
+    renderRadarCatBar();
+    renderOfertas();
+  }catch(e){
+    grid.innerHTML='<div class="status-box"><div style="font-size:30px">📭</div><div style="color:var(--muted);font-size:13px">Nenhuma oferta disponível ainda. O radar atualiza periodicamente.</div></div>';
+    console.error('[CDV] Radar:',e);
+  }
+}
+
+function renderRadarCatBar(){
+  const bar=document.getElementById('radar-cat-bar');
+  if(!ofertasData||!ofertasData.items||!ofertasData.items.length){bar.innerHTML='';return;}
+  const cats=[...new Set(ofertasData.items.map(o=>o.categoria))];
+  let html=`<button class="cbtn ${radarActiveCat==='all'?'active':''}" data-radarcat="all">Todas</button>`;
+  cats.forEach(c=>{
+    html+=`<button class="cbtn ${radarActiveCat===c?'active':''}" data-radarcat="${c}">${OFERTA_CAT_LABELS[c]||c}</button>`;
+  });
+  bar.innerHTML=html;
+}
+
+function renderOfertas(){
+  const grid=document.getElementById('radar-grid');
+  if(!ofertasData||!ofertasData.items||!ofertasData.items.length){
+    grid.innerHTML='<div class="status-box"><div style="font-size:30px">📭</div><div style="color:var(--muted);font-size:13px">Nenhuma oferta no radar no momento.</div></div>';
+    return;
+  }
+  let items=ofertasData.items;
+  if(radarActiveCat!=='all') items=items.filter(o=>o.categoria===radarActiveCat);
+  if(!items.length){
+    grid.innerHTML='<div class="status-box"><div style="font-size:30px">🔍</div><div style="color:var(--muted);font-size:13px">Nenhuma oferta nessa categoria.</div></div>';
+    return;
+  }
+  grid.innerHTML=items.map(o=>`
+    <div class="oferta-card" data-oferta-id="${o.id}">
+      <div class="oferta-card-top">
+        <span class="oferta-emoji">${o.emoji||'📰'}</span>
+        <span class="oferta-cat-badge">${(OFERTA_CAT_LABELS[o.categoria]||o.categoria||'').replace(/^[^ ]+ /,'')}</span>
+      </div>
+      <div class="oferta-titulo">${o.titulo}</div>
+      <div class="oferta-resumo-mini">${o.resumo||''}</div>
+      <div class="oferta-card-foot">
+        <span class="oferta-prazo-mini">${o.prazo&&o.prazo.toLowerCase()!=='não informado'?'⏳ '+o.prazo:''}</span>
+        <span class="oferta-data-mini">${o.publicadoEm?formatDataCurta(o.publicadoEm):''}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function formatDataCurta(iso){
+  try{
+    const d=new Date(iso);
+    return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  }catch(e){return '';}
+}
+
+function openOfertaModal(id){
+  const o=(ofertasData&&ofertasData.items||[]).find(x=>x.id===id);
+  if(!o) return;
+  document.getElementById('oferta-modal-emoji').textContent=o.emoji||'📰';
+  document.getElementById('oferta-modal-titulo').textContent=o.titulo;
+  document.getElementById('oferta-modal-meta').textContent=
+    (o.programa?o.programa+' · ':'')+(OFERTA_CAT_LABELS[o.categoria]||o.categoria||'')+(o.publicadoEm?' · '+formatDataCurta(o.publicadoEm):'');
+  document.getElementById('oferta-modal-resumo').textContent=o.resumo||'';
+
+  const fatos=[];
+  if(o.bonus) fatos.push(['Bônus / Ganho',o.bonus]);
+  if(o.prazo) fatos.push(['Prazo',o.prazo]);
+  if(o.programa) fatos.push(['Programa',o.programa]);
+  if(o.categoria) fatos.push(['Categoria',OFERTA_CAT_LABELS[o.categoria]||o.categoria]);
+  document.getElementById('oferta-modal-fatos').innerHTML=fatos.map(([label,val])=>
+    `<div class="oferta-fato"><div class="oferta-fato-label">${label}</div><div class="oferta-fato-val">${val}</div></div>`
+  ).join('');
+
+  const restEl=document.getElementById('oferta-modal-restricoes');
+  if(o.restricoes&&o.restricoes.length){
+    restEl.innerHTML='<strong style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Condições e detalhes</strong><ul>'+
+      o.restricoes.map(r=>`<li>${r}</li>`).join('')+'</ul>';
+  } else {
+    restEl.innerHTML='';
+  }
+
+  document.getElementById('oferta-modal-overlay').classList.add('open');
+}
+
+function closeOfertaModal(){
+  document.getElementById('oferta-modal-overlay').classList.remove('open');
+}
+
+// ─── Eventos: abas, cards de oferta, modal de oferta ──────────────────────────
+document.getElementById('main-tabs').addEventListener('click',e=>{
+  const btn=e.target.closest('.main-tab');
+  if(!btn) return;
+  const tab=btn.dataset.tab;
+  document.querySelectorAll('.main-tab').forEach(b=>b.classList.toggle('active',b===btn));
+  document.getElementById('tab-comparador').style.display = tab==='comparador'?'block':'none';
+  document.getElementById('tab-radar').style.display = tab==='radar'?'block':'none';
+  if(tab==='radar') loadOfertas(false);
+});
+
+document.getElementById('radar-refresh-btn').addEventListener('click',()=>loadOfertas(true));
+
+document.getElementById('radar-cat-bar').addEventListener('click',e=>{
+  const b=e.target.closest('[data-radarcat]');
+  if(!b) return;
+  radarActiveCat=b.dataset.radarcat;
+  renderRadarCatBar();
+  renderOfertas();
+});
+
+document.getElementById('radar-grid').addEventListener('click',e=>{
+  const card=e.target.closest('.oferta-card[data-oferta-id]');
+  if(card) openOfertaModal(card.dataset.ofertaId);
+});
+
+document.getElementById('oferta-modal-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('oferta-modal-overlay')) closeOfertaModal();
+});
+document.getElementById('oferta-modal-close-btn').addEventListener('click',closeOfertaModal);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOfertaModal();});
+
 </script>
 </body>
 </html>
