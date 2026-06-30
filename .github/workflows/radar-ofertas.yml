@@ -1,0 +1,34 @@
+name: Radar de Ofertas — Coleta e Reescrita com IA
+
+on:
+  schedule:
+    - cron: '0 */3 * * *'   # a cada 3 horas
+  workflow_dispatch: {}      # permite rodar manualmente pela aba Actions
+
+permissions:
+  contents: write
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Rodar coletor do Radar de Ofertas
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node coletar-radar.js
+
+      - name: Commit ofertas.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ofertas.json
+          git diff --staged --quiet || git commit -m "chore: atualiza radar de ofertas [skip ci]"
+          git push
