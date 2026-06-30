@@ -67,9 +67,16 @@ function stripTags(html) {
 }
 
 function decodeEntities(s) {
-  return (s || '')
-    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&nbsp;/g, ' ');
+  let prev = s || '';
+  let out = prev;
+  for (let i = 0; i < 4; i++) {
+    out = out
+      .replace(/&amp;/g, '&').replace(/&#0?38;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&nbsp;/g, ' ');
+    if (out === prev) break;
+    prev = out;
+  }
+  return out;
 }
 
 // ── Extrai o texto principal do artigo a partir do HTML completo ─────────────
@@ -118,7 +125,11 @@ const CTA_TEXT_RE = /clique aqui|acesse|confira|participar|saiba mais|ver oferta
 
 function stripUtm(url) {
   try {
-    const u = new URL(url);
+    // Alguns links do site de origem vêm com artefato "amp;" sem o "&" na frente
+    // (bug de geração de URL no WordPress: "?amp;utm_medium=..." em vez de "?utm_medium=...").
+    // Normaliza esses separadores antes de interpretar a query string.
+    const cleaned = (url || '').replace(/\?amp;/gi, '?').replace(/&amp;/gi, '&');
+    const u = new URL(cleaned);
     [...u.searchParams.keys()].forEach((k) => {
       if (/^utm_/i.test(k)) u.searchParams.delete(k);
     });
@@ -135,7 +146,7 @@ function extractLinkCandidates(html) {
   for (const a of anchors) {
     const m = a.match(/href="([^"]+)"/i);
     if (!m) continue;
-    let href = m[1];
+    let href = decodeEntities(m[1]); // o HTML traz "&amp;" no lugar de "&" dentro do href
     if (!/^https?:\/\//i.test(href)) continue;
     if (href.includes('passageirodeprimeira.com')) continue; // nunca o próprio site
     if (/facebook\.com|instagram\.com|whatsapp\.com|t\.me|twitter\.com|x\.com|tiktok\.com|youtube\.com|threads\.com|wp-content|cdn-cgi|cookiedatabase/i.test(href)) continue;
@@ -347,7 +358,7 @@ async function main() {
       const ia = await reescreverComIA(c.title, texto, c.categoriaFeed, linkCandidatos);
 
       const categoria = ia.categoria || categorizeFallback(c.categoriaFeed);
-      let link = stripUtm((ia.link || '').trim());
+      let link = stripUtm(decodeEntities((ia.link || '').trim()));
       if (!linkValido(link)) {
         const fb = resolverLinkFallback(ia.programa, ia.loja);
         if (fb) {
