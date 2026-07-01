@@ -21,6 +21,11 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const OUT_FILE = path.join(__dirname, 'ofertas-pendentes.json');
 const APROVADAS_FILE = path.join(__dirname, 'ofertas.json');
 const REJEITADAS_FILE = path.join(__dirname, 'ofertas-rejeitadas.json');
+// Arquivo de histórico acumulativo de IDs já processados (aprovados, rejeitados ou pendentes).
+// É commitado pelo workflow e serve como fonte única de verdade para deduplicação —
+// mesmo que ofertas-pendentes.json, ofertas.json ou ofertas-rejeitadas.json sejam zerados,
+// este arquivo garante que artigos já vistos não sejam reprocessados.
+const PROCESSADOS_FILE = path.join(__dirname, 'ofertas-processados.json');
 
 // IMPORTANTE: a fonte nunca é exibida no painel nem mencionada nos textos
 // gerados pela IA — esses valores ficam só aqui, internos ao coletor.
@@ -354,8 +359,17 @@ async function main() {
   }
   if (!Array.isArray(rejeitadas)) rejeitadas = [];
 
-  // Nunca reprocessar: já pendente, já aprovada, ou rejeitada permanentemente
+  // Carrega histórico acumulativo de IDs já processados (fonte primária de dedup)
+  let processados = [];
+  if (fs.existsSync(PROCESSADOS_FILE)) {
+    try { processados = JSON.parse(fs.readFileSync(PROCESSADOS_FILE, 'utf8')); } catch (e) { /* ignora */ }
+  }
+  if (!Array.isArray(processados)) processados = [];
+
+  // Une todas as fontes — mesmo que qualquer arquivo seja zerado,
+  // o histórico acumulativo garante a deduplicação
   const existentes = new Set([
+    ...processados,
     ...(atual.items || []).map((o) => o.id),
     ...(aprovadas.items || []).map((o) => o.id),
     ...rejeitadas,
@@ -456,6 +470,16 @@ async function main() {
   const saida = { geradoEm: new Date().toISOString(), items: todos };
   fs.writeFileSync(OUT_FILE, JSON.stringify(saida, null, 2));
   console.log(`[Radar] ofertas-pendentes.json salvo com ${todos.length} itens aguardando aprovação.`);
+
+  // 3. Atualiza histórico acumulativo de IDs processados
+  // Inclui todos os IDs vistos nesta e em execuções anteriores (mantém até 2000)
+  const novosIds = [
+    ...aProcessar.map((c) => c.id),  // candidatos desta execução (processados ou não)
+    ...candidatos.map((c) => c.id),  // todos os candidatos lidos do RSS
+  ];
+  const processadosAtualizados = [...new Set([...processados, ...novosIds])].slice(-2000);
+  fs.writeFileSync(PROCESSADOS_FILE, JSON.stringify(processadosAtualizados, null, 2));
+  console.log(`[Radar] ofertas-processados.json: ${processadosAtualizados.length} IDs no histórico.`);
 }
 
 main().catch((e) => {
