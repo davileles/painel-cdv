@@ -246,16 +246,23 @@ async function main() {
     process.exit(1);
   }
 
-  // 4. Verifica alertas
+  // 4. Verifica alertas e dispara os atingidos (remove após enviar)
+  const alertasRestantes = [];
   for (const alerta of alertas) {
     const key = (alerta.parceiro || '').toLowerCase().trim();
     const snap = snapshot[key];
-    if (!snap) continue;
+    if (!snap) { alertasRestantes.push(alerta); continue; }
     const pts = snap.programs[alerta.programa];
     if (pts && pts >= alerta.minPts) {
       await dispararAlerta(alerta, alerta.parceiro, pts);
+      // Não adiciona de volta — alerta consumido após envio
+      console.log(`[Histórico] Alerta removido após envio: ${alerta.email} / ${alerta.parceiro} / ${alerta.programa}`);
+    } else {
+      alertasRestantes.push(alerta);
     }
   }
+  // Salva alertas restantes (sem os que já foram disparados)
+  fs.writeFileSync(ALERTAS_FILE, JSON.stringify(alertasRestantes, null, 2));
 
   // 5. Salva snapshot no histórico (sobrescreve o dia se já existir)
   historico[hoje] = snapshot;
