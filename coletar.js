@@ -134,6 +134,14 @@ function parseComparemaniaPts(html, progId) {
   return result; // { "shopee": 8, "magalu": 5, ... }
 }
 
+function decodeEntities(s) {
+  return (s || '')
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d))
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ').replace(/&#0?39;/g, "'");
+}
+
 // ── Alerta por e-mail via Resend ──────────────────────────────────────────────
 async function dispararAlerta(alerta, parceiro, pts) {
   if (!RESEND_API_KEY) return;
@@ -203,12 +211,6 @@ async function main() {
     try {
       const html = await fetchDirect(prog.url);
 
-      // DEBUG TEMPORÁRIO — remover após investigar
-if (prog.id === 'smiles') {
-  console.log('[DEBUG Smiles] primeiros 3000 chars:');
-  console.log(html.slice(0, 3000));
-}
-
       // Sanidade mínima
       const hasContent =
         html.includes('ponto') || html.includes('PONTOS') ||
@@ -224,8 +226,9 @@ if (prog.id === 'smiles') {
 
       // Popula snapshot
       for (const [key, pts] of Object.entries(parceiros)) {
-        if (!snapshot[key]) snapshot[key] = { programs: {} };
-        snapshot[key].programs[prog.id] = pts;
+        const cleanKey = decodeEntities(key);
+        if (!snapshot[cleanKey]) snapshot[cleanKey] = { programs: {} };
+        snapshot[cleanKey].programs[prog.id] = pts;
       }
     } catch (e) {
       console.error(`[Histórico] Erro ao coletar ${prog.name}:`, e.message);
