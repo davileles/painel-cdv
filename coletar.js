@@ -159,14 +159,89 @@ async function dispararAlerta(alerta, parceiro, pts) {
         from:    'Clube do Viajante <alertas@clubedoviajante.com.br>',
         to:      [alerta.email],
         subject: `🔔 ${parceiro} atingiu ${pts} pts/R$ no ${alerta.programa}`,
-        html: `
-          <p>Olá!</p>
-          <p>O parceiro <strong>${parceiro}</strong> está oferecendo
-          <strong>${pts} pts/R$</strong> no programa <strong>${alerta.programa}</strong>.</p>
-          <p>Você configurou um alerta para quando atingisse <strong>${alerta.minPts} pts/R$</strong>.</p>
-          <p><a href="https://davileles.github.io/painel-cdv/">Acessar o painel</a></p>
-          <p>— Clube do Viajante</p>
-        `,
+        html: `<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap');</style>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f7;font-family:'Montserrat',Arial,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:32px 0">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);max-width:560px;width:100%">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:#2a3246;padding:28px 32px;text-align:center">
+            <p style="margin:0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.3px">Clube do Viajante</p>
+            <p style="margin:6px 0 0;font-size:11px;font-weight:600;color:#ff585e;letter-spacing:2px;text-transform:uppercase">Alerta de Pontuação</p>
+          </td>
+        </tr>
+
+        <!-- Ícone -->
+        <tr>
+          <td style="padding:32px 32px 0;text-align:center">
+            <div style="display:inline-block;background:#fff3f3;border-radius:50%;width:64px;height:64px;line-height:64px;font-size:30px;text-align:center">🔔</div>
+          </td>
+        </tr>
+
+        <!-- Título -->
+        <tr>
+          <td style="padding:16px 32px 8px;text-align:center">
+            <p style="margin:0;font-size:20px;font-weight:800;color:#1a1a2e">Sua meta foi atingida!</p>
+            <p style="margin:8px 0 0;font-size:14px;color:#666;line-height:1.5">O parceiro que você monitora atingiu a pontuação configurada.</p>
+          </td>
+        </tr>
+
+        <!-- Card de destaque -->
+        <tr>
+          <td style="padding:24px 32px">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9ff;border:1px solid #e0e4f0;border-radius:10px;overflow:hidden">
+              <tr>
+                <td style="padding:20px 24px">
+                  <p style="margin:0 0 4px;font-size:11px;font-weight:700;color:#8a9bbf;text-transform:uppercase;letter-spacing:1px">Parceiro</p>
+                  <p style="margin:0;font-size:20px;font-weight:800;color:#2a3246">${parceiro}</p>
+                </td>
+                <td style="padding:20px 24px;text-align:right;border-left:1px solid #e0e4f0">
+                  <p style="margin:0 0 4px;font-size:11px;font-weight:700;color:#8a9bbf;text-transform:uppercase;letter-spacing:1px">Pontuação atual</p>
+                  <p style="margin:0;font-size:28px;font-weight:900;color:#ff585e">${pts} <span style="font-size:14px;font-weight:600;color:#8a9bbf">pts/R$</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2" style="padding:0 24px 20px">
+                  <p style="margin:0;font-size:11px;font-weight:700;color:#8a9bbf;text-transform:uppercase;letter-spacing:1px">Programa</p>
+                  <p style="margin:4px 0 0;font-size:14px;font-weight:700;color:#2a3246">${alerta.programa.charAt(0).toUpperCase()+alerta.programa.slice(1)}</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Info alerta -->
+        <tr>
+          <td style="padding:0 32px 24px;text-align:center">
+            <p style="margin:0;font-size:13px;color:#999">Você configurou um alerta para <strong style="color:#2a3246">${alerta.minPts} pts/R$</strong> neste parceiro.</p>
+          </td>
+        </tr>
+
+        <!-- CTA -->
+        <tr>
+          <td style="padding:0 32px 32px;text-align:center">
+            <a href="https://davileles.github.io/painel-cdv/" style="display:inline-block;background:#ff585e;color:#ffffff;text-decoration:none;font-size:14px;font-weight:700;padding:14px 32px;border-radius:8px;letter-spacing:0.3px">Acessar o Painel →</a>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#f8f9ff;padding:20px 32px;text-align:center;border-top:1px solid #e0e4f0">
+            <p style="margin:0;font-size:12px;color:#aaa">Este alerta foi enviado automaticamente pelo Clube do Viajante.<br>Após o envio, o alerta é removido automaticamente.</p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
       }),
     });
     if (res.ok) {
