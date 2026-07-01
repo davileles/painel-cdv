@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel de Compras Bonificadas — Clube do Viajante</title>
+<title>Painel de Ofertas — Clube do Viajante</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
   :root {
@@ -200,13 +200,13 @@
     <img class="logo-bird" src="logocdv.png" onerror="this.style.display='none'" alt="Clube do Viajante"/>
     <div class="brand">
       <span class="brand-name">Clube do Viajante</span>
-      <span class="brand-sub">Painel de compras bonificadas</span>
+      <span class="brand-sub">Painel de ofertas</span>
     </div>
   </div>
 </header>
 
 <div class="main-tabs" id="main-tabs">
-  <button class="main-tab active" data-tab="comparador">🏆 Comparador</button>
+  <button class="main-tab active" data-tab="comparador">🏆 Comparador de Pontos</button>
   <button class="main-tab" data-tab="radar">📡 Radar de Ofertas</button>
 </div>
 
@@ -1122,15 +1122,27 @@ function closeOfertaModal(){
   document.getElementById('oferta-modal-overlay').classList.remove('open');
 }
 
-document.getElementById('main-tabs').addEventListener('click',e=>{
-  const btn=e.target.closest('.main-tab');
-  if(!btn) return;
-  const tab=btn.dataset.tab;
-  document.querySelectorAll('.main-tab').forEach(b=>b.classList.toggle('active',b===btn));
+function switchTab(tab){
+  document.querySelectorAll('.main-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   document.getElementById('tab-comparador').style.display = tab==='comparador'?'block':'none';
   document.getElementById('tab-radar').style.display = tab==='radar'?'block':'none';
   if(tab==='radar') loadOfertas(false);
+  try{localStorage.setItem('cdv_active_tab', tab);}catch(e){}
+}
+
+document.getElementById('main-tabs').addEventListener('click',e=>{
+  const btn=e.target.closest('.main-tab');
+  if(!btn) return;
+  switchTab(btn.dataset.tab);
 });
+
+// Restaurar aba ao carregar
+(function(){
+  try{
+    const saved=localStorage.getItem('cdv_active_tab');
+    if(saved && saved!=='comparador') switchTab(saved);
+  }catch(e){}
+})();
 
 document.getElementById('radar-refresh-btn').addEventListener('click',()=>loadOfertas(true));
 
