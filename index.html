@@ -185,6 +185,34 @@
   .radar-search{background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:8px;font-size:13px;font-family:'Montserrat',sans-serif;width:210px;outline:none;transition:border-color .2s}
   .radar-search:focus{border-color:var(--cdv-coral)}
   .radar-search::placeholder{color:var(--muted)}
+
+  /* ── Aba Passagens ─────────────────────────────────────────────────────────── */
+  .passagens-controls{padding:10px 22px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--bg)}
+  .passagens-search{background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:8px;font-size:13px;font-family:'Montserrat',sans-serif;width:210px;outline:none;transition:border-color .2s}
+  .passagens-search:focus{border-color:var(--cdv-coral)}
+  .passagens-search::placeholder{color:var(--muted)}
+  .pass-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;cursor:default;transition:border-color .15s,transform .15s;position:relative}
+  .pass-card:hover{transform:translateY(-2px);border-color:var(--cdv-coral)}
+  .pass-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--cdv-coral);border-radius:12px 12px 0 0}
+  .pass-rota{font-size:15px;font-weight:800;color:var(--text);line-height:1.2}
+  .pass-rota span{color:var(--cdv-coral)}
+  .pass-pts{font-size:26px;font-weight:900;color:var(--cdv-coral);line-height:1}
+  .pass-pts-lbl{font-size:11px;color:var(--muted)}
+  .pass-info{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+  .pass-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--card);border:1px solid var(--border);color:var(--muted)}
+  .pass-datas{font-size:11px;color:var(--muted);line-height:1.4;margin-top:2px}
+  .pass-datas strong{color:var(--text-secondary);font-size:10px;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+  .pass-hist{margin-top:6px;padding-top:8px;border-top:1px solid var(--border)}
+  .pass-hist-titulo{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+  .pass-hist-item{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;padding:2px 0}
+  .pass-hist-melhor{color:#34d399;font-weight:700}
+  .pass-hist-pior{color:#f87171;font-weight:700}
+  .pass-hist-igual{color:var(--muted)}
+  .pass-excluir{position:absolute;top:10px;right:10px;background:transparent;border:none;color:var(--muted2);font-size:16px;cursor:pointer;padding:2px 6px;border-radius:4px;line-height:1;transition:color .15s}
+  .pass-excluir:hover{color:#f87171}
+  .pass-fonte{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:1px 6px;border-radius:3px;width:fit-content}
+  .pass-fonte-emissao{background:rgba(18,110,255,.15);color:#126eff}
+  .pass-fonte-alerta{background:rgba(249,115,22,.15);color:#f97316}
   @media(max-width:640px){
     .main-tabs{top:73px;padding:0 10px}
     .main-tab{padding:12px 12px;font-size:12px}
@@ -208,6 +236,7 @@
 <div class="main-tabs" id="main-tabs">
   <button class="main-tab active" data-tab="comparador">🏆 Comparador de Pontos</button>
   <button class="main-tab" data-tab="radar">📡 Radar de Ofertas</button>
+  <button class="main-tab" data-tab="passagens">✈️ Passagens</button>
 </div>
 
 <div id="tab-comparador" class="tab-panel">
@@ -276,6 +305,24 @@
     <div class="oferta-modal-section" id="oferta-modal-restricoes"></div>
     <div class="oferta-importante" id="oferta-modal-importante" style="display:none"></div>
     <a class="modal-url" id="oferta-modal-link" href="#" target="_blank" rel="noopener" style="display:none;margin-top:16px">↗ Acessar oferta</a>
+  </div>
+</div>
+
+<div id="tab-passagens" class="tab-panel" style="display:none">
+  <div class="passagens-controls">
+    <input type="text" class="passagens-search" id="pass-search" placeholder="Buscar rota, programa, CIA…" oninput="renderPassagens()">
+    <select class="srt" id="pass-filtro-prog" onchange="renderPassagens()" style="margin-left:0">
+      <option value="">Todos os programas</option>
+    </select>
+    <select class="srt" id="pass-sort" onchange="renderPassagens()" style="margin-left:0">
+      <option value="recente">Mais recentes</option>
+      <option value="pts_asc">Menor pontuação</option>
+      <option value="pts_desc">Maior pontuação</option>
+    </select>
+  </div>
+  <div class="stats" id="pass-stats"></div>
+  <div class="grid" id="pass-grid">
+    <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando passagens…</div></div>
   </div>
 </div>
 
@@ -946,6 +993,151 @@ document.addEventListener('click',e=>{
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
+
+// ─── Aba Passagens ─────────────────────────────────────────────────────────────
+const PASSAGENS_URL = 'passagens.json';
+const CDV_PROXY_PASS = 'https://cdv-proxy-production.up.railway.app';
+let passagensData = [];
+let passagensLoaded = false;
+
+async function loadPassagens(force) {
+  if (passagensLoaded && !force) return;
+  const grid = document.getElementById('pass-grid');
+  grid.innerHTML = '<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando passagens…</div></div>';
+  try {
+    const res = await fetch(PASSAGENS_URL + '?t=' + Date.now(), {cache:'no-cache'});
+    if (!res.ok) throw new Error('passagens.json não encontrado');
+    const data = await res.json();
+    passagensData = data.items || [];
+    passagensLoaded = true;
+    buildPassFiltroPrograma();
+    renderPassagens();
+  } catch(e) {
+    grid.innerHTML = '<div class="status-box"><div style="font-size:30px">✈️</div><div style="color:var(--muted);font-size:13px">Nenhuma passagem registrada ainda.</div></div>';
+  }
+}
+
+function buildPassFiltroPrograma() {
+  const sel = document.getElementById('pass-filtro-prog');
+  const progs = [...new Set(passagensData.map(p => p.programa).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">Todos os programas</option>' +
+    progs.map(p => `<option value="${p}">${p}</option>`).join('');
+}
+
+// Agrupa passagens por rota+programa+cabine para comparação histórica
+function grupoKey(p) {
+  return `${(p.origem||'').toLowerCase()}|${(p.destino||'').toLowerCase()}|${(p.programa||'').toLowerCase()}|${(p.cabine||'').toLowerCase()}`;
+}
+
+function renderPassagens() {
+  const q = (document.getElementById('pass-search')?.value || '').toLowerCase().trim();
+  const progFiltro = document.getElementById('pass-filtro-prog')?.value || '';
+  const sort = document.getElementById('pass-sort')?.value || 'recente';
+
+  let items = passagensData.filter(p => {
+    if (progFiltro && p.programa !== progFiltro) return false;
+    if (q) {
+      const haystack = `${p.origem} ${p.destino} ${p.programa} ${p.cia} ${p.cabine}`.toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+    return true;
+  });
+
+  items = [...items].sort((a, b) => {
+    if (sort === 'pts_asc') return (a.pontos||0) - (b.pontos||0);
+    if (sort === 'pts_desc') return (b.pontos||0) - (a.pontos||0);
+    return new Date(b.enviadoEm) - new Date(a.enviadoEm);
+  });
+
+  // Monta mapa de histórico por grupo (todos os dados, não só os filtrados)
+  const histMap = {};
+  for (const p of passagensData) {
+    const k = grupoKey(p);
+    if (!histMap[k]) histMap[k] = [];
+    histMap[k].push(p);
+  }
+
+  const grid = document.getElementById('pass-grid');
+  const stats = document.getElementById('pass-stats');
+
+  stats.innerHTML = `<span><span class="sdot" style="background:var(--text)"></span>Total: <strong>${passagensData.length}</strong></span>` +
+    `<span><span class="sdot" style="background:var(--cdv-coral)"></span>Exibindo: <strong>${items.length}</strong></span>`;
+
+  if (!items.length) {
+    grid.innerHTML = '<div class="status-box" style="color:var(--muted)">Nenhuma passagem encontrada.</div>';
+    return;
+  }
+
+  const MESES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  function fmtData(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return `${String(d.getDate()).padStart(2,'0')} ${MESES[d.getMonth()]}. ${d.getFullYear()}`;
+  }
+
+  grid.innerHTML = items.map(p => {
+    const k = grupoKey(p);
+    const hist = (histMap[k] || []).filter(h => h.id !== p.id).sort((a,b) => new Date(b.enviadoEm) - new Date(a.enviadoEm));
+    const anterior = hist[0];
+
+    let histHtml = '';
+    if (anterior) {
+      const diff = p.pontos - anterior.pontos;
+      const pct = anterior.pontos > 0 ? Math.round(Math.abs(diff)/anterior.pontos*100) : 0;
+      let cls, icone, txt;
+      if (diff < 0) { cls='pass-hist-melhor'; icone='↓'; txt=`${Math.abs(diff).toLocaleString('pt-BR')} pts a menos (${pct}% melhor) vs. ${fmtData(anterior.enviadoEm)}`; }
+      else if (diff > 0) { cls='pass-hist-pior'; icone='↑'; txt=`${diff.toLocaleString('pt-BR')} pts a mais (${pct}% pior) vs. ${fmtData(anterior.enviadoEm)}`; }
+      else { cls='pass-hist-igual'; icone='='; txt=`Mesma pontuação vs. ${fmtData(anterior.enviadoEm)}`; }
+      histHtml = `<div class="pass-hist">
+        <div class="pass-hist-titulo">vs. envio anterior</div>
+        <div class="pass-hist-item"><span class="${cls}">${icone} ${txt}</span></div>
+      </div>`;
+    }
+
+    const fonteClass = p.fonte === 'alerta' ? 'pass-fonte-alerta' : 'pass-fonte-emissao';
+    const fonteTxt   = p.fonte === 'alerta' ? 'Alerta' : 'Emissão';
+
+    return `<div class="pass-card">
+      <button class="pass-excluir" onclick="excluirPassagem('${p.id}')" title="Excluir">×</button>
+      <span class="pass-fonte ${fonteClass}">${fonteTxt}</span>
+      <div class="pass-rota">${p.origem} <span>→</span> ${p.destino}</div>
+      <div style="display:flex;align-items:baseline;gap:4px">
+        <span class="pass-pts">${(p.pontos||0).toLocaleString('pt-BR')}</span>
+        <span class="pass-pts-lbl">pts</span>
+      </div>
+      <div class="pass-info">
+        ${p.programa ? `<span class="pass-badge">🎟️ ${p.programa}</span>` : ''}
+        ${p.cia ? `<span class="pass-badge">✈️ ${p.cia}</span>` : ''}
+        ${p.cabine ? `<span class="pass-badge">${p.cabine}</span>` : ''}
+      </div>
+      ${p.datas_ida ? `<div class="pass-datas"><strong>Ida</strong>${p.datas_ida}</div>` : ''}
+      ${p.datas_volta ? `<div class="pass-datas"><strong>Volta</strong>${p.datas_volta}</div>` : ''}
+      <div style="font-size:10px;color:var(--muted2);margin-top:2px">${fmtData(p.enviadoEm)}</div>
+      ${histHtml}
+    </div>`;
+  }).join('');
+}
+
+async function excluirPassagem(id) {
+  if (!confirm('Excluir esta passagem do histórico?')) return;
+  try {
+    const r = await fetch(CDV_PROXY_PASS + '/passagens/excluir', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({id})
+    });
+    const d = await r.json();
+    if (d.ok) {
+      passagensData = passagensData.filter(p => p.id !== id);
+      renderPassagens();
+    } else {
+      alert('Erro ao excluir: ' + (d.erro || 'falha'));
+    }
+  } catch(e) {
+    alert('Erro: ' + e.message);
+  }
+}
+
 loadData();
 
 // ─── Radar de Ofertas ───────────────────────────────────────────────────────
@@ -1148,7 +1340,9 @@ function switchTab(tab){
   document.querySelectorAll('.main-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   document.getElementById('tab-comparador').style.display = tab==='comparador'?'block':'none';
   document.getElementById('tab-radar').style.display = tab==='radar'?'block':'none';
+  document.getElementById('tab-passagens').style.display = tab==='passagens'?'block':'none';
   if(tab==='radar') loadOfertas(false);
+  if(tab==='passagens') loadPassagens(false);
   try{localStorage.setItem('cdv_active_tab', tab);}catch(e){}
 }
 
