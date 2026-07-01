@@ -1037,6 +1037,15 @@ function grupoKey(p) {
   return `${(p.origem||'').toLowerCase()}|${(p.destino||'').toLowerCase()}|${(p.programa||'').toLowerCase()}|${(p.cabine||'').toLowerCase()}`;
 }
 
+function normalizarCabine(cabine) {
+  if (!cabine) return '';
+  const s = cabine.trim().toLowerCase();
+  if (s === 'economica' || s === 'econômica' || s === 'economy') return 'Econômica';
+  if (s === 'executiva' || s === 'executive' || s === 'business') return 'Executiva';
+  if (s === 'primeira' || s === 'first') return 'Primeira Classe';
+  return cabine;
+}
+
 function renderPassagens() {
   const q = (document.getElementById('pass-search')?.value || '').toLowerCase().trim();
   const progFiltro = document.getElementById('pass-filtro-prog')?.value || '';
@@ -1116,7 +1125,7 @@ function renderPassagens() {
       <div class="pass-info">
         ${p.programa ? `<span class="pass-badge">🎟️ ${p.programa}</span>` : ''}
         ${p.cia ? `<span class="pass-badge">✈️ ${p.cia}</span>` : ''}
-        ${p.cabine ? `<span class="pass-badge">${p.cabine}</span>` : ''}
+        ${p.cabine ? `<span class="pass-badge">${normalizarCabine(p.cabine)}</span>` : ''}
       </div>
       <div style="font-size:10px;color:var(--muted2);margin-top:6px">${fmtData(p.enviadoEm)}</div>
       ${histHtml}
@@ -1165,7 +1174,7 @@ function abrirPassagemModal(id) {
     <div class="modal-rows" style="gap:8px">
       ${p.programa ? `<div class="modal-row" style="padding:10px 14px"><span style="color:var(--muted);font-size:12px">Programa</span><span style="font-weight:700">${p.programa}</span></div>` : ''}
       ${p.cia      ? `<div class="modal-row" style="padding:10px 14px"><span style="color:var(--muted);font-size:12px">Companhia</span><span style="font-weight:700">${p.cia}</span></div>` : ''}
-      ${p.cabine   ? `<div class="modal-row" style="padding:10px 14px"><span style="color:var(--muted);font-size:12px">Classe</span><span style="font-weight:700">${p.cabine}</span></div>` : ''}
+      ${p.cabine   ? `<div class="modal-row" style="padding:10px 14px"><span style="color:var(--muted);font-size:12px">Classe</span><span style="font-weight:700">${normalizarCabine(p.cabine)}</span></div>` : ''}
     </div>
     ${p.datas_ida ? `<div class="pass-datas" style="margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px"><strong>Datas de ida</strong>${p.datas_ida}</div>` : ''}
     ${p.datas_volta ? `<div class="pass-datas" style="margin-top:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px"><strong>Datas de volta</strong>${p.datas_volta}</div>` : ''}
