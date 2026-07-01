@@ -219,6 +219,57 @@ app.post('/ofertas/rejeitar', async (req, res) => {
   }
 });
 
+// ── Publicar oferta diretamente no radar (sem passar por pendentes) ───────────
+app.post('/ofertas/publicar', async (req, res) => {
+  const oferta = req.body || {};
+  if (!oferta.titulo) return res.status(400).json({ ok: false, erro: 'Campo obrigatório: titulo' });
+  if (!GITHUB_TOKEN) return res.status(500).json({ ok: false, erro: 'GITHUB_TOKEN não configurado no servidor' });
+
+  try {
+    // Gera ID estável a partir do título + timestamp
+    const raw = (oferta.titulo || '') + Date.now();
+    let hash = 0;
+    for (let i = 0; i < raw.length; i++) hash = (hash * 31 + raw.charCodeAt(i)) >>> 0;
+    const id = hash.toString(36);
+
+    const item = {
+      id,
+      titulo:           oferta.titulo || '',
+      emoji:            oferta.emoji  || '📰',
+      resumo:           oferta.resumo || oferta.descricao || '',
+      programa:         oferta.programa || '',
+      bonus:            oferta.bonus || '',
+      prazo:            oferta.prazo || '',
+      categoria:        oferta.categoria || 'geral',
+      loja:             oferta.loja || '',
+      cupom:            oferta.cupom || '',
+      milheiro:         oferta.milheiro || '',
+      tetoTransferencia: oferta.tetoTransferencia || '',
+      importante:       oferta.importante || '',
+      link:             oferta.link || '',
+      restricoes:       Array.isArray(oferta.restricoes) ? oferta.restricoes : [],
+      publicadoEm:      new Date().toISOString(),
+    };
+
+    const aprov = await ghGetJson(OFERTAS_APROVADAS_PATH, { geradoEm: null, items: [] });
+    const jaExiste = (aprov.data.items || []).some(o => o.id === id);
+    const novosItens = jaExiste
+      ? aprov.data.items
+      : [item, ...(aprov.data.items || [])].slice(0, 100);
+
+    await ghPutJson(
+      OFERTAS_APROVADAS_PATH,
+      { geradoEm: new Date().toISOString(), items: novosItens },
+      aprov.sha,
+      `chore: publica oferta "${item.titulo}"`
+    );
+
+    res.json({ ok: true, id });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 app.listen(PORT, '0.0.0.0', () => {
