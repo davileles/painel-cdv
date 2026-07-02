@@ -1676,15 +1676,19 @@ function closeOfertaModal(){
   document.getElementById('oferta-modal-overlay').classList.remove('open');
 }
 
+// ── Emails com acesso a abas em desenvolvimento ───────────────────────────
+const DEV_EMAILS = ['davileles@gmail.com'];
+function devAcesso(){ const s=lerSessao(); return s && DEV_EMAILS.includes(s.email); }
+
 function switchTab(tab){
   document.querySelectorAll('.main-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   document.getElementById('tab-comparador').style.display = tab==='comparador'?'block':'none';
   document.getElementById('tab-radar').style.display = tab==='radar'?'block':'none';
   document.getElementById('tab-passagens').style.display = tab==='passagens'?'block':'none';
-  document.getElementById('tab-milhas').style.display = tab==='milhas'?'block':'none';
+  document.getElementById('tab-milhas').style.display = (tab==='milhas' && devAcesso())?'block':'none';
   if(tab==='radar') loadOfertas(false);
   if(tab==='passagens') loadPassagens(false);
-  if(tab==='milhas') initMilhas();
+  if(tab==='milhas'){ if(devAcesso()) initMilhas(); else switchTab('comparador'); }
   try{localStorage.setItem('cdv_active_tab', tab);}catch(e){}
 }
 
@@ -2201,6 +2205,9 @@ function mostrarPainel(sessao) {
   // Mostra nome no header se existir
   const nomeEl = document.getElementById('header-nome-membro');
   if (nomeEl && sessao?.nome) nomeEl.textContent = '👤 ' + sessao.nome.split(' ')[0];
+  // Exibe aba de dev apenas para emails autorizados
+  const tabMilhas = document.querySelector('.main-tab[data-tab="milhas"]');
+  if (tabMilhas) tabMilhas.style.display = DEV_EMAILS.includes((sessao?.email||'').toLowerCase()) ? '' : 'none';
 }
 async function fazerLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
