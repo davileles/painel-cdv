@@ -181,6 +181,7 @@ const PASSAGENS_PATH          = 'passagens.json';
 const MAX_OFERTAS_APROVADAS   = 100;
 const MAX_DIAS_PASSAGENS      = 180;
 const MEMBROS_PATH            = 'membros.json';
+const MILHAS_PATH             = 'milhas.json';
 const HUBLA_TOKEN             = process.env.HUBLA_TOKEN;
 
 // ── Listar ofertas pendentes (com CORS correto) ───────────────────────────────
@@ -493,6 +494,95 @@ app.post('/webhook/hubla-membros', async (req, res) => {
         continue;
       }
       console.error('[webhook-hubla-membros]', err.message);
+      return res.status(500).json({ ok: false, erro: err.message });
+    }
+  }
+});
+
+// ── Gestão de Milhas: listar registros do usuário ────────────────────────────
+app.get('/milhas/listar', async (req, res) => {
+  const email = (req.query.email || '').toLowerCase().trim();
+  if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
+  try {
+    const atual = await ghGetJson(MILHAS_PATH, { registros: [] });
+    const registros = (atual.data.registros || []).filter(r => r.email === email);
+    res.json({ ok: true, registros });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// ── Gestão de Milhas: salvar lista completa do usuário ───────────────────────
+// Body: { email, registros: [...] }
+// Substitui todos os registros daquele e-mail; mantém registros de outros usuários intactos.
+app.post('/milhas/salvar', async (req, res) => {
+  const { email, registros } = req.body || {};
+  if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
+  if (!Array.isArray(registros)) return res.status(400).json({ ok: false, erro: 'registros deve ser um array' });
+  if (!GITHUB_TOKEN) return res.status(500).json({ ok: false, erro: 'GITHUB_TOKEN não configurado' });
+
+  const emailNorm = email.toLowerCase().trim();
+
+  // Garante que todos os registros enviados pertencem ao e-mail autenticado
+  const registrosSanitizados = registros.map(r => ({ ...r, email: emailNorm }));
+
+  for (let tentativa = 1; tentativa <= 4; tentativa++) {
+    try {
+      const atual = await ghGetJson(MILHAS_PATH, { atualizadoEm: null, registros: [] });
+      const outros = (atual.data.registros || []).filter(r => r.email !== emailNorm);
+      const novos  = [...outros, ...registrosSanitizados];
+
+      await ghPutJson(
+        MILHAS_PATH,
+        { atualizadoEm: new Date().toISOString(), registros: novos },
+        atual.sha,
+        `chore: milhas ${emailNorm} (${registrosSanitizados.length} registros)`
+      );
+
+      return res.json({ ok: true, total: registrosSanitizados.length });
+    } catch (err) {
+      const isShaConflict = err.message && err.message.includes('but expected');
+      if (isShaConflict && tentativa < 4) {
+        console.warn(`[milhas/salvar] SHA conflict, retry ${tentativa}/4 em ${tentativa * 400}ms`);
+        await new Promise(r => setTimeout(r, tentativa * 400));
+        continue;
+      }
+      console.error('[milhas/salvar]', err.message);
+      return res.status(500).json({ ok: false, erro: err.message });
+    }
+  }
+});
+
+// ── Gestão de Milhas: excluir um registro por ID ────────────────────────────
+// Body: { email, id }
+app.post('/milhas/excluir', async (req, res) => {
+  const { email, id } = req.body || {};
+  if (!email || !id) return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: email, id' });
+  if (!GITHUB_TOKEN) return res.status(500).json({ ok: false, erro: 'GITHUB_TOKEN não configurado' });
+
+  const emailNorm = email.toLowerCase().trim();
+
+  for (let tentativa = 1; tentativa <= 4; tentativa++) {
+    try {
+      const atual = await ghGetJson(MILHAS_PATH, { atualizadoEm: null, registros: [] });
+      const registros = (atual.data.registros || []).filter(r => !(r.email === emailNorm && r.id === id));
+
+      await ghPutJson(
+        MILHAS_PATH,
+        { atualizadoEm: new Date().toISOString(), registros },
+        atual.sha,
+        `chore: exclui milha ${id} (${emailNorm})`
+      );
+
+      return res.json({ ok: true });
+    } catch (err) {
+      const isShaConflict = err.message && err.message.includes('but expected');
+      if (isShaConflict && tentativa < 4) {
+        console.warn(`[milhas/excluir] SHA conflict, retry ${tentativa}/4 em ${tentativa * 400}ms`);
+        await new Promise(r => setTimeout(r, tentativa * 400));
+        continue;
+      }
+      console.error('[milhas/excluir]', err.message);
       return res.status(500).json({ ok: false, erro: err.message });
     }
   }
