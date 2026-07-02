@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-07-02T22:30:09.407Z",
+  "atualizadoEm": "2026-07-02T23:10:21.373Z",
   "registros": [
     {
       "id": "1783031408843_mra9",
@@ -12,6 +12,30 @@
       "qtde": 6500,
       "custo": 0,
       "obs": "AMEX TPC"
+    },
+    {
+      "id": "1783033820414_deb",
+      "email": "davileles@gmail.com",
+      "data": "2026-07-02",
+      "tipo": "debito",
+      "operacao": "transferencia",
+      "subcat": "transferido",
+      "programa": "livelo",
+      "qtde": 150000,
+      "custo": 0,
+      "obs": "Transferência para Azul Fidelidade (+95% bônus) "
+    },
+    {
+      "id": "1783033820414_cred",
+      "email": "davileles@gmail.com",
+      "data": "2026-07-02",
+      "tipo": "credito",
+      "operacao": "transferencia",
+      "subcat": "trans_bon",
+      "programa": "azul",
+      "qtde": 292500,
+      "custo": 4095,
+      "obs": "Recebido de Livelo (+95% bônus) "
     }
   ]
 }
