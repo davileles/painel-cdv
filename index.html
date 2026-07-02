@@ -226,6 +226,30 @@
     .radar-bar{padding:12px 14px 0}
   }
 
+  /* ── Gestão de Milhas ────────────────────────────────────────────────────── */
+  .milhas-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+  .milhas-input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px;font-family:'Montserrat',sans-serif;outline:none;transition:border-color .2s;-moz-appearance:textfield}
+  .milhas-input:focus{border-color:var(--cdv-coral)}
+  .milhas-input::placeholder{color:var(--muted2)}
+  .milhas-input[type=number]::-webkit-outer-spin-button,.milhas-input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+  .milhas-kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden}
+  .milhas-kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+  .milhas-kpi-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .milhas-kpi-val{font-size:28px;font-weight:900;line-height:1.1}
+  .milhas-kpi-sub{font-size:11px;color:var(--muted)}
+  .milhas-table{width:100%;border-collapse:collapse}
+  .milhas-table th{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+  .milhas-table td{font-size:12px;padding:10px 12px;border-bottom:1px solid rgba(61,74,102,.4);vertical-align:middle}
+  .milhas-table tr:last-child td{border-bottom:none}
+  .milhas-table tr:hover td{background:rgba(255,255,255,.03)}
+  .milhas-badge-cred{display:inline-block;font-size:9px;font-weight:800;background:rgba(52,211,153,.12);color:#34d399;border:1px solid rgba(52,211,153,.3);border-radius:4px;padding:2px 6px}
+  .milhas-badge-deb{display:inline-block;font-size:9px;font-weight:800;background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.3);border-radius:4px;padding:2px 6px}
+  .milhas-badge-trans{display:inline-block;font-size:9px;font-weight:800;background:rgba(96,165,250,.12);color:#60a5fa;border:1px solid rgba(96,165,250,.3);border-radius:4px;padding:2px 6px}
+  .milhas-del-btn{background:transparent;border:1px solid rgba(248,113,113,.3);color:#f87171;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s}
+  .milhas-del-btn:hover{background:rgba(248,113,113,.12);border-color:#f87171}
+  .milhas-prog-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .milhas-empty{text-align:center;padding:50px 20px;color:var(--muted);font-size:13px}
+
   /* ── Login ───────────────────────────────────────────────────────────────── */
   #login-screen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px}
   .login-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 32px;width:100%;max-width:380px;display:flex;flex-direction:column;align-items:center;gap:0}
@@ -278,6 +302,7 @@
   <button class="main-tab active" data-tab="comparador">🏆 Comparador de Pontos</button>
   <button class="main-tab" data-tab="radar">📡 Radar de Ofertas</button>
   <button class="main-tab" data-tab="passagens">✈️ Passagens</button>
+  <button class="main-tab" data-tab="milhas">💎 Gestão de Milhas</button>
 </div>
 
 <div id="tab-comparador" class="tab-panel">
@@ -355,6 +380,144 @@
     <div class="oferta-modal-section" id="oferta-modal-restricoes"></div>
     <div class="oferta-importante" id="oferta-modal-importante" style="display:none"></div>
     <a class="modal-url" id="oferta-modal-link" href="#" target="_blank" rel="noopener" style="display:none;margin-top:16px">↗ Acessar oferta</a>
+  </div>
+</div>
+
+<div id="tab-milhas" class="tab-panel" style="display:none">
+  <!-- DASHBOARD HEADER -->
+  <div id="milhas-dashboard" style="padding:18px 22px 0">
+    <!-- KPI CARDS -->
+    <div id="milhas-kpis" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:18px"></div>
+    <!-- CHARTS ROW -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px" id="milhas-charts-row">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Distribuição por Programa</div>
+        <canvas id="chart-distribuicao" style="max-height:200px"></canvas>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Evolução do Saldo Total</div>
+        <canvas id="chart-evolucao" style="max-height:200px"></canvas>
+      </div>
+    </div>
+    <!-- CUSTO POR MILHEIRO -->
+    <div id="milhas-cpm-row" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:18px">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Custo Médio do Milheiro (R$/1.000 pts)</div>
+      <div id="milhas-cpm-cards" style="display:flex;gap:10px;flex-wrap:wrap"></div>
+    </div>
+  </div>
+
+  <!-- CONTROLS BAR -->
+  <div style="padding:10px 22px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:120px;z-index:89">
+    <button class="milhas-view-btn active" data-view="registros" onclick="milhasSetView('registros')" style="background:rgba(255,88,94,.12);border:1px solid var(--cdv-coral);color:var(--cdv-coral);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">📋 Registros</button>
+    <button class="milhas-view-btn" data-view="novo" onclick="milhasSetView('novo')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">＋ Novo Lançamento</button>
+    <div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
+      <select id="milhas-filter-prog" onchange="renderMilhasTabela()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
+        <option value="">Todos os programas</option>
+      </select>
+      <select id="milhas-filter-tipo" onchange="renderMilhasTabela()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
+        <option value="">Todos os tipos</option>
+        <option value="credito">Créditos</option>
+        <option value="debito">Débitos</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- VIEW: REGISTROS -->
+  <div id="milhas-view-registros" style="padding:16px 22px">
+    <div id="milhas-tabela-wrap">
+      <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando registros…</div></div>
+    </div>
+  </div>
+
+  <!-- VIEW: NOVO LANÇAMENTO -->
+  <div id="milhas-view-novo" style="padding:18px 22px;display:none">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:600px;margin:0 auto">
+      <div style="font-size:16px;font-weight:800;margin-bottom:20px;color:var(--text)">＋ Novo Lançamento de Milhas</div>
+
+      <!-- TIPO OPERAÇÃO -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Tipo de Operação</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="milhas-tipo-btn active" data-tipo="credito" onclick="milhasSetTipo('credito')" style="flex:1;min-width:120px;padding:10px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;background:rgba(52,211,153,.12);border:2px solid #34d399;color:#34d399;transition:all .15s">✅ CRÉDITO</button>
+          <button class="milhas-tipo-btn" data-tipo="debito" onclick="milhasSetTipo('debito')" style="flex:1;min-width:120px;padding:10px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;background:transparent;border:2px solid var(--border);color:var(--muted);transition:all .15s">❌ DÉBITO</button>
+          <button class="milhas-tipo-btn" data-tipo="transferencia" onclick="milhasSetTipo('transferencia')" style="flex:1;min-width:120px;padding:10px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;background:transparent;border:2px solid var(--border);color:var(--muted);transition:all .15s">🔄 TRANSFERÊNCIA</button>
+        </div>
+      </div>
+
+      <!-- CAMPOS COMUNS -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div>
+          <label class="milhas-label">Data</label>
+          <input type="date" id="ml-data" class="milhas-input"/>
+        </div>
+        <div id="ml-prog-wrap">
+          <label class="milhas-label">Programa</label>
+          <select id="ml-programa" class="milhas-input" onchange="milhasUpdateSubcats()"></select>
+        </div>
+      </div>
+
+      <!-- PROGRAMA ORIGEM (transferência) -->
+      <div id="ml-trans-origem-wrap" style="display:none;margin-bottom:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <label class="milhas-label">Programa de Origem</label>
+            <select id="ml-prog-origem" class="milhas-input"></select>
+          </div>
+          <div>
+            <label class="milhas-label">Programa de Destino</label>
+            <select id="ml-prog-destino" class="milhas-input"></select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px">
+          <div>
+            <label class="milhas-label">Pts Debitados (Origem)</label>
+            <input type="number" id="ml-trans-pts-origem" class="milhas-input" placeholder="Ex: 10000" min="0" oninput="milhasCalcBonusTrans()"/>
+          </div>
+          <div>
+            <label class="milhas-label">Bônus % (opcional)</label>
+            <input type="number" id="ml-trans-bonus" class="milhas-input" placeholder="Ex: 80" min="0" max="1000" oninput="milhasCalcBonusTrans()"/>
+          </div>
+          <div>
+            <label class="milhas-label">Pts Creditados (Destino)</label>
+            <input type="number" id="ml-trans-pts-destino" class="milhas-input" placeholder="Calculado auto" min="0"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBCATEGORIA -->
+      <div style="margin-bottom:12px">
+        <label class="milhas-label">Subcategoria</label>
+        <select id="ml-subcat" class="milhas-input" onchange="milhasUpdateCustoField()"></select>
+      </div>
+
+      <!-- QTDE MILHAS -->
+      <div id="ml-qtde-wrap" style="margin-bottom:12px">
+        <label class="milhas-label">Quantidade de Milhas/Pontos</label>
+        <input type="number" id="ml-qtde" class="milhas-input" placeholder="Ex: 5000" min="0"/>
+      </div>
+
+      <!-- CUSTO (apenas para subcats que têm custo) -->
+      <div id="ml-custo-wrap" style="display:none;margin-bottom:12px">
+        <label class="milhas-label">Custo Total (R$) <span style="color:var(--muted);font-weight:500">(opcional — para calcular custo do milheiro)</span></label>
+        <input type="number" id="ml-custo" class="milhas-input" placeholder="Ex: 250.00" min="0" step="0.01" oninput="milhasCalcCPM()"/>
+        <div id="ml-cpm-preview" style="font-size:11px;color:#34d399;font-weight:700;margin-top:4px;min-height:16px"></div>
+      </div>
+
+      <!-- CUSTO (transferência com bônus pago) -->
+      <div id="ml-trans-custo-wrap" style="display:none;margin-bottom:12px">
+        <label class="milhas-label">Custo da Transferência (R$) <span style="color:var(--muted);font-weight:500">(se pagou pela transferência)</span></label>
+        <input type="number" id="ml-trans-custo" class="milhas-input" placeholder="Ex: 180.00" min="0" step="0.01"/>
+      </div>
+
+      <!-- OBSERVAÇÃO -->
+      <div style="margin-bottom:20px">
+        <label class="milhas-label">Observação <span style="color:var(--muted);font-weight:500">(opcional)</span></label>
+        <input type="text" id="ml-obs" class="milhas-input" placeholder="Ex: Cartão XP Visa Infinite, Compra Magalu…"/>
+      </div>
+
+      <div id="ml-feedback" style="font-size:12px;font-weight:700;min-height:18px;margin-bottom:12px;text-align:center"></div>
+      <button onclick="salvarLancamento()" style="width:100%;padding:12px;background:var(--cdv-coral);border:none;color:#fff;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Salvar Lançamento</button>
+    </div>
   </div>
 </div>
 
@@ -1518,9 +1681,444 @@ function switchTab(tab){
   document.getElementById('tab-comparador').style.display = tab==='comparador'?'block':'none';
   document.getElementById('tab-radar').style.display = tab==='radar'?'block':'none';
   document.getElementById('tab-passagens').style.display = tab==='passagens'?'block':'none';
+  document.getElementById('tab-milhas').style.display = tab==='milhas'?'block':'none';
   if(tab==='radar') loadOfertas(false);
   if(tab==='passagens') loadPassagens(false);
+  if(tab==='milhas') initMilhas();
   try{localStorage.setItem('cdv_active_tab', tab);}catch(e){}
+}
+
+// ══════════════════════════════════════════════════════
+//  GESTÃO DE MILHAS
+// ══════════════════════════════════════════════════════
+const MILHAS_PROXY = 'https://cdv-proxy-production.up.railway.app';
+
+const MILHAS_PROGS = [
+  {id:'livelo',  name:'Livelo',     color:'#df0979'},
+  {id:'esfera',  name:'Esfera',     color:'#e8371b'},
+  {id:'smiles',  name:'Smiles',     color:'#f97316'},
+  {id:'azul',    name:'Azul Fidelidade', color:'#0ea5e9'},
+  {id:'latam',   name:'LATAM Pass', color:'#dc2626'},
+  {id:'iberia',  name:'Iberia Plus',color:'#c0392b'},
+  {id:'aadvantage',name:'AAdvantage',color:'#0068b2'},
+  {id:'qatar',   name:'Qatar Privilege',color:'#8b0000'},
+  {id:'outros',  name:'Outros',     color:'#8a9bbf'},
+];
+
+const MILHAS_SUBCATS = {
+  credito: [
+    {id:'cartao',     label:'Cartão de Crédito',       temCusto:false},
+    {id:'compra_pts', label:'Compra de Pontos',         temCusto:true},
+    {id:'clube',      label:'Assinatura de Clube',      temCusto:true},
+    {id:'compra_bon', label:'Compra Bonificada',        temCusto:true},
+    {id:'trans_bon',  label:'Transferência com Bônus (recebimento)', temCusto:false},
+    {id:'bonus',      label:'Bônus / Promoção',         temCusto:false},
+    {id:'outros_cred',label:'Outros Créditos',          temCusto:false},
+  ],
+  debito: [
+    {id:'passagem',   label:'Resgate — Passagem Aérea', temCusto:false},
+    {id:'hospedagem', label:'Resgate — Hospedagem',     temCusto:false},
+    {id:'locacao',    label:'Resgate — Locação de Carro',temCusto:false},
+    {id:'produto',    label:'Resgate — Produto/Shopping',temCusto:false},
+    {id:'transferido',label:'Transferência Enviada',    temCusto:false},
+    {id:'expiracao',  label:'Expiração',                temCusto:false},
+    {id:'outros_deb', label:'Outros Débitos',           temCusto:false},
+  ],
+};
+
+let milhasTipoAtual = 'credito';
+let milhasRegistros = [];
+let milhasChartDist = null;
+let milhasChartEvol = null;
+let milhasInitialized = false;
+
+function milhasGetEmail(){
+  try{ const s=JSON.parse(localStorage.getItem('cdv_auth')||'null'); return s?.email||null; }catch{return null;}
+}
+
+// ── Storage via proxy ──────────────────────────────────────────────────────
+async function milhasCarregar(){
+  const email=milhasGetEmail();
+  if(!email){milhasRegistros=[];return;}
+  try{
+    const r=await fetch(`${MILHAS_PROXY}/milhas/listar?email=${encodeURIComponent(email)}`);
+    if(!r.ok)throw new Error('err');
+    const d=await r.json();
+    milhasRegistros=Array.isArray(d)?d:[];
+  }catch{
+    // fallback localStorage
+    try{
+      const key='cdv_milhas_'+email;
+      milhasRegistros=JSON.parse(localStorage.getItem(key)||'[]');
+    }catch{milhasRegistros=[];}
+  }
+}
+
+async function milhasSalvarRemoto(registros){
+  const email=milhasGetEmail();
+  if(!email)return false;
+  try{
+    const r=await fetch(`${MILHAS_PROXY}/milhas/salvar`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,registros})
+    });
+    return r.ok;
+  }catch{return false;}
+}
+
+function milhasSalvarLocal(){
+  const email=milhasGetEmail();
+  if(!email)return;
+  try{localStorage.setItem('cdv_milhas_'+email, JSON.stringify(milhasRegistros));}catch{}
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+async function initMilhas(){
+  if(!milhasInitialized){
+    milhasInitialized=true;
+    // populate selects
+    ['ml-programa','ml-prog-origem','ml-prog-destino','milhas-filter-prog'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      if(id==='milhas-filter-prog') el.innerHTML='<option value="">Todos os programas</option>';
+      else el.innerHTML='';
+      MILHAS_PROGS.forEach(p=>{
+        const o=document.createElement('option');
+        o.value=p.id; o.textContent=p.name;
+        el.appendChild(o);
+      });
+    });
+    milhasUpdateSubcats();
+    // data padrão = hoje
+    const today=new Date().toISOString().split('T')[0];
+    document.getElementById('ml-data').value=today;
+  }
+  document.getElementById('milhas-tabela-wrap').innerHTML='<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando registros…</div></div>';
+  await milhasCarregar();
+  renderMilhasDashboard();
+  renderMilhasTabela();
+}
+
+// ── Views ──────────────────────────────────────────────────────────────────
+function milhasSetView(v){
+  document.querySelectorAll('.milhas-view-btn').forEach(b=>{
+    const active=b.dataset.view===v;
+    b.style.background=active?'rgba(255,88,94,.12)':'transparent';
+    b.style.borderColor=active?'var(--cdv-coral)':'var(--border)';
+    b.style.color=active?'var(--cdv-coral)':'var(--muted)';
+  });
+  document.getElementById('milhas-view-registros').style.display=v==='registros'?'block':'none';
+  document.getElementById('milhas-view-novo').style.display=v==='novo'?'block':'none';
+}
+
+// ── Tipo crédito/débito/transferência ──────────────────────────────────────
+function milhasSetTipo(t){
+  milhasTipoAtual=t;
+  document.querySelectorAll('.milhas-tipo-btn').forEach(b=>{
+    const active=b.dataset.tipo===t;
+    if(active){
+      b.style.background = t==='credito'?'rgba(52,211,153,.12)': t==='debito'?'rgba(248,113,113,.12)':'rgba(96,165,250,.12)';
+      b.style.borderColor= t==='credito'?'#34d399': t==='debito'?'#f87171':'#60a5fa';
+      b.style.color      = t==='credito'?'#34d399': t==='debito'?'#f87171':'#60a5fa';
+    } else {
+      b.style.background='transparent';
+      b.style.borderColor='var(--border)';
+      b.style.color='var(--muted)';
+    }
+  });
+  const isTransf = t==='transferencia';
+  document.getElementById('ml-trans-origem-wrap').style.display=isTransf?'block':'none';
+  document.getElementById('ml-prog-wrap').style.display=isTransf?'none':'block';
+  document.getElementById('ml-qtde-wrap').style.display=isTransf?'none':'block';
+  document.getElementById('ml-trans-custo-wrap').style.display=isTransf?'block':'none';
+  milhasUpdateSubcats();
+}
+
+function milhasUpdateSubcats(){
+  const t=milhasTipoAtual;
+  const isTransf=t==='transferencia';
+  const sel=document.getElementById('ml-subcat');
+  if(!sel)return;
+  sel.innerHTML='';
+  if(isTransf){
+    sel.innerHTML='<option value="transferencia">Transferência entre programas</option>';
+    document.getElementById('ml-custo-wrap').style.display='none';
+    return;
+  }
+  const list=MILHAS_SUBCATS[t]||[];
+  list.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.label;sel.appendChild(o);});
+  milhasUpdateCustoField();
+}
+
+function milhasUpdateCustoField(){
+  const t=milhasTipoAtual;
+  if(t==='transferencia') return;
+  const subcat=document.getElementById('ml-subcat')?.value;
+  const list=MILHAS_SUBCATS[t]||[];
+  const entry=list.find(s=>s.id===subcat);
+  document.getElementById('ml-custo-wrap').style.display=(entry?.temCusto)?'block':'none';
+  document.getElementById('ml-cpm-preview').textContent='';
+}
+
+function milhasCalcBonusTrans(){
+  const orig=parseFloat(document.getElementById('ml-trans-pts-origem')?.value)||0;
+  const bonus=parseFloat(document.getElementById('ml-trans-bonus')?.value)||0;
+  if(orig>0){
+    const dest=Math.round(orig*(1+bonus/100));
+    document.getElementById('ml-trans-pts-destino').value=dest;
+  }
+}
+
+function milhasCalcCPM(){
+  const custo=parseFloat(document.getElementById('ml-custo')?.value)||0;
+  const qtde=parseFloat(document.getElementById('ml-qtde')?.value)||0;
+  const el=document.getElementById('ml-cpm-preview');
+  if(custo>0&&qtde>0){
+    const cpm=(custo/qtde)*1000;
+    el.textContent=`Custo do milheiro: R$ ${cpm.toFixed(2).replace('.',',')}`;
+  } else {
+    el.textContent='';
+  }
+}
+
+// ── Salvar lançamento ──────────────────────────────────────────────────────
+async function salvarLancamento(){
+  const email=milhasGetEmail();
+  if(!email){document.getElementById('ml-feedback').textContent='Faça login primeiro.';return;}
+  const fb=document.getElementById('ml-feedback');
+  fb.style.color='#f87171';
+  const t=milhasTipoAtual;
+  const data=document.getElementById('ml-data').value;
+  const obs=document.getElementById('ml-obs').value.trim();
+  if(!data){fb.textContent='Informe a data.';return;}
+
+  let novos=[];
+
+  if(t==='transferencia'){
+    const origem=document.getElementById('ml-prog-origem').value;
+    const destino=document.getElementById('ml-prog-destino').value;
+    if(origem===destino){fb.textContent='Origem e destino devem ser diferentes.';return;}
+    const ptsOrig=parseFloat(document.getElementById('ml-trans-pts-origem').value)||0;
+    const ptsDest=parseFloat(document.getElementById('ml-trans-pts-destino').value)||0;
+    const bonus=parseFloat(document.getElementById('ml-trans-bonus').value)||0;
+    const custo=parseFloat(document.getElementById('ml-trans-custo').value)||0;
+    if(!ptsOrig||!ptsDest){fb.textContent='Informe os pontos de origem e destino.';return;}
+    const id=Date.now();
+    novos.push({id:id+'_deb',email,data,tipo:'debito',operacao:'transferencia',subcat:'transferido',
+      programa:origem,qtde:ptsOrig,custo:0,obs:`Transferência para ${milhasNomePrograma(destino)}${bonus?` (+${bonus}% bônus)`:''} ${obs?'| '+obs:''}`});
+    novos.push({id:id+'_cred',email,data,tipo:'credito',operacao:'transferencia',subcat:'trans_bon',
+      programa:destino,qtde:ptsDest,custo:custo,obs:`Recebido de ${milhasNomePrograma(origem)}${bonus?` (+${bonus}% bônus)`:''} ${obs?'| '+obs:''}`});
+  } else {
+    const prog=document.getElementById('ml-programa').value;
+    const subcat=document.getElementById('ml-subcat').value;
+    const qtde=parseFloat(document.getElementById('ml-qtde').value)||0;
+    const custo=parseFloat(document.getElementById('ml-custo')?.value)||0;
+    if(!prog){fb.textContent='Selecione o programa.';return;}
+    if(!qtde){fb.textContent='Informe a quantidade de milhas.';return;}
+    novos.push({id:Date.now()+'_'+Math.random().toString(36).slice(2,6),email,data,tipo:t,operacao:t,subcat,programa:prog,qtde,custo,obs});
+  }
+
+  milhasRegistros=[...milhasRegistros,...novos];
+  // salva local primeiro
+  milhasSalvarLocal();
+  // tenta remoto
+  milhasSalvarRemoto(milhasRegistros);
+
+  fb.style.color='#34d399';
+  fb.textContent='✓ Lançamento salvo com sucesso!';
+  // limpar campos
+  document.getElementById('ml-qtde').value='';
+  document.getElementById('ml-custo').value='';
+  document.getElementById('ml-trans-pts-origem').value='';
+  document.getElementById('ml-trans-pts-destino').value='';
+  document.getElementById('ml-trans-bonus').value='';
+  document.getElementById('ml-trans-custo').value='';
+  document.getElementById('ml-obs').value='';
+  document.getElementById('ml-cpm-preview').textContent='';
+  setTimeout(()=>{fb.textContent='';},3000);
+  renderMilhasDashboard();
+  renderMilhasTabela();
+}
+
+// ── Excluir ────────────────────────────────────────────────────────────────
+async function excluirLancamento(id){
+  if(!confirm('Excluir este lançamento?'))return;
+  milhasRegistros=milhasRegistros.filter(r=>r.id!==id);
+  milhasSalvarLocal();
+  milhasSalvarRemoto(milhasRegistros);
+  renderMilhasTabela();
+  renderMilhasDashboard();
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function milhasNomePrograma(id){return MILHAS_PROGS.find(p=>p.id===id)?.name||id;}
+function milhasCorPrograma(id){return MILHAS_PROGS.find(p=>p.id===id)?.color||'#8a9bbf';}
+function milhasFormatNum(n){return n.toLocaleString('pt-BR');}
+function milhasFormatData(s){
+  if(!s)return'—';
+  const [y,m,d]=s.split('-');
+  return`${d}/${m}/${y}`;
+}
+function milhasLabelSubcat(tipo,subcat){
+  const all=[...(MILHAS_SUBCATS.credito||[]),...(MILHAS_SUBCATS.debito||[]),{id:'transferencia',label:'Transferência'}];
+  return all.find(s=>s.id===subcat)?.label||subcat;
+}
+
+// ── Dashboard ──────────────────────────────────────────────────────────────
+function renderMilhasDashboard(){
+  const email=milhasGetEmail();
+  const regs=milhasRegistros.filter(r=>r.email===email||!r.email);
+
+  // Saldo por programa
+  const saldos={};
+  MILHAS_PROGS.forEach(p=>{saldos[p.id]=0;});
+  regs.forEach(r=>{
+    if(!saldos[r.programa]&&saldos[r.programa]!==0) saldos[r.programa]=0;
+    if(r.tipo==='credito') saldos[r.programa]=(saldos[r.programa]||0)+r.qtde;
+    else if(r.tipo==='debito') saldos[r.programa]=(saldos[r.programa]||0)-r.qtde;
+  });
+
+  const totalMilhas=Object.values(saldos).reduce((a,b)=>a+(b>0?b:0),0);
+  const totalGasto=regs.filter(r=>r.custo>0).reduce((a,b)=>a+b.custo,0);
+  const totalCreditado=regs.filter(r=>r.tipo==='credito').reduce((a,b)=>a+b.qtde,0);
+  const totalResgatado=regs.filter(r=>r.tipo==='debito').reduce((a,b)=>a+b.qtde,0);
+
+  // KPIs
+  const kpiEl=document.getElementById('milhas-kpis');
+  const kpis=[
+    {label:'Saldo Total',val:milhasFormatNum(totalMilhas)+' pts',sub:'somando todos os programas',color:'#ff585e'},
+    {label:'Total Creditado',val:milhasFormatNum(totalCreditado)+' pts',sub:'entradas registradas',color:'#34d399'},
+    {label:'Total Resgatado',val:milhasFormatNum(totalResgatado)+' pts',sub:'saídas registradas',color:'#f87171'},
+    {label:'Total Investido',val:'R$ '+totalGasto.toLocaleString('pt-BR',{minimumFractionDigits:2}),sub:'em compras e assinaturas',color:'#60a5fa'},
+  ];
+  kpiEl.innerHTML=kpis.map(k=>`
+    <div class="milhas-kpi" style="border-top:3px solid ${k.color}">
+      <div class="milhas-kpi-label">${k.label}</div>
+      <div class="milhas-kpi-val" style="color:${k.color}">${k.val}</div>
+      <div class="milhas-kpi-sub">${k.sub}</div>
+    </div>`).join('');
+
+  // Custo por milheiro por programa
+  const cpmEl=document.getElementById('milhas-cpm-cards');
+  const cpmProgs=[];
+  MILHAS_PROGS.forEach(p=>{
+    const regsP=regs.filter(r=>r.programa===p.id&&r.custo>0&&r.qtde>0);
+    if(!regsP.length)return;
+    const totalC=regsP.reduce((a,b)=>a+b.custo,0);
+    const totalQ=regsP.reduce((a,b)=>a+b.qtde,0);
+    cpmProgs.push({p,cpm:(totalC/totalQ)*1000});
+  });
+  if(cpmProgs.length){
+    cpmEl.innerHTML=cpmProgs.map(({p,cpm})=>`
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:4px;min-width:150px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="milhas-prog-dot" style="background:${p.color}"></span>
+          <span style="font-size:11px;font-weight:700;color:var(--muted)">${p.name}</span>
+        </div>
+        <div style="font-size:20px;font-weight:900;color:${p.color}">R$ ${cpm.toFixed(2).replace('.',',')}</div>
+        <div style="font-size:10px;color:var(--muted2)">por 1.000 pts</div>
+      </div>`).join('');
+  } else {
+    cpmEl.innerHTML='<div style="font-size:12px;color:var(--muted)">Nenhum lançamento com custo registrado ainda.</div>';
+  }
+
+  // Chart Distribuição (doughnut)
+  const progComSaldo=MILHAS_PROGS.filter(p=>saldos[p.id]>0);
+  if(milhasChartDist){milhasChartDist.destroy();milhasChartDist=null;}
+  const ctxDist=document.getElementById('chart-distribuicao');
+  if(ctxDist&&progComSaldo.length){
+    milhasChartDist=new Chart(ctxDist,{
+      type:'doughnut',
+      data:{
+        labels:progComSaldo.map(p=>p.name),
+        datasets:[{data:progComSaldo.map(p=>saldos[p.id]),backgroundColor:progComSaldo.map(p=>p.color),borderWidth:0,hoverOffset:6}]
+      },
+      options:{plugins:{legend:{position:'right',labels:{color:'#8a9bbf',font:{family:'Montserrat',size:11},boxWidth:12}}},cutout:'60%',maintainAspectRatio:false}
+    });
+  } else if(ctxDist){
+    ctxDist.getContext('2d').clearRect(0,0,ctxDist.width,ctxDist.height);
+  }
+
+  // Chart Evolução (line) — acumulado por mês
+  if(milhasChartEvol){milhasChartEvol.destroy();milhasChartEvol=null;}
+  const ctxEvol=document.getElementById('chart-evolucao');
+  if(ctxEvol&&regs.length){
+    // agrupa por mês
+    const mesMap={};
+    const sorted=[...regs].sort((a,b)=>a.data.localeCompare(b.data));
+    let acum=0;
+    sorted.forEach(r=>{
+      const mes=r.data.slice(0,7);
+      if(!mesMap[mes])mesMap[mes]=0;
+      mesMap[mes]+= r.tipo==='credito'?r.qtde:-r.qtde;
+    });
+    const meses=Object.keys(mesMap).sort();
+    const vals=[];
+    let running=0;
+    meses.forEach(m=>{running+=mesMap[m];vals.push(running);});
+    const labels=meses.map(m=>{const[y,mo]=m.split('-');return`${mo}/${y.slice(2)}`;});
+    milhasChartEvol=new Chart(ctxEvol,{
+      type:'line',
+      data:{labels,datasets:[{label:'Saldo',data:vals,borderColor:'#ff585e',backgroundColor:'rgba(255,88,94,.1)',tension:.3,fill:true,pointRadius:3,pointBackgroundColor:'#ff585e',borderWidth:2}]},
+      options:{plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8a9bbf',font:{family:'Montserrat',size:10}},grid:{color:'rgba(61,74,102,.3)'}},y:{ticks:{color:'#8a9bbf',font:{family:'Montserrat',size:10},callback:v=>milhasFormatNum(v)},grid:{color:'rgba(61,74,102,.3)'}}},maintainAspectRatio:false}
+    });
+  }
+}
+
+// ── Tabela de registros ────────────────────────────────────────────────────
+function renderMilhasTabela(){
+  const email=milhasGetEmail();
+  let regs=milhasRegistros.filter(r=>r.email===email||!r.email);
+  const filtProg=document.getElementById('milhas-filter-prog')?.value;
+  const filtTipo=document.getElementById('milhas-filter-tipo')?.value;
+  if(filtProg) regs=regs.filter(r=>r.programa===filtProg);
+  if(filtTipo) regs=regs.filter(r=>r.tipo===filtTipo);
+  regs=[...regs].sort((a,b)=>b.data.localeCompare(a.data));
+
+  const wrap=document.getElementById('milhas-tabela-wrap');
+  if(!regs.length){
+    wrap.innerHTML=`<div class="milhas-empty">Nenhum registro encontrado.<br><span style="font-size:11px">Clique em <strong>"＋ Novo Lançamento"</strong> para começar.</span></div>`;
+    return;
+  }
+
+  wrap.innerHTML=`
+    <div style="overflow-x:auto">
+    <table class="milhas-table">
+      <thead><tr>
+        <th>Data</th>
+        <th>Tipo</th>
+        <th>Programa</th>
+        <th>Subcategoria</th>
+        <th style="text-align:right">Qtde (pts)</th>
+        <th style="text-align:right">Custo (R$)</th>
+        <th style="text-align:right">R$/1k</th>
+        <th>Obs.</th>
+        <th></th>
+      </tr></thead>
+      <tbody>
+      ${regs.map(r=>{
+        const cor=milhasCorPrograma(r.programa);
+        const cpm=(r.custo>0&&r.qtde>0)?'R$ '+((r.custo/r.qtde)*1000).toFixed(2).replace('.',','):'—';
+        const bdg=r.tipo==='credito'?'<span class="milhas-badge-cred">CRÉDITO</span>':
+                  r.tipo==='debito'?'<span class="milhas-badge-deb">DÉBITO</span>':
+                  '<span class="milhas-badge-trans">TRANSF.</span>';
+        const sinal=r.tipo==='credito'?`<span style="color:#34d399">+${milhasFormatNum(r.qtde)}</span>`:
+                                        `<span style="color:#f87171">−${milhasFormatNum(r.qtde)}</span>`;
+        return `<tr>
+          <td style="white-space:nowrap">${milhasFormatData(r.data)}</td>
+          <td>${bdg}</td>
+          <td><span class="milhas-prog-dot" style="background:${cor}"></span>${milhasNomePrograma(r.programa)}</td>
+          <td style="color:var(--muted);font-size:11px">${milhasLabelSubcat(r.tipo,r.subcat)}</td>
+          <td style="text-align:right;font-weight:700">${sinal}</td>
+          <td style="text-align:right;color:var(--muted)">${r.custo>0?'R$ '+r.custo.toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}</td>
+          <td style="text-align:right;color:${cpm!=='—'?'#60a5fa':'var(--muted)'};font-size:11px;font-weight:700">${cpm}</td>
+          <td style="color:var(--muted);font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.obs||''}">${r.obs||'—'}</td>
+          <td><button class="milhas-del-btn" onclick="excluirLancamento('${r.id}')">Excluir</button></td>
+        </tr>`;
+      }).join('')}
+      </tbody>
+    </table>
+    </div>`;
 }
 
 document.getElementById('main-tabs').addEventListener('click',e=>{
