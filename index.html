@@ -1744,7 +1744,13 @@ async function milhasCarregar(){
     const r=await fetch(`${MILHAS_PROXY}/milhas/listar?email=${encodeURIComponent(email)}`);
     if(!r.ok)throw new Error('err');
     const d=await r.json();
-    milhasRegistros=Array.isArray(d)?d:[];
+    // API retorna { ok: true, registros: [...] }
+    if(d.ok && Array.isArray(d.registros)){
+      milhasRegistros=d.registros;
+      try{localStorage.setItem('cdv_milhas_'+email, JSON.stringify(milhasRegistros));}catch{}
+    } else {
+      throw new Error('formato inesperado');
+    }
   }catch{
     // fallback localStorage
     try{
@@ -1943,11 +1949,22 @@ async function salvarLancamento(){
 // ── Excluir ────────────────────────────────────────────────────────────────
 async function excluirLancamento(id){
   if(!confirm('Excluir este lançamento?'))return;
+  const email=milhasGetEmail();
+  // Remove localmente de imediato (UX instantânea)
   milhasRegistros=milhasRegistros.filter(r=>r.id!==id);
   milhasSalvarLocal();
-  milhasSalvarRemoto(milhasRegistros);
   renderMilhasTabela();
   renderMilhasDashboard();
+  // Sincroniza com o proxy via endpoint dedicado de exclusão
+  try{
+    await fetch(,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,id})
+    });
+  }catch(e){
+    // falha silenciosa — localStorage já está correto
+    console.warn('[milhas/excluir] erro remoto:', e.message);
+  }
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
