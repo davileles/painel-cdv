@@ -1957,7 +1957,7 @@ async function excluirLancamento(id){
   renderMilhasDashboard();
   // Sincroniza com o proxy via endpoint dedicado de exclusão
   try{
-    await fetch(,{
+    await fetch(`${MILHAS_PROXY}/milhas/excluir`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({email,id})
     });
