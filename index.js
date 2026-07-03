@@ -605,33 +605,119 @@ app.post('/ia/extrair-reserva', (req, res) => {
   const prompt =
     'Você é um assistente de extração de dados de documentos de viagem. ' +
     'Analise este documento (' + (isPdf ? 'PDF' : 'imagem') + ') de ' + (tipoCampos || 'reserva de viagem') + '. ' +
-    'REGRAS CRÍTICAS PARA VOOS: ' +
-    '1) origem = cidade/IATA de PARTIDA DO PRIMEIRO VOO. ' +
-    '2) destino = cidade/IATA de CHEGADA DO ÚLTIMO TRECHO DA IDA (destino final do passageiro). ' +
-    '3) Se houver 2 ou mais trechos na IDA: o DESTINO do primeiro trecho é a CONEXÃO, e o DESTINO do último trecho é o destino final. Exemplo: trecho 1 AMS→GRU + trecho 2 GRU→FLN = origem:AMS, destino:FLN, conexao:GRU. ' +
-    '3b) IDENTIFICAÇÃO AUTOMÁTICA DE CONEXÃO: quando o DESTINO de um trecho é IGUAL à ORIGEM do trecho seguinte, esse local É A CONEXÃO. ' +
-    '3c) CONEXÃO COM TROCA DE AEROPORTO: quando o destino do primeiro trecho e a origem do segundo trecho são aeroportos DIFERENTES da mesma cidade (ex: GRU e CGH são ambos São Paulo; CDG e ORY são ambos Paris), isso também é uma CONEXÃO — use o código IATA do destino do primeiro trecho como conexao. Exemplo: LA 8079 AMS→GRU + LA 3080 CGH→FLN = conexao:GRU (São Paulo é a conexão, mesmo com troca de aeroporto). ' +
-    '4) Voo de VOLTA só existe se o passageiro retorna fisicamente à cidade de ORIGEM do primeiro trecho. ' +
-    '5) horaChegada = horário de chegada no destino FINAL da ida (destino do ÚLTIMO trecho, não da escala). ' +
-    '6) ciaIda = companhia aérea (ex: LATAM). ' +
-    '7) nvooIda = TODOS os números de voo da ida separados por vírgula (ex: "LA 8079, LA 3080"). ' +
-    '8) conexao = código IATA do DESTINO DO PRIMEIRO TRECHO quando há mais de um trecho de ida. Ex: se trecho 1 vai AMS→GRU e trecho 2 vai GRU→FLN, então conexao=GRU. OBRIGATÓRIO quando nvooIda contém mais de um voo. ' +
-    '9) pax = número total de passageiros listados no documento. ' +
-    '10) milhas = milhas POR PASSAGEIRO. Se o documento mostrar o total de milhas, divida pelo número de passageiros (pax). Ex: 870.804 milhas para 2 passageiros → milhas = 435402. ' +
-    '11) classe = classe de cabine em português: se o documento indicar "Business" ou "Executiva" → "Executiva"; "Economy" ou "Econômica" → "Econômica"; "Premium Economy" → "Econômica Premium"; "First" ou "Primeira" → "Primeira Classe". ' +
-    'Retorne SOMENTE um JSON válido (sem markdown) com os campos: ' +
-    'tipo (voo/hotel/carro/passeio), origem (IATA ou cidade de partida), destino (IATA ou cidade de chegada FINAL da ida), ' +
-    'dataIda (YYYY-MM-DD), horaPartida (HH:MM — partida da origem), horaChegada (HH:MM — chegada no destino FINAL da ida), ' +
-    'conexao (IATA do aeroporto de escala na IDA — OBRIGATÓRIO se houver mais de um trecho), ' +
-    'ciaIda (companhia aérea), nvooIda (TODOS os números de voo da ida separados por vírgula), ' +
-    'dataVolta (YYYY-MM-DD — SÓ se houver voo de retorno à origem), ' +
-    'horaPartidaVolta (HH:MM), horaChegadaVolta (HH:MM), ' +
-    'conexaoVolta (IATA ou cidade de escala na volta — só se houver), ciaVolta, nvooVolta, ' +
-    'classe (Econômica / Econômica Premium / Executiva / Primeira Classe), pnr, pax, programa, milhas (POR passageiro), valor, ' +
-    'hotelNome, hotelDestino, hotelQuarto, checkin (YYYY-MM-DD), checkout (YYYY-MM-DD), noites, hospedes, hotelConf, regime, hotelValor, ' +
-    'locadora, carroCat, retLocal, devLocal, retData (YYYY-MM-DD), devData (YYYY-MM-DD), carroConf, carroValor, ' +
-    'passeioNome, passeioDest, passeioOp, passeioData (YYYY-MM-DD), passeioHora (HH:MM), passeioPax, passeioConf, passeioValor, obs. ' +
-    'Preencha apenas os campos presentes no documento. Campos ausentes deixe vazios.';
+    'Retorne SOMENTE um JSON válido (sem markdown) com esta estrutura exata: ' +
+    '{ ' +
+    '  "tipo": "voo|hotel|carro|passeio", ' +
+    '  "trechos": [ ' +
+    '    {"nvoo": "LA 8079", "origem": "AMS", "destino": "GRU", "data": "2026-07-28", "horaPartida": "13:10", "horaChegada": "20:10", "cabine": "Business"}, ' +
+    '    {"nvoo": "LA 3080", "origem": "CGH", "destino": "FLN", "data": "2026-07-29", "horaPartida": "08:40", "horaChegada": "09:50", "cabine": "PremiumEconomy"} ' +
+    '  ], ' +
+    '  "pnr": "JMFBZV", ' +
+    '  "pax": 2, ' +
+    '  "ciaIda": "LATAM", ' +
+    '  "programa": "LATAM Pass", ' +
+    '  "milhasTotal": 870804, ' +
+    '  "valor": "1081.24", ' +
+    '  "hotelNome": "", "hotelDestino": "", "hotelQuarto": "", "checkin": "", "checkout": "", "noites": "", "hospedes": "", "hotelConf": "", "regime": "", "hotelValor": "", ' +
+    '  "locadora": "", "carroCat": "", "retLocal": "", "devLocal": "", "retData": "", "devData": "", "carroConf": "", "carroValor": "", ' +
+    '  "passeioNome": "", "passeioDest": "", "passeioOp": "", "passeioData": "", "passeioHora": "", "passeioPax": "", "passeioConf": "", "passeioValor": "", ' +
+    '  "obs": "" ' +
+    '} ' +
+    'INSTRUÇÕES: ' +
+    '1) Em trechos[], liste TODOS os segmentos de voo do documento em ordem cronológica, cada um com seu nvoo, origem, destino (códigos IATA ou nome da cidade/aeroporto), data (YYYY-MM-DD), horaPartida, horaChegada e cabine. ' +
+    '2) pax = número total de passageiros listados. ' +
+    '3) milhasTotal = total bruto de milhas no documento (sem dividir). ' +
+    '4) cabine: use exatamente o que está no documento (Business, PremiumEconomy, Economy, etc). ' +
+    '5) Preencha apenas os campos presentes. Deixe vazio o que não encontrar.';
+
+  // Processar trechos no servidor para derivar conexao, destino final, etc.
+  function processarTrechos(d) {
+    if (!d.trechos || d.trechos.length === 0) return d;
+
+    // Aeroportos da mesma cidade (para detectar conexão com troca de aeroporto)
+    const mesmaCidade = [
+      ['GRU','CGH','VCP'],   // São Paulo
+      ['CDG','ORY','BVA'],   // Paris
+      ['LHR','LGW','STN','LTN','LCY'], // Londres
+      ['JFK','LGA','EWR'],   // Nova York
+      ['FCO','CIA'],          // Roma
+      ['MXP','LIN','BGY'],   // Milão
+      ['TXL','SXF'],          // Berlim
+      ['OSL','TRF'],          // Oslo
+      ['STO','ARN','BMA','NYO'], // Estocolmo
+    ];
+
+    function mesmaCidadeCheck(a, b) {
+      a = (a||'').toUpperCase(); b = (b||'').toUpperCase();
+      if (a === b) return true;
+      return mesmaCidade.some(g => g.includes(a) && g.includes(b));
+    }
+
+    function cabineToClasse(cabine) {
+      if (!cabine) return '';
+      const c = cabine.toLowerCase();
+      if (c.includes('business') || c.includes('executiv')) return 'Executiva';
+      if (c.includes('premium') && c.includes('econ')) return 'Econômica Premium';
+      if (c.includes('first') || c.includes('primeira')) return 'Primeira Classe';
+      return 'Econômica';
+    }
+
+    // Separar trechos de ida e volta
+    // Ida: sequência do início; volta: quando destino de um trecho = origem do primeiro
+    const origem0 = (d.trechos[0].origem||'').toUpperCase();
+    let idxVolta = -1;
+    for (let i = 1; i < d.trechos.length; i++) {
+      if (mesmaCidadeCheck(d.trechos[i].origem, d.trechos[d.trechos.length-1].destino) &&
+          mesmaCidadeCheck(d.trechos[i].destino, origem0)) {
+        idxVolta = i; break;
+      }
+      // Se destino do último trecho da ida = origem do primeiro → é volta
+      if (mesmaCidadeCheck(d.trechos[i].destino, origem0) && i === d.trechos.length - 1) {
+        idxVolta = i; break;
+      }
+    }
+
+    const trechosIda = idxVolta === -1 ? d.trechos : d.trechos.slice(0, idxVolta);
+    const trechosVolta = idxVolta === -1 ? [] : d.trechos.slice(idxVolta);
+
+    // Montar campos de ida
+    const primeiro = trechosIda[0];
+    const ultimo = trechosIda[trechosIda.length - 1];
+
+    d.origem = primeiro.origem;
+    d.destino = ultimo.destino;
+    d.dataIda = primeiro.data;
+    d.horaPartida = primeiro.horaPartida;
+    d.horaChegada = ultimo.horaChegada;
+    d.nvooIda = trechosIda.map(t => t.nvoo).filter(Boolean).join(', ');
+    d.classe = cabineToClasse(primeiro.cabine);
+
+    // Conexão na ida: destino do primeiro trecho (se há mais de um trecho)
+    if (trechosIda.length > 1) {
+      d.conexao = trechosIda[0].destino;
+    }
+
+    // Montar campos de volta
+    if (trechosVolta.length > 0) {
+      const primeiroV = trechosVolta[0];
+      const ultimoV = trechosVolta[trechosVolta.length - 1];
+      d.dataVolta = primeiroV.data;
+      d.horaPartidaVolta = primeiroV.horaPartida;
+      d.horaChegadaVolta = ultimoV.horaChegada;
+      d.nvooVolta = trechosVolta.map(t => t.nvoo).filter(Boolean).join(', ');
+      d.ciaVolta = d.ciaVolta || d.ciaIda;
+      if (trechosVolta.length > 1) {
+        d.conexaoVolta = trechosVolta[0].destino;
+      }
+    }
+
+    // Milhas por passageiro
+    if (d.milhasTotal && d.pax) {
+      d.milhas = String(Math.round(d.milhasTotal / d.pax));
+    }
+
+    return d;
+  }
 
   const contentBlock = isPdf
     ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } }
@@ -665,7 +751,14 @@ app.post('/ia/extrair-reserva', (req, res) => {
         const parsed = JSON.parse(raw);
         if (parsed.error) return res.json({ ok: false, erro: parsed.error.message });
         const texto = (parsed.content && parsed.content[0] && parsed.content[0].text) || '';
-        return res.json({ ok: true, texto: texto.replace(/```json|```/g, '').trim() });
+        const textoClean = texto.replace(/```json|```/g, '').trim();
+        try {
+          const dadosRaw = JSON.parse(textoClean);
+          const dadosProcessados = processarTrechos(dadosRaw);
+          return res.json({ ok: true, texto: JSON.stringify(dadosProcessados) });
+        } catch(e) {
+          return res.json({ ok: true, texto: textoClean });
+        }
       } catch (e) {
         return res.json({ ok: false, erro: 'Resposta inválida: ' + raw.slice(0, 300) });
       }
