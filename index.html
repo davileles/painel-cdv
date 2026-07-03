@@ -417,14 +417,18 @@
     <button class="milhas-view-btn active" data-view="registros" onclick="milhasSetView('registros')" style="background:rgba(255,88,94,.12);border:1px solid var(--cdv-coral);color:var(--cdv-coral);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">📋 Registros</button>
     <button class="milhas-view-btn" data-view="novo" onclick="milhasSetView('novo')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">＋ Novo Lançamento</button>
     <button class="milhas-view-btn" data-view="assinaturas" onclick="milhasSetView('assinaturas')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">🔁 Assinaturas</button>
+    <button class="milhas-view-btn" data-view="cartoes" onclick="milhasSetView('cartoes')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">💳 Cartões</button>
     <div id="milhas-filtros-wrap" style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
       <select id="milhas-filter-prog" onchange="renderMilhasTabela()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
         <option value="">Todos os programas</option>
       </select>
-      <select id="milhas-filter-tipo" onchange="renderMilhasTabela()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
+      <select id="milhas-filter-tipo" onchange="milhasFilterTipoChange()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
         <option value="">Todos os tipos</option>
         <option value="credito">Créditos</option>
         <option value="debito">Débitos</option>
+      </select>
+      <select id="milhas-filter-subcat" onchange="renderMilhasTabela()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
+        <option value="">Todas as subcategorias</option>
       </select>
     </div>
   </div>
@@ -496,7 +500,58 @@
     </div>
   </div>
 
-  <!-- VIEW: NOVO LANÇAMENTO -->
+  
+  <!-- VIEW: CARTÕES -->
+  <div id="milhas-view-cartoes" style="padding:18px 22px;display:none">
+    <div style="max-width:800px;margin:0 auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div>
+          <div style="font-size:16px;font-weight:800;color:var(--text)">💳 Meus Cartões</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">Cadastre seus cartões para vincular nos lançamentos</div>
+        </div>
+        <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">← Voltar</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px">＋ Novo Cartão</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div>
+            <label class="milhas-label">Nome do Cartão</label>
+            <input type="text" id="cartao-nome" class="milhas-input" placeholder="Ex: Amex Platinum TPC"/>
+          </div>
+          <div>
+            <label class="milhas-label">Bandeira</label>
+            <select id="cartao-bandeira" class="milhas-input">
+              <option value="">Selecione…</option>
+              <option>Visa</option>
+              <option>Mastercard</option>
+              <option>American Express</option>
+              <option>Elo</option>
+              <option>Hipercard</option>
+              <option>Diners</option>
+              <option>Outro</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <div>
+            <label class="milhas-label">Programa Principal</label>
+            <select id="cartao-programa" class="milhas-input"></select>
+          </div>
+          <div>
+            <label class="milhas-label">Dia de Fechamento</label>
+            <input type="number" id="cartao-dia" class="milhas-input" placeholder="Ex: 15" min="1" max="31"/>
+          </div>
+        </div>
+        <div id="cartao-feedback" style="font-size:12px;font-weight:700;min-height:16px;margin-bottom:10px;text-align:center"></div>
+        <button onclick="salvarCartao()" style="width:100%;padding:10px;background:var(--cdv-coral);border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Salvar Cartão</button>
+      </div>
+      <div id="cartao-lista-wrap">
+        <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Nenhum cartão cadastrado ainda.</div>
+      </div>
+    </div>
+  </div>
+
+<!-- VIEW: NOVO LANÇAMENTO -->
   <div id="milhas-view-novo" style="padding:18px 22px;display:none">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:600px;margin:0 auto">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
@@ -556,17 +611,17 @@
         </div>
 
         <!-- MODO: Somente Pontos -->
-        <div id="ml-trans-modo-pontos" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+        <div id="ml-trans-modo-pontos" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:end">
           <div>
-            <label class="milhas-label">Pts do Saldo (Origem)</label>
+            <label class="milhas-label" style="min-height:32px;display:flex;align-items:flex-end;padding-bottom:4px">Pts do Saldo (Origem)</label>
             <input type="number" id="ml-trans-pts-origem" class="milhas-input" placeholder="Ex: 100000" min="0" oninput="milhasCalcBonusTrans()"/>
           </div>
           <div>
-            <label class="milhas-label">Bônus % (opcional)</label>
+            <label class="milhas-label" style="min-height:32px;display:flex;align-items:flex-end;padding-bottom:4px">Bônus % (opcional)</label>
             <input type="number" id="ml-trans-bonus" class="milhas-input" placeholder="Ex: 80" min="0" max="1000" oninput="milhasCalcBonusTrans()"/>
           </div>
           <div>
-            <label class="milhas-label">Pts Creditados (Destino)</label>
+            <label class="milhas-label" style="min-height:32px;display:flex;align-items:flex-end;padding-bottom:4px">Pts Creditados (Destino)</label>
             <input type="number" id="ml-trans-pts-destino" class="milhas-input" placeholder="Calculado auto" min="0"/>
           </div>
         </div>
@@ -611,7 +666,15 @@
       <!-- SUBCATEGORIA -->
       <div style="margin-bottom:12px">
         <label class="milhas-label">Subcategoria</label>
-        <select id="ml-subcat" class="milhas-input" onchange="milhasUpdateCustoField()"></select>
+        <select id="ml-subcat" class="milhas-input" onchange="milhasUpdateCustoField();milhasToggleCartaoField()"></select>
+      </div>
+
+      <!-- CARTÃO (aparece só quando subcat = cartao) -->
+      <div id="ml-cartao-wrap" style="display:none;margin-bottom:12px">
+        <label class="milhas-label">Cartão de Crédito</label>
+        <select id="ml-cartao-sel" class="milhas-input" onchange="milhasPreencheCartaoObs()">
+          <option value="">Selecione o cartão…</option>
+        </select>
       </div>
 
       <!-- QTDE MILHAS -->
@@ -1948,6 +2011,13 @@ async function initMilhas(){
   }
   await assCarregar();
   await assProcessarPendentes();
+  cartaoCarregar();
+  // Popular select de programa no form de cartão
+  const selCartaoProg = document.getElementById('cartao-programa');
+  if(selCartaoProg){
+    selCartaoProg.innerHTML='<option value="">Selecione…</option>';
+    MILHAS_PROGS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.name; selCartaoProg.appendChild(o); });
+  }
   renderMilhasDashboard();
   renderMilhasTabela();
 }
@@ -1963,10 +2033,12 @@ function milhasSetView(v){
   document.getElementById('milhas-view-registros').style.display=v==='registros'?'block':'none';
   document.getElementById('milhas-view-novo').style.display=v==='novo'?'block':'none';
   document.getElementById('milhas-view-assinaturas').style.display=v==='assinaturas'?'block':'none';
+  document.getElementById('milhas-view-cartoes').style.display=v==='cartoes'?'block':'none';
   // Filtros visíveis apenas na view de registros
   const filtros=document.getElementById('milhas-filtros-wrap');
   if(filtros) filtros.style.display=v==='registros'?'flex':'none';
   if(v==='assinaturas') renderAssLista();
+  if(v==='cartoes') renderCartaoLista();
 }
 
 // ── Tipo crédito/débito/transferência ──────────────────────────────────────
@@ -2692,8 +2764,10 @@ function renderMilhasTabela(){
   let regs=milhasRegistros.filter(r=>r.email===email||!r.email);
   const filtProg=document.getElementById('milhas-filter-prog')?.value;
   const filtTipo=document.getElementById('milhas-filter-tipo')?.value;
+  const filtSubcat=document.getElementById('milhas-filter-subcat')?.value;
   if(filtProg) regs=regs.filter(r=>r.programa===filtProg);
   if(filtTipo) regs=regs.filter(r=>r.tipo===filtTipo);
+  if(filtSubcat) regs=regs.filter(r=>r.subcat===filtSubcat);
   regs=[...regs].sort((a,b)=>b.data.localeCompare(a.data));
 
   const wrap=document.getElementById('milhas-tabela-wrap');
@@ -2857,6 +2931,131 @@ function fazerLogout() {
   const sessao = lerSessao();
   if (sessao) { mostrarPainel(sessao); }
 })();
+
+
+// ══════════════════════════════════════════════════════
+//  CARTÕES
+// ══════════════════════════════════════════════════════
+let milhasCartoes = [];
+
+function cartaoCarregar(){
+  const email = milhasGetEmail(); if(!email){ milhasCartoes=[]; return; }
+  try{ milhasCartoes = JSON.parse(localStorage.getItem('cdv_cartoes_'+email)||'[]'); }catch{ milhasCartoes=[]; }
+}
+
+function cartaoSalvarLocal(){
+  const email=milhasGetEmail(); if(!email)return;
+  try{ localStorage.setItem('cdv_cartoes_'+email, JSON.stringify(milhasCartoes)); }catch{}
+}
+
+function renderCartaoLista(){
+  const wrap = document.getElementById('cartao-lista-wrap');
+  if(!wrap) return;
+  if(!milhasCartoes.length){
+    wrap.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">Nenhum cartão cadastrado ainda.</div>';
+    return;
+  }
+  wrap.innerHTML = milhasCartoes.map(c=>{
+    const cor = milhasCorPrograma(c.programa);
+    return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:36px;height:36px;border-radius:8px;background:${cor}22;display:flex;align-items:center;justify-content:center;font-size:18px">💳</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text)">${c.nome}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${c.bandeira||''} ${c.bandeira&&c.programa?'·':''} <span style="color:${cor}">${milhasNomePrograma(c.programa)}</span>${c.dia ? ' · Fecha dia '+c.dia : ''}</div>
+        </div>
+      </div>
+      <button onclick="excluirCartao('${c.id}')" style="background:transparent;border:1px solid rgba(248,113,113,.3);color:#f87171;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Montserrat',sans-serif">Excluir</button>
+    </div>`;
+  }).join('');
+  milhasAtualizaSelectCartao();
+}
+
+function salvarCartao(){
+  const fb = document.getElementById('cartao-feedback');
+  fb.style.color='#f87171';
+  const nome = document.getElementById('cartao-nome').value.trim();
+  const bandeira = document.getElementById('cartao-bandeira').value;
+  const programa = document.getElementById('cartao-programa').value;
+  const dia = parseInt(document.getElementById('cartao-dia').value)||0;
+  if(!nome){ fb.textContent='Informe o nome do cartão.'; return; }
+  if(!programa){ fb.textContent='Selecione o programa principal.'; return; }
+  milhasCartoes.push({ id: Date.now()+'_c', nome, bandeira, programa, dia });
+  cartaoSalvarLocal();
+  document.getElementById('cartao-nome').value='';
+  document.getElementById('cartao-bandeira').value='';
+  document.getElementById('cartao-dia').value='';
+  fb.style.color='#34d399';
+  fb.textContent='✓ Cartão salvo!';
+  setTimeout(()=>{ fb.textContent=''; }, 2500);
+  renderCartaoLista();
+}
+
+function excluirCartao(id){
+  if(!confirm('Excluir este cartão?')) return;
+  milhasCartoes = milhasCartoes.filter(c=>c.id!==id);
+  cartaoSalvarLocal();
+  renderCartaoLista();
+}
+
+function milhasAtualizaSelectCartao(){
+  const sel = document.getElementById('ml-cartao-sel');
+  if(!sel) return;
+  sel.innerHTML='<option value="">Selecione o cartão…</option>';
+  milhasCartoes.forEach(c=>{
+    const o = document.createElement('option');
+    o.value = c.nome;
+    o.textContent = c.nome + (c.bandeira?' ('+c.bandeira+')':'');
+    sel.appendChild(o);
+  });
+}
+
+function milhasToggleCartaoField(){
+  const subcat = document.getElementById('ml-subcat')?.value;
+  const wrap = document.getElementById('ml-cartao-wrap');
+  if(!wrap) return;
+  const show = (milhasTipoAtual === 'credito' && subcat === 'cartao');
+  wrap.style.display = show ? 'block' : 'none';
+  if(show) milhasAtualizaSelectCartao();
+}
+
+function milhasPreencheCartaoObs(){
+  const cartao = document.getElementById('ml-cartao-sel')?.value;
+  if(!cartao) return;
+  const obsEl = document.getElementById('ml-obs');
+  if(!obsEl) return;
+  if(!obsEl.value) obsEl.value = cartao;
+}
+
+function milhasFilterTipoChange(){
+  const tipo = document.getElementById('milhas-filter-tipo')?.value;
+  const subcatSel = document.getElementById('milhas-filter-subcat');
+  if(subcatSel){
+    subcatSel.innerHTML='<option value="">Todas as subcategorias</option>';
+    const email = milhasGetEmail();
+    let regs = milhasRegistros.filter(r=>r.email===email||!r.email);
+    if(tipo) regs = regs.filter(r=>r.tipo===tipo);
+    const subcats = [...new Set(regs.map(r=>r.subcat).filter(Boolean))];
+    const allSubcats = [
+      ...(MILHAS_SUBCATS.credito||[]),
+      ...(MILHAS_SUBCATS.debito||[]),
+      {id:'transferencia',label:'Transferência entre programas'},
+      {id:'transferido',label:'Transf. entre Programas — Enviada'},
+      {id:'trans_bon',label:'Recebido c/ bônus (destino)'},
+      {id:'trans_cpf_rec',label:'Transferência entre CPFs — Recebida'},
+      {id:'trans_cpf_env',label:'Transferência entre CPFs — Enviada'},
+      {id:'saldo_ini',label:'Saldo Inicial'},
+    ];
+    subcats.forEach(id=>{
+      const entry = allSubcats.find(s=>s.id===id);
+      const o = document.createElement('option');
+      o.value = id;
+      o.textContent = entry ? entry.label : id;
+      subcatSel.appendChild(o);
+    });
+  }
+  renderMilhasTabela();
+}
 
 </script>
 </div><!-- /app-content -->
