@@ -461,11 +461,19 @@
           <div style="font-size:16px;font-weight:800;color:var(--text)">🔁 Assinaturas Recorrentes</div>
           <div style="font-size:11px;color:var(--muted);margin-top:3px">Pontos lançados automaticamente todo mês na data de vencimento</div>
         </div>
-        <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">← Voltar</button>
+        <div style="display:flex;gap:8px">
+          <button onclick="assToggleForm()" id="ass-btn-novo" style="background:var(--cdv-coral);border:none;color:#fff;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">＋ Nova</button>
+          <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">← Voltar</button>
+        </div>
       </div>
 
-      <!-- Formulário nova assinatura -->
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px">
+      <!-- Lista de assinaturas ativas — aparece PRIMEIRO -->
+      <div id="ass-lista-wrap" style="margin-bottom:16px">
+        <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Carregando assinaturas…</div>
+      </div>
+
+      <!-- Formulário nova assinatura — colapsado por padrão -->
+      <div id="ass-form-wrap" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px">
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px">＋ Nova Assinatura</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
           <div>
@@ -502,11 +510,6 @@
         </div>
         <div id="ass-feedback" style="font-size:12px;font-weight:700;min-height:16px;margin-bottom:10px;text-align:center"></div>
         <button onclick="salvarAssinatura()" style="width:100%;padding:10px;background:var(--cdv-coral);border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Salvar Assinatura</button>
-      </div>
-
-      <!-- Lista de assinaturas ativas -->
-      <div id="ass-lista-wrap">
-        <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Carregando assinaturas…</div>
       </div>
     </div>
   </div>
@@ -580,11 +583,21 @@
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <div>
           <div style="font-size:16px;font-weight:800;color:var(--text)">💳 Meus Cartões</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:3px">Cadastre seus cartões para vincular nos lançamentos</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">Cartões vinculados aos lançamentos de crédito</div>
         </div>
-        <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">← Voltar</button>
+        <div style="display:flex;gap:8px">
+          <button onclick="cartaoToggleForm()" id="cartao-btn-novo" style="background:var(--cdv-coral);border:none;color:#fff;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">＋ Novo</button>
+          <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">← Voltar</button>
+        </div>
       </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px">
+
+      <!-- Lista de cartões — aparece PRIMEIRO -->
+      <div id="cartao-lista-wrap" style="margin-bottom:16px">
+        <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Nenhum cartão cadastrado ainda.</div>
+      </div>
+
+      <!-- Formulário novo cartão — colapsado por padrão -->
+      <div id="cartao-form-wrap" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px">
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px">＋ Novo Cartão</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
           <div>
@@ -617,9 +630,6 @@
         </div>
         <div id="cartao-feedback" style="font-size:12px;font-weight:700;min-height:16px;margin-bottom:10px;text-align:center"></div>
         <button onclick="salvarCartao()" style="width:100%;padding:10px;background:var(--cdv-coral);border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Salvar Cartão</button>
-      </div>
-      <div id="cartao-lista-wrap">
-        <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Nenhum cartão cadastrado ainda.</div>
       </div>
     </div>
   </div>
@@ -2730,6 +2740,11 @@ async function salvarAssinatura(){
   assSalvarLocal();
   // Dispara verificação imediata para lançar meses passados
   await assProcessarPendentes();
+  // Fechar form e resetar botão após salvar
+  const assFormWrap = document.getElementById('ass-form-wrap');
+  const assBtnNovo  = document.getElementById('ass-btn-novo');
+  if(assFormWrap) assFormWrap.style.display='none';
+  if(assBtnNovo)  assBtnNovo.textContent='＋ Nova';
   fb.style.color='#34d399';
   fb.textContent='✓ Assinatura salva!';
   // Limpa form
@@ -3442,6 +3457,24 @@ function salvarEdicao(){
   setTimeout(()=>{ fecharEditModal(); renderMilhasDashboard(); renderMilhasTabela(); }, 900);
 }
 
+function assToggleForm(){
+  const wrap = document.getElementById('ass-form-wrap');
+  const btn  = document.getElementById('ass-btn-novo');
+  if(!wrap) return;
+  const open = wrap.style.display === 'none';
+  wrap.style.display = open ? 'block' : 'none';
+  if(btn) btn.textContent = open ? '✕ Fechar' : '＋ Nova';
+}
+
+function cartaoToggleForm(){
+  const wrap = document.getElementById('cartao-form-wrap');
+  const btn  = document.getElementById('cartao-btn-novo');
+  if(!wrap) return;
+  const open = wrap.style.display === 'none';
+  wrap.style.display = open ? 'block' : 'none';
+  if(btn) btn.textContent = open ? '✕ Fechar' : '＋ Novo';
+}
+
 // ══════════════════════════════════════════════════════
 //  CARTÕES
 // ══════════════════════════════════════════════════════
@@ -3494,6 +3527,11 @@ function salvarCartao(){
   document.getElementById('cartao-nome').value='';
   document.getElementById('cartao-bandeira').value='';
   document.getElementById('cartao-dia').value='';
+  // Fechar form e resetar botão após salvar
+  const cartFormWrap = document.getElementById('cartao-form-wrap');
+  const cartBtnNovo  = document.getElementById('cartao-btn-novo');
+  if(cartFormWrap) cartFormWrap.style.display='none';
+  if(cartBtnNovo)  cartBtnNovo.textContent='＋ Novo';
   fb.style.color='#34d399';
   fb.textContent='✓ Cartão salvo!';
   setTimeout(()=>{ fb.textContent=''; }, 2500);
