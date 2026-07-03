@@ -217,6 +217,7 @@
   .pass-stat-sub{font-size:8px;color:var(--muted2)}
   .pass-stat-atual-min{font-size:8px;font-weight:700;color:#34d399}
   .pass-stat-atual-caro{font-size:8px;font-weight:700;color:#f87171}
+  .pass-badge-minimo{position:absolute;top:10px;right:10px;background:linear-gradient(135deg,rgba(251,191,36,.18),rgba(249,115,22,.18));border:1px solid rgba(251,191,36,.4);color:#fbbf24;font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;letter-spacing:.3px;display:flex;align-items:center;gap:4px;z-index:2}
   .pass-fonte{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:1px 6px;border-radius:3px;width:fit-content}
   .pass-fonte-emissao{background:rgba(18,110,255,.15);color:#126eff}
   .pass-fonte-alerta{background:rgba(249,115,22,.15);color:#f97316}
@@ -1724,13 +1725,14 @@ function renderPassagens() {
     const hist180 = grupoCompleto.filter(h => new Date(h.enviadoEm).getTime() >= corteMs180);
 
     let histHtml = '';
+    let isAtualMin = false;
     // ── média e mínimo 180 dias ────────────────────────────────────────────────
     if (hist180.length >= 2) {
       const pontosArr = hist180.map(h => h.pontos).filter(v => v > 0);
       const minPts = Math.min(...pontosArr);
       const mediaPts = Math.round(pontosArr.reduce((a,b)=>a+b,0) / pontosArr.length);
       const minItem = hist180.find(h => h.pontos === minPts);
-      const isAtualMin = p.pontos === minPts && hist180.filter(h=>h.pontos===minPts).length === 1;
+      isAtualMin = p.pontos === minPts && hist180.filter(h=>h.pontos===minPts).length === 1;
       const diffMedia = p.pontos - mediaPts;
       const pctMedia = mediaPts > 0 ? Math.round(Math.abs(diffMedia)/mediaPts*100) : 0;
       const mediaTag = diffMedia < 0
@@ -1759,6 +1761,7 @@ function renderPassagens() {
     const fonteTxt   = p.fonte === 'alerta' ? 'Alerta' : 'Emissão';
 
     return `<div class="pass-card" onclick="abrirPassagemModal('${p.id}')" style="cursor:pointer">
+      ${isAtualMin ? '<div class="pass-badge-minimo">🔥 Mínimo histórico</div>' : ''}
       <span class="pass-fonte ${fonteClass}">${fonteTxt}</span>
       <div class="pass-rota">${p.origem} <span>→</span> ${p.destino}</div>
       <div style="display:flex;align-items:baseline;gap:4px">
@@ -3234,10 +3237,8 @@ document.getElementById('main-tabs').addEventListener('click',e=>{
 (function(){
   try{
     const saved=localStorage.getItem('cdv_active_tab');
-    // Milhas requer login — não restaura automaticamente para evitar tela em branco
-    if(saved && saved !== 'milhas') switchTab(saved);
-    else switchTab('comparador');
-  }catch(e){ switchTab('comparador'); }
+    if(saved && saved!=='comparador') switchTab(saved);
+  }catch(e){}
 })();
 
 
@@ -3289,9 +3290,9 @@ function mostrarPainel(sessao) {
   // Mostra nome no header se existir
   const nomeEl = document.getElementById('header-nome-membro');
   if (nomeEl && sessao?.nome) nomeEl.textContent = '👤 ' + sessao.nome.split(' ')[0];
-  // Aba Gestão de Milhas disponível para todos os membros
+  // Exibe aba de dev apenas para emails autorizados
   const tabMilhas = document.querySelector('.main-tab[data-tab="milhas"]');
-  if (tabMilhas) tabMilhas.style.display = '';
+  if (tabMilhas) tabMilhas.style.display = DEV_EMAILS.includes((sessao?.email||'').toLowerCase()) ? '' : 'none';
 }
 async function fazerLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
