@@ -1762,7 +1762,6 @@ function renderPassagens() {
 
     return `<div class="pass-card" onclick="abrirPassagemModal('${p.id}')" style="cursor:pointer">
       ${isAtualMin ? '<div class="pass-badge-minimo">🔥 Mínimo histórico</div>' : ''}
-      <span class="pass-fonte ${fonteClass}">${fonteTxt}</span>
       <div class="pass-rota">${p.origem} <span>→</span> ${p.destino}</div>
       <div style="display:flex;align-items:baseline;gap:4px">
         <span class="pass-pts">${(p.pontos||0).toLocaleString('pt-BR')}</span>
@@ -3237,8 +3236,9 @@ document.getElementById('main-tabs').addEventListener('click',e=>{
 (function(){
   try{
     const saved=localStorage.getItem('cdv_active_tab');
-    if(saved && saved!=='comparador') switchTab(saved);
-  }catch(e){}
+    if(saved && saved !== 'milhas') switchTab(saved);
+    else switchTab('comparador');
+  }catch(e){ switchTab('comparador'); }
 })();
 
 
@@ -3290,9 +3290,9 @@ function mostrarPainel(sessao) {
   // Mostra nome no header se existir
   const nomeEl = document.getElementById('header-nome-membro');
   if (nomeEl && sessao?.nome) nomeEl.textContent = '👤 ' + sessao.nome.split(' ')[0];
-  // Exibe aba de dev apenas para emails autorizados
+  // Aba Gestão de Milhas disponível para todos os membros
   const tabMilhas = document.querySelector('.main-tab[data-tab="milhas"]');
-  if (tabMilhas) tabMilhas.style.display = DEV_EMAILS.includes((sessao?.email||'').toLowerCase()) ? '' : 'none';
+  if (tabMilhas) tabMilhas.style.display = '';
 }
 async function fazerLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
