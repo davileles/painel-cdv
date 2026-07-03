@@ -8,7 +8,7 @@ const GITHUB_REPO = process.env.GITHUB_REPO || 'davileles/cdv-compras-bonificada
 
 const ALLOWED = ['comparemania.com.br', 'passageirodeprimeira.com'];
 
-app.use(express.json());
+app.use(express.json({ limit: '20mb' }));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -592,6 +592,7 @@ app.post('/milhas/excluir', async (req, res) => {
 // ── IA: Extrair dados de reserva via Anthropic ──────────────────
 app.post('/ia/extrair-reserva', async (req, res) => {
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+  console.log('[ia/extrair-reserva] recebido. isPdf:', isPdf, 'mediaType:', mediaType, 'base64 len:', (base64||'').length);
   if (!ANTHROPIC_API_KEY) {
     return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY não configurada no servidor.' });
   }
