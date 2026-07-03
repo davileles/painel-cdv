@@ -605,14 +605,16 @@ app.post('/ia/extrair-reserva', (req, res) => {
   const prompt =
     'Você é um assistente de extração de dados de documentos de viagem. ' +
     'Analise este documento (' + (isPdf ? 'PDF' : 'imagem') + ') de ' + (tipoCampos || 'reserva de viagem') + '. ' +
-    'Extraia os dados REAIS do documento e retorne SOMENTE um JSON válido (sem markdown) com esta estrutura: ' +
-    '{"tipo":"voo","trechos":[{"nvoo":"NUMERO_VOO","origem":"IATA_ORIGEM","destino":"IATA_DESTINO","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","cabine":"CABINE"}],"pnr":"","pax":0,"ciaIda":"","programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","obs":""} ' +
-    'INSTRUÇÕES: ' +
-    '1) trechos[]: liste CADA segmento/trecho/voo do itinerário separadamente com os dados REAIS extraídos do documento. Use IATA de 3 letras para origem e destino. ' +
-    '2) pax = número total de passageiros nomeados no documento. ' +
-    '3) milhasTotal = total bruto de milhas/pontos mostrado no documento (SEM dividir por passageiro). ' +
-    '4) cabine: copie exatamente como aparece no documento (ex: Business, PremiumEconomy, Economy). ' +
-    '5) Preencha apenas os campos presentes no documento. Campos sem informação deixe como string vazia ou 0.';
+    'Extraia os dados REAIS do documento e retorne SOMENTE um JSON válido (sem markdown). ' +
+    'Use exatamente esta estrutura JSON (substitua pelos valores reais): ' +
+    '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","cabine":"cabine exata","cia":"companhia aerea"}],"pnr":"","pax":0,"programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","obs":""} ' +
+    'REGRAS: ' +
+    '1) trechos[]: um objeto por segmento de voo na ordem do itinerário. ' +
+    '2) Em cada trecho, cia = nome da companhia aérea operadora (ex: LATAM, Azul, Gol, TAP, KLM). ' +
+    '3) pax = total de passageiros listados por nome no documento. ' +
+    '4) milhasTotal = total bruto de milhas do documento inteiro, sem dividir. ' +
+    '5) Para hotel/carro/passeio, preencha os campos correspondentes e trechos=[]. ' +
+    '6) Retorne SOMENTE o JSON, sem explicações.';
 
   // Processar trechos no servidor para derivar conexao, destino final, etc.
   function processarTrechos(d) {
@@ -675,6 +677,7 @@ app.post('/ia/extrair-reserva', (req, res) => {
     d.horaChegada = ultimo.horaChegada;
     d.nvooIda = trechosIda.map(t => t.nvoo).filter(Boolean).join(', ');
     d.classe = cabineToClasse(primeiro.cabine);
+    if (!d.ciaIda) d.ciaIda = trechosIda.map(t => t.cia).filter(Boolean)[0] || '';
 
     // Conexão na ida: destino do primeiro trecho (se há mais de um trecho)
     if (trechosIda.length > 1) {
