@@ -266,6 +266,13 @@
   .login-erro{font-size:12px;font-weight:700;color:#f87171;text-align:center;min-height:18px;margin-bottom:4px}
   .login-ok{font-size:12px;font-weight:700;color:#34d399;text-align:center;min-height:18px;margin-bottom:4px}
   #app-content{display:none}
+
+  .iata-wrap{position:relative}
+  .iata-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;z-index:150;max-height:200px;overflow-y:auto;display:none;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+  .iata-option{padding:8px 12px;font-size:12px;color:var(--text);cursor:pointer;font-family:'Montserrat',sans-serif;border-bottom:1px solid rgba(61,74,102,.3)}
+  .iata-option:last-child{border-bottom:none}
+  .iata-option:hover,.iata-option.selected{background:rgba(255,88,94,.1);color:var(--cdv-coral)}
+  .iata-code{font-weight:800;color:var(--cdv-coral);margin-right:6px;font-size:11px}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -764,11 +771,48 @@
         <div style="font-size:10px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">✈️ Detalhes da Passagem <span style="font-weight:400;color:var(--muted)">(opcionais)</span></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
           <div><label class="milhas-label">Localizador</label><input type="text" id="ml-pass-localizador" class="milhas-input" placeholder="Ex: ABC123"/></div>
-          <div><label class="milhas-label">Companhia Aérea</label><input type="text" id="ml-pass-cia" class="milhas-input" placeholder="Ex: LATAM, Azul…"/></div>
+          <div><label class="milhas-label">Companhia Aérea</label>
+          <select id="ml-pass-cia" class="milhas-input">
+            <option value="">Selecione…</option>
+            <option value="Aerolíneas Argentinas">Aerolíneas Argentinas</option>
+            <option value="Air Europa">Air Europa</option>
+            <option value="Air France">Air France</option>
+            <option value="American Airlines">American Airlines</option>
+            <option value="Avianca">Avianca</option>
+            <option value="Azul">Azul</option>
+            <option value="Copa Airlines">Copa Airlines</option>
+            <option value="Delta">Delta</option>
+            <option value="Emirates">Emirates</option>
+            <option value="Finnair">Finnair</option>
+            <option value="GOL">GOL</option>
+            <option value="Iberia">Iberia</option>
+            <option value="Japan Airlines">Japan Airlines</option>
+            <option value="KLM">KLM</option>
+            <option value="LATAM">LATAM</option>
+            <option value="Lufthansa">Lufthansa</option>
+            <option value="Qatar Airways">Qatar Airways</option>
+            <option value="Reliance">Reliance</option>
+            <option value="Sky Airline">Sky Airline</option>
+            <option value="South African Airways">South African Airways</option>
+            <option value="Swiss">Swiss</option>
+            <option value="TAP Air Portugal">TAP Air Portugal</option>
+            <option value="Turkish Airlines">Turkish Airlines</option>
+            <option value="United Airlines">United Airlines</option>
+          </select></div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-          <div><label class="milhas-label">Origem</label><input type="text" id="ml-pass-origem" class="milhas-input" placeholder="Ex: GRU"/></div>
-          <div><label class="milhas-label">Destino</label><input type="text" id="ml-pass-destino" class="milhas-input" placeholder="Ex: LIS"/></div>
+          <div><label class="milhas-label">Origem</label>
+            <div class="iata-wrap">
+              <input type="text" id="ml-pass-origem" class="milhas-input" placeholder="Ex: GRU ou Belo…" autocomplete="off" oninput="iataAutocomplete(this,this.nextElementSibling)" onkeydown="if(event.key==='Escape')this.nextElementSibling.style.display='none'"/>
+              <div class="iata-dropdown"></div>
+            </div>
+          </div>
+          <div><label class="milhas-label">Destino</label>
+            <div class="iata-wrap">
+              <input type="text" id="ml-pass-destino" class="milhas-input" placeholder="Ex: LIS ou Lisboa…" autocomplete="off" oninput="iataAutocomplete(this,this.nextElementSibling)" onkeydown="if(event.key==='Escape')this.nextElementSibling.style.display='none'"/>
+              <div class="iata-dropdown"></div>
+            </div>
+          </div>
         </div>
         <div><label class="milhas-label">Valor em Dinheiro (R$) <span style="color:var(--muted);font-weight:400">(opcional)</span></label><input type="number" id="ml-pass-valor" class="milhas-input" placeholder="Ex: 3200.00" min="0" step="0.01"/></div>
       </div>
@@ -778,6 +822,12 @@
           <div><label class="milhas-label">Nº da Reserva</label><input type="text" id="ml-hosp-reserva" class="milhas-input" placeholder="Ex: 987654321"/></div>
           <div><label class="milhas-label">Hospedagem</label><input type="text" id="ml-hosp-nome" class="milhas-input" placeholder="Ex: Marriott São Paulo"/></div>
         </div>
+        <div style="margin-bottom:10px"><label class="milhas-label">Cidade / Aeroporto</label>
+          <div class="iata-wrap">
+            <input type="text" id="ml-hosp-cidade" class="milhas-input" placeholder="Ex: GRU ou São Paulo…" autocomplete="off" oninput="iataAutocomplete(this,this.nextElementSibling)" onkeydown="if(event.key==='Escape')this.nextElementSibling.style.display='none'"/>
+            <div class="iata-dropdown"></div>
+          </div>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
           <div><label class="milhas-label">Check-in</label><input type="date" id="ml-hosp-checkin" class="milhas-input"/></div>
           <div><label class="milhas-label">Check-out</label><input type="date" id="ml-hosp-checkout" class="milhas-input"/></div>
@@ -786,7 +836,15 @@
       </div>
       <div id="ml-extra-locacao" style="display:none;margin-bottom:12px;background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.15);border-radius:10px;padding:14px">
         <div style="font-size:10px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">🚗 Detalhes da Locação <span style="font-weight:400;color:var(--muted)">(opcionais)</span></div>
-        <div style="margin-bottom:10px"><label class="milhas-label">Nº da Reserva</label><input type="text" id="ml-loc-reserva" class="milhas-input" placeholder="Ex: LR123456"/></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div><label class="milhas-label">Nº da Reserva</label><input type="text" id="ml-loc-reserva" class="milhas-input" placeholder="Ex: LR123456"/></div>
+          <div><label class="milhas-label">Cidade / Aeroporto</label>
+            <div class="iata-wrap">
+              <input type="text" id="ml-loc-cidade" class="milhas-input" placeholder="Ex: GRU ou Curitiba…" autocomplete="off" oninput="iataAutocomplete(this,this.nextElementSibling)" onkeydown="if(event.key==='Escape')this.nextElementSibling.style.display='none'"/>
+              <div class="iata-dropdown"></div>
+            </div>
+          </div>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
           <div><label class="milhas-label">Data de Retirada</label><input type="date" id="ml-loc-retirada" class="milhas-input"/></div>
           <div><label class="milhas-label">Data de Entrega</label><input type="date" id="ml-loc-entrega" class="milhas-input"/></div>
@@ -2492,7 +2550,9 @@ async function salvarLancamento(){
         const cin=document.getElementById('ml-hosp-checkin')?.value;
         const cout=document.getElementById('ml-hosp-checkout')?.value;
         const val=parseFloat(document.getElementById('ml-hosp-valor')?.value)||0;
+        const cid=document.getElementById('ml-hosp-cidade')?.value.trim();
         if(res) extra.reserva=res; if(nom) extra.hospedagem=nom;
+        if(cid) extra.cidadeHosp=cid;
         if(cin) extra.checkin=cin; if(cout) extra.checkout=cout;
         if(val) extra.valorDinheiro=val;
       } else if(subcat==='locacao'){
@@ -2500,7 +2560,9 @@ async function salvarLancamento(){
         const ret=document.getElementById('ml-loc-retirada')?.value;
         const ent=document.getElementById('ml-loc-entrega')?.value;
         const val=parseFloat(document.getElementById('ml-loc-valor')?.value)||0;
-        if(res) extra.reserva=res; if(ret) extra.retirada=ret;
+        const cidLoc=document.getElementById('ml-loc-cidade')?.value.trim();
+        if(res) extra.reserva=res; if(cidLoc) extra.cidadeLoc=cidLoc;
+        if(ret) extra.retirada=ret;
         if(ent) extra.entrega=ent; if(val) extra.valorDinheiro=val;
       } else if(subcat==='produto'){
         const nom=document.getElementById('ml-prod-nome')?.value.trim();
@@ -2553,8 +2615,8 @@ async function salvarLancamento(){
   document.getElementById('ml-obs').value='';
   document.getElementById('ml-cpm-preview').textContent='';
   ['ml-pass-localizador','ml-pass-cia','ml-pass-origem','ml-pass-destino','ml-pass-valor',
-   'ml-hosp-reserva','ml-hosp-nome','ml-hosp-checkin','ml-hosp-checkout','ml-hosp-valor',
-   'ml-loc-reserva','ml-loc-retirada','ml-loc-entrega','ml-loc-valor',
+   'ml-hosp-reserva','ml-hosp-nome','ml-hosp-cidade','ml-hosp-checkin','ml-hosp-checkout','ml-hosp-valor',
+   'ml-loc-reserva','ml-loc-cidade','ml-loc-retirada','ml-loc-entrega','ml-loc-valor',
    'ml-prod-nome','ml-prod-pedido','ml-prod-valor'
   ].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   milhasToggleExtras('','');
@@ -3212,9 +3274,11 @@ function verDetalhesLancamento(id){
   else if(r.origemVoo)  rows.push(['🛫 Origem', r.origemVoo]);
   else if(r.destinoVoo) rows.push(['🛬 Destino', r.destinoVoo]);
   if(r.hospedagem)  rows.push(['🏨 Hospedagem', r.hospedagem]);
+  if(r.cidadeHosp)  rows.push(['📍 Cidade', r.cidadeHosp]);
   if(r.reserva)     rows.push(['📋 Nº Reserva', r.reserva]);
   if(r.checkin)     rows.push(['📅 Check-in', milhasFormatData(r.checkin)]);
   if(r.checkout)    rows.push(['📅 Check-out', milhasFormatData(r.checkout)]);
+  if(r.cidadeLoc)   rows.push(['📍 Cidade', r.cidadeLoc]);
   if(r.retirada)    rows.push(['📅 Retirada', milhasFormatData(r.retirada)]);
   if(r.entrega)     rows.push(['📅 Entrega', milhasFormatData(r.entrega)]);
   if(r.produto)     rows.push(['🛍️ Produto', r.produto]);
@@ -3439,6 +3503,174 @@ function milhasFilterTipoChange(){
   renderMilhasTabela();
 }
 
+
+const IATA_AIRPORTS = [
+  {code:"GRU",label:"São Paulo (GRU) – Guarulhos"},
+  {code:"CGH",label:"São Paulo (CGH) – Congonhas"},
+  {code:"VCP",label:"Campinas (VCP) – Viracopos"},
+  {code:"GIG",label:"Rio de Janeiro (GIG) – Galeão"},
+  {code:"SDU",label:"Rio de Janeiro (SDU) – Santos Dumont"},
+  {code:"BSB",label:"Brasília (BSB)"},
+  {code:"CNF",label:"Belo Horizonte (CNF) – Confins"},
+  {code:"PLU",label:"Belo Horizonte (PLU) – Pampulha"},
+  {code:"SSA",label:"Salvador (SSA)"},
+  {code:"REC",label:"Recife (REC)"},
+  {code:"FOR",label:"Fortaleza (FOR)"},
+  {code:"MAO",label:"Manaus (MAO)"},
+  {code:"BEL",label:"Belém (BEL)"},
+  {code:"CWB",label:"Curitiba (CWB)"},
+  {code:"POA",label:"Porto Alegre (POA)"},
+  {code:"FLN",label:"Florianópolis (FLN)"},
+  {code:"NAT",label:"Natal (NAT)"},
+  {code:"MCZ",label:"Maceió (MCZ)"},
+  {code:"AJU",label:"Aracaju (AJU)"},
+  {code:"THE",label:"Teresina (THE)"},
+  {code:"SLZ",label:"São Luís (SLZ)"},
+  {code:"PMW",label:"Palmas (PMW)"},
+  {code:"CGB",label:"Cuiabá (CGB)"},
+  {code:"CGR",label:"Campo Grande (CGR)"},
+  {code:"PVH",label:"Porto Velho (PVH)"},
+  {code:"MCP",label:"Macapá (MCP)"},
+  {code:"BVB",label:"Boa Vista (BVB)"},
+  {code:"RBR",label:"Rio Branco (RBR)"},
+  {code:"VIX",label:"Vitória (VIX)"},
+  {code:"PMO",label:"Pelotas (PMO)"},
+  {code:"IGU",label:"Foz do Iguaçu (IGU)"},
+  {code:"JPA",label:"João Pessoa (JPA)"},
+  {code:"LDB",label:"Londrina (LDB)"},
+  {code:"MGF",label:"Maringá (MGF)"},
+  {code:"UDI",label:"Uberlândia (UDI)"},
+  {code:"IOS",label:"Ilhéus (IOS)"},
+  {code:"MNX",label:"Manicoré (MNX)"},
+  {code:"XAP",label:"Chapecó (XAP)"},
+  {code:"NVT",label:"Navegantes (NVT)"},
+  {code:"BPS",label:"Porto Seguro (BPS)"},
+  {code:"GYN",label:"Goiânia (GYN)"},
+  {code:"AXI",label:"Araçatuba (AXI)"},
+  {code:"JOI",label:"Joinville (JOI)"},
+  {code:"CAC",label:"Cascavel (CAC)"},
+  {code:"EZE",label:"Buenos Aires (EZE) – Ezeiza"},
+  {code:"AEP",label:"Buenos Aires (AEP) – Aeroparque"},
+  {code:"SCL",label:"Santiago (SCL)"},
+  {code:"LIM",label:"Lima (LIM)"},
+  {code:"BOG",label:"Bogotá (BOG)"},
+  {code:"UIO",label:"Quito (UIO)"},
+  {code:"GYE",label:"Guayaquil (GYE)"},
+  {code:"MVD",label:"Montevidéu (MVD)"},
+  {code:"ASU",label:"Assunção (ASU)"},
+  {code:"CCS",label:"Caracas (CCS)"},
+  {code:"VVI",label:"Santa Cruz de la Sierra (VVI)"},
+  {code:"PBM",label:"Paramaribo (PBM)"},
+  {code:"GEO",label:"Georgetown (GEO)"},
+  {code:"JFK",label:"Nova York (JFK) – JFK"},
+  {code:"EWR",label:"Nova York (EWR) – Newark"},
+  {code:"LGA",label:"Nova York (LGA) – LaGuardia"},
+  {code:"MIA",label:"Miami (MIA)"},
+  {code:"LAX",label:"Los Angeles (LAX)"},
+  {code:"ORD",label:"Chicago (ORD)"},
+  {code:"ATL",label:"Atlanta (ATL)"},
+  {code:"DFW",label:"Dallas (DFW)"},
+  {code:"IAH",label:"Houston (IAH)"},
+  {code:"SFO",label:"San Francisco (SFO)"},
+  {code:"BOS",label:"Boston (BOS)"},
+  {code:"DCA",label:"Washington (DCA)"},
+  {code:"IAD",label:"Washington (IAD) – Dulles"},
+  {code:"MCO",label:"Orlando (MCO)"},
+  {code:"LAS",label:"Las Vegas (LAS)"},
+  {code:"SEA",label:"Seattle (SEA)"},
+  {code:"YYZ",label:"Toronto (YYZ)"},
+  {code:"YUL",label:"Montreal (YUL)"},
+  {code:"YVR",label:"Vancouver (YVR)"},
+  {code:"MEX",label:"Cidade do México (MEX)"},
+  {code:"CUN",label:"Cancún (CUN)"},
+  {code:"PTY",label:"Cidade do Panamá (PTY)"},
+  {code:"LIS",label:"Lisboa (LIS)"},
+  {code:"OPO",label:"Porto (OPO)"},
+  {code:"MAD",label:"Madri (MAD)"},
+  {code:"BCN",label:"Barcelona (BCN)"},
+  {code:"CDG",label:"Paris (CDG) – Charles de Gaulle"},
+  {code:"ORY",label:"Paris (ORY) – Orly"},
+  {code:"LHR",label:"Londres (LHR) – Heathrow"},
+  {code:"LGW",label:"Londres (LGW) – Gatwick"},
+  {code:"STN",label:"Londres (STN) – Stansted"},
+  {code:"AMS",label:"Amsterdã (AMS)"},
+  {code:"FRA",label:"Frankfurt (FRA)"},
+  {code:"MUC",label:"Munique (MUC)"},
+  {code:"ZRH",label:"Zurique (ZRH)"},
+  {code:"GVA",label:"Genebra (GVA)"},
+  {code:"FCO",label:"Roma (FCO)"},
+  {code:"MXP",label:"Milão (MXP)"},
+  {code:"VCE",label:"Veneza (VCE)"},
+  {code:"ATH",label:"Atenas (ATH)"},
+  {code:"IST",label:"Istambul (IST)"},
+  {code:"VIE",label:"Viena (VIE)"},
+  {code:"BRU",label:"Bruxelas (BRU)"},
+  {code:"CPH",label:"Copenhague (CPH)"},
+  {code:"ARN",label:"Estocolmo (ARN)"},
+  {code:"OSL",label:"Oslo (OSL)"},
+  {code:"HEL",label:"Helsinque (HEL)"},
+  {code:"DUB",label:"Dublin (DUB)"},
+  {code:"WAW",label:"Varsóvia (WAW)"},
+  {code:"PRG",label:"Praga (PRG)"},
+  {code:"BUD",label:"Budapeste (BUD)"},
+  {code:"DXB",label:"Dubai (DXB)"},
+  {code:"AUH",label:"Abu Dhabi (AUH)"},
+  {code:"DOH",label:"Doha (DOH)"},
+  {code:"RUH",label:"Riad (RUH)"},
+  {code:"TLV",label:"Tel Aviv (TLV)"},
+  {code:"CAI",label:"Cairo (CAI)"},
+  {code:"JNB",label:"Joanesburgo (JNB)"},
+  {code:"CPT",label:"Cidade do Cabo (CPT)"},
+  {code:"LOS",label:"Lagos (LOS)"},
+  {code:"NBO",label:"Nairóbi (NBO)"},
+  {code:"CMN",label:"Casablanca (CMN)"},
+  {code:"NRT",label:"Tóquio (NRT) – Narita"},
+  {code:"HND",label:"Tóquio (HND) – Haneda"},
+  {code:"ICN",label:"Seul (ICN)"},
+  {code:"PEK",label:"Pequim (PEK)"},
+  {code:"PVG",label:"Xangai (PVG)"},
+  {code:"HKG",label:"Hong Kong (HKG)"},
+  {code:"SIN",label:"Cingapura (SIN)"},
+  {code:"BKK",label:"Bangkok (BKK)"},
+  {code:"KUL",label:"Kuala Lumpur (KUL)"},
+  {code:"DEL",label:"Nova Delhi (DEL)"},
+  {code:"BOM",label:"Mumbai (BOM)"},
+  {code:"SYD",label:"Sydney (SYD)"},
+  {code:"MEL",label:"Melbourne (MEL)"},
+  {code:"AKL",label:"Auckland (AKL)"}
+];
+
+function iataAutocomplete(inputEl, dropdownEl){
+  const q = inputEl.value.trim().toLowerCase();
+  if(q.length < 2){ dropdownEl.style.display='none'; return; }
+  const matches = IATA_AIRPORTS.filter(a=>
+    a.code.toLowerCase().startsWith(q) ||
+    a.label.toLowerCase().includes(q)
+  ).slice(0, 10);
+  if(!matches.length){ dropdownEl.style.display='none'; return; }
+  dropdownEl.innerHTML = matches.map(a=>
+    `<div class="iata-option" onmousedown="iataSelect(event,'${a.code}','${a.label.replace(/'/g,"\\'")}')">
+      <span class="iata-code">${a.code}</span>${a.label.replace(/ *\(.*?\)/g,'').trim()}
+    </div>`
+  ).join('');
+  dropdownEl.style.display='block';
+}
+
+function iataSelect(e, code, label){
+  e.preventDefault();
+  const wrap = e.currentTarget.closest('.iata-wrap');
+  if(!wrap) return;
+  const input = wrap.querySelector('input');
+  const dropdown = wrap.querySelector('.iata-dropdown');
+  if(input) input.value = code;
+  if(dropdown) dropdown.style.display='none';
+}
+
+document.addEventListener('click', function(e){
+  document.querySelectorAll('.iata-dropdown').forEach(d=>{
+    if(!d.closest('.iata-wrap')?.contains(e.target)) d.style.display='none';
+  });
+});
 </script>
 </div><!-- /app-content -->
 </body>
