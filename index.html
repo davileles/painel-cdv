@@ -2795,24 +2795,6 @@ function renderMilhasDashboard(){
     // Para cada programa com movimento, calcula saldo acumulado mês a mês
     const progsComMov=[...new Set(regs.map(r=>r.programa))];
     const datasets=[];
-    // Dataset "Total" sempre presente
-    const totalPorMes={};
-    todosMeses.forEach(m=>{ totalPorMes[m]=0; });
-    regs.forEach(r=>{
-      const m=r.data.slice(0,7);
-      totalPorMes[m]+= r.tipo==='credito'?r.qtde:-r.qtde;
-    });
-    let runTotal=0;
-    const valsTotal=todosMeses.map(m=>{runTotal+=totalPorMes[m];return runTotal;});
-    datasets.push({
-      label:'Total',
-      data:valsTotal,
-      borderColor:'#ff585e',
-      backgroundColor:'rgba(255,88,94,.08)',
-      tension:.3,fill:true,
-      pointRadius:2,borderWidth:2.5,
-      borderDash:[]
-    });
     // Uma linha por programa
     for(const progId of progsComMov){
       const prog=MILHAS_PROGS.find(p=>p.id===progId);
