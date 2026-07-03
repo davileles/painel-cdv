@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-07-03T11:23:39.520Z",
+  "atualizadoEm": "2026-07-03T11:25:24.542Z",
   "registros": [
     {
       "id": "1783039963676_ass_2026-01",
@@ -588,6 +588,36 @@
       "qtde": 12800,
       "custo": 0,
       "obs": ""
+    },
+    {
+      "id": "1783077923921_deb",
+      "email": "davileles@gmail.com",
+      "data": "2026-02-23",
+      "tipo": "debito",
+      "operacao": "transferencia",
+      "subcat": "transferido",
+      "programa": "esfera",
+      "qtde": 3000,
+      "custo": 0,
+      "obs": "Transf. Pontos+Dinheiro para Azul Fidelidade (+90% bônus) — saldo: 3.000 pts + comprados: 297.000 pts",
+      "modalidade": "pontos_dinheiro"
+    },
+    {
+      "id": "1783077923921_cred",
+      "email": "davileles@gmail.com",
+      "data": "2026-02-23",
+      "tipo": "credito",
+      "operacao": "transferencia",
+      "subcat": "trans_bon",
+      "programa": "azul",
+      "qtde": 570000,
+      "custo": 7362,
+      "custoHerdadoFIFO": 85.5,
+      "custoCompradoNaTransf": 7276.5,
+      "milheiroHerdado": 28.5,
+      "modalidade": "pontos_dinheiro",
+      "ptsCompradosNaTransf": 297000,
+      "obs": "Recebido de Esfera (Pontos+Dinheiro) (+90% bônus) — total transferido: 300.000 pts | FIFO saldo: R$ 85,50 (R$ 28,50/1k)"
     }
   ]
 }
