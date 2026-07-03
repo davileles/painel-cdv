@@ -2116,6 +2116,7 @@ function milhasUpdateSubcats(){
   const list=MILHAS_SUBCATS[t]||[];
   list.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.label;sel.appendChild(o);});
   milhasUpdateCustoField();
+  milhasToggleCartaoField();
 }
 
 function milhasUpdateCustoField(){
