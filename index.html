@@ -2479,27 +2479,27 @@ function renderAssLista(){
 async function excluirLancamento(id){
   if(!confirm('Excluir este lançamento?'))return;
   const email=milhasGetEmail();
-  // Identifica o programa afetado antes de remover
-  const reg=milhasRegistros.find(r=>r.id===id);
-  const progAfetado=reg?.programa;
+
   // Remove o registro
   milhasRegistros=milhasRegistros.filter(r=>r.id!==id);
-  // Reconstrói a fila FIFO do programa afetado do zero
-  // (necessário porque a exclusão pode ter sido de qualquer posição do histórico)
-  if(progAfetado){
-    milhasFIFO[progAfetado]=fifoReconstruir(progAfetado, milhasRegistros, email);
-    // Se a transferência tinha par (deb+cred com mesmo timestamp base), reconstrói o destino também
-    if(reg?.obs){
-      const progs=MILHAS_PROGS.map(p=>p.id);
-      for(const p of progs){
-        if(p!==progAfetado) milhasFIFO[p]=fifoReconstruir(p, milhasRegistros, email);
-      }
-    }
+
+  // Reconstrói a fila FIFO de TODOS os programas que têm movimento nos registros restantes.
+  // Garantia total de consistência — necessário porque:
+  // - A exclusão pode ser em qualquer posição do histórico (não só no mais recente)
+  // - Transferências entre programas criam dependência cruzada (custo herdado)
+  //   então excluir o lançamento de origem ou destino afeta ambos os programas
+  // - É a única operação rara onde varrer tudo é obrigatório
+  const progsAfetados=[...new Set(milhasRegistros.map(r=>r.programa))];
+  milhasFIFO={};
+  for(const p of progsAfetados){
+    milhasFIFO[p]=fifoReconstruir(p, milhasRegistros, email);
   }
+
   milhasSalvarLocal();
   renderMilhasTabela();
   renderMilhasDashboard();
-  // Sincroniza com o proxy
+
+  // Sincroniza com o proxy (envia registros atualizados + novo snapshot FIFO)
   try{
     await fetch(`${MILHAS_PROXY}/milhas/excluir`,{
       method:'POST',headers:{'Content-Type':'application/json'},
@@ -2563,24 +2563,27 @@ function renderMilhasDashboard(){
   const cpmEl=document.getElementById('milhas-cpm-cards');
   const cpmProgs=[];
   MILHAS_PROGS.forEach(p=>{
-    const regsP=regs.filter(r=>r.programa===p.id&&r.custo>0&&r.qtde>0&&r.subcat!=='transferido');
-    if(!regsP.length)return;
-    const totalC=regsP.reduce((a,b)=>a+b.custo,0);
+    // Todos os créditos do programa (exceto transferências enviadas)
+    const regsP=regs.filter(r=>r.programa===p.id&&r.tipo==='credito'&&r.qtde>0&&r.subcat!=='transferido');
+    if(!regsP.length)return; // programa sem nenhum registro: não exibe
+    const totalC=regsP.reduce((a,b)=>a+(b.custo||0),0);
     const totalQ=regsP.reduce((a,b)=>a+b.qtde,0);
-    cpmProgs.push({p,cpm:(totalC/totalQ)*1000});
+    const cpm=totalQ>0?(totalC/totalQ)*1000:0;
+    const temCusto=totalC>0;
+    cpmProgs.push({p,cpm,temCusto});
   });
   if(cpmProgs.length){
-    cpmEl.innerHTML=cpmProgs.map(({p,cpm})=>`
+    cpmEl.innerHTML=cpmProgs.map(({p,cpm,temCusto})=>`
       <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:4px;min-width:150px">
         <div style="display:flex;align-items:center;gap:6px">
           <span class="milhas-prog-dot" style="background:${p.color}"></span>
           <span style="font-size:11px;font-weight:700;color:var(--muted)">${p.name}</span>
         </div>
-        <div style="font-size:20px;font-weight:900;color:${p.color}">R$ ${cpm.toFixed(2).replace('.',',')}</div>
-        <div style="font-size:10px;color:var(--muted2)">por 1.000 pts</div>
+        <div style="font-size:20px;font-weight:900;color:${temCusto?p.color:'var(--muted)'}">${temCusto?'R$ '+cpm.toFixed(2).replace('.',','):'R$ 0,00'}</div>
+        <div style="font-size:10px;color:var(--muted2)">${temCusto?'por 1.000 pts':'sem custo rastreado'}</div>
       </div>`).join('');
   } else {
-    cpmEl.innerHTML='<div style="font-size:12px;color:var(--muted)">Nenhum lançamento com custo registrado ainda.</div>';
+    cpmEl.innerHTML='<div style="font-size:12px;color:var(--muted)">Nenhum registro cadastrado ainda.</div>';
   }
 
   // Chart Distribuição (doughnut)
