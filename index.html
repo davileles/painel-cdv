@@ -402,10 +402,14 @@
     <!-- KPI CARDS -->
     <div id="milhas-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px"></div>
     <!-- CHARTS ROW -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px" id="milhas-charts-row">
+    <div style="display:grid;grid-template-columns:minmax(160px,1fr) minmax(180px,1.1fr) minmax(0,2fr);gap:12px;margin-bottom:18px" id="milhas-charts-row">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Distribuição por Programa</div>
-        <canvas id="chart-distribuicao" style="max-height:200px"></canvas>
+        <canvas id="chart-distribuicao" style="max-height:160px"></canvas>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Saldo por Programa</div>
+        <div id="milhas-saldo-tabela" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0"></div>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Evolução do Saldo Total</div>
@@ -3017,6 +3021,25 @@ function renderMilhasDashboard(){
     });
   } else if(ctxDist){
     ctxDist.getContext('2d').clearRect(0,0,ctxDist.width,ctxDist.height);
+  }
+
+  // Tabelinha de saldo por programa
+  const tabelaEl = document.getElementById('milhas-saldo-tabela');
+  if(tabelaEl){
+    const progsComSaldoTab = MILHAS_PROGS.filter(p=>saldos[p.id]>0)
+      .sort((a,b)=>saldos[b.id]-saldos[a.id]);
+    if(progsComSaldoTab.length){
+      tabelaEl.innerHTML = progsComSaldoTab.map((p,i)=>`
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;${i>0?'border-top:1px solid rgba(61,74,102,.35)':''}">
+          <div style="display:flex;align-items:center;gap:7px;min-width:0">
+            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${p.color};flex-shrink:0"></span>
+            <span style="font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</span>
+          </div>
+          <span style="font-size:12px;font-weight:800;color:var(--text);white-space:nowrap;margin-left:8px">${milhasFormatNum(saldos[p.id])}</span>
+        </div>`).join('');
+    } else {
+      tabelaEl.innerHTML = '<div style="color:var(--muted);font-size:12px;text-align:center;padding:20px 0">Nenhum saldo</div>';
+    }
   }
 
   // Chart Evolução (line) — saldo acumulado por mês, uma linha por programa
