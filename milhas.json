@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-07-03T11:25:24.542Z",
+  "atualizadoEm": "2026-07-03T11:29:27.032Z",
   "registros": [
     {
       "id": "1783039963676_ass_2026-01",
@@ -618,6 +618,34 @@
       "modalidade": "pontos_dinheiro",
       "ptsCompradosNaTransf": 297000,
       "obs": "Recebido de Esfera (Pontos+Dinheiro) (+90% bônus) — total transferido: 300.000 pts | FIFO saldo: R$ 85,50 (R$ 28,50/1k)"
+    },
+    {
+      "id": "1783078166502_deb",
+      "email": "davileles@gmail.com",
+      "data": "2026-06-25",
+      "tipo": "debito",
+      "operacao": "transferencia",
+      "subcat": "transferido",
+      "programa": "brb",
+      "qtde": 30000,
+      "custo": 0,
+      "modalidade": "pontos",
+      "obs": "Transferência para LATAM Pass (+25% bônus) "
+    },
+    {
+      "id": "1783078166502_cred",
+      "email": "davileles@gmail.com",
+      "data": "2026-06-25",
+      "tipo": "credito",
+      "operacao": "transferencia",
+      "subcat": "trans_bon",
+      "programa": "latam",
+      "qtde": 37500,
+      "custo": 0,
+      "custoHerdadoFIFO": 0,
+      "milheiroHerdado": 0,
+      "modalidade": "pontos",
+      "obs": "Recebido de BRB Pontos (+25% bônus)  | Pontos sem custo rastreado na origem"
     }
   ]
 }
