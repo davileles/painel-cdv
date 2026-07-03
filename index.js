@@ -658,20 +658,33 @@ app.post('/ia/extrair-reserva', async (req, res) => {
     : { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } };
 
   try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 55000); // 55s timeout
+
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
         messages: [{ role: 'user', content: [contentBlock, { type: 'text', text: prompt }] }]
       })
     });
-    const data = await resp.json();
+
+    clearTimeout(timer);
+
+    const rawText = await resp.text();
+    console.log('[ia/extrair-reserva] status:', resp.status, 'body len:', rawText.length);
+
+    let data;
+    try { data = JSON.parse(rawText); }
+    catch(e) { return res.status(500).json({ ok: false, erro: 'Resposta inválida da API: ' + rawText.slice(0, 200) }); }
+
     if (data.error) return res.status(500).json({ ok: false, erro: data.error.message });
     const texto = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : '';
     return res.json({ ok: true, texto: texto.replace(/```json|```/g, '').trim() });
