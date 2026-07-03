@@ -315,7 +315,7 @@
   <button class="main-tab active" data-tab="comparador">🏆 Comparador de Pontos</button>
   <button class="main-tab" data-tab="radar">📡 Radar de Ofertas</button>
   <button class="main-tab" data-tab="passagens">✈️ Passagens</button>
-  <button class="main-tab" data-tab="milhas">💎 Gestão de Milhas</button>
+  <button class="main-tab" data-tab="milhas">📋 Gestão de Milhas</button>
 </div>
 
 <div id="tab-comparador" class="tab-panel">
@@ -2078,10 +2078,10 @@ function switchTab(tab){
   document.getElementById('tab-comparador').style.display = tab==='comparador'?'block':'none';
   document.getElementById('tab-radar').style.display = tab==='radar'?'block':'none';
   document.getElementById('tab-passagens').style.display = tab==='passagens'?'block':'none';
-  document.getElementById('tab-milhas').style.display = (tab==='milhas' && devAcesso())?'block':'none';
+  document.getElementById('tab-milhas').style.display = tab==='milhas'?'block':'none';
   if(tab==='radar') loadOfertas(false);
   if(tab==='passagens') loadPassagens(false);
-  if(tab==='milhas'){ if(devAcesso()) initMilhas(); else switchTab('comparador'); }
+  if(tab==='milhas') initMilhas();
   try{localStorage.setItem('cdv_active_tab', tab);}catch(e){}
 }
 
