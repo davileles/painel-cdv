@@ -400,7 +400,7 @@
   <!-- DASHBOARD HEADER -->
   <div id="milhas-dashboard" style="padding:18px 22px 0">
     <!-- KPI CARDS -->
-    <div id="milhas-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px"></div>
+    <div id="milhas-kpis" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px"></div>
     <!-- CHARTS ROW -->
     <div style="display:grid;grid-template-columns:minmax(160px,1fr) minmax(180px,1.1fr) minmax(0,2fr);gap:12px;margin-bottom:18px" id="milhas-charts-row">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 16px 8px">
@@ -429,6 +429,7 @@
     <button class="milhas-view-btn" data-view="novo" onclick="milhasSetView('novo')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">＋ Novo Lançamento</button>
     <button class="milhas-view-btn" data-view="assinaturas" onclick="milhasSetView('assinaturas')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">🔁 Assinaturas</button>
     <button class="milhas-view-btn" data-view="cartoes" onclick="milhasSetView('cartoes')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">💳 Cartões</button>
+    <button class="milhas-view-btn" data-view="resgates" onclick="milhasSetView('resgates')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">✈️ Resgates</button>
     <div id="milhas-filtros-wrap" style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
       <select id="milhas-filter-prog" onchange="renderMilhasTabela()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
         <option value="">Todos os programas</option>
@@ -515,6 +516,33 @@
   </div>
 
   
+  <!-- VIEW: RESGATES E ECONOMIA -->
+  <div id="milhas-view-resgates" style="padding:18px 22px;display:none">
+    <div style="max-width:900px;margin:0 auto">
+
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div>
+          <div style="font-size:16px;font-weight:800;color:var(--text)">✈️ Resgates & Economia</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">Análise do valor economizado em cada resgate vs. pagar em dinheiro</div>
+        </div>
+        <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">← Voltar</button>
+      </div>
+
+      <!-- KPI cards de resgates -->
+      <div id="resgates-kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px"></div>
+
+      <!-- Aviso quando não há resgates com valor em dinheiro -->
+      <div id="resgates-aviso" style="display:none;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:20px;text-align:center;color:var(--muted);font-size:13px;margin-bottom:16px">
+        💡 Nenhum resgate com valor em dinheiro informado ainda.<br>
+        <span style="font-size:11px;margin-top:4px;display:block">Ao registrar um débito de Passagem, Hospedagem, Locação ou Produto, informe o campo <strong>Valor em Dinheiro</strong> para ver a economia aqui.</span>
+      </div>
+
+      <!-- Tabela de resgates -->
+      <div id="resgates-tabela-wrap"></div>
+    </div>
+  </div>
+
   <!-- MODAL DE DETALHES DO LANÇAMENTO -->
   <div id="milhas-detalhe-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:210;align-items:center;justify-content:center">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;width:90%;max-width:500px;position:relative;overflow:hidden">
@@ -2216,6 +2244,8 @@ function milhasSetView(v){
   document.getElementById('milhas-view-novo').style.display=v==='novo'?'block':'none';
   document.getElementById('milhas-view-assinaturas').style.display=v==='assinaturas'?'block':'none';
   document.getElementById('milhas-view-cartoes').style.display=v==='cartoes'?'block':'none';
+  document.getElementById('milhas-view-resgates').style.display=v==='resgates'?'block':'none';
+  if(v==='resgates') renderMilhasResgates();
   // Filtros visíveis apenas na view de registros
   const filtros=document.getElementById('milhas-filtros-wrap');
   if(filtros) filtros.style.display=v==='registros'?'flex':'none';
@@ -2961,11 +2991,20 @@ function renderMilhasDashboard(){
 
   // KPIs
   const kpiEl=document.getElementById('milhas-kpis');
+  // Economia gerada: soma de (valorDinheiro - custoFIFO) dos resgates com valorDinheiro
+  const SUBCATS_RESGATE_ECO=['passagem','hospedagem','locacao','produto','outros_deb'];
+  let totalEconomia = 0;
+  regs.filter(r=>r.tipo==='debito'&&SUBCATS_RESGATE_ECO.includes(r.subcat)&&r.valorDinheiro>0).forEach(r=>{
+    const fifo = calcularCustoFIFO(r.programa, r.qtde, milhasRegistros, email);
+    totalEconomia += Math.max(0, r.valorDinheiro - fifo.custoTotal);
+  });
+
   const kpis=[
     {label:'Saldo Total',val:milhasFormatNum(totalMilhas)+' pts',sub:'somando todos os programas',color:'#ff585e'},
     {label:'Total Creditado',val:milhasFormatNum(totalCreditado)+' pts',sub:'entradas registradas',color:'#34d399'},
     {label:'Total Resgatado',val:milhasFormatNum(totalResgatado)+' pts',sub:'passagens, hospedagem, locação…',color:'#f87171'},
     {label:'Total Investido',val:'R$ '+totalGasto.toLocaleString('pt-BR',{minimumFractionDigits:2}),sub:'em compras e assinaturas',color:'#60a5fa'},
+    {label:'Economia Gerada',val:'R$ '+totalEconomia.toLocaleString('pt-BR',{minimumFractionDigits:2}),sub:'vs. pagar em dinheiro',color:'#a78bfa'},
   ];
   kpiEl.innerHTML=kpis.map(k=>`
     <div class="milhas-kpi" style="border-top:3px solid ${k.color}">
@@ -3485,6 +3524,103 @@ function cartaoToggleForm(){
   wrap.style.display = open ? 'block' : 'none';
   if(btn) btn.textContent = open ? '✕ Fechar' : '＋ Novo';
   if(open) setTimeout(()=> milhasScrollToEl(wrap), 60);
+}
+
+
+// ══════════════════════════════════════════════════════
+//  RESGATES & ECONOMIA
+// ══════════════════════════════════════════════════════
+function renderMilhasResgates(){
+  const email = milhasGetEmail();
+  const regs = milhasRegistros.filter(r=>r.email===email||!r.email);
+  const SUBCATS_ECO = ['passagem','hospedagem','locacao','produto','outros_deb'];
+
+  // Apenas resgates com valorDinheiro preenchido
+  const resgates = regs
+    .filter(r=>r.tipo==='debito' && SUBCATS_ECO.includes(r.subcat) && r.valorDinheiro>0)
+    .sort((a,b)=>b.data.localeCompare(a.data));
+
+  const avisoEl = document.getElementById('resgates-aviso');
+  const tabelaEl = document.getElementById('resgates-tabela-wrap');
+  const kpisEl = document.getElementById('resgates-kpis');
+
+  if(!resgates.length){
+    if(avisoEl) avisoEl.style.display='block';
+    if(tabelaEl) tabelaEl.innerHTML='';
+    if(kpisEl) kpisEl.innerHTML='';
+    return;
+  }
+  if(avisoEl) avisoEl.style.display='none';
+
+  // Calcular economia de cada resgate
+  const dados = resgates.map(r=>{
+    const fifo = calcularCustoFIFO(r.programa, r.qtde, milhasRegistros, email);
+    const custoMilhas = fifo.custoTotal;
+    const economia = Math.max(0, r.valorDinheiro - custoMilhas);
+    const pct = r.valorDinheiro > 0 ? (economia / r.valorDinheiro * 100) : 0;
+    return {...r, custoMilhas, economia, pct, milheiroFIFO: fifo.milheiroHerdado};
+  });
+
+  // KPIs resumo
+  const totalValorDinheiro = dados.reduce((a,b)=>a+b.valorDinheiro,0);
+  const totalCustoMilhas   = dados.reduce((a,b)=>a+b.custoMilhas,0);
+  const totalEconomia      = dados.reduce((a,b)=>a+b.economia,0);
+  const pctMedio = totalValorDinheiro > 0 ? (totalEconomia/totalValorDinheiro*100) : 0;
+
+  if(kpisEl){
+    kpisEl.innerHTML = [
+      {label:'Valor Total em Dinheiro',val:'R$ '+totalValorDinheiro.toLocaleString('pt-BR',{minimumFractionDigits:2}),sub:'se pagos sem milhas',color:'#60a5fa'},
+      {label:'Custo Real das Milhas',val:'R$ '+totalCustoMilhas.toLocaleString('pt-BR',{minimumFractionDigits:2}),sub:'custo FIFO das milhas usadas',color:'#f87171'},
+      {label:'Total Economizado',val:'R$ '+totalEconomia.toLocaleString('pt-BR',{minimumFractionDigits:2}),sub:`${pctMedio.toFixed(1).replace('.',',')}% de economia média`,color:'#a78bfa'},
+    ].map(k=>`
+      <div class="milhas-kpi" style="border-top:3px solid ${k.color}">
+        <div class="milhas-kpi-label">${k.label}</div>
+        <div class="milhas-kpi-val" style="color:${k.color};font-size:22px">${k.val}</div>
+        <div class="milhas-kpi-sub">${k.sub}</div>
+      </div>`).join('');
+  }
+
+  // Tabela
+  if(tabelaEl){
+    tabelaEl.innerHTML = `
+    <div style="overflow-x:auto">
+    <table class="milhas-table">
+      <thead><tr>
+        <th>Data</th>
+        <th>Programa</th>
+        <th>Subcategoria</th>
+        <th>Obs.</th>
+        <th style="text-align:right">Milhas</th>
+        <th style="text-align:right">Custo Milhas</th>
+        <th style="text-align:right">Valor Dinheiro</th>
+        <th style="text-align:right">Economia</th>
+        <th style="text-align:right">% Econ.</th>
+      </tr></thead>
+      <tbody>
+      ${dados.map(r=>{
+        const cor = milhasCorPrograma(r.programa);
+        const pctColor = r.pct>=70?'#a78bfa':r.pct>=40?'#34d399':'#60a5fa';
+        const pctBg    = r.pct>=70?'rgba(167,139,250,.12)':r.pct>=40?'rgba(52,211,153,.12)':'rgba(96,165,250,.12)';
+        return `<tr onclick="verDetalhesLancamento('${r.id}')" style="cursor:pointer" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background=''">
+          <td style="white-space:nowrap">${milhasFormatData(r.data)}</td>
+          <td><span class="milhas-prog-dot" style="background:${cor}"></span>${milhasNomePrograma(r.programa)}</td>
+          <td style="color:var(--muted);font-size:11px">${milhasLabelSubcat(r.tipo,r.subcat)}</td>
+          <td style="color:var(--muted);font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.obs||''}">${r.obs||'—'}</td>
+          <td style="text-align:right;color:#f87171;font-weight:700">−${milhasFormatNum(r.qtde)}</td>
+          <td style="text-align:right;color:var(--muted)">${r.custoMilhas>0?'R$ '+r.custoMilhas.toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}</td>
+          <td style="text-align:right;color:#60a5fa;font-weight:700">R$ ${r.valorDinheiro.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+          <td style="text-align:right;color:#a78bfa;font-weight:700">${r.economia>0?'R$ '+r.economia.toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}</td>
+          <td style="text-align:right">
+            <span style="font-size:11px;font-weight:800;background:${pctBg};color:${pctColor};padding:2px 7px;border-radius:4px">
+              ${r.pct>0?r.pct.toFixed(1).replace('.',',')+' %':'—'}
+            </span>
+          </td>
+        </tr>`;
+      }).join('')}
+      </tbody>
+    </table>
+    </div>`;
+  }
 }
 
 // ══════════════════════════════════════════════════════
