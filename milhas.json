@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-07-03T12:35:25.495Z",
+  "atualizadoEm": "2026-07-03T12:45:04.702Z",
   "registros": [
     {
       "id": "1783039963676_ass_2026-01",
@@ -740,6 +740,34 @@
       "origemVoo": "CNF",
       "destinoVoo": "REC",
       "valorDinheiro": 950
+    },
+    {
+      "id": "1783082703210_deb",
+      "email": "davileles@gmail.com",
+      "data": "2026-07-03",
+      "tipo": "debito",
+      "operacao": "transferencia",
+      "subcat": "transferido",
+      "programa": "esfera",
+      "qtde": 100000,
+      "custo": 0,
+      "modalidade": "pontos",
+      "obs": "Transferência para Iberia Plus (+25% bônus) "
+    },
+    {
+      "id": "1783082703210_cred",
+      "email": "davileles@gmail.com",
+      "data": "2026-07-03",
+      "tipo": "credito",
+      "operacao": "transferencia",
+      "subcat": "trans_bon",
+      "programa": "iberia",
+      "qtde": 62500,
+      "custo": 2869.5,
+      "custoHerdadoFIFO": 2869.5,
+      "milheiroHerdado": 28.695,
+      "modalidade": "pontos",
+      "obs": "Recebido de Esfera (+25% bônus)  | Custo herdado FIFO: R$ 2.869,50 (R$ 28,70/1k)"
     }
   ]
 }
