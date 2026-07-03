@@ -2243,6 +2243,8 @@ function milhasUpdateSubcats(){
     document.getElementById('ml-custo-wrap').style.display='none';
     return;
   }
+  // Garante que campo de taxa de transferência nunca aparece em crédito/débito
+  document.getElementById('ml-trans-custo-wrap').style.display='none';
   const list=MILHAS_SUBCATS[t]||[];
   list.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.label;sel.appendChild(o);});
   milhasUpdateCustoField();
