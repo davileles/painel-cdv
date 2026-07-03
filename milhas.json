@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-07-03T11:29:27.032Z",
+  "atualizadoEm": "2026-07-03T11:34:54.368Z",
   "registros": [
     {
       "id": "1783039963676_ass_2026-01",
@@ -646,6 +646,36 @@
       "milheiroHerdado": 0,
       "modalidade": "pontos",
       "obs": "Recebido de BRB Pontos (+25% bônus)  | Pontos sem custo rastreado na origem"
+    },
+    {
+      "id": "1783078493742_deb",
+      "email": "davileles@gmail.com",
+      "data": "2026-05-19",
+      "tipo": "debito",
+      "operacao": "transferencia",
+      "subcat": "transferido",
+      "programa": "livelo",
+      "qtde": 25000,
+      "custo": 0,
+      "obs": "Transf. Pontos+Dinheiro para Smiles (+80% bônus) — saldo: 25.000 pts + comprados: 247.500 pts",
+      "modalidade": "pontos_dinheiro"
+    },
+    {
+      "id": "1783078493742_cred",
+      "email": "davileles@gmail.com",
+      "data": "2026-05-19",
+      "tipo": "credito",
+      "operacao": "transferencia",
+      "subcat": "trans_bon",
+      "programa": "smiles",
+      "qtde": 490500,
+      "custo": 6795,
+      "custoHerdadoFIFO": 360,
+      "custoCompradoNaTransf": 6435,
+      "milheiroHerdado": 14.4,
+      "modalidade": "pontos_dinheiro",
+      "ptsCompradosNaTransf": 247500,
+      "obs": "Recebido de Livelo (Pontos+Dinheiro) (+80% bônus) — total transferido: 272.500 pts | FIFO saldo: R$ 360,00 (R$ 14,40/1k)"
     }
   ]
 }
