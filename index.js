@@ -609,6 +609,7 @@ app.post('/ia/extrair-reserva', (req, res) => {
     '1) origem = cidade/IATA de PARTIDA DO PRIMEIRO VOO. ' +
     '2) destino = cidade/IATA de CHEGADA DO ÚLTIMO TRECHO DA IDA (destino final do passageiro). ' +
     '3) Se houver 2 ou mais trechos na IDA: o DESTINO do primeiro trecho é a CONEXÃO, e o DESTINO do último trecho é o destino final. Exemplo: trecho 1 AMS→GRU + trecho 2 GRU→FLN = origem:AMS, destino:FLN, conexao:GRU. ' +
+    '3b) IDENTIFICAÇÃO AUTOMÁTICA DE CONEXÃO: quando o DESTINO de um trecho é IGUAL à ORIGEM do trecho seguinte, esse local É A CONEXÃO. Aplique essa regra para identificar todas as escalas. ' +
     '4) Voo de VOLTA só existe se o passageiro retorna fisicamente à cidade de ORIGEM do primeiro trecho. ' +
     '5) horaChegada = horário de chegada no destino FINAL da ida (destino do ÚLTIMO trecho, não da escala). ' +
     '6) ciaIda = companhia aérea (ex: LATAM). ' +
