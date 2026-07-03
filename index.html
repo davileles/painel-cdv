@@ -2326,6 +2326,16 @@ async function salvarLancamento(){
       const bonus   = parseFloat(document.getElementById('ml-trans-bonus').value)||0;
       const custoManual = parseFloat(document.getElementById('ml-trans-custo').value)||0;
       if(!ptsOrig||!ptsDest){fb.textContent='Informe os pontos de origem e destino.';return;}
+      // Valida se há saldo suficiente no programa de origem
+      const regsEmail = milhasRegistros.filter(r=>r.email===email||!r.email);
+      const saldoOrigem = regsEmail.reduce((acc,r)=>{
+        if(r.programa!==origem) return acc;
+        return r.tipo==='credito' ? acc+r.qtde : r.tipo==='debito' ? acc-r.qtde : acc;
+      }, 0);
+      if(ptsOrig > saldoOrigem){
+        fb.textContent=`Saldo insuficiente em ${milhasNomePrograma(origem)}: disponível ${milhasFormatNum(saldoOrigem)} pts, solicitado ${milhasFormatNum(ptsOrig)} pts.`;
+        return;
+      }
       // Calcula custo herdado via FIFO dos pontos da origem
       const fifo = calcularCustoFIFO(origem, ptsOrig, milhasRegistros, email);
       // Custo no destino = custo FIFO herdado da origem + custo manual de taxa (se houver)
