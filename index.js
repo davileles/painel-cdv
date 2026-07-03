@@ -605,25 +605,35 @@ app.post('/ia/extrair-reserva', (req, res) => {
   const prompt =
     'Você é um assistente de extração de dados de documentos de viagem. ' +
     'Analise este documento (' + (isPdf ? 'PDF' : 'imagem') + ') de ' + (tipoCampos || 'reserva de viagem') + '. ' +
+    'REGRAS CRÍTICAS PARA VOOS: ' +
+    '1) origem = cidade/IATA de PARTIDA DO PRIMEIRO VOO. ' +
+    '2) destino = cidade/IATA de CHEGADA DO ÚLTIMO TRECHO DA IDA (destino final do passageiro). ' +
+    '3) Se houver 2 ou mais trechos na IDA (ex: AMS→GRU→FLN), o destino é FLN e a conexão é GRU. NÃO use os trechos intermediários como voo de volta. ' +
+    '4) Voo de VOLTA só existe se o passageiro retorna à cidade de ORIGEM. Se os trechos têm datas próximas e destinos diferentes, são todos trechos de IDA com conexão. ' +
+    '5) horaChegada = horário de chegada no destino FINAL da ida (não na escala). ' +
+    '6) ciaIda = companhia aérea do primeiro trecho (ex: LATAM). ' +
+    '7) nvooIda = número do primeiro voo. Se houver conexão, o número do voo da conexão pode ser ignorado. ' +
+    '8) pax = número total de passageiros listados no documento. ' +
     'Retorne SOMENTE um JSON válido (sem markdown) com os campos: ' +
-    'tipo (voo/hotel/carro/passeio), origem (código IATA ou cidade de partida), destino (código IATA ou cidade de chegada final), ' +
-    'dataIda (YYYY-MM-DD), horaPartida (HH:MM — horário de partida da origem), horaChegada (HH:MM — horário de chegada no destino FINAL), ' +
-    'conexao (IATA ou cidade da ESCALA DO VOO DE IDA — só se houver; NUNCA colocar dados de conexão em dataVolta), ' +
-    'ciaIda, nvooIda, dataVolta (YYYY-MM-DD — só se for realmente voo de volta ao ponto de origem), ' +
-    'horaPartidaVolta (HH:MM — partida do destino na volta), horaChegadaVolta (HH:MM — chegada na origem na volta), ' +
-    'conexaoVolta (IATA ou cidade da ESCALA DO VOO DE VOLTA — só se houver), ciaVolta, nvooVolta, ' +
+    'tipo (voo/hotel/carro/passeio), origem (IATA ou cidade de partida), destino (IATA ou cidade de chegada FINAL da ida), ' +
+    'dataIda (YYYY-MM-DD), horaPartida (HH:MM — partida da origem), horaChegada (HH:MM — chegada no destino FINAL da ida), ' +
+    'conexao (IATA ou cidade da escala na IDA — só se houver), ' +
+    'ciaIda (companhia do primeiro trecho), nvooIda (número do primeiro voo), ' +
+    'dataVolta (YYYY-MM-DD — SÓ se houver voo de retorno à origem), ' +
+    'horaPartidaVolta (HH:MM), horaChegadaVolta (HH:MM), ' +
+    'conexaoVolta (IATA ou cidade de escala na volta — só se houver), ciaVolta, nvooVolta, ' +
     'classe, pnr, pax, programa, milhas, valor, ' +
     'hotelNome, hotelDestino, hotelQuarto, checkin (YYYY-MM-DD), checkout (YYYY-MM-DD), noites, hospedes, hotelConf, regime, hotelValor, ' +
     'locadora, carroCat, retLocal, devLocal, retData (YYYY-MM-DD), devData (YYYY-MM-DD), carroConf, carroValor, ' +
     'passeioNome, passeioDest, passeioOp, passeioData (YYYY-MM-DD), passeioHora (HH:MM), passeioPax, passeioConf, passeioValor, obs. ' +
-    'Preencha apenas os campos que existem no documento.';
+    'Preencha apenas os campos presentes no documento. Campos ausentes deixe vazios.';
 
   const contentBlock = isPdf
     ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } }
     : { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } };
 
   const bodyPayload = JSON.stringify({
-    model: 'claude-haiku-4-5-20251001',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1024,
     messages: [{ role: 'user', content: [contentBlock, { type: 'text', text: prompt }] }]
   });
