@@ -605,30 +605,14 @@ app.post('/ia/extrair-reserva', (req, res) => {
   const prompt =
     'Você é um assistente de extração de dados de documentos de viagem. ' +
     'Analise este documento (' + (isPdf ? 'PDF' : 'imagem') + ') de ' + (tipoCampos || 'reserva de viagem') + '. ' +
-    'Retorne SOMENTE um JSON válido (sem markdown) com esta estrutura exata: ' +
-    '{ ' +
-    '  "tipo": "voo|hotel|carro|passeio", ' +
-    '  "trechos": [ ' +
-    '    {"nvoo": "LA 8079", "origem": "AMS", "destino": "GRU", "data": "2026-07-28", "horaPartida": "13:10", "horaChegada": "20:10", "cabine": "Business"}, ' +
-    '    {"nvoo": "LA 3080", "origem": "CGH", "destino": "FLN", "data": "2026-07-29", "horaPartida": "08:40", "horaChegada": "09:50", "cabine": "PremiumEconomy"} ' +
-    '  ], ' +
-    '  "pnr": "JMFBZV", ' +
-    '  "pax": 2, ' +
-    '  "ciaIda": "LATAM", ' +
-    '  "programa": "LATAM Pass", ' +
-    '  "milhasTotal": 870804, ' +
-    '  "valor": "1081.24", ' +
-    '  "hotelNome": "", "hotelDestino": "", "hotelQuarto": "", "checkin": "", "checkout": "", "noites": "", "hospedes": "", "hotelConf": "", "regime": "", "hotelValor": "", ' +
-    '  "locadora": "", "carroCat": "", "retLocal": "", "devLocal": "", "retData": "", "devData": "", "carroConf": "", "carroValor": "", ' +
-    '  "passeioNome": "", "passeioDest": "", "passeioOp": "", "passeioData": "", "passeioHora": "", "passeioPax": "", "passeioConf": "", "passeioValor": "", ' +
-    '  "obs": "" ' +
-    '} ' +
+    'Extraia os dados REAIS do documento e retorne SOMENTE um JSON válido (sem markdown) com esta estrutura: ' +
+    '{"tipo":"voo","trechos":[{"nvoo":"NUMERO_VOO","origem":"IATA_ORIGEM","destino":"IATA_DESTINO","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","cabine":"CABINE"}],"pnr":"","pax":0,"ciaIda":"","programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","obs":""} ' +
     'INSTRUÇÕES: ' +
-    '1) Em trechos[], liste TODOS os segmentos de voo do documento em ordem cronológica, cada um com seu nvoo, origem, destino (códigos IATA ou nome da cidade/aeroporto), data (YYYY-MM-DD), horaPartida, horaChegada e cabine. ' +
-    '2) pax = número total de passageiros listados. ' +
-    '3) milhasTotal = total bruto de milhas no documento (sem dividir). ' +
-    '4) cabine: use exatamente o que está no documento (Business, PremiumEconomy, Economy, etc). ' +
-    '5) Preencha apenas os campos presentes. Deixe vazio o que não encontrar.';
+    '1) trechos[]: liste CADA segmento/trecho/voo do itinerário separadamente com os dados REAIS extraídos do documento. Use IATA de 3 letras para origem e destino. ' +
+    '2) pax = número total de passageiros nomeados no documento. ' +
+    '3) milhasTotal = total bruto de milhas/pontos mostrado no documento (SEM dividir por passageiro). ' +
+    '4) cabine: copie exatamente como aparece no documento (ex: Business, PremiumEconomy, Economy). ' +
+    '5) Preencha apenas os campos presentes no documento. Campos sem informação deixe como string vazia ou 0.';
 
   // Processar trechos no servidor para derivar conexao, destino final, etc.
   function processarTrechos(d) {
