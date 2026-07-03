@@ -606,8 +606,10 @@ app.post('/ia/extrair-reserva', (req, res) => {
     'Você é um assistente de extração de dados de documentos de viagem. ' +
     'Analise este documento (' + (isPdf ? 'PDF' : 'imagem') + ') de ' + (tipoCampos || 'reserva de viagem') + '. ' +
     'Retorne SOMENTE um JSON válido (sem markdown) com os campos: ' +
-    'tipo (voo/hotel/carro/passeio), origem, destino, dataIda (YYYY-MM-DD), horaPartida (HH:MM), horaChegada (HH:MM), ' +
-    'ciaIda, nvooIda, dataVolta (YYYY-MM-DD), horaPartidaVolta, horaChegadaVolta, ciaVolta, nvooVolta, ' +
+    'tipo (voo/hotel/carro/passeio), origem (código IATA ou cidade de partida), destino (código IATA ou cidade de chegada final), ' +
+    'dataIda (YYYY-MM-DD), horaPartida (HH:MM — horário de partida da origem), horaChegada (HH:MM — horário de chegada no destino FINAL), ' +
+    'conexao (código IATA ou cidade da escala — preencher apenas se houver conexão/escala; NUNCA usar dataVolta para dados de conexão), ' +
+    'ciaIda, nvooIda, dataVolta (YYYY-MM-DD — preencher apenas se for realmente um voo de volta ao ponto de origem), horaPartidaVolta, horaChegadaVolta, ciaVolta, nvooVolta, ' +
     'classe, pnr, pax, programa, milhas, valor, ' +
     'hotelNome, hotelDestino, hotelQuarto, checkin (YYYY-MM-DD), checkout (YYYY-MM-DD), noites, hospedes, hotelConf, regime, hotelValor, ' +
     'locadora, carroCat, retLocal, devLocal, retData (YYYY-MM-DD), devData (YYYY-MM-DD), carroConf, carroValor, ' +
