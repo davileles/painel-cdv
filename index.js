@@ -612,13 +612,14 @@ app.post('/ia/extrair-reserva', (req, res) => {
     '4) Voo de VOLTA só existe se o passageiro retorna à cidade de ORIGEM. Se os trechos têm datas próximas e destinos diferentes, são todos trechos de IDA com conexão. ' +
     '5) horaChegada = horário de chegada no destino FINAL da ida (não na escala). ' +
     '6) ciaIda = companhia aérea do primeiro trecho (ex: LATAM). ' +
-    '7) nvooIda = número do primeiro voo. Se houver conexão, o número do voo da conexão pode ser ignorado. ' +
-    '8) pax = número total de passageiros listados no documento. ' +
+    '7) nvooIda = TODOS os números de voo da ida separados por vírgula (ex: "LA 8079, LA 3080"). ' +
+    '8) conexao = código IATA do aeroporto de escala (ex: GRU). SEMPRE preencher quando houver mais de um trecho na ida. ' +
+    '9) pax = número total de passageiros listados no documento. ' +
     'Retorne SOMENTE um JSON válido (sem markdown) com os campos: ' +
     'tipo (voo/hotel/carro/passeio), origem (IATA ou cidade de partida), destino (IATA ou cidade de chegada FINAL da ida), ' +
     'dataIda (YYYY-MM-DD), horaPartida (HH:MM — partida da origem), horaChegada (HH:MM — chegada no destino FINAL da ida), ' +
-    'conexao (IATA ou cidade da escala na IDA — só se houver), ' +
-    'ciaIda (companhia do primeiro trecho), nvooIda (número do primeiro voo), ' +
+    'conexao (IATA do aeroporto de escala na IDA — OBRIGATÓRIO se houver mais de um trecho), ' +
+    'ciaIda (companhia aérea), nvooIda (TODOS os números de voo da ida separados por vírgula), ' +
     'dataVolta (YYYY-MM-DD — SÓ se houver voo de retorno à origem), ' +
     'horaPartidaVolta (HH:MM), horaChegadaVolta (HH:MM), ' +
     'conexaoVolta (IATA ou cidade de escala na volta — só se houver), ciaVolta, nvooVolta, ' +
