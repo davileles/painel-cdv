@@ -3234,8 +3234,10 @@ document.getElementById('main-tabs').addEventListener('click',e=>{
 (function(){
   try{
     const saved=localStorage.getItem('cdv_active_tab');
-    if(saved && saved!=='comparador') switchTab(saved);
-  }catch(e){}
+    // Milhas requer login — não restaura automaticamente para evitar tela em branco
+    if(saved && saved !== 'milhas') switchTab(saved);
+    else switchTab('comparador');
+  }catch(e){ switchTab('comparador'); }
 })();
 
 
@@ -3287,9 +3289,9 @@ function mostrarPainel(sessao) {
   // Mostra nome no header se existir
   const nomeEl = document.getElementById('header-nome-membro');
   if (nomeEl && sessao?.nome) nomeEl.textContent = '👤 ' + sessao.nome.split(' ')[0];
-  // Exibe aba de dev apenas para emails autorizados
+  // Aba Gestão de Milhas disponível para todos os membros
   const tabMilhas = document.querySelector('.main-tab[data-tab="milhas"]');
-  if (tabMilhas) tabMilhas.style.display = DEV_EMAILS.includes((sessao?.email||'').toLowerCase()) ? '' : 'none';
+  if (tabMilhas) tabMilhas.style.display = '';
 }
 async function fazerLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
