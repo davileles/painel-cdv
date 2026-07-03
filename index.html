@@ -721,6 +721,7 @@
             <label class="milhas-label">Custo dos Pts Comprados (R$)</label>
             <input type="number" id="ml-trans-custo-compra" class="milhas-input" placeholder="Ex: 1470.00" min="0" step="0.01" oninput="milhasCalcMisto()"/>
             <div id="ml-trans-cpm-misto" style="font-size:11px;color:#60a5fa;font-weight:700;margin-top:4px;min-height:16px"></div>
+            <div id="ml-trans-cpm-destino" style="font-size:11px;color:#34d399;font-weight:700;margin-top:2px;min-height:16px"></div>
           </div>
         </div>
       </div>
@@ -2194,12 +2195,34 @@ function milhasCalcMisto(){
   const destino  = Math.round(total * (1 + bonus/100));
   if(total > 0) document.getElementById('ml-trans-pts-total').value = total;
   if(total > 0) document.getElementById('ml-trans-pts-destino-misto').value = destino;
-  const cpmEl = document.getElementById('ml-trans-cpm-misto');
+  const cpmEl    = document.getElementById('ml-trans-cpm-misto');
+  const cpmDestEl = document.getElementById('ml-trans-cpm-destino');
+
+  // CPM origem: custo dos pontos comprados / quantidade comprada
   if(custo > 0 && comprado > 0){
-    const cpm = (custo / comprado) * 1000;
-    cpmEl.textContent = `Custo do milheiro comprado: R$ ${cpm.toFixed(2).replace('.',',')}`;
+    const cpmOrigem = (custo / comprado) * 1000;
+    cpmEl.textContent = `📦 Milheiro comprado (origem): R$ ${cpmOrigem.toFixed(2).replace('.',',')}`;
   } else {
     cpmEl.textContent = '';
+  }
+
+  // CPM destino: custo total (FIFO saldo + compra) / pontos creditados no destino
+  // Só calcula se tiver destino (com bônus aplicado)
+  if(destino > 0 && (custo > 0 || saldo > 0)){
+    // Custo FIFO do saldo que sai da origem
+    const email = milhasGetEmail();
+    const origem = document.getElementById('ml-prog-origem')?.value;
+    const fifoSaldo = (origem && saldo > 0) ? calcularCustoFIFO(origem, saldo, milhasRegistros, email) : {custoTotal:0};
+    const custoTotal = fifoSaldo.custoTotal + custo;
+    if(custoTotal > 0){
+      const cpmDestino = (custoTotal / destino) * 1000;
+      const bonusLabel = bonus > 0 ? ` (com ${bonus}% bônus)` : '';
+      cpmDestEl.textContent = `🎯 Milheiro no destino${bonusLabel}: R$ ${cpmDestino.toFixed(2).replace('.',',')}`;
+    } else {
+      cpmDestEl.textContent = '';
+    }
+  } else {
+    cpmDestEl.textContent = '';
   }
 }
 
@@ -2427,6 +2450,7 @@ async function salvarLancamento(){
   document.getElementById('ml-trans-pts-destino-misto').value='';
   document.getElementById('ml-trans-custo-compra').value='';
   document.getElementById('ml-trans-cpm-misto').textContent='';
+  document.getElementById('ml-trans-cpm-destino').textContent='';
   milhasSetModalidade('pontos');
   document.getElementById('ml-obs').value='';
   document.getElementById('ml-cpm-preview').textContent='';
