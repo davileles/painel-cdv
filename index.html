@@ -759,6 +759,46 @@
         <input type="number" id="ml-trans-custo" class="milhas-input" placeholder="Ex: 50.00" min="0" step="0.01"/>
       </div>
 
+      <!-- CAMPOS EXTRAS POR SUBCATEGORIA (débito) -->
+      <div id="ml-extra-passagem" style="display:none;margin-bottom:12px;background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.15);border-radius:10px;padding:14px">
+        <div style="font-size:10px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">✈️ Detalhes da Passagem <span style="font-weight:400;color:var(--muted)">(opcionais)</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div><label class="milhas-label">Localizador</label><input type="text" id="ml-pass-localizador" class="milhas-input" placeholder="Ex: ABC123"/></div>
+          <div><label class="milhas-label">Companhia Aérea</label><input type="text" id="ml-pass-cia" class="milhas-input" placeholder="Ex: LATAM, Azul…"/></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div><label class="milhas-label">Origem</label><input type="text" id="ml-pass-origem" class="milhas-input" placeholder="Ex: GRU"/></div>
+          <div><label class="milhas-label">Destino</label><input type="text" id="ml-pass-destino" class="milhas-input" placeholder="Ex: LIS"/></div>
+        </div>
+        <div><label class="milhas-label">Valor em Dinheiro (R$) <span style="color:var(--muted);font-weight:400">(opcional)</span></label><input type="number" id="ml-pass-valor" class="milhas-input" placeholder="Ex: 3200.00" min="0" step="0.01"/></div>
+      </div>
+      <div id="ml-extra-hospedagem" style="display:none;margin-bottom:12px;background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.15);border-radius:10px;padding:14px">
+        <div style="font-size:10px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">🏨 Detalhes da Hospedagem <span style="font-weight:400;color:var(--muted)">(opcionais)</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div><label class="milhas-label">Nº da Reserva</label><input type="text" id="ml-hosp-reserva" class="milhas-input" placeholder="Ex: 987654321"/></div>
+          <div><label class="milhas-label">Hospedagem</label><input type="text" id="ml-hosp-nome" class="milhas-input" placeholder="Ex: Marriott São Paulo"/></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div><label class="milhas-label">Check-in</label><input type="date" id="ml-hosp-checkin" class="milhas-input"/></div>
+          <div><label class="milhas-label">Check-out</label><input type="date" id="ml-hosp-checkout" class="milhas-input"/></div>
+        </div>
+        <div><label class="milhas-label">Valor em Dinheiro (R$) <span style="color:var(--muted);font-weight:400">(opcional)</span></label><input type="number" id="ml-hosp-valor" class="milhas-input" placeholder="Ex: 1500.00" min="0" step="0.01"/></div>
+      </div>
+      <div id="ml-extra-locacao" style="display:none;margin-bottom:12px;background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.15);border-radius:10px;padding:14px">
+        <div style="font-size:10px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">🚗 Detalhes da Locação <span style="font-weight:400;color:var(--muted)">(opcionais)</span></div>
+        <div style="margin-bottom:10px"><label class="milhas-label">Nº da Reserva</label><input type="text" id="ml-loc-reserva" class="milhas-input" placeholder="Ex: LR123456"/></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div><label class="milhas-label">Data de Retirada</label><input type="date" id="ml-loc-retirada" class="milhas-input"/></div>
+          <div><label class="milhas-label">Data de Entrega</label><input type="date" id="ml-loc-entrega" class="milhas-input"/></div>
+        </div>
+        <div><label class="milhas-label">Valor em Dinheiro (R$) <span style="color:var(--muted);font-weight:400">(opcional)</span></label><input type="number" id="ml-loc-valor" class="milhas-input" placeholder="Ex: 800.00" min="0" step="0.01"/></div>
+      </div>
+      <div id="ml-extra-produto" style="display:none;margin-bottom:12px;background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.15);border-radius:10px;padding:14px">
+        <div style="font-size:10px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">🛍️ Detalhes do Produto <span style="font-weight:400;color:var(--muted)">(opcionais)</span></div>
+        <div style="margin-bottom:10px"><label class="milhas-label">Produto</label><input type="text" id="ml-prod-nome" class="milhas-input" placeholder="Ex: Headphone Sony WH-1000XM5"/></div>
+        <div style="margin-bottom:10px"><label class="milhas-label">Nº do Pedido</label><input type="text" id="ml-prod-pedido" class="milhas-input" placeholder="Ex: PED-789456"/></div>
+        <div><label class="milhas-label">Valor em Dinheiro (R$) <span style="color:var(--muted);font-weight:400">(opcional)</span></label><input type="number" id="ml-prod-valor" class="milhas-input" placeholder="Ex: 2500.00" min="0" step="0.01"/></div>
+      </div>
       <!-- OBSERVAÇÃO -->
       <div style="margin-bottom:20px">
         <label class="milhas-label">Observação <span style="color:var(--muted);font-weight:500">(opcional)</span></label>
@@ -2159,6 +2199,18 @@ function milhasUpdateCustoField(){
   const entry=list.find(s=>s.id===subcat);
   document.getElementById('ml-custo-wrap').style.display=(entry?.temCusto)?'block':'none';
   document.getElementById('ml-cpm-preview').textContent='';
+  milhasToggleExtras(t, subcat);
+}
+
+function milhasToggleExtras(tipo, subcat){
+  ['passagem','hospedagem','locacao','produto'].forEach(id=>{
+    const el=document.getElementById('ml-extra-'+id);
+    if(el) el.style.display='none';
+  });
+  if(tipo!=='debito') return;
+  const mapa={passagem:'passagem',hospedagem:'hospedagem',locacao:'locacao',produto:'produto'};
+  const alvo=mapa[subcat];
+  if(alvo){ const el=document.getElementById('ml-extra-'+alvo); if(el) el.style.display='block'; }
 }
 
 let milhasModalidadeAtual = 'pontos';
@@ -2412,7 +2464,53 @@ async function salvarLancamento(){
     const custo=parseFloat(document.getElementById('ml-custo')?.value)||0;
     if(!prog){fb.textContent='Selecione o programa.';return;}
     if(!qtde){fb.textContent='Informe a quantidade de milhas.';return;}
-    novos.push({id:Date.now()+'_'+Math.random().toString(36).slice(2,6),email,data,tipo:t,operacao:t,subcat,programa:prog,qtde,custo,obs});
+    if(t==='debito'){
+      const regsEmail=milhasRegistros.filter(r=>r.email===email||!r.email);
+      const saldoProg=regsEmail.reduce((acc,r)=>{
+        if(r.programa!==prog) return acc;
+        return r.tipo==='credito'?acc+r.qtde:r.tipo==='debito'?acc-r.qtde:acc;
+      },0);
+      if(qtde>saldoProg){
+        fb.textContent=`Saldo insuficiente em ${milhasNomePrograma(prog)}: disponível ${milhasFormatNum(saldoProg)} pts, solicitado ${milhasFormatNum(qtde)} pts.`;
+        return;
+      }
+    }
+    const extra={};
+    if(t==='debito'){
+      if(subcat==='passagem'){
+        const loc=document.getElementById('ml-pass-localizador')?.value.trim();
+        const cia=document.getElementById('ml-pass-cia')?.value.trim();
+        const ori=document.getElementById('ml-pass-origem')?.value.trim();
+        const dst=document.getElementById('ml-pass-destino')?.value.trim();
+        const val=parseFloat(document.getElementById('ml-pass-valor')?.value)||0;
+        if(loc) extra.localizador=loc; if(cia) extra.cia=cia;
+        if(ori) extra.origemVoo=ori; if(dst) extra.destinoVoo=dst;
+        if(val) extra.valorDinheiro=val;
+      } else if(subcat==='hospedagem'){
+        const res=document.getElementById('ml-hosp-reserva')?.value.trim();
+        const nom=document.getElementById('ml-hosp-nome')?.value.trim();
+        const cin=document.getElementById('ml-hosp-checkin')?.value;
+        const cout=document.getElementById('ml-hosp-checkout')?.value;
+        const val=parseFloat(document.getElementById('ml-hosp-valor')?.value)||0;
+        if(res) extra.reserva=res; if(nom) extra.hospedagem=nom;
+        if(cin) extra.checkin=cin; if(cout) extra.checkout=cout;
+        if(val) extra.valorDinheiro=val;
+      } else if(subcat==='locacao'){
+        const res=document.getElementById('ml-loc-reserva')?.value.trim();
+        const ret=document.getElementById('ml-loc-retirada')?.value;
+        const ent=document.getElementById('ml-loc-entrega')?.value;
+        const val=parseFloat(document.getElementById('ml-loc-valor')?.value)||0;
+        if(res) extra.reserva=res; if(ret) extra.retirada=ret;
+        if(ent) extra.entrega=ent; if(val) extra.valorDinheiro=val;
+      } else if(subcat==='produto'){
+        const nom=document.getElementById('ml-prod-nome')?.value.trim();
+        const ped=document.getElementById('ml-prod-pedido')?.value.trim();
+        const val=parseFloat(document.getElementById('ml-prod-valor')?.value)||0;
+        if(nom) extra.produto=nom; if(ped) extra.pedido=ped;
+        if(val) extra.valorDinheiro=val;
+      }
+    }
+    novos.push({id:Date.now()+'_'+Math.random().toString(36).slice(2,6),email,data,tipo:t,operacao:t,subcat,programa:prog,qtde,custo,obs,...extra});
   }
 
   // ── Atualiza snapshot FIFO para cada novo lançamento ──────────────────
@@ -2454,6 +2552,12 @@ async function salvarLancamento(){
   milhasSetModalidade('pontos');
   document.getElementById('ml-obs').value='';
   document.getElementById('ml-cpm-preview').textContent='';
+  ['ml-pass-localizador','ml-pass-cia','ml-pass-origem','ml-pass-destino','ml-pass-valor',
+   'ml-hosp-reserva','ml-hosp-nome','ml-hosp-checkin','ml-hosp-checkout','ml-hosp-valor',
+   'ml-loc-reserva','ml-loc-retirada','ml-loc-entrega','ml-loc-valor',
+   'ml-prod-nome','ml-prod-pedido','ml-prod-valor'
+  ].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  milhasToggleExtras('','');
   setTimeout(()=>{fb.textContent='';},3000);
   renderMilhasDashboard();
   renderMilhasTabela();
@@ -3102,6 +3206,23 @@ function verDetalhesLancamento(id){
   if(r.modalidade && r.modalidade !== 'pontos')
     rows.push(['🔄 Modalidade', r.modalidade==='pontos_dinheiro'?'Pontos + Dinheiro':'Pontos']);
 
+  if(r.localizador) rows.push(['🔖 Localizador', r.localizador]);
+  if(r.cia)         rows.push(['✈️ Companhia', r.cia]);
+  if(r.origemVoo&&r.destinoVoo) rows.push(['🗺️ Rota', `${r.origemVoo} → ${r.destinoVoo}`]);
+  else if(r.origemVoo)  rows.push(['🛫 Origem', r.origemVoo]);
+  else if(r.destinoVoo) rows.push(['🛬 Destino', r.destinoVoo]);
+  if(r.hospedagem)  rows.push(['🏨 Hospedagem', r.hospedagem]);
+  if(r.reserva)     rows.push(['📋 Nº Reserva', r.reserva]);
+  if(r.checkin)     rows.push(['📅 Check-in', milhasFormatData(r.checkin)]);
+  if(r.checkout)    rows.push(['📅 Check-out', milhasFormatData(r.checkout)]);
+  if(r.retirada)    rows.push(['📅 Retirada', milhasFormatData(r.retirada)]);
+  if(r.entrega)     rows.push(['📅 Entrega', milhasFormatData(r.entrega)]);
+  if(r.produto)     rows.push(['🛍️ Produto', r.produto]);
+  if(r.pedido)      rows.push(['📦 Nº Pedido', r.pedido]);
+  if(r.valorDinheiro>0){
+    const economia = r.custo>0 ? ` — economia de R$ ${(r.valorDinheiro-r.custo).toLocaleString('pt-BR',{minimumFractionDigits:2})}` : '';
+    rows.push(['💵 Valor em Dinheiro','R$ '+r.valorDinheiro.toLocaleString('pt-BR',{minimumFractionDigits:2})+economia]);
+  }
   if(r.assId)
     rows.push(['🔁 Origem', 'Assinatura recorrente']);
 
