@@ -653,16 +653,17 @@
       <!-- PROGRAMA ORIGEM (transferência) -->
       <div id="ml-trans-origem-wrap" style="display:none;margin-bottom:12px">
         <!-- Programas -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px">
           <div>
             <label class="milhas-label">Programa de Origem</label>
-            <select id="ml-prog-origem" class="milhas-input"></select>
+            <select id="ml-prog-origem" class="milhas-input" onchange="milhasCheckParidade()"></select>
           </div>
           <div>
             <label class="milhas-label">Programa de Destino</label>
-            <select id="ml-prog-destino" class="milhas-input"></select>
+            <select id="ml-prog-destino" class="milhas-input" onchange="milhasCheckParidade()"></select>
           </div>
         </div>
+        <div id="ml-paridade-aviso" style="display:none;margin-bottom:12px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);border-radius:8px;padding:10px 14px;font-size:12px;color:#fbbf24;font-weight:600;font-family:'Montserrat',sans-serif"></div>
 
         <!-- Modalidade -->
         <div style="margin-bottom:12px">
@@ -2289,11 +2290,50 @@ function milhasSetModalidade(m){
   document.getElementById('ml-trans-custo-wrap').style.display = isPM ? 'none' : 'block';
 }
 
+// ── Tabela de paridades de transferência ─────────────────────────────────
+// Formato: { 'origem:destino': paridade }
+// paridade = quantos pontos da origem valem 1 ponto no destino
+// Ex: esfera→iberia = 2:1 significa que 2 pts esfera = 1 milha Iberia
+const TRANSFER_PARIDADES = {
+  'esfera:iberia':     2.0,    // 2 pts Esfera = 1 milha Iberia Plus
+  'esfera:aadvantage': 3.5,    // 3,5 pts Esfera = 1 milha AAdvantage
+};
+
+function milhasGetParidade(){
+  const origem  = document.getElementById('ml-prog-origem')?.value;
+  const destino = document.getElementById('ml-prog-destino')?.value;
+  if(!origem || !destino) return 1;
+  return TRANSFER_PARIDADES[`${origem}:${destino}`] || 1;
+}
+
+function milhasCheckParidade(){
+  const origem  = document.getElementById('ml-prog-origem')?.value;
+  const destino = document.getElementById('ml-prog-destino')?.value;
+  const aviso   = document.getElementById('ml-paridade-aviso');
+  if(!aviso) return;
+  const paridade = TRANSFER_PARIDADES[`${origem}:${destino}`];
+  if(paridade && paridade !== 1){
+    const nomeOri = milhasNomePrograma(origem);
+    const nomeDst = milhasNomePrograma(destino);
+    aviso.innerHTML = `⚠️ Paridade de deságio: <strong>${paridade.toFixed(1).replace('.',',')} pts ${nomeOri}</strong> = <strong>1 pt ${nomeDst}</strong>. Os pontos no destino já serão calculados com essa conversão.`;
+    aviso.style.display = 'block';
+  } else {
+    aviso.style.display = 'none';
+  }
+  // Recalcular com nova paridade
+  if(document.getElementById('ml-trans-modo-pontos')?.style.display !== 'none'){
+    milhasCalcBonusTrans();
+  } else {
+    milhasCalcMisto();
+  }
+}
+
 function milhasCalcBonusTrans(){
   const orig = parseFloat(document.getElementById('ml-trans-pts-origem')?.value)||0;
   const bonus = parseFloat(document.getElementById('ml-trans-bonus')?.value)||0;
   if(orig > 0){
-    const dest = Math.round(orig * (1 + bonus/100));
+    const paridade = milhasGetParidade();
+    const dest = Math.round((orig / paridade) * (1 + bonus/100));
     document.getElementById('ml-trans-pts-destino').value = dest;
   }
 }
@@ -2304,7 +2344,8 @@ function milhasCalcMisto(){
   const bonus    = parseFloat(document.getElementById('ml-trans-bonus-misto')?.value)||0;
   const custo    = parseFloat(document.getElementById('ml-trans-custo-compra')?.value)||0;
   const total    = saldo + comprado;
-  const destino  = Math.round(total * (1 + bonus/100));
+  const paridade = milhasGetParidade();
+  const destino  = Math.round((total / paridade) * (1 + bonus/100));
   if(total > 0) document.getElementById('ml-trans-pts-total').value = total;
   if(total > 0) document.getElementById('ml-trans-pts-destino-misto').value = destino;
   const cpmEl    = document.getElementById('ml-trans-cpm-misto');
@@ -2502,6 +2543,8 @@ async function salvarLancamento(){
         fb.textContent=`Saldo insuficiente em ${milhasNomePrograma(origem)}: disponível ${milhasFormatNum(saldoOrigem)} pts, solicitado ${milhasFormatNum(ptsOrig)} pts.`;
         return;
       }
+      // Verifica paridade e avisa se houve deságio
+      const paridadeSalvar = TRANSFER_PARIDADES[`${origem}:${destino}`];
       // Calcula custo herdado via FIFO dos pontos da origem
       const fifo = calcularCustoFIFO(origem, ptsOrig, milhasRegistros, email);
       // Custo no destino = custo FIFO herdado da origem + custo manual de taxa (se houver)
@@ -2614,6 +2657,8 @@ async function salvarLancamento(){
   document.getElementById('ml-trans-cpm-misto').textContent='';
   document.getElementById('ml-trans-cpm-destino').textContent='';
   milhasSetModalidade('pontos');
+  const parAviso = document.getElementById('ml-paridade-aviso');
+  if(parAviso){ parAviso.style.display='none'; parAviso.innerHTML=''; }
   document.getElementById('ml-obs').value='';
   document.getElementById('ml-cpm-preview').textContent='';
   ['ml-pass-localizador','ml-pass-cia','ml-pass-origem','ml-pass-destino','ml-pass-valor',
