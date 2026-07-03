@@ -2773,13 +2773,48 @@ function renderMilhasDashboard(){
   if(milhasChartDist){milhasChartDist.destroy();milhasChartDist=null;}
   const ctxDist=document.getElementById('chart-distribuicao');
   if(ctxDist&&progComSaldo.length){
+    const distSaldos = progComSaldo.map(p=>saldos[p.id]);
     milhasChartDist=new Chart(ctxDist,{
       type:'doughnut',
       data:{
         labels:progComSaldo.map(p=>p.name),
-        datasets:[{data:progComSaldo.map(p=>saldos[p.id]),backgroundColor:progComSaldo.map(p=>p.color),borderWidth:0,hoverOffset:6}]
+        datasets:[{data:distSaldos,backgroundColor:progComSaldo.map(p=>p.color),borderWidth:0,hoverOffset:6}]
       },
-      options:{plugins:{legend:{position:'right',labels:{color:'#8a9bbf',font:{family:'Montserrat',size:11},boxWidth:12}}},cutout:'60%',maintainAspectRatio:false}
+      options:{
+        plugins:{
+          legend:{
+            position:'right',
+            labels:{
+              color:'#8a9bbf',
+              font:{family:'Montserrat',size:11},
+              boxWidth:12,
+              generateLabels(chart){
+                const ds=chart.data.datasets[0];
+                return chart.data.labels.map((label,i)=>({
+                  text: `${label}  ${milhasFormatNum(ds.data[i])} pts`,
+                  fillStyle: ds.backgroundColor[i],
+                  strokeStyle: ds.backgroundColor[i],
+                  lineWidth: 0,
+                  hidden: false,
+                  index: i
+                }));
+              }
+            }
+          },
+          tooltip:{
+            callbacks:{
+              label(ctx){
+                const val = ctx.parsed;
+                const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                const pct = total>0 ? ((val/total)*100).toFixed(1) : 0;
+                return `  ${milhasFormatNum(val)} pts (${pct}%)`;
+              }
+            }
+          }
+        },
+        cutout:'60%',
+        maintainAspectRatio:false
+      }
     });
   } else if(ctxDist){
     ctxDist.getContext('2d').clearRect(0,0,ctxDist.width,ctxDist.height);
