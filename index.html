@@ -803,13 +803,13 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
           <div><label class="milhas-label">Origem</label>
             <div class="iata-wrap">
-              <input type="text" id="ml-pass-origem" class="milhas-input" placeholder="Ex: GRU ou Belo…" autocomplete="off" oninput="iataAutocomplete(this,this.nextElementSibling)" onkeydown="if(event.key==='Escape')this.nextElementSibling.style.display='none'"/>
+              <input type="text" id="ml-pass-origem" class="milhas-input" placeholder="Ex: GRU ou Belo…" autocomplete="off" oninput="iataAutocomplete(this,this.nextElementSibling)" onkeydown="iataKeydown(event,this,this.nextElementSibling)"/>
               <div class="iata-dropdown"></div>
             </div>
           </div>
           <div><label class="milhas-label">Destino</label>
             <div class="iata-wrap">
-              <input type="text" id="ml-pass-destino" class="milhas-input" placeholder="Ex: LIS ou Lisboa…" autocomplete="off" oninput="iataAutocomplete(this,this.nextElementSibling)" onkeydown="if(event.key==='Escape')this.nextElementSibling.style.display='none'"/>
+              <input type="text" id="ml-pass-destino" class="milhas-input" placeholder="Ex: LIS ou Lisboa…" autocomplete="off" oninput="iataAutocomplete(this,this.nextElementSibling)" onkeydown="iataKeydown(event,this,this.nextElementSibling)"/>
               <div class="iata-dropdown"></div>
             </div>
           </div>
@@ -824,7 +824,7 @@
         </div>
         <div style="margin-bottom:10px"><label class="milhas-label">Cidade / Aeroporto</label>
           <div class="iata-wrap">
-            <input type="text" id="ml-hosp-cidade" class="milhas-input" placeholder="Ex: GRU ou São Paulo…" autocomplete="off" oninput="iataAutocomplete(this,this.nextElementSibling)" onkeydown="if(event.key==='Escape')this.nextElementSibling.style.display='none'"/>
+            <input type="text" id="ml-hosp-cidade" class="milhas-input" placeholder="Ex: GRU ou São Paulo…" autocomplete="off" oninput="iataAutocomplete(this,this.nextElementSibling)" onkeydown="iataKeydown(event,this,this.nextElementSibling)"/>
             <div class="iata-dropdown"></div>
           </div>
         </div>
@@ -840,7 +840,7 @@
           <div><label class="milhas-label">Nº da Reserva</label><input type="text" id="ml-loc-reserva" class="milhas-input" placeholder="Ex: LR123456"/></div>
           <div><label class="milhas-label">Cidade / Aeroporto</label>
             <div class="iata-wrap">
-              <input type="text" id="ml-loc-cidade" class="milhas-input" placeholder="Ex: GRU ou Curitiba…" autocomplete="off" oninput="iataAutocomplete(this,this.nextElementSibling)" onkeydown="if(event.key==='Escape')this.nextElementSibling.style.display='none'"/>
+              <input type="text" id="ml-loc-cidade" class="milhas-input" placeholder="Ex: GRU ou Curitiba…" autocomplete="off" oninput="iataAutocomplete(this,this.nextElementSibling)" onkeydown="iataKeydown(event,this,this.nextElementSibling)"/>
               <div class="iata-dropdown"></div>
             </div>
           </div>
@@ -3516,6 +3516,8 @@ function iataAutocomplete(inputEl, dropdownEl){
     a.label.toLowerCase().includes(q)
   ).slice(0, 10);
   if(!matches.length){ dropdownEl.style.display='none'; return; }
+  // Guarda matches no dropdown para acesso pelo onkeydown
+  dropdownEl._matches = matches;
   dropdownEl.innerHTML = matches.map(a=>
     `<div class="iata-option" onmousedown="iataSelect(event,'${a.code}','${a.label.replace(/'/g,"\\'")}')">
       <span class="iata-code">${a.code}</span>${a.label.replace(/ *\(.*?\)/g,'').trim()}
@@ -3532,6 +3534,31 @@ function iataSelect(e, code, label){
   const dropdown = wrap.querySelector('.iata-dropdown');
   if(input) input.value = code;
   if(dropdown) dropdown.style.display='none';
+}
+
+function iataKeydown(e, inputEl, dropdownEl){
+  if(e.key === 'Escape'){
+    dropdownEl.style.display='none';
+    return;
+  }
+  if(e.key === 'Enter'){
+    const matches = dropdownEl._matches || [];
+    if(matches.length === 1){
+      // Só 1 resultado — seleciona automaticamente
+      e.preventDefault();
+      inputEl.value = matches[0].code;
+      dropdownEl.style.display='none';
+    } else if(matches.length > 1){
+      // Verifica se o texto digitado bate exatamente com algum código IATA
+      const exact = matches.find(a => a.code.toLowerCase() === inputEl.value.trim().toLowerCase());
+      if(exact){
+        e.preventDefault();
+        inputEl.value = exact.code;
+        dropdownEl.style.display='none';
+      }
+      // Caso contrário, deixa o Enter seguir normalmente (submeter form, etc.)
+    }
+  }
 }
 
 document.addEventListener('click', function(e){
