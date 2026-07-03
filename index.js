@@ -608,12 +608,12 @@ app.post('/ia/extrair-reserva', (req, res) => {
     'REGRAS CRÍTICAS PARA VOOS: ' +
     '1) origem = cidade/IATA de PARTIDA DO PRIMEIRO VOO. ' +
     '2) destino = cidade/IATA de CHEGADA DO ÚLTIMO TRECHO DA IDA (destino final do passageiro). ' +
-    '3) Se houver 2 ou mais trechos na IDA (ex: AMS→GRU→FLN), o destino é FLN e a conexão é GRU. NÃO use os trechos intermediários como voo de volta. ' +
-    '4) Voo de VOLTA só existe se o passageiro retorna à cidade de ORIGEM. Se os trechos têm datas próximas e destinos diferentes, são todos trechos de IDA com conexão. ' +
-    '5) horaChegada = horário de chegada no destino FINAL da ida (não na escala). ' +
-    '6) ciaIda = companhia aérea do primeiro trecho (ex: LATAM). ' +
+    '3) Se houver 2 ou mais trechos na IDA: o DESTINO do primeiro trecho é a CONEXÃO, e o DESTINO do último trecho é o destino final. Exemplo: trecho 1 AMS→GRU + trecho 2 GRU→FLN = origem:AMS, destino:FLN, conexao:GRU. ' +
+    '4) Voo de VOLTA só existe se o passageiro retorna fisicamente à cidade de ORIGEM do primeiro trecho. ' +
+    '5) horaChegada = horário de chegada no destino FINAL da ida (destino do ÚLTIMO trecho, não da escala). ' +
+    '6) ciaIda = companhia aérea (ex: LATAM). ' +
     '7) nvooIda = TODOS os números de voo da ida separados por vírgula (ex: "LA 8079, LA 3080"). ' +
-    '8) conexao = código IATA do aeroporto de escala (ex: GRU). SEMPRE preencher quando houver mais de um trecho na ida. ' +
+    '8) conexao = código IATA do DESTINO DO PRIMEIRO TRECHO quando há mais de um trecho de ida. Ex: se trecho 1 vai AMS→GRU e trecho 2 vai GRU→FLN, então conexao=GRU. OBRIGATÓRIO quando nvooIda contém mais de um voo. ' +
     '9) pax = número total de passageiros listados no documento. ' +
     '10) milhas = milhas POR PASSAGEIRO. Se o documento mostrar o total de milhas, divida pelo número de passageiros (pax). Ex: 870.804 milhas para 2 passageiros → milhas = 435402. ' +
     '11) classe = classe de cabine em português: se o documento indicar "Business" ou "Executiva" → "Executiva"; "Economy" ou "Econômica" → "Econômica"; "Premium Economy" → "Econômica Premium"; "First" ou "Primeira" → "Primeira Classe". ' +
