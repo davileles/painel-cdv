@@ -501,6 +501,37 @@
   </div>
 
   
+  <!-- MODAL DE EDIÇÃO DE LANÇAMENTO -->
+  <div id="milhas-edit-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;width:90%;max-width:480px;position:relative">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div style="font-size:15px;font-weight:800;color:var(--text)">✏️ Editar Lançamento</div>
+        <button onclick="fecharEditModal()" style="background:transparent;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;padding:0 4px">×</button>
+      </div>
+      <div style="margin-bottom:12px">
+        <label class="milhas-label">Data</label>
+        <input type="date" id="edit-data" class="milhas-input"/>
+      </div>
+      <div style="margin-bottom:12px">
+        <label class="milhas-label">Quantidade de Milhas/Pontos</label>
+        <input type="number" id="edit-qtde" class="milhas-input" min="0"/>
+      </div>
+      <div style="margin-bottom:12px">
+        <label class="milhas-label">Custo (R$) <span style="color:var(--muted);font-weight:500">(opcional)</span></label>
+        <input type="number" id="edit-custo" class="milhas-input" min="0" step="0.01"/>
+      </div>
+      <div style="margin-bottom:20px">
+        <label class="milhas-label">Observação</label>
+        <input type="text" id="edit-obs" class="milhas-input"/>
+      </div>
+      <div id="edit-feedback" style="font-size:12px;font-weight:700;min-height:16px;margin-bottom:12px;text-align:center"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button onclick="fecharEditModal()" style="padding:10px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">Cancelar</button>
+        <button onclick="salvarEdicao()" style="padding:10px;background:var(--cdv-coral);border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif">Salvar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- VIEW: CARTÕES -->
   <div id="milhas-view-cartoes" style="padding:18px 22px;display:none">
     <div style="max-width:800px;margin:0 auto">
@@ -553,7 +584,7 @@
 
 <!-- VIEW: NOVO LANÇAMENTO -->
   <div id="milhas-view-novo" style="padding:18px 22px;display:none">
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:600px;margin:0 auto">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:780px;margin:0 auto">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <div style="font-size:16px;font-weight:800;color:var(--text)">＋ Novo Lançamento de Milhas</div>
         <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='var(--text)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">← Voltar</button>
@@ -611,17 +642,17 @@
         </div>
 
         <!-- MODO: Somente Pontos -->
-        <div id="ml-trans-modo-pontos" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:end">
+        <div id="ml-trans-modo-pontos" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
           <div>
-            <label class="milhas-label" style="min-height:32px;display:flex;align-items:flex-end;padding-bottom:4px">Pts do Saldo (Origem)</label>
+            <label class="milhas-label">Pts do Saldo (Origem)</label>
             <input type="number" id="ml-trans-pts-origem" class="milhas-input" placeholder="Ex: 100000" min="0" oninput="milhasCalcBonusTrans()"/>
           </div>
           <div>
-            <label class="milhas-label" style="min-height:32px;display:flex;align-items:flex-end;padding-bottom:4px">Bônus % (opcional)</label>
+            <label class="milhas-label">Bônus % (opcional)</label>
             <input type="number" id="ml-trans-bonus" class="milhas-input" placeholder="Ex: 80" min="0" max="1000" oninput="milhasCalcBonusTrans()"/>
           </div>
           <div>
-            <label class="milhas-label" style="min-height:32px;display:flex;align-items:flex-end;padding-bottom:4px">Pts Creditados (Destino)</label>
+            <label class="milhas-label">Pts Creditados (Destino)</label>
             <input type="number" id="ml-trans-pts-destino" class="milhas-input" placeholder="Calculado auto" min="0"/>
           </div>
         </div>
@@ -2062,6 +2093,7 @@ function milhasSetTipo(t){
   document.getElementById('ml-qtde-wrap').style.display=isTransf?'none':'block';
   document.getElementById('ml-trans-custo-wrap').style.display=isTransf?'block':'none';
   milhasUpdateSubcats();
+  milhasToggleCartaoField();
 }
 
 function milhasUpdateSubcats(){
@@ -2764,7 +2796,9 @@ function renderMilhasTabela(){
   let regs=milhasRegistros.filter(r=>r.email===email||!r.email);
   const filtProg=document.getElementById('milhas-filter-prog')?.value;
   const filtTipo=document.getElementById('milhas-filter-tipo')?.value;
+  milhasPopularSubcatFilter(filtTipo);
   const filtSubcat=document.getElementById('milhas-filter-subcat')?.value;
+  if(filtSubcat){const sel=document.getElementById('milhas-filter-subcat');if(sel)sel.value=filtSubcat;}
   if(filtProg) regs=regs.filter(r=>r.programa===filtProg);
   if(filtTipo) regs=regs.filter(r=>r.tipo===filtTipo);
   if(filtSubcat) regs=regs.filter(r=>r.subcat===filtSubcat);
@@ -2812,7 +2846,10 @@ function renderMilhasTabela(){
           <td style="text-align:right;color:var(--muted)">${r.custo>0?'R$ '+r.custo.toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}</td>
           <td style="text-align:right;color:${cpmColor};font-size:11px;font-weight:700" title="${cpmTitle}">${cpmLabel}</td>
           <td style="color:var(--muted);font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.obs||''}">${r.obs||'—'}</td>
-          <td><button class="milhas-del-btn" onclick="excluirLancamento('${r.id}')">Excluir</button></td>
+          <td style="white-space:nowrap">
+            <button class="milhas-del-btn" onclick="editarLancamento('${r.id}')" style="border-color:rgba(96,165,250,.3);color:#60a5fa;margin-right:4px" onmouseover="this.style.background='rgba(96,165,250,.12)'" onmouseout="this.style.background='transparent'">Editar</button>
+            <button class="milhas-del-btn" onclick="excluirLancamento('${r.id}')">Excluir</button>
+          </td>
         </tr>`;
       }).join('')}
       </tbody>
@@ -2933,6 +2970,60 @@ function fazerLogout() {
 })();
 
 
+
+// ══════════════════════════════════════════════════════
+//  EDIÇÃO DE LANÇAMENTO
+// ══════════════════════════════════════════════════════
+let milhasEditId = null;
+
+function editarLancamento(id){
+  const email = milhasGetEmail();
+  const reg = milhasRegistros.find(r=>r.id===id&&(r.email===email||!r.email));
+  if(!reg) return;
+  milhasEditId = id;
+  document.getElementById('edit-data').value = reg.data||'';
+  document.getElementById('edit-qtde').value = reg.qtde||0;
+  document.getElementById('edit-custo').value = reg.custo||'';
+  document.getElementById('edit-obs').value = reg.obs||'';
+  document.getElementById('edit-feedback').textContent = '';
+  document.getElementById('milhas-edit-overlay').style.display = 'flex';
+}
+
+function fecharEditModal(){
+  document.getElementById('milhas-edit-overlay').style.display = 'none';
+  milhasEditId = null;
+}
+
+function salvarEdicao(){
+  const fb = document.getElementById('edit-feedback');
+  fb.style.color = '#f87171';
+  if(!milhasEditId){ fb.textContent='Erro: ID não encontrado.'; return; }
+  const data  = document.getElementById('edit-data').value;
+  const qtde  = parseFloat(document.getElementById('edit-qtde').value)||0;
+  const custo = parseFloat(document.getElementById('edit-custo').value)||0;
+  const obs   = document.getElementById('edit-obs').value.trim();
+  if(!data){ fb.textContent='Informe a data.'; return; }
+  if(!qtde){ fb.textContent='Informe a quantidade.'; return; }
+  const idx = milhasRegistros.findIndex(r=>r.id===milhasEditId);
+  if(idx===-1){ fb.textContent='Registro não encontrado.'; return; }
+  milhasRegistros[idx] = {...milhasRegistros[idx], data, qtde, custo, obs};
+  // Reconstrói FIFO
+  const email = milhasGetEmail();
+  const progs = [...new Set(milhasRegistros.filter(r=>r.email===email||!r.email).map(r=>r.programa))];
+  milhasFIFO = {};
+  progs.forEach(p=>{ milhasFIFO[p]=[]; });
+  const sorted = [...milhasRegistros.filter(r=>r.email===email||!r.email)].sort((a,b)=>a.data.localeCompare(b.data));
+  sorted.forEach(r=>{
+    if(r.tipo==='credito') fifoAdicionarLote(r.programa,r.qtde,r.custo,r.data,r.obs||r.subcat);
+    else if(r.tipo==='debito') fifoConsumirSnapshot(r.programa,r.qtde);
+  });
+  milhasSalvarLocal();
+  milhasSalvarRemoto(milhasRegistros, milhasFIFO);
+  fb.style.color = '#34d399';
+  fb.textContent = '✓ Salvo com sucesso!';
+  setTimeout(()=>{ fecharEditModal(); renderMilhasDashboard(); renderMilhasTabela(); }, 900);
+}
+
 // ══════════════════════════════════════════════════════
 //  CARTÕES
 // ══════════════════════════════════════════════════════
@@ -3027,33 +3118,38 @@ function milhasPreencheCartaoObs(){
   if(!obsEl.value) obsEl.value = cartao;
 }
 
+function milhasPopularSubcatFilter(tipo){
+  const subcatSel = document.getElementById('milhas-filter-subcat');
+  if(!subcatSel) return;
+  const valorAtual = subcatSel.value;
+  subcatSel.innerHTML='<option value="">Todas as subcategorias</option>';
+  const email = milhasGetEmail();
+  let regs = milhasRegistros.filter(r=>r.email===email||!r.email);
+  if(tipo) regs = regs.filter(r=>r.tipo===tipo);
+  const subcats = [...new Set(regs.map(r=>r.subcat).filter(Boolean))].sort();
+  const allSubcats = [
+    ...(MILHAS_SUBCATS.credito||[]),
+    ...(MILHAS_SUBCATS.debito||[]),
+    {id:'transferencia',label:'Transferência entre programas'},
+    {id:'transferido',label:'Transf. entre Programas — Enviada'},
+    {id:'trans_bon',label:'Recebido c/ bônus (destino)'},
+    {id:'trans_cpf_rec',label:'Transferência entre CPFs — Recebida'},
+    {id:'trans_cpf_env',label:'Transferência entre CPFs — Enviada'},
+    {id:'saldo_ini',label:'Saldo Inicial'},
+  ];
+  subcats.forEach(id=>{
+    const entry = allSubcats.find(s=>s.id===id);
+    const o = document.createElement('option');
+    o.value = id;
+    o.textContent = entry ? entry.label : id;
+    subcatSel.appendChild(o);
+  });
+  if(valorAtual && subcats.includes(valorAtual)) subcatSel.value = valorAtual;
+}
+
 function milhasFilterTipoChange(){
   const tipo = document.getElementById('milhas-filter-tipo')?.value;
-  const subcatSel = document.getElementById('milhas-filter-subcat');
-  if(subcatSel){
-    subcatSel.innerHTML='<option value="">Todas as subcategorias</option>';
-    const email = milhasGetEmail();
-    let regs = milhasRegistros.filter(r=>r.email===email||!r.email);
-    if(tipo) regs = regs.filter(r=>r.tipo===tipo);
-    const subcats = [...new Set(regs.map(r=>r.subcat).filter(Boolean))];
-    const allSubcats = [
-      ...(MILHAS_SUBCATS.credito||[]),
-      ...(MILHAS_SUBCATS.debito||[]),
-      {id:'transferencia',label:'Transferência entre programas'},
-      {id:'transferido',label:'Transf. entre Programas — Enviada'},
-      {id:'trans_bon',label:'Recebido c/ bônus (destino)'},
-      {id:'trans_cpf_rec',label:'Transferência entre CPFs — Recebida'},
-      {id:'trans_cpf_env',label:'Transferência entre CPFs — Enviada'},
-      {id:'saldo_ini',label:'Saldo Inicial'},
-    ];
-    subcats.forEach(id=>{
-      const entry = allSubcats.find(s=>s.id===id);
-      const o = document.createElement('option');
-      o.value = id;
-      o.textContent = entry ? entry.label : id;
-      subcatSel.appendChild(o);
-    });
-  }
+  milhasPopularSubcatFilter(tipo);
   renderMilhasTabela();
 }
 
