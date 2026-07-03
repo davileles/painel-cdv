@@ -588,6 +588,99 @@ app.post('/milhas/excluir', async (req, res) => {
   }
 });
 
+
+// ── IA: Extrair dados de reserva via Anthropic ──────────────────
+app.post('/ia/extrair-reserva', async (req, res) => {
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+  if (!ANTHROPIC_API_KEY) {
+    return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY não configurada no servidor.' });
+  }
+
+  const { mediaType, base64, isPdf, tipoCampos } = req.body;
+  if (!base64 || !mediaType) {
+    return res.status(400).json({ ok: false, erro: 'Parâmetros base64 e mediaType são obrigatórios.' });
+  }
+
+  const prompt = 'Você é um assistente de extração de dados de documentos de viagem. ' +
+    'Analise este documento (' + (isPdf ? 'PDF' : 'imagem') + ') que é um comprovante de ' + (tipoCampos || 'reserva de viagem') + '. ' +
+    'Extraia TODOS os dados relevantes e retorne SOMENTE um JSON válido (sem markdown, sem explicação) no seguinte formato:\n' +
+    '{\n' +
+    '  "tipo": "voo|hotel|carro|passeio",\n' +
+    '  "origem": "",\n' +
+    '  "destino": "",\n' +
+    '  "dataIda": "YYYY-MM-DD",\n' +
+    '  "horaPartida": "HH:MM",\n' +
+    '  "horaChegada": "HH:MM",\n' +
+    '  "ciaIda": "",\n' +
+    '  "nvooIda": "",\n' +
+    '  "dataVolta": "YYYY-MM-DD",\n' +
+    '  "horaPartidaVolta": "HH:MM",\n' +
+    '  "horaChegadaVolta": "HH:MM",\n' +
+    '  "ciaVolta": "",\n' +
+    '  "nvooVolta": "",\n' +
+    '  "classe": "",\n' +
+    '  "pnr": "",\n' +
+    '  "pax": "",\n' +
+    '  "programa": "",\n' +
+    '  "milhas": "",\n' +
+    '  "valor": "",\n' +
+    '  "hotelNome": "",\n' +
+    '  "hotelDestino": "",\n' +
+    '  "hotelQuarto": "",\n' +
+    '  "checkin": "YYYY-MM-DD",\n' +
+    '  "checkout": "YYYY-MM-DD",\n' +
+    '  "noites": "",\n' +
+    '  "hospedes": "",\n' +
+    '  "hotelConf": "",\n' +
+    '  "regime": "",\n' +
+    '  "hotelValor": "",\n' +
+    '  "locadora": "",\n' +
+    '  "carroCat": "",\n' +
+    '  "retLocal": "",\n' +
+    '  "devLocal": "",\n' +
+    '  "retData": "YYYY-MM-DD",\n' +
+    '  "devData": "YYYY-MM-DD",\n' +
+    '  "carroConf": "",\n' +
+    '  "carroValor": "",\n' +
+    '  "passeioNome": "",\n' +
+    '  "passeioDest": "",\n' +
+    '  "passeioOp": "",\n' +
+    '  "passeioData": "YYYY-MM-DD",\n' +
+    '  "passeioHora": "HH:MM",\n' +
+    '  "passeioPax": "",\n' +
+    '  "passeioConf": "",\n' +
+    '  "passeioValor": "",\n' +
+    '  "obs": ""\n' +
+    '}\nPreencha apenas os campos que existem no documento. Deixe vazio o que não encontrar.';
+
+  const contentBlock = isPdf
+    ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } }
+    : { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } };
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: [contentBlock, { type: 'text', text: prompt }] }]
+      })
+    });
+    const data = await resp.json();
+    if (data.error) return res.status(500).json({ ok: false, erro: data.error.message });
+    const texto = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : '';
+    return res.json({ ok: true, texto: texto.replace(/```json|```/g, '').trim() });
+  } catch (err) {
+    console.error('[ia/extrair-reserva]', err.message);
+    return res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
 });
