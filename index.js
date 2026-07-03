@@ -608,8 +608,10 @@ app.post('/ia/extrair-reserva', (req, res) => {
     'Retorne SOMENTE um JSON válido (sem markdown) com os campos: ' +
     'tipo (voo/hotel/carro/passeio), origem (código IATA ou cidade de partida), destino (código IATA ou cidade de chegada final), ' +
     'dataIda (YYYY-MM-DD), horaPartida (HH:MM — horário de partida da origem), horaChegada (HH:MM — horário de chegada no destino FINAL), ' +
-    'conexao (código IATA ou cidade da escala — preencher apenas se houver conexão/escala; NUNCA usar dataVolta para dados de conexão), ' +
-    'ciaIda, nvooIda, dataVolta (YYYY-MM-DD — preencher apenas se for realmente um voo de volta ao ponto de origem), horaPartidaVolta, horaChegadaVolta, ciaVolta, nvooVolta, ' +
+    'conexao (IATA ou cidade da ESCALA DO VOO DE IDA — só se houver; NUNCA colocar dados de conexão em dataVolta), ' +
+    'ciaIda, nvooIda, dataVolta (YYYY-MM-DD — só se for realmente voo de volta ao ponto de origem), ' +
+    'horaPartidaVolta (HH:MM — partida do destino na volta), horaChegadaVolta (HH:MM — chegada na origem na volta), ' +
+    'conexaoVolta (IATA ou cidade da ESCALA DO VOO DE VOLTA — só se houver), ciaVolta, nvooVolta, ' +
     'classe, pnr, pax, programa, milhas, valor, ' +
     'hotelNome, hotelDestino, hotelQuarto, checkin (YYYY-MM-DD), checkout (YYYY-MM-DD), noites, hospedes, hotelConf, regime, hotelValor, ' +
     'locadora, carroCat, retLocal, devLocal, retData (YYYY-MM-DD), devData (YYYY-MM-DD), carroConf, carroValor, ' +
