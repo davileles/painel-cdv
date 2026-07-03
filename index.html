@@ -405,7 +405,7 @@
     <div style="display:grid;grid-template-columns:minmax(160px,1fr) minmax(180px,1.1fr) minmax(0,2fr);gap:12px;margin-bottom:18px" id="milhas-charts-row">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Distribuição por Programa</div>
-        <canvas id="chart-distribuicao" style="max-height:160px"></canvas>
+        <canvas id="chart-distribuicao" style="max-height:180px"></canvas>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column">
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Saldo por Programa</div>
@@ -467,13 +467,8 @@
         </div>
       </div>
 
-      <!-- Lista de assinaturas ativas — aparece PRIMEIRO -->
-      <div id="ass-lista-wrap" style="margin-bottom:16px">
-        <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Carregando assinaturas…</div>
-      </div>
-
-      <!-- Formulário nova assinatura — colapsado por padrão -->
-      <div id="ass-form-wrap" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px">
+      <!-- Formulário nova assinatura — colapsado por padrão, abre ACIMA da lista -->
+      <div id="ass-form-wrap" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px">
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px">＋ Nova Assinatura</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
           <div>
@@ -510,6 +505,11 @@
         </div>
         <div id="ass-feedback" style="font-size:12px;font-weight:700;min-height:16px;margin-bottom:10px;text-align:center"></div>
         <button onclick="salvarAssinatura()" style="width:100%;padding:10px;background:var(--cdv-coral);border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Salvar Assinatura</button>
+      </div>
+
+      <!-- Lista de assinaturas ativas -->
+      <div id="ass-lista-wrap">
+        <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Carregando assinaturas…</div>
       </div>
     </div>
   </div>
@@ -591,13 +591,8 @@
         </div>
       </div>
 
-      <!-- Lista de cartões — aparece PRIMEIRO -->
-      <div id="cartao-lista-wrap" style="margin-bottom:16px">
-        <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Nenhum cartão cadastrado ainda.</div>
-      </div>
-
-      <!-- Formulário novo cartão — colapsado por padrão -->
-      <div id="cartao-form-wrap" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px">
+      <!-- Formulário novo cartão — colapsado por padrão, abre ACIMA da lista -->
+      <div id="cartao-form-wrap" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px">
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px">＋ Novo Cartão</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
           <div>
@@ -630,6 +625,11 @@
         </div>
         <div id="cartao-feedback" style="font-size:12px;font-weight:700;min-height:16px;margin-bottom:10px;text-align:center"></div>
         <button onclick="salvarCartao()" style="width:100%;padding:10px;background:var(--cdv-coral);border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Salvar Cartão</button>
+      </div>
+
+      <!-- Lista de cartões -->
+      <div id="cartao-lista-wrap">
+        <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Nenhum cartão cadastrado ainda.</div>
       </div>
     </div>
   </div>
@@ -3017,8 +3017,8 @@ function renderMilhasDashboard(){
       options:{
         plugins:{
           legend:{
-            position:'right',
-            labels:{color:'#8a9bbf',font:{family:'Montserrat',size:11},boxWidth:12}
+            position:'bottom',
+            labels:{color:'#8a9bbf',font:{family:'Montserrat',size:11},boxWidth:10,padding:10}
           },
           tooltip:{
             callbacks:{
@@ -3464,6 +3464,7 @@ function assToggleForm(){
   const open = wrap.style.display === 'none';
   wrap.style.display = open ? 'block' : 'none';
   if(btn) btn.textContent = open ? '✕ Fechar' : '＋ Nova';
+  if(open) setTimeout(()=>wrap.scrollIntoView({behavior:'smooth', block:'start'}), 50);
 }
 
 function cartaoToggleForm(){
@@ -3473,6 +3474,7 @@ function cartaoToggleForm(){
   const open = wrap.style.display === 'none';
   wrap.style.display = open ? 'block' : 'none';
   if(btn) btn.textContent = open ? '✕ Fechar' : '＋ Novo';
+  if(open) setTimeout(()=>wrap.scrollIntoView({behavior:'smooth', block:'start'}), 50);
 }
 
 // ══════════════════════════════════════════════════════
