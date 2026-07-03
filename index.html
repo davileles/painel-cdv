@@ -501,6 +501,37 @@
   </div>
 
   
+  <!-- MODAL DE DETALHES DO LANÇAMENTO -->
+  <div id="milhas-detalhe-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:210;align-items:center;justify-content:center">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;width:90%;max-width:500px;position:relative;overflow:hidden">
+      <!-- Cabeçalho colorido -->
+      <div id="detalhe-header" style="padding:22px 24px 18px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div id="detalhe-badge"></div>
+            <div>
+              <div id="detalhe-programa" style="font-size:15px;font-weight:800;color:var(--text)"></div>
+              <div id="detalhe-subcat" style="font-size:11px;color:var(--muted);margin-top:2px"></div>
+            </div>
+          </div>
+          <button onclick="fecharDetalheModal()" style="background:transparent;border:none;color:var(--muted);font-size:24px;cursor:pointer;line-height:1;padding:0 4px">×</button>
+        </div>
+        <div id="detalhe-qtde" style="font-size:32px;font-weight:900;margin-top:12px"></div>
+        <div id="detalhe-data" style="font-size:12px;color:var(--muted);margin-top:2px"></div>
+      </div>
+      <!-- Corpo com detalhes -->
+      <div style="padding:20px 24px" id="detalhe-body">
+        <div id="detalhe-rows" style="display:flex;flex-direction:column;gap:12px"></div>
+      </div>
+      <!-- Rodapé com ações -->
+      <div style="padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end">
+        <button onclick="fecharDetalheModal();editarLancamento(milhasDetalheId)" style="padding:8px 18px;background:transparent;border:1px solid rgba(96,165,250,.4);color:#60a5fa;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">✏️ Editar</button>
+        <button onclick="fecharDetalheModal();excluirLancamento(milhasDetalheId)" style="padding:8px 18px;background:transparent;border:1px solid rgba(248,113,113,.4);color:#f87171;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">🗑 Excluir</button>
+        <button onclick="fecharDetalheModal()" style="padding:8px 18px;background:var(--cdv-coral);border:none;color:#fff;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">Fechar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL DE EDIÇÃO DE LANÇAMENTO -->
   <div id="milhas-edit-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;width:90%;max-width:480px;position:relative">
@@ -2854,7 +2885,7 @@ function renderMilhasTabela(){
                   '<span class="milhas-badge-trans">TRANSF.</span>';
         const sinal=r.tipo==='credito'?`<span style="color:#34d399">+${milhasFormatNum(r.qtde)}</span>`:
                                         `<span style="color:#f87171">−${milhasFormatNum(r.qtde)}</span>`;
-        return `<tr>
+        return `<tr onclick="verDetalhesLancamento('${r.id}')" style="cursor:pointer" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background=''">
           <td style="white-space:nowrap">${milhasFormatData(r.data)}</td>
           <td>${bdg}</td>
           <td><span class="milhas-prog-dot" style="background:${cor}"></span>${milhasNomePrograma(r.programa)}</td>
@@ -2863,7 +2894,7 @@ function renderMilhasTabela(){
           <td style="text-align:right;color:var(--muted)">${r.custo>0?'R$ '+r.custo.toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}</td>
           <td style="text-align:right;color:${cpmColor};font-size:11px;font-weight:700" title="${cpmTitle}">${cpmLabel}</td>
           <td style="color:var(--muted);font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.obs||''}">${r.obs||'—'}</td>
-          <td style="white-space:nowrap">
+          <td style="white-space:nowrap" onclick="event.stopPropagation()">
             <button class="milhas-del-btn" onclick="editarLancamento('${r.id}')" style="border-color:rgba(96,165,250,.3);color:#60a5fa;margin-right:4px" onmouseover="this.style.background='rgba(96,165,250,.12)'" onmouseout="this.style.background='transparent'">Editar</button>
             <button class="milhas-del-btn" onclick="excluirLancamento('${r.id}')">Excluir</button>
           </td>
@@ -2987,6 +3018,94 @@ function fazerLogout() {
 })();
 
 
+
+
+// ══════════════════════════════════════════════════════
+//  DETALHES DO LANÇAMENTO
+// ══════════════════════════════════════════════════════
+let milhasDetalheId = null;
+
+function verDetalhesLancamento(id){
+  const email = milhasGetEmail();
+  const r = milhasRegistros.find(x=>x.id===id&&(x.email===email||!x.email));
+  if(!r) return;
+  milhasDetalheId = id;
+
+  const cor = milhasCorPrograma(r.programa);
+  const isCred = r.tipo==='credito';
+  const isDeb  = r.tipo==='debito';
+  const corTipo = isCred?'#34d399': isDeb?'#f87171':'#60a5fa';
+  const labelTipo = isCred?'CRÉDITO': isDeb?'DÉBITO':'TRANSF.';
+  const sinalStr = isCred
+    ? `<span style="color:#34d399">+${milhasFormatNum(r.qtde)} pts</span>`
+    : `<span style="color:#f87171">−${milhasFormatNum(r.qtde)} pts</span>`;
+
+  // Badge tipo
+  document.getElementById('detalhe-badge').innerHTML =
+    `<span style="font-size:10px;font-weight:800;padding:3px 8px;border-radius:4px;background:${corTipo}22;color:${corTipo};border:1px solid ${corTipo}44">${labelTipo}</span>`;
+
+  // Programa + dot
+  document.getElementById('detalhe-programa').innerHTML =
+    `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${cor};margin-right:6px;vertical-align:middle"></span>${milhasNomePrograma(r.programa)}`;
+
+  document.getElementById('detalhe-subcat').textContent = milhasLabelSubcat(r.tipo, r.subcat);
+  document.getElementById('detalhe-qtde').innerHTML = sinalStr;
+  document.getElementById('detalhe-data').textContent = '📅 ' + milhasFormatData(r.data);
+
+  // Linhas de detalhe
+  const rows = [];
+
+  if(r.custo > 0){
+    const cpm = ((r.custo/r.qtde)*1000).toFixed(2).replace('.',',');
+    rows.push(['💰 Custo total', 'R$ '+r.custo.toLocaleString('pt-BR',{minimumFractionDigits:2})]);
+    rows.push(['📊 Custo do milheiro', 'R$ '+cpm+' / 1.000 pts']);
+  }
+
+  if(r.custoHerdadoFIFO > 0){
+    const cpmHerd = r.milheiroHerdado?.toFixed(2).replace('.',',');
+    rows.push(['🔁 Custo herdado (FIFO)', 'R$ '+r.custoHerdadoFIFO.toLocaleString('pt-BR',{minimumFractionDigits:2})]);
+    if(cpmHerd) rows.push(['📊 Milheiro herdado', 'R$ '+cpmHerd+' / 1.000 pts']);
+  }
+
+  if(r.custoCompradoNaTransf > 0)
+    rows.push(['🛒 Pts comprados na transf.', 'R$ '+r.custoCompradoNaTransf.toLocaleString('pt-BR',{minimumFractionDigits:2})]);
+
+  if(r.ptsCompradosNaTransf > 0)
+    rows.push(['🔢 Qtde comprada na transf.', milhasFormatNum(r.ptsCompradosNaTransf)+' pts']);
+
+  if(r.modalidade && r.modalidade !== 'pontos')
+    rows.push(['🔄 Modalidade', r.modalidade==='pontos_dinheiro'?'Pontos + Dinheiro':'Pontos']);
+
+  if(r.assId)
+    rows.push(['🔁 Origem', 'Assinatura recorrente']);
+
+  if(r.autoLancado)
+    rows.push(['⚙️ Lançamento', 'Automático']);
+
+  if(r.obs)
+    rows.push(['📝 Observação', r.obs]);
+
+  rows.push(['🆔 ID', `<span style="font-family:monospace;font-size:11px;color:var(--muted)">${r.id}</span>`]);
+
+  document.getElementById('detalhe-rows').innerHTML = rows.map(([label, val])=>`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:8px 0;border-bottom:1px solid rgba(61,74,102,.3)">
+      <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap">${label}</span>
+      <span style="font-size:13px;font-weight:600;color:var(--text);text-align:right">${val}</span>
+    </div>`).join('');
+
+  const overlay = document.getElementById('milhas-detalhe-overlay');
+  overlay.style.display = 'flex';
+}
+
+function fecharDetalheModal(){
+  document.getElementById('milhas-detalhe-overlay').style.display = 'none';
+  milhasDetalheId = null;
+}
+
+// Fechar ao clicar fora
+document.getElementById('milhas-detalhe-overlay')?.addEventListener('click', function(e){
+  if(e.target===this) fecharDetalheModal();
+});
 
 // ══════════════════════════════════════════════════════
 //  EDIÇÃO DE LANÇAMENTO
