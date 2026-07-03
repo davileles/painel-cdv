@@ -403,9 +403,9 @@
     <div id="milhas-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px"></div>
     <!-- CHARTS ROW -->
     <div style="display:grid;grid-template-columns:minmax(160px,1fr) minmax(180px,1.1fr) minmax(0,2fr);gap:12px;margin-bottom:18px" id="milhas-charts-row">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
-        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Distribuição por Programa</div>
-        <canvas id="chart-distribuicao" style="max-height:220px"></canvas>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 16px 8px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Distribuição por Programa</div>
+        <canvas id="chart-distribuicao" style="height:240px;max-height:240px"></canvas>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column">
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Saldo por Programa</div>
@@ -3018,7 +3018,8 @@ function renderMilhasDashboard(){
         plugins:{
           legend:{
             position:'bottom',
-            labels:{color:'#8a9bbf',font:{family:'Montserrat',size:10},boxWidth:8,padding:8}
+            align:'center',
+            labels:{color:'#8a9bbf',font:{family:'Montserrat',size:10},boxWidth:8,padding:6,usePointStyle:true,pointStyle:'rect'}
           },
           tooltip:{
             callbacks:{
@@ -3030,8 +3031,9 @@ function renderMilhasDashboard(){
             }
           }
         },
-        cutout:'60%',
-        maintainAspectRatio:false
+        cutout:'62%',
+        maintainAspectRatio:false,
+        layout:{padding:{bottom:0}}
       }
     });
   } else if(ctxDist){
@@ -3457,6 +3459,14 @@ function salvarEdicao(){
   setTimeout(()=>{ fecharEditModal(); renderMilhasDashboard(); renderMilhasTabela(); }, 900);
 }
 
+function milhasScrollToEl(el){
+  // Calcula posição absoluta do elemento e desconta headers stickies
+  const rect = el.getBoundingClientRect();
+  const stickyOffset = 135; // header (~80px) + tabs (~41px) + barra milhas (~14px)
+  const absTop = window.scrollY + rect.top - stickyOffset;
+  window.scrollTo({top: absTop, behavior: 'smooth'});
+}
+
 function assToggleForm(){
   const wrap = document.getElementById('ass-form-wrap');
   const btn  = document.getElementById('ass-btn-novo');
@@ -3464,13 +3474,7 @@ function assToggleForm(){
   const open = wrap.style.display === 'none';
   wrap.style.display = open ? 'block' : 'none';
   if(btn) btn.textContent = open ? '✕ Fechar' : '＋ Nova';
-  if(open){
-    // Form está no topo — rola a view para o topo da página de assinaturas
-    setTimeout(()=>{
-      const view = document.getElementById('milhas-view-assinaturas');
-      if(view) view.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 50);
-  }
+  if(open) setTimeout(()=> milhasScrollToEl(wrap), 60);
 }
 
 function cartaoToggleForm(){
@@ -3480,12 +3484,7 @@ function cartaoToggleForm(){
   const open = wrap.style.display === 'none';
   wrap.style.display = open ? 'block' : 'none';
   if(btn) btn.textContent = open ? '✕ Fechar' : '＋ Novo';
-  if(open){
-    setTimeout(()=>{
-      const view = document.getElementById('milhas-view-cartoes');
-      if(view) view.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 50);
-  }
+  if(open) setTimeout(()=> milhasScrollToEl(wrap), 60);
 }
 
 // ══════════════════════════════════════════════════════
