@@ -1086,7 +1086,8 @@ function pool(){
 function buildProgFilters(){
   const el=document.getElementById('prog-filters-bar');
   if(!el) return;
-  el.innerHTML=PROGRAMS.map(pr=>`
+  const sorted=[...PROGRAMS].sort((a,b)=>a.name.localeCompare(b.name,'pt-BR'));
+  el.innerHTML=sorted.map(pr=>`
     <button class="prog-fbtn" data-prog="${pr.id}" style="border-color:${pr.color};color:${pr.color}">
       ${pr.name}
     </button>`).join('');
@@ -1728,7 +1729,8 @@ async function loadOfertas(force){
 function renderRadarCatBar(){
   const bar=document.getElementById('radar-cat-bar');
   if(!ofertasData||!ofertasData.items||!ofertasData.items.length){bar.innerHTML='';return;}
-  const cats=[...new Set(ofertasData.items.map(o=>o.categoria))];
+  const cats=[...new Set(ofertasData.items.map(o=>o.categoria))]
+    .sort((a,b)=>(OFERTA_CAT_LABELS[a]||a).localeCompare(OFERTA_CAT_LABELS[b]||b,'pt-BR'));
   let html=`<button class="cbtn ${radarActiveCat==='all'?'active':''}" data-radarcat="all">Todas</button>`;
   cats.forEach(c=>{
     html+=`<button class="cbtn ${radarActiveCat===c?'active':''}" data-radarcat="${c}">${OFERTA_CAT_LABELS[c]||c}</button>`;
@@ -2018,7 +2020,11 @@ async function initMilhas(){
       if(!el)return;
       if(id==='milhas-filter-prog') el.innerHTML='<option value="">Todos os programas</option>';
       else el.innerHTML='';
-      MILHAS_PROGS.forEach(p=>{
+      // Ordem alfabética para filtros; ordem original para selects de lançamento
+      const progs = id==='milhas-filter-prog'
+        ? [...MILHAS_PROGS].sort((a,b)=>a.name.localeCompare(b.name,'pt-BR'))
+        : MILHAS_PROGS;
+      progs.forEach(p=>{
         const o=document.createElement('option');
         o.value=p.id; o.textContent=p.name;
         el.appendChild(o);
@@ -3126,7 +3132,7 @@ function milhasPopularSubcatFilter(tipo){
   const email = milhasGetEmail();
   let regs = milhasRegistros.filter(r=>r.email===email||!r.email);
   if(tipo) regs = regs.filter(r=>r.tipo===tipo);
-  const subcats = [...new Set(regs.map(r=>r.subcat).filter(Boolean))].sort();
+  const subcatsIds = [...new Set(regs.map(r=>r.subcat).filter(Boolean))];
   const allSubcats = [
     ...(MILHAS_SUBCATS.credito||[]),
     ...(MILHAS_SUBCATS.debito||[]),
@@ -3137,14 +3143,17 @@ function milhasPopularSubcatFilter(tipo){
     {id:'trans_cpf_env',label:'Transferência entre CPFs — Enviada'},
     {id:'saldo_ini',label:'Saldo Inicial'},
   ];
-  subcats.forEach(id=>{
-    const entry = allSubcats.find(s=>s.id===id);
+  // Montar objetos {id, label} e ordenar por label alfabeticamente
+  const subcats = subcatsIds
+    .map(id=>{ const e=allSubcats.find(s=>s.id===id); return {id, label: e?e.label:id}; })
+    .sort((a,b)=>a.label.localeCompare(b.label,'pt-BR'));
+  subcats.forEach(({id, label})=>{
     const o = document.createElement('option');
     o.value = id;
-    o.textContent = entry ? entry.label : id;
+    o.textContent = label;
     subcatSel.appendChild(o);
   });
-  if(valorAtual && subcats.includes(valorAtual)) subcatSel.value = valorAtual;
+  if(valorAtual && subcatsIds.includes(valorAtual)) subcatSel.value = valorAtual;
 }
 
 function milhasFilterTipoChange(){
