@@ -615,6 +615,8 @@ app.post('/ia/extrair-reserva', (req, res) => {
     '7) nvooIda = TODOS os números de voo da ida separados por vírgula (ex: "LA 8079, LA 3080"). ' +
     '8) conexao = código IATA do aeroporto de escala (ex: GRU). SEMPRE preencher quando houver mais de um trecho na ida. ' +
     '9) pax = número total de passageiros listados no documento. ' +
+    '10) milhas = milhas POR PASSAGEIRO. Se o documento mostrar o total de milhas, divida pelo número de passageiros (pax). Ex: 870.804 milhas para 2 passageiros → milhas = 435402. ' +
+    '11) classe = classe de cabine em português: se o documento indicar "Business" ou "Executiva" → "Executiva"; "Economy" ou "Econômica" → "Econômica"; "Premium Economy" → "Econômica Premium"; "First" ou "Primeira" → "Primeira Classe". ' +
     'Retorne SOMENTE um JSON válido (sem markdown) com os campos: ' +
     'tipo (voo/hotel/carro/passeio), origem (IATA ou cidade de partida), destino (IATA ou cidade de chegada FINAL da ida), ' +
     'dataIda (YYYY-MM-DD), horaPartida (HH:MM — partida da origem), horaChegada (HH:MM — chegada no destino FINAL da ida), ' +
@@ -623,7 +625,7 @@ app.post('/ia/extrair-reserva', (req, res) => {
     'dataVolta (YYYY-MM-DD — SÓ se houver voo de retorno à origem), ' +
     'horaPartidaVolta (HH:MM), horaChegadaVolta (HH:MM), ' +
     'conexaoVolta (IATA ou cidade de escala na volta — só se houver), ciaVolta, nvooVolta, ' +
-    'classe, pnr, pax, programa, milhas, valor, ' +
+    'classe (Econômica / Econômica Premium / Executiva / Primeira Classe), pnr, pax, programa, milhas (POR passageiro), valor, ' +
     'hotelNome, hotelDestino, hotelQuarto, checkin (YYYY-MM-DD), checkout (YYYY-MM-DD), noites, hospedes, hotelConf, regime, hotelValor, ' +
     'locadora, carroCat, retLocal, devLocal, retData (YYYY-MM-DD), devData (YYYY-MM-DD), carroConf, carroValor, ' +
     'passeioNome, passeioDest, passeioOp, passeioData (YYYY-MM-DD), passeioHora (HH:MM), passeioPax, passeioConf, passeioValor, obs. ' +
