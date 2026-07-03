@@ -592,12 +592,11 @@ app.post('/milhas/excluir', async (req, res) => {
 // ── IA: Extrair dados de reserva via Anthropic ──────────────────
 app.post('/ia/extrair-reserva', async (req, res) => {
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+  const { mediaType, base64, isPdf, tipoCampos } = req.body;
   console.log('[ia/extrair-reserva] recebido. isPdf:', isPdf, 'mediaType:', mediaType, 'base64 len:', (base64||'').length);
   if (!ANTHROPIC_API_KEY) {
     return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY não configurada no servidor.' });
   }
-
-  const { mediaType, base64, isPdf, tipoCampos } = req.body;
   if (!base64 || !mediaType) {
     return res.status(400).json({ ok: false, erro: 'Parâmetros base64 e mediaType são obrigatórios.' });
   }
