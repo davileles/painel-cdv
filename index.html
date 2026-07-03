@@ -398,7 +398,10 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px" id="milhas-charts-row">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Distribuição por Programa</div>
-        <canvas id="chart-distribuicao" style="max-height:200px"></canvas>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <canvas id="chart-distribuicao" style="max-height:200px;flex-shrink:0;width:180px"></canvas>
+          <div id="dist-legenda" style="display:flex;flex-direction:column;gap:6px;justify-content:center;flex:1;padding:4px 0"></div>
+        </div>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Evolução do Saldo Total</div>
@@ -2774,6 +2777,7 @@ function renderMilhasDashboard(){
   const ctxDist=document.getElementById('chart-distribuicao');
   if(ctxDist&&progComSaldo.length){
     const distSaldos = progComSaldo.map(p=>saldos[p.id]);
+    const distTotal = distSaldos.reduce((a,b)=>a+b,0);
     milhasChartDist=new Chart(ctxDist,{
       type:'doughnut',
       data:{
@@ -2782,32 +2786,12 @@ function renderMilhasDashboard(){
       },
       options:{
         plugins:{
-          legend:{
-            position:'right',
-            labels:{
-              color:'#8a9bbf',
-              font:{family:'Montserrat',size:11},
-              boxWidth:12,
-              generateLabels(chart){
-                const ds=chart.data.datasets[0];
-                return chart.data.labels.map((label,i)=>({
-                  text: `${label}  ${milhasFormatNum(ds.data[i])} pts`,
-                  fillStyle: ds.backgroundColor[i],
-                  strokeStyle: ds.backgroundColor[i],
-                  color: '#8a9bbf',
-                  lineWidth: 0,
-                  hidden: false,
-                  index: i
-                }));
-              }
-            }
-          },
+          legend:{display:false},
           tooltip:{
             callbacks:{
               label(ctx){
                 const val = ctx.parsed;
-                const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
-                const pct = total>0 ? ((val/total)*100).toFixed(1) : 0;
+                const pct = distTotal>0 ? ((val/distTotal)*100).toFixed(1) : 0;
                 return `  ${milhasFormatNum(val)} pts (${pct}%)`;
               }
             }
@@ -2817,6 +2801,20 @@ function renderMilhasDashboard(){
         maintainAspectRatio:false
       }
     });
+    // Legenda HTML customizada — cor controlada por CSS
+    const legEl = document.getElementById('dist-legenda');
+    if(legEl){
+      legEl.innerHTML = progComSaldo.map((p,i)=>`
+        <div style="display:flex;align-items:center;gap:7px">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${p.color};flex-shrink:0"></span>
+          <span style="font-size:11px;font-weight:600;color:#8a9bbf;font-family:'Montserrat',sans-serif;white-space:nowrap">
+            ${p.name}
+          </span>
+          <span style="font-size:11px;font-weight:700;color:#eeeeee;font-family:'Montserrat',sans-serif;margin-left:2px">
+            ${milhasFormatNum(distSaldos[i])} pts
+          </span>
+        </div>`).join('');
+    }
   } else if(ctxDist){
     ctxDist.getContext('2d').clearRect(0,0,ctxDist.width,ctxDist.height);
   }
