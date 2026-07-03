@@ -590,10 +590,11 @@ app.post('/milhas/excluir', async (req, res) => {
 
 
 // ── IA: Extrair dados de reserva via Anthropic ──────────────────
-app.post('/ia/extrair-reserva', async (req, res) => {
+app.post('/ia/extrair-reserva', (req, res) => {
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
   const { mediaType, base64, isPdf, tipoCampos } = req.body;
   console.log('[ia/extrair-reserva] recebido. isPdf:', isPdf, 'mediaType:', mediaType, 'base64 len:', (base64||'').length);
+
   if (!ANTHROPIC_API_KEY) {
     return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY não configurada no servidor.' });
   }
@@ -601,97 +602,69 @@ app.post('/ia/extrair-reserva', async (req, res) => {
     return res.status(400).json({ ok: false, erro: 'Parâmetros base64 e mediaType são obrigatórios.' });
   }
 
-  const prompt = 'Você é um assistente de extração de dados de documentos de viagem. ' +
-    'Analise este documento (' + (isPdf ? 'PDF' : 'imagem') + ') que é um comprovante de ' + (tipoCampos || 'reserva de viagem') + '. ' +
-    'Extraia TODOS os dados relevantes e retorne SOMENTE um JSON válido (sem markdown, sem explicação) no seguinte formato:\n' +
-    '{\n' +
-    '  "tipo": "voo|hotel|carro|passeio",\n' +
-    '  "origem": "",\n' +
-    '  "destino": "",\n' +
-    '  "dataIda": "YYYY-MM-DD",\n' +
-    '  "horaPartida": "HH:MM",\n' +
-    '  "horaChegada": "HH:MM",\n' +
-    '  "ciaIda": "",\n' +
-    '  "nvooIda": "",\n' +
-    '  "dataVolta": "YYYY-MM-DD",\n' +
-    '  "horaPartidaVolta": "HH:MM",\n' +
-    '  "horaChegadaVolta": "HH:MM",\n' +
-    '  "ciaVolta": "",\n' +
-    '  "nvooVolta": "",\n' +
-    '  "classe": "",\n' +
-    '  "pnr": "",\n' +
-    '  "pax": "",\n' +
-    '  "programa": "",\n' +
-    '  "milhas": "",\n' +
-    '  "valor": "",\n' +
-    '  "hotelNome": "",\n' +
-    '  "hotelDestino": "",\n' +
-    '  "hotelQuarto": "",\n' +
-    '  "checkin": "YYYY-MM-DD",\n' +
-    '  "checkout": "YYYY-MM-DD",\n' +
-    '  "noites": "",\n' +
-    '  "hospedes": "",\n' +
-    '  "hotelConf": "",\n' +
-    '  "regime": "",\n' +
-    '  "hotelValor": "",\n' +
-    '  "locadora": "",\n' +
-    '  "carroCat": "",\n' +
-    '  "retLocal": "",\n' +
-    '  "devLocal": "",\n' +
-    '  "retData": "YYYY-MM-DD",\n' +
-    '  "devData": "YYYY-MM-DD",\n' +
-    '  "carroConf": "",\n' +
-    '  "carroValor": "",\n' +
-    '  "passeioNome": "",\n' +
-    '  "passeioDest": "",\n' +
-    '  "passeioOp": "",\n' +
-    '  "passeioData": "YYYY-MM-DD",\n' +
-    '  "passeioHora": "HH:MM",\n' +
-    '  "passeioPax": "",\n' +
-    '  "passeioConf": "",\n' +
-    '  "passeioValor": "",\n' +
-    '  "obs": ""\n' +
-    '}\nPreencha apenas os campos que existem no documento. Deixe vazio o que não encontrar.';
+  const prompt =
+    'Você é um assistente de extração de dados de documentos de viagem. ' +
+    'Analise este documento (' + (isPdf ? 'PDF' : 'imagem') + ') de ' + (tipoCampos || 'reserva de viagem') + '. ' +
+    'Retorne SOMENTE um JSON válido (sem markdown) com os campos: ' +
+    'tipo (voo/hotel/carro/passeio), origem, destino, dataIda (YYYY-MM-DD), horaPartida (HH:MM), horaChegada (HH:MM), ' +
+    'ciaIda, nvooIda, dataVolta (YYYY-MM-DD), horaPartidaVolta, horaChegadaVolta, ciaVolta, nvooVolta, ' +
+    'classe, pnr, pax, programa, milhas, valor, ' +
+    'hotelNome, hotelDestino, hotelQuarto, checkin (YYYY-MM-DD), checkout (YYYY-MM-DD), noites, hospedes, hotelConf, regime, hotelValor, ' +
+    'locadora, carroCat, retLocal, devLocal, retData (YYYY-MM-DD), devData (YYYY-MM-DD), carroConf, carroValor, ' +
+    'passeioNome, passeioDest, passeioOp, passeioData (YYYY-MM-DD), passeioHora (HH:MM), passeioPax, passeioConf, passeioValor, obs. ' +
+    'Preencha apenas os campos que existem no documento.';
 
   const contentBlock = isPdf
     ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } }
     : { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } };
 
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 55000); // 55s timeout
+  const bodyPayload = JSON.stringify({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 1024,
+    messages: [{ role: 'user', content: [contentBlock, { type: 'text', text: prompt }] }]
+  });
 
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      signal: controller.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
-        messages: [{ role: 'user', content: [contentBlock, { type: 'text', text: prompt }] }]
-      })
+  const https = require('https');
+  const options = {
+    hostname: 'api.anthropic.com',
+    path: '/v1/messages',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(bodyPayload),
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01'
+    }
+  };
+
+  const apiReq = https.request(options, (apiRes) => {
+    let raw = '';
+    apiRes.on('data', (chunk) => { raw += chunk; });
+    apiRes.on('end', () => {
+      console.log('[ia/extrair-reserva] status:', apiRes.statusCode, 'len:', raw.length);
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed.error) return res.json({ ok: false, erro: parsed.error.message });
+        const texto = (parsed.content && parsed.content[0] && parsed.content[0].text) || '';
+        return res.json({ ok: true, texto: texto.replace(/```json|```/g, '').trim() });
+      } catch (e) {
+        return res.json({ ok: false, erro: 'Resposta inválida: ' + raw.slice(0, 300) });
+      }
     });
+  });
 
-    clearTimeout(timer);
+  apiReq.on('error', (e) => {
+    console.error('[ia/extrair-reserva] erro:', e.message);
+    return res.json({ ok: false, erro: e.message });
+  });
 
-    const rawText = await resp.text();
-    console.log('[ia/extrair-reserva] status:', resp.status, 'body len:', rawText.length);
+  apiReq.setTimeout(55000, () => {
+    apiReq.destroy();
+    return res.json({ ok: false, erro: 'Timeout (>55s) ao chamar API Anthropic.' });
+  });
 
-    let data;
-    try { data = JSON.parse(rawText); }
-    catch(e) { return res.status(500).json({ ok: false, erro: 'Resposta inválida da API: ' + rawText.slice(0, 200) }); }
-
-    if (data.error) return res.status(500).json({ ok: false, erro: data.error.message });
-    const texto = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : '';
-    return res.json({ ok: true, texto: texto.replace(/```json|```/g, '').trim() });
-  } catch (err) {
-    console.error('[ia/extrair-reserva]', err.message);
-    return res.status(500).json({ ok: false, erro: err.message });
-  }
+  apiReq.write(bodyPayload);
+  apiReq.end();
 });
 
 app.listen(PORT, '0.0.0.0', () => {
