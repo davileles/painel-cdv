@@ -405,7 +405,7 @@
     <div style="display:grid;grid-template-columns:minmax(160px,1fr) minmax(180px,1.1fr) minmax(0,2fr);gap:12px;margin-bottom:18px" id="milhas-charts-row">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Distribuição por Programa</div>
-        <canvas id="chart-distribuicao" style="max-height:180px"></canvas>
+        <canvas id="chart-distribuicao" style="max-height:220px"></canvas>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column">
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Saldo por Programa</div>
@@ -3018,7 +3018,7 @@ function renderMilhasDashboard(){
         plugins:{
           legend:{
             position:'bottom',
-            labels:{color:'#8a9bbf',font:{family:'Montserrat',size:11},boxWidth:10,padding:10}
+            labels:{color:'#8a9bbf',font:{family:'Montserrat',size:10},boxWidth:8,padding:8}
           },
           tooltip:{
             callbacks:{
@@ -3464,7 +3464,13 @@ function assToggleForm(){
   const open = wrap.style.display === 'none';
   wrap.style.display = open ? 'block' : 'none';
   if(btn) btn.textContent = open ? '✕ Fechar' : '＋ Nova';
-  if(open) setTimeout(()=>wrap.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+  if(open){
+    // Form está no topo — rola a view para o topo da página de assinaturas
+    setTimeout(()=>{
+      const view = document.getElementById('milhas-view-assinaturas');
+      if(view) view.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 50);
+  }
 }
 
 function cartaoToggleForm(){
@@ -3474,7 +3480,12 @@ function cartaoToggleForm(){
   const open = wrap.style.display === 'none';
   wrap.style.display = open ? 'block' : 'none';
   if(btn) btn.textContent = open ? '✕ Fechar' : '＋ Novo';
-  if(open) setTimeout(()=>wrap.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+  if(open){
+    setTimeout(()=>{
+      const view = document.getElementById('milhas-view-cartoes');
+      if(view) view.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 50);
+  }
 }
 
 // ══════════════════════════════════════════════════════
