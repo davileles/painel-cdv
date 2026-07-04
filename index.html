@@ -2151,28 +2151,34 @@ async function milhasCarregar(){
     const d=await r.json();
     if(d.ok && Array.isArray(d.registros)){
       milhasRegistros=d.registros;
-      milhasFIFO=d.filaFIFO||{};
+      milhasFIFO={};
+      // Reconstrói FIFO sempre a partir dos registros — fonte única de verdade
+      const progs=[...new Set(milhasRegistros.map(r=>r.programa))];
+      for(const p of progs) milhasFIFO[p]=fifoReconstruir(p, milhasRegistros, email);
       milhasSalvarLocal();
     } else {
       throw new Error('formato inesperado');
     }
   }catch{
+    // Fallback: localStorage (cache de emergência — sem FIFO, reconstruído dos registros)
     try{
       const key='cdv_milhas_'+email;
       const salvo=JSON.parse(localStorage.getItem(key)||'{}');
       milhasRegistros=Array.isArray(salvo)?salvo:(salvo.registros||[]);
-      milhasFIFO=Array.isArray(salvo)?{}:(salvo.filaFIFO||{});
+      milhasFIFO={};
+      const progs=[...new Set(milhasRegistros.map(r=>r.programa))];
+      for(const p of progs) milhasFIFO[p]=fifoReconstruir(p, milhasRegistros, email);
     }catch{milhasRegistros=[];milhasFIFO={};}
   }
 }
 
-async function milhasSalvarRemoto(registros, filaFIFO){
+async function milhasSalvarRemoto(registros){
   const email=milhasGetEmail();
   if(!email)return false;
   try{
     const r=await fetch(`${MILHAS_PROXY}/milhas/salvar`,{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email,registros,filaFIFO:filaFIFO||milhasFIFO})
+      body:JSON.stringify({email,registros})
     });
     return r.ok;
   }catch{return false;}
@@ -2181,7 +2187,8 @@ async function milhasSalvarRemoto(registros, filaFIFO){
 function milhasSalvarLocal(){
   const email=milhasGetEmail();
   if(!email)return;
-  try{localStorage.setItem('cdv_milhas_'+email, JSON.stringify({registros:milhasRegistros,filaFIFO:milhasFIFO}));}catch{}
+  // Salva apenas os registros — FIFO é sempre reconstruído na carga
+  try{localStorage.setItem('cdv_milhas_'+email, JSON.stringify({registros:milhasRegistros}));}catch{}
 }
 
 // ── Init ───────────────────────────────────────────────────────────────────
@@ -2211,15 +2218,7 @@ async function initMilhas(){
   }
   document.getElementById('milhas-tabela-wrap').innerHTML='<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando registros…</div></div>';
   await milhasCarregar();
-  // Se não há snapshot salvo mas há registros, reconstrói do histórico (migração)
-  const email_init = milhasGetEmail();
-  if(email_init && milhasRegistros.length > 0 && Object.keys(milhasFIFO).length === 0){
-    const progsComMovimento = [...new Set(milhasRegistros.map(r=>r.programa))];
-    for(const p of progsComMovimento){
-      milhasFIFO[p] = fifoReconstruir(p, milhasRegistros, email_init);
-    }
-    milhasSalvarLocal();
-  }
+  // FIFO já reconstruído dentro de milhasCarregar — nenhuma migração necessária
   await assCarregar();
   await assProcessarPendentes();
   cartaoCarregar();
@@ -2682,7 +2681,7 @@ async function salvarLancamento(){
   // salva local primeiro
   milhasSalvarLocal();
   // tenta remoto
-  milhasSalvarRemoto(milhasRegistros, milhasFIFO);
+  milhasSalvarRemoto(milhasRegistros);
 
   fb.style.color='#34d399';
   fb.textContent='✓ Lançamento salvo com sucesso!';
@@ -2860,7 +2859,7 @@ async function assProcessarPendentes(){
 
   if(houveNovos){
     milhasSalvarLocal();
-    milhasSalvarRemoto(milhasRegistros, milhasFIFO);
+    milhasSalvarRemoto(milhasRegistros);
     assSalvarLocal();
     renderMilhasDashboard();
     renderMilhasTabela();
@@ -2949,7 +2948,7 @@ async function excluirLancamento(id){
   try{
     await fetch(`${MILHAS_PROXY}/milhas/excluir`,{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email,id,filaFIFO:milhasFIFO})
+      body:JSON.stringify({email,id})
     });
   }catch(e){
     console.warn('[milhas/excluir] erro remoto:', e.message);
@@ -3494,7 +3493,7 @@ function salvarEdicao(){
     else if(r.tipo==='debito') fifoConsumirSnapshot(r.programa,r.qtde);
   });
   milhasSalvarLocal();
-  milhasSalvarRemoto(milhasRegistros, milhasFIFO);
+  milhasSalvarRemoto(milhasRegistros);
   fb.style.color = '#34d399';
   fb.textContent = '✓ Salvo com sucesso!';
   setTimeout(()=>{ fecharEditModal(); renderMilhasDashboard(); renderMilhasTabela(); }, 900);
