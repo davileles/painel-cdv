@@ -766,6 +766,117 @@ app.post('/ia/extrair-reserva', (req, res) => {
   apiReq.end();
 });
 
+// ── CONCIERGE: Reservas e Viagens ──────────────────────────────
+
+const CONCIERGE_REPO = 'davileles/concierge';
+
+async function getConciergeFile(filename) {
+  return new Promise((resolve, reject) => {
+    const https = require('https');
+    const options = {
+      hostname: 'api.github.com',
+      path: `/repos/${CONCIERGE_REPO}/contents/${filename}`,
+      headers: {
+        'Authorization': `token ${GITHUB_TOKEN}`,
+        'User-Agent': 'cdv-proxy',
+        'Accept': 'application/vnd.github+json'
+      }
+    };
+    https.get(options, (res) => {
+      let raw = '';
+      res.on('data', d => raw += d);
+      res.on('end', () => {
+        try {
+          const data = JSON.parse(raw);
+          const content = JSON.parse(Buffer.from(data.content, 'base64').toString('utf-8'));
+          resolve({ content, sha: data.sha });
+        } catch(e) { reject(e); }
+      });
+    }).on('error', reject);
+  });
+}
+
+async function putConciergeFile(filename, content, sha) {
+  return new Promise((resolve, reject) => {
+    const https = require('https');
+    const body = JSON.stringify({
+      message: `update: ${filename}`,
+      content: Buffer.from(JSON.stringify(content, null, 2)).toString('base64'),
+      sha
+    });
+    const options = {
+      hostname: 'api.github.com',
+      path: `/repos/${CONCIERGE_REPO}/contents/${filename}`,
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${GITHUB_TOKEN}`,
+        'User-Agent': 'cdv-proxy',
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(body)
+      }
+    };
+    const req = https.request(options, (res) => {
+      let raw = '';
+      res.on('data', d => raw += d);
+      res.on('end', () => resolve(JSON.parse(raw)));
+    });
+    req.on('error', reject);
+    req.write(body);
+    req.end();
+  });
+}
+
+// GET /concierge/reservas
+app.get('/concierge/reservas', async (req, res) => {
+  try {
+    const { content } = await getConciergeFile('reservas.json');
+    res.json({ ok: true, data: content });
+  } catch(e) {
+    console.error('[concierge/reservas GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// POST /concierge/reservas
+app.post('/concierge/reservas', async (req, res) => {
+  try {
+    const { data } = req.body;
+    if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
+    const { sha } = await getConciergeFile('reservas.json');
+    await putConciergeFile('reservas.json', data, sha);
+    res.json({ ok: true });
+  } catch(e) {
+    console.error('[concierge/reservas POST]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// GET /concierge/viagens
+app.get('/concierge/viagens', async (req, res) => {
+  try {
+    const { content } = await getConciergeFile('viagens.json');
+    res.json({ ok: true, data: content });
+  } catch(e) {
+    console.error('[concierge/viagens GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// POST /concierge/viagens
+app.post('/concierge/viagens', async (req, res) => {
+  try {
+    const { data } = req.body;
+    if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
+    const { sha } = await getConciergeFile('viagens.json');
+    await putConciergeFile('viagens.json', data, sha);
+    res.json({ ok: true });
+  } catch(e) {
+    console.error('[concierge/viagens POST]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
 });
