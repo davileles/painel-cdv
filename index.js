@@ -182,6 +182,8 @@ const MAX_OFERTAS_APROVADAS   = 100;
 const MAX_DIAS_PASSAGENS      = 180;
 const MEMBROS_PATH            = 'membros.json';
 const MILHAS_PATH             = 'milhas.json';
+const CARTOES_PATH            = 'cartoes.json';
+const ASSINATURAS_PATH        = 'assinaturas.json';
 const HUBLA_TOKEN             = process.env.HUBLA_TOKEN;
 
 // ── Listar ofertas pendentes (com CORS correto) ───────────────────────────────
@@ -588,6 +590,86 @@ app.post('/milhas/excluir', async (req, res) => {
   }
 });
 
+
+// ── Cartões: listar ────────────────────────────────────────────────────────
+app.get('/cartoes/listar', async (req, res) => {
+  const email = (req.query.email || '').toLowerCase().trim();
+  if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
+  try {
+    const atual = await ghGetJson(CARTOES_PATH, { cartoes: [] });
+    const cartoes = (atual.data.cartoes || []).filter(c => c.email === email);
+    res.json({ ok: true, cartoes });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// ── Cartões: salvar lista completa do usuário ──────────────────────────────
+app.post('/cartoes/salvar', async (req, res) => {
+  const { email, cartoes } = req.body || {};
+  if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
+  if (!Array.isArray(cartoes)) return res.status(400).json({ ok: false, erro: 'cartoes deve ser um array' });
+  if (!GITHUB_TOKEN) return res.status(500).json({ ok: false, erro: 'GITHUB_TOKEN não configurado' });
+
+  const emailNorm = email.toLowerCase().trim();
+  const cartoesSanitizados = cartoes.map(c => ({ ...c, email: emailNorm }));
+
+  for (let tentativa = 1; tentativa <= 4; tentativa++) {
+    try {
+      const atual = await ghGetJson(CARTOES_PATH, { atualizadoEm: null, cartoes: [] });
+      const outros = (atual.data.cartoes || []).filter(c => c.email !== emailNorm);
+      const novos  = [...outros, ...cartoesSanitizados];
+      await ghPutJson(CARTOES_PATH, { atualizadoEm: new Date().toISOString(), cartoes: novos }, atual.sha,
+        `chore: cartoes ${emailNorm} (${cartoesSanitizados.length} registros)`);
+      return res.json({ ok: true, total: cartoesSanitizados.length });
+    } catch (err) {
+      const isShaConflict = err.message && err.message.includes('but expected');
+      if (isShaConflict && tentativa < 4) { await new Promise(r => setTimeout(r, tentativa * 400)); continue; }
+      console.error('[cartoes/salvar]', err.message);
+      return res.status(500).json({ ok: false, erro: err.message });
+    }
+  }
+});
+
+// ── Assinaturas: listar ────────────────────────────────────────────────────
+app.get('/assinaturas/listar', async (req, res) => {
+  const email = (req.query.email || '').toLowerCase().trim();
+  if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
+  try {
+    const atual = await ghGetJson(ASSINATURAS_PATH, { assinaturas: [] });
+    const assinaturas = (atual.data.assinaturas || []).filter(a => a.email === email);
+    res.json({ ok: true, assinaturas });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// ── Assinaturas: salvar lista completa do usuário ──────────────────────────
+app.post('/assinaturas/salvar', async (req, res) => {
+  const { email, assinaturas } = req.body || {};
+  if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
+  if (!Array.isArray(assinaturas)) return res.status(400).json({ ok: false, erro: 'assinaturas deve ser um array' });
+  if (!GITHUB_TOKEN) return res.status(500).json({ ok: false, erro: 'GITHUB_TOKEN não configurado' });
+
+  const emailNorm = email.toLowerCase().trim();
+  const assinaturasSanitizadas = assinaturas.map(a => ({ ...a, email: emailNorm }));
+
+  for (let tentativa = 1; tentativa <= 4; tentativa++) {
+    try {
+      const atual = await ghGetJson(ASSINATURAS_PATH, { atualizadoEm: null, assinaturas: [] });
+      const outros = (atual.data.assinaturas || []).filter(a => a.email !== emailNorm);
+      const novos  = [...outros, ...assinaturasSanitizadas];
+      await ghPutJson(ASSINATURAS_PATH, { atualizadoEm: new Date().toISOString(), assinaturas: novos }, atual.sha,
+        `chore: assinaturas ${emailNorm} (${assinaturasSanitizadas.length} registros)`);
+      return res.json({ ok: true, total: assinaturasSanitizadas.length });
+    } catch (err) {
+      const isShaConflict = err.message && err.message.includes('but expected');
+      if (isShaConflict && tentativa < 4) { await new Promise(r => setTimeout(r, tentativa * 400)); continue; }
+      console.error('[assinaturas/salvar]', err.message);
+      return res.status(500).json({ ok: false, erro: err.message });
+    }
+  }
+});
 
 // ── IA: Extrair dados de reserva via Anthropic ──────────────────
 app.post('/ia/extrair-reserva', (req, res) => {
