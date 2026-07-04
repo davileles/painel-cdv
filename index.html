@@ -2221,7 +2221,7 @@ async function initMilhas(){
   // FIFO já reconstruído dentro de milhasCarregar — nenhuma migração necessária
   await assCarregar();
   await assProcessarPendentes();
-  cartaoCarregar();
+  await cartaoCarregar();
   // Popular select de programa no form de cartão
   const selCartaoProg = document.getElementById('cartao-programa');
   if(selCartaoProg){
@@ -2726,12 +2726,20 @@ async function assCarregar(){
   const email = milhasGetEmail();
   if(!email){ milhasAssinaturas=[]; return; }
   try{
-    const key = 'cdv_ass_' + email;
-    milhasAssinaturas = JSON.parse(localStorage.getItem(key)||'[]');
-    // Tenta buscar do remoto (mesmo endpoint de milhas, campo separado)
     const r = await fetch(`${MILHAS_PROXY}/assinaturas/listar?email=${encodeURIComponent(email)}`);
-    if(r.ok){ const d=await r.json(); if(d.ok && Array.isArray(d.assinaturas)) milhasAssinaturas=d.assinaturas; }
-  }catch{ /* usa localStorage */ }
+    if(r.ok){ const d=await r.json(); if(d.ok && Array.isArray(d.assinaturas)){ milhasAssinaturas=d.assinaturas; assSalvarLocal(); return; } }
+    throw new Error('remoto falhou');
+  }catch{
+    try{ milhasAssinaturas = JSON.parse(localStorage.getItem('cdv_ass_'+email)||'[]'); }catch{ milhasAssinaturas=[]; }
+  }
+}
+
+async function assSalvarRemoto(){
+  const email=milhasGetEmail(); if(!email)return false;
+  try{
+    const r=await fetch(`${MILHAS_PROXY}/assinaturas/salvar`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,assinaturas:milhasAssinaturas})});
+    return r.ok;
+  }catch{return false;}
 }
 
 function assSalvarLocal(){
@@ -2768,6 +2776,7 @@ async function salvarAssinatura(){
   };
   milhasAssinaturas.push(nova);
   assSalvarLocal();
+  assSalvarRemoto();
   // Dispara verificação imediata para lançar meses passados
   await assProcessarPendentes();
   // Fechar form e resetar botão após salvar
@@ -2790,6 +2799,7 @@ async function excluirAssinatura(id){
   if(!confirm('Excluir esta assinatura? Os lançamentos já realizados serão mantidos.')) return;
   milhasAssinaturas = milhasAssinaturas.filter(a=>a.id!==id);
   assSalvarLocal();
+  assSalvarRemoto();
   renderAssLista();
 }
 
@@ -2798,6 +2808,7 @@ async function toggleAssinatura(id){
   if(!a) return;
   a.ativa = !a.ativa;
   assSalvarLocal();
+  assSalvarRemoto();
   renderAssLista();
 }
 
@@ -2861,6 +2872,7 @@ async function assProcessarPendentes(){
     milhasSalvarLocal();
     milhasSalvarRemoto(milhasRegistros);
     assSalvarLocal();
+  assSalvarRemoto();
     renderMilhasDashboard();
     renderMilhasTabela();
   }
@@ -3629,9 +3641,23 @@ function renderMilhasResgates(){
 // ══════════════════════════════════════════════════════
 let milhasCartoes = [];
 
-function cartaoCarregar(){
+async function cartaoCarregar(){
   const email = milhasGetEmail(); if(!email){ milhasCartoes=[]; return; }
-  try{ milhasCartoes = JSON.parse(localStorage.getItem('cdv_cartoes_'+email)||'[]'); }catch{ milhasCartoes=[]; }
+  try{
+    const r = await fetch(`${MILHAS_PROXY}/cartoes/listar?email=${encodeURIComponent(email)}`);
+    if(r.ok){ const d=await r.json(); if(d.ok && Array.isArray(d.cartoes)){ milhasCartoes=d.cartoes; cartaoSalvarLocal(); return; } }
+    throw new Error('remoto falhou');
+  }catch{
+    try{ milhasCartoes = JSON.parse(localStorage.getItem('cdv_cartoes_'+email)||'[]'); }catch{ milhasCartoes=[]; }
+  }
+}
+
+async function cartaoSalvarRemoto(){
+  const email=milhasGetEmail(); if(!email)return false;
+  try{
+    const r=await fetch(`${MILHAS_PROXY}/cartoes/salvar`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,cartoes:milhasCartoes})});
+    return r.ok;
+  }catch{return false;}
 }
 
 function cartaoSalvarLocal(){
@@ -3673,6 +3699,7 @@ function salvarCartao(){
   if(!programa){ fb.textContent='Selecione o programa principal.'; return; }
   milhasCartoes.push({ id: Date.now()+'_c', nome, bandeira, programa, dia });
   cartaoSalvarLocal();
+  cartaoSalvarRemoto();
   document.getElementById('cartao-nome').value='';
   document.getElementById('cartao-bandeira').value='';
   document.getElementById('cartao-dia').value='';
@@ -3691,6 +3718,7 @@ function excluirCartao(id){
   if(!confirm('Excluir este cartão?')) return;
   milhasCartoes = milhasCartoes.filter(c=>c.id!==id);
   cartaoSalvarLocal();
+  cartaoSalvarRemoto();
   renderCartaoLista();
 }
 
