@@ -468,7 +468,7 @@ async function main() {
 
       // Popula snapshot
       for (const [key, pts] of Object.entries(parceiros)) {
-        const cleanKey = decodeEntities(key);
+        const cleanKey = decodeEntities(key).toLowerCase().trim();
         if (!snapshot[cleanKey]) snapshot[cleanKey] = { programs: {} };
         snapshot[cleanKey].programs[prog.id] = { pts: parceiros[key].pts, dollar: parceiros[key].dollar };
       }
