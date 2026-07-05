@@ -280,51 +280,7 @@ const PROG_NAMES = {
   latam:  'LATAM Pass',
 };
 
-// ── Helpers GitHub API ────────────────────────────────────────────────────────
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
-const GITHUB_REPO  = 'davileles/painel-cdv';
 
-async function ghGet(filePath, fallback) {
-  if (!GITHUB_TOKEN) return { data: fallback, sha: null };
-  const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`;
-  const res = await fetch(url, {
-    headers: {
-      'Authorization': `Bearer ${GITHUB_TOKEN}`,
-      'Accept': 'application/vnd.github+json',
-    },
-  });
-  if (res.status === 404) return { data: fallback, sha: null };
-  const data = await res.json();
-  if (!res.ok || !data.content) return { data: fallback, sha: null };
-  try {
-    return { data: JSON.parse(Buffer.from(data.content, 'base64').toString('utf8')), sha: data.sha };
-  } catch (e) {
-    return { data: fallback, sha: data.sha };
-  }
-}
-
-async function ghPut(filePath, jsonData, sha, message) {
-  if (!GITHUB_TOKEN) { console.warn('[Variação] GITHUB_TOKEN não configurado — pulando push.'); return; }
-  const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`;
-  const body = {
-    message,
-    content: Buffer.from(JSON.stringify(jsonData, null, 2)).toString('base64'),
-  };
-  if (sha) body.sha = sha;
-  const res = await fetch(url, {
-    method: 'PUT',
-    headers: {
-      'Authorization': `Bearer ${GITHUB_TOKEN}`,
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `Falha ao salvar ${filePath} (status ${res.status})`);
-  }
-}
 
 // ── Gera ofertas pendentes para variações positivas de pontuação ──────────────
 async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
@@ -345,10 +301,13 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
 
   // Carrega controle de notificações do dia (evita mensagens repetidas)
   const notifFile = 'variacoes-notificadas.json';
-  const notifData = await ghGet(notifFile, {});
+  let notifRaw = {};
+  if (fs.existsSync(notifFile)) {
+    try { notifRaw = JSON.parse(fs.readFileSync(notifFile, 'utf8')); } catch (e) {}
+  }
   // Limpa entradas com mais de 2 dias
   const notifAtual = {};
-  for (const [data, entries] of Object.entries(notifData.data || {})) {
+  for (const [data, entries] of Object.entries(notifRaw)) {
     if (data >= hoje) notifAtual[data] = entries; // mantém hoje e futuro
   }
   const notifHoje = notifAtual[hoje] || {};
@@ -391,8 +350,12 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
   console.log(`[Variação] Novas variações em ${programasComVariacao.length} programa(s): ${programasComVariacao.join(', ')}`);
 
   // Lê ofertas-pendentes.json atual
-  const pendentes = await ghGet('ofertas-pendentes.json', { geradoEm: null, items: [] });
-  const itensPendentes = Array.isArray(pendentes.data.items) ? pendentes.data.items : [];
+  const pendentesFile = 'ofertas-pendentes.json';
+  let pendentesDados = { geradoEm: null, items: [] };
+  if (fs.existsSync(pendentesFile)) {
+    try { pendentesDados = JSON.parse(fs.readFileSync(pendentesFile, 'utf8')); } catch (e) {}
+  }
+  const itensPendentes = Array.isArray(pendentesDados.items) ? pendentesDados.items : [];
 
   const novasOfertas = [];
 
@@ -445,16 +408,13 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
 
   // Salva controle de notificações atualizado
   notifAtual[hoje] = notifHoje;
-  await ghPut(notifFile, notifAtual, notifData.sha, `chore: atualiza notificações ${hoje}`);
+  fs.writeFileSync(notifFile, JSON.stringify(notifAtual, null, 2));
 
   // Adiciona novas ofertas no início das pendentes
   const itensMerged = [...novasOfertas, ...itensPendentes];
-  await ghPut(
-    'ofertas-pendentes.json',
-    { geradoEm: new Date().toISOString(), items: itensMerged },
-    pendentes.sha,
-    `chore: variações de pontuação ${hoje} (${novasOfertas.length} programa(s))`
-  );
+  fs.writeFileSync(pendentesFile, JSON.stringify(
+    { geradoEm: new Date().toISOString(), items: itensMerged }, null, 2
+  ));
 
   console.log(`[Variação] ${novasOfertas.length} oferta(s) adicionada(s) às pendentes.`);
 }
