@@ -19,13 +19,12 @@ jobs:
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.CDV_PAINEL_TOKEN }}
         run: node coletar.js
       - name: Salvar arquivos
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add historico.json alertas.json variacoes-notificadas.json
+          git add historico.json alertas.json variacoes-notificadas.json ofertas-pendentes.json
           git diff --staged --quiet || git commit -m "chore: atualiza histórico $(date -u +'%Y-%m-%d %H:%M')"
           git pull --rebase origin main
           git push
