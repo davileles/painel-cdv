@@ -494,9 +494,40 @@ async function main() {
     const progData = snap.programs[alerta.programa];
     const pts = typeof progData === 'object' ? progData.pts : progData;
     if (pts && pts >= alerta.minPts) {
-      await dispararAlerta(alerta, alerta.parceiro, pts);
+      // Alerta tipo concierge → notifica via WhatsApp
+      if (alerta.tipo === 'concierge' && alerta.grupoWhatsApp) {
+        try {
+          const BAILEYS = process.env.BAILEYS_URL || 'https://baileys-server-production-ebfe.up.railway.app';
+          const msg = [
+            `🔔 *Alerta de Compra Bonificada*`,
+            ``,
+            `📍 *Parceiro:* ${alerta.parceiro}`,
+            `🏆 *Programa:* ${alerta.programa}`,
+            `📊 *Pontuação atual:* ${pts} pts/R$ (mínimo configurado: ${alerta.minPts})`,
+            ``,
+            `🗓️ *Viagem:* ${alerta.viagemNome || '—'}`,
+            `✅ *Atividade:* ${alerta.atividadeNome || '—'}`,
+            alerta.atividadeTitulo ? `   _${alerta.atividadeTitulo}_` : '',
+            ``,
+            `💡 Aproveite a bonificação para emitir a passagem!`
+          ].filter(l => l !== undefined).join('\n');
+
+          await fetch(`${BAILEYS}/enviar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ grupo: alerta.grupoWhatsApp, mensagem: msg })
+          });
+          console.log(`[Concierge] Alerta WhatsApp enviado: ${alerta.parceiro} / ${alerta.programa} → ${alerta.grupoWhatsApp}`);
+        } catch (e) {
+          console.error('[Concierge] Erro ao enviar alerta WhatsApp:', e.message);
+          alertasRestantes.push(alerta);
+          continue;
+        }
+      } else {
+        await dispararAlerta(alerta, alerta.parceiro, pts);
+      }
       // Não adiciona de volta — alerta consumido após envio
-      console.log(`[Histórico] Alerta removido após envio: ${alerta.email} / ${alerta.parceiro} / ${alerta.programa}`);
+      console.log(`[Histórico] Alerta removido após envio: ${alerta.email || alerta.grupoWhatsApp} / ${alerta.parceiro} / ${alerta.programa}`);
     } else {
       alertasRestantes.push(alerta);
     }
