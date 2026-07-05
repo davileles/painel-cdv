@@ -959,6 +959,55 @@ app.post('/concierge/viagens', async (req, res) => {
   }
 });
 
+// GET /concierge/cfg
+app.get('/concierge/cfg', async (req, res) => {
+  try {
+    const { content } = await getConciergeFile('cfg.json');
+    res.json({ ok: true, data: content });
+  } catch(e) {
+    res.json({ ok: true, data: {} });
+  }
+});
+
+// POST /concierge/cfg
+app.post('/concierge/cfg', async (req, res) => {
+  try {
+    const { data } = req.body;
+    let sha = null;
+    try { ({ sha } = await getConciergeFile('cfg.json')); } catch(e) {}
+    await putConciergeFile('cfg.json', data, sha);
+    res.json({ ok: true });
+  } catch(e) {
+    console.error('[concierge/cfg POST]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// GET /concierge/modelos
+app.get('/concierge/modelos', async (req, res) => {
+  try {
+    const { content } = await getConciergeFile('modelos.json');
+    res.json({ ok: true, data: content });
+  } catch(e) {
+    res.json({ ok: true, data: [] });
+  }
+});
+
+// POST /concierge/modelos
+app.post('/concierge/modelos', async (req, res) => {
+  try {
+    const { data } = req.body;
+    if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
+    let sha = null;
+    try { ({ sha } = await getConciergeFile('modelos.json')); } catch(e) {}
+    await putConciergeFile('modelos.json', data, sha);
+    res.json({ ok: true });
+  } catch(e) {
+    console.error('[concierge/modelos POST]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
 });
