@@ -1008,6 +1008,27 @@ app.post('/concierge/modelos', async (req, res) => {
   }
 });
 
+// GET /parceiros — lista parceiros do snapshot mais recente com seus programas
+app.get('/parceiros', async (req, res) => {
+  try {
+    const apiBase = `https://api.github.com/repos/${GITHUB_REPO}/contents/historico.json`;
+    const headers = { 'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json' };
+    const getRes = await fetch(apiBase, { compress: false, headers });
+    const getData = await getRes.json();
+    const historico = JSON.parse(Buffer.from(getData.content, 'base64').toString('utf8'));
+    const dates = Object.keys(historico).sort();
+    const last = historico[dates[dates.length - 1]] || {};
+    const parceiros = Object.entries(last).map(([nome, info]) => ({
+      nome,
+      programas: typeof info === 'object' && info.programs ? Object.keys(info.programs) : []
+    })).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    res.json({ ok: true, data: parceiros, atualizadoEm: dates[dates.length - 1] });
+  } catch(e) {
+    console.error('[/parceiros]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 // POST /concierge/alerta — cria alerta de compra bonificada do concierge (disparo via WhatsApp)
 app.post('/concierge/alerta', async (req, res) => {
   const { parceiro, programa, minPts, grupoWhatsApp, viagemId, viagemNome, atividadeNome, atividadeTitulo } = req.body || {};
