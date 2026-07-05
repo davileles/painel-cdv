@@ -959,6 +959,86 @@ app.post('/concierge/viagens', async (req, res) => {
   }
 });
 
+// GET /concierge/portal?email=x — dados do cliente para o portal de acompanhamento
+app.get('/concierge/portal', async (req, res) => {
+  const email = (req.query.email || '').toLowerCase().trim();
+  if (!email) return res.status(400).json({ ok: false, erro: 'email obrigatório' });
+
+  try {
+    // 1. Buscar cfg para obter URL do Apps Script e configuração de colunas
+    const CONCIERGE_REPO = 'davileles/concierge';
+    const ghHeaders = { 'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json' };
+
+    const cfgRes = await fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/cfg.json`, { compress: false, headers: ghHeaders });
+    const cfgData = await cfgRes.json();
+    const cfg = JSON.parse(Buffer.from(cfgData.content, 'base64').toString('utf8'));
+
+    if (!cfg.url) return res.status(400).json({ ok: false, erro: 'Apps Script não configurado' });
+
+    // 2. Buscar clientes do Apps Script
+    const sheetUrl = cfg.url + '?aba=' + encodeURIComponent(cfg.aba || 'Clientes') + '&linha=' + (cfg.linha || 2);
+    const sheetRes = await fetch(sheetUrl);
+    const sheetData = await sheetRes.json();
+
+    function colIdx(letra) {
+      const s = (letra || 'A').toUpperCase().trim();
+      let r = 0;
+      for (let i = 0; i < s.length; i++) r = r * 26 + (s.charCodeAt(i) - 64);
+      return r - 1;
+    }
+
+    const rows = sheetData.rows || [];
+    // Encontrar clientes cujo e-mail corresponde
+    const clientesMatch = rows
+      .map(row => ({
+        nome: String(row[colIdx(cfg.colNome)] || '').trim(),
+        email: String(row[colIdx(cfg.colEmail)] || '').trim().toLowerCase(),
+      }))
+      .filter(c => c.email === email && c.nome);
+
+    if (!clientesMatch.length) {
+      return res.json({ ok: true, clientes: [], viagens: [], reservas: [] });
+    }
+
+    const nomesCliente = clientesMatch.map(c => {
+      const partes = c.nome.trim().split(/\s+/);
+      return (partes[0].charAt(0).toUpperCase() + partes[0].slice(1).toLowerCase()) + 
+             (partes[1] ? ' ' + partes[1].charAt(0).toUpperCase() + partes[1].slice(1).toLowerCase() : '');
+    });
+
+    // 3. Buscar viagens e reservas do GitHub
+    const [viagensRes, reservasRes] = await Promise.all([
+      fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/viagens.json`, { compress: false, headers: ghHeaders }),
+      fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/reservas.json`, { compress: false, headers: ghHeaders }),
+    ]);
+    const viagensData = await viagensRes.json();
+    const reservasData = await reservasRes.json();
+    const todasViagens  = JSON.parse(Buffer.from(viagensData.content,  'base64').toString('utf8'));
+    const todasReservas = JSON.parse(Buffer.from(reservasData.content, 'base64').toString('utf8'));
+
+    // 4. Filtrar por nome do cliente (normalizado)
+    function nomeMatch(nome) {
+      if (!nome) return false;
+      const partes = nome.trim().split(/\s+/);
+      const norm = (partes[0].charAt(0).toUpperCase() + partes[0].slice(1).toLowerCase()) +
+                   (partes[1] ? ' ' + partes[1].charAt(0).toUpperCase() + partes[1].slice(1).toLowerCase() : '');
+      return nomesCliente.includes(norm);
+    }
+
+    const viagens = todasViagens.filter(v => {
+      const clis = Array.isArray(v.clientes) ? v.clientes : [v.clientes];
+      return clis.some(nomeMatch);
+    });
+
+    const reservas = todasReservas.filter(r => nomeMatch(r.cliente));
+
+    res.json({ ok: true, clientes: clientesMatch, nomesCliente, viagens, reservas });
+  } catch(e) {
+    console.error('[concierge/portal]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 // GET /concierge/cfg
 app.get('/concierge/cfg', async (req, res) => {
   try {
