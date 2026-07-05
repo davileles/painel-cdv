@@ -1008,9 +1008,33 @@ app.post('/concierge/modelos', async (req, res) => {
   }
 });
 
-// GET /parceiros — lista parceiros do snapshot mais recente com seus programas
+// GET /parceiros — lista parceiros do snapshot filtrados por categoria viagem
+const PARCEIROS_VIAGEM = new Set([
+  // ✈️ Aéreo / Transporte
+  'clickbus', 'flixbus', 'quero passagem', 'uber',
+  // 🏨 Hospedagem
+  'booking', 'decolar', 'hoteis.com', 'hotel nacional', 'hope resort',
+  'beach park hospedagens', 'summerville', 'wala place', 'grupo dreams', 'luxury loyalty',
+  // 🚗 Locação de Carro
+  'avis', 'budget', 'hertz', 'localiza internacional', 'localiza meoo',
+  'movida', 'rentcars', 'reservecar', 'sixt', 'unidas',
+  // 🎯 Passeios / Entretenimento
+  'agaxtur cruzeiros', 'agaxtur viagens e turismo', 'beach park ingressos',
+  'beto carrero world', 'civitatis', 'easy live entreterimento',
+  'horas mágicas', 'hot beach', 'mundos infinitos', 'seus ingressos', 'viajar',
+  // 🛡️ Seguros de Viagem
+  'allianz travel', 'assist card', 'ciclic seguro viagem', 'coris',
+  'hero seguro viagem', 'liga vitória - seguro de viagem', 'next seguro viagem',
+  'seguro viagem bradesco', 'sulamérica seguro viagem', 'tokio marine seguros',
+  'universal assistance – seguro viagem',
+  // 🧳 Acessórios e Serviços de Viagem
+  'airport park', 'airport park - guarulhos', 'bagaggio', 'portal das malas',
+  'samsonite', 'thule', 'travelex', 'tripchip', 'wavee, seu esim global', 'nomad'
+]);
+
 app.get('/parceiros', async (req, res) => {
   try {
+    const filtroViagem = req.query.viagem !== 'false'; // padrão: filtra por viagem
     const apiBase = `https://api.github.com/repos/${GITHUB_REPO}/contents/historico.json`;
     const headers = { 'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json' };
     const getRes = await fetch(apiBase, { compress: false, headers });
@@ -1018,10 +1042,13 @@ app.get('/parceiros', async (req, res) => {
     const historico = JSON.parse(Buffer.from(getData.content, 'base64').toString('utf8'));
     const dates = Object.keys(historico).sort();
     const last = historico[dates[dates.length - 1]] || {};
-    const parceiros = Object.entries(last).map(([nome, info]) => ({
-      nome,
-      programas: typeof info === 'object' && info.programs ? Object.keys(info.programs) : []
-    })).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    let parceiros = Object.entries(last)
+      .filter(([nome]) => !filtroViagem || PARCEIROS_VIAGEM.has(nome))
+      .map(([nome, info]) => ({
+        nome,
+        programas: typeof info === 'object' && info.programs ? Object.keys(info.programs) : []
+      }))
+      .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
     res.json({ ok: true, data: parceiros, atualizadoEm: dates[dates.length - 1] });
   } catch(e) {
     console.error('[/parceiros]', e.message);
