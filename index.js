@@ -1008,6 +1008,80 @@ app.post('/concierge/modelos', async (req, res) => {
   }
 });
 
+// POST /concierge/alerta — cria alerta de compra bonificada do concierge (disparo via WhatsApp)
+app.post('/concierge/alerta', async (req, res) => {
+  const { parceiro, programa, minPts, grupoWhatsApp, viagemId, viagemNome, atividadeNome, atividadeTitulo } = req.body || {};
+  if (!parceiro || !programa || !minPts || !grupoWhatsApp) {
+    return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: parceiro, programa, minPts, grupoWhatsApp' });
+  }
+  try {
+    const apiBase = `https://api.github.com/repos/davileles/concierge/contents/alertas-concierge.json`;
+    const headers = {
+      'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+    let alertas = [], sha = null;
+    try {
+      const getRes = await fetch(apiBase, { compress: false, headers });
+      const getData = await getRes.json();
+      sha = getData.sha;
+      alertas = JSON.parse(Buffer.from(getData.content, 'base64').toString('utf8'));
+    } catch(e) {}
+
+    // Upsert: mesmo parceiro + programa + viagem
+    const idx = alertas.findIndex(a => a.parceiro === parceiro && a.programa === programa && a.viagemId === viagemId);
+    const novo = {
+      tipo: 'concierge',
+      parceiro, programa, minPts: parseFloat(minPts),
+      grupoWhatsApp, viagemId, viagemNome,
+      atividadeNome, atividadeTitulo,
+      criadoEm: new Date().toISOString()
+    };
+    if (idx >= 0) { alertas[idx] = { ...alertas[idx], ...novo, atualizadoEm: new Date().toISOString() }; }
+    else { alertas.push(novo); }
+
+    const body = { message: `chore: alerta concierge ${parceiro} (${programa} ≥ ${minPts})`, content: Buffer.from(JSON.stringify(alertas, null, 2)).toString('base64') };
+    if (sha) body.sha = sha;
+    await fetch(apiBase, { compress: false, method: 'PUT', headers, body: JSON.stringify(body) });
+    res.json({ ok: true });
+  } catch(e) {
+    console.error('[concierge/alerta POST]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// GET /concierge/alertas — lista alertas de compra bonificada do concierge
+app.get('/concierge/alertas', async (req, res) => {
+  try {
+    const apiBase = `https://api.github.com/repos/davileles/concierge/contents/alertas-concierge.json`;
+    const headers = { 'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json' };
+    const getRes = await fetch(apiBase, { compress: false, headers });
+    const getData = await getRes.json();
+    const alertas = JSON.parse(Buffer.from(getData.content, 'base64').toString('utf8'));
+    res.json({ ok: true, data: alertas });
+  } catch(e) {
+    res.json({ ok: true, data: [] });
+  }
+});
+
+// DELETE /concierge/alerta — remove alerta específico
+app.delete('/concierge/alerta', async (req, res) => {
+  const { parceiro, programa, viagemId } = req.body || {};
+  try {
+    const apiBase = `https://api.github.com/repos/davileles/concierge/contents/alertas-concierge.json`;
+    const headers = { 'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' };
+    const getRes = await fetch(apiBase, { compress: false, headers });
+    const getData = await getRes.json();
+    let alertas = JSON.parse(Buffer.from(getData.content, 'base64').toString('utf8'));
+    alertas = alertas.filter(a => !(a.parceiro === parceiro && a.programa === programa && a.viagemId === viagemId));
+    await fetch(apiBase, { compress: false, method: 'PUT', headers, body: JSON.stringify({ message: `chore: remove alerta ${parceiro} (${programa})`, content: Buffer.from(JSON.stringify(alertas, null, 2)).toString('base64'), sha: getData.sha }) });
+    res.json({ ok: true });
+  } catch(e) {
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
 });
