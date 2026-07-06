@@ -1617,10 +1617,12 @@ async function salvarAlerta(){
   }
 }
 
-document.getElementById('modal-overlay').addEventListener('click', e=>{
-  if(e.target===document.getElementById('modal-overlay')) closeModal();
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('modal-overlay').addEventListener('click', e=>{
+    if(e.target===document.getElementById('modal-overlay')) closeModal();
+  });
+  document.getElementById('modal-close-btn').addEventListener('click', closeModal);
 });
-document.getElementById('modal-close-btn').addEventListener('click', closeModal);
 
 document.addEventListener('click',e=>{
   if(document.getElementById('modal-overlay').classList.contains('open')) return;
@@ -3314,16 +3316,18 @@ document.getElementById('radar-grid').addEventListener('click',e=>{
   if(card) openOfertaModal(card.dataset.ofertaId);
 });
 
-document.getElementById('pass-modal-overlay').addEventListener('click',e=>{
-  if(e.target===document.getElementById('pass-modal-overlay')) fecharPassagemModal();
-});
-document.getElementById('pass-modal-close').addEventListener('click', fecharPassagemModal);
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('pass-modal-overlay').addEventListener('click',e=>{
+    if(e.target===document.getElementById('pass-modal-overlay')) fecharPassagemModal();
+  });
+  document.getElementById('pass-modal-close').addEventListener('click', fecharPassagemModal);
 
-document.getElementById('oferta-modal-overlay').addEventListener('click',e=>{
-  if(e.target===document.getElementById('oferta-modal-overlay')) closeOfertaModal();
+  document.getElementById('oferta-modal-overlay').addEventListener('click',e=>{
+    if(e.target===document.getElementById('oferta-modal-overlay')) closeOfertaModal();
+  });
+  document.getElementById('oferta-modal-close-btn').addEventListener('click',closeOfertaModal);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOfertaModal();});
 });
-document.getElementById('oferta-modal-close-btn').addEventListener('click',closeOfertaModal);
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOfertaModal();});
 
 
 // ── Login ─────────────────────────────────────────────────────────────────────
@@ -3417,7 +3421,9 @@ async function fazerLogin() {
   }
 }
 // Enter no campo dispara login
-document.getElementById('login-email').addEventListener('keydown', e => { if (e.key === 'Enter') fazerLogin(); });
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('login-email').addEventListener('keydown', e => { if (e.key === 'Enter') fazerLogin(); });
+});
 
 function fazerLogout() {
   localStorage.removeItem(LOGIN_KEY);
