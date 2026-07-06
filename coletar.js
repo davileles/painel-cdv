@@ -448,7 +448,7 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
         if (pts != null) pts6m.push(pts);
       }
 
-      const maxPts6m = pts6m.length > 0 ? Math.max(...pts6m) : v.ptsBefore;
+      const maxPts6m = Math.max(v.ptsNow, ...(pts6m.length > 0 ? pts6m : [v.ptsBefore]));
       const mediaPts6m = pts6m.length > 0
         ? Math.round(pts6m.reduce((a, b) => a + b, 0) / pts6m.length * 10) / 10
         : v.ptsBefore;
