@@ -1213,6 +1213,111 @@ app.delete('/concierge/alerta', async (req, res) => {
   }
 });
 
+// ══════════════════════════════════════════════════════════════════
+//  POST /roteiros/publicar
+//  Recebe: { slug, html (base64 ou string), viagemId? }
+//  - Faz commit do HTML em davileles/roteiros/{slug}/index.html
+//  - Se viagemId fornecido, atualiza viagem no concierge com slugRoteiro + urlRoteiro
+// ══════════════════════════════════════════════════════════════════
+app.post('/roteiros/publicar', async (req, res) => {
+  const { slug, html, htmlBase64, viagemId } = req.body || {};
+
+  if (!slug) return res.status(400).json({ ok: false, erro: 'slug obrigatório' });
+
+  const htmlContent = html || (htmlBase64 ? Buffer.from(htmlBase64, 'base64').toString('utf-8') : null);
+  if (!htmlContent) return res.status(400).json({ ok: false, erro: 'html ou htmlBase64 obrigatório' });
+
+  const ROTEIROS_REPO = 'davileles/roteiros';
+  const caminho = `${slug}/index.html`;
+  const ghHeaders = {
+    'Authorization': `token ${GITHUB_TOKEN}`,
+    'User-Agent': 'cdv-proxy',
+    'Accept': 'application/vnd.github+json',
+    'Content-Type': 'application/json'
+  };
+
+  try {
+    // 1. Buscar SHA existente (se o arquivo já existe)
+    let shaBefore = null;
+    try {
+      const checkRes = await fetch(`https://api.github.com/repos/${ROTEIROS_REPO}/contents/${caminho}`, {
+        headers: ghHeaders
+      });
+      if (checkRes.ok) {
+        const checkData = await checkRes.json();
+        shaBefore = checkData.sha || null;
+      }
+    } catch(e) { /* arquivo não existe ainda */ }
+
+    // 2. Commit do HTML no repositório roteiros
+    const putBody = {
+      message: `roteiro: ${slug}`,
+      content: Buffer.from(htmlContent).toString('base64')
+    };
+    if (shaBefore) putBody.sha = shaBefore;
+
+    const putRes = await fetch(`https://api.github.com/repos/${ROTEIROS_REPO}/contents/${caminho}`, {
+      method: 'PUT',
+      headers: ghHeaders,
+      body: JSON.stringify(putBody)
+    });
+
+    if (!putRes.ok) {
+      const putErr = await putRes.json().catch(() => ({}));
+      throw new Error(putErr.message || `GitHub PUT falhou (${putRes.status})`);
+    }
+
+    const url = `https://davileles.github.io/roteiros/${slug}/`;
+
+    // 3. Se viagemId fornecido, atualizar viagem no concierge com slugRoteiro + urlRoteiro
+    if (viagemId) {
+      try {
+        const { content: viagens, sha: viagensSha } = await getConciergeFile('viagens.json');
+        const idx = viagens.findIndex(v => v.id === viagemId);
+        if (idx !== -1) {
+          viagens[idx].slugRoteiro = slug;
+          viagens[idx].urlRoteiro  = url;
+          viagens[idx].roteiroPubEm = new Date().toISOString().split('T')[0];
+          await putConciergeFile('viagens.json', viagens, viagensSha);
+        }
+      } catch(e) {
+        console.warn('[roteiros/publicar] Aviso: não atualizou viagem no concierge:', e.message);
+        // Não falha — o commit do HTML já foi feito
+      }
+    }
+
+    res.json({ ok: true, url, slug, viagemAtualizada: !!viagemId });
+
+  } catch(e) {
+    console.error('[roteiros/publicar]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// GET /roteiros/publicar?slug=xxx — verifica se roteiro já existe e retorna URL
+app.get('/roteiros/publicar', async (req, res) => {
+  const slug = (req.query.slug || '').trim();
+  if (!slug) return res.status(400).json({ ok: false, erro: 'slug obrigatório' });
+  const ROTEIROS_REPO = 'davileles/roteiros';
+  try {
+    const checkRes = await fetch(`https://api.github.com/repos/${ROTEIROS_REPO}/contents/${slug}/index.html`, {
+      headers: {
+        'Authorization': `token ${GITHUB_TOKEN}`,
+        'User-Agent': 'cdv-proxy',
+        'Accept': 'application/vnd.github+json'
+      }
+    });
+    if (checkRes.ok) {
+      res.json({ ok: true, existe: true, url: `https://davileles.github.io/roteiros/${slug}/` });
+    } else {
+      res.json({ ok: true, existe: false });
+    }
+  } catch(e) {
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
 });
