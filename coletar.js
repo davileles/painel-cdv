@@ -458,15 +458,19 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
       for (let i = 0; i < rawT1.length; i++) hashT1 = (hashT1 * 31 + rawT1.charCodeAt(i)) >>> 0;
       const idT1 = 'var_t1_' + hashT1.toString(36);
 
-      const tituloT1 = v.parceiro + ' aumentou pontuacao no ' + progName;
-      const resumoT1 = [
-        '\u2b50 *' + v.parceiro + '* teve aumento de pontuacao com *' + progName + '*',
-        '',
-        '\ud83d\udcca *Pontuacao anterior:* ' + v.ptsBefore + ' pts/R$',
-        '\ud83d\udcc8 *Pontuacao atual:* ' + v.ptsNow + ' pts/R$ (+' + v.delta + ')',
-        '\ud83d\udd1d *Maior pontuacao (ultimos 6 meses):* ' + maxPts6m + ' pts/R$',
-        '\ud83d\udcc9 *Media (ultimos 6 meses):* ' + mediaPts6m + ' pts/R$',
-      ].join('\n');
+      // Titulo no formato padrao do gerador CDV
+      const tituloT1 = v.ptsNow + ' pontos por real entre ' + v.parceiro + ' e ' + progName;
+
+      // Resumo: chamada curta (sera exibida abaixo do titulo pelo montarMensagemRadar)
+      const resumoT1 = v.parceiro + ' aumentou sua pontuacao de compra bonificada no ' + progName + '.';
+
+      // Dados de pontuacao vao no campo "importante" — aparece como "⚠️ *IMPORTANTE*" na mensagem final
+      const importanteT1 = [
+        'Pontuacao anterior: ' + v.ptsBefore + ' pts/R$',
+        'Pontuacao atual: ' + v.ptsNow + ' pts/R$ (+' + v.delta + ')',
+        'Maior pontuacao (ultimos 6 meses): ' + maxPts6m + ' pts/R$',
+        'Media (ultimos 6 meses): ' + mediaPts6m + ' pts/R$',
+      ].join(' | ');
 
       const ofertaT1 = {
         id:        idT1,
@@ -481,7 +485,7 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
         loja:      v.parceiro,
         cupom:     '',
         link:      'https://painel.clubedoviajante.com.br',
-        importante: '',
+        importante: importanteT1,
         milheiro:  '',
         tetoTransferencia: '',
         restricoes: [],
