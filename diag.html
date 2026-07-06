@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CDV Diagnóstico</title>
+<style>
+body{font-family:monospace;background:#1e2535;color:#eee;padding:20px;font-size:14px}
+.ok{color:#34d399}.err{color:#f87171}.warn{color:#fbbf24}
+pre{background:#2a3246;padding:12px;border-radius:8px;overflow-x:auto}
+button{background:#ff585e;border:none;color:#fff;padding:8px 16px;border-radius:6px;cursor:pointer;font-family:monospace;font-size:13px;margin:4px}
+</style>
+</head>
+<body>
+<h2>🔍 CDV Proxy Diagnóstico</h2>
+<div id="log"></div>
+<button onclick="runAll()">▶ Rodar todos os testes</button>
+
+<script>
+const PROXY = 'https://cdv-proxy-production.up.railway.app';
+const log = document.getElementById('log');
+
+function addLine(msg, cls=''){
+  const d = document.createElement('div');
+  d.className = cls;
+  d.textContent = msg;
+  log.appendChild(d);
+}
+
+async function testEndpoint(label, url){
+  addLine(`\n⏳ Testando: ${label} → ${url}`);
+  const t0 = Date.now();
+  try {
+    const res = await fetch(url);
+    const ms = Date.now()-t0;
+    let body = '';
+    try { body = JSON.stringify(await res.json(), null, 2); } catch(e){ body = await res.text(); }
+    addLine(`✅ ${label}: HTTP ${res.status} (${ms}ms)`, 'ok');
+    const pre = document.createElement('pre');
+    pre.textContent = body.slice(0,500);
+    log.appendChild(pre);
+  } catch(e) {
+    const ms = Date.now()-t0;
+    addLine(`❌ ${label}: ERRO após ${ms}ms — ${e.name}: ${e.message}`, 'err');
+  }
+}
+
+async function runAll(){
+  log.innerHTML = '';
+  addLine('=== CDV PROXY DIAGNÓSTICO ===');
+  addLine('Browser: ' + navigator.userAgent.slice(0,80));
+  addLine('AbortSignal.timeout suportado: ' + (typeof AbortSignal.timeout === 'function'));
+  addLine('AbortController suportado: ' + (typeof AbortController !== 'undefined'));
+  
+  await testEndpoint('/ping', PROXY + '/ping');
+  await testEndpoint('/membros/verificar', PROXY + '/membros/verificar?email=davileles%40gmail.com');
+  
+  addLine('\n=== FIM ===');
+}
+
+runAll();
+</script>
+</body>
+</html>
