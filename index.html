@@ -1851,6 +1851,13 @@ function renderPassagens() {
       ${histHtml}
     </div>`;
   }).join('');
+  // Animação escalonada nos pass-cards
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('#pass-grid .pass-card').forEach((el,i)=>{
+      el.style.animationDelay = (i * 55) + 'ms';
+      setTimeout(()=>el.classList.add('cdv-visible'), 10);
+    });
+  });
 }
 
 
@@ -2073,6 +2080,13 @@ function renderOfertas(){
       </div>
     </div>
   `;}).join('');
+  // Animação escalonada nos oferta-cards (container: radar-grid)
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('#radar-grid .oferta-card').forEach((el,i)=>{
+      el.style.animationDelay = (i * 45) + 'ms';
+      setTimeout(()=>el.classList.add('cdv-visible'), 10);
+    });
+  });
 }
 
 function formatDataCurta(iso){
