@@ -67,6 +67,47 @@ async function fetchDirect(url, timeoutMs = 25000) {
   }
 }
 
+// ── Resolve o link final do parceiro a partir do link do Comparemania ──────────
+// Reaplica a mesma lógica do index.html (fetchRedirectLinks):
+//   1. Faz fetch da página do parceiro no Comparemania
+//   2. Extrai o href /redirecionar/oferta/...
+//   3. Faz fetch desse URL → captura o Location ou primeiro link externo (esfera.com, livelo.com etc.)
+// Chamado apenas para parceiros Tier 1 que tiveram variação positiva.
+async function resolvePartnerLink(comparemaniaParceirUrl) {
+  if (!comparemaniaParceirUrl) return '';
+  try {
+    // Passo 1: página do parceiro no Comparemania — extrair link /redirecionar/oferta
+    const html = await fetchDirect(comparemaniaParceirUrl, 12000);
+    const redirectMatch = html.match(/href=["']((?:https?:\/\/www\.comparemania\.com\.br)?\/redirecionar\/oferta[^"']+)["']/i);
+    if (!redirectMatch) return '';
+    const redirectUrl = redirectMatch[1].startsWith('http')
+      ? redirectMatch[1]
+      : 'https://www.comparemania.com.br' + redirectMatch[1];
+
+    // Passo 2: seguir o redirect — Node fetch segue automaticamente; pegar a URL final
+    const ctrl = new AbortController();
+    setTimeout(() => ctrl.abort(), 10000);
+    const rres = await fetch(redirectUrl, {
+      signal: ctrl.signal,
+      redirect: 'follow',
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+    });
+    // URL final após redirects
+    const finalUrl = rres.url || '';
+    if (finalUrl && !finalUrl.includes('comparemania')) return finalUrl;
+
+    // Fallback: extrair primeiro link externo não-comparemania do HTML de resposta
+    const rhtml = await rres.text().catch(() => '');
+    const extMatch = rhtml.match(/https?:\/\/[^"'\s<>]*(?:esfera\.com|livelo\.com|smiles\.com\.br|viajemais\.voeazul|latamairlines)[^"'\s<>]*/i);
+    if (extMatch) return extMatch[0].replace(/\u0026/g, '&').replace(/\u002B/g, '+').replace(/\u002F/g, '/');
+
+    return redirectUrl; // fallback: link do redirect do comparemania
+  } catch (e) {
+    console.warn('[resolvePartnerLink] Erro ao resolver link para', comparemaniaParceirUrl, '—', e.message);
+    return '';
+  }
+}
+
 // ── Parser de pontuação ───────────────────────────────────────────────────────
 // Suporta os formatos que a Comparemania usa por programa:
 //   Livelo/Esfera : "= 5 ponto(s) por 1 real"  |  "até 84 ponto(s) por 1 real"
@@ -476,11 +517,15 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
         '* Media (ultimos 6 meses): ' + mediaPts6m + ' pts/R$',
       ].join('\n');
 
-      // Link direto do parceiro no programa, capturado pelo parseComparemaniaPts
-      const linkT1 = (
-        (snapshotAtual[parceiroKey] && snapshotAtual[parceiroKey].links && snapshotAtual[parceiroKey].links[progId])
-        || 'https://painel.clubedoviajante.com.br'
-      );
+      // Link direto do parceiro no programa — resolve URL final via redirect do Comparemania
+      const comparemaniaParceirUrl = (
+        snapshotAtual[parceiroKey] && snapshotAtual[parceiroKey].links && snapshotAtual[parceiroKey].links[progId]
+      ) || '';
+      let linkT1 = 'https://painel.clubedoviajante.com.br';
+      if (comparemaniaParceirUrl) {
+        const resolved = await resolvePartnerLink(comparemaniaParceirUrl);
+        if (resolved) linkT1 = resolved;
+      }
 
       const ofertaT1 = {
         id:        idT1,
