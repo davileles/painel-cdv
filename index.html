@@ -3328,6 +3328,12 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOfertaModal();}
 
 // ── Login ─────────────────────────────────────────────────────────────────────
 const CDV_PROXY_AUTH = 'https://cdv-proxy-production.up.railway.app';
+
+// Acorda o servidor Railway silenciosamente ao carregar a página
+(function warmUpProxy() {
+  fetch(CDV_PROXY_AUTH + '/ping', { signal: AbortSignal.timeout(8000) })
+    .catch(() => {}); // silencioso — só acorda o servidor
+})();
 const LOGIN_KEY  = 'cdv_auth';
 const LOGIN_TTL  = 24 * 60 * 60 * 1000; // 24h
 
@@ -3366,9 +3372,25 @@ async function fazerLogin() {
   if (!email || !email.includes('@')) { erroEl.textContent = 'Digite um e-mail válido.'; return; }
   btn.disabled = true;
   btn.textContent = 'Verificando...';
+
+  const tentarVerificar = async (tentativa) => {
+    const url = CDV_PROXY_AUTH + '/membros/verificar?email=' + encodeURIComponent(email);
+    const res = await fetch(url, { signal: AbortSignal.timeout(12000) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  };
+
   try {
-    const res = await fetch(CDV_PROXY_AUTH + '/membros/verificar?email=' + encodeURIComponent(email));
-    const data = await res.json();
+    let data;
+    try {
+      data = await tentarVerificar(1);
+    } catch (e1) {
+      // Servidor pode estar acordando — aguardar e tentar novamente
+      erroEl.textContent = 'Conectando ao servidor…';
+      await new Promise(r => setTimeout(r, 4000));
+      erroEl.textContent = '';
+      data = await tentarVerificar(2);
+    }
     if (data.acesso) {
       salvarSessao({ email: data.email, nome: data.nome });
       mostrarPainel(data);
@@ -3380,7 +3402,8 @@ async function fazerLogin() {
       erroEl.textContent = msgs[data.motivo] || 'Acesso negado.';
     }
   } catch (e) {
-    erroEl.textContent = 'Erro ao verificar. Tente novamente.';
+    erroEl.textContent = 'Servidor indisponível. Tente novamente em instantes.';
+    console.error('[CDV login]', e);
   } finally {
     btn.disabled = false;
     btn.textContent = 'Entrar';
