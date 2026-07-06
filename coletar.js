@@ -117,11 +117,16 @@ function parseComparemaniaPts(html, progId) {
     const cells = row.split(/<\/td>/i);
     if (cells.length < 2) continue;
 
-    // Primeiro <td>: extrai o nome via <a>
-    const aMatch = cells[0].match(/<a[^>]*>([\s\S]*?)<\/a>/i);
+    // Primeiro <td>: extrai o nome e href via <a>
+    const aMatch = cells[0].match(/<a([^>]*)>([\s\S]*?)<\/a>/i);
     if (!aMatch) continue;
-    const name = aMatch[1].replace(/<[^>]*>/g, '').trim();
+    const name = aMatch[2].replace(/<[^>]*>/g, '').trim();
     if (!name) continue;
+    const hrefMatch = aMatch[1].match(/href=["']([^"']+)["']/i);
+    const rawHref = hrefMatch ? hrefMatch[1] : '';
+    const partnerLink = rawHref
+      ? (rawHref.startsWith('http') ? rawHref : 'https://www.comparemania.com.br' + rawHref)
+      : '';
 
     // Segundo <td>: texto de pontuação (remove tags)
     const ptsTxt = cells[1].replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -145,7 +150,7 @@ function parseComparemaniaPts(html, progId) {
 
     const key = name.toLowerCase().trim();
     if (!result[key] || pts > result[key].pts) {
-      result[key] = { pts, dollar };
+      result[key] = { pts, dollar, link: partnerLink };
     }
   }
 
@@ -461,16 +466,21 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
       // Titulo no formato padrao do gerador CDV
       const tituloT1 = v.ptsNow + ' pontos por real entre ' + v.parceiro + ' e ' + progName;
 
-      // Resumo: chamada curta (sera exibida abaixo do titulo pelo montarMensagemRadar)
-      const resumoT1 = v.parceiro + ' aumentou sua pontuacao de compra bonificada no ' + progName + '.';
-
-      // Dados de pontuacao vao no campo "importante" — aparece como "⚠️ *IMPORTANTE*" na mensagem final
-      const importanteT1 = [
-        'Pontuacao anterior: ' + v.ptsBefore + ' pts/R$',
-        'Pontuacao atual: ' + v.ptsNow + ' pts/R$ (+' + v.delta + ')',
-        'Maior pontuacao (ultimos 6 meses): ' + maxPts6m + ' pts/R$',
-        'Media (ultimos 6 meses): ' + mediaPts6m + ' pts/R$',
+      // Resumo: chamada + dados de pontuacao logo abaixo
+      const resumoT1 = [
+        v.parceiro + ' aumentou sua pontuacao de compra bonificada no ' + progName + '.',
+        '',
+        '* Pontuacao anterior: ' + v.ptsBefore + ' pts/R$',
+        '* Pontuacao atual: ' + v.ptsNow + ' pts/R$ (+' + v.delta + ')',
+        '* Maior pontuacao (ultimos 6 meses): ' + maxPts6m + ' pts/R$',
+        '* Media (ultimos 6 meses): ' + mediaPts6m + ' pts/R$',
       ].join('\n');
+
+      // Link direto do parceiro no programa, capturado pelo parseComparemaniaPts
+      const linkT1 = (
+        (snapshotAtual[parceiroKey] && snapshotAtual[parceiroKey].links && snapshotAtual[parceiroKey].links[progId])
+        || 'https://painel.clubedoviajante.com.br'
+      );
 
       const ofertaT1 = {
         id:        idT1,
@@ -484,8 +494,8 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
         categoria: 'compra_bonificada',
         loja:      v.parceiro,
         cupom:     '',
-        link:      'https://painel.clubedoviajante.com.br',
-        importante: importanteT1,
+        link:      linkT1,
+        importante: '',
         milheiro:  '',
         tetoTransferencia: '',
         restricoes: [],
@@ -565,10 +575,15 @@ async function main() {
       console.log(`[Histórico] ${prog.name}: ${count} parceiros encontrados`);
 
       // Popula snapshot
-      for (const [key, pts] of Object.entries(parceiros)) {
+      for (const [key, dados] of Object.entries(parceiros)) {
         const cleanKey = decodeEntities(key).toLowerCase().trim();
         if (!snapshot[cleanKey]) snapshot[cleanKey] = { programs: {} };
-        snapshot[cleanKey].programs[prog.id] = { pts: parceiros[key].pts, dollar: parceiros[key].dollar };
+        snapshot[cleanKey].programs[prog.id] = { pts: dados.pts, dollar: dados.dollar };
+        // Persiste link do programa (um link por programa, ex: links.esfera, links.livelo)
+        if (dados.link) {
+          if (!snapshot[cleanKey].links) snapshot[cleanKey].links = {};
+          snapshot[cleanKey].links[prog.id] = dados.link;
+        }
       }
     } catch (e) {
       console.error(`[Histórico] Erro ao coletar ${prog.name}:`, e.message);
