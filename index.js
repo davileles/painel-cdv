@@ -18,6 +18,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Health check / warm-up
+app.get('/ping', (req, res) => res.json({ ok: true, ts: Date.now() }));
+
 // ── Fetch para análise de ofertas (sem restrição de domínio) ─────────────────
 app.get('/fetch-oferta', async (req, res) => {
   const target = req.query.url;
