@@ -105,7 +105,77 @@
   /* STATUS */
   .status-box{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:16px;grid-column:1/-1;text-align:center}
   .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--cdv-coral);border-radius:50%;animation:spin 0.7s linear infinite}
+
   @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ═══════════════════════════════════════════
+     CDV ANIMATIONS — entrada e interação
+  ═══════════════════════════════════════════ */
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(18px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  @keyframes slideInLeft{
+    from{opacity:0;transform:translateX(-16px)}
+    to{opacity:1;transform:translateX(0)}
+  }
+  @keyframes countUp{
+    from{opacity:0;transform:scale(.92)}
+    to{opacity:1;transform:scale(1)}
+  }
+  @keyframes barFill{
+    from{width:0!important}
+  }
+  @keyframes tabSlide{
+    from{opacity:0;transform:translateY(10px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  /* Login box entrada */
+  .login-box{animation:fadeUp .45s cubic-bezier(.22,.68,0,1.2) both}
+
+  /* Logo hover no login — rotação leve */
+  .login-logo{transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+  .login-logo:hover{transform:rotate(-8deg) scale(1.08)}
+
+  /* Header wordmark */
+  .logo-row{cursor:default}
+  .logo-bird{transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+  .logo-bird:hover{transform:rotate(-6deg) scale(1.1)}
+
+  /* Cards — entrada escalonada */
+  .card{opacity:0}
+  .card.cdv-visible{animation:fadeUp .35s cubic-bezier(.22,.68,0,1.2) both;opacity:1}
+
+  /* Oferta cards */
+  .oferta-card{opacity:0}
+  .oferta-card.cdv-visible{animation:fadeUp .35s cubic-bezier(.22,.68,0,1.2) both;opacity:1}
+
+  /* Passagem cards */
+  .pass-card{opacity:0}
+  .pass-card.cdv-visible{animation:fadeUp .35s cubic-bezier(.22,.68,0,1.2) both;opacity:1}
+
+  /* KPIs milhas — countUp */
+  .milhas-kpi{opacity:0}
+  .milhas-kpi.cdv-visible{animation:countUp .4s cubic-bezier(.22,.68,0,1.2) both;opacity:1}
+
+  /* Tab panels — fade ao trocar aba */
+  .tab-panel.cdv-tab-enter{animation:tabSlide .3s ease both}
+
+  /* Main tabs — hover suave */
+  .main-tab{transition:color .15s,border-color .15s,background .15s}
+  .main-tab:hover:not(.active){background:rgba(255,88,94,.06)}
+
+  /* Modal rows — slideIn */
+  .modal-row{transition:border-color .15s,background .15s,transform .15s}
+  .modal-row:hover{transform:translateX(3px)}
+
+  /* Tabela milhas row hover */
+  .milhas-table tr{transition:background .12s}
+
+  /* Botão refresh — spin ao carregar */
+  .refresh-btn.loading .refresh-icon{display:inline-block;animation:spin .7s linear infinite}
+
   .error-box{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);border-radius:10px;padding:16px 20px;color:var(--red);font-size:13px;grid-column:1/-1;text-align:center;line-height:1.8}
 
   /* MODAL */
@@ -1314,6 +1384,13 @@ function render(){
       ${p.dollar?'<span class="tag-dollar">em U$ turismo</span>':''}
       <div class="card-foot">${p.cat}</div>
     </div>`).join('');
+  // Animação escalonada nos cards
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('#grid .card').forEach((el,i)=>{
+      el.style.animationDelay = (i * 55) + 'ms';
+      setTimeout(()=>el.classList.add('cdv-visible'), 10);
+    });
+  });
 }
 
 const directUrlCache={};
@@ -3024,6 +3101,13 @@ function renderMilhasDashboard(){
       <div class="milhas-kpi-val" style="color:${k.color}">${k.val}</div>
       <div class="milhas-kpi-sub">${k.sub}</div>
     </div>`).join('');
+  // countUp nos KPIs
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('#milhas-kpis .milhas-kpi').forEach((el,i)=>{
+      el.style.animationDelay = (i * 80) + 'ms';
+      setTimeout(()=>el.classList.add('cdv-visible'), 10);
+    });
+  });
 
   // Custo por milheiro por programa
   const cpmEl=document.getElementById('milhas-cpm-cards');
@@ -3296,7 +3380,12 @@ function lerSessao() {
 }
 function mostrarPainel(sessao) {
   document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app-content').style.display = 'block';
+  const appEl = document.getElementById('app-content');
+  appEl.style.display = 'block';
+  appEl.style.animation = 'none';
+  requestAnimationFrame(()=>{
+    appEl.style.animation = 'fadeUp .4s cubic-bezier(.22,.68,0,1.2) both';
+  });
   // Mostra nome no header se existir
   const nomeEl = document.getElementById('header-nome-membro');
   if (nomeEl && sessao?.nome) nomeEl.textContent = '👤 ' + sessao.nome.split(' ')[0];
