@@ -3373,9 +3373,16 @@ async function fazerLogin() {
   btn.disabled = true;
   btn.textContent = 'Verificando...';
 
-  const tentarVerificar = async (tentativa) => {
+  // Fetch com timeout manual (compatível com todos os browsers)
+  const fetchComTimeout = (url, ms) => {
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), ms);
+    return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(tid));
+  };
+
+  const tentarVerificar = async () => {
     const url = CDV_PROXY_AUTH + '/membros/verificar?email=' + encodeURIComponent(email);
-    const res = await fetch(url, { signal: AbortSignal.timeout(12000) });
+    const res = await fetchComTimeout(url, 15000);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     return res.json();
   };
@@ -3383,13 +3390,13 @@ async function fazerLogin() {
   try {
     let data;
     try {
-      data = await tentarVerificar(1);
+      data = await tentarVerificar();
     } catch (e1) {
-      // Servidor pode estar acordando — aguardar e tentar novamente
+      // Servidor pode estar acordando (Railway sleep) — aguardar e tentar novamente
       erroEl.textContent = 'Conectando ao servidor…';
-      await new Promise(r => setTimeout(r, 4000));
+      await new Promise(r => setTimeout(r, 5000));
       erroEl.textContent = '';
-      data = await tentarVerificar(2);
+      data = await tentarVerificar();
     }
     if (data.acesso) {
       salvarSessao({ email: data.email, nome: data.nome });
