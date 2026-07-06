@@ -280,6 +280,32 @@ const PROG_NAMES = {
   latam:  'LATAM Pass',
 };
 
+// ── Parceiros com mensagem individual detalhada (Tier 1) ─────────────────────
+// Lista definida por pesquisa com membros: parceiros com >= 40% de mencoes.
+// Chave = nome lowercase exato como aparece no historico.json
+const PARCEIROS_TIER1 = new Set([
+  // Viagem
+  'booking', 'hoteis.com', 'decolar',
+  // Marketplace
+  'mercado livre', 'casas bahia', 'magazine luiza', 'shopee',
+  // Esportes
+  'netshoes', 'centauro', 'decathlon',
+  // Moda
+  'adidas', 'nike', 'lojas renner', 'riachuelo',
+  // Beleza
+  'beleza na web',
+  // Saude
+  'pague menos', 'drogarias pacheco', 'drogaria sao paulo',
+  // Alimentacao
+  'outback',
+  // Casa
+  'electrolux', 'camicado',
+  // Pet
+  'petlove',
+  // Joias
+  'vivara',
+]);
+
 
 
 // ── Gera ofertas pendentes para variações positivas de pontuação ──────────────
@@ -399,6 +425,74 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
 
     novasOfertas.push(oferta);
     console.log(`[Variação] Oferta gerada: "${titulo}"`);
+
+
+    // -- Ofertas individuais para parceiros Tier 1 ----------------------------
+    for (const v of variacoes) {
+      const parceiroKey = v.parceiro.toLowerCase().trim();
+      if (!PARCEIROS_TIER1.has(parceiroKey)) continue;
+
+      // Calcula estatisticas dos ultimos 6 meses para este parceiro+programa
+      const datasHistorico = Object.keys(historico).sort();
+      const hoje6m = new Date();
+      hoje6m.setMonth(hoje6m.getMonth() - 6);
+      const corte6m = hoje6m.toISOString().split('T')[0];
+      const datas6m = datasHistorico.filter(d => d >= corte6m && d !== hoje);
+
+      const pts6m = [];
+      for (const d of datas6m) {
+        const snap = historico[d] || {};
+        const dadosParceiro = snap[parceiroKey] || {};
+        const prog = (dadosParceiro.programs || {})[progId];
+        const pts = prog ? (typeof prog === 'object' ? prog.pts : prog) : null;
+        if (pts != null) pts6m.push(pts);
+      }
+
+      const maxPts6m = pts6m.length > 0 ? Math.max(...pts6m) : v.ptsBefore;
+      const mediaPts6m = pts6m.length > 0
+        ? Math.round(pts6m.reduce((a, b) => a + b, 0) / pts6m.length * 10) / 10
+        : v.ptsBefore;
+
+      const rawT1 = 'variacao-tier1-' + parceiroKey + '-' + progId + '-' + new Date().toISOString();
+      let hashT1 = 0;
+      for (let i = 0; i < rawT1.length; i++) hashT1 = (hashT1 * 31 + rawT1.charCodeAt(i)) >>> 0;
+      const idT1 = 'var_t1_' + hashT1.toString(36);
+
+      const tituloT1 = v.parceiro + ' aumentou pontuacao no ' + progName;
+      const resumoT1 = [
+        '\u2b50 *' + v.parceiro + '* teve aumento de pontuacao com *' + progName + '*',
+        '',
+        '\ud83d\udcca *Pontuacao anterior:* ' + v.ptsBefore + ' pts/R$',
+        '\ud83d\udcc8 *Pontuacao atual:* ' + v.ptsNow + ' pts/R$ (+' + v.delta + ')',
+        '\ud83d\udd1d *Maior pontuacao (ultimos 6 meses):* ' + maxPts6m + ' pts/R$',
+        '\ud83d\udcc9 *Media (ultimos 6 meses):* ' + mediaPts6m + ' pts/R$',
+      ].join('\n');
+
+      const ofertaT1 = {
+        id:        idT1,
+        titulo:    tituloT1,
+        emoji:     '\u2b50',
+        resumo:    resumoT1,
+        descricao: '',
+        programa:  progName,
+        bonus:     '',
+        prazo:     '',
+        categoria: 'compra_bonificada',
+        loja:      v.parceiro,
+        cupom:     '',
+        link:      'https://painel.clubedoviajante.com.br',
+        importante: '',
+        milheiro:  '',
+        tetoTransferencia: '',
+        restricoes: [],
+        publicadoEm: new Date().toISOString(),
+        tipoVariacao: true,
+        tier1: true,
+      };
+
+      novasOfertas.push(ofertaT1);
+      console.log('[Variacao Tier 1] Oferta individual: "' + tituloT1 + '"');
+    }
 
     // Registra parceiros notificados
     for (const v of variacoes) {
