@@ -127,8 +127,8 @@
     from{width:0!important}
   }
   @keyframes tabSlide{
-    from{opacity:0;transform:translateY(10px)}
-    to{opacity:1;transform:translateY(0)}
+    from{opacity:0}
+    to{opacity:1}
   }
 
   /* Login box entrada */
@@ -412,57 +412,6 @@
   <div class="cat-bar" id="radar-cat-bar"></div>
   <div class="grid" id="radar-grid">
     <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando ofertas…</div></div>
-  </div>
-</div>
-
-<!-- MODAL -->
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal">
-    <button class="modal-close" id="modal-close-btn">×</button>
-    <div class="modal-name" id="modal-name"></div>
-    <div class="modal-cat" id="modal-cat"></div>
-    <div class="modal-rows" id="modal-rows"></div>
-    <div style="display:flex;gap:8px;margin-top:14px">
-    <button class="modal-url" id="modal-hist-btn" onclick="toggleHistorico()" style="flex:1;margin-top:0">📈 Ver histórico</button>
-    <button class="modal-url" onclick="toggleAlerta()" style="flex:1;margin-top:0;border-color:rgba(52,211,153,.4);color:#34d399">🔔 Criar alerta</button>
-  </div>
-  <div id="modal-alerta-form" class="modal-alert-form" style="display:none">
-    <label>E-mail</label>
-    <input type="email" id="alerta-email" placeholder="seu@email.com"/>
-    <label>Programa</label>
-    <select id="alerta-programa"></select>
-    <label>Pontuação mínima (pts/R$)</label>
-    <input type="number" id="alerta-min-pts" placeholder="Ex: 10" min="1"/>
-    <button class="btn-alerta" onclick="salvarAlerta()">✓ Salvar alerta</button>
-    <div class="alerta-fb" id="alerta-fb"></div>
-  </div>
-  <div id="modal-hist" style="display:none;margin-top:14px">
-    <canvas id="hist-chart" style="width:100%;height:200px"></canvas>
-    <div id="hist-empty" style="display:none;text-align:center;font-size:12px;color:var(--muted);padding:20px 0">Histórico ainda sendo construído — volte amanhã 📅</div>
-  </div>
-  </div>
-</div>
-
-
-<!-- MODAL PASSAGEM -->
-<div class="modal-overlay" id="pass-modal-overlay">
-  <div class="modal" style="max-width:480px">
-    <button class="modal-close" id="pass-modal-close">×</button>
-    <div id="pass-modal-content"></div>
-  </div>
-</div>
-<!-- MODAL OFERTA -->
-<div class="modal-overlay" id="oferta-modal-overlay">
-  <div class="modal oferta-modal">
-    <button class="modal-close" id="oferta-modal-close-btn">×</button>
-    <div class="oferta-modal-emoji" id="oferta-modal-emoji"></div>
-    <div class="modal-name" id="oferta-modal-titulo"></div>
-    <div class="modal-cat" id="oferta-modal-meta"></div>
-    <div class="oferta-modal-section" id="oferta-modal-resumo"></div>
-    <div class="oferta-modal-grid" id="oferta-modal-fatos"></div>
-    <div class="oferta-modal-section" id="oferta-modal-restricoes"></div>
-    <div class="oferta-importante" id="oferta-modal-importante" style="display:none"></div>
-    <a class="modal-url" id="oferta-modal-link" href="#" target="_blank" rel="noopener" style="display:none;margin-top:16px">↗ Acessar oferta</a>
   </div>
 </div>
 
@@ -2171,6 +2120,7 @@ function switchTab(tab){
   document.getElementById('tab-radar').style.display = tab==='radar'?'block':'none';
   document.getElementById('tab-passagens').style.display = tab==='passagens'?'block':'none';
   document.getElementById('tab-milhas').style.display = tab==='milhas'?'block':'none';
+  window.scrollTo({top:0, behavior:'smooth'});
   if(tab==='radar') loadOfertas(false);
   if(tab==='passagens') loadPassagens(false);
   if(tab==='milhas') initMilhas();
@@ -3396,9 +3346,10 @@ function mostrarPainel(sessao) {
   document.getElementById('login-screen').style.display = 'none';
   const appEl = document.getElementById('app-content');
   appEl.style.display = 'block';
-  appEl.style.animation = 'none';
+  appEl.style.opacity = '0';
   requestAnimationFrame(()=>{
-    appEl.style.animation = 'fadeUp .4s cubic-bezier(.22,.68,0,1.2) both';
+    appEl.style.transition = 'opacity .35s ease';
+    appEl.style.opacity = '1';
   });
   // Mostra nome no header se existir
   const nomeEl = document.getElementById('header-nome-membro');
@@ -3956,5 +3907,57 @@ document.addEventListener('click', function(e){
 </script>
 </div><!-- /app-content -->
 <script src="iata.js"></script>
+<!-- MODAIS (fora do app-content para evitar stacking context) -->
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" id="modal-close-btn">×</button>
+    <div class="modal-name" id="modal-name"></div>
+    <div class="modal-cat" id="modal-cat"></div>
+    <div class="modal-rows" id="modal-rows"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+    <button class="modal-url" id="modal-hist-btn" onclick="toggleHistorico()" style="flex:1;margin-top:0">📈 Ver histórico</button>
+    <button class="modal-url" onclick="toggleAlerta()" style="flex:1;margin-top:0;border-color:rgba(52,211,153,.4);color:#34d399">🔔 Criar alerta</button>
+  </div>
+  <div id="modal-alerta-form" class="modal-alert-form" style="display:none">
+    <label>E-mail</label>
+    <input type="email" id="alerta-email" placeholder="seu@email.com"/>
+    <label>Programa</label>
+    <select id="alerta-programa"></select>
+    <label>Pontuação mínima (pts/R$)</label>
+    <input type="number" id="alerta-min-pts" placeholder="Ex: 10" min="1"/>
+    <button class="btn-alerta" onclick="salvarAlerta()">✓ Salvar alerta</button>
+    <div class="alerta-fb" id="alerta-fb"></div>
+  </div>
+  <div id="modal-hist" style="display:none;margin-top:14px">
+    <canvas id="hist-chart" style="width:100%;height:200px"></canvas>
+    <div id="hist-empty" style="display:none;text-align:center;font-size:12px;color:var(--muted);padding:20px 0">Histórico ainda sendo construído — volte amanhã 📅</div>
+  </div>
+  </div>
+</div>
+
+
+<!-- MODAL PASSAGEM -->
+<div class="modal-overlay" id="pass-modal-overlay">
+  <div class="modal" style="max-width:480px">
+    <button class="modal-close" id="pass-modal-close">×</button>
+    <div id="pass-modal-content"></div>
+  </div>
+</div>
+<!-- MODAL OFERTA -->
+<div class="modal-overlay" id="oferta-modal-overlay">
+  <div class="modal oferta-modal">
+    <button class="modal-close" id="oferta-modal-close-btn">×</button>
+    <div class="oferta-modal-emoji" id="oferta-modal-emoji"></div>
+    <div class="modal-name" id="oferta-modal-titulo"></div>
+    <div class="modal-cat" id="oferta-modal-meta"></div>
+    <div class="oferta-modal-section" id="oferta-modal-resumo"></div>
+    <div class="oferta-modal-grid" id="oferta-modal-fatos"></div>
+    <div class="oferta-modal-section" id="oferta-modal-restricoes"></div>
+    <div class="oferta-importante" id="oferta-modal-importante" style="display:none"></div>
+    <a class="modal-url" id="oferta-modal-link" href="#" target="_blank" rel="noopener" style="display:none;margin-top:16px">↗ Acessar oferta</a>
+  </div>
+</div>
+
 </body>
 </html>
