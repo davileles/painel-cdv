@@ -1318,6 +1318,147 @@ app.get('/roteiros/publicar', async (req, res) => {
 });
 
 
+// ══════════════════════════════════════════════════════════════
+//  POST /roteiros/doc-upload
+//  Body: { slug, docId, nome, tipo, base64, mediaType }
+//  Salva o arquivo em davileles/roteiros/{slug}/docs/{docId}
+//  e atualiza docs-meta.json com metadados
+// ══════════════════════════════════════════════════════════════
+app.post('/roteiros/doc-upload', async (req, res) => {
+  try {
+    const { slug, docId, nome, tipo, base64: fileB64, mediaType } = req.body;
+    if (!slug || !docId || !fileB64) return res.status(400).json({ ok: false, erro: 'Parâmetros incompletos' });
+
+    const ROTEIROS_REPO = 'davileles/roteiros';
+    const GH = 'https://api.github.com';
+    const headers = {
+      'Authorization': `token ${GITHUB_TOKEN}`,
+      'User-Agent': 'cdv-proxy',
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+
+    // 1. Salvar arquivo binário
+    const filePath = `${slug}/docs/${docId}`;
+    let fileSha;
+    try {
+      const checkRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${filePath}`, { headers });
+      if (checkRes.ok) { const d = await checkRes.json(); fileSha = d.sha; }
+    } catch(e) {}
+
+    const filePayload = { message: `doc: ${slug}/${docId}`, content: fileB64, ...(fileSha ? { sha: fileSha } : {}) };
+    const fileRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${filePath}`, {
+      method: 'PUT', headers, body: JSON.stringify(filePayload)
+    });
+    if (!fileRes.ok) throw new Error('Erro ao salvar arquivo: ' + (await fileRes.text()));
+
+    // 2. Atualizar docs-meta.json
+    const metaPath = `${slug}/docs-meta.json`;
+    let meta = {}, metaSha;
+    try {
+      const metaRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${metaPath}`, { headers });
+      if (metaRes.ok) {
+        const d = await metaRes.json();
+        metaSha = d.sha;
+        meta = JSON.parse(Buffer.from(d.content.replace(/\n/g,''), 'base64').toString('utf-8'));
+      }
+    } catch(e) {}
+
+    meta[docId] = { nome: nome||docId, tipo: tipo||'', mediaType: mediaType||'application/octet-stream', uploadEm: new Date().toISOString() };
+    const metaB64 = Buffer.from(JSON.stringify(meta, null, 2)).toString('base64');
+    const metaPayload = { message: `doc-meta: ${slug}`, content: metaB64, ...(metaSha ? { sha: metaSha } : {}) };
+    await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${metaPath}`, {
+      method: 'PUT', headers, body: JSON.stringify(metaPayload)
+    });
+
+    const rawUrl = `https://raw.githubusercontent.com/${ROTEIROS_REPO}/main/${filePath}`;
+    res.json({ ok: true, rawUrl, docId });
+  } catch(e) {
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// ══════════════════════════════════════════════════════════════
+//  DELETE /roteiros/doc-upload
+//  Body: { slug, docId }
+//  Remove o arquivo e atualiza docs-meta.json
+// ══════════════════════════════════════════════════════════════
+app.delete('/roteiros/doc-upload', async (req, res) => {
+  try {
+    const { slug, docId } = req.body;
+    if (!slug || !docId) return res.status(400).json({ ok: false, erro: 'Parâmetros incompletos' });
+
+    const ROTEIROS_REPO = 'davileles/roteiros';
+    const GH = 'https://api.github.com';
+    const headers = {
+      'Authorization': `token ${GITHUB_TOKEN}`,
+      'User-Agent': 'cdv-proxy',
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+
+    // Deletar arquivo
+    const filePath = `${slug}/docs/${docId}`;
+    try {
+      const checkRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${filePath}`, { headers });
+      if (checkRes.ok) {
+        const d = await checkRes.json();
+        await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${filePath}`, {
+          method: 'DELETE', headers,
+          body: JSON.stringify({ message: `doc-remove: ${slug}/${docId}`, sha: d.sha })
+        });
+      }
+    } catch(e) {}
+
+    // Atualizar meta
+    const metaPath = `${slug}/docs-meta.json`;
+    let meta = {}, metaSha;
+    try {
+      const metaRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${metaPath}`, { headers });
+      if (metaRes.ok) {
+        const d = await metaRes.json();
+        metaSha = d.sha;
+        meta = JSON.parse(Buffer.from(d.content.replace(/\n/g,''), 'base64').toString('utf-8'));
+      }
+    } catch(e) {}
+
+    delete meta[docId];
+    const metaB64 = Buffer.from(JSON.stringify(meta, null, 2)).toString('base64');
+    await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${metaPath}`, {
+      method: 'PUT', headers,
+      body: JSON.stringify({ message: `doc-meta: ${slug}`, content: metaB64, ...(metaSha ? { sha: metaSha } : {}) })
+    });
+
+    res.json({ ok: true });
+  } catch(e) {
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// ══════════════════════════════════════════════════════════════
+//  GET /roteiros/doc-upload?slug=xxx
+//  Retorna docs-meta.json do roteiro
+// ══════════════════════════════════════════════════════════════
+app.get('/roteiros/doc-upload', async (req, res) => {
+  try {
+    const { slug } = req.query;
+    if (!slug) return res.status(400).json({ ok: false, erro: 'slug obrigatório' });
+
+    const ROTEIROS_REPO = 'davileles/roteiros';
+    const GH = 'https://api.github.com';
+    const headers = { 'Authorization': `token ${GITHUB_TOKEN}`, 'User-Agent': 'cdv-proxy', 'Accept': 'application/vnd.github+json' };
+
+    const metaRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${slug}/docs-meta.json`, { headers });
+    if (!metaRes.ok) return res.json({ ok: true, docs: {} });
+    const d = await metaRes.json();
+    const meta = JSON.parse(Buffer.from(d.content.replace(/\n/g,''), 'base64').toString('utf-8'));
+    res.json({ ok: true, docs: meta });
+  } catch(e) {
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
 });
+
