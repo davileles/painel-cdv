@@ -470,7 +470,7 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
         'Pontuacao atual: ' + v.ptsNow + ' pts/R$ (+' + v.delta + ')',
         'Maior pontuacao (ultimos 6 meses): ' + maxPts6m + ' pts/R$',
         'Media (ultimos 6 meses): ' + mediaPts6m + ' pts/R$',
-      ].join(' | ');
+      ].join('\n');
 
       const ofertaT1 = {
         id:        idT1,
