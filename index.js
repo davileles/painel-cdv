@@ -1567,6 +1567,36 @@ app.post('/parceiros/resolver-links', async (req, res) => {
 });
 
 
+// ── Diagnóstico: testar fetch de URL do Comparemania ─────────────────────────
+app.get('/parceiros/testar-fetch', async (req, res) => {
+  const url = req.query.url || 'https://www.comparemania.com.br/livelo/parceiros/booking';
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Encoding': 'identity',
+    'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+    'Upgrade-Insecure-Requests': '1',
+  };
+  try {
+    const ctrl = new AbortController();
+    setTimeout(() => ctrl.abort(), 15000);
+    const r = await fetch(url, { compress: false, headers, signal: ctrl.signal });
+    const body = await r.text();
+    const temRedirect = /redirecionar\/oferta/i.test(body);
+    res.json({
+      url, status: r.status, ok: r.ok,
+      bodyLen: body.length,
+      temRedirect,
+      inicio: body.substring(0, 500),
+    });
+  } catch(e) {
+    res.json({ url, erro: e.message });
+  }
+});
+
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
 });
