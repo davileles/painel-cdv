@@ -1607,7 +1607,7 @@ app.post('/parceiros/resolver-links', async (req, res) => {
 
 // ── Diagnóstico: testar fetch de URL do Comparemania ─────────────────────────
 app.get('/parceiros/testar-fetch', async (req, res) => {
-  const url = req.query.url || 'https://www.comparemania.com.br/livelo/parceiros/booking';
+  const url = req.query.url || 'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-livelo';
   const headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -1622,12 +1622,23 @@ app.get('/parceiros/testar-fetch', async (req, res) => {
     setTimeout(() => ctrl.abort(), 15000);
     const r = await fetch(url, { compress: false, headers, signal: ctrl.signal });
     const body = await r.text();
+    const temTabela = /<table/i.test(body);
+    const temTr = /<tr/i.test(body);
     const temRedirect = /redirecionar\/oferta/i.test(body);
+    // Extrair primeiros hrefs de <a> para diagnóstico
+    const hrefs = [];
+    const hrefRe = /href=["']([^"']+comparemania[^"']+)["']/gi;
+    let hm;
+    while ((hm = hrefRe.exec(body)) !== null && hrefs.length < 10) hrefs.push(hm[1]);
+    // Primeiros 2 <tr> para ver estrutura
+    const trs = body.match(/<tr[\s\S]*?<\/tr>/gi) || [];
     res.json({
       url, status: r.status, ok: r.ok,
       bodyLen: body.length,
-      temRedirect,
-      inicio: body.substring(0, 500),
+      temTabela, temTr, temRedirect,
+      hrefs,
+      primeiros2tr: trs.slice(0,2).map(t => t.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()),
+      inicio: body.substring(0, 800),
     });
   } catch(e) {
     res.json({ url, erro: e.message });
