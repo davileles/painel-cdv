@@ -540,18 +540,13 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
         '* Média (últimos 6 meses): ' + mediaPts6m + ' pts/' + moedaT1,
       ].join('\n');
 
-      // Link direto do parceiro no programa — usa URL do redirect do Comparemania (sem seguir o redirect)
-      const comparemaniaParceirUrl = (
+      // Link direto: usa o link /redirecionar/oferta já salvo no historico.json
+      // (populado via POST /parceiros/resolver-links no proxy — roda uma vez manualmente)
+      const linkSalvo = (
         snapshotAtual[parceiroKey] && snapshotAtual[parceiroKey].links && snapshotAtual[parceiroKey].links[progId]
       ) || '';
-      let linkT1 = 'https://painel.clubedoviajante.com.br';
-      if (comparemaniaParceirUrl) {
-        // Tenta extrair o link /redirecionar/oferta da página do parceiro no Comparemania
-        // Esse link já redireciona direto para o programa de fidelidade — é o que deve ser enviado
-        const resolved = await resolveRedirectLink(comparemaniaParceirUrl);
-        if (resolved) linkT1 = resolved;
-        else console.log('[LinkT1] Sem redirect encontrado para ' + parceiroKey + '/' + progId + ' — usando painel');
-      }
+      const linkT1 = linkSalvo || 'https://painel.clubedoviajante.com.br';
+      if (!linkSalvo) console.log('[LinkT1] Link não encontrado para ' + parceiroKey + '/' + progId + ' — usando painel. Execute POST /parceiros/resolver-links para popular.');
 
       const ofertaT1 = {
         id:        idT1,
