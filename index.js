@@ -1632,15 +1632,21 @@ app.get('/parceiros/testar-fetch', async (req, res) => {
       const hm = t.match(/href=["']([^"']+)["']/i);
       return { txt: txt.substring(0,120), href: hm ? hm[1] : '' };
     }).filter(l => l.txt.length > 3);
-    // Se ?buscar=termo, filtra linhas que contenham o termo
-    const resultado = buscar
-      ? linhas.filter(l => l.txt.toLowerCase().includes(buscar))
-      : linhas.slice(0,10);
+    // Se ?buscar=termo, filtra linhas que contenham o termo + 200 chars de contexto HTML
+    let resultado, contextoHtml = '';
+    if (buscar) {
+      resultado = linhas.filter(l => l.txt.toLowerCase().includes(buscar));
+      const pos = body.toLowerCase().indexOf(buscar);
+      if (pos !== -1) contextoHtml = body.substring(Math.max(0, pos-300), pos+500);
+    } else {
+      resultado = linhas.slice(0,10);
+    }
     res.json({
       url, status: r.status, ok: r.ok,
       bodyLen: body.length, temTabela, temTr,
       totalLinhas: linhas.length,
       resultado,
+      contextoHtml,
     });
   } catch(e) {
     res.json({ url, erro: e.message });
