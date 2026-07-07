@@ -1011,9 +1011,12 @@ function parseHTML(html, progId){
   doc.querySelectorAll('table tr').forEach(tr=>{
     const td=tr.querySelectorAll('td');
     if(td.length<2)return;
-    const na=td[0].querySelector('a'),ga=td[1].querySelector('a');
-    if(!na||!ga)return;
-    const name=na.textContent.trim(),g=ga.textContent.trim();
+    const na=td[0].querySelector('a');
+    if(!na)return;
+    const name=na.textContent.trim();
+    // td[1] pode não ter <a> (parceiros como Centauro/Mercado Livre têm texto direto)
+    const ga=td[1].querySelector('a');
+    const g=(ga?ga:td[1]).textContent.trim();
     const parsed=extractPts(g);
     if(!parsed||!name)return;
     const {pts,ate}=parsed;
