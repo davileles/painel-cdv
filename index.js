@@ -1467,19 +1467,27 @@ app.get('/roteiros/doc-upload', async (req, res) => {
 app.post('/parceiros/resolver-links', async (req, res) => {
   if (!GITHUB_TOKEN) return res.status(500).json({ ok: false, erro: 'GITHUB_TOKEN não configurado' });
 
-  // Por padrão processa apenas parceiros tier1. Envie { "todos": true } para processar todos.
+  // Estratégia: busca as 4 páginas de listagem do Comparemania (uma por programa),
+  // extrai o href de cada parceiro na tabela + segue para a página do parceiro
+  // para pegar o link /redirecionar/oferta que vai direto ao programa de fidelidade.
+  // Salva em historico.json[data][parceiro].links[prog].
+
+  const PROGS = [
+    { id: 'livelo', url: 'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-livelo' },
+    { id: 'esfera', url: 'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-santander-esfera' },
+    { id: 'smiles', url: 'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-smiles' },
+    { id: 'azul',   url: 'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-tudo-azul' },
+  ];
+
   const TIER1 = new Set([
     'booking', 'hoteis.com', 'decolar',
     'mercado livre', 'casas bahia', 'magazine luiza', 'shopee',
-    'netshoes', 'centauro',
-    'carrefour mercado', 'extra', 'pão de açúcar',
-    'drogasil', 'ultrafarma',
-    'lojas renner', 'c&a', 'riachuelo',
+    'netshoes', 'centauro', 'carrefour mercado', 'extra',
+    'pão de açúcar', 'drogasil', 'ultrafarma', 'lojas renner', 'c&a', 'riachuelo',
   ]);
   const processarTodos = req.body && req.body.todos === true;
 
-  const PROG_SLUGS = { livelo: 'livelo', esfera: 'esfera', smiles: 'smiles', azul: 'azul-fidelidade' };
-  const FETCH_HEADERS = {
+  const FHEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Encoding': 'identity',
@@ -1489,33 +1497,44 @@ app.post('/parceiros/resolver-links', async (req, res) => {
     'Upgrade-Insecure-Requests': '1',
   };
 
-  async function fetchPage(url, timeoutMs = 15000) {
+  async function fetchHtml(url, timeoutMs = 20000) {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      const r = await fetch(url, { compress: false, headers: FETCH_HEADERS, signal: ctrl.signal });
+      const r = await fetch(url, { compress: false, headers: FHEADERS, signal: ctrl.signal });
       clearTimeout(t);
-      console.log(`[ResolveLinks] fetchPage ${url.substring(0,80)} → ${r.status}`);
+      console.log(`[ResolveLinks] ${url.substring(0,80)} → ${r.status}`);
       if (!r.ok) return '';
       return await r.text();
-    } catch(e) { clearTimeout(t); console.log(`[ResolveLinks] fetchPage erro: ${e.message}`); return ''; }
+    } catch(e) { clearTimeout(t); console.log(`[ResolveLinks] erro: ${e.message}`); return ''; }
   }
 
-  async function resolveLink(parceiro, prog) {
-    const progSlug = PROG_SLUGS[prog];
-    if (!progSlug) return '';
-    const partnerSlug = parceiro.toLowerCase()
-      .replace(/\s+/g, '-').replace(/\./g, '').replace(/&/g, 'e')
-      .replace(/[ãâä]/g, 'a').replace(/[áà]/g, 'a').replace(/ç/g, 'c')
-      .replace(/[éêë]/g, 'e').replace(/[íî]/g, 'i')
-      .replace(/[óôõö]/g, 'o').replace(/[úû]/g, 'u');
-    const url = `https://www.comparemania.com.br/${progSlug}/parceiros/${partnerSlug}`;
-    const html = await fetchPage(url);
-    if (!html) return '';
+  // Extrai parceiros e seus hrefs da tabela da página de listagem do programa
+  function extrairParceiros(html) {
+    const result = {};
+    const rowRe = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
+    let row;
+    while ((row = rowRe.exec(html)) !== null) {
+      const cells = row[1].split(/<\/td>/i);
+      if (cells.length < 2) continue;
+      const aMatch = cells[0].match(/<a([^>]*)>([\s\S]*?)<\/a>/i);
+      if (!aMatch) continue;
+      const name = aMatch[2].replace(/<[^>]*>/g, '').trim().toLowerCase();
+      if (!name) continue;
+      const hrefMatch = aMatch[1].match(/href=["']([^"']+)["']/i);
+      if (!hrefMatch) continue;
+      const raw = hrefMatch[1];
+      const partnerPageUrl = raw.startsWith('http') ? raw : 'https://www.comparemania.com.br' + raw;
+      result[name] = partnerPageUrl;
+    }
+    return result;
+  }
+
+  // Extrai o link /redirecionar/oferta da página individual do parceiro
+  function extrairRedirect(html) {
     const m = html.match(/href=["']((?:https?:\/\/www\.comparemania\.com\.br)?\/redirecionar\/oferta[^"']+)["']/i);
     if (!m) return '';
-    const raw = m[1];
-    return raw.startsWith('http') ? raw : 'https://www.comparemania.com.br' + raw;
+    return m[1].startsWith('http') ? m[1] : 'https://www.comparemania.com.br' + m[1];
   }
 
   try {
@@ -1523,33 +1542,52 @@ app.post('/parceiros/resolver-links', async (req, res) => {
     const datas = Object.keys(hist.data).sort();
     if (datas.length === 0) return res.status(400).json({ ok: false, erro: 'historico.json vazio' });
 
-    const dataRecente = datas[datas.length - 1];
-    const snapshot = hist.data[dataRecente];
-
-    const resolved = {};
-    const erros = [];
+    const resolved = {};  // { parceiro: { prog: redirectUrl } }
     let total = 0, salvos = 0;
+    const erros = [];
 
-    for (const [parceiro, dados] of Object.entries(snapshot)) {
-      if (!processarTodos && !TIER1.has(parceiro.toLowerCase())) continue;
-      const progs = Object.keys(dados.programs || {});
-      for (const prog of progs) {
-        if (!PROG_SLUGS[prog]) continue;
+    for (const prog of PROGS) {
+      // Passo 1: busca página de listagem do programa
+      const listHtml = await fetchHtml(prog.url);
+      if (!listHtml) { console.log(`[ResolveLinks] sem HTML para ${prog.id}`); continue; }
+
+      const parceiros = extrairParceiros(listHtml);
+      console.log(`[ResolveLinks] ${prog.id}: ${Object.keys(parceiros).length} parceiros na listagem`);
+
+      // Passo 2: para cada parceiro (tier1 ou todos), busca a página individual
+      for (const [nome, partnerPageUrl] of Object.entries(parceiros)) {
+        if (!processarTodos && !TIER1.has(nome)) continue;
         total++;
-        const link = await resolveLink(parceiro, prog);
-        if (link) {
-          if (!resolved[parceiro]) resolved[parceiro] = {};
-          resolved[parceiro][prog] = link;
+
+        const partnerHtml = await fetchHtml(partnerPageUrl);
+        const redirectUrl = extrairRedirect(partnerHtml);
+
+        if (redirectUrl) {
+          if (!resolved[nome]) resolved[nome] = {};
+          resolved[nome][prog.id] = redirectUrl;
           salvos++;
-          console.log(`[ResolveLinks] ✓ ${parceiro}/${prog}: ${link.substring(0, 80)}`);
+          console.log(`[ResolveLinks] ✓ ${nome}/${prog.id}`);
         } else {
-          erros.push(`${parceiro}/${prog}`);
+          erros.push(`${nome}/${prog.id}`);
+          console.log(`[ResolveLinks] ✗ sem redirect: ${nome}/${prog.id}`);
         }
-        await new Promise(r => setTimeout(r, 300)); // throttle suave
+
+        // Também salva a URL da página do parceiro no historico (usada como fallback)
+        const dataRecente = datas[datas.length - 1];
+        for (const data of datas) {
+          const snap = hist.data[data];
+          if (snap[nome] && !snap[nome].partnerUrl) {
+            snap[nome].partnerUrl = {};
+          }
+          if (snap[nome]) snap[nome].partnerUrl = snap[nome].partnerUrl || {};
+          if (snap[nome]) snap[nome].partnerUrl[prog.id] = partnerPageUrl;
+        }
+
+        await new Promise(r => setTimeout(r, 300));
       }
     }
 
-    // Aplica os links em TODAS as datas do historico (links são estáveis entre datas)
+    // Salva links /redirecionar/oferta em historico.json em todas as datas
     for (const data of datas) {
       for (const [parceiro, links] of Object.entries(resolved)) {
         if (!hist.data[data][parceiro]) continue;
@@ -1558,7 +1596,7 @@ app.post('/parceiros/resolver-links', async (req, res) => {
       }
     }
 
-    await ghPutJson('historico.json', hist.data, hist.sha, `chore: salva links diretos de ${salvos} parceiros via resolve`);
+    await ghPutJson('historico.json', hist.data, hist.sha, `chore: salva links diretos de ${salvos} parceiros (resolve via listagem)`);
 
     res.json({ ok: true, total, salvos, erros: erros.length, falhas: erros });
   } catch(e) {
