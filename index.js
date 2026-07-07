@@ -1482,19 +1482,23 @@ app.post('/parceiros/resolver-links', async (req, res) => {
   const FETCH_HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'pt-BR,pt;q=0.9',
+    'Accept-Encoding': 'identity',
+    'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
     'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+    'Upgrade-Insecure-Requests': '1',
   };
 
   async function fetchPage(url, timeoutMs = 15000) {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      const r = await fetch(url, { headers: FETCH_HEADERS, signal: ctrl.signal });
+      const r = await fetch(url, { compress: false, headers: FETCH_HEADERS, signal: ctrl.signal });
       clearTimeout(t);
+      console.log(`[ResolveLinks] fetchPage ${url.substring(0,80)} → ${r.status}`);
       if (!r.ok) return '';
       return await r.text();
-    } catch(e) { clearTimeout(t); return ''; }
+    } catch(e) { clearTimeout(t); console.log(`[ResolveLinks] fetchPage erro: ${e.message}`); return ''; }
   }
 
   async function resolveLink(parceiro, prog) {
