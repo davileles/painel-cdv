@@ -349,26 +349,28 @@ const PROG_NAMES = {
 // Lista definida por pesquisa com membros: parceiros com >= 40% de mencoes.
 // Chave = nome lowercase exato como aparece no historico.json
 const PARCEIROS_TIER1 = new Set([
-  // Viagem
+  // Viagem (≥40% survey)
   'booking', 'hoteis.com', 'decolar',
   // Marketplace
-  'mercado livre', 'casas bahia', 'magazine luiza', 'shopee',
+  'mercado livre', 'casas bahia', 'magazine luiza', 'shopee', 'ponto', 'extra',
   // Esportes
-  'netshoes', 'centauro', 'decathlon',
+  'netshoes', 'centauro', 'decathlon', 'asics', 'nike', 'adidas',
   // Moda
-  'adidas', 'nike', 'lojas renner', 'riachuelo',
+  'lojas renner', 'riachuelo', 'c&a', 'sephora',
   // Beleza
   'beleza na web',
-  // Saude
-  'pague menos', 'drogarias pacheco', 'drogaria sao paulo',
-  // Alimentacao
+  // Saúde/Farmácia
+  'pague menos', 'drogarias pacheco', 'drogaria são paulo',
+  // Alimentação
   'outback',
-  // Casa
-  'electrolux', 'camicado',
+  // Casa/Eletro
+  'electrolux', 'camicado', 'consul',
   // Pet
   'petlove',
   // Joias
   'vivara',
+  // Seguros
+  'porto seguro',
 ]);
 
 
