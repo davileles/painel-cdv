@@ -1607,7 +1607,7 @@ app.post('/parceiros/resolver-links', async (req, res) => {
 
 // ── Diagnóstico: testar fetch de URL do Comparemania ─────────────────────────
 app.get('/parceiros/testar-fetch', async (req, res) => {
-  const url = req.query.url || 'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-livelo';
+  const url = req.query.url || 'https://www.comparemania.com.br/cashback-mercado-livre';
   const buscar = (req.query.buscar || '').toLowerCase(); // ex: ?buscar=centauro
   const headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -1638,6 +1638,10 @@ app.get('/parceiros/testar-fetch', async (req, res) => {
       resultado = linhas.filter(l => l.txt.toLowerCase().includes(buscar));
       const pos = body.toLowerCase().indexOf(buscar);
       if (pos !== -1) contextoHtml = body.substring(Math.max(0, pos-300), pos+500);
+      // Também buscar ocorrências de redirecionar na página
+      const redirPos = body.indexOf('redirecionar');
+      const temRedirJS = body.includes('redirecionar');
+      contextoHtml += ' ||| temRedirecionar=' + temRedirJS + (redirPos > -1 ? ' pos=' + redirPos + ' ctx=' + body.substring(Math.max(0,redirPos-100), redirPos+200) : '');
     } else {
       resultado = linhas.slice(0,10);
     }
