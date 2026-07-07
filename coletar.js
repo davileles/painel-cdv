@@ -73,6 +73,25 @@ async function fetchDirect(url, timeoutMs = 25000) {
 //   2. Extrai o href /redirecionar/oferta/...
 //   3. Faz fetch desse URL → captura o Location ou primeiro link externo (esfera.com, livelo.com etc.)
 // Chamado apenas para parceiros Tier 1 que tiveram variação positiva.
+async function resolveRedirectLink(comparemaniaParceirUrl) {
+  // Retorna a URL /redirecionar/oferta do Comparemania (sem seguir até o destino final).
+  // Esse link já é suficiente para o usuário ser redirecionado ao programa de fidelidade.
+  if (!comparemaniaParceirUrl) return '';
+  try {
+    const html = await fetchDirect(comparemaniaParceirUrl, 12000);
+    const redirectMatch = html.match(/href=["']((?:https?:\/\/www\.comparemania\.com\.br)?\/redirecionar\/oferta[^"']+)["']/i);
+    if (!redirectMatch) return '';
+    const redirectUrl = redirectMatch[1].startsWith('http')
+      ? redirectMatch[1]
+      : 'https://www.comparemania.com.br' + redirectMatch[1];
+    console.log('[resolveRedirectLink] URL redirect: ' + redirectUrl);
+    return redirectUrl;
+  } catch (e) {
+    console.log('[resolveRedirectLink] Erro: ' + e.message);
+    return '';
+  }
+}
+
 async function resolvePartnerLink(comparemaniaParceirUrl) {
   if (!comparemaniaParceirUrl) return '';
   try {
@@ -409,6 +428,7 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
         ptsBefore,
         ptsNow,
         delta: ptsNow - ptsBefore,
+        dollar: typeof progAtual === 'object' ? (progAtual.dollar || false) : false,
       });
     }
   }
@@ -437,9 +457,10 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
     const count = variacoes.length;
 
     // Gera descrição linha a linha
-    const linhas = variacoes.map(v =>
-      `🛍️ ${v.parceiro} — ${v.ptsBefore} → ${v.ptsNow} pts/R$ (+${v.delta})`
-    ).join('\n');
+    const linhas = variacoes.map(v => {
+      const moeda = v.dollar ? 'US$' : 'R$';
+      return `🛍️ ${v.parceiro} — ${v.ptsBefore} → ${v.ptsNow} pts/${moeda} (+${v.delta})`;
+    }).join('\n');
 
     const titulo = `${count} parceiro${count > 1 ? 's' : ''} tiveram aumento de pontuação com ${progName}`;
 
@@ -505,26 +526,31 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
       const idT1 = 'var_t1_' + hashT1.toString(36);
 
       // Titulo no formato padrao do gerador CDV
-      const tituloT1 = v.ptsNow + ' pontos por real entre ' + v.parceiro + ' e ' + progName;
+      const moedaT1 = v.dollar ? 'US$' : 'R$';
+      const moedaLabelT1 = v.dollar ? 'dólar' : 'real';
+      const tituloT1 = v.ptsNow + ' pontos por ' + moedaLabelT1 + ' entre ' + v.parceiro + ' e ' + progName;
 
-      // Resumo: chamada + dados de pontuacao logo abaixo
+      // Resumo: chamada + dados de pontuação logo abaixo
       const resumoT1 = [
-        v.parceiro + ' aumentou sua pontuacao de compra bonificada no ' + progName + '.',
+        v.parceiro + ' aumentou sua pontuação de compra bonificada no ' + progName + '.',
         '',
-        '* Pontuacao anterior: ' + v.ptsBefore + ' pts/R$',
-        '* Pontuacao atual: ' + v.ptsNow + ' pts/R$ (+' + v.delta + ')',
-        '* Maior pontuacao (ultimos 6 meses): ' + maxPts6m + ' pts/R$',
-        '* Media (ultimos 6 meses): ' + mediaPts6m + ' pts/R$',
+        '* Pontuação anterior: ' + v.ptsBefore + ' pts/' + moedaT1,
+        '* Pontuação atual: ' + v.ptsNow + ' pts/' + moedaT1 + ' (+' + v.delta + ')',
+        '* Maior pontuação (últimos 6 meses): ' + maxPts6m + ' pts/' + moedaT1,
+        '* Média (últimos 6 meses): ' + mediaPts6m + ' pts/' + moedaT1,
       ].join('\n');
 
-      // Link direto do parceiro no programa — resolve URL final via redirect do Comparemania
+      // Link direto do parceiro no programa — usa URL do redirect do Comparemania (sem seguir o redirect)
       const comparemaniaParceirUrl = (
         snapshotAtual[parceiroKey] && snapshotAtual[parceiroKey].links && snapshotAtual[parceiroKey].links[progId]
       ) || '';
       let linkT1 = 'https://painel.clubedoviajante.com.br';
       if (comparemaniaParceirUrl) {
-        const resolved = await resolvePartnerLink(comparemaniaParceirUrl);
+        // Tenta extrair o link /redirecionar/oferta da página do parceiro no Comparemania
+        // Esse link já redireciona direto para o programa de fidelidade — é o que deve ser enviado
+        const resolved = await resolveRedirectLink(comparemaniaParceirUrl);
         if (resolved) linkT1 = resolved;
+        else console.log('[LinkT1] Sem redirect encontrado para ' + parceiroKey + '/' + progId + ' — usando painel');
       }
 
       const ofertaT1 = {
