@@ -1458,6 +1458,111 @@ app.get('/roteiros/doc-upload', async (req, res) => {
   }
 });
 
+// ── Resolver e salvar links diretos dos parceiros Tier1 ──────────────────────
+// POST /parceiros/resolver-links
+// Roda uma vez (ou manualmente quando necessário).
+// Varre todos os parceiros do snapshot mais recente, acessa a página de cada
+// um no Comparemania via fetch interno (Railway tem acesso), extrai o link
+// /redirecionar/oferta de cada programa e salva em historico.json[data][parceiro].links
+app.post('/parceiros/resolver-links', async (req, res) => {
+  if (!GITHUB_TOKEN) return res.status(500).json({ ok: false, erro: 'GITHUB_TOKEN não configurado' });
+
+  // Por padrão processa apenas parceiros tier1. Envie { "todos": true } para processar todos.
+  const TIER1 = new Set([
+    'booking', 'hoteis.com', 'decolar',
+    'mercado livre', 'casas bahia', 'magazine luiza', 'shopee',
+    'netshoes', 'centauro',
+    'carrefour mercado', 'extra', 'pão de açúcar',
+    'drogasil', 'ultrafarma',
+    'lojas renner', 'c&a', 'riachuelo',
+  ]);
+  const processarTodos = req.body && req.body.todos === true;
+
+  const PROG_SLUGS = { livelo: 'livelo', esfera: 'esfera', smiles: 'smiles', azul: 'azul-fidelidade' };
+  const FETCH_HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'pt-BR,pt;q=0.9',
+    'Cache-Control': 'no-cache',
+  };
+
+  async function fetchPage(url, timeoutMs = 15000) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const r = await fetch(url, { headers: FETCH_HEADERS, signal: ctrl.signal });
+      clearTimeout(t);
+      if (!r.ok) return '';
+      return await r.text();
+    } catch(e) { clearTimeout(t); return ''; }
+  }
+
+  async function resolveLink(parceiro, prog) {
+    const progSlug = PROG_SLUGS[prog];
+    if (!progSlug) return '';
+    const partnerSlug = parceiro.toLowerCase()
+      .replace(/\s+/g, '-').replace(/\./g, '').replace(/&/g, 'e')
+      .replace(/[ãâä]/g, 'a').replace(/[áà]/g, 'a').replace(/ç/g, 'c')
+      .replace(/[éêë]/g, 'e').replace(/[íî]/g, 'i')
+      .replace(/[óôõö]/g, 'o').replace(/[úû]/g, 'u');
+    const url = `https://www.comparemania.com.br/${progSlug}/parceiros/${partnerSlug}`;
+    const html = await fetchPage(url);
+    if (!html) return '';
+    const m = html.match(/href=["']((?:https?:\/\/www\.comparemania\.com\.br)?\/redirecionar\/oferta[^"']+)["']/i);
+    if (!m) return '';
+    const raw = m[1];
+    return raw.startsWith('http') ? raw : 'https://www.comparemania.com.br' + raw;
+  }
+
+  try {
+    const hist = await ghGetJson('historico.json', {});
+    const datas = Object.keys(hist.data).sort();
+    if (datas.length === 0) return res.status(400).json({ ok: false, erro: 'historico.json vazio' });
+
+    const dataRecente = datas[datas.length - 1];
+    const snapshot = hist.data[dataRecente];
+
+    const resolved = {};
+    const erros = [];
+    let total = 0, salvos = 0;
+
+    for (const [parceiro, dados] of Object.entries(snapshot)) {
+      if (!processarTodos && !TIER1.has(parceiro.toLowerCase())) continue;
+      const progs = Object.keys(dados.programs || {});
+      for (const prog of progs) {
+        if (!PROG_SLUGS[prog]) continue;
+        total++;
+        const link = await resolveLink(parceiro, prog);
+        if (link) {
+          if (!resolved[parceiro]) resolved[parceiro] = {};
+          resolved[parceiro][prog] = link;
+          salvos++;
+          console.log(`[ResolveLinks] ✓ ${parceiro}/${prog}: ${link.substring(0, 80)}`);
+        } else {
+          erros.push(`${parceiro}/${prog}`);
+        }
+        await new Promise(r => setTimeout(r, 300)); // throttle suave
+      }
+    }
+
+    // Aplica os links em TODAS as datas do historico (links são estáveis entre datas)
+    for (const data of datas) {
+      for (const [parceiro, links] of Object.entries(resolved)) {
+        if (!hist.data[data][parceiro]) continue;
+        if (!hist.data[data][parceiro].links) hist.data[data][parceiro].links = {};
+        Object.assign(hist.data[data][parceiro].links, links);
+      }
+    }
+
+    await ghPutJson('historico.json', hist.data, hist.sha, `chore: salva links diretos de ${salvos} parceiros via resolve`);
+
+    res.json({ ok: true, total, salvos, erros: erros.length, falhas: erros });
+  } catch(e) {
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
 });
