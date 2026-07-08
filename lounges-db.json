@@ -1,9 +1,9 @@
 {
   "_meta": {
     "versao": "1.0",
-    "atualizadoEm": "2026-07-08T00:00:00.000Z",
+    "atualizadoEm": "2026-07-08T12:00:00.000Z",
     "fonte": "LoungeKey + DragonPass + Priority Pass",
-    "totalAeroportos": 50
+    "totalAeroportos": 80
   },
   "aeroportos": {
     "GRU": {
@@ -337,9 +337,23 @@
       "cidade": "Belém",
       "pais": "Brasil",
       "iata": "BEL",
-      "loungekey": [],
+      "loungekey": [
+        {
+          "nome": "Sala VIP BEL",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=BEL"
+        }
+      ],
       "dragonpass": [],
-      "prioritypass": []
+      "prioritypass": [
+        {
+          "nome": "Sala VIP BEL",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BEL"
+        }
+      ]
     },
     "LIS": {
       "nome": "Lisboa – Humberto Delgado",
@@ -1806,14 +1820,347 @@
       ]
     },
     "CNF": {
-      "nome": "Aeroporto CNF",
-      "cidade": "",
-      "pais": "",
+      "nome": "Belo Horizonte – Tancredo Neves Internacional (Confins)",
+      "cidade": "Belo Horizonte",
+      "pais": "Brasil",
       "iata": "CNF",
+      "loungekey": [
+        {
+          "nome": "Sala VIP Lounge CNF",
+          "terminal": "Embarque Nacional/Internacional",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CNF"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Sala VIP Lounge CNF",
+          "terminal": "Embarque Nacional/Internacional",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CNF"
+        }
+      ]
+    },
+    "MAO": {
+      "nome": "Manaus – Eduardo Gomes Internacional",
+      "cidade": "Manaus",
+      "pais": "Brasil",
+      "iata": "MAO",
+      "loungekey": [
+        {
+          "nome": "Sala VIP MAO",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MAO"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Sala VIP MAO",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MAO"
+        }
+      ]
+    },
+    "FLN": {
+      "nome": "Florianópolis – Hercílio Luz Internacional",
+      "cidade": "Florianópolis",
+      "pais": "Brasil",
+      "iata": "FLN",
+      "loungekey": [
+        {
+          "nome": "Sala VIP FLN",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=FLN"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Sala VIP FLN",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FLN"
+        }
+      ]
+    },
+    "GYN": {
+      "nome": "Goiânia – Santa Genoveva",
+      "cidade": "Goiânia",
+      "pais": "Brasil",
+      "iata": "GYN",
       "loungekey": [],
       "dragonpass": [],
-      "prioritypass": [],
-      "buscadoEm": "2026-07-08T20:38:48.701Z"
+      "prioritypass": [
+        {
+          "nome": "Sala VIP GYN",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GYN"
+        }
+      ]
+    },
+    "VIX": {
+      "nome": "Vitória – Eurico de Aguiar Salles",
+      "cidade": "Vitória",
+      "pais": "Brasil",
+      "iata": "VIX",
+      "loungekey": [
+        {
+          "nome": "Sala VIP VIX",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=VIX"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Sala VIP VIX",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=VIX"
+        }
+      ]
+    },
+    "SLZ": {
+      "nome": "São Luís – Marechal Cunha Machado Internacional",
+      "cidade": "São Luís",
+      "pais": "Brasil",
+      "iata": "SLZ",
+      "loungekey": [],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Sala VIP SLZ",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SLZ"
+        }
+      ]
+    },
+    "MCZ": {
+      "nome": "Maceió – Zumbi dos Palmares Internacional",
+      "cidade": "Maceió",
+      "pais": "Brasil",
+      "iata": "MCZ",
+      "loungekey": [],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Sala VIP MCZ",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MCZ"
+        }
+      ]
+    },
+    "NAT": {
+      "nome": "Natal – São Gonçalo do Amarante Internacional",
+      "cidade": "Natal",
+      "pais": "Brasil",
+      "iata": "NAT",
+      "loungekey": [
+        {
+          "nome": "Sala VIP NAT",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=NAT"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Sala VIP NAT",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=NAT"
+        }
+      ]
+    },
+    "JPA": {
+      "nome": "João Pessoa – Presidente Castro Pinto Internacional",
+      "cidade": "João Pessoa",
+      "pais": "Brasil",
+      "iata": "JPA",
+      "loungekey": [],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Sala VIP JPA",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=JPA"
+        }
+      ]
+    },
+    "AJU": {
+      "nome": "Aracaju – Santa Maria",
+      "cidade": "Aracaju",
+      "pais": "Brasil",
+      "iata": "AJU",
+      "loungekey": [],
+      "dragonpass": [],
+      "prioritypass": []
+    },
+    "THE": {
+      "nome": "Teresina – Senador Petrônio Portella",
+      "cidade": "Teresina",
+      "pais": "Brasil",
+      "iata": "THE",
+      "loungekey": [],
+      "dragonpass": [],
+      "prioritypass": []
+    },
+    "CGR": {
+      "nome": "Campo Grande – Internacional",
+      "cidade": "Campo Grande",
+      "pais": "Brasil",
+      "iata": "CGR",
+      "loungekey": [],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Sala VIP CGR",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CGR"
+        }
+      ]
+    },
+    "CGB": {
+      "nome": "Cuiabá – Marechal Rondon Internacional",
+      "cidade": "Cuiabá",
+      "pais": "Brasil",
+      "iata": "CGB",
+      "loungekey": [],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Sala VIP CGB",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CGB"
+        }
+      ]
+    },
+    "PVH": {
+      "nome": "Porto Velho – Governador Jorge Teixeira",
+      "cidade": "Porto Velho",
+      "pais": "Brasil",
+      "iata": "PVH",
+      "loungekey": [],
+      "dragonpass": [],
+      "prioritypass": []
+    },
+    "BVB": {
+      "nome": "Boa Vista – Atlas Brasil Cantanhede Internacional",
+      "cidade": "Boa Vista",
+      "pais": "Brasil",
+      "iata": "BVB",
+      "loungekey": [],
+      "dragonpass": [],
+      "prioritypass": []
+    },
+    "MCP": {
+      "nome": "Macapá – Alberto Alcolumbre Internacional",
+      "cidade": "Macapá",
+      "pais": "Brasil",
+      "iata": "MCP",
+      "loungekey": [],
+      "dragonpass": [],
+      "prioritypass": []
+    },
+    "RBR": {
+      "nome": "Rio Branco – Plácido de Castro Internacional",
+      "cidade": "Rio Branco",
+      "pais": "Brasil",
+      "iata": "RBR",
+      "loungekey": [],
+      "dragonpass": [],
+      "prioritypass": []
+    },
+    "PMW": {
+      "nome": "Palmas – Brigadeiro Lysias Rodrigues",
+      "cidade": "Palmas",
+      "pais": "Brasil",
+      "iata": "PMW",
+      "loungekey": [],
+      "dragonpass": [],
+      "prioritypass": []
+    },
+    "NVT": {
+      "nome": "Navegantes – Ministro Victor Konder Internacional",
+      "cidade": "Navegantes",
+      "pais": "Brasil",
+      "iata": "NVT",
+      "loungekey": [
+        {
+          "nome": "Sala VIP NVT",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=NVT"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Sala VIP NVT",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=NVT"
+        }
+      ]
+    },
+    "BPS": {
+      "nome": "Porto Seguro – Internacional",
+      "cidade": "Porto Seguro",
+      "pais": "Brasil",
+      "iata": "BPS",
+      "loungekey": [],
+      "dragonpass": [
+        {
+          "nome": "BRT Lounge Porto Seguro",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.dragonpass.com/explore/airport/BPS"
+        }
+      ],
+      "prioritypass": [
+        {
+          "nome": "BRT Lounge Porto Seguro",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BPS"
+        }
+      ]
+    },
+    "IGU": {
+      "nome": "Foz do Iguaçu – Cataratas Internacional",
+      "cidade": "Foz do Iguaçu",
+      "pais": "Brasil",
+      "iata": "IGU",
+      "loungekey": [
+        {
+          "nome": "Sala VIP IGU",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=IGU"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Sala VIP IGU",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=IGU"
+        }
+      ]
     }
   }
 }
