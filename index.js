@@ -1700,6 +1700,184 @@ app.get('/parceiros/testar-fetch', async (req, res) => {
 });
 
 
+// ══════════════════════════════════════════════════════════════════════════════
+// SALAS VIP — busca por aeroporto (LoungeKey + DragonPass + Priority Pass)
+// ══════════════════════════════════════════════════════════════════════════════
+
+const LOUNGES_DB_PATH = 'lounges-db.json';
+
+function extrairLoungesLoungeKey(html, iata) {
+  const salas = [];
+  const reLoungeLink = /lounge-finder\/lounge\?loungecode=([A-Z0-9]+)/g;
+  const blocos = html.match(/<[^>]*(?:lounge-card|lounge-item|result-item)[^>]*>[\s\S]*?<\/[^>]+>/gi) || [];
+  blocos.forEach(bloco => {
+    const nomeMatch = bloco.match(/class="[^"]*(?:title|name|heading)[^"]*"[^>]*>([\s\S]*?)<\//) ||
+                      bloco.match(/<h[23][^>]*>([\s\S]*?)<\/h[23]>/i);
+    const terminalMatch = bloco.match(/(?:Terminal|T\d)[^<"]{0,40}/i);
+    const horarioMatch = bloco.match(/\d{2}:\d{2}\s*[-–]\s*\d{2}:\d{2}/);
+    const codeMatch = bloco.match(/loungecode=([A-Z0-9]+)/i);
+    if (nomeMatch) {
+      const nome = nomeMatch[1].replace(/<[^>]+>/g, '').trim();
+      if (nome.length > 3) {
+        salas.push({
+          nome,
+          terminal: terminalMatch ? terminalMatch[0].trim() : '',
+          horario: horarioMatch ? horarioMatch[0] : '',
+          url: codeMatch
+            ? `https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=${codeMatch[1]}`
+            : `https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=${iata}`
+        });
+      }
+    }
+  });
+  if (salas.length === 0) {
+    let m;
+    while ((m = reLoungeLink.exec(html)) !== null) {
+      const code = m[1];
+      if (!salas.find(s => s.url && s.url.includes(code))) {
+        salas.push({ nome: `Sala VIP ${code}`, terminal: '', horario: '',
+          url: `https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=${code}` });
+      }
+    }
+  }
+  return salas;
+}
+
+function extrairLoungesDragonPass(html, iata) {
+  const salas = [];
+  const blocos = html.match(/<[^>]*(?:lounge[-_]?card|facility[-_]?card|lounge[-_]?item)[^>]*>[\s\S]*?<\/(?:div|article|section)>/gi) || [];
+  blocos.forEach(bloco => {
+    const nomeMatch = bloco.match(/<h[234][^>]*>([\s\S]*?)<\/h[234]>/i) ||
+                      bloco.match(/class="[^"]*(?:title|name|heading)[^"]*"[^>]*>([\s\S]*?)<\//i);
+    const horarioMatch = bloco.match(/\d{2}:\d{2}\s*[-–]\s*\d{2}:\d{2}/);
+    const linkMatch = bloco.match(/href="([^"]*explore\/lounge[^"]*)"/i);
+    if (nomeMatch) {
+      const nome = nomeMatch[1].replace(/<[^>]+>/g, '').trim();
+      if (nome.length > 3) {
+        salas.push({
+          nome, terminal: '', horario: horarioMatch ? horarioMatch[0] : '',
+          url: linkMatch ? `https://www.dragonpass.com${linkMatch[1]}`
+            : `https://www.dragonpass.com/explore/airport/${iata}`
+        });
+      }
+    }
+  });
+  return salas;
+}
+
+function extrairLoungesPriorityPass(html, iata) {
+  const salas = [];
+  const blocos = html.match(/<[^>]*(?:lounge[-_]?card|experience[-_]?card|result[-_]?card)[^>]*>[\s\S]*?<\/(?:div|article|li)>/gi) || [];
+  blocos.forEach(bloco => {
+    const nomeMatch = bloco.match(/<h[234][^>]*>([\s\S]*?)<\/h[234]>/i) ||
+                      bloco.match(/class="[^"]*(?:title|name|heading)[^"]*"[^>]*>([\s\S]*?)<\//i);
+    const terminalMatch = bloco.match(/Terminal\s*[0-9A-Z\-]+/i);
+    const horarioMatch = bloco.match(/\d{2}:\d{2}\s*[-–]\s*\d{2}:\d{2}/);
+    if (nomeMatch) {
+      const nome = nomeMatch[1].replace(/<[^>]+>/g, '').trim();
+      if (nome.length > 3) {
+        salas.push({
+          nome, terminal: terminalMatch ? terminalMatch[0] : '',
+          horario: horarioMatch ? horarioMatch[0] : '',
+          url: `https://www.prioritypass.com/pt-BR/airport-lounges?location=${iata}`
+        });
+      }
+    }
+  });
+  return salas;
+}
+
+async function buscarLoungesAoVivo(iata) {
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.7',
+    'Cache-Control': 'no-cache'
+  };
+  const fetchSafe = async (url) => {
+    try {
+      const r = await fetch(url, { compress: false, headers, timeout: 15000 });
+      if (!r.ok) return '';
+      return r.text();
+    } catch { return ''; }
+  };
+  const [htmlLK, htmlDP, htmlPP] = await Promise.all([
+    fetchSafe(`https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=${iata}`),
+    fetchSafe(`https://www.dragonpass.com/explore/airport/${iata}`),
+    fetchSafe(`https://www.prioritypass.com/pt-BR/airport-lounges?location=${iata}`)
+  ]);
+  return {
+    loungekey:    extrairLoungesLoungeKey(htmlLK, iata),
+    dragonpass:   extrairLoungesDragonPass(htmlDP, iata),
+    prioritypass: extrairLoungesPriorityPass(htmlPP, iata)
+  };
+}
+
+// GET /lounges/buscar?iata=GRU
+app.get('/lounges/buscar', async (req, res) => {
+  const iata = (req.query.iata || '').toUpperCase().trim();
+  if (!iata || !/^[A-Z]{3}$/.test(iata)) {
+    return res.status(400).json({ ok: false, erro: 'Parâmetro ?iata= deve ter 3 letras (ex: GRU)' });
+  }
+  try {
+    const db = await ghGetJson(LOUNGES_DB_PATH, { aeroportos: {} });
+    const entrada = db.data.aeroportos?.[iata];
+    if (entrada) {
+      return res.json({
+        ok: true, fonte: 'cache',
+        atualizadoEm: db.data._meta?.atualizadoEm || null,
+        aeroporto: { iata, nome: entrada.nome, cidade: entrada.cidade, pais: entrada.pais },
+        loungekey:    entrada.loungekey    || [],
+        dragonpass:   entrada.dragonpass   || [],
+        prioritypass: entrada.prioritypass || []
+      });
+    }
+    // Não está no cache — busca ao vivo
+    const resultado = await buscarLoungesAoVivo(iata);
+    if (GITHUB_TOKEN) {
+      try {
+        const dbAtual = await ghGetJson(LOUNGES_DB_PATH, { _meta: { atualizadoEm: new Date().toISOString() }, aeroportos: {} });
+        dbAtual.data.aeroportos = dbAtual.data.aeroportos || {};
+        dbAtual.data.aeroportos[iata] = {
+          nome: `Aeroporto ${iata}`, cidade: '', pais: '', iata,
+          loungekey:    resultado.loungekey,
+          dragonpass:   resultado.dragonpass,
+          prioritypass: resultado.prioritypass,
+          buscadoEm: new Date().toISOString()
+        };
+        await ghPutJson(LOUNGES_DB_PATH, dbAtual.data, dbAtual.sha, `chore: add lounge cache ${iata}`);
+      } catch (saveErr) {
+        console.warn('[lounges] Falha ao salvar cache:', saveErr.message);
+      }
+    }
+    return res.json({
+      ok: true, fonte: 'busca-ativa',
+      atualizadoEm: new Date().toISOString(),
+      aeroporto: { iata, nome: `Aeroporto ${iata}`, cidade: '', pais: '' },
+      loungekey:    resultado.loungekey,
+      dragonpass:   resultado.dragonpass,
+      prioritypass: resultado.prioritypass
+    });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// GET /lounges/aeroportos
+app.get('/lounges/aeroportos', async (req, res) => {
+  try {
+    const db = await ghGetJson(LOUNGES_DB_PATH, { aeroportos: {} });
+    const lista = Object.values(db.data.aeroportos || {}).map(a => ({
+      iata: a.iata, nome: a.nome, cidade: a.cidade, pais: a.pais
+    })).sort((a, b) => a.iata.localeCompare(b.iata));
+    res.json({ ok: true, total: lista.length, aeroportos: lista });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
 });
