@@ -352,6 +352,54 @@
   .iata-option:last-child{border-bottom:none}
   .iata-option:hover,.iata-option.selected{background:rgba(255,88,94,.1);color:var(--cdv-coral)}
   .iata-code{font-weight:800;color:var(--cdv-coral);margin-right:6px;font-size:11px}
+
+/* === SALAS VIP === */
+.lv-search-wrap{padding:20px 22px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.lv-search-input{flex:1;min-width:200px;max-width:400px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:14px;font-family:'Montserrat',sans-serif;font-weight:600;outline:none;text-transform:uppercase;transition:border-color .2s}
+.lv-search-input::placeholder{text-transform:none;font-weight:400;color:var(--muted)}
+.lv-search-input:focus{border-color:var(--cdv-coral)}
+.lv-search-btn{background:var(--cdv-coral);border:none;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s;white-space:nowrap}
+.lv-search-btn:hover{opacity:.85}.lv-search-btn:disabled{opacity:.5;cursor:not-allowed}
+.lv-autocomplete{position:absolute;background:var(--surface);border:1px solid var(--border);border-radius:10px;max-height:260px;overflow-y:auto;z-index:200;width:400px;max-width:calc(100vw - 44px);box-shadow:0 8px 24px rgba(0,0,0,.3);top:100%;left:0;margin-top:4px}
+.lv-autocomplete-item{padding:10px 14px;cursor:pointer;font-size:13px;display:flex;gap:10px;align-items:center;border-bottom:1px solid rgba(61,74,102,.3);transition:background .12s}
+.lv-autocomplete-item:last-child{border-bottom:none}.lv-autocomplete-item:hover{background:rgba(255,88,94,.08)}
+.lv-autocomplete-iata{font-size:12px;font-weight:800;color:var(--cdv-coral);min-width:36px}
+.lv-autocomplete-info{display:flex;flex-direction:column;gap:1px}
+.lv-autocomplete-cidade{font-size:12px;font-weight:700;color:var(--text)}
+.lv-autocomplete-pais{font-size:11px;color:var(--muted)}
+.lv-status{padding:16px 22px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.lv-spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--cdv-coral);border-radius:50%;animation:lvSpin .7s linear infinite;flex-shrink:0}
+@keyframes lvSpin{to{transform:rotate(360deg)}}
+.lv-aeroporto-header{padding:18px 22px 10px;border-bottom:1px solid var(--border)}
+.lv-aeroporto-nome{font-size:18px;font-weight:900;color:var(--text);margin-bottom:2px}
+.lv-aeroporto-sub{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.lv-fonte-badge{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:rgba(96,165,250,.12);color:#60a5fa}
+.lv-fonte-badge.ao-vivo{background:rgba(52,211,153,.12);color:#34d399}
+.lv-programas-wrap{padding:16px 22px;display:flex;flex-direction:column;gap:16px}
+.lv-programa-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.lv-programa-header{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border)}
+.lv-programa-titulo{font-size:14px;font-weight:800;color:var(--text)}
+.lv-programa-subtitulo{font-size:11px;color:var(--muted);margin-top:1px}
+.lv-programa-count{margin-left:auto;font-size:11px;font-weight:700;color:var(--cdv-coral);background:rgba(255,88,94,.1);padding:3px 10px;border-radius:20px}
+.lv-programa-empty{padding:18px;font-size:13px;color:var(--muted);text-align:center}
+.lv-sala-item{padding:13px 18px;border-bottom:1px solid rgba(61,74,102,.3);display:flex;gap:12px;align-items:flex-start;transition:background .12s}
+.lv-sala-item:last-child{border-bottom:none}.lv-sala-item:hover{background:rgba(255,255,255,.025)}
+.lv-sala-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.lv-sala-info{flex:1;min-width:0}
+.lv-sala-nome{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.lv-sala-tags{display:flex;gap:6px;flex-wrap:wrap}
+.lv-sala-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:rgba(61,74,102,.4);color:var(--muted);white-space:nowrap}
+.lv-sala-tag.terminal{color:#60a5fa;background:rgba(96,165,250,.1)}
+.lv-sala-tag.horario{color:#34d399;background:rgba(52,211,153,.1)}
+.lv-sala-tag.obs{color:#f59e0b;background:rgba(245,158,11,.1)}
+.lv-sala-link{font-size:11px;color:var(--cdv-coral);text-decoration:none;white-space:nowrap;font-weight:700;flex-shrink:0;align-self:center;opacity:.8;transition:opacity .15s}
+.lv-sala-link:hover{opacity:1}
+.lv-empty-state{padding:48px 22px;text-align:center;color:var(--muted)}
+.lv-empty-state-icon{font-size:40px;margin-bottom:12px}
+.lv-empty-state-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px}
+.lv-empty-state-sub{font-size:13px}
+@media(max-width:640px){.lv-search-wrap{padding:14px 10px 0}.lv-programas-wrap{padding:12px 10px}.lv-autocomplete{width:calc(100vw - 20px)}}
+/* === /SALAS VIP === */
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -395,6 +443,7 @@
   <button class="main-tab" data-tab="radar">📡 Radar de Ofertas</button>
   <button class="main-tab" data-tab="passagens">✈️ Passagens</button>
   <button class="main-tab" data-tab="milhas">📋 Gestão de Milhas</button>
+  <button class="main-tab" data-tab="lounges" id="tab-btn-lounges" style="display:none">🛋️ Salas VIP</button>
 </div>
 
 <div id="tab-comparador" class="tab-panel">
@@ -423,6 +472,50 @@
     <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando ofertas…</div></div>
   </div>
 </div>
+
+<div id="tab-lounges" class="tab-panel" style="display:none">
+
+  <!-- Busca -->
+  <div class="lv-search-wrap">
+    <div style="position:relative;flex:1;max-width:400px">
+      <input
+        class="lv-search-input"
+        id="lv-input"
+        type="text"
+        placeholder="Código IATA ou nome do aeroporto (ex: GRU)"
+        maxlength="60"
+        autocomplete="off"
+        oninput="lvOnInput(this.value)"
+        onkeydown="lvOnKeydown(event)"
+      />
+      <div class="lv-autocomplete" id="lv-autocomplete" style="display:none"></div>
+    </div>
+    <button class="lv-search-btn" id="lv-btn" onclick="lvBuscar()">🔍 Buscar</button>
+  </div>
+
+  <!-- Status / loading -->
+  <div class="lv-status" id="lv-status" style="display:none"></div>
+
+  <!-- Resultados -->
+  <div id="lv-result" style="display:none">
+    <div class="lv-aeroporto-header">
+      <div class="lv-aeroporto-nome" id="lv-aeroporto-nome"></div>
+      <div class="lv-aeroporto-sub">
+        <span id="lv-aeroporto-sub"></span>
+        <span class="lv-fonte-badge" id="lv-fonte-badge"></span>
+      </div>
+    </div>
+    <div class="lv-programas-wrap" id="lv-programas-wrap"></div>
+  </div>
+
+  <!-- Estado vazio inicial -->
+  <div class="lv-empty-state" id="lv-empty-state">
+    <div class="lv-empty-state-icon">🛋️</div>
+    <div class="lv-empty-state-title">Consulte salas VIP por aeroporto</div>
+    <div class="lv-empty-state-sub">Digite o código IATA (GRU, LIS, CDG…) ou o nome do aeroporto e clique em Buscar.</div>
+  </div>
+
+</div><!-- /tab-lounges -->
 
 <div id="tab-milhas" class="tab-panel" style="display:none">
 
@@ -2167,11 +2260,13 @@ function switchTab(tab){
   document.getElementById('tab-comparador').style.display = tab==='comparador'?'block':'none';
   document.getElementById('tab-radar').style.display = tab==='radar'?'block':'none';
   document.getElementById('tab-passagens').style.display = tab==='passagens'?'block':'none';
-  document.getElementById('tab-milhas').style.display = tab==='milhas'?'block':'none';
+  document.getElementById('tab-milhas').style.display  = tab==='milhas'  ?'block':'none';
+  document.getElementById('tab-lounges').style.display = tab==='lounges' ?'block':'none';
   window.scrollTo({top:0, behavior:'smooth'});
-  if(tab==='radar') loadOfertas(false);
+  if(tab==='radar')    loadOfertas(false);
   if(tab==='passagens') loadPassagens(false);
-  if(tab==='milhas') initMilhas();
+  if(tab==='milhas')   initMilhas();
+  if(tab==='lounges')  lvCarregarAeroportos();
   try{localStorage.setItem('cdv_active_tab', tab);}catch(e){}
 }
 
@@ -3691,6 +3786,9 @@ function mostrarPainel(sessao) {
   // Aba Gestão de Milhas disponível para todos os membros
   const tabMilhas = document.querySelector('.main-tab[data-tab="milhas"]');
   if (tabMilhas) tabMilhas.style.display = '';
+  // Aba Salas VIP — só para devs
+  const tabLounges = document.getElementById('tab-btn-lounges');
+  if (tabLounges && devAcesso()) tabLounges.style.display = '';
 }
 async function fazerLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
@@ -4259,6 +4357,154 @@ document.addEventListener('click', function(e){
     if(!d.closest('.iata-wrap')?.contains(e.target)) d.style.display='none';
   });
 });
+
+// === SALAS VIP ===
+const LV_PROGRAMAS_META = {
+  loungekey:    { titulo:'LoungeKey',    subtitulo:'Mastercard Airport Experiences', icon:'🔷' },
+  dragonpass:   { titulo:'DragonPass',   subtitulo:'Visa Airport Companion',         icon:'🐉' },
+  prioritypass: { titulo:'Priority Pass',subtitulo:'Acesso universal a lounges',     icon:'🟣' }
+};
+let lvAeroportosCache = null;
+let lvAutocompleteIdx = -1;
+
+async function lvCarregarAeroportos() {
+  if (lvAeroportosCache) return lvAeroportosCache;
+  try {
+    const r = await fetch(CDV_PROXY_AUTH + '/lounges/aeroportos');
+    if (!r.ok) return [];
+    const d = await r.json();
+    lvAeroportosCache = d.aeroportos || [];
+    return lvAeroportosCache;
+  } catch { return []; }
+}
+
+async function lvOnInput(valor) {
+  const q = valor.trim().toUpperCase();
+  const el = document.getElementById('lv-autocomplete');
+  if (q.length < 2) { el.style.display='none'; lvAutocompleteIdx=-1; return; }
+  const lista = await lvCarregarAeroportos();
+  const filtrados = lista.filter(a =>
+    a.iata.startsWith(q) ||
+    (a.nome||'').toUpperCase().includes(q) ||
+    (a.cidade||'').toUpperCase().includes(q)
+  ).slice(0,8);
+  if (!filtrados.length) { el.style.display='none'; return; }
+  el.innerHTML = filtrados.map((a,i) => `
+    <div class="lv-autocomplete-item" onclick="lvSelecionarAeroporto('${a.iata}','${(a.nome||'').replace(/'/g,'&apos;')}')" data-idx="${i}">
+      <span class="lv-autocomplete-iata">${a.iata}</span>
+      <span class="lv-autocomplete-info">
+        <span class="lv-autocomplete-cidade">${a.nome||a.cidade||a.iata}</span>
+        <span class="lv-autocomplete-pais">${[a.cidade,a.pais].filter(Boolean).join(' · ')}</span>
+      </span>
+    </div>`).join('');
+  el.style.display='block'; lvAutocompleteIdx=-1;
+}
+
+function lvOnKeydown(e) {
+  const el = document.getElementById('lv-autocomplete');
+  const items = el.querySelectorAll('.lv-autocomplete-item');
+  if (el.style.display==='none'||!items.length) { if(e.key==='Enter') lvBuscar(); return; }
+  if (e.key==='ArrowDown') { e.preventDefault(); lvAutocompleteIdx=Math.min(lvAutocompleteIdx+1,items.length-1); items.forEach((it,i)=>it.style.background=i===lvAutocompleteIdx?'rgba(255,88,94,.12)':''); }
+  else if (e.key==='ArrowUp') { e.preventDefault(); lvAutocompleteIdx=Math.max(lvAutocompleteIdx-1,-1); items.forEach((it,i)=>it.style.background=i===lvAutocompleteIdx?'rgba(255,88,94,.12)':''); }
+  else if (e.key==='Enter') { if(lvAutocompleteIdx>=0) items[lvAutocompleteIdx].click(); else lvBuscar(); }
+  else if (e.key==='Escape') { el.style.display='none'; }
+}
+
+function lvSelecionarAeroporto(iata) {
+  document.getElementById('lv-input').value = iata;
+  document.getElementById('lv-autocomplete').style.display='none';
+  lvBuscar(iata);
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#tab-lounges .lv-search-wrap')) {
+    const el = document.getElementById('lv-autocomplete');
+    if (el) el.style.display='none';
+  }
+});
+
+async function lvBuscar(iataForced) {
+  const iata = (iataForced || document.getElementById('lv-input').value.trim().toUpperCase());
+  if (!iata || !/^[A-Z]{3}$/.test(iata)) {
+    lvMostrarStatus('⚠️ Digite um código IATA válido (3 letras, ex: GRU)', false); return;
+  }
+  document.getElementById('lv-autocomplete').style.display='none';
+  document.getElementById('lv-result').style.display='none';
+  document.getElementById('lv-empty-state').style.display='none';
+  const btn = document.getElementById('lv-btn');
+  btn.disabled=true; btn.textContent='Buscando…';
+  lvMostrarStatus(`<div class="lv-spinner"></div> Buscando salas em <strong>${iata}</strong>…`, true);
+  try {
+    const r = await fetch(CDV_PROXY_AUTH + `/lounges/buscar?iata=${iata}`);
+    const d = await r.json();
+    lvEsconderStatus();
+    if (!d.ok) { lvMostrarStatus(`❌ ${d.erro||'Erro ao buscar salas.'}`, false); return; }
+    lvRenderizarResultado(d);
+  } catch(err) {
+    lvMostrarStatus('❌ Erro de conexão. Tente novamente.', false);
+  } finally {
+    btn.disabled=false; btn.textContent='🔍 Buscar';
+  }
+}
+
+function lvMostrarStatus(html) {
+  const el=document.getElementById('lv-status');
+  el.innerHTML=html; el.style.display='flex';
+}
+function lvEsconderStatus() { document.getElementById('lv-status').style.display='none'; }
+
+function lvRenderizarResultado(d) {
+  const { aeroporto, loungekey, dragonpass, prioritypass, fonte, atualizadoEm } = d;
+  document.getElementById('lv-aeroporto-nome').textContent = aeroporto.nome||aeroporto.iata;
+  document.getElementById('lv-aeroporto-sub').textContent = [aeroporto.cidade,aeroporto.pais].filter(Boolean).join(', ')||aeroporto.iata;
+  const badge = document.getElementById('lv-fonte-badge');
+  if (fonte==='cache') {
+    const dt = atualizadoEm ? new Date(atualizadoEm).toLocaleDateString('pt-BR') : '';
+    badge.textContent = dt ? `Cache · ${dt}` : 'Cache';
+    badge.className = 'lv-fonte-badge';
+  } else {
+    badge.textContent = 'Busca ao vivo';
+    badge.className = 'lv-fonte-badge ao-vivo';
+  }
+  const programas = [
+    { key:'loungekey',    salas: loungekey    || [] },
+    { key:'dragonpass',   salas: dragonpass   || [] },
+    { key:'prioritypass', salas: prioritypass || [] }
+  ];
+  document.getElementById('lv-programas-wrap').innerHTML = programas.map(({key,salas}) => {
+    const meta = LV_PROGRAMAS_META[key];
+    const lista = salas.length
+      ? salas.map(s=>`
+          <div class="lv-sala-item">
+            <span class="lv-sala-icon">🛋️</span>
+            <div class="lv-sala-info">
+              <div class="lv-sala-nome">${s.nome}</div>
+              <div class="lv-sala-tags">
+                ${s.terminal?`<span class="lv-sala-tag terminal">📍 ${s.terminal}</span>`:''}
+                ${s.horario ?`<span class="lv-sala-tag horario">⏰ ${s.horario}</span>`:''}
+                ${s.obs     ?`<span class="lv-sala-tag obs">⚠️ ${s.obs}</span>`:''}
+              </div>
+            </div>
+            ${s.url?`<a class="lv-sala-link" href="${s.url}" target="_blank" rel="noopener">Ver ↗</a>`:''}
+          </div>`).join('')
+      : `<div class="lv-programa-empty">Nenhuma sala encontrada neste programa para ${aeroporto.iata}.</div>`;
+    return `
+      <div class="lv-programa-card">
+        <div class="lv-programa-header">
+          <span style="font-size:26px">${meta.icon}</span>
+          <div>
+            <div class="lv-programa-titulo">${meta.titulo}</div>
+            <div class="lv-programa-subtitulo">${meta.subtitulo}</div>
+          </div>
+          ${salas.length?`<span class="lv-programa-count">${salas.length} sala${salas.length>1?'s':''}</span>`:''}
+        </div>
+        ${lista}
+      </div>`;
+  }).join('');
+  document.getElementById('lv-result').style.display='block';
+  document.getElementById('lv-result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+// === /SALAS VIP ===
 </script>
 </div><!-- /app-content -->
 <script src="iata.js"></script>
