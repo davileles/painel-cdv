@@ -12,28 +12,127 @@
       "pais": "Brasil",
       "iata": "GRU",
       "loungekey": [
-        { "nome": "Tryp by Wyndham GRU Airport", "terminal": "T3 – Internacional", "horario": "06:00–22:30", "loungecode": "GRU18H", "url": "https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=GRU18H" },
-        { "nome": "W Premium Lounge – The Pier", "terminal": "T3 – Internacional", "horario": "24h", "loungecode": "GRU28", "url": "https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=GRU28" },
-        { "nome": "W Premium Lounge – The West", "terminal": "T2 – Doméstico", "horario": "24h", "loungecode": "GRU24", "url": "https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=GRU24" },
-        { "nome": "W Lounge Guarulhos", "terminal": "T1 – Doméstico", "horario": "24h", "loungecode": "GRU30", "url": "https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=GRU30" },
-        { "nome": "Plaza Premium Lounge – Airside", "terminal": "T2 – Doméstico", "horario": "24h", "loungecode": "GRU19", "url": "https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=GRU19" },
-        { "nome": "The Lounge São Paulo (Doméstico)", "terminal": "T2 – Doméstico", "horario": "24h", "loungecode": "GRU27", "url": "https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=GRU27" },
-        { "nome": "Advantage VIP Lounge", "terminal": "T2 – Doméstico", "horario": "24h", "loungecode": "GRU30D", "url": "https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=GRU30D" }
+        {
+          "nome": "Tryp by Wyndham GRU Airport",
+          "terminal": "T3 – Internacional",
+          "horario": "06:00–22:30",
+          "loungecode": "GRU18H",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=GRU18H"
+        },
+        {
+          "nome": "W Premium Lounge – The Pier",
+          "terminal": "T3 – Internacional",
+          "horario": "24h",
+          "loungecode": "GRU28",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=GRU28"
+        },
+        {
+          "nome": "W Premium Lounge – The West",
+          "terminal": "T2 – Doméstico",
+          "horario": "24h",
+          "loungecode": "GRU24",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=GRU24"
+        },
+        {
+          "nome": "W Lounge Guarulhos",
+          "terminal": "T1 – Doméstico",
+          "horario": "24h",
+          "loungecode": "GRU30",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=GRU30"
+        },
+        {
+          "nome": "Plaza Premium Lounge – Airside",
+          "terminal": "T2 – Doméstico",
+          "horario": "24h",
+          "loungecode": "GRU19",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=GRU19"
+        },
+        {
+          "nome": "The Lounge São Paulo (Doméstico)",
+          "terminal": "T2 – Doméstico",
+          "horario": "24h",
+          "loungecode": "GRU27",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=GRU27"
+        },
+        {
+          "nome": "Advantage VIP Lounge",
+          "terminal": "T2 – Doméstico",
+          "horario": "24h",
+          "loungecode": "GRU30D",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/lounge?loungecode=GRU30D"
+        }
       ],
       "dragonpass": [
-        { "nome": "Tryp by Wyndham GRU Airport", "terminal": "T3 – Internacional", "horario": "06:00–22:30", "url": "https://www.dragonpass.com/explore/lounge/A10199/N02081" },
-        { "nome": "Plaza Premium Lounge – Landside", "terminal": "T2 – Pré-embarque", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A10199" },
-        { "nome": "W Premium Lounge – The West", "terminal": "T2 – Doméstico", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A10199" },
-        { "nome": "W Premium Lounge – The Pier", "terminal": "T3 – Internacional", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A10199" }
+        {
+          "nome": "Tryp by Wyndham GRU Airport",
+          "terminal": "T3 – Internacional",
+          "horario": "06:00–22:30",
+          "url": "https://www.dragonpass.com/explore/lounge/A10199/N02081"
+        },
+        {
+          "nome": "Plaza Premium Lounge – Landside",
+          "terminal": "T2 – Pré-embarque",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A10199"
+        },
+        {
+          "nome": "W Premium Lounge – The West",
+          "terminal": "T2 – Doméstico",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A10199"
+        },
+        {
+          "nome": "W Premium Lounge – The Pier",
+          "terminal": "T3 – Internacional",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A10199"
+        }
       ],
       "prioritypass": [
-        { "nome": "W Premium Lounge – The Pier", "terminal": "T3 – Internacional", "horario": "24h", "obs": "Restrito 05h–09h e 21h–23h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GRU" },
-        { "nome": "W Premium Lounge – The West", "terminal": "T2 – Doméstico", "horario": "24h", "obs": "Máx. 3h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GRU" },
-        { "nome": "Tryp by Wyndham GRU Airport", "terminal": "T3 – Internacional", "horario": "06:00–22:30", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GRU" },
-        { "nome": "The Lounge São Paulo (Doméstico)", "terminal": "T2 – Doméstico", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GRU" },
-        { "nome": "W Lounge Guarulhos", "terminal": "T1 – Doméstico", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GRU" },
-        { "nome": "Advantage VIP Lounge", "terminal": "T2 – Doméstico", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GRU" },
-        { "nome": "Plaza Premium Lounge – Airside", "terminal": "T2 – Doméstico", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GRU" }
+        {
+          "nome": "W Premium Lounge – The Pier",
+          "terminal": "T3 – Internacional",
+          "horario": "24h",
+          "obs": "Restrito 05h–09h e 21h–23h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GRU"
+        },
+        {
+          "nome": "W Premium Lounge – The West",
+          "terminal": "T2 – Doméstico",
+          "horario": "24h",
+          "obs": "Máx. 3h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GRU"
+        },
+        {
+          "nome": "Tryp by Wyndham GRU Airport",
+          "terminal": "T3 – Internacional",
+          "horario": "06:00–22:30",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GRU"
+        },
+        {
+          "nome": "The Lounge São Paulo (Doméstico)",
+          "terminal": "T2 – Doméstico",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GRU"
+        },
+        {
+          "nome": "W Lounge Guarulhos",
+          "terminal": "T1 – Doméstico",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GRU"
+        },
+        {
+          "nome": "Advantage VIP Lounge",
+          "terminal": "T2 – Doméstico",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GRU"
+        },
+        {
+          "nome": "Plaza Premium Lounge – Airside",
+          "terminal": "T2 – Doméstico",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GRU"
+        }
       ]
     },
     "GIG": {
@@ -42,14 +141,34 @@
       "pais": "Brasil",
       "iata": "GIG",
       "loungekey": [
-        { "nome": "Plaza Premium Lounge", "terminal": "T2 – Internacional", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=GIG" },
-        { "nome": "GIG Lounge", "terminal": "T1 – Doméstico", "horario": "06:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=GIG" }
+        {
+          "nome": "Plaza Premium Lounge",
+          "terminal": "T2 – Internacional",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=GIG"
+        },
+        {
+          "nome": "GIG Lounge",
+          "terminal": "T1 – Doméstico",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=GIG"
+        }
       ],
       "dragonpass": [
-        { "nome": "Plaza Premium Lounge", "terminal": "T2 – Internacional", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A10200" }
+        {
+          "nome": "Plaza Premium Lounge",
+          "terminal": "T2 – Internacional",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A10200"
+        }
       ],
       "prioritypass": [
-        { "nome": "Plaza Premium Lounge", "terminal": "T2 – Internacional", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GIG" }
+        {
+          "nome": "Plaza Premium Lounge",
+          "terminal": "T2 – Internacional",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GIG"
+        }
       ]
     },
     "CGH": {
@@ -58,11 +177,21 @@
       "pais": "Brasil",
       "iata": "CGH",
       "loungekey": [
-        { "nome": "CGH VIP Lounge", "terminal": "Embarque Nacional", "horario": "06:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CGH" }
+        {
+          "nome": "CGH VIP Lounge",
+          "terminal": "Embarque Nacional",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CGH"
+        }
       ],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "CGH VIP Lounge", "terminal": "Embarque Nacional", "horario": "06:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CGH" }
+        {
+          "nome": "CGH VIP Lounge",
+          "terminal": "Embarque Nacional",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CGH"
+        }
       ]
     },
     "BSB": {
@@ -71,13 +200,28 @@
       "pais": "Brasil",
       "iata": "BSB",
       "loungekey": [
-        { "nome": "BSB VIP Lounge", "terminal": "Embarque", "horario": "06:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=BSB" }
+        {
+          "nome": "BSB VIP Lounge",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=BSB"
+        }
       ],
       "dragonpass": [
-        { "nome": "BSB VIP Lounge", "terminal": "Embarque", "horario": "06:00–22:00", "url": "https://www.dragonpass.com/explore/airport/A10201" }
+        {
+          "nome": "BSB VIP Lounge",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.dragonpass.com/explore/airport/A10201"
+        }
       ],
       "prioritypass": [
-        { "nome": "BSB VIP Lounge", "terminal": "Embarque", "horario": "06:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BSB" }
+        {
+          "nome": "BSB VIP Lounge",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BSB"
+        }
       ]
     },
     "SSA": {
@@ -86,11 +230,21 @@
       "pais": "Brasil",
       "iata": "SSA",
       "loungekey": [
-        { "nome": "SSA Sala VIP", "terminal": "Embarque", "horario": "06:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=SSA" }
+        {
+          "nome": "SSA Sala VIP",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=SSA"
+        }
       ],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "SSA Sala VIP", "terminal": "Embarque", "horario": "06:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SSA" }
+        {
+          "nome": "SSA Sala VIP",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SSA"
+        }
       ]
     },
     "FOR": {
@@ -99,11 +253,21 @@
       "pais": "Brasil",
       "iata": "FOR",
       "loungekey": [
-        { "nome": "FOR VIP Lounge", "terminal": "Embarque", "horario": "06:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=FOR" }
+        {
+          "nome": "FOR VIP Lounge",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=FOR"
+        }
       ],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "FOR VIP Lounge", "terminal": "Embarque", "horario": "06:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FOR" }
+        {
+          "nome": "FOR VIP Lounge",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FOR"
+        }
       ]
     },
     "REC": {
@@ -112,11 +276,21 @@
       "pais": "Brasil",
       "iata": "REC",
       "loungekey": [
-        { "nome": "REC Sala VIP", "terminal": "Embarque", "horario": "06:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=REC" }
+        {
+          "nome": "REC Sala VIP",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=REC"
+        }
       ],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "REC Sala VIP", "terminal": "Embarque", "horario": "06:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=REC" }
+        {
+          "nome": "REC Sala VIP",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=REC"
+        }
       ]
     },
     "POA": {
@@ -125,11 +299,21 @@
       "pais": "Brasil",
       "iata": "POA",
       "loungekey": [
-        { "nome": "POA VIP Lounge", "terminal": "Embarque", "horario": "06:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=POA" }
+        {
+          "nome": "POA VIP Lounge",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=POA"
+        }
       ],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "POA VIP Lounge", "terminal": "Embarque", "horario": "06:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=POA" }
+        {
+          "nome": "POA VIP Lounge",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=POA"
+        }
       ]
     },
     "CWB": {
@@ -138,7 +322,12 @@
       "pais": "Brasil",
       "iata": "CWB",
       "loungekey": [
-        { "nome": "CWB VIP Lounge", "terminal": "Embarque", "horario": "06:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CWB" }
+        {
+          "nome": "CWB VIP Lounge",
+          "terminal": "Embarque",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CWB"
+        }
       ],
       "dragonpass": [],
       "prioritypass": []
@@ -158,16 +347,46 @@
       "pais": "Portugal",
       "iata": "LIS",
       "loungekey": [
-        { "nome": "TAP Premium Lounge", "terminal": "T1 – Internacional", "horario": "05:00–24:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LIS" },
-        { "nome": "ANA Lounge", "terminal": "T1", "horario": "05:00–23:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LIS" }
+        {
+          "nome": "TAP Premium Lounge",
+          "terminal": "T1 – Internacional",
+          "horario": "05:00–24:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LIS"
+        },
+        {
+          "nome": "ANA Lounge",
+          "terminal": "T1",
+          "horario": "05:00–23:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LIS"
+        }
       ],
       "dragonpass": [
-        { "nome": "TAP Premium Lounge", "terminal": "T1 – Internacional", "horario": "05:00–24:00", "url": "https://www.dragonpass.com/explore/airport/A10300" },
-        { "nome": "ANA Executive Lounge", "terminal": "T1", "horario": "05:00–23:00", "url": "https://www.dragonpass.com/explore/airport/A10300" }
+        {
+          "nome": "TAP Premium Lounge",
+          "terminal": "T1 – Internacional",
+          "horario": "05:00–24:00",
+          "url": "https://www.dragonpass.com/explore/airport/A10300"
+        },
+        {
+          "nome": "ANA Executive Lounge",
+          "terminal": "T1",
+          "horario": "05:00–23:00",
+          "url": "https://www.dragonpass.com/explore/airport/A10300"
+        }
       ],
       "prioritypass": [
-        { "nome": "ANA Executive Lounge", "terminal": "T1", "horario": "05:00–23:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LIS" },
-        { "nome": "TAP Premium Lounge", "terminal": "T1 – Internacional", "horario": "05:00–24:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LIS" }
+        {
+          "nome": "ANA Executive Lounge",
+          "terminal": "T1",
+          "horario": "05:00–23:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LIS"
+        },
+        {
+          "nome": "TAP Premium Lounge",
+          "terminal": "T1 – Internacional",
+          "horario": "05:00–24:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LIS"
+        }
       ]
     },
     "MAD": {
@@ -176,15 +395,40 @@
       "pais": "Espanha",
       "iata": "MAD",
       "loungekey": [
-        { "nome": "Iberia Lounge T4", "terminal": "T4", "horario": "06:00–23:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MAD" },
-        { "nome": "Plaza Premium Lounge", "terminal": "T4S", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MAD" }
+        {
+          "nome": "Iberia Lounge T4",
+          "terminal": "T4",
+          "horario": "06:00–23:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MAD"
+        },
+        {
+          "nome": "Plaza Premium Lounge",
+          "terminal": "T4S",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MAD"
+        }
       ],
       "dragonpass": [
-        { "nome": "Plaza Premium Lounge T4S", "terminal": "T4S", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A10400" }
+        {
+          "nome": "Plaza Premium Lounge T4S",
+          "terminal": "T4S",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A10400"
+        }
       ],
       "prioritypass": [
-        { "nome": "Iberia Lounge T4", "terminal": "T4", "horario": "06:00–23:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MAD" },
-        { "nome": "Plaza Premium Lounge", "terminal": "T4S", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MAD" }
+        {
+          "nome": "Iberia Lounge T4",
+          "terminal": "T4",
+          "horario": "06:00–23:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MAD"
+        },
+        {
+          "nome": "Plaza Premium Lounge",
+          "terminal": "T4S",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MAD"
+        }
       ]
     },
     "CDG": {
@@ -193,15 +437,40 @@
       "pais": "França",
       "iata": "CDG",
       "loungekey": [
-        { "nome": "Air France Lounge", "terminal": "2E – K", "horario": "06:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CDG" },
-        { "nome": "Aspire Lounge T2E", "terminal": "T2E", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CDG" }
+        {
+          "nome": "Air France Lounge",
+          "terminal": "2E – K",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CDG"
+        },
+        {
+          "nome": "Aspire Lounge T2E",
+          "terminal": "T2E",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CDG"
+        }
       ],
       "dragonpass": [
-        { "nome": "Salon Kléber", "terminal": "2E", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A10500" }
+        {
+          "nome": "Salon Kléber",
+          "terminal": "2E",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A10500"
+        }
       ],
       "prioritypass": [
-        { "nome": "Aspire Lounge T2E", "terminal": "T2E", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CDG" },
-        { "nome": "Salon Kléber", "terminal": "2E", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CDG" }
+        {
+          "nome": "Aspire Lounge T2E",
+          "terminal": "T2E",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CDG"
+        },
+        {
+          "nome": "Salon Kléber",
+          "terminal": "2E",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CDG"
+        }
       ]
     },
     "LHR": {
@@ -210,18 +479,58 @@
       "pais": "Reino Unido",
       "iata": "LHR",
       "loungekey": [
-        { "nome": "Aspire Lounge T5", "terminal": "T5", "horario": "05:00–21:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LHR" },
-        { "nome": "Aspire Lounge T3", "terminal": "T3", "horario": "05:30–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LHR" },
-        { "nome": "No1 Lounge T2", "terminal": "T2", "horario": "04:30–21:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LHR" }
+        {
+          "nome": "Aspire Lounge T5",
+          "terminal": "T5",
+          "horario": "05:00–21:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LHR"
+        },
+        {
+          "nome": "Aspire Lounge T3",
+          "terminal": "T3",
+          "horario": "05:30–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LHR"
+        },
+        {
+          "nome": "No1 Lounge T2",
+          "terminal": "T2",
+          "horario": "04:30–21:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LHR"
+        }
       ],
       "dragonpass": [
-        { "nome": "Plaza Premium Lounge T3", "terminal": "T3", "horario": "05:00–22:00", "url": "https://www.dragonpass.com/explore/airport/A10600" },
-        { "nome": "Aspire Lounge T5", "terminal": "T5", "horario": "05:00–21:00", "url": "https://www.dragonpass.com/explore/airport/A10600" }
+        {
+          "nome": "Plaza Premium Lounge T3",
+          "terminal": "T3",
+          "horario": "05:00–22:00",
+          "url": "https://www.dragonpass.com/explore/airport/A10600"
+        },
+        {
+          "nome": "Aspire Lounge T5",
+          "terminal": "T5",
+          "horario": "05:00–21:00",
+          "url": "https://www.dragonpass.com/explore/airport/A10600"
+        }
       ],
       "prioritypass": [
-        { "nome": "Aspire Lounge T5", "terminal": "T5", "horario": "05:00–21:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LHR" },
-        { "nome": "No1 Lounge T2", "terminal": "T2", "horario": "04:30–21:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LHR" },
-        { "nome": "Plaza Premium T3", "terminal": "T3", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LHR" }
+        {
+          "nome": "Aspire Lounge T5",
+          "terminal": "T5",
+          "horario": "05:00–21:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LHR"
+        },
+        {
+          "nome": "No1 Lounge T2",
+          "terminal": "T2",
+          "horario": "04:30–21:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LHR"
+        },
+        {
+          "nome": "Plaza Premium T3",
+          "terminal": "T3",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LHR"
+        }
       ]
     },
     "AMS": {
@@ -230,14 +539,35 @@
       "pais": "Holanda",
       "iata": "AMS",
       "loungekey": [
-        { "nome": "Aspire Lounge – Pier E", "terminal": "Pier E", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=AMS" }
+        {
+          "nome": "Aspire Lounge – Pier E",
+          "terminal": "Pier E",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=AMS"
+        }
       ],
       "dragonpass": [
-        { "nome": "Aspire Lounge – Pier E", "terminal": "Pier E", "horario": "05:00–22:00", "url": "https://www.dragonpass.com/explore/airport/A10700" }
+        {
+          "nome": "Aspire Lounge – Pier E",
+          "terminal": "Pier E",
+          "horario": "05:00–22:00",
+          "url": "https://www.dragonpass.com/explore/airport/A10700"
+        }
       ],
       "prioritypass": [
-        { "nome": "Aspire Lounge – Pier E", "terminal": "Pier E", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=AMS" },
-        { "nome": "KLM Crown Lounge", "terminal": "Pier G", "horario": "06:00–22:00", "obs": "Somente voos KLM", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=AMS" }
+        {
+          "nome": "Aspire Lounge – Pier E",
+          "terminal": "Pier E",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=AMS"
+        },
+        {
+          "nome": "KLM Crown Lounge",
+          "terminal": "Pier G",
+          "horario": "06:00–22:00",
+          "obs": "Somente voos KLM",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=AMS"
+        }
       ]
     },
     "FRA": {
@@ -246,15 +576,40 @@
       "pais": "Alemanha",
       "iata": "FRA",
       "loungekey": [
-        { "nome": "Lufthansa Senator Lounge T1", "terminal": "T1 – B/C", "horario": "06:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=FRA" },
-        { "nome": "The Squaire Business Lounge", "terminal": "T1 – A", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=FRA" }
+        {
+          "nome": "Lufthansa Senator Lounge T1",
+          "terminal": "T1 – B/C",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=FRA"
+        },
+        {
+          "nome": "The Squaire Business Lounge",
+          "terminal": "T1 – A",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=FRA"
+        }
       ],
       "dragonpass": [
-        { "nome": "The Squaire Business Lounge", "terminal": "T1", "horario": "05:00–22:00", "url": "https://www.dragonpass.com/explore/airport/A10800" }
+        {
+          "nome": "The Squaire Business Lounge",
+          "terminal": "T1",
+          "horario": "05:00–22:00",
+          "url": "https://www.dragonpass.com/explore/airport/A10800"
+        }
       ],
       "prioritypass": [
-        { "nome": "The Squaire Business Lounge", "terminal": "T1 – A", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FRA" },
-        { "nome": "Plaza Premium Lounge", "terminal": "T2", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FRA" }
+        {
+          "nome": "The Squaire Business Lounge",
+          "terminal": "T1 – A",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FRA"
+        },
+        {
+          "nome": "Plaza Premium Lounge",
+          "terminal": "T2",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FRA"
+        }
       ]
     },
     "MIA": {
@@ -263,15 +618,40 @@
       "pais": "EUA",
       "iata": "MIA",
       "loungekey": [
-        { "nome": "Centurion Lounge MIA", "terminal": "D", "horario": "05:30–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MIA" },
-        { "nome": "The Club MIA", "terminal": "D", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MIA" }
+        {
+          "nome": "Centurion Lounge MIA",
+          "terminal": "D",
+          "horario": "05:30–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MIA"
+        },
+        {
+          "nome": "The Club MIA",
+          "terminal": "D",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MIA"
+        }
       ],
       "dragonpass": [
-        { "nome": "The Club MIA", "terminal": "D", "horario": "05:00–22:00", "url": "https://www.dragonpass.com/explore/airport/A10900" }
+        {
+          "nome": "The Club MIA",
+          "terminal": "D",
+          "horario": "05:00–22:00",
+          "url": "https://www.dragonpass.com/explore/airport/A10900"
+        }
       ],
       "prioritypass": [
-        { "nome": "The Club MIA", "terminal": "D", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MIA" },
-        { "nome": "Escape Lounge MIA", "terminal": "H", "horario": "05:00–21:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MIA" }
+        {
+          "nome": "The Club MIA",
+          "terminal": "D",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MIA"
+        },
+        {
+          "nome": "Escape Lounge MIA",
+          "terminal": "H",
+          "horario": "05:00–21:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MIA"
+        }
       ]
     },
     "JFK": {
@@ -280,14 +660,34 @@
       "pais": "EUA",
       "iata": "JFK",
       "loungekey": [
-        { "nome": "Wingtips Lounge T1", "terminal": "T1", "horario": "05:00–23:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=JFK" }
+        {
+          "nome": "Wingtips Lounge T1",
+          "terminal": "T1",
+          "horario": "05:00–23:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=JFK"
+        }
       ],
       "dragonpass": [
-        { "nome": "Wingtips Lounge T1", "terminal": "T1", "horario": "05:00–23:00", "url": "https://www.dragonpass.com/explore/airport/A11000" }
+        {
+          "nome": "Wingtips Lounge T1",
+          "terminal": "T1",
+          "horario": "05:00–23:00",
+          "url": "https://www.dragonpass.com/explore/airport/A11000"
+        }
       ],
       "prioritypass": [
-        { "nome": "Wingtips Lounge T1", "terminal": "T1", "horario": "05:00–23:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=JFK" },
-        { "nome": "The Club JFK T4", "terminal": "T4", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=JFK" }
+        {
+          "nome": "Wingtips Lounge T1",
+          "terminal": "T1",
+          "horario": "05:00–23:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=JFK"
+        },
+        {
+          "nome": "The Club JFK T4",
+          "terminal": "T4",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=JFK"
+        }
       ]
     },
     "ORD": {
@@ -296,11 +696,21 @@
       "pais": "EUA",
       "iata": "ORD",
       "loungekey": [
-        { "nome": "The Club ORD", "terminal": "T3", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ORD" }
+        {
+          "nome": "The Club ORD",
+          "terminal": "T3",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ORD"
+        }
       ],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "The Club ORD", "terminal": "T3", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ORD" }
+        {
+          "nome": "The Club ORD",
+          "terminal": "T3",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ORD"
+        }
       ]
     },
     "LAX": {
@@ -309,13 +719,28 @@
       "pais": "EUA",
       "iata": "LAX",
       "loungekey": [
-        { "nome": "The Club LAX T6", "terminal": "T6", "horario": "05:00–23:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LAX" }
+        {
+          "nome": "The Club LAX T6",
+          "terminal": "T6",
+          "horario": "05:00–23:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LAX"
+        }
       ],
       "dragonpass": [
-        { "nome": "The Club LAX T6", "terminal": "T6", "horario": "05:00–23:00", "url": "https://www.dragonpass.com/explore/airport/A11100" }
+        {
+          "nome": "The Club LAX T6",
+          "terminal": "T6",
+          "horario": "05:00–23:00",
+          "url": "https://www.dragonpass.com/explore/airport/A11100"
+        }
       ],
       "prioritypass": [
-        { "nome": "The Club LAX T6", "terminal": "T6", "horario": "05:00–23:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LAX" }
+        {
+          "nome": "The Club LAX T6",
+          "terminal": "T6",
+          "horario": "05:00–23:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LAX"
+        }
       ]
     },
     "EZE": {
@@ -324,13 +749,28 @@
       "pais": "Argentina",
       "iata": "EZE",
       "loungekey": [
-        { "nome": "Patagonia Lounge", "terminal": "A – Internacional", "horario": "06:00–23:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=EZE" }
+        {
+          "nome": "Patagonia Lounge",
+          "terminal": "A – Internacional",
+          "horario": "06:00–23:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=EZE"
+        }
       ],
       "dragonpass": [
-        { "nome": "Patagonia Lounge", "terminal": "A – Internacional", "horario": "06:00–23:00", "url": "https://www.dragonpass.com/explore/airport/A11200" }
+        {
+          "nome": "Patagonia Lounge",
+          "terminal": "A – Internacional",
+          "horario": "06:00–23:00",
+          "url": "https://www.dragonpass.com/explore/airport/A11200"
+        }
       ],
       "prioritypass": [
-        { "nome": "Patagonia Lounge", "terminal": "A – Internacional", "horario": "06:00–23:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=EZE" }
+        {
+          "nome": "Patagonia Lounge",
+          "terminal": "A – Internacional",
+          "horario": "06:00–23:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=EZE"
+        }
       ]
     },
     "SCL": {
@@ -339,13 +779,28 @@
       "pais": "Chile",
       "iata": "SCL",
       "loungekey": [
-        { "nome": "Entel Sky Lounge", "terminal": "Internacional", "horario": "06:00–23:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=SCL" }
+        {
+          "nome": "Entel Sky Lounge",
+          "terminal": "Internacional",
+          "horario": "06:00–23:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=SCL"
+        }
       ],
       "dragonpass": [
-        { "nome": "Entel Sky Lounge", "terminal": "Internacional", "horario": "06:00–23:00", "url": "https://www.dragonpass.com/explore/airport/A11300" }
+        {
+          "nome": "Entel Sky Lounge",
+          "terminal": "Internacional",
+          "horario": "06:00–23:00",
+          "url": "https://www.dragonpass.com/explore/airport/A11300"
+        }
       ],
       "prioritypass": [
-        { "nome": "Entel Sky Lounge", "terminal": "Internacional", "horario": "06:00–23:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SCL" }
+        {
+          "nome": "Entel Sky Lounge",
+          "terminal": "Internacional",
+          "horario": "06:00–23:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SCL"
+        }
       ]
     },
     "BOG": {
@@ -354,11 +809,21 @@
       "pais": "Colômbia",
       "iata": "BOG",
       "loungekey": [
-        { "nome": "VIP Lounge BOG", "terminal": "T1 – Internacional", "horario": "05:00–23:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=BOG" }
+        {
+          "nome": "VIP Lounge BOG",
+          "terminal": "T1 – Internacional",
+          "horario": "05:00–23:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=BOG"
+        }
       ],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "VIP Lounge BOG", "terminal": "T1 – Internacional", "horario": "05:00–23:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BOG" }
+        {
+          "nome": "VIP Lounge BOG",
+          "terminal": "T1 – Internacional",
+          "horario": "05:00–23:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BOG"
+        }
       ]
     },
     "LIM": {
@@ -367,13 +832,28 @@
       "pais": "Peru",
       "iata": "LIM",
       "loungekey": [
-        { "nome": "LAN Premium Lounge", "terminal": "Internacional", "horario": "05:00–24:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LIM" }
+        {
+          "nome": "LAN Premium Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–24:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LIM"
+        }
       ],
       "dragonpass": [
-        { "nome": "LAN Premium Lounge", "terminal": "Internacional", "horario": "05:00–24:00", "url": "https://www.dragonpass.com/explore/airport/A11400" }
+        {
+          "nome": "LAN Premium Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–24:00",
+          "url": "https://www.dragonpass.com/explore/airport/A11400"
+        }
       ],
       "prioritypass": [
-        { "nome": "LAN Premium Lounge", "terminal": "Internacional", "horario": "05:00–24:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LIM" }
+        {
+          "nome": "LAN Premium Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–24:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LIM"
+        }
       ]
     },
     "DXB": {
@@ -382,17 +862,52 @@
       "pais": "Emirados Árabes",
       "iata": "DXB",
       "loungekey": [
-        { "nome": "Marhaba Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=DXB" },
-        { "nome": "Marhaba Lounge T3", "terminal": "T3", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=DXB" },
-        { "nome": "Plaza Premium Lounge T3", "terminal": "T3", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=DXB" }
+        {
+          "nome": "Marhaba Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=DXB"
+        },
+        {
+          "nome": "Marhaba Lounge T3",
+          "terminal": "T3",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=DXB"
+        },
+        {
+          "nome": "Plaza Premium Lounge T3",
+          "terminal": "T3",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=DXB"
+        }
       ],
       "dragonpass": [
-        { "nome": "Marhaba Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A11500" },
-        { "nome": "Marhaba Lounge T3", "terminal": "T3", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A11500" }
+        {
+          "nome": "Marhaba Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A11500"
+        },
+        {
+          "nome": "Marhaba Lounge T3",
+          "terminal": "T3",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A11500"
+        }
       ],
       "prioritypass": [
-        { "nome": "Marhaba Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=DXB" },
-        { "nome": "Plaza Premium Lounge T3", "terminal": "T3", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=DXB" }
+        {
+          "nome": "Marhaba Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=DXB"
+        },
+        {
+          "nome": "Plaza Premium Lounge T3",
+          "terminal": "T3",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=DXB"
+        }
       ]
     },
     "DOH": {
@@ -401,13 +916,28 @@
       "pais": "Qatar",
       "iata": "DOH",
       "loungekey": [
-        { "nome": "Al Mourjan Business Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=DOH" }
+        {
+          "nome": "Al Mourjan Business Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=DOH"
+        }
       ],
       "dragonpass": [
-        { "nome": "Al Mourjan Business Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A11600" }
+        {
+          "nome": "Al Mourjan Business Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A11600"
+        }
       ],
       "prioritypass": [
-        { "nome": "Al Mourjan Business Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=DOH" }
+        {
+          "nome": "Al Mourjan Business Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=DOH"
+        }
       ]
     },
     "SIN": {
@@ -416,16 +946,46 @@
       "pais": "Singapura",
       "iata": "SIN",
       "loungekey": [
-        { "nome": "SATS Premier Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=SIN" },
-        { "nome": "Plaza Premium Lounge T2", "terminal": "T2", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=SIN" }
+        {
+          "nome": "SATS Premier Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=SIN"
+        },
+        {
+          "nome": "Plaza Premium Lounge T2",
+          "terminal": "T2",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=SIN"
+        }
       ],
       "dragonpass": [
-        { "nome": "SATS Premier Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A11700" },
-        { "nome": "Plaza Premium Lounge T3", "terminal": "T3", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A11700" }
+        {
+          "nome": "SATS Premier Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A11700"
+        },
+        {
+          "nome": "Plaza Premium Lounge T3",
+          "terminal": "T3",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A11700"
+        }
       ],
       "prioritypass": [
-        { "nome": "SATS Premier Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SIN" },
-        { "nome": "Plaza Premium T2", "terminal": "T2", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SIN" }
+        {
+          "nome": "SATS Premier Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SIN"
+        },
+        {
+          "nome": "Plaza Premium T2",
+          "terminal": "T2",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SIN"
+        }
       ]
     },
     "NRT": {
@@ -434,13 +994,28 @@
       "pais": "Japão",
       "iata": "NRT",
       "loungekey": [
-        { "nome": "IASSFacility Narita T1", "terminal": "T1", "horario": "06:00–21:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=NRT" }
+        {
+          "nome": "IASSFacility Narita T1",
+          "terminal": "T1",
+          "horario": "06:00–21:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=NRT"
+        }
       ],
       "dragonpass": [
-        { "nome": "IASS Executive Lounge", "terminal": "T1", "horario": "06:00–21:00", "url": "https://www.dragonpass.com/explore/airport/A11800" }
+        {
+          "nome": "IASS Executive Lounge",
+          "terminal": "T1",
+          "horario": "06:00–21:00",
+          "url": "https://www.dragonpass.com/explore/airport/A11800"
+        }
       ],
       "prioritypass": [
-        { "nome": "IASS Executive Lounge", "terminal": "T1", "horario": "06:00–21:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=NRT" }
+        {
+          "nome": "IASS Executive Lounge",
+          "terminal": "T1",
+          "horario": "06:00–21:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=NRT"
+        }
       ]
     },
     "BCN": {
@@ -449,11 +1024,21 @@
       "pais": "Espanha",
       "iata": "BCN",
       "loungekey": [
-        { "nome": "BCN Lounge T1", "terminal": "T1", "horario": "05:30–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=BCN" }
+        {
+          "nome": "BCN Lounge T1",
+          "terminal": "T1",
+          "horario": "05:30–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=BCN"
+        }
       ],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "BCN Lounge T1", "terminal": "T1", "horario": "05:30–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BCN" }
+        {
+          "nome": "BCN Lounge T1",
+          "terminal": "T1",
+          "horario": "05:30–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BCN"
+        }
       ]
     },
     "FCO": {
@@ -462,13 +1047,28 @@
       "pais": "Itália",
       "iata": "FCO",
       "loungekey": [
-        { "nome": "Sala Michelangelo T1", "terminal": "T1", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=FCO" }
+        {
+          "nome": "Sala Michelangelo T1",
+          "terminal": "T1",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=FCO"
+        }
       ],
       "dragonpass": [
-        { "nome": "Sala Michelangelo T1", "terminal": "T1", "horario": "05:00–22:00", "url": "https://www.dragonpass.com/explore/airport/A11900" }
+        {
+          "nome": "Sala Michelangelo T1",
+          "terminal": "T1",
+          "horario": "05:00–22:00",
+          "url": "https://www.dragonpass.com/explore/airport/A11900"
+        }
       ],
       "prioritypass": [
-        { "nome": "Sala Michelangelo T1", "terminal": "T1", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FCO" }
+        {
+          "nome": "Sala Michelangelo T1",
+          "terminal": "T1",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FCO"
+        }
       ]
     },
     "ATH": {
@@ -477,13 +1077,28 @@
       "pais": "Grécia",
       "iata": "ATH",
       "loungekey": [
-        { "nome": "Goldair Handling VIP Lounge", "terminal": "Internacional", "horario": "05:00–23:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ATH" }
+        {
+          "nome": "Goldair Handling VIP Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–23:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ATH"
+        }
       ],
       "dragonpass": [
-        { "nome": "Goldair Handling VIP Lounge", "terminal": "Internacional", "horario": "05:00–23:00", "url": "https://www.dragonpass.com/explore/airport/A12000" }
+        {
+          "nome": "Goldair Handling VIP Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–23:00",
+          "url": "https://www.dragonpass.com/explore/airport/A12000"
+        }
       ],
       "prioritypass": [
-        { "nome": "Goldair Handling VIP Lounge", "terminal": "Internacional", "horario": "05:00–23:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ATH" }
+        {
+          "nome": "Goldair Handling VIP Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–23:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ATH"
+        }
       ]
     },
     "IST": {
@@ -492,13 +1107,28 @@
       "pais": "Turquia",
       "iata": "IST",
       "loungekey": [
-        { "nome": "IST CIP Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=IST" }
+        {
+          "nome": "IST CIP Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=IST"
+        }
       ],
       "dragonpass": [
-        { "nome": "IST CIP Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A12100" }
+        {
+          "nome": "IST CIP Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A12100"
+        }
       ],
       "prioritypass": [
-        { "nome": "IST CIP Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=IST" }
+        {
+          "nome": "IST CIP Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=IST"
+        }
       ]
     },
     "YYZ": {
@@ -507,14 +1137,34 @@
       "pais": "Canadá",
       "iata": "YYZ",
       "loungekey": [
-        { "nome": "Air Canada Maple Leaf Lounge T1", "terminal": "T1", "horario": "05:00–23:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=YYZ" },
-        { "nome": "Plaza Premium Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=YYZ" }
+        {
+          "nome": "Air Canada Maple Leaf Lounge T1",
+          "terminal": "T1",
+          "horario": "05:00–23:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=YYZ"
+        },
+        {
+          "nome": "Plaza Premium Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=YYZ"
+        }
       ],
       "dragonpass": [
-        { "nome": "Plaza Premium Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A12200" }
+        {
+          "nome": "Plaza Premium Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A12200"
+        }
       ],
       "prioritypass": [
-        { "nome": "Plaza Premium Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=YYZ" }
+        {
+          "nome": "Plaza Premium Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=YYZ"
+        }
       ]
     },
     "MEX": {
@@ -523,257 +1173,21 @@
       "pais": "México",
       "iata": "MEX",
       "loungekey": [
-        { "nome": "Terminal 2 VIP Lounge", "terminal": "T2", "horario": "05:00–23:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MEX" }
+        {
+          "nome": "Terminal 2 VIP Lounge",
+          "terminal": "T2",
+          "horario": "05:00–23:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MEX"
+        }
       ],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "Terminal 2 VIP Lounge", "terminal": "T2", "horario": "05:00–23:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MEX" }
-      ]
-    },
-    "GVA": {
-      "nome": "Genebra – Internacional",
-      "cidade": "Genebra",
-      "pais": "Suíça",
-      "iata": "GVA",
-      "loungekey": [
-        { "nome": "Club Aspire GVA", "terminal": "Internacional", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=GVA" }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        { "nome": "Club Aspire GVA", "terminal": "Internacional", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GVA" }
-      ]
-    },
-    "ZRH": {
-      "nome": "Zurique – Internacional",
-      "cidade": "Zurique",
-      "pais": "Suíça",
-      "iata": "ZRH",
-      "loungekey": [
-        { "nome": "Swiss Lounge A", "terminal": "A – Internacional", "horario": "05:30–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ZRH" }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        { "nome": "Swiss Business Lounge A", "terminal": "A – Internacional", "horario": "05:30–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ZRH" }
-      ]
-    },
-    "MUC": {
-      "nome": "Munique – Internacional",
-      "cidade": "Munique",
-      "pais": "Alemanha",
-      "iata": "MUC",
-      "loungekey": [
-        { "nome": "H-Hotels Lounge T2", "terminal": "T2", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MUC" }
-      ],
-      "dragonpass": [
-        { "nome": "Lufthansa Business Lounge T2", "terminal": "T2", "horario": "05:30–22:00", "url": "https://www.dragonpass.com/explore/airport/A12300" }
-      ],
-      "prioritypass": [
-        { "nome": "H-Hotels Lounge T2", "terminal": "T2", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MUC" }
-      ]
-    },
-    "VIE": {
-      "nome": "Viena – Internacional",
-      "cidade": "Viena",
-      "pais": "Áustria",
-      "iata": "VIE",
-      "loungekey": [
-        { "nome": "Austrian Airlines Business Lounge", "terminal": "F – Internacional", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=VIE" }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        { "nome": "Austrian Airlines Business Lounge", "terminal": "F – Internacional", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=VIE" }
-      ]
-    },
-    "ORY": {
-      "nome": "Paris – Orly",
-      "cidade": "Paris",
-      "pais": "França",
-      "iata": "ORY",
-      "loungekey": [
-        { "nome": "Salon Bercy ORY", "terminal": "Internacional", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ORY" }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        { "nome": "Salon Bercy", "terminal": "Internacional", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ORY" }
-      ]
-    },
-    "MXP": {
-      "nome": "Milão – Malpensa",
-      "cidade": "Milão",
-      "pais": "Itália",
-      "iata": "MXP",
-      "loungekey": [
-        { "nome": "VIP Lounge MXP T1", "terminal": "T1", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MXP" }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        { "nome": "VIP Lounge T1", "terminal": "T1", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MXP" }
-      ]
-    },
-    "CPT": {
-      "nome": "Cidade do Cabo – Internacional",
-      "cidade": "Cidade do Cabo",
-      "pais": "África do Sul",
-      "iata": "CPT",
-      "loungekey": [
-        { "nome": "SLOW Lounge CPT", "terminal": "Internacional", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CPT" }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        { "nome": "SLOW Lounge CPT", "terminal": "Internacional", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CPT" }
-      ]
-    },
-    "JNB": {
-      "nome": "Joanesburgo – O.R. Tambo Internacional",
-      "cidade": "Joanesburgo",
-      "pais": "África do Sul",
-      "iata": "JNB",
-      "loungekey": [
-        { "nome": "Bidvest Premier Lounge", "terminal": "Internacional", "horario": "05:00–23:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=JNB" }
-      ],
-      "dragonpass": [
-        { "nome": "Bidvest Premier Lounge", "terminal": "Internacional", "horario": "05:00–23:00", "url": "https://www.dragonpass.com/explore/airport/A12400" }
-      ],
-      "prioritypass": [
-        { "nome": "Bidvest Premier Lounge", "terminal": "Internacional", "horario": "05:00–23:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=JNB" }
-      ]
-    },
-    "BKK": {
-      "nome": "Bangkok – Suvarnabhumi",
-      "cidade": "Bangkok",
-      "pais": "Tailândia",
-      "iata": "BKK",
-      "loungekey": [
-        { "nome": "Miracle Business Class Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=BKK" }
-      ],
-      "dragonpass": [
-        { "nome": "Miracle Business Class Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A12500" }
-      ],
-      "prioritypass": [
-        { "nome": "Miracle Business Class Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BKK" }
-      ]
-    },
-    "HKG": {
-      "nome": "Hong Kong – Internacional",
-      "cidade": "Hong Kong",
-      "pais": "Hong Kong",
-      "iata": "HKG",
-      "loungekey": [
-        { "nome": "Plaza Premium Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=HKG" }
-      ],
-      "dragonpass": [
-        { "nome": "Plaza Premium Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A12600" }
-      ],
-      "prioritypass": [
-        { "nome": "Plaza Premium Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=HKG" }
-      ]
-    },
-    "ICN": {
-      "nome": "Seul – Incheon Internacional",
-      "cidade": "Seul",
-      "pais": "Coreia do Sul",
-      "iata": "ICN",
-      "loungekey": [
-        { "nome": "Morning Calm Premium Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ICN" }
-      ],
-      "dragonpass": [
-        { "nome": "Morning Calm Premium Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A12700" }
-      ],
-      "prioritypass": [
-        { "nome": "Morning Calm Premium Lounge T1", "terminal": "T1", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ICN" }
-      ]
-    },
-    "CAI": {
-      "nome": "Cairo – Internacional",
-      "cidade": "Cairo",
-      "pais": "Egito",
-      "iata": "CAI",
-      "loungekey": [
-        { "nome": "Cairo Airport Lounge T2", "terminal": "T2", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CAI" }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        { "nome": "Cairo Airport Lounge T2", "terminal": "T2", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CAI" }
-      ]
-    },
-    "CPH": {
-      "nome": "Copenhague – Kastrup",
-      "cidade": "Copenhague",
-      "pais": "Dinamarca",
-      "iata": "CPH",
-      "loungekey": [
-        { "nome": "CPH Airport Lounge", "terminal": "Internacional", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CPH" }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        { "nome": "CPH Airport Lounge", "terminal": "Internacional", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CPH" }
-      ]
-    },
-    "BRU": {
-      "nome": "Bruxelas – Nacional",
-      "cidade": "Bruxelas",
-      "pais": "Bélgica",
-      "iata": "BRU",
-      "loungekey": [
-        { "nome": "No1 Lounge BRU", "terminal": "Internacional", "horario": "04:30–21:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=BRU" }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        { "nome": "No1 Lounge BRU", "terminal": "Internacional", "horario": "04:30–21:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BRU" }
-      ]
-    },
-    "PRG": {
-      "nome": "Praga – Václav Havel",
-      "cidade": "Praga",
-      "pais": "República Tcheca",
-      "iata": "PRG",
-      "loungekey": [
-        { "nome": "Menzies Aviation Lounge T2", "terminal": "T2", "horario": "05:00–21:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=PRG" }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        { "nome": "Menzies Aviation Lounge T2", "terminal": "T2", "horario": "05:00–21:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=PRG" }
-      ]
-    },
-    "WAW": {
-      "nome": "Varsóvia – Chopin",
-      "cidade": "Varsóvia",
-      "pais": "Polônia",
-      "iata": "WAW",
-      "loungekey": [
-        { "nome": "LOT Business Lounge", "terminal": "A", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=WAW" }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        { "nome": "LOT Business Lounge", "terminal": "A", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=WAW" }
-      ]
-    },
-    "ORK": {
-      "nome": "Porto – Francisco Sá Carneiro",
-      "cidade": "Porto",
-      "pais": "Portugal",
-      "iata": "OPO",
-      "loungekey": [
-        { "nome": "OPO VIP Lounge", "terminal": "Internacional", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=OPO" }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        { "nome": "OPO VIP Lounge", "terminal": "Internacional", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=OPO" }
-      ]
-    },
-    "MAN": {
-      "nome": "Manchester – Internacional",
-      "cidade": "Manchester",
-      "pais": "Reino Unido",
-      "iata": "MAN",
-      "loungekey": [
-        { "nome": "Escape Lounge T1", "terminal": "T1", "horario": "04:00–21:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MAN" },
-        { "nome": "No1 Lounge T2", "terminal": "T2", "horario": "04:00–21:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MAN" }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        { "nome": "Escape Lounge T1", "terminal": "T1", "horario": "04:00–21:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MAN" },
-        { "nome": "No1 Lounge T2", "terminal": "T2", "horario": "04:00–21:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MAN" }
+        {
+          "nome": "Terminal 2 VIP Lounge",
+          "terminal": "T2",
+          "horario": "05:00–23:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MEX"
+        }
       ]
     },
     "GVA": {
@@ -782,11 +1196,459 @@
       "pais": "Suíça",
       "iata": "GVA",
       "loungekey": [
-        { "nome": "Club Aspire GVA", "terminal": "Internacional", "horario": "05:00–21:30", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=GVA" }
+        {
+          "nome": "Club Aspire GVA",
+          "terminal": "Internacional",
+          "horario": "05:00–21:30",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=GVA"
+        }
       ],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "Club Aspire GVA", "terminal": "Internacional", "horario": "05:00–21:30", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GVA" }
+        {
+          "nome": "Club Aspire GVA",
+          "terminal": "Internacional",
+          "horario": "05:00–21:30",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GVA"
+        }
+      ]
+    },
+    "ZRH": {
+      "nome": "Zurique – Internacional",
+      "cidade": "Zurique",
+      "pais": "Suíça",
+      "iata": "ZRH",
+      "loungekey": [
+        {
+          "nome": "Swiss Lounge A",
+          "terminal": "A – Internacional",
+          "horario": "05:30–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ZRH"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Swiss Business Lounge A",
+          "terminal": "A – Internacional",
+          "horario": "05:30–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ZRH"
+        }
+      ]
+    },
+    "MUC": {
+      "nome": "Munique – Internacional",
+      "cidade": "Munique",
+      "pais": "Alemanha",
+      "iata": "MUC",
+      "loungekey": [
+        {
+          "nome": "H-Hotels Lounge T2",
+          "terminal": "T2",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MUC"
+        }
+      ],
+      "dragonpass": [
+        {
+          "nome": "Lufthansa Business Lounge T2",
+          "terminal": "T2",
+          "horario": "05:30–22:00",
+          "url": "https://www.dragonpass.com/explore/airport/A12300"
+        }
+      ],
+      "prioritypass": [
+        {
+          "nome": "H-Hotels Lounge T2",
+          "terminal": "T2",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MUC"
+        }
+      ]
+    },
+    "VIE": {
+      "nome": "Viena – Internacional",
+      "cidade": "Viena",
+      "pais": "Áustria",
+      "iata": "VIE",
+      "loungekey": [
+        {
+          "nome": "Austrian Airlines Business Lounge",
+          "terminal": "F – Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=VIE"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Austrian Airlines Business Lounge",
+          "terminal": "F – Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=VIE"
+        }
+      ]
+    },
+    "ORY": {
+      "nome": "Paris – Orly",
+      "cidade": "Paris",
+      "pais": "França",
+      "iata": "ORY",
+      "loungekey": [
+        {
+          "nome": "Salon Bercy ORY",
+          "terminal": "Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ORY"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Salon Bercy",
+          "terminal": "Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ORY"
+        }
+      ]
+    },
+    "MXP": {
+      "nome": "Milão – Malpensa",
+      "cidade": "Milão",
+      "pais": "Itália",
+      "iata": "MXP",
+      "loungekey": [
+        {
+          "nome": "VIP Lounge MXP T1",
+          "terminal": "T1",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MXP"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "VIP Lounge T1",
+          "terminal": "T1",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MXP"
+        }
+      ]
+    },
+    "CPT": {
+      "nome": "Cidade do Cabo – Internacional",
+      "cidade": "Cidade do Cabo",
+      "pais": "África do Sul",
+      "iata": "CPT",
+      "loungekey": [
+        {
+          "nome": "SLOW Lounge CPT",
+          "terminal": "Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CPT"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "SLOW Lounge CPT",
+          "terminal": "Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CPT"
+        }
+      ]
+    },
+    "JNB": {
+      "nome": "Joanesburgo – O.R. Tambo Internacional",
+      "cidade": "Joanesburgo",
+      "pais": "África do Sul",
+      "iata": "JNB",
+      "loungekey": [
+        {
+          "nome": "Bidvest Premier Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–23:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=JNB"
+        }
+      ],
+      "dragonpass": [
+        {
+          "nome": "Bidvest Premier Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–23:00",
+          "url": "https://www.dragonpass.com/explore/airport/A12400"
+        }
+      ],
+      "prioritypass": [
+        {
+          "nome": "Bidvest Premier Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–23:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=JNB"
+        }
+      ]
+    },
+    "BKK": {
+      "nome": "Bangkok – Suvarnabhumi",
+      "cidade": "Bangkok",
+      "pais": "Tailândia",
+      "iata": "BKK",
+      "loungekey": [
+        {
+          "nome": "Miracle Business Class Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=BKK"
+        }
+      ],
+      "dragonpass": [
+        {
+          "nome": "Miracle Business Class Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A12500"
+        }
+      ],
+      "prioritypass": [
+        {
+          "nome": "Miracle Business Class Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BKK"
+        }
+      ]
+    },
+    "HKG": {
+      "nome": "Hong Kong – Internacional",
+      "cidade": "Hong Kong",
+      "pais": "Hong Kong",
+      "iata": "HKG",
+      "loungekey": [
+        {
+          "nome": "Plaza Premium Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=HKG"
+        }
+      ],
+      "dragonpass": [
+        {
+          "nome": "Plaza Premium Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A12600"
+        }
+      ],
+      "prioritypass": [
+        {
+          "nome": "Plaza Premium Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=HKG"
+        }
+      ]
+    },
+    "ICN": {
+      "nome": "Seul – Incheon Internacional",
+      "cidade": "Seul",
+      "pais": "Coreia do Sul",
+      "iata": "ICN",
+      "loungekey": [
+        {
+          "nome": "Morning Calm Premium Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ICN"
+        }
+      ],
+      "dragonpass": [
+        {
+          "nome": "Morning Calm Premium Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A12700"
+        }
+      ],
+      "prioritypass": [
+        {
+          "nome": "Morning Calm Premium Lounge T1",
+          "terminal": "T1",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ICN"
+        }
+      ]
+    },
+    "CAI": {
+      "nome": "Cairo – Internacional",
+      "cidade": "Cairo",
+      "pais": "Egito",
+      "iata": "CAI",
+      "loungekey": [
+        {
+          "nome": "Cairo Airport Lounge T2",
+          "terminal": "T2",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CAI"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Cairo Airport Lounge T2",
+          "terminal": "T2",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CAI"
+        }
+      ]
+    },
+    "CPH": {
+      "nome": "Copenhague – Kastrup",
+      "cidade": "Copenhague",
+      "pais": "Dinamarca",
+      "iata": "CPH",
+      "loungekey": [
+        {
+          "nome": "CPH Airport Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CPH"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "CPH Airport Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CPH"
+        }
+      ]
+    },
+    "BRU": {
+      "nome": "Bruxelas – Nacional",
+      "cidade": "Bruxelas",
+      "pais": "Bélgica",
+      "iata": "BRU",
+      "loungekey": [
+        {
+          "nome": "No1 Lounge BRU",
+          "terminal": "Internacional",
+          "horario": "04:30–21:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=BRU"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "No1 Lounge BRU",
+          "terminal": "Internacional",
+          "horario": "04:30–21:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BRU"
+        }
+      ]
+    },
+    "PRG": {
+      "nome": "Praga – Václav Havel",
+      "cidade": "Praga",
+      "pais": "República Tcheca",
+      "iata": "PRG",
+      "loungekey": [
+        {
+          "nome": "Menzies Aviation Lounge T2",
+          "terminal": "T2",
+          "horario": "05:00–21:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=PRG"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Menzies Aviation Lounge T2",
+          "terminal": "T2",
+          "horario": "05:00–21:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=PRG"
+        }
+      ]
+    },
+    "WAW": {
+      "nome": "Varsóvia – Chopin",
+      "cidade": "Varsóvia",
+      "pais": "Polônia",
+      "iata": "WAW",
+      "loungekey": [
+        {
+          "nome": "LOT Business Lounge",
+          "terminal": "A",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=WAW"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "LOT Business Lounge",
+          "terminal": "A",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=WAW"
+        }
+      ]
+    },
+    "ORK": {
+      "nome": "Porto – Francisco Sá Carneiro",
+      "cidade": "Porto",
+      "pais": "Portugal",
+      "iata": "OPO",
+      "loungekey": [
+        {
+          "nome": "OPO VIP Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=OPO"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "OPO VIP Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=OPO"
+        }
+      ]
+    },
+    "MAN": {
+      "nome": "Manchester – Internacional",
+      "cidade": "Manchester",
+      "pais": "Reino Unido",
+      "iata": "MAN",
+      "loungekey": [
+        {
+          "nome": "Escape Lounge T1",
+          "terminal": "T1",
+          "horario": "04:00–21:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MAN"
+        },
+        {
+          "nome": "No1 Lounge T2",
+          "terminal": "T2",
+          "horario": "04:00–21:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MAN"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "Escape Lounge T1",
+          "terminal": "T1",
+          "horario": "04:00–21:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MAN"
+        },
+        {
+          "nome": "No1 Lounge T2",
+          "terminal": "T2",
+          "horario": "04:00–21:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MAN"
+        }
       ]
     },
     "MLE": {
@@ -795,11 +1657,21 @@
       "pais": "Maldivas",
       "iata": "MLE",
       "loungekey": [
-        { "nome": "MLE VIP Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MLE" }
+        {
+          "nome": "MLE VIP Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MLE"
+        }
       ],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "MLE VIP Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MLE" }
+        {
+          "nome": "MLE VIP Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MLE"
+        }
       ]
     },
     "SYD": {
@@ -808,13 +1680,28 @@
       "pais": "Austrália",
       "iata": "SYD",
       "loungekey": [
-        { "nome": "Plaza Premium Lounge T1", "terminal": "T1 – Internacional", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=SYD" }
+        {
+          "nome": "Plaza Premium Lounge T1",
+          "terminal": "T1 – Internacional",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=SYD"
+        }
       ],
       "dragonpass": [
-        { "nome": "Plaza Premium Lounge T1", "terminal": "T1 – Internacional", "horario": "24h", "url": "https://www.dragonpass.com/explore/airport/A12800" }
+        {
+          "nome": "Plaza Premium Lounge T1",
+          "terminal": "T1 – Internacional",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/A12800"
+        }
       ],
       "prioritypass": [
-        { "nome": "Plaza Premium Lounge T1", "terminal": "T1 – Internacional", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SYD" }
+        {
+          "nome": "Plaza Premium Lounge T1",
+          "terminal": "T1 – Internacional",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SYD"
+        }
       ]
     },
     "AKL": {
@@ -823,11 +1710,21 @@
       "pais": "Nova Zelândia",
       "iata": "AKL",
       "loungekey": [
-        { "nome": "Air NZ International Lounge", "terminal": "Internacional", "horario": "05:00–22:00", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=AKL" }
+        {
+          "nome": "Air NZ International Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=AKL"
+        }
       ],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "Air NZ International Lounge", "terminal": "Internacional", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=AKL" }
+        {
+          "nome": "Air NZ International Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=AKL"
+        }
       ]
     },
     "GUA": {
@@ -838,7 +1735,12 @@
       "loungekey": [],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "GUA Sala VIP", "terminal": "Internacional", "horario": "05:00–21:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GUA" }
+        {
+          "nome": "GUA Sala VIP",
+          "terminal": "Internacional",
+          "horario": "05:00–21:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GUA"
+        }
       ]
     },
     "UIO": {
@@ -849,7 +1751,12 @@
       "loungekey": [],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "VIP Lounge Quito", "terminal": "Internacional", "horario": "05:00–22:00", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=UIO" }
+        {
+          "nome": "VIP Lounge Quito",
+          "terminal": "Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=UIO"
+        }
       ]
     },
     "ADD": {
@@ -858,11 +1765,21 @@
       "pais": "Etiópia",
       "iata": "ADD",
       "loungekey": [
-        { "nome": "Ethiopian Airlines Cloud 9 Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ADD" }
+        {
+          "nome": "Ethiopian Airlines Cloud 9 Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ADD"
+        }
       ],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "Ethiopian Airlines Cloud 9 Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ADD" }
+        {
+          "nome": "Ethiopian Airlines Cloud 9 Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ADD"
+        }
       ]
     },
     "NBO": {
@@ -871,12 +1788,32 @@
       "pais": "Quênia",
       "iata": "NBO",
       "loungekey": [
-        { "nome": "Gulfstream Premier Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=NBO" }
+        {
+          "nome": "Gulfstream Premier Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=NBO"
+        }
       ],
       "dragonpass": [],
       "prioritypass": [
-        { "nome": "Gulfstream Premier Lounge", "terminal": "Internacional", "horario": "24h", "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=NBO" }
+        {
+          "nome": "Gulfstream Premier Lounge",
+          "terminal": "Internacional",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=NBO"
+        }
       ]
+    },
+    "CNF": {
+      "nome": "Aeroporto CNF",
+      "cidade": "",
+      "pais": "",
+      "iata": "CNF",
+      "loungekey": [],
+      "dragonpass": [],
+      "prioritypass": [],
+      "buscadoEm": "2026-07-08T20:38:48.701Z"
     }
   }
 }
