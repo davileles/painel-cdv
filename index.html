@@ -428,10 +428,11 @@
 
   <!-- PERFIS BAR -->
   <div id="perfis-bar" style="padding:12px 22px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--bg)">
-    <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-right:4px">Perfil:</span>
+    <button onclick="perfilAbrirModal('geral')" id="perfil-btn-geral" style="background:rgba(255,88,94,.08);border:1px solid rgba(255,88,94,.35);color:var(--cdv-coral);padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;flex-shrink:0">🌐 Visão Geral</button>
+    <div style="width:1px;height:18px;background:var(--border);margin:0 4px;flex-shrink:0"></div>
+    <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;flex-shrink:0">Perfil:</span>
     <div id="perfis-chips" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"></div>
     <button class="perfil-chip-add" onclick="perfilAbrirModal('novo')">＋ Novo perfil</button>
-    <button onclick="perfilAbrirModal('geral')" id="perfil-btn-geral" style="margin-left:auto;background:transparent;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">🌐 Visão Geral</button>
   </div>
 
   <!-- MODAL PERFIS -->
@@ -2383,77 +2384,130 @@ async function perfilAbrirGeral(){
   document.querySelectorAll('[id^=milhas-view-]').forEach(e=>e.style.display='none');
   geralDiv.style.display='block';
 
-  const email = milhasGetEmail();
-  const content = document.getElementById('visao-geral-content');
-  content.innerHTML='<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Consolidando dados…</div></div>';
+  const emailBase = milhasGetEmail();
+  const cont = document.getElementById('visao-geral-content');
+  cont.innerHTML='<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Consolidando dados…</div></div>';
 
   // Carregar dados de todos os perfis em paralelo
   const resultados = await Promise.all(milhasPerfis.map(async p=>{
-    const key = p.isPrincipal ? email : email+'|'+p.id;
+    const key = p.isPrincipal ? emailBase : emailBase+'|'+p.id;
     try{
       const r = await fetch(`${MILHAS_PROXY}/milhas/listar?email=${encodeURIComponent(key)}`);
       const d = await r.json();
-      return {perfil:p, registros: d.ok ? d.registros : []};
-    }catch{ return {perfil:p, registros:[]}; }
+      return {perfil:p, key, registros: d.ok ? d.registros : []};
+    }catch{ return {perfil:p, key, registros:[]}; }
   }));
 
-  // Consolidar saldos por programa
-  const saldoGlobal = {}; // programa -> {totalPts, porPerfil:{perfilNome: pts}}
-  resultados.forEach(({perfil, registros})=>{
-    const saldos = {};
-    registros.forEach(r=>{
-      if(!saldos[r.programa]) saldos[r.programa]=0;
-      if(r.tipo==='credito') saldos[r.programa]+=r.qtde;
-      else if(r.tipo==='debito') saldos[r.programa]-=r.qtde;
-    });
-    Object.entries(saldos).forEach(([prog,pts])=>{
-      if(!saldoGlobal[prog]) saldoGlobal[prog]={total:0,porPerfil:{}};
-      saldoGlobal[prog].total+=pts;
-      saldoGlobal[prog].porPerfil[perfil.nome]=pts;
+  const todosRegs = resultados.flatMap(({perfil,registros})=>registros.map(r=>({...r,_perfil:perfil.nome})));
+  const SUBCATS_RESGATE=['passagem','hospedagem','locacao','produto','outros_deb'];
+
+  // Saldos consolidados por programa
+  const saldos={};
+  MILHAS_PROGS.forEach(p=>{saldos[p.id]=0;});
+  todosRegs.forEach(r=>{
+    if(r.tipo==='credito') saldos[r.programa]=(saldos[r.programa]||0)+r.qtde;
+    else if(r.tipo==='debito') saldos[r.programa]=(saldos[r.programa]||0)-r.qtde;
+  });
+
+  const totalMilhas = Object.values(saldos).reduce((a,b)=>a+(b>0?b:0),0);
+  const totalCreditado = todosRegs.filter(r=>r.tipo==='credito').reduce((a,b)=>a+b.qtde,0);
+  const totalResgatado = todosRegs.filter(r=>r.tipo==='debito'&&SUBCATS_RESGATE.includes(r.subcat)).reduce((a,b)=>a+b.qtde,0);
+  const totalInvestido = todosRegs.filter(r=>r.custo>0).reduce((a,b)=>a+b.custo,0);
+  let totalEconomia=0;
+  resultados.forEach(({key,registros})=>{
+    registros.filter(r=>r.tipo==='debito'&&SUBCATS_RESGATE.includes(r.subcat)&&r.valorDinheiro>0).forEach(r=>{
+      const fifo=calcularCustoFIFO(r.programa,r.qtde,registros,key);
+      totalEconomia+=Math.max(0,r.valorDinheiro-fifo.custoTotal);
     });
   });
 
-  const totalGeral = Object.values(saldoGlobal).reduce((s,v)=>s+v.total,0);
-  const progNomes = Object.keys(saldoGlobal).sort((a,b)=>{
-    const na=MILHAS_PROGS.find(p=>p.id===a)?.name||a;
-    const nb=MILHAS_PROGS.find(p=>p.id===b)?.name||b;
-    return nb - na || saldoGlobal[b].total-saldoGlobal[a].total;
-  });
-
-  // KPI total
-  let html = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">`;
-  html+=`<div class="milhas-kpi" style="border-color:rgba(255,88,94,.3)"><div class="milhas-kpi-label">Total Consolidado</div><div class="milhas-kpi-val" style="color:var(--cdv-coral)">${milhasFormatNum(totalGeral)}</div><div class="milhas-kpi-sub">pts em todos os perfis</div></div>`;
+  const saldoPorPerfil={};
   resultados.forEach(({perfil,registros})=>{
-    const tot=registros.reduce((s,r)=>r.tipo==='credito'?s+r.qtde:r.tipo==='debito'?s-r.qtde:s,0);
-    html+=`<div class="milhas-kpi"><div class="milhas-kpi-label">${perfil.nome}</div><div class="milhas-kpi-val" style="color:var(--text)">${milhasFormatNum(tot)}</div><div class="milhas-kpi-sub">${registros.length} lançamento${registros.length!==1?'s':''}</div></div>`;
+    saldoPorPerfil[perfil.nome]=registros.reduce((s,r)=>r.tipo==='credito'?s+r.qtde:r.tipo==='debito'?s-r.qtde:s,0);
   });
-  html+='</div>';
 
-  // Tabela consolidada por programa
-  html+=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden">
-    <table class="milhas-table" style="width:100%">
-      <thead><tr>
-        <th>Programa</th>
-        ${milhasPerfis.map(p=>`<th style="text-align:right">${p.nome}</th>`).join('')}
-        <th style="text-align:right">Total</th>
-      </tr></thead><tbody>`;
+  cont.innerHTML=`
+    <div id="geral-kpis" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px">
+      <div class="milhas-kpi" style="border-top:3px solid #ff585e"><div class="milhas-kpi-label">Saldo Total</div><div class="milhas-kpi-val" style="color:#ff585e">${milhasFormatNum(totalMilhas)} <span style="font-size:13px">pts</span></div><div class="milhas-kpi-sub">todos os perfis e programas</div></div>
+      <div class="milhas-kpi" style="border-top:3px solid #34d399"><div class="milhas-kpi-label">Total Creditado</div><div class="milhas-kpi-val" style="color:#34d399">${milhasFormatNum(totalCreditado)} <span style="font-size:13px">pts</span></div><div class="milhas-kpi-sub">entradas registradas</div></div>
+      <div class="milhas-kpi" style="border-top:3px solid #f87171"><div class="milhas-kpi-label">Total Resgatado</div><div class="milhas-kpi-val" style="color:#f87171">${milhasFormatNum(totalResgatado)} <span style="font-size:13px">pts</span></div><div class="milhas-kpi-sub">passagens, hospedagem…</div></div>
+      <div class="milhas-kpi" style="border-top:3px solid #60a5fa"><div class="milhas-kpi-label">Total Investido</div><div class="milhas-kpi-val" style="color:#60a5fa;font-size:22px">R$ ${totalInvestido.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="milhas-kpi-sub">em compras e assinaturas</div></div>
+      <div class="milhas-kpi" style="border-top:3px solid #a78bfa"><div class="milhas-kpi-label">Economia Gerada</div><div class="milhas-kpi-val" style="color:#a78bfa;font-size:22px">R$ ${totalEconomia.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="milhas-kpi-sub">vs. pagar em dinheiro</div></div>
+    </div>
+    ${milhasPerfis.length>1?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px">${milhasPerfis.map(p=>`<div class="milhas-kpi" style="border-top:3px solid var(--border)"><div class="milhas-kpi-label">&#128100; ${p.nome}</div><div class="milhas-kpi-val" style="color:var(--text);font-size:22px">${milhasFormatNum(saldoPorPerfil[p.nome]||0)} <span style="font-size:11px">pts</span></div><div class="milhas-kpi-sub">saldo do perfil</div></div>`).join('')}</div>`:''}
+    <div style="display:grid;grid-template-columns:minmax(160px,1fr) minmax(180px,1.1fr) minmax(0,2fr);gap:12px;margin-bottom:18px">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 16px 8px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Distribuição por Programa</div>
+        <canvas id="geral-chart-dist" style="height:240px;max-height:240px"></canvas>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Saldo por Programa</div>
+        <div id="geral-saldo-tabela" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0"></div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Evolução do Saldo Total</div>
+        <canvas id="geral-chart-evol" style="max-height:260px"></canvas>
+      </div>
+    </div>`;
 
-  Object.entries(saldoGlobal)
-    .sort((a,b)=>b[1].total-a[1].total)
-    .forEach(([prog,data])=>{
-      const progInfo = MILHAS_PROGS.find(p=>p.id===prog);
-      const nome = progInfo?.name || prog;
-      const cor = progInfo?.color || '#8a9bbf';
-      html+=`<tr>
-        <td><span class="milhas-prog-dot" style="background:${cor}"></span>${nome}</td>
-        ${milhasPerfis.map(p=>`<td style="text-align:right;color:var(--muted)">${data.porPerfil[p.nome]!=null?milhasFormatNum(data.porPerfil[p.nome])+'<span style=\"font-size:9px;margin-left:2px\">pts</span>':'—'}</td>`).join('')}
-        <td style="text-align:right;font-weight:700;color:var(--text)">${milhasFormatNum(data.total)} <span style="font-size:9px">pts</span></td>
-      </tr>`;
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('#geral-kpis .milhas-kpi').forEach((el,i)=>{
+      el.style.animationDelay=(i*80)+'ms';
+      setTimeout(()=>el.classList.add('cdv-visible'),10);
     });
-  html+='</tbody></table></div>';
-  content.innerHTML=html;
-}
+  });
 
+  // Chart distribuição
+  let geralChartDist=null,geralChartEvol=null;
+  const progComSaldo=MILHAS_PROGS.filter(p=>saldos[p.id]>0);
+  const ctxDist=document.getElementById('geral-chart-dist');
+  if(ctxDist&&progComSaldo.length){
+    const distSaldos=progComSaldo.map(p=>saldos[p.id]);
+    const distTotal=distSaldos.reduce((a,b)=>a+b,0);
+    geralChartDist=new Chart(ctxDist,{
+      type:'doughnut',
+      data:{labels:progComSaldo.map(p=>p.name),datasets:[{data:distSaldos,backgroundColor:progComSaldo.map(p=>p.color),borderWidth:0,hoverOffset:6}]},
+      options:{plugins:{legend:{position:'bottom',align:'center',labels:{color:'#8a9bbf',font:{family:'Montserrat',size:10},boxWidth:8,padding:6,usePointStyle:true,pointStyle:'rect'}},tooltip:{callbacks:{label(ctx){const val=ctx.parsed;const pct=distTotal>0?((val/distTotal)*100).toFixed(1):0;return` ${milhasFormatNum(val)} pts (${pct}%)`;} }}},cutout:'62%',maintainAspectRatio:false,layout:{padding:{bottom:0}}}
+    });
+  }
+
+  // Tabelinha saldo
+  const tabelaEl=document.getElementById('geral-saldo-tabela');
+  if(tabelaEl){
+    const progsTab=MILHAS_PROGS.filter(p=>saldos[p.id]>0).sort((a,b)=>saldos[b.id]-saldos[a.id]);
+    tabelaEl.innerHTML=progsTab.length?progsTab.map((p,i)=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;${i>0?'border-top:1px solid rgba(61,74,102,.35)':''}">
+        <div style="display:flex;align-items:center;gap:7px;min-width:0">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${p.color};flex-shrink:0"></span>
+          <span style="font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</span>
+        </div>
+        <span style="font-size:12px;font-weight:800;color:var(--text);white-space:nowrap;margin-left:8px">${milhasFormatNum(saldos[p.id])}</span>
+      </div>`).join(''):'<div style="color:var(--muted);font-size:12px;text-align:center;padding:20px 0">Nenhum saldo</div>';
+  }
+
+  // Chart evolução
+  const ctxEvol=document.getElementById('geral-chart-evol');
+  if(ctxEvol&&todosRegs.length){
+    const todosMeses=[...new Set(todosRegs.map(r=>r.data.slice(0,7)))].sort();
+    const progsComMov=[...new Set(todosRegs.map(r=>r.programa))];
+    const datasets=[];
+    for(const progId of progsComMov){
+      const prog=MILHAS_PROGS.find(p=>p.id===progId);
+      if(!prog) continue;
+      const porMes={};
+      todosMeses.forEach(m=>{porMes[m]=0;});
+      todosRegs.filter(r=>r.programa===progId).forEach(r=>{porMes[r.data.slice(0,7)]+=r.tipo==='credito'?r.qtde:-r.qtde;});
+      let run=0;
+      const vals=todosMeses.map(m=>{run+=porMes[m];return run;});
+      if(vals.some(v=>v!==0)) datasets.push({label:prog.name,data:vals,borderColor:prog.color,backgroundColor:'transparent',tension:.3,fill:false,pointRadius:2,borderWidth:1.5,borderDash:[4,3]});
+    }
+    const labels=todosMeses.map(m=>{const[y,mo]=m.split('-');return`${mo}/${y.slice(2)}`;});
+    geralChartEvol=new Chart(ctxEvol,{
+      type:'line',data:{labels,datasets},
+      options:{plugins:{legend:{display:true,position:'bottom',labels:{color:'#8a9bbf',font:{family:'Montserrat',size:10},boxWidth:12,padding:8}}},scales:{x:{ticks:{color:'#8a9bbf',font:{family:'Montserrat',size:10}},grid:{color:'rgba(61,74,102,.3)'}},y:{ticks:{color:'#8a9bbf',font:{family:'Montserrat',size:10},callback:v=>milhasFormatNum(v)},grid:{color:'rgba(61,74,102,.3)'}}},maintainAspectRatio:false,responsive:true}
+    });
+  }
+}
 function perfilFecharGeral(){
   document.getElementById('milhas-visao-geral').style.display='none';
   document.getElementById('milhas-dashboard').style.display='';
