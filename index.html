@@ -483,24 +483,27 @@
   </div>
 
   <!-- CONTROLS BAR -->
-  <div id="milhas-controls-bar" style="padding:10px 22px;display:flex;gap:8px;align-items:center;flex-wrap:nowrap;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:120px;z-index:89;overflow-x:auto">
-    <button class="milhas-view-btn active" data-view="registros" onclick="milhasSetView('registros')" style="background:rgba(255,88,94,.12);border:1px solid var(--cdv-coral);color:var(--cdv-coral);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">📋 Registros</button>
-    <button class="milhas-view-btn" data-view="novo" onclick="milhasSetView('novo')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">＋ Novo Lançamento</button>
-    <button class="milhas-view-btn" data-view="assinaturas" onclick="milhasSetView('assinaturas')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">🔁 Assinaturas</button>
-    <button class="milhas-view-btn" data-view="cartoes" onclick="milhasSetView('cartoes')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">💳 Cartões</button>
-    <button class="milhas-view-btn" data-view="resgates" onclick="milhasSetView('resgates')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">✈️ Resgates</button>
-    <div id="milhas-filtros-wrap" style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
-      <select id="milhas-filter-prog" onchange="renderMilhasTabela()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
-        <option value="">Todos os programas</option>
-      </select>
-      <select id="milhas-filter-tipo" onchange="milhasFilterTipoChange()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
-        <option value="">Todos os tipos</option>
-        <option value="credito">Créditos</option>
-        <option value="debito">Débitos</option>
-      </select>
-      <select id="milhas-filter-subcat" onchange="renderMilhasTabela()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
-        <option value="">Todas as subcategorias</option>
-      </select>
+  <div id="milhas-controls-bar" style="background:var(--bg);position:sticky;top:120px;z-index:89;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+    <!-- Linha 1: botões de navegação + filtros à direita na mesma linha -->
+    <div style="padding:10px 22px;display:flex;gap:8px;align-items:center;flex-wrap:nowrap;overflow-x:auto">
+      <button class="milhas-view-btn active" data-view="registros" onclick="milhasSetView('registros')" style="background:rgba(255,88,94,.12);border:1px solid var(--cdv-coral);color:var(--cdv-coral);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">📋 Registros</button>
+      <button class="milhas-view-btn" data-view="novo" onclick="milhasSetView('novo')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">＋ Novo Lançamento</button>
+      <button class="milhas-view-btn" data-view="assinaturas" onclick="milhasSetView('assinaturas')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">🔁 Assinaturas</button>
+      <button class="milhas-view-btn" data-view="cartoes" onclick="milhasSetView('cartoes')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">💳 Cartões</button>
+      <button class="milhas-view-btn" data-view="resgates" onclick="milhasSetView('resgates')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">✈️ Resgates</button>
+      <div id="milhas-filtros-wrap" style="margin-left:auto;display:flex;gap:6px;flex-shrink:0">
+        <select id="milhas-filter-prog" onchange="renderMilhasTabela()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
+          <option value="">Todos os programas</option>
+        </select>
+        <select id="milhas-filter-tipo" onchange="milhasFilterTipoChange()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
+          <option value="">Todos os tipos</option>
+          <option value="credito">Créditos</option>
+          <option value="debito">Débitos</option>
+        </select>
+        <select id="milhas-filter-subcat" onchange="renderMilhasTabela()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
+          <option value="">Todas as subcategorias</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -2612,7 +2615,7 @@ function milhasSetView(v){
   if(v==='resgates') renderMilhasResgates();
   // Filtros visíveis apenas na view de registros
   const filtros=document.getElementById('milhas-filtros-wrap');
-  if(filtros) filtros.style.display=v==='registros'?'flex':'none';
+  if(filtros) filtros.style.display=v==='registros'?'':'none';
   if(v==='assinaturas') renderAssLista();
   if(v==='cartoes') renderCartaoLista();
 }
