@@ -483,7 +483,7 @@
   </div>
 
   <!-- CONTROLS BAR -->
-  <div style="padding:10px 22px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:120px;z-index:89">
+  <div id="milhas-controls-bar" style="padding:10px 22px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:120px;z-index:89">
     <button class="milhas-view-btn active" data-view="registros" onclick="milhasSetView('registros')" style="background:rgba(255,88,94,.12);border:1px solid var(--cdv-coral);color:var(--cdv-coral);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">📋 Registros</button>
     <button class="milhas-view-btn" data-view="novo" onclick="milhasSetView('novo')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">＋ Novo Lançamento</button>
     <button class="milhas-view-btn" data-view="assinaturas" onclick="milhasSetView('assinaturas')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">🔁 Assinaturas</button>
@@ -2305,9 +2305,8 @@ async function perfilAtivar(id){
   perfilRenderChips();
   document.getElementById('milhas-visao-geral').style.display='none';
   document.getElementById('milhas-dashboard').style.display='';
-  document.querySelectorAll('.milhas-view-btn,.milhas-filtros-wrap,[id^=milhas-view-]').forEach(e=>{
-    if(e.id&&e.id.startsWith('milhas-view-')) e.style.display=e.id==='milhas-view-registros'?'block':'none';
-  });
+  const ctrlBar=document.getElementById('milhas-controls-bar');
+  if(ctrlBar) ctrlBar.style.display='';
   milhasSetView('registros');
   document.getElementById('milhas-tabela-wrap').innerHTML='<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando perfil…</div></div>';
   await milhasCarregar();
@@ -2378,7 +2377,7 @@ function perfilFecharModal(){
 async function perfilAbrirGeral(){
   const dashboard = document.getElementById('milhas-dashboard');
   const geralDiv = document.getElementById('milhas-visao-geral');
-  const controles = document.querySelector('[style*="position:sticky"]');
+  const controles = document.getElementById('milhas-controls-bar');
   dashboard.style.display='none';
   if(controles) controles.style.display='none';
   document.querySelectorAll('[id^=milhas-view-]').forEach(e=>e.style.display='none');
@@ -2511,7 +2510,7 @@ async function perfilAbrirGeral(){
 function perfilFecharGeral(){
   document.getElementById('milhas-visao-geral').style.display='none';
   document.getElementById('milhas-dashboard').style.display='';
-  const controles=document.querySelector('[style*="position:sticky"]');
+  const controles=document.getElementById('milhas-controls-bar');
   if(controles) controles.style.display='';
   milhasSetView('registros');
 }
