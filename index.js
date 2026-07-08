@@ -187,6 +187,7 @@ const MEMBROS_PATH            = 'membros.json';
 const MILHAS_PATH             = 'milhas.json';
 const CARTOES_PATH            = 'cartoes.json';
 const ASSINATURAS_PATH        = 'assinaturas.json';
+const PERFIS_PATH             = 'perfis.json';
 const HUBLA_TOKEN             = process.env.HUBLA_TOKEN;
 
 // ── Listar ofertas pendentes (com CORS correto) ───────────────────────────────
@@ -499,6 +500,47 @@ app.post('/webhook/hubla-membros', async (req, res) => {
         continue;
       }
       console.error('[webhook-hubla-membros]', err.message);
+      return res.status(500).json({ ok: false, erro: err.message });
+    }
+  }
+});
+
+// ── Perfis: listar ────────────────────────────────────────────────────────────
+app.get('/perfis/listar', async (req, res) => {
+  const email = (req.query.email || '').toLowerCase().trim();
+  if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
+  try {
+    const atual = await ghGetJson(PERFIS_PATH, { perfis: [] });
+    const perfis = (atual.data.perfis || []).filter(p => p.email === email);
+    res.json({ ok: true, perfis });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// ── Perfis: salvar lista completa do usuário ───────────────────────────────────
+// Body: { email, perfis: [{id, nome}] }
+app.post('/perfis/salvar', async (req, res) => {
+  const { email, perfis } = req.body || {};
+  if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
+  if (!Array.isArray(perfis)) return res.status(400).json({ ok: false, erro: 'perfis deve ser um array' });
+  if (!GITHUB_TOKEN) return res.status(500).json({ ok: false, erro: 'GITHUB_TOKEN não configurado' });
+
+  const emailNorm = email.toLowerCase().trim();
+  const perfisSanitizados = perfis.map(p => ({ ...p, email: emailNorm }));
+
+  for (let tentativa = 1; tentativa <= 4; tentativa++) {
+    try {
+      const atual = await ghGetJson(PERFIS_PATH, { atualizadoEm: null, perfis: [] });
+      const outros = (atual.data.perfis || []).filter(p => p.email !== emailNorm);
+      const novos  = [...outros, ...perfisSanitizados];
+      await ghPutJson(PERFIS_PATH, { atualizadoEm: new Date().toISOString(), perfis: novos }, atual.sha,
+        `chore: perfis ${emailNorm} (${perfisSanitizados.length} perfis)`);
+      return res.json({ ok: true, total: perfisSanitizados.length });
+    } catch (err) {
+      const isShaConflict = err.message && err.message.includes('but expected');
+      if (isShaConflict && tentativa < 4) { await new Promise(r => setTimeout(r, tentativa * 400)); continue; }
+      console.error('[perfis/salvar]', err.message);
       return res.status(500).json({ ok: false, erro: err.message });
     }
   }
