@@ -296,6 +296,15 @@
     .radar-bar{padding:12px 14px 0}
   }
 
+  /* ── Perfis ─────────────────────────────────────────────────────────────────── */
+  .perfil-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap}
+  .perfil-chip.active{background:rgba(255,88,94,.12);border-color:var(--cdv-coral);color:var(--cdv-coral)}
+  .perfil-chip:hover:not(.active){background:rgba(255,255,255,.04);color:var(--text)}
+  .perfil-chip-add{background:transparent;border:1px dashed var(--border);color:var(--muted);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s}
+  .perfil-chip-add:hover{border-color:var(--cdv-coral);color:var(--cdv-coral)}
+  #perfis-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:300;align-items:center;justify-content:center}
+  #perfis-modal-overlay.open{display:flex}
+
   /* ── Gestão de Milhas ────────────────────────────────────────────────────── */
   .milhas-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
   .milhas-input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px;font-family:'Montserrat',sans-serif;outline:none;transition:border-color .2s;-moz-appearance:textfield}
@@ -416,6 +425,36 @@
 </div>
 
 <div id="tab-milhas" class="tab-panel" style="display:none">
+
+  <!-- PERFIS BAR -->
+  <div id="perfis-bar" style="padding:12px 22px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--bg)">
+    <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-right:4px">Perfil:</span>
+    <div id="perfis-chips" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"></div>
+    <button class="perfil-chip-add" onclick="perfilAbrirModal('novo')">＋ Novo perfil</button>
+    <button onclick="perfilAbrirModal('geral')" id="perfil-btn-geral" style="margin-left:auto;background:transparent;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s">🌐 Visão Geral</button>
+  </div>
+
+  <!-- MODAL PERFIS -->
+  <div id="perfis-modal-overlay">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;width:340px;max-width:90vw">
+      <div id="perfis-modal-titulo" style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:18px"></div>
+      <div id="perfis-modal-body"></div>
+      <div style="display:flex;gap:8px;margin-top:18px;justify-content:flex-end">
+        <button onclick="perfilFecharModal()" style="padding:8px 18px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">Cancelar</button>
+        <button id="perfis-modal-confirmar" style="padding:8px 18px;background:var(--cdv-coral);border:none;color:#fff;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISÃO GERAL (overlay dentro da aba) -->
+  <div id="milhas-visao-geral" style="display:none;padding:18px 22px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-size:15px;font-weight:800;color:var(--text)">🌐 Visão Geral — Todos os Perfis</div>
+      <button onclick="perfilFecharGeral()" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:5px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">← Voltar</button>
+    </div>
+    <div id="visao-geral-content"></div>
+  </div>
+
   <!-- DASHBOARD HEADER -->
   <div id="milhas-dashboard" style="padding:18px 22px 0">
     <!-- KPI CARDS -->
@@ -2186,58 +2225,280 @@ let milhasChartDist = null;
 let milhasChartEvol = null;
 let milhasInitialized = false;
 
+// ── Sistema de Perfis ──────────────────────────────────────────────────────
+let milhasPerfis = [];        // [{id, nome, email}]
+let milhasPerfilAtivo = null; // id do perfil ativo (null = carregando)
+
 function milhasGetEmail(){
   try{ const s=JSON.parse(localStorage.getItem('cdv_auth')||'null'); return s?.email||null; }catch{return null;}
+}
+
+// Chave de storage para o perfil ativo: email puro = perfil principal; email|id = secundário
+function milhasGetPerfilKey(){
+  const email = milhasGetEmail();
+  if(!email) return null;
+  if(!milhasPerfilAtivo) return email;
+  const perfil = milhasPerfis.find(p=>p.id===milhasPerfilAtivo);
+  if(!perfil) return email;
+  return perfil.isPrincipal ? email : email+'|'+perfil.id;
+}
+
+async function perfilCarregar(){
+  const email = milhasGetEmail();
+  if(!email){ milhasPerfis=[]; perfilRenderChips(); return; }
+  try{
+    const r = await fetch(`${MILHAS_PROXY}/perfis/listar?email=${encodeURIComponent(email)}`);
+    const d = await r.json();
+    if(d.ok && Array.isArray(d.perfis) && d.perfis.length>0){
+      milhasPerfis = d.perfis;
+    } else {
+      // Primeira vez: criar perfil principal
+      milhasPerfis = [{id:'principal', nome:'Principal', email, isPrincipal:true}];
+      await perfilSalvar();
+    }
+  }catch{
+    milhasPerfis = [{id:'principal', nome:'Principal', email, isPrincipal:true}];
+  }
+  // Ativar o primeiro se nenhum ativo
+  if(!milhasPerfilAtivo || !milhasPerfis.find(p=>p.id===milhasPerfilAtivo)){
+    milhasPerfilAtivo = milhasPerfis[0].id;
+  }
+  perfilRenderChips();
+}
+
+async function perfilSalvar(){
+  const email = milhasGetEmail();
+  if(!email) return;
+  try{
+    await fetch(`${MILHAS_PROXY}/perfis/salvar`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email, perfis:milhasPerfis})
+    });
+  }catch{}
+}
+
+function perfilRenderChips(){
+  const wrap = document.getElementById('perfis-chips');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  milhasPerfis.forEach(p=>{
+    const btn = document.createElement('button');
+    btn.className = 'perfil-chip' + (p.id===milhasPerfilAtivo?' active':'');
+    btn.textContent = p.nome;
+    btn.onclick = ()=>perfilAtivar(p.id);
+    // Botão editar no chip ativo
+    if(p.id===milhasPerfilAtivo){
+      const edit = document.createElement('span');
+      edit.textContent='✏️';
+      edit.style.cssText='font-size:10px;cursor:pointer;opacity:.7';
+      edit.onclick=(e)=>{e.stopPropagation();perfilAbrirModal('editar',p.id);};
+      btn.appendChild(edit);
+    }
+    wrap.appendChild(btn);
+  });
+}
+
+async function perfilAtivar(id){
+  if(milhasPerfilAtivo===id) return;
+  milhasPerfilAtivo = id;
+  perfilRenderChips();
+  document.getElementById('milhas-visao-geral').style.display='none';
+  document.getElementById('milhas-dashboard').style.display='';
+  document.querySelectorAll('.milhas-view-btn,.milhas-filtros-wrap,[id^=milhas-view-]').forEach(e=>{
+    if(e.id&&e.id.startsWith('milhas-view-')) e.style.display=e.id==='milhas-view-registros'?'block':'none';
+  });
+  milhasSetView('registros');
+  document.getElementById('milhas-tabela-wrap').innerHTML='<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando perfil…</div></div>';
+  await milhasCarregar();
+  await assCarregar();
+  await assProcessarPendentes();
+  await cartaoCarregar();
+  renderMilhasDashboard();
+  renderMilhasTabela();
+}
+
+function perfilAbrirModal(modo, id){
+  const overlay = document.getElementById('perfis-modal-overlay');
+  const titulo = document.getElementById('perfis-modal-titulo');
+  const body = document.getElementById('perfis-modal-body');
+  const btn = document.getElementById('perfis-modal-confirmar');
+
+  if(modo==='novo'){
+    titulo.textContent = '＋ Novo Perfil';
+    body.innerHTML = `<label class="milhas-label">Nome do perfil</label>
+      <input id="perfil-nome-input" class="milhas-input" type="text" placeholder="Ex: Esposa, Pai, Filha…" maxlength="30"/>`;
+    btn.onclick = async()=>{
+      const nome = document.getElementById('perfil-nome-input').value.trim();
+      if(!nome) return;
+      const email = milhasGetEmail();
+      const newId = 'p'+Date.now();
+      milhasPerfis.push({id:newId, nome, email, isPrincipal:false});
+      await perfilSalvar();
+      perfilFecharModal();
+      await perfilAtivar(newId);
+    };
+  } else if(modo==='editar'){
+    const perfil = milhasPerfis.find(p=>p.id===id);
+    if(!perfil) return;
+    titulo.textContent = '✏️ Editar Perfil';
+    body.innerHTML = `<label class="milhas-label">Nome do perfil</label>
+      <input id="perfil-nome-input" class="milhas-input" type="text" value="${perfil.nome}" maxlength="30"/>
+      ${milhasPerfis.length>1?`<div style="margin-top:14px"><button onclick="perfilExcluir('${id}')" style="background:transparent;border:1px solid rgba(248,113,113,.4);color:#f87171;padding:6px 14px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">🗑 Excluir este perfil</button></div>`:''}`;
+    btn.onclick = async()=>{
+      const nome = document.getElementById('perfil-nome-input').value.trim();
+      if(!nome) return;
+      const idx = milhasPerfis.findIndex(p=>p.id===id);
+      if(idx>=0){ milhasPerfis[idx].nome=nome; await perfilSalvar(); }
+      perfilFecharModal();
+      perfilRenderChips();
+    };
+  } else if(modo==='geral'){
+    perfilFecharModal();
+    perfilAbrirGeral();
+    return;
+  }
+  overlay.classList.add('open');
+  setTimeout(()=>{ const inp=document.getElementById('perfil-nome-input'); if(inp) inp.focus(); },50);
+}
+
+async function perfilExcluir(id){
+  if(!confirm('Excluir este perfil? Os registros de milhas associados NÃO serão apagados do servidor.')) return;
+  milhasPerfis = milhasPerfis.filter(p=>p.id!==id);
+  await perfilSalvar();
+  perfilFecharModal();
+  milhasPerfilAtivo = milhasPerfis[0]?.id || null;
+  await perfilAtivar(milhasPerfilAtivo);
+}
+
+function perfilFecharModal(){
+  document.getElementById('perfis-modal-overlay').classList.remove('open');
+}
+
+async function perfilAbrirGeral(){
+  const dashboard = document.getElementById('milhas-dashboard');
+  const geralDiv = document.getElementById('milhas-visao-geral');
+  const controles = document.querySelector('[style*="position:sticky"]');
+  dashboard.style.display='none';
+  if(controles) controles.style.display='none';
+  document.querySelectorAll('[id^=milhas-view-]').forEach(e=>e.style.display='none');
+  geralDiv.style.display='block';
+
+  const email = milhasGetEmail();
+  const content = document.getElementById('visao-geral-content');
+  content.innerHTML='<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Consolidando dados…</div></div>';
+
+  // Carregar dados de todos os perfis em paralelo
+  const resultados = await Promise.all(milhasPerfis.map(async p=>{
+    const key = p.isPrincipal ? email : email+'|'+p.id;
+    try{
+      const r = await fetch(`${MILHAS_PROXY}/milhas/listar?email=${encodeURIComponent(key)}`);
+      const d = await r.json();
+      return {perfil:p, registros: d.ok ? d.registros : []};
+    }catch{ return {perfil:p, registros:[]}; }
+  }));
+
+  // Consolidar saldos por programa
+  const saldoGlobal = {}; // programa -> {totalPts, porPerfil:{perfilNome: pts}}
+  resultados.forEach(({perfil, registros})=>{
+    const saldos = {};
+    registros.forEach(r=>{
+      if(!saldos[r.programa]) saldos[r.programa]=0;
+      if(r.tipo==='credito') saldos[r.programa]+=r.qtde;
+      else if(r.tipo==='debito') saldos[r.programa]-=r.qtde;
+    });
+    Object.entries(saldos).forEach(([prog,pts])=>{
+      if(!saldoGlobal[prog]) saldoGlobal[prog]={total:0,porPerfil:{}};
+      saldoGlobal[prog].total+=pts;
+      saldoGlobal[prog].porPerfil[perfil.nome]=pts;
+    });
+  });
+
+  const totalGeral = Object.values(saldoGlobal).reduce((s,v)=>s+v.total,0);
+  const progNomes = Object.keys(saldoGlobal).sort((a,b)=>{
+    const na=MILHAS_PROGS.find(p=>p.id===a)?.name||a;
+    const nb=MILHAS_PROGS.find(p=>p.id===b)?.name||b;
+    return nb - na || saldoGlobal[b].total-saldoGlobal[a].total;
+  });
+
+  // KPI total
+  let html = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">`;
+  html+=`<div class="milhas-kpi" style="border-color:rgba(255,88,94,.3)"><div class="milhas-kpi-label">Total Consolidado</div><div class="milhas-kpi-val" style="color:var(--cdv-coral)">${milhasFormatNum(totalGeral)}</div><div class="milhas-kpi-sub">pts em todos os perfis</div></div>`;
+  resultados.forEach(({perfil,registros})=>{
+    const tot=registros.reduce((s,r)=>r.tipo==='credito'?s+r.qtde:r.tipo==='debito'?s-r.qtde:s,0);
+    html+=`<div class="milhas-kpi"><div class="milhas-kpi-label">${perfil.nome}</div><div class="milhas-kpi-val" style="color:var(--text)">${milhasFormatNum(tot)}</div><div class="milhas-kpi-sub">${registros.length} lançamento${registros.length!==1?'s':''}</div></div>`;
+  });
+  html+='</div>';
+
+  // Tabela consolidada por programa
+  html+=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+    <table class="milhas-table" style="width:100%">
+      <thead><tr>
+        <th>Programa</th>
+        ${milhasPerfis.map(p=>`<th style="text-align:right">${p.nome}</th>`).join('')}
+        <th style="text-align:right">Total</th>
+      </tr></thead><tbody>`;
+
+  Object.entries(saldoGlobal)
+    .sort((a,b)=>b[1].total-a[1].total)
+    .forEach(([prog,data])=>{
+      const progInfo = MILHAS_PROGS.find(p=>p.id===prog);
+      const nome = progInfo?.name || prog;
+      const cor = progInfo?.color || '#8a9bbf';
+      html+=`<tr>
+        <td><span class="milhas-prog-dot" style="background:${cor}"></span>${nome}</td>
+        ${milhasPerfis.map(p=>`<td style="text-align:right;color:var(--muted)">${data.porPerfil[p.nome]!=null?milhasFormatNum(data.porPerfil[p.nome])+'<span style=\"font-size:9px;margin-left:2px\">pts</span>':'—'}</td>`).join('')}
+        <td style="text-align:right;font-weight:700;color:var(--text)">${milhasFormatNum(data.total)} <span style="font-size:9px">pts</span></td>
+      </tr>`;
+    });
+  html+='</tbody></table></div>';
+  content.innerHTML=html;
+}
+
+function perfilFecharGeral(){
+  document.getElementById('milhas-visao-geral').style.display='none';
+  document.getElementById('milhas-dashboard').style.display='';
+  const controles=document.querySelector('[style*="position:sticky"]');
+  if(controles) controles.style.display='';
+  milhasSetView('registros');
 }
 
 // ── Storage via proxy ──────────────────────────────────────────────────────
 async function milhasCarregar(){
   const email=milhasGetEmail();
-  if(!email){milhasRegistros=[];milhasFIFO={};return;}
+  const key=milhasGetPerfilKey();
+  if(!email||!key){milhasRegistros=[];milhasFIFO={};return;}
   try{
-    const r=await fetch(`${MILHAS_PROXY}/milhas/listar?email=${encodeURIComponent(email)}`);
+    const r=await fetch(`${MILHAS_PROXY}/milhas/listar?email=${encodeURIComponent(key)}`);
     if(!r.ok)throw new Error('err');
     const d=await r.json();
     if(d.ok && Array.isArray(d.registros)){
       milhasRegistros=d.registros;
       milhasFIFO={};
-      // Reconstrói FIFO sempre a partir dos registros — fonte única de verdade
       const progs=[...new Set(milhasRegistros.map(r=>r.programa))];
-      for(const p of progs) milhasFIFO[p]=fifoReconstruir(p, milhasRegistros, email);
+      for(const p of progs) milhasFIFO[p]=fifoReconstruir(p, milhasRegistros, key);
       milhasSalvarLocal();
     } else {
       throw new Error('formato inesperado');
     }
   }catch{
-    // Fallback: localStorage (cache de emergência — sem FIFO, reconstruído dos registros)
-    try{
-      const key='cdv_milhas_'+email;
-      const salvo=JSON.parse(localStorage.getItem(key)||'{}');
-      milhasRegistros=Array.isArray(salvo)?salvo:(salvo.registros||[]);
-      milhasFIFO={};
-      const progs=[...new Set(milhasRegistros.map(r=>r.programa))];
-      for(const p of progs) milhasFIFO[p]=fifoReconstruir(p, milhasRegistros, email);
-    }catch{milhasRegistros=[];milhasFIFO={};}
+    milhasRegistros=[];milhasFIFO={};
   }
 }
 
 async function milhasSalvarRemoto(registros){
-  const email=milhasGetEmail();
-  if(!email)return false;
+  const key=milhasGetPerfilKey();
+  if(!key)return false;
   try{
     const r=await fetch(`${MILHAS_PROXY}/milhas/salvar`,{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email,registros})
+      body:JSON.stringify({email:key,registros})
     });
     return r.ok;
   }catch{return false;}
 }
 
 function milhasSalvarLocal(){
-  const email=milhasGetEmail();
-  if(!email)return;
-  // Salva apenas os registros — FIFO é sempre reconstruído na carga
-  try{localStorage.setItem('cdv_milhas_'+email, JSON.stringify({registros:milhasRegistros}));}catch{}
+  // Dados persistidos no proxy — sem fallback localStorage
 }
 
 // ── Init ───────────────────────────────────────────────────────────────────
@@ -2265,6 +2526,8 @@ async function initMilhas(){
     const today=new Date().toISOString().split('T')[0];
     document.getElementById('ml-data').value=today;
   }
+  // Carregar perfis antes dos dados
+  await perfilCarregar();
   document.getElementById('milhas-tabela-wrap').innerHTML='<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando registros…</div></div>';
   await milhasCarregar();
   // FIFO já reconstruído dentro de milhasCarregar — nenhuma migração necessária
@@ -2457,7 +2720,7 @@ function milhasCalcMisto(){
   // Só calcula se tiver destino (com bônus aplicado)
   if(destino > 0 && (custo > 0 || saldo > 0)){
     // Custo FIFO do saldo que sai da origem
-    const email = milhasGetEmail();
+    const email = milhasGetPerfilKey();
     const origem = document.getElementById('ml-prog-origem')?.value;
     const fifoSaldo = (origem && saldo > 0) ? calcularCustoFIFO(origem, saldo, milhasRegistros, email) : {custoTotal:0};
     const custoTotal = fifoSaldo.custoTotal + custo;
@@ -2572,7 +2835,7 @@ function calcularCustoFIFO(prog, qtde, _registros, _email) {
 }
 
 async function salvarLancamento(){
-  const email=milhasGetEmail();
+  const email=milhasGetPerfilKey();
   if(!email){document.getElementById('ml-feedback').textContent='Faça login primeiro.';return;}
   const fb=document.getElementById('ml-feedback');
   fb.style.color='#f87171';
@@ -2772,7 +3035,7 @@ async function salvarLancamento(){
 let milhasAssinaturas = [];
 
 async function assCarregar(){
-  const email = milhasGetEmail();
+  const email = milhasGetPerfilKey();
   if(!email){ milhasAssinaturas=[]; return; }
   try{
     const r = await fetch(`${MILHAS_PROXY}/assinaturas/listar?email=${encodeURIComponent(email)}`);
@@ -2784,7 +3047,7 @@ async function assCarregar(){
 }
 
 async function assSalvarRemoto(){
-  const email=milhasGetEmail(); if(!email)return false;
+  const email=milhasGetPerfilKey(); if(!email)return false;
   try{
     const r=await fetch(`${MILHAS_PROXY}/assinaturas/salvar`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,assinaturas:milhasAssinaturas})});
     return r.ok;
@@ -2792,7 +3055,7 @@ async function assSalvarRemoto(){
 }
 
 function assSalvarLocal(){
-  const email=milhasGetEmail(); if(!email)return;
+  const email=milhasGetPerfilKey(); if(!email)return;
   try{localStorage.setItem('cdv_ass_'+email, JSON.stringify(milhasAssinaturas));}catch{}
 }
 
@@ -2806,7 +3069,7 @@ function assCalcCPM(){
 }
 
 async function salvarAssinatura(){
-  const email = milhasGetEmail();
+  const email = milhasGetPerfilKey();
   const fb = document.getElementById('ass-feedback');
   fb.style.color='#f87171';
   const nome    = document.getElementById('ass-nome').value.trim();
@@ -2863,7 +3126,7 @@ async function toggleAssinatura(id){
 
 // Verifica todas as assinaturas ativas e lança os meses pendentes
 async function assProcessarPendentes(){
-  const email = milhasGetEmail();
+  const email = milhasGetPerfilKey();
   if(!email) return;
   let houveNovos = false;
   const hoje = new Date();
@@ -2928,7 +3191,7 @@ async function assProcessarPendentes(){
 }
 
 function renderAssLista(){
-  const email = milhasGetEmail();
+  const email = milhasGetPerfilKey();
   const wrap = document.getElementById('ass-lista-wrap');
   if(!wrap) return;
   const lista = milhasAssinaturas.filter(a=>a.email===email||!a.email);
@@ -2984,7 +3247,7 @@ function renderAssLista(){
 // ── Excluir ────────────────────────────────────────────────────────────────
 async function excluirLancamento(id){
   if(!confirm('Excluir este lançamento?'))return;
-  const email=milhasGetEmail();
+  const email=milhasGetPerfilKey();
 
   // Remove o registro
   milhasRegistros=milhasRegistros.filter(r=>r.id!==id);
@@ -3032,7 +3295,7 @@ function milhasLabelSubcat(tipo,subcat){
 
 // ── Dashboard ──────────────────────────────────────────────────────────────
 function renderMilhasDashboard(){
-  const email=milhasGetEmail();
+  const email=milhasGetPerfilKey();
   const regs=milhasRegistros.filter(r=>r.email===email||!r.email);
 
   // Saldo por programa
@@ -3227,7 +3490,7 @@ function renderMilhasDashboard(){
 
 // ── Tabela de registros ────────────────────────────────────────────────────
 function renderMilhasTabela(){
-  const email=milhasGetEmail();
+  const email=milhasGetPerfilKey();
   let regs=milhasRegistros.filter(r=>r.email===email||!r.email);
   const filtProg=document.getElementById('milhas-filter-prog')?.value;
   const filtTipo=document.getElementById('milhas-filter-tipo')?.value;
@@ -3454,7 +3717,7 @@ function fazerLogout() {
 let milhasDetalheId = null;
 
 function verDetalhesLancamento(id){
-  const email = milhasGetEmail();
+  const email = milhasGetPerfilKey();
   const r = milhasRegistros.find(x=>x.id===id&&(x.email===email||!x.email));
   if(!r) return;
   milhasDetalheId = id;
@@ -3560,7 +3823,7 @@ document.getElementById('milhas-detalhe-overlay')?.addEventListener('click', fun
 let milhasEditId = null;
 
 function editarLancamento(id){
-  const email = milhasGetEmail();
+  const email = milhasGetPerfilKey();
   const reg = milhasRegistros.find(r=>r.id===id&&(r.email===email||!r.email));
   if(!reg) return;
   milhasEditId = id;
@@ -3591,7 +3854,7 @@ function salvarEdicao(){
   if(idx===-1){ fb.textContent='Registro não encontrado.'; return; }
   milhasRegistros[idx] = {...milhasRegistros[idx], data, qtde, custo, obs};
   // Reconstrói FIFO
-  const email = milhasGetEmail();
+  const email = milhasGetPerfilKey();
   const progs = [...new Set(milhasRegistros.filter(r=>r.email===email||!r.email).map(r=>r.programa))];
   milhasFIFO = {};
   progs.forEach(p=>{ milhasFIFO[p]=[]; });
@@ -3640,7 +3903,7 @@ function cartaoToggleForm(){
 //  RESGATES & ECONOMIA
 // ══════════════════════════════════════════════════════
 function renderMilhasResgates(){
-  const email = milhasGetEmail();
+  const email = milhasGetPerfilKey();
   const regs = milhasRegistros.filter(r=>r.email===email||!r.email);
   const SUBCATS_ECO = ['passagem','hospedagem','locacao','produto','outros_deb'];
 
@@ -3738,7 +4001,7 @@ function renderMilhasResgates(){
 let milhasCartoes = [];
 
 async function cartaoCarregar(){
-  const email = milhasGetEmail(); if(!email){ milhasCartoes=[]; return; }
+  const email = milhasGetPerfilKey(); if(!email){ milhasCartoes=[]; return; }
   try{
     const r = await fetch(`${MILHAS_PROXY}/cartoes/listar?email=${encodeURIComponent(email)}`);
     if(r.ok){ const d=await r.json(); if(d.ok && Array.isArray(d.cartoes)){ milhasCartoes=d.cartoes; cartaoSalvarLocal(); return; } }
@@ -3749,7 +4012,7 @@ async function cartaoCarregar(){
 }
 
 async function cartaoSalvarRemoto(){
-  const email=milhasGetEmail(); if(!email)return false;
+  const email=milhasGetPerfilKey(); if(!email)return false;
   try{
     const r=await fetch(`${MILHAS_PROXY}/cartoes/salvar`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,cartoes:milhasCartoes})});
     return r.ok;
@@ -3757,7 +4020,7 @@ async function cartaoSalvarRemoto(){
 }
 
 function cartaoSalvarLocal(){
-  const email=milhasGetEmail(); if(!email)return;
+  const email=milhasGetPerfilKey(); if(!email)return;
   try{ localStorage.setItem('cdv_cartoes_'+email, JSON.stringify(milhasCartoes)); }catch{}
 }
 
@@ -3852,7 +4115,7 @@ function milhasPopularSubcatFilter(tipo){
   if(!subcatSel) return;
   const valorAtual = subcatSel.value;
   subcatSel.innerHTML='<option value="">Todas as subcategorias</option>';
-  const email = milhasGetEmail();
+  const email = milhasGetPerfilKey();
   let regs = milhasRegistros.filter(r=>r.email===email||!r.email);
   if(tipo) regs = regs.filter(r=>r.tipo===tipo);
   const subcatsIds = [...new Set(regs.map(r=>r.subcat).filter(Boolean))];
