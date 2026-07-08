@@ -1,6 +1,78 @@
 {
-  "atualizadoEm": "2026-07-08T14:21:46.676Z",
+  "atualizadoEm": "2026-07-08T15:08:24.367Z",
   "registros": [
+    {
+      "id": "1783517976890_hgqg",
+      "email": "joaoamrl@gmail.com",
+      "data": "2026-07-08",
+      "tipo": "credito",
+      "operacao": "credito",
+      "subcat": "saldo_ini",
+      "programa": "livelo",
+      "qtde": 2700,
+      "custo": 0,
+      "obs": ""
+    },
+    {
+      "id": "1783518355922_75cu",
+      "email": "joaoamrl@gmail.com",
+      "data": "2026-07-08",
+      "tipo": "credito",
+      "operacao": "credito",
+      "subcat": "compra_pts",
+      "programa": "latam",
+      "qtde": 363000,
+      "custo": 7325,
+      "obs": ""
+    },
+    {
+      "id": "1783518406476_4wvm",
+      "email": "joaoamrl@gmail.com",
+      "data": "2026-07-08",
+      "tipo": "credito",
+      "operacao": "credito",
+      "subcat": "compra_pts",
+      "programa": "iberia",
+      "qtde": 4600,
+      "custo": 270,
+      "obs": ""
+    },
+    {
+      "id": "1783518455804_ckpl",
+      "email": "joaoamrl@gmail.com",
+      "data": "2026-07-08",
+      "tipo": "credito",
+      "operacao": "credito",
+      "subcat": "compra_pts",
+      "programa": "azul",
+      "qtde": 82000,
+      "custo": 1150,
+      "obs": ""
+    },
+    {
+      "id": "1783520397440_aqv9",
+      "email": "joaoamrl@gmail.com",
+      "data": "2026-07-08",
+      "tipo": "credito",
+      "operacao": "credito",
+      "subcat": "cartao",
+      "programa": "c6atomos",
+      "qtde": 9000,
+      "custo": 0,
+      "obs": ""
+    },
+    {
+      "id": "1783520505894_kabh",
+      "email": "joaoamrl@gmail.com",
+      "data": "2026-07-08",
+      "tipo": "credito",
+      "operacao": "credito",
+      "subcat": "compra_pts",
+      "programa": "all",
+      "qtde": 40000,
+      "custo": 2800,
+      "obs": ""
+    },
     {
       "id": "1783039963676_ass_2026-01",
       "email": "davileles@gmail.com",
@@ -770,76 +842,21 @@
       "obs": "Recebido de Esfera (+25% bônus)  | Custo herdado FIFO: R$ 2.869,50 (R$ 28,70/1k)"
     },
     {
-      "id": "1783517976890_hgqg",
-      "email": "joaoamrl@gmail.com",
+      "id": "1783523303580_olgv",
+      "email": "davileles@gmail.com",
       "data": "2026-07-08",
-      "tipo": "credito",
-      "operacao": "credito",
-      "subcat": "saldo_ini",
-      "programa": "livelo",
-      "qtde": 2700,
+      "tipo": "debito",
+      "operacao": "debito",
+      "subcat": "passagem",
+      "programa": "aadvantage",
+      "qtde": 7500,
       "custo": 0,
-      "obs": ""
-    },
-    {
-      "id": "1783518355922_75cu",
-      "email": "joaoamrl@gmail.com",
-      "data": "2026-07-08",
-      "tipo": "credito",
-      "operacao": "credito",
-      "subcat": "compra_pts",
-      "programa": "latam",
-      "qtde": 363000,
-      "custo": 7325,
-      "obs": ""
-    },
-    {
-      "id": "1783518406476_4wvm",
-      "email": "joaoamrl@gmail.com",
-      "data": "2026-07-08",
-      "tipo": "credito",
-      "operacao": "credito",
-      "subcat": "compra_pts",
-      "programa": "iberia",
-      "qtde": 4600,
-      "custo": 270,
-      "obs": ""
-    },
-    {
-      "id": "1783518455804_ckpl",
-      "email": "joaoamrl@gmail.com",
-      "data": "2026-07-08",
-      "tipo": "credito",
-      "operacao": "credito",
-      "subcat": "compra_pts",
-      "programa": "azul",
-      "qtde": 82000,
-      "custo": 1150,
-      "obs": ""
-    },
-    {
-      "id": "1783520397440_aqv9",
-      "email": "joaoamrl@gmail.com",
-      "data": "2026-07-08",
-      "tipo": "credito",
-      "operacao": "credito",
-      "subcat": "cartao",
-      "programa": "c6atomos",
-      "qtde": 9000,
-      "custo": 0,
-      "obs": ""
-    },
-    {
-      "id": "1783520505894_kabh",
-      "email": "joaoamrl@gmail.com",
-      "data": "2026-07-08",
-      "tipo": "credito",
-      "operacao": "credito",
-      "subcat": "compra_pts",
-      "programa": "all",
-      "qtde": 40000,
-      "custo": 2800,
-      "obs": ""
+      "obs": "",
+      "localizador": "QWERP1",
+      "cia": "GOL",
+      "origemVoo": "CNF",
+      "destinoVoo": "CGH",
+      "valorDinheiro": 1301
     }
   ]
 }
