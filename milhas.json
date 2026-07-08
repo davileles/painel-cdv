@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-07-08T18:37:34.342Z",
+  "atualizadoEm": "2026-07-08T18:38:17.213Z",
   "registros": [
     {
       "id": "1783517976890_hgqg",
@@ -1247,6 +1247,34 @@
       "qtde": 35000,
       "custo": 0,
       "obs": "C6 Carbon"
+    },
+    {
+      "id": "1783535897155_deb",
+      "email": "dogolima@hotmail.com",
+      "data": "2025-11-25",
+      "tipo": "debito",
+      "operacao": "transferencia",
+      "subcat": "transferido",
+      "programa": "c6atomos",
+      "qtde": 14000,
+      "custo": 0,
+      "modalidade": "pontos",
+      "obs": "Transferência para Azul Fidelidade (+20% bônus) "
+    },
+    {
+      "id": "1783535897155_cred",
+      "email": "dogolima@hotmail.com",
+      "data": "2025-11-25",
+      "tipo": "credito",
+      "operacao": "transferencia",
+      "subcat": "trans_bon",
+      "programa": "azul",
+      "qtde": 16800,
+      "custo": 0,
+      "custoHerdadoFIFO": 0,
+      "milheiroHerdado": 0,
+      "modalidade": "pontos",
+      "obs": "Recebido de C6 Átomos (+20% bônus)  | Pontos sem custo rastreado na origem"
     }
   ]
 }
