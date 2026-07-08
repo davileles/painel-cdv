@@ -1,9 +1,9 @@
 {
   "_meta": {
     "versao": "1.0",
-    "atualizadoEm": "2026-07-08T12:00:00.000Z",
+    "atualizadoEm": "2026-07-08T13:00:00.000Z",
     "fonte": "LoungeKey + DragonPass + Priority Pass",
-    "totalAeroportos": 80
+    "totalAeroportos": 92
   },
   "aeroportos": {
     "GRU": {
@@ -1607,29 +1607,6 @@
         }
       ]
     },
-    "ORK": {
-      "nome": "Porto – Francisco Sá Carneiro",
-      "cidade": "Porto",
-      "pais": "Portugal",
-      "iata": "OPO",
-      "loungekey": [
-        {
-          "nome": "OPO VIP Lounge",
-          "terminal": "Internacional",
-          "horario": "05:00–22:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=OPO"
-        }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        {
-          "nome": "OPO VIP Lounge",
-          "terminal": "Internacional",
-          "horario": "05:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=OPO"
-        }
-      ]
-    },
     "MAN": {
       "nome": "Manchester – Internacional",
       "cidade": "Manchester",
@@ -2159,6 +2136,376 @@
           "terminal": "Embarque",
           "horario": "06:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=IGU"
+        }
+      ]
+    },
+    "AEP": {
+      "nome": "Buenos Aires – Jorge Newbery (Aeroparque)",
+      "cidade": "Buenos Aires",
+      "pais": "Argentina",
+      "iata": "AEP",
+      "loungekey": [
+        {
+          "nome": "AEP VIP Lounge",
+          "terminal": "Doméstico/Regional",
+          "horario": "05:00–23:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=AEP"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "AEP VIP Lounge",
+          "terminal": "Doméstico/Regional",
+          "horario": "05:00–23:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=AEP"
+        }
+      ]
+    },
+    "MVD": {
+      "nome": "Montevidéu – Carrasco Internacional",
+      "cidade": "Montevidéu",
+      "pais": "Uruguai",
+      "iata": "MVD",
+      "loungekey": [
+        {
+          "nome": "MVD VIP Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–23:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MVD"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "MVD VIP Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–23:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MVD"
+        }
+      ]
+    },
+    "MDZ": {
+      "nome": "Mendoza – El Plumerillo Internacional",
+      "cidade": "Mendoza",
+      "pais": "Argentina",
+      "iata": "MDZ",
+      "loungekey": [
+        {
+          "nome": "MDZ Sala VIP",
+          "terminal": "Internacional",
+          "horario": "06:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MDZ"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "MDZ Sala VIP",
+          "terminal": "Internacional",
+          "horario": "06:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MDZ"
+        }
+      ]
+    },
+    "PTY": {
+      "nome": "Cidade do Panamá – Tocumen Internacional",
+      "cidade": "Cidade do Panamá",
+      "pais": "Panamá",
+      "iata": "PTY",
+      "loungekey": [
+        {
+          "nome": "Copa Club Lounge",
+          "terminal": "T1 – Internacional",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=PTY"
+        },
+        {
+          "nome": "VIP Lounge T2",
+          "terminal": "T2 – Internacional",
+          "horario": "24h",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=PTY"
+        }
+      ],
+      "dragonpass": [
+        {
+          "nome": "Copa Club Lounge",
+          "terminal": "T1 – Internacional",
+          "horario": "24h",
+          "url": "https://www.dragonpass.com/explore/airport/PTY"
+        }
+      ],
+      "prioritypass": [
+        {
+          "nome": "Copa Club Lounge",
+          "terminal": "T1 – Internacional",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=PTY"
+        },
+        {
+          "nome": "VIP Lounge T2",
+          "terminal": "T2 – Internacional",
+          "horario": "24h",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=PTY"
+        }
+      ]
+    },
+    "MCO": {
+      "nome": "Orlando – Internacional",
+      "cidade": "Orlando",
+      "pais": "EUA",
+      "iata": "MCO",
+      "loungekey": [
+        {
+          "nome": "The Club MCO",
+          "terminal": "B",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MCO"
+        }
+      ],
+      "dragonpass": [
+        {
+          "nome": "The Club MCO",
+          "terminal": "B",
+          "horario": "05:00–22:00",
+          "url": "https://www.dragonpass.com/explore/airport/MCO"
+        }
+      ],
+      "prioritypass": [
+        {
+          "nome": "The Club MCO",
+          "terminal": "B",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MCO"
+        },
+        {
+          "nome": "Escape Lounge MCO",
+          "terminal": "A",
+          "horario": "05:00–21:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MCO"
+        }
+      ]
+    },
+    "FLL": {
+      "nome": "Fort Lauderdale – Hollywood Internacional",
+      "cidade": "Fort Lauderdale",
+      "pais": "EUA",
+      "iata": "FLL",
+      "loungekey": [
+        {
+          "nome": "The Club FLL",
+          "terminal": "4",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=FLL"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "The Club FLL",
+          "terminal": "4",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FLL"
+        }
+      ]
+    },
+    "EWR": {
+      "nome": "Newark – Liberty Internacional",
+      "cidade": "Newark",
+      "pais": "EUA",
+      "iata": "EWR",
+      "loungekey": [
+        {
+          "nome": "The Club EWR",
+          "terminal": "C",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=EWR"
+        }
+      ],
+      "dragonpass": [
+        {
+          "nome": "The Club EWR",
+          "terminal": "C",
+          "horario": "05:00–22:00",
+          "url": "https://www.dragonpass.com/explore/airport/EWR"
+        }
+      ],
+      "prioritypass": [
+        {
+          "nome": "The Club EWR",
+          "terminal": "C",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=EWR"
+        }
+      ]
+    },
+    "LGA": {
+      "nome": "Nova York – LaGuardia",
+      "cidade": "Nova York",
+      "pais": "EUA",
+      "iata": "LGA",
+      "loungekey": [
+        {
+          "nome": "The Club LGA",
+          "terminal": "B",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LGA"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "The Club LGA",
+          "terminal": "B",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LGA"
+        }
+      ]
+    },
+    "IAD": {
+      "nome": "Washington – Dulles Internacional",
+      "cidade": "Washington DC",
+      "pais": "EUA",
+      "iata": "IAD",
+      "loungekey": [
+        {
+          "nome": "The Club IAD",
+          "terminal": "Concourse A",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=IAD"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "The Club IAD",
+          "terminal": "Concourse A",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=IAD"
+        },
+        {
+          "nome": "Escape Lounge IAD",
+          "terminal": "Concourse B",
+          "horario": "05:00–21:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=IAD"
+        }
+      ]
+    },
+    "IAH": {
+      "nome": "Houston – George Bush Intercontinental",
+      "cidade": "Houston",
+      "pais": "EUA",
+      "iata": "IAH",
+      "loungekey": [
+        {
+          "nome": "The Club IAH",
+          "terminal": "E",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=IAH"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "The Club IAH",
+          "terminal": "E",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=IAH"
+        }
+      ]
+    },
+    "LAS": {
+      "nome": "Las Vegas – Harry Reid Internacional",
+      "cidade": "Las Vegas",
+      "pais": "EUA",
+      "iata": "LAS",
+      "loungekey": [
+        {
+          "nome": "The Club LAS",
+          "terminal": "1",
+          "horario": "05:00–23:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=LAS"
+        }
+      ],
+      "dragonpass": [
+        {
+          "nome": "The Club LAS",
+          "terminal": "1",
+          "horario": "05:00–23:00",
+          "url": "https://www.dragonpass.com/explore/airport/LAS"
+        }
+      ],
+      "prioritypass": [
+        {
+          "nome": "The Club LAS T1",
+          "terminal": "1",
+          "horario": "05:00–23:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LAS"
+        },
+        {
+          "nome": "The Club LAS T3",
+          "terminal": "3",
+          "horario": "05:00–23:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LAS"
+        }
+      ]
+    },
+    "SFO": {
+      "nome": "São Francisco – Internacional",
+      "cidade": "São Francisco",
+      "pais": "EUA",
+      "iata": "SFO",
+      "loungekey": [
+        {
+          "nome": "The Club SFO",
+          "terminal": "International G",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=SFO"
+        }
+      ],
+      "dragonpass": [
+        {
+          "nome": "The Club SFO",
+          "terminal": "International G",
+          "horario": "05:00–22:00",
+          "url": "https://www.dragonpass.com/explore/airport/SFO"
+        }
+      ],
+      "prioritypass": [
+        {
+          "nome": "The Club SFO",
+          "terminal": "International G",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SFO"
+        },
+        {
+          "nome": "Escape Lounge SFO",
+          "terminal": "Terminal 1",
+          "horario": "05:00–21:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SFO"
+        }
+      ]
+    },
+    "OPO": {
+      "nome": "Porto – Francisco Sá Carneiro Internacional",
+      "cidade": "Porto",
+      "pais": "Portugal",
+      "iata": "OPO",
+      "loungekey": [
+        {
+          "nome": "OPO VIP Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=OPO"
+        }
+      ],
+      "dragonpass": [],
+      "prioritypass": [
+        {
+          "nome": "OPO VIP Lounge",
+          "terminal": "Internacional",
+          "horario": "05:00–22:00",
+          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=OPO"
         }
       ]
     }
