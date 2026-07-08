@@ -2437,7 +2437,7 @@ async function perfilAbrirGeral(){
       `<div class="milhas-kpi" style="border-top:3px solid #60a5fa"><div class="milhas-kpi-label">Total Investido</div><div class="milhas-kpi-val" style="color:#60a5fa;font-size:22px">R$ ${totalInvestido.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="milhas-kpi-sub">em compras e assinaturas</div></div>`,
       `<div class="milhas-kpi" style="border-top:3px solid #a78bfa"><div class="milhas-kpi-label">Economia Gerada</div><div class="milhas-kpi-val" style="color:#a78bfa;font-size:22px">R$ ${totalEconomia.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="milhas-kpi-sub">vs. pagar em dinheiro</div></div>`,
     `</div>`,
-    milhasPerfis.length>1 ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px">${milhasPerfis.map(p=>`<div class="milhas-kpi" style="border-top:3px solid var(--border)"><div class="milhas-kpi-label">&#128100; ${p.nome}</div><div class="milhas-kpi-val" style="color:var(--text);font-size:22px">${milhasFormatNum(saldoPorPerfil[p.nome]||0)} <span style="font-size:11px">pts</span></div><div class="milhas-kpi-sub">saldo do perfil</div></div>`).join('')}</div>` : '',
+    milhasPerfis.length>1 ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px">${milhasPerfis.map((p,i)=>{const cores=['#60a5fa','#34d399','#f97316','#a78bfa','#f87171','#fbbf24'];const cor=cores[i%cores.length];return`<div class="milhas-kpi" style="border-top:3px solid ${cor}"><div class="milhas-kpi-label" style="color:${cor}">&#128100; ${p.nome}</div><div class="milhas-kpi-val" style="color:${cor};font-size:22px">${milhasFormatNum(saldoPorPerfil[p.nome]||0)} <span style="font-size:11px">pts</span></div><div class="milhas-kpi-sub">saldo do perfil</div></div>`;}).join('')}</div>` : '',
     `<div style="display:grid;grid-template-columns:minmax(160px,1fr) minmax(180px,1.1fr) minmax(0,2fr);gap:12px">`,
       `<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 16px 8px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Distribuição por Programa</div><canvas id="geral-chart-dist" style="height:240px;max-height:240px"></canvas></div>`,
       `<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Saldo por Programa</div><div id="geral-saldo-tabela" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0"></div></div>`,
@@ -2606,7 +2606,18 @@ function milhasSetView(v){
   document.getElementById('milhas-view-assinaturas').style.display=v==='assinaturas'?'block':'none';
   document.getElementById('milhas-view-cartoes').style.display=v==='cartoes'?'block':'none';
   document.getElementById('milhas-view-resgates').style.display=v==='resgates'?'block':'none';
+  // Ocultar dashboard nas views que têm conteúdo próprio (evita empurrar para fora da viewport)
+  const dash = document.getElementById('milhas-dashboard');
+  const cpmRow = document.getElementById('milhas-cpm-row');
+  const showDash = v==='registros'||v==='novo';
+  if(dash) dash.style.display = showDash?'':'none';
+  if(cpmRow) cpmRow.style.display = showDash?'':'none';
   if(v==='resgates') renderMilhasResgates();
+  if(v==='assinaturas'||v==='cartoes'||v==='resgates'){
+    // Scroll para o topo da controls bar para que o conteúdo fique visível
+    const bar = document.getElementById('milhas-controls-bar');
+    if(bar) bar.scrollIntoView({behavior:'smooth', block:'start'});
+  }
   // Filtros visíveis apenas na view de registros
   const filtros=document.getElementById('milhas-filtros-wrap');
   if(filtros) filtros.style.display=v==='registros'?'':'none';
