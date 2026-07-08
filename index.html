@@ -2429,27 +2429,21 @@ async function perfilAbrirGeral(){
     saldoPorPerfil[perfil.nome]=registros.reduce((s,r)=>r.tipo==='credito'?s+r.qtde:r.tipo==='debito'?s-r.qtde:s,0);
   });
 
-  cont.innerHTML=`
-    <div id="geral-kpis" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px">
-      <div class="milhas-kpi" style="border-top:3px solid #ff585e"><div class="milhas-kpi-label">Saldo Total</div><div class="milhas-kpi-val" style="color:#ff585e">${milhasFormatNum(totalMilhas)} <span style="font-size:13px">pts</span></div><div class="milhas-kpi-sub">todos os perfis e programas</div></div>
-      <div class="milhas-kpi" style="border-top:3px solid #34d399"><div class="milhas-kpi-label">Total Creditado</div><div class="milhas-kpi-val" style="color:#34d399">${milhasFormatNum(totalCreditado)} <span style="font-size:13px">pts</span></div><div class="milhas-kpi-sub">entradas registradas</div></div>
-      <div class="milhas-kpi" style="border-top:3px solid #f87171"><div class="milhas-kpi-label">Total Resgatado</div><div class="milhas-kpi-val" style="color:#f87171">${milhasFormatNum(totalResgatado)} <span style="font-size:13px">pts</span></div><div class="milhas-kpi-sub">passagens, hospedagem…</div></div>
-      <div class="milhas-kpi" style="border-top:3px solid #60a5fa"><div class="milhas-kpi-label">Total Investido</div><div class="milhas-kpi-val" style="color:#60a5fa;font-size:22px">R$ ${totalInvestido.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="milhas-kpi-sub">em compras e assinaturas</div></div>
-      <div class="milhas-kpi" style="border-top:3px solid #a78bfa"><div class="milhas-kpi-label">Economia Gerada</div><div class="milhas-kpi-val" style="color:#a78bfa;font-size:22px">R$ ${totalEconomia.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="milhas-kpi-sub">vs. pagar em dinheiro</div></div>
-    </div>${milhasPerfis.length>1?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px">${milhasPerfis.map(p=>`<div class="milhas-kpi" style="border-top:3px solid var(--border)"><div class="milhas-kpi-label">&#128100; ${p.nome}</div><div class="milhas-kpi-val" style="color:var(--text);font-size:22px">${milhasFormatNum(saldoPorPerfil[p.nome]||0)} <span style="font-size:11px">pts</span></div><div class="milhas-kpi-sub">saldo do perfil</div></div>`).join('')}</div>`:''}    <div style="display:grid;grid-template-columns:minmax(160px,1fr) minmax(180px,1.1fr) minmax(0,2fr);gap:12px;margin-bottom:18px">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 16px 8px">
-        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Distribuição por Programa</div>
-        <canvas id="geral-chart-dist" style="height:240px;max-height:240px"></canvas>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column">
-        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Saldo por Programa</div>
-        <div id="geral-saldo-tabela" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0"></div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
-        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Evolução do Saldo Total</div>
-        <canvas id="geral-chart-evol" style="max-height:260px"></canvas>
-      </div>
-    </div>`;
+  cont.innerHTML = [
+    `<div id="geral-kpis" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px">`,
+      `<div class="milhas-kpi" style="border-top:3px solid #ff585e"><div class="milhas-kpi-label">Saldo Total</div><div class="milhas-kpi-val" style="color:#ff585e">${milhasFormatNum(totalMilhas)} <span style="font-size:13px">pts</span></div><div class="milhas-kpi-sub">todos os perfis e programas</div></div>`,
+      `<div class="milhas-kpi" style="border-top:3px solid #34d399"><div class="milhas-kpi-label">Total Creditado</div><div class="milhas-kpi-val" style="color:#34d399">${milhasFormatNum(totalCreditado)} <span style="font-size:13px">pts</span></div><div class="milhas-kpi-sub">entradas registradas</div></div>`,
+      `<div class="milhas-kpi" style="border-top:3px solid #f87171"><div class="milhas-kpi-label">Total Resgatado</div><div class="milhas-kpi-val" style="color:#f87171">${milhasFormatNum(totalResgatado)} <span style="font-size:13px">pts</span></div><div class="milhas-kpi-sub">passagens, hospedagem…</div></div>`,
+      `<div class="milhas-kpi" style="border-top:3px solid #60a5fa"><div class="milhas-kpi-label">Total Investido</div><div class="milhas-kpi-val" style="color:#60a5fa;font-size:22px">R$ ${totalInvestido.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="milhas-kpi-sub">em compras e assinaturas</div></div>`,
+      `<div class="milhas-kpi" style="border-top:3px solid #a78bfa"><div class="milhas-kpi-label">Economia Gerada</div><div class="milhas-kpi-val" style="color:#a78bfa;font-size:22px">R$ ${totalEconomia.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="milhas-kpi-sub">vs. pagar em dinheiro</div></div>`,
+    `</div>`,
+    milhasPerfis.length>1 ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px">${milhasPerfis.map(p=>`<div class="milhas-kpi" style="border-top:3px solid var(--border)"><div class="milhas-kpi-label">&#128100; ${p.nome}</div><div class="milhas-kpi-val" style="color:var(--text);font-size:22px">${milhasFormatNum(saldoPorPerfil[p.nome]||0)} <span style="font-size:11px">pts</span></div><div class="milhas-kpi-sub">saldo do perfil</div></div>`).join('')}</div>` : '',
+    `<div style="display:grid;grid-template-columns:minmax(160px,1fr) minmax(180px,1.1fr) minmax(0,2fr);gap:12px">`,
+      `<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 16px 8px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Distribuição por Programa</div><canvas id="geral-chart-dist" style="height:240px;max-height:240px"></canvas></div>`,
+      `<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Saldo por Programa</div><div id="geral-saldo-tabela" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0"></div></div>`,
+      `<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Evolução do Saldo Total</div><canvas id="geral-chart-evol" style="max-height:260px"></canvas></div>`,
+    `</div>`,
+  ].join('');
 
   requestAnimationFrame(()=>{
     document.querySelectorAll('#geral-kpis .milhas-kpi').forEach((el,i)=>{
@@ -3385,12 +3379,7 @@ function renderMilhasDashboard(){
     {label:'Total Investido',val:'R$ '+totalGasto.toLocaleString('pt-BR',{minimumFractionDigits:2}),sub:'em compras e assinaturas',color:'#60a5fa'},
     {label:'Economia Gerada',val:'R$ '+totalEconomia.toLocaleString('pt-BR',{minimumFractionDigits:2}),sub:'vs. pagar em dinheiro',color:'#a78bfa'},
   ];
-  kpiEl.innerHTML=kpis.map(k=>`
-    <div class="milhas-kpi" style="border-top:3px solid ${k.color}">
-      <div class="milhas-kpi-label">${k.label}</div>
-      <div class="milhas-kpi-val" style="color:${k.color}">${k.val}</div>
-      <div class="milhas-kpi-sub">${k.sub}</div>
-    </div>`).join('');
+  kpiEl.innerHTML=kpis.map(k=>`<div class="milhas-kpi" style="border-top:3px solid ${k.color}"><div class="milhas-kpi-label">${k.label}</div><div class="milhas-kpi-val" style="color:${k.color}">${k.val}</div><div class="milhas-kpi-sub">${k.sub}</div></div>`).join('');
   // countUp nos KPIs
   requestAnimationFrame(()=>{
     document.querySelectorAll('#milhas-kpis .milhas-kpi').forEach((el,i)=>{
@@ -3999,12 +3988,7 @@ function renderMilhasResgates(){
       {label:'Valor Total em Dinheiro',val:'R$ '+totalValorDinheiro.toLocaleString('pt-BR',{minimumFractionDigits:2}),sub:'se pagos sem milhas',color:'#60a5fa'},
       {label:'Custo Real das Milhas',val:'R$ '+totalCustoMilhas.toLocaleString('pt-BR',{minimumFractionDigits:2}),sub:'custo FIFO das milhas usadas',color:'#f87171'},
       {label:'Total Economizado',val:'R$ '+totalEconomia.toLocaleString('pt-BR',{minimumFractionDigits:2}),sub:`${pctMedio.toFixed(1).replace('.',',')}% de economia média`,color:'#a78bfa'},
-    ].map(k=>`
-      <div class="milhas-kpi" style="border-top:3px solid ${k.color}">
-        <div class="milhas-kpi-label">${k.label}</div>
-        <div class="milhas-kpi-val" style="color:${k.color};font-size:22px">${k.val}</div>
-        <div class="milhas-kpi-sub">${k.sub}</div>
-      </div>`).join('');
+    ].map(k=>`<div class="milhas-kpi" style="border-top:3px solid ${k.color}"><div class="milhas-kpi-label">${k.label}</div><div class="milhas-kpi-val" style="color:${k.color};font-size:22px">${k.val}</div><div class="milhas-kpi-sub">${k.sub}</div></div>`).join('');
   }
 
   // Tabela
