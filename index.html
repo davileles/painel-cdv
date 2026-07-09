@@ -403,10 +403,9 @@
 .lv-empty-state-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px}
 .lv-empty-state-sub{font-size:13px}
 /* Modal */
-.lv-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s;pointer-events:none}
-.lv-modal-overlay.open{opacity:1;visibility:visible;pointer-events:all}
-.lv-modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;position:relative;transform:translateY(20px);transition:transform .2s}
-.lv-modal-overlay.open .lv-modal{transform:translateY(0)}
+.lv-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9998;display:none;align-items:center;justify-content:center;padding:16px}
+.lv-modal-overlay.open{display:flex}
+.lv-modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;position:relative}
 .lv-modal-close{position:sticky;top:0;z-index:10;display:flex;justify-content:flex-end;padding:14px 16px 0;background:var(--surface)}
 .lv-modal-close button{background:rgba(61,74,102,.5);border:none;color:var(--text);width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .lv-modal-close button:hover{background:rgba(255,88,94,.3)}
@@ -558,30 +557,6 @@
   </div>
 
 </div><!-- /tab-lounges -->
-
-<!-- Modal Sala VIP -->
-<div class="lv-modal-overlay" id="lv-modal-overlay" onclick="lvFecharModal(event)">
-  <div class="lv-modal" id="lv-modal">
-    <div class="lv-modal-close"><button onclick="lvFecharModal(null)">✕</button></div>
-    <div class="lv-modal-foto" id="lv-modal-foto">🛋️</div>
-    <div class="lv-modal-body">
-      <div class="lv-modal-nome" id="lv-modal-nome"></div>
-      <div class="lv-modal-badges" id="lv-modal-badges"></div>
-      <div class="lv-modal-section" id="lv-modal-sec-loc" style="display:none">
-        <div class="lv-modal-section-title">📍 Como chegar</div>
-        <div class="lv-modal-localizacao" id="lv-modal-loc"></div>
-      </div>
-      <div class="lv-modal-section" id="lv-modal-sec-am" style="display:none">
-        <div class="lv-modal-section-title">✨ Amenidades</div>
-        <div class="lv-modal-amenidades" id="lv-modal-am"></div>
-      </div>
-      <div class="lv-modal-section" id="lv-modal-sec-pr" style="display:none">
-        <div class="lv-modal-section-title">🎫 Acesso via</div>
-        <div class="lv-modal-progs" id="lv-modal-pr"></div>
-      </div>
-    </div>
-  </div>
-</div>
 
 <div id="tab-milhas" class="tab-panel" style="display:none">
 
@@ -4726,6 +4701,30 @@ function lvRenderizarResultado(d) {
 
 </script>
 </div><!-- /app-content -->
+
+<!-- Modal Sala VIP — fora do app-content para não interferir com login -->
+<div class="lv-modal-overlay" id="lv-modal-overlay" onclick="lvFecharModal(event)">
+  <div class="lv-modal" id="lv-modal">
+    <div class="lv-modal-close"><button onclick="lvFecharModal(null)">✕</button></div>
+    <div class="lv-modal-foto" id="lv-modal-foto">🛋️</div>
+    <div class="lv-modal-body">
+      <div class="lv-modal-nome" id="lv-modal-nome"></div>
+      <div class="lv-modal-badges" id="lv-modal-badges"></div>
+      <div class="lv-modal-section" id="lv-modal-sec-loc" style="display:none">
+        <div class="lv-modal-section-title">📍 Como chegar</div>
+        <div class="lv-modal-localizacao" id="lv-modal-loc"></div>
+      </div>
+      <div class="lv-modal-section" id="lv-modal-sec-am" style="display:none">
+        <div class="lv-modal-section-title">✨ Amenidades</div>
+        <div class="lv-modal-amenidades" id="lv-modal-am"></div>
+      </div>
+      <div class="lv-modal-section" id="lv-modal-sec-pr" style="display:none">
+        <div class="lv-modal-section-title">🎫 Acesso via</div>
+        <div class="lv-modal-progs" id="lv-modal-pr"></div>
+      </div>
+    </div>
+  </div>
+</div>
 <script src="iata.js"></script>
 <!-- MODAIS (fora do app-content para evitar stacking context) -->
 <!-- MODAL -->
