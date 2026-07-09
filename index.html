@@ -375,6 +375,15 @@
 .lv-aeroporto-sub{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
 .lv-fonte-badge{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:rgba(96,165,250,.12);color:#60a5fa}
 .lv-fonte-badge.ao-vivo{background:rgba(52,211,153,.12);color:#34d399}
+/* Filtros */
+.lv-filtros{padding:12px 22px 0;display:flex;gap:8px;flex-wrap:wrap}
+.lv-filtro-grupo{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lv-filtro-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.lv-filtro-btn{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap}
+.lv-filtro-btn:hover{border-color:var(--cdv-coral);color:var(--cdv-coral)}
+.lv-filtro-btn.ativo{background:var(--cdv-coral);border-color:var(--cdv-coral);color:#fff}
+.lv-filtro-sep{width:1px;height:20px;background:var(--border);margin:0 4px;align-self:center}
+.lv-filtros-count{font-size:11px;color:var(--muted);padding:4px 0;align-self:center}
 /* Grid de cards */
 .lv-cards-grid{padding:16px 22px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
 /* Card compacto (thumbnail) */
@@ -417,11 +426,6 @@
 .lv-modal-amenidade{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text);background:rgba(61,74,102,.35);padding:4px 10px;border-radius:20px;font-weight:600}
 .lv-modal-progs{display:flex;flex-wrap:wrap;gap:8px}
 .lv-modal-prog{font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid}
-.lv-modal-links{display:flex;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
-.lv-modal-link{flex:1;text-align:center;padding:10px;border-radius:10px;font-size:12px;font-weight:800;text-decoration:none;transition:opacity .15s}
-.lv-modal-link:hover{opacity:.85}
-.lv-modal-link-primary{background:var(--cdv-coral);color:#fff}
-.lv-modal-link-secondary{background:rgba(96,165,250,.12);color:#60a5fa;border:1px solid rgba(96,165,250,.3)}
 @media(max-width:640px){
   .lv-search-wrap{padding:14px 10px 0}
   .lv-cards-grid{padding:12px 10px;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
@@ -535,6 +539,14 @@
         <span class="lv-fonte-badge" id="lv-fonte-badge"></span>
       </div>
     </div>
+    <!-- Filtros -->
+    <div class="lv-filtros" id="lv-filtros" style="display:none">
+      <div class="lv-filtro-grupo" id="lv-filtro-redes"></div>
+      <div class="lv-filtro-sep"></div>
+      <div class="lv-filtro-grupo" id="lv-filtro-terminais"></div>
+      <div class="lv-filtro-sep"></div>
+      <span class="lv-filtros-count" id="lv-filtros-count"></span>
+    </div>
     <div class="lv-cards-grid" id="lv-programas-wrap"></div>
   </div>
 
@@ -559,10 +571,6 @@
         <div class="lv-modal-section-title">📍 Como chegar</div>
         <div class="lv-modal-localizacao" id="lv-modal-loc"></div>
       </div>
-      <div class="lv-modal-section" id="lv-modal-sec-ov" style="display:none">
-        <div class="lv-modal-section-title">💬 Sobre a sala</div>
-        <div class="lv-modal-overview" id="lv-modal-ov"></div>
-      </div>
       <div class="lv-modal-section" id="lv-modal-sec-am" style="display:none">
         <div class="lv-modal-section-title">✨ Amenidades</div>
         <div class="lv-modal-amenidades" id="lv-modal-am"></div>
@@ -571,7 +579,6 @@
         <div class="lv-modal-section-title">🎫 Acesso via</div>
         <div class="lv-modal-progs" id="lv-modal-pr"></div>
       </div>
-      <div class="lv-modal-links" id="lv-modal-links"></div>
     </div>
   </div>
 </div>
@@ -4559,6 +4566,11 @@ function lvProgModalBadge(prog) {
   return '<span class="lv-modal-prog" style="border-color:'+m.cor+';color:'+m.cor+'">'+prog+'</span>';
 }
 
+// Estado dos filtros
+var _lvFiltroRede = 'Todas';
+var _lvFiltroTerminal = 'Todos';
+var _lvSalasCompletas = [];
+
 function lvAbrirModal(sala) {
   document.getElementById('lv-modal-foto').innerHTML = '🛋️';
   document.getElementById('lv-modal-nome').textContent = sala.nome;
@@ -4570,9 +4582,6 @@ function lvAbrirModal(sala) {
   var secLoc = document.getElementById('lv-modal-sec-loc');
   if (sala.localizacao) { document.getElementById('lv-modal-loc').textContent = sala.localizacao; secLoc.style.display=''; }
   else secLoc.style.display='none';
-  var secOv = document.getElementById('lv-modal-sec-ov');
-  if (sala.overview) { document.getElementById('lv-modal-ov').textContent = sala.overview; secOv.style.display=''; }
-  else secOv.style.display='none';
   var todasAm = [].concat(sala.amenidades&&sala.amenidades.comida||[]).concat(sala.amenidades&&sala.amenidades.bebida||[]).concat(sala.amenidades&&sala.amenidades.outros||[]);
   var secAm = document.getElementById('lv-modal-sec-am');
   if (todasAm.length) {
@@ -4584,11 +4593,96 @@ function lvAbrirModal(sala) {
     document.getElementById('lv-modal-pr').innerHTML = sala.programas.map(lvProgModalBadge).join('');
     secPr.style.display='';
   } else secPr.style.display='none';
-  document.getElementById('lv-modal-links').innerHTML =
-    '<a class="lv-modal-link lv-modal-link-primary" href="'+sala.urlLoungereview+'" target="_blank" rel="noopener">Ver no LoungeReview ↗</a>'+
-    '<a class="lv-modal-link lv-modal-link-secondary" href="'+sala.urlFotos+'" target="_blank" rel="noopener">📷 Ver fotos</a>';
   document.getElementById('lv-modal-overlay').classList.add('open');
   document.body.style.overflow='hidden';
+}
+
+// ── FILTROS ───────────────────────────────────────────────────────────────────
+function lvExtrairTerminal(terminal) {
+  if (!terminal) return 'Outros';
+  var m = terminal.match(/Terminal\s*(\d+|[A-Z]+(?:\s*[\(\)\/][^\,\.]*)?)/i);
+  if (m) return 'Terminal ' + m[1].trim().replace(/\s*\(.*/, '');
+  if (/landside|antes da segurança/i.test(terminal)) return 'Landside';
+  if (/international|internacional/i.test(terminal)) return 'Internacional';
+  if (/dom[eé]stico|domestic/i.test(terminal)) return 'Doméstico';
+  return 'Outros';
+}
+
+function lvRenderizarFiltros(salas) {
+  // Redes únicas
+  var redesSet = {};
+  salas.forEach(function(s) {
+    (s.programas||[]).forEach(function(p) { redesSet[p] = true; });
+  });
+  var redes = Object.keys(redesSet).sort();
+
+  // Terminais únicos
+  var terminaisSet = {};
+  salas.forEach(function(s) { terminaisSet[lvExtrairTerminal(s.terminal)] = true; });
+  var terminais = Object.keys(terminaisSet).sort();
+
+  var elRedes = document.getElementById('lv-filtro-redes');
+  var elTerminais = document.getElementById('lv-filtro-terminais');
+
+  elRedes.innerHTML = '<span class="lv-filtro-label">Rede</span>' +
+    ['Todas'].concat(redes).map(function(r) {
+      return '<button class="lv-filtro-btn'+(r===_lvFiltroRede?' ativo':'')+'" onclick="lvSetFiltroRede(''+r.replace(/'/g,"\'")+'')">' + r.replace(' Business/First','').replace(' exclusivo','') + '</button>';
+    }).join('');
+
+  if (terminais.length > 1) {
+    elTerminais.innerHTML = '<span class="lv-filtro-label">Terminal</span>' +
+      ['Todos'].concat(terminais).map(function(t) {
+        return '<button class="lv-filtro-btn'+(t===_lvFiltroTerminal?' ativo':'')+'" onclick="lvSetFiltroTerminal(''+t.replace(/'/g,"\'")+'')">' + t + '</button>';
+      }).join('');
+    elTerminais.style.display='';
+    document.querySelector('.lv-filtro-sep').style.display='';
+  } else {
+    elTerminais.innerHTML = '';
+    elTerminais.style.display='none';
+    document.querySelector('.lv-filtro-sep').style.display='none';
+  }
+
+  document.getElementById('lv-filtros').style.display = redes.length > 1 ? '' : 'none';
+  lvAplicarFiltros();
+}
+
+function lvSetFiltroRede(rede) {
+  _lvFiltroRede = rede;
+  lvRenderizarFiltros(_lvSalasCompletas);
+}
+function lvSetFiltroTerminal(terminal) {
+  _lvFiltroTerminal = terminal;
+  lvRenderizarFiltros(_lvSalasCompletas);
+}
+
+function lvAplicarFiltros() {
+  var filtradas = _lvSalasCompletas.filter(function(s, i) {
+    var passaRede = _lvFiltroRede === 'Todas' || (s.programas||[]).includes(_lvFiltroRede);
+    var passaTerm = _lvFiltroTerminal === 'Todos' || lvExtrairTerminal(s.terminal) === _lvFiltroTerminal;
+    return passaRede && passaTerm;
+  });
+
+  // Contador
+  document.getElementById('lv-filtros-count').textContent = filtradas.length + ' de ' + _lvSalasCompletas.length + ' sala' + (_lvSalasCompletas.length>1?'s':'');
+
+  // Renderizar cards filtrados
+  var wrap = document.getElementById('lv-programas-wrap');
+  if (!filtradas.length) {
+    wrap.innerHTML = '<div class="lv-empty-state" style="grid-column:1/-1;padding:24px 0"><div class="lv-empty-state-icon">🔍</div><div class="lv-empty-state-title">Nenhuma sala para este filtro</div></div>';
+    return;
+  }
+  wrap.innerHTML = filtradas.map(function(s) {
+    var idx = _lvSalasCompletas.indexOf(s);
+    var progsHtml = (s.programas||[]).map(lvProgCardBadge).join('');
+    return '<div class="lv-card" onclick="lvAbrirModal(window._lvSalas['+idx+'])">'
+      +'<div class="lv-card-img">🛋️</div>'
+      +'<div class="lv-card-body">'
+      +'<div class="lv-card-nome">'+s.nome+'</div>'
+      +'<div class="lv-card-terminal">'+(s.terminal||'')+'</div>'
+      +'<div class="lv-card-progs">'+progsHtml+'</div>'
+      +(s.horario?'<div class="lv-card-horario">⏰ '+s.horario+'</div>':'')
+      +'</div></div>';
+  }).join('');
 }
 
 function lvFecharModal(e) {
@@ -4615,19 +4709,15 @@ function lvRenderizarResultado(d) {
   var wrap = document.getElementById('lv-programas-wrap');
   if (!salas.length) {
     wrap.innerHTML = '<div class="lv-empty-state" style="grid-column:1/-1;padding:32px 0"><div class="lv-empty-state-icon">🔍</div><div class="lv-empty-state-title">Nenhuma sala encontrada</div><div class="lv-empty-state-sub">Ainda não catalogamos as salas de '+aeroporto.iata+'.<br>Acesse em <a href="https://loungereview.com" target="_blank" style="color:var(--cdv-coral)">loungereview.com</a>.</div></div>';
+    document.getElementById('lv-filtros').style.display='none';
   } else {
+    // Guardar salas e resetar filtros
     window._lvSalas = salas;
-    wrap.innerHTML = salas.map(function(s,i){
-      var progsHtml = (s.programas||[]).map(lvProgCardBadge).join('');
-      return '<div class="lv-card" onclick="lvAbrirModal(window._lvSalas['+i+'])">'
-        +'<div class="lv-card-img">🛋️</div>'
-        +'<div class="lv-card-body">'
-        +'<div class="lv-card-nome">'+s.nome+'</div>'
-        +'<div class="lv-card-terminal">'+(s.terminal||'')+'</div>'
-        +'<div class="lv-card-progs">'+progsHtml+'</div>'
-        +(s.horario?'<div class="lv-card-horario">⏰ '+s.horario+'</div>':'')
-        +'</div></div>';
-    }).join('');
+    _lvSalasCompletas = salas;
+    _lvFiltroRede = 'Todas';
+    _lvFiltroTerminal = 'Todos';
+    // Montar filtros e cards
+    lvRenderizarFiltros(salas);
   }
   document.getElementById('lv-result').style.display='block';
   document.getElementById('lv-result').scrollIntoView({behavior:'smooth',block:'start'});
