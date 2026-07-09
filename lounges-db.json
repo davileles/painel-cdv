@@ -1,7 +1,7 @@
 {
   "_meta": {
     "versao": "1.0",
-    "atualizadoEm": "2026-07-08T13:00:00.000Z",
+    "atualizadoEm": "2026-07-09T00:00:00.000Z",
     "fonte": "LoungeKey + DragonPass + Priority Pass",
     "totalAeroportos": 92
   },
@@ -135,7 +135,23 @@
         }
       ],
       "salas": [],
-      "buscadoEm": "2026-07-09T14:49:57.854Z"
+      "buscadoEm": "2026-07-09T14:49:57.854Z",
+      "slugs": [
+        "w-lounge-guarulhos-gru",
+        "w-lounge-guarulhos-gru-terminal-2",
+        "w-lounge-guarulhos-gru-terminal-3",
+        "plaza-premium-lounge-gru",
+        "the-lounge-sao-paulo-gru-t2-domestic",
+        "skyteam-lounge-gru",
+        "advantage-vip-lounge-gru",
+        "tryp-gru-airport-gru",
+        "espaco-banco-safra-gru",
+        "vip-lounge-inter-gru",
+        "urban-cowork-airport-lounge-gru",
+        "visa-infinite-lounge-gru",
+        "nomad-lounge-gru",
+        "gol-premium-lounge-gru-domestic"
+      ]
     },
     "GIG": {
       "nome": "Rio de Janeiro – Galeão Internacional",
@@ -171,6 +187,9 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GIG"
         }
+      ],
+      "slugs": [
+        "plaza-premium-lounge-gig"
       ]
     },
     "CGH": {
@@ -194,6 +213,10 @@
           "horario": "06:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CGH"
         }
+      ],
+      "slugs": [
+        "vip-lounge-cgh",
+        "cgm-lounge-congonhas"
       ]
     },
     "BSB": {
@@ -224,6 +247,10 @@
           "horario": "06:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BSB"
         }
+      ],
+      "slugs": [
+        "vip-lounge-bsb",
+        "brasilia-executive-lounge-bsb"
       ]
     },
     "SSA": {
@@ -247,6 +274,10 @@
           "horario": "06:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SSA"
         }
+      ],
+      "slugs": [
+        "vip-lounge-ssa",
+        "sala-vip-ssa"
       ]
     },
     "FOR": {
@@ -270,6 +301,9 @@
           "horario": "06:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FOR"
         }
+      ],
+      "slugs": [
+        "vip-lounge-for"
       ]
     },
     "REC": {
@@ -293,6 +327,10 @@
           "horario": "06:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=REC"
         }
+      ],
+      "slugs": [
+        "vip-lounge-rec",
+        "sala-vip-rec"
       ]
     },
     "POA": {
@@ -316,6 +354,10 @@
           "horario": "06:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=POA"
         }
+      ],
+      "slugs": [
+        "vip-lounge-poa",
+        "sala-vip-poa"
       ]
     },
     "CWB": {
@@ -332,7 +374,10 @@
         }
       ],
       "dragonpass": [],
-      "prioritypass": []
+      "prioritypass": [],
+      "slugs": [
+        "vip-lounge-cwb"
+      ]
     },
     "BEL": {
       "nome": "Belém – Val de Cans Internacional",
@@ -403,6 +448,11 @@
           "horario": "05:00–24:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LIS"
         }
+      ],
+      "slugs": [
+        "tap-premium-lounge-lis",
+        "ana-executive-lounge-lis",
+        "sala-vip-lis"
       ]
     },
     "MAD": {
@@ -445,6 +495,11 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MAD"
         }
+      ],
+      "slugs": [
+        "iberia-lounge-mad-t4",
+        "plaza-premium-lounge-mad",
+        "sala-vip-mad"
       ]
     },
     "CDG": {
@@ -487,6 +542,11 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CDG"
         }
+      ],
+      "slugs": [
+        "aspire-lounge-cdg",
+        "salon-kleber-cdg",
+        "air-france-lounge-cdg"
       ]
     },
     "LHR": {
@@ -547,6 +607,12 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LHR"
         }
+      ],
+      "slugs": [
+        "aspire-lounge-lhr-t5",
+        "no1-lounge-lhr-t2",
+        "plaza-premium-lounge-lhr-t3",
+        "british-airways-galleries-lhr"
       ]
     },
     "AMS": {
@@ -584,6 +650,10 @@
           "obs": "Somente voos KLM",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=AMS"
         }
+      ],
+      "slugs": [
+        "aspire-lounge-ams",
+        "klm-crown-lounge-ams"
       ]
     },
     "FRA": {
@@ -626,6 +696,10 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FRA"
         }
+      ],
+      "slugs": [
+        "the-squaire-business-lounge-fra",
+        "lufthansa-senator-lounge-fra"
       ]
     },
     "MIA": {
@@ -668,6 +742,11 @@
           "horario": "05:00–21:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MIA"
         }
+      ],
+      "slugs": [
+        "the-club-mia",
+        "escape-lounge-mia",
+        "american-airlines-admirals-club-mia"
       ]
     },
     "JFK": {
@@ -704,6 +783,11 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=JFK"
         }
+      ],
+      "slugs": [
+        "wingtips-lounge-jfk",
+        "the-club-jfk-t4",
+        "korean-air-lounge-jfk"
       ]
     },
     "ORD": {
@@ -727,6 +811,10 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ORD"
         }
+      ],
+      "slugs": [
+        "the-club-ord",
+        "united-club-ord"
       ]
     },
     "LAX": {
@@ -757,6 +845,10 @@
           "horario": "05:00–23:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LAX"
         }
+      ],
+      "slugs": [
+        "the-club-lax",
+        "star-alliance-lounge-lax"
       ]
     },
     "EZE": {
@@ -787,6 +879,11 @@
           "horario": "06:00–23:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=EZE"
         }
+      ],
+      "slugs": [
+        "patagonia-lounge-eze",
+        "eze-vip-lounge",
+        "admirals-club-eze"
       ]
     },
     "SCL": {
@@ -817,6 +914,10 @@
           "horario": "06:00–23:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SCL"
         }
+      ],
+      "slugs": [
+        "entel-sky-lounge-scl",
+        "vip-lounge-scl"
       ]
     },
     "BOG": {
@@ -840,6 +941,10 @@
           "horario": "05:00–23:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BOG"
         }
+      ],
+      "slugs": [
+        "vip-lounge-bog",
+        "el-dorado-lounge-bog"
       ]
     },
     "LIM": {
@@ -870,6 +975,10 @@
           "horario": "05:00–24:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LIM"
         }
+      ],
+      "slugs": [
+        "lan-premium-lounge-lim",
+        "vip-lounge-lim"
       ]
     },
     "DXB": {
@@ -924,6 +1033,11 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=DXB"
         }
+      ],
+      "slugs": [
+        "marhaba-lounge-dxb-t1",
+        "marhaba-lounge-dxb-t3",
+        "plaza-premium-lounge-dxb-t3"
       ]
     },
     "DOH": {
@@ -954,6 +1068,10 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=DOH"
         }
+      ],
+      "slugs": [
+        "al-mourjan-business-lounge-doh",
+        "oryx-lounge-doh"
       ]
     },
     "SIN": {
@@ -1055,6 +1173,10 @@
           "horario": "05:30–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BCN"
         }
+      ],
+      "slugs": [
+        "bcn-lounge-t1",
+        "vueling-lounge-bcn"
       ]
     },
     "FCO": {
@@ -1085,6 +1207,10 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FCO"
         }
+      ],
+      "slugs": [
+        "sala-michelangelo-fco",
+        "alitalia-lounge-fco"
       ]
     },
     "ATH": {
@@ -1250,6 +1376,10 @@
           "horario": "05:30–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ZRH"
         }
+      ],
+      "slugs": [
+        "swiss-business-lounge-zrh",
+        "zurich-lounge-zrh"
       ]
     },
     "MUC": {
@@ -1326,6 +1456,10 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ORY"
         }
+      ],
+      "slugs": [
+        "salon-bercy-ory",
+        "orly-lounge-ory"
       ]
     },
     "MXP": {
@@ -1349,6 +1483,10 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MXP"
         }
+      ],
+      "slugs": [
+        "vip-lounge-mxp-t1",
+        "malpensa-lounge-mxp"
       ]
     },
     "CPT": {
@@ -1372,6 +1510,10 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CPT"
         }
+      ],
+      "slugs": [
+        "slow-lounge-cpt",
+        "british-airways-lounge-cpt"
       ]
     },
     "JNB": {
@@ -1402,6 +1544,10 @@
           "horario": "05:00–23:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=JNB"
         }
+      ],
+      "slugs": [
+        "bidvest-premier-lounge-jnb",
+        "british-airways-lounge-jnb"
       ]
     },
     "BKK": {
@@ -1561,6 +1707,10 @@
           "horario": "04:30–21:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BRU"
         }
+      ],
+      "slugs": [
+        "no1-lounge-bru",
+        "brussels-airlines-lounge-bru"
       ]
     },
     "PRG": {
@@ -1821,7 +1971,11 @@
         }
       ],
       "salas": [],
-      "buscadoEm": "2026-07-09T14:49:43.784Z"
+      "buscadoEm": "2026-07-09T14:49:43.784Z",
+      "slugs": [
+        "vip-lounge-confins-cnf",
+        "sala-vip-cnf"
+      ]
     },
     "MAO": {
       "nome": "Manaus – Eduardo Gomes Internacional",
@@ -1844,6 +1998,9 @@
           "horario": "06:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MAO"
         }
+      ],
+      "slugs": [
+        "vip-lounge-mao"
       ]
     },
     "FLN": {
@@ -1867,6 +2024,9 @@
           "horario": "06:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FLN"
         }
+      ],
+      "slugs": [
+        "vip-lounge-fln"
       ]
     },
     "GYN": {
@@ -1961,6 +2121,9 @@
           "horario": "06:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=NAT"
         }
+      ],
+      "slugs": [
+        "vip-lounge-nat"
       ]
     },
     "JPA": {
@@ -2095,6 +2258,9 @@
           "horario": "06:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=NVT"
         }
+      ],
+      "slugs": [
+        "vip-lounge-nvt"
       ]
     },
     "BPS": {
@@ -2118,6 +2284,9 @@
           "horario": "06:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BPS"
         }
+      ],
+      "slugs": [
+        "brt-lounge-bps"
       ]
     },
     "IGU": {
@@ -2141,6 +2310,9 @@
           "horario": "06:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=IGU"
         }
+      ],
+      "slugs": [
+        "vip-lounge-iguassu-igu"
       ]
     },
     "AEP": {
@@ -2164,6 +2336,10 @@
           "horario": "05:00–23:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=AEP"
         }
+      ],
+      "slugs": [
+        "aep-vip-lounge",
+        "sala-vip-aeroparque-aep"
       ]
     },
     "MVD": {
@@ -2187,6 +2363,10 @@
           "horario": "05:00–23:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MVD"
         }
+      ],
+      "slugs": [
+        "vip-lounge-mvd",
+        "carrasco-lounge-mvd"
       ]
     },
     "MDZ": {
@@ -2210,6 +2390,9 @@
           "horario": "06:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MDZ"
         }
+      ],
+      "slugs": [
+        "vip-lounge-mdz"
       ]
     },
     "PTY": {
@@ -2252,6 +2435,10 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=PTY"
         }
+      ],
+      "slugs": [
+        "copa-club-lounge-pty",
+        "vip-lounge-t2-pty"
       ]
     },
     "MCO": {
@@ -2288,6 +2475,10 @@
           "horario": "05:00–21:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MCO"
         }
+      ],
+      "slugs": [
+        "the-club-mco",
+        "escape-lounge-mco"
       ]
     },
     "FLL": {
@@ -2311,6 +2502,9 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FLL"
         }
+      ],
+      "slugs": [
+        "the-club-fll"
       ]
     },
     "EWR": {
@@ -2341,6 +2535,9 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=EWR"
         }
+      ],
+      "slugs": [
+        "the-club-ewr"
       ]
     },
     "LGA": {
@@ -2364,6 +2561,10 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LGA"
         }
+      ],
+      "slugs": [
+        "the-club-lga",
+        "delta-sky-club-lga"
       ]
     },
     "IAD": {
@@ -2393,6 +2594,10 @@
           "horario": "05:00–21:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=IAD"
         }
+      ],
+      "slugs": [
+        "the-club-iad",
+        "escape-lounge-iad"
       ]
     },
     "IAH": {
@@ -2416,6 +2621,10 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=IAH"
         }
+      ],
+      "slugs": [
+        "the-club-iah",
+        "united-club-iah"
       ]
     },
     "LAS": {
@@ -2452,6 +2661,11 @@
           "horario": "05:00–23:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=LAS"
         }
+      ],
+      "slugs": [
+        "the-club-las-t1",
+        "the-club-las-t3",
+        "centurion-las"
       ]
     },
     "SFO": {
@@ -2488,6 +2702,11 @@
           "horario": "05:00–21:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SFO"
         }
+      ],
+      "slugs": [
+        "the-club-sfo",
+        "escape-lounge-sfo",
+        "air-france-klm-lounge-sfo"
       ]
     },
     "OPO": {
@@ -2511,6 +2730,10 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=OPO"
         }
+      ],
+      "slugs": [
+        "vip-lounge-opo",
+        "ana-lounge-opo"
       ]
     }
   }
