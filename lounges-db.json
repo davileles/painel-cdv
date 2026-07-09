@@ -4069,21 +4069,141 @@
       ],
       "salas": [
         {
-          "nome": "BRT Lounge Inter Confins",
-          "slug": "brt-lounge-confins-cnf",
-          "terminal": "Confins (CNF), Terminal 1 (Doméstico), após segurança, nível 1",
-          "horario": "05:00–23:00",
-          "localizacao": "Confins – Tancredo Neves, Terminal 1 (Doméstico), após segurança, nível 1.",
-          "overview": "Lounge BRT/Inter em Confins, airside. Ambiente confortável com bom buffet e bar.",
+          "nome": "Advantage VIP Lounge",
+          "slug": "advantage-vip-lounge-cnf",
+          "terminal": "Terminal 1 (Doméstico), oposto ao gate 2, 2º andar",
+          "horario": "24h",
+          "localizacao": "Terminal 1 (Doméstico), após a segurança, oposto ao gate 2, 2º andar. Possui Fast Track exclusivo próximo ao acesso da sala.",
+          "overview": "Melhor opção em Confins. Único lounge com Fast Track e sala VIP interna. Ambiente elegante e confortável, com menu à la carte disponível. Acesso pay-in para todos os passageiros.",
           "amenidades": {
             "comida": [
-              "Buffet quente e frio",
-              "Snacks e salgados",
-              "Frutas"
+              "Seleção de snacks e refeições leves",
+              "Opções sugar free disponíveis (verificar disponibilidade)",
+              "Menu à la carte"
             ],
             "bebida": [
-              "Bar completo",
-              "Cervejas, vinhos",
+              "Bar completo com bebidas alcoólicas e não alcoólicas",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Fast Track exclusivo",
+              "Chuveiros (taxa adicional)",
+              "Sala VIP interna reservada"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-cnf/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-cnf/#photos"
+        },
+        {
+          "nome": "Ambaar Lounge (T1)",
+          "slug": "ambaar-lounge-cnf-terminal-1",
+          "terminal": "Terminal 1 (Doméstico), próximo ao gate 7",
+          "horario": "24h",
+          "localizacao": "Terminal 1 (Doméstico), próximo ao gate 7.",
+          "overview": "Lounge Ambaar no Terminal 1. Espaçoso, porém pode ficar cheio. Poucas opções de alimentação. O ar condicionado do aeroporto tende a ser melhor que o da sala. Aceita Priority Pass e pay-in.",
+          "amenidades": {
+            "comida": [
+              "Lanches leves e refeições simples"
+            ],
+            "bebida": [
+              "Bebidas alcoólicas",
+              "Café e bebidas quentes",
+              "Sucos e refrigerantes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Salas de conferência",
+              "Televisores",
+              "Revistas e jornais"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/ambaar-lounge-cnf-terminal-1/",
+          "urlFotos": "https://loungereview.com/lounges/ambaar-lounge-cnf-terminal-1/#photos"
+        },
+        {
+          "nome": "Ambaar Lounge 2 (T1)",
+          "slug": "ambaar-lounge-2-cnf-terminal-1-gates-2-3",
+          "terminal": "Terminal 1 (Doméstico), gates 2-3",
+          "horario": "24h",
+          "localizacao": "Terminal 1 (Doméstico), entre os gates 2 e 3.",
+          "overview": "Segunda unidade Ambaar no T1. Espaço de coworking com boas opções de bebidas e máquinas de café. Sem pratos quentes. Aceita Priority Pass e pay-in.",
+          "amenidades": {
+            "comida": [
+              "Snacks e itens frios",
+              "Sem pratos quentes"
+            ],
+            "bebida": [
+              "Boa seleção de bebidas",
+              "Máquinas de café premium"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Espaço de coworking",
+              "Tomadas e USB"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/ambaar-lounge-2-cnf-terminal-1-gates-2-3/",
+          "urlFotos": "https://loungereview.com/lounges/ambaar-lounge-2-cnf-terminal-1-gates-2-3/#photos"
+        },
+        {
+          "nome": "BRT Lounge Confins",
+          "slug": "brt-lounge-confins-cnf",
+          "terminal": "Terminal 1 (Doméstico), entre os gates 21-25",
+          "horario": "06:00–22:00",
+          "localizacao": "Terminal 1 (Doméstico), entre os gates 21 e 25.",
+          "overview": "Lounge BRT no setor doméstico do T1. Ambiente aconchegante. Aceita pay-in.",
+          "amenidades": {
+            "comida": [
+              "Buffet quente e frio"
+            ],
+            "bebida": [
+              "Cervejas, vinhos e destilados",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/brt-lounge-confins-cnf/",
+          "urlFotos": "https://loungereview.com/lounges/brt-lounge-confins-cnf/#photos"
+        },
+        {
+          "nome": "BRT Lounge Inter Confins",
+          "slug": "brt-lounge-inter-confins-cnf",
+          "terminal": "Terminal 1 (Doméstico), após segurança, nível 1",
+          "horario": "24h",
+          "localizacao": "Terminal 1, após segurança, nível 1. Sala airside.",
+          "overview": "Sala pequena mas aconchegante com culinária mineira. Muito elogiada pela diversidade de comidas e bebidas regionais. Pode lotar facilmente. Opiniões mistas sobre qualidade e reposição dos itens.",
+          "amenidades": {
+            "comida": [
+              "Buffet quente com culinária mineira",
+              "Salgados e pão de queijo",
+              "Frutas e doces"
+            ],
+            "bebida": [
+              "Cervejas, vinhos e destilados complementares",
               "Café e bebidas quentes"
             ],
             "outros": [
@@ -4102,26 +4222,56 @@
           "urlFotos": "https://loungereview.com/lounges/brt-lounge-confins-cnf/#photos"
         },
         {
-          "nome": "Siesta Box Confins",
-          "slug": "siesta-box-confins-cnf",
-          "terminal": "Confins (CNF), Terminal 1 (Doméstico), landside, em frente ao check-in Azul",
-          "horario": "24h",
-          "localizacao": "Confins, Terminal 1 (Doméstico), landside (fora da segurança), em frente ao balcão de check-in da Azul.",
-          "overview": "Pods de descanso individuais para quem chega cedo ou tem longas esperas antes do embarque. Acesso antes da segurança.",
+          "nome": "Latitude Workspaces",
+          "slug": "latitude-workspaces-cnf",
+          "terminal": "Terminal 1 (Doméstico), landside (antes da segurança), em frente ao restaurante Vila Francisca",
+          "horario": "08:00–20:00",
+          "localizacao": "Terminal 1 (Doméstico), landside (antes da segurança), em frente ao restaurante Vila Francisca.",
+          "overview": "Espaço de trabalho e descanso antes da segurança. Ideal para quem chega cedo ao aeroporto. Aceita todos os passageiros mediante pagamento.",
           "amenidades": {
             "comida": [
-              "Snacks básicos"
+              "Snacks e lanches leves"
+            ],
+            "bebida": [
+              "Café e bebidas quentes",
+              "Bebidas não alcoólicas"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Estações de trabalho",
+              "Tomadas e USB",
+              "Ambiente tranquilo"
+            ]
+          },
+          "obs": "Localização landside — antes da segurança.",
+          "programas": [
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/latitude-workspaces-cnf/",
+          "urlFotos": "https://loungereview.com/lounges/latitude-workspaces-cnf/#photos"
+        },
+        {
+          "nome": "Siesta Box Confins",
+          "slug": "siesta-box-confins-cnf",
+          "terminal": "Terminal 1 (Doméstico), landside (antes da segurança), em frente ao check-in Azul",
+          "horario": "24h",
+          "localizacao": "Terminal 1 (Doméstico), landside, em frente ao balcão de check-in da Azul. Área pública do aeroporto.",
+          "overview": "Pods privativos de descanso por hora. Ideal para quem chega muito cedo ou tem longas esperas antes do embarque. Acomoda passageiros individuais e casais.",
+          "amenidades": {
+            "comida": [
+              "Snacks básicos disponíveis"
             ],
             "bebida": [
               "Água e bebidas básicas"
             ],
             "outros": [
-              "Pods privativos de descanso",
+              "Pods privativos por hora",
               "Wi-Fi",
               "Carregador USB",
               "Ar-condicionado"
             ]
           },
+          "obs": "Localização landside — antes da segurança. Cobrado por hora.",
           "programas": [
             "Priority Pass"
           ],
@@ -4129,27 +4279,28 @@
           "urlFotos": "https://loungereview.com/lounges/siesta-box-confins-cnf/#photos"
         },
         {
-          "nome": "Ambaar Lounge CNF",
+          "nome": "Ambaar Lounge (T2 Internacional)",
           "slug": "ambaar-lounge-cnf-terminal-2",
-          "terminal": "Confins (CNF), Terminal 2",
+          "terminal": "Terminal 2 (Internacional), após segurança",
           "horario": "05:00–23:00",
-          "localizacao": "Confins – Tancredo Neves, Terminal 2.",
-          "overview": "Lounge Ambaar no Terminal 2 de Confins. Boa infraestrutura para voos domésticos e internacionais.",
+          "localizacao": "Terminal 2 (Internacional), após segurança.",
+          "overview": "Lounge Ambaar no Terminal 2 Internacional de Confins. Boa infraestrutura para voos internacionais.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio",
-              "Snacks"
+              "Snacks e frutas"
             ],
             "bebida": [
               "Cervejas",
               "Vinhos",
-              "Café",
+              "Café e bebidas quentes",
               "Sucos"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Televisores"
+              "Televisores",
+              "Ar-condicionado"
             ]
           },
           "programas": [
@@ -4161,7 +4312,7 @@
           "urlFotos": "https://loungereview.com/lounges/ambaar-lounge-cnf-terminal-2/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T12:00:00.000Z",
+      "buscadoEm": "2026-07-09T14:00:00.000Z",
       "slugs": [
         "vip-lounge-confins-cnf",
         "sala-vip-cnf"
