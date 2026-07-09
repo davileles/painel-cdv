@@ -149,7 +149,495 @@
         "visa-infinite-lounge-gru",
         "nomad-lounge-gru",
         "gol-premium-lounge-gru-domestic"
-      ]
+      ],
+      "salas": [
+        {
+          "nome": "W Premium Lounge T1",
+          "slug": "w-lounge-guarulhos-gru",
+          "terminal": "Terminal 1 (Doméstico – Azul)",
+          "horario": "24h",
+          "localizacao": "Terminal 1, após o controle de segurança. Lounge doméstico, atende principalmente voos da Azul. Espaço compacto com capacidade para 36 passageiros.",
+          "overview": "Lounge doméstico compacto no Terminal 1, operado pelo grupo W. Atende principalmente passageiros da Azul. Design contemporâneo da marca W. Pequena capacidade — pode lotar nos horários de pico.",
+          "amenidades": {
+            "comida": [
+              "Buffet com opções quentes e frias",
+              "Café da manhã (pastéis, ovos, frios)",
+              "Snacks e sanduíches",
+              "Doces e frutas"
+            ],
+            "bebida": [
+              "Cervejas nacionais",
+              "Vinhos",
+              "Destilados",
+              "Café, sucos e refrigerantes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas e USB em todos os assentos",
+              "Televisores",
+              "Chuveiros",
+              "Ar-condicionado",
+              "Monitor de voos"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/w-lounge-guarulhos-gru/",
+          "urlFotos": "https://loungereview.com/lounges/w-lounge-guarulhos-gru/#photos"
+        },
+        {
+          "nome": "W Premium Lounge T2 The West",
+          "slug": "w-lounge-guarulhos-gru-terminal-2",
+          "terminal": "Terminal 2 (Doméstico), próximo aos gates 201-205",
+          "horario": "24h",
+          "localizacao": "Terminal 2 (Doméstico), após a segurança, vire à direita, siga até o fim do corredor, vire à direita novamente e suba pela escada rolante ou elevador até o andar superior.",
+          "overview": "Lounge doméstico no Terminal 2. Visitantes descrevem o espaço como pequeno e frequentemente superlotado. Comida limitada mas de boa qualidade. Equipe elogiada pela simpatia e limpeza rápida.",
+          "amenidades": {
+            "comida": [
+              "Buffet quente e frio",
+              "Snacks",
+              "Frutas"
+            ],
+            "bebida": [
+              "Cervejas",
+              "Vinhos",
+              "Destilados",
+              "Café e bebidas quentes",
+              "Sucos e refrigerantes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Ar-condicionado",
+              "Monitor de voos"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/w-lounge-guarulhos-gru-terminal-2/",
+          "urlFotos": "https://loungereview.com/lounges/w-lounge-guarulhos-gru-terminal-2/#photos"
+        },
+        {
+          "nome": "W Premium Lounge T3 The Pier",
+          "slug": "w-lounge-guarulhos-gru-terminal-3",
+          "terminal": "Terminal 3 (Internacional), próximo aos gates 323-328",
+          "horario": "24h",
+          "localizacao": "Terminal 3, após a imigração/segurança, ao final do pier à direita, próximo aos Gates 327 e 328. Acesso restrito a voos internacionais. Estadia máxima: 3 horas.",
+          "overview": "Lounge internacional de dois andares no Terminal 3. O andar superior é exclusivo para passageiros Air France La Première. Possui buffet, bar e vistas para os gates internacionais. Pode ficar superlotado nos horários de pico.",
+          "amenidades": {
+            "comida": [
+              "Buffet quente (café da manhã 5h-10h: ovos, frios, frutas, pães)",
+              "Buffet frio",
+              "Snacks e doces",
+              "Opções à la carte (área Centurion)"
+            ],
+            "bebida": [
+              "Cervejas",
+              "Vinhos e espumantes",
+              "Coquetéis e destilados",
+              "Café, chá, sucos",
+              "Água e refrigerantes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas e USB",
+              "Televisores",
+              "Monitor de voos",
+              "Chuveiros (taxa adicional, grátis Centurion)",
+              "Armazenamento de bagagem",
+              "Área La Première Air France (andar superior)"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "obs": "Acesso restrito entre 05h-09h e 21h-23h. Apenas voos internacionais.",
+          "urlLoungereview": "https://loungereview.com/lounges/w-lounge-guarulhos-gru-terminal-3/",
+          "urlFotos": "https://loungereview.com/lounges/w-lounge-guarulhos-gru-terminal-3/#photos"
+        },
+        {
+          "nome": "Plaza Premium Lounge",
+          "slug": "plaza-premium-lounge-gru",
+          "terminal": "Terminal 2 (Doméstico), após a segurança",
+          "horario": "24h",
+          "localizacao": "Terminal 2 (Doméstico), após a segurança. Acesso pelo mesmo corredor do W Lounge T2, andar superior. Vista privilegiada para a pista.",
+          "overview": "Um dos melhores lounges do Terminal 2. Espaço amplo com buffet variado e área dedicada de bebidas. Vista para a pista e pátio é um destaque. Prazo máximo de 2 horas de permanência. Aceita reservas antecipadas.",
+          "amenidades": {
+            "comida": [
+              "Buffet quente e frio variado",
+              "Frutas tropicais",
+              "Sanduíches e salgados",
+              "Doces e sobremesas"
+            ],
+            "bebida": [
+              "Cervejas nacionais e importadas",
+              "Vinhos e espumantes",
+              "Barra de drinks e coquetéis",
+              "Café, chá, sucos, água"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas e USB",
+              "Televisores",
+              "Monitor de voos",
+              "Salas de conferência (taxa adicional)",
+              "Quartos privados (taxa adicional)",
+              "Chuveiros (taxa adicional)",
+              "Armazenamento de bagagem",
+              "Vista para a pista"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "obs": "Estadia máxima 2 horas. Reserva antecipada recomendada.",
+          "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-lounge-gru/",
+          "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-gru/#photos"
+        },
+        {
+          "nome": "Advantage VIP Lounge",
+          "slug": "advantage-vip-lounge-gru",
+          "terminal": "Terminal 2 (Doméstico), andar superior",
+          "horario": "24h",
+          "localizacao": "Terminal 2 (Doméstico), após a segurança, vire à direita, siga até o fim do corredor, vire à direita novamente e suba pelo elevador ou escada rolante até o andar superior.",
+          "overview": "Lounge espaçoso e bem equipado no Terminal 2. Boa seleção de comida quente e bar completo. Pode ficar movimentado no início da noite. Bem avaliado pelos visitantes.",
+          "amenidades": {
+            "comida": [
+              "Buffet quente variado",
+              "Snacks e salgados",
+              "Frutas e doces"
+            ],
+            "bebida": [
+              "Bar completo com drinks e coquetéis",
+              "Cervejas",
+              "Vinhos",
+              "Café, sucos, refrigerantes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas e USB",
+              "Televisores",
+              "Monitor de voos",
+              "Ar-condicionado"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-gru/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-gru/#photos"
+        },
+        {
+          "nome": "The Lounge São Paulo (SkyTeam)",
+          "slug": "skyteam-lounge-gru",
+          "terminal": "Terminal 2 (Internacional), mezanino",
+          "horario": "24h",
+          "localizacao": "Terminal 2 (Internacional), após a segurança, vire à direita, suba para o mezanino.",
+          "overview": "Operado em parceria com a Global Lounge Network. Aceita Air Europa e Aeromexico (elite), além de Priority Pass e pay-in. Espaço amplo e iluminado com diversidade de assentos: poltronas, mesas, reclinados e escritórios privados.",
+          "amenidades": {
+            "comida": [
+              "Buffet de snacks e salgados",
+              "Frutas e doces"
+            ],
+            "bebida": [
+              "Bebidas alcoólicas e não alcoólicas",
+              "Cerveja, vinho, refrigerantes",
+              "Café e chá"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas (algumas com defeito)",
+              "Televisores",
+              "Área kids",
+              "Chuveiros",
+              "Escritórios privados"
+            ]
+          },
+          "programas": [
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/skyteam-lounge-gru/",
+          "urlFotos": "https://loungereview.com/lounges/skyteam-lounge-gru/#photos"
+        },
+        {
+          "nome": "The Lounge São Paulo (Doméstico)",
+          "slug": "the-lounge-sao-paulo-gru-t2-domestic",
+          "terminal": "Terminal 2 (Doméstico), andar superior",
+          "horario": "24h",
+          "localizacao": "Terminal 2 (Doméstico), após a segurança, vire à direita, ao fim do corredor vire à direita e suba pela escada rolante ou elevador até o andar superior.",
+          "overview": "Lounge pequeno e frequentemente cheio. Equipe elogiada pela simpatia e agilidade. Comida com boa variedade para curtas esperas. Espaço kids pequeno disponível.",
+          "amenidades": {
+            "comida": [
+              "Buffet com opções quentes e frias",
+              "Itens à la carte (horário limitado)",
+              "Frutas e doces"
+            ],
+            "bebida": [
+              "Cervejas",
+              "Vinhos",
+              "Café, sucos e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Espaço kids",
+              "Ar-condicionado"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/the-lounge-sao-paulo-gru-t2-domestic/",
+          "urlFotos": "https://loungereview.com/lounges/the-lounge-sao-paulo-gru-t2-domestic/#photos"
+        },
+        {
+          "nome": "Tryp GRU Airport",
+          "slug": "tryp-gru-airport-gru",
+          "terminal": "Terminal 2 e 3 (hotel in-terminal)",
+          "horario": "24h",
+          "localizacao": "Acessível pelos Terminais 2 e 3 para passageiros em trânsito internacional. Único hotel dentro do aeroporto no Hemisfério Sul.",
+          "overview": "Único hotel in-terminal do Hemisfério Sul. Membros LoungeKey, DragonPass e Priority Pass recebem crédito de US$28 em alimentos e bebidas no restaurante. Acesso liberado a passageiros internacionais e em trânsito.",
+          "amenidades": {
+            "comida": [
+              "Restaurante com menu completo",
+              "Crédito US$28 food & beverage para membros LoungeKey/DP/PP"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Bebidas alcoólicas e não alcoólicas"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Quartos de hotel (tarifa adicional)",
+              "Piscina",
+              "Academia",
+              "Spa",
+              "Estacionamento"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "obs": "Membros recebem crédito de US$28 em alimentos e bebidas, não acesso livre ao lounge.",
+          "urlLoungereview": "https://loungereview.com/lounges/tryp-gru-airport-gru/",
+          "urlFotos": "https://loungereview.com/lounges/tryp-gru-airport-gru/#photos"
+        },
+        {
+          "nome": "Espaço Banco Safra (GRU Lounge)",
+          "slug": "espaco-banco-safra-gru",
+          "terminal": "Terminal 3 (Internacional)",
+          "horario": "24h",
+          "localizacao": "Terminal 3 (Internacional). Antigo Star Alliance Lounge, reformulado pelo Banco Safra. Overlook para o átrio e pista.",
+          "overview": "Ex-Star Alliance Lounge, agora operado pelo Banco Safra. Design moderno, iluminado e amplo. Vista para o átrio e pista. Priority Pass aceito fora do horário de pico (geralmente entre 23h e 2h). Centro de negócios com impressão wireless.",
+          "amenidades": {
+            "comida": [
+              "Buffet leve com opções quentes e frias",
+              "Café da manhã básico"
+            ],
+            "bebida": [
+              "Café e bebidas quentes",
+              "Sucos e refrigerantes",
+              "Bar self-service"
+            ],
+            "outros": [
+              "Wi-Fi rápido",
+              "Tomadas e USB em todos os assentos",
+              "Impressão wireless",
+              "Centro de negócios",
+              "Chuveiros de luxo (taxa adicional)"
+            ]
+          },
+          "programas": [
+            "Priority Pass"
+          ],
+          "obs": "Priority Pass aceito fora do horário de pico. Horário restrito pode variar.",
+          "urlLoungereview": "https://loungereview.com/lounges/espaco-banco-safra-gru/",
+          "urlFotos": "https://loungereview.com/lounges/espaco-banco-safra-gru/#photos"
+        },
+        {
+          "nome": "Banco Inter VIP Lounge",
+          "slug": "vip-lounge-inter-gru",
+          "terminal": "Terminal 2 ou 3",
+          "horario": "24h",
+          "localizacao": "Guarulhos (GRU). Lounge pequeno e aconchegante, menor que outras opções do aeroporto.",
+          "overview": "Lounge pequeno mas bem avaliado. Ambiente calmo e menos lotado que outras salas de Guarulhos. Comida simples, fresca e com boa variedade. Bar excelente com várias opções de drinks. Banheiros limpos e equipe prestativa.",
+          "amenidades": {
+            "comida": [
+              "Buffet simples e fresco",
+              "Variedade razoável de opções"
+            ],
+            "bebida": [
+              "Bar com excelente variedade de drinks",
+              "Cervejas, vinhos, destilados",
+              "Café, sucos"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Estações de trabalho",
+              "Chuveiros"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/vip-lounge-inter-gru/",
+          "urlFotos": "https://loungereview.com/lounges/vip-lounge-inter-gru/#photos"
+        },
+        {
+          "nome": "Visa Infinite Lounge",
+          "slug": "visa-infinite-lounge-gru",
+          "terminal": "Guarulhos (GRU)",
+          "horario": "24h",
+          "localizacao": "São Paulo – Guarulhos (GRU). Exclusivo para portadores de cartão Visa Infinite.",
+          "overview": "Lounge exclusivo para cartões Visa Infinite. Ambiente confortável com amenidades premium.",
+          "amenidades": {
+            "comida": [
+              "Buffet quente e frio"
+            ],
+            "bebida": [
+              "Bar com bebidas alcoólicas e não alcoólicas"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Chuveiros",
+              "Estações de trabalho"
+            ]
+          },
+          "programas": [
+            "Visa Infinite"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/visa-infinite-lounge-gru/",
+          "urlFotos": "https://loungereview.com/lounges/visa-infinite-lounge-gru/#photos"
+        },
+        {
+          "nome": "Urban Cowork Airport Lounge",
+          "slug": "urban-cowork-airport-lounge-gru",
+          "terminal": "Terminal 2 (landside), próximo ao check-in área E / balcões LATAM",
+          "horario": "24h",
+          "localizacao": "Terminal 2, antes da segurança (landside), próximo à área de check-in E e balcões LATAM.",
+          "overview": "Espaço de coworking no aeroporto, antes da segurança. Foco em trabalho: salas de conferência, impressão e chuveiros. Café, chá, água e pão de queijo inclusos. DragonPass e Priority Pass têm franquia de tempo gratuita. Alguns visitantes relatam redução do espaço e móveis antigos.",
+          "amenidades": {
+            "comida": [
+              "Pão de queijo",
+              "Snacks básicos inclusos",
+              "Alimentos adicionais à venda"
+            ],
+            "bebida": [
+              "Café, chá e água inclusos",
+              "Bebidas adicionais à venda"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Espaço de trabalho amplo",
+              "Salas de conferência",
+              "Sala de treinamento",
+              "Impressão",
+              "Chuveiros"
+            ]
+          },
+          "programas": [
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "obs": "Localização landside (antes da segurança). Não substitui lounge tradicional pós-segurança.",
+          "urlLoungereview": "https://loungereview.com/lounges/urban-cowork-airport-lounge-gru/",
+          "urlFotos": "https://loungereview.com/lounges/urban-cowork-airport-lounge-gru/#photos"
+        },
+        {
+          "nome": "Nomad Lounge",
+          "slug": "nomad-lounge-gru",
+          "terminal": "Guarulhos (GRU)",
+          "horario": "24h",
+          "localizacao": "São Paulo – Guarulhos (GRU). Design moderno com vista panorâmica para a pista.",
+          "overview": "Lounge moderno com design luminoso e assentos confortáveis. Vista panorâmica para a pista. Oferece snacks, bebidas (incluindo alcoólicas, milkshakes e refrigerantes) e mesa de atendimento Nomad.",
+          "amenidades": {
+            "comida": [
+              "Snacks e salgados",
+              "Opções leves"
+            ],
+            "bebida": [
+              "Bebidas alcoólicas",
+              "Milkshakes",
+              "Refrigerantes e sucos",
+              "Café"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Vista panorâmica para a pista",
+              "Mesa de atendimento Nomad"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/nomad-lounge-gru/",
+          "urlFotos": "https://loungereview.com/lounges/nomad-lounge-gru/#photos"
+        },
+        {
+          "nome": "GOL Smiles Lounge",
+          "slug": "gol-premium-lounge-gru-domestic",
+          "terminal": "Terminal 2 (Doméstico), com vista para a pista",
+          "horario": "24h",
+          "localizacao": "Terminal 2 (Doméstico), andar superior, com vista para a pista.",
+          "overview": "Lounge amplo com bastante assentos e boa variedade de alimentos. Vista para a pista. Geralmente menos lotado que outros lounges de GRU. Equipe com apenas um atendente na recepção em alguns horários, gerando fila.",
+          "amenidades": {
+            "comida": [
+              "Sanduíches e frios",
+              "Pães e torradas",
+              "Geleias e cereais",
+              "Frutas tropicais",
+              "Doces e chocolates",
+              "Sopa",
+              "Finger food"
+            ],
+            "bebida": [
+              "Café, suco, refrigerante",
+              "Cerveja, vinho e espumante",
+              "Destilados (em alguns horários)"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas e USB (limitadas)",
+              "Televisores planos com fones",
+              "Revistas e jornais",
+              "Área kids",
+              "Estações de trabalho",
+              "Chuveiros com kit de higiene e toalha",
+              "Vista para a pista"
+            ]
+          },
+          "programas": [
+            "Smiles GOL"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/gol-premium-lounge-gru-domestic/",
+          "urlFotos": "https://loungereview.com/lounges/gol-premium-lounge-gru-domestic/#photos"
+        }
+      ],
+      "buscadoEm": "2026-07-09T00:00:00.000Z"
     },
     "GIG": {
       "nome": "Rio de Janeiro – Galeão Internacional",
@@ -451,7 +939,79 @@
         "tap-premium-lounge-lis",
         "ana-executive-lounge-lis",
         "sala-vip-lis"
-      ]
+      ],
+      "salas": [
+        {
+          "nome": "TAP Premium Lounge",
+          "slug": "tap-premium-lounge-lis",
+          "terminal": "Terminal 1 (Schengen), mezanino acima da área de compras",
+          "horario": "5:00 am – 12:00 am",
+          "localizacao": "Terminal 1, área Schengen. Após a segurança, suba pelas escadas rolantes até o mezanino. Compartilha o corredor com o Lounge ANA.",
+          "overview": "Principal lounge da TAP em Lisboa. Acesso para passageiros Star Alliance em Business, Gold e portadores de Priority Pass. Buffet quente e frio variado com pastéis de nata frescos. Pode ficar muito lotado nos horários de pico.",
+          "amenidades": {
+            "comida": [
+              "Buffet quente e frio variado",
+              "Pastéis de nata frescos",
+              "Queijos e frios",
+              "Cereais e frutas"
+            ],
+            "bebida": [
+              "Vinhos e espumantes portugueses",
+              "Cervejas",
+              "Café espresso e chá",
+              "Sucos e água",
+              "Bebidas alcoólicas no bar"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas e USB",
+              "Televisores",
+              "Área de trabalho"
+            ]
+          },
+          "programas": [
+            "Priority Pass",
+            "LoungeKey",
+            "Star Alliance"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/tap-premium-lounge-lis/",
+          "urlFotos": "https://loungereview.com/lounges/tap-premium-lounge-lis/#photos"
+        },
+        {
+          "nome": "Lounge ANA",
+          "slug": "ana-lounge-lis",
+          "terminal": "Terminal 1 (Schengen), próximo ao gate 22",
+          "horario": "5:00 am – 12:00 am",
+          "localizacao": "Terminal 1 (Schengen), próximo ao gate 22, acima da Praça Lisboa. Após a segurança, suba ao 6º andar.",
+          "overview": "Lounge amplo e com boa estrutura. Aceita Priority Pass e DragonPass. Muito movimentado — visitantes relatam longas filas e ambiente de mercado em horários de pico. Boa rotatividade e limpeza constante.",
+          "amenidades": {
+            "comida": [
+              "Buffet frio e quente",
+              "Opções variadas de snacks"
+            ],
+            "bebida": [
+              "Vinhos",
+              "Cervejas",
+              "Café e bebidas quentes",
+              "Sucos"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores com esportes",
+              "Poltronas confortáveis"
+            ]
+          },
+          "programas": [
+            "Priority Pass",
+            "DragonPass",
+            "LoungeKey"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/ana-lounge-lis/",
+          "urlFotos": "https://loungereview.com/lounges/ana-lounge-lis/#photos"
+        }
+      ],
+      "buscadoEm": "2026-07-09T00:00:00.000Z"
     },
     "MAD": {
       "nome": "Madrid – Barajas Adolfo Suárez",
