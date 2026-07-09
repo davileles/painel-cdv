@@ -2007,30 +2007,32 @@ async function buscarLoungesAoVivo(iata) {
 }
 
 // GET /lounges/buscar?iata=GRU
-// Retorna salas ricas (LoungeReview): nome, horário, localização, amenidades, programas, link fotos
+// Retorna salas do lounges-db.json (dados pré-catalogados do LoungeReview)
 app.get('/lounges/buscar', async (req, res) => {
   const iata = (req.query.iata || '').toUpperCase().trim();
   if (!iata || !/^[A-Z]{3}$/.test(iata)) {
     return res.status(400).json({ ok: false, erro: 'Parâmetro ?iata= deve ter 3 letras (ex: GRU)' });
   }
   try {
-    // 1. Tenta cache no GitHub
+    // 1. Cache em memória (mais rápido, sem I/O)
+    if (global._loungesCache?.[iata]?.salas?.length) {
+      const mem = global._loungesCache[iata];
+      return res.json({ ok: true, fonte: 'cache', buscadoEm: mem.buscadoEm,
+        aeroporto: mem.aeroporto, salas: mem.salas });
+    }
+
+    // 2. Lê do lounges-db.json no GitHub
     const db = await ghGetJson(LOUNGES_DB_PATH, { aeroportos: {} });
     const entrada = db.data.aeroportos?.[iata];
 
-    // 1. Cache em memória (mais rápido, evita leitura do GitHub)
-    if (global._loungesCache?.[iata]?.salas?.length) {
-      const mem = global._loungesCache[iata];
-      return res.json({
-        ok: true, fonte: 'cache',
-        buscadoEm: mem.buscadoEm,
-        aeroporto: { iata, nome: entrada?.nome || iata, cidade: entrada?.cidade || '', pais: entrada?.pais || '' },
-        salas: mem.salas
-      });
-    }
-
-    // Cache válido = tem campo "salas" (formato rico no GitHub)
     if (entrada?.salas?.length) {
+      // Salva em memória para próximas consultas
+      if (!global._loungesCache) global._loungesCache = {};
+      global._loungesCache[iata] = {
+        salas: entrada.salas,
+        buscadoEm: entrada.buscadoEm || null,
+        aeroporto: { iata, nome: entrada.nome, cidade: entrada.cidade, pais: entrada.pais }
+      };
       return res.json({
         ok: true, fonte: 'cache',
         buscadoEm: entrada.buscadoEm || null,
@@ -2039,25 +2041,16 @@ app.get('/lounges/buscar', async (req, res) => {
       });
     }
 
-    // 2. Busca ao vivo no LoungeReview usando slugs pré-cadastrados
-    const slugsConhecidos = entrada?.slugs || [];
-    const salas = await lrBuscarSalasPorIATA(iata, slugsConhecidos);
-
-    // 3. Salva em cache em memória (evita redeploy: NÃO commita no GitHub)
-    if (!global._loungesCache) global._loungesCache = {};
-    global._loungesCache[iata] = { salas, buscadoEm: new Date().toISOString() };
-
+    // 3. Aeroporto ainda não catalogado
     return res.json({
-      ok: true,
-      fonte: salas.length ? 'busca-ativa' : 'sem-dados',
-      buscadoEm: new Date().toISOString(),
+      ok: true, fonte: 'sem-dados',
       aeroporto: {
         iata,
         nome: entrada?.nome || `Aeroporto ${iata}`,
         cidade: entrada?.cidade || '',
         pais: entrada?.pais || ''
       },
-      salas
+      salas: []
     });
 
   } catch (err) {
