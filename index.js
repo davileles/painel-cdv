@@ -1519,6 +1519,45 @@ app.get('/roteiros/doc-upload', async (req, res) => {
   }
 });
 
+
+// ══════════════════════════════════════════════════════════════
+//  POST /roteiros/doc-meta
+//  Body: { slug, meta }
+//  Salva o docs-meta.json completo (inclui _deletedCards, _extraCards)
+// ══════════════════════════════════════════════════════════════
+app.post('/roteiros/doc-meta', async (req, res) => {
+  try {
+    const { slug, meta } = req.body;
+    if (!slug || !meta) return res.status(400).json({ ok: false, erro: 'Parâmetros incompletos' });
+
+    const ROTEIROS_REPO = 'davileles/roteiros';
+    const GH = 'https://api.github.com';
+    const headers = {
+      'Authorization': `token ${GITHUB_TOKEN}`,
+      'User-Agent': 'cdv-proxy',
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+
+    const metaPath = `${slug}/docs-meta.json`;
+    let metaSha;
+    try {
+      const checkRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${metaPath}`, { headers });
+      if (checkRes.ok) { const d = await checkRes.json(); metaSha = d.sha; }
+    } catch(e) {}
+
+    const metaB64 = Buffer.from(JSON.stringify(meta, null, 2)).toString('base64');
+    const payload = { message: `doc-meta: ${slug}`, content: metaB64, ...(metaSha ? { sha: metaSha } : {}) };
+    await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${metaPath}`, {
+      method: 'PUT', headers, body: JSON.stringify(payload)
+    });
+
+    res.json({ ok: true });
+  } catch(e) {
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 // ── Resolver e salvar links diretos dos parceiros Tier1 ──────────────────────
 // POST /parceiros/resolver-links
 // Roda uma vez (ou manualmente quando necessário).
