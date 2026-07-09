@@ -354,11 +354,11 @@
   .iata-code{font-weight:800;color:var(--cdv-coral);margin-right:6px;font-size:11px}
 
 /* === SALAS VIP === */
-.lv-search-wrap{padding:20px 22px 0;display:flex;gap:0;align-items:center;flex-wrap:wrap}
-.lv-search-input{flex:1;min-width:160px;background:var(--card);border:1px solid var(--border);border-right:none;color:var(--text);padding:10px 14px;border-radius:10px 0 0 10px;font-size:14px;font-family:'Montserrat',sans-serif;font-weight:600;outline:none;text-transform:uppercase;transition:border-color .2s}
+.lv-search-wrap{padding:20px 22px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lv-search-input{flex:1;min-width:160px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:14px;font-family:'Montserrat',sans-serif;font-weight:600;outline:none;text-transform:uppercase;transition:border-color .2s}
 .lv-search-input::placeholder{text-transform:none;font-weight:400;color:var(--muted)}
-.lv-search-input:focus{border-color:var(--cdv-coral);border-right:none}
-.lv-search-btn{background:var(--cdv-coral);border:none;color:#fff;padding:10px 18px;border-radius:0 10px 10px 0;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s;white-space:nowrap}
+.lv-search-input:focus{border-color:var(--cdv-coral)}
+.lv-search-btn{background:var(--cdv-coral);border:none;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s;white-space:nowrap}
 .lv-search-btn:hover{opacity:.85}.lv-search-btn:disabled{opacity:.5;cursor:not-allowed}
 .lv-autocomplete{position:absolute;background:var(--surface);border:1px solid var(--border);border-radius:10px;max-height:260px;overflow-y:auto;z-index:200;width:400px;max-width:calc(100vw - 44px);box-shadow:0 8px 24px rgba(0,0,0,.3);top:100%;left:0;margin-top:4px}
 .lv-autocomplete-item{padding:10px 14px;cursor:pointer;font-size:13px;display:flex;gap:10px;align-items:center;border-bottom:1px solid rgba(61,74,102,.3);transition:background .12s}
@@ -376,7 +376,7 @@
 .lv-fonte-badge{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:rgba(96,165,250,.12);color:#60a5fa}
 .lv-fonte-badge.ao-vivo{background:rgba(52,211,153,.12);color:#34d399}
 /* Filtros */
-.lv-filtros{padding:12px 22px 0;display:flex;gap:8px;flex-wrap:wrap}
+.lv-filtros{padding:12px 22px 0;display:flex;flex-direction:column;gap:8px}
 .lv-filtro-grupo{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .lv-filtro-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-right:2px}
 .lv-filtro-btn{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap}
@@ -540,6 +540,7 @@
     <!-- Filtros -->
     <div class="lv-filtros" id="lv-filtros" style="display:none">
       <div class="lv-filtro-grupo" id="lv-filtro-redes"></div>
+      <div class="lv-filtro-grupo" id="lv-filtro-parcerias" style="display:none"></div>
       <div class="lv-filtro-sep"></div>
       <div class="lv-filtro-grupo" id="lv-filtro-terminais"></div>
       <div class="lv-filtro-sep"></div>
@@ -4579,9 +4580,17 @@ function lvAbrirModal(sala) {
 // ── FILTROS ───────────────────────────────────────────────────────────────────
 function lvExtrairTerminal(terminal) {
   if (!terminal) return 'Outros';
-  var m = terminal.match(/Terminal\s*(\d+|[A-Z]+(?:\s*[\(\)\/][^\,\.]*)?)/i);
-  if (m) return 'Terminal ' + m[1].trim().replace(/\s*\(.*/, '');
-  if (/landside|antes da segurança/i.test(terminal)) return 'Landside';
+  // Detectar T1, T2, T3... (número do terminal)
+  var mNum = terminal.match(/Terminal\s*(\d+)/i);
+  if (mNum) {
+    var num = mNum[1];
+    // Ver se é doméstico ou internacional dentro do mesmo terminal
+    if (/dom[eé]stico|domestic/i.test(terminal)) return 'T' + num + ' Dom.';
+    if (/international|internacional/i.test(terminal)) return 'T' + num + ' Intl.';
+    return 'T' + num;
+  }
+  // Sem número de terminal — usar Dom/Intl/Landside
+  if (/landside|antes da segurança|área pública|público/i.test(terminal)) return 'Landside';
   if (/international|internacional/i.test(terminal)) return 'Internacional';
   if (/dom[eé]stico|domestic/i.test(terminal)) return 'Doméstico';
   return 'Outros';
@@ -4619,24 +4628,32 @@ function lvRenderizarFiltros(salas) {
 
   var elRedes = document.getElementById('lv-filtro-redes');
   var elTerminais = document.getElementById('lv-filtro-terminais');
+  var elParcerias = document.getElementById('lv-filtro-parcerias');
 
-  // Montar linha de Rede: Todas | LoungeKey | Priority Pass | DragonPass | Parcerias
+  // Linha REDE: Todas | LoungeKey | Priority Pass | DragonPass
   var redesDisponiveis = LV_REDES_FIXAS.filter(function(r){ return redesSet[r]; });
-  var temParceria = Object.keys(redesSet).some(function(r){ return LV_PARCERIAS.indexOf(r) >= 0; });
-
-  var botoesRede = ['Todas'].concat(redesDisponiveis);
-  if (temParceria) botoesRede.push('__PARCERIAS__');
-
   elRedes.innerHTML = '<span class="lv-filtro-label">Rede</span>' +
-    botoesRede.map(function(r) {
-      var isParceria = r === '__PARCERIAS__';
-      var val = isParceria ? 'Parcerias' : r;
-      var label = isParceria ? '🤝 Parcerias' : r;
-      var ativo = _lvFiltroRede === val ? ' ativo' : '';
-      return '<button class="lv-filtro-btn' + ativo + '" onclick="lvSetFiltroRede(this.dataset.v)" data-v="' + val + '">' + label + '</button>';
+    ['Todas'].concat(redesDisponiveis).map(function(r) {
+      var ativo = _lvFiltroRede === r ? ' ativo' : '';
+      return '<button class="lv-filtro-btn' + ativo + '" onclick="lvSetFiltroRede(this.dataset.v)" data-v="' + r + '">' + r + '</button>';
     }).join('');
 
-  // Terminais
+  // Linha PARCERIAS: botões individuais por parceria disponível
+  var parceriasDisponiveis = LV_PARCERIAS.filter(function(p){ return redesSet[p]; });
+  if (parceriasDisponiveis.length > 0) {
+    elParcerias.innerHTML = '<span class="lv-filtro-label">Parcerias</span>' +
+      parceriasDisponiveis.map(function(p) {
+        var ativo = _lvFiltroRede === p ? ' ativo' : '';
+        var label = p.replace(' Business/First','').replace(' exclusivo','').replace('oneworld ','').replace('Qatar Airways ','').replace('KLM/SkyTeam ','');
+        return '<button class="lv-filtro-btn' + ativo + '" onclick="lvSetFiltroRede(this.dataset.v)" data-v="' + p.replace(/"/g,'&quot;') + '">' + label + '</button>';
+      }).join('');
+    elParcerias.style.display = '';
+  } else {
+    elParcerias.innerHTML = '';
+    elParcerias.style.display = 'none';
+  }
+
+  // Linha TERMINAL: Todos | T1 Dom. | T1 Intl. | T2 | Landside | etc.
   var seps = document.querySelectorAll('.lv-filtro-sep');
   if (terminais.length > 1) {
     elTerminais.innerHTML = '<span class="lv-filtro-label">Terminal</span>' +
@@ -4644,15 +4661,16 @@ function lvRenderizarFiltros(salas) {
         var ativo = t === _lvFiltroTerminal ? ' ativo' : '';
         return '<button class="lv-filtro-btn' + ativo + '" onclick="lvSetFiltroTerminal(this.dataset.v)" data-v="' + t.replace(/"/g,'&quot;') + '">' + t + '</button>';
       }).join('');
-    elTerminais.style.display='';
-    if (seps[0]) seps[0].style.display='';
+    elTerminais.style.display = '';
+    if (seps[0]) seps[0].style.display = '';
   } else {
-    elTerminais.innerHTML='';
-    elTerminais.style.display='none';
-    if (seps[0]) seps[0].style.display='none';
+    elTerminais.innerHTML = '';
+    elTerminais.style.display = 'none';
+    if (seps[0]) seps[0].style.display = 'none';
   }
 
-  document.getElementById('lv-filtros').style.display = (redesDisponiveis.length > 0 || temParceria) ? '' : 'none';
+  var temAlgo = redesDisponiveis.length > 0 || parceriasDisponiveis.length > 0;
+  document.getElementById('lv-filtros').style.display = temAlgo ? '' : 'none';
   lvAplicarFiltros();
 }
 
@@ -4667,14 +4685,7 @@ function lvSetFiltroTerminal(terminal) {
 
 function lvAplicarFiltros() {
   var filtradas = _lvSalasCompletas.filter(function(s, i) {
-    var passaRede;
-    if (_lvFiltroRede === 'Todas') {
-      passaRede = true;
-    } else if (_lvFiltroRede === 'Parcerias') {
-      passaRede = (s.programas||[]).some(function(p){ return LV_PARCERIAS.indexOf(p) >= 0; });
-    } else {
-      passaRede = (s.programas||[]).includes(_lvFiltroRede);
-    }
+    var passaRede = _lvFiltroRede === 'Todas' || (s.programas||[]).includes(_lvFiltroRede);
     var passaTerm = _lvFiltroTerminal === 'Todos' || lvExtrairTerminal(s.terminal) === _lvFiltroTerminal;
     return passaRede && passaTerm;
   });
