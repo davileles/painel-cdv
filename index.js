@@ -1511,7 +1511,7 @@ app.get('/roteiros/doc-upload', async (req, res) => {
 
     const ROTEIROS_REPO = 'davileles/roteiros';
     const GH = 'https://api.github.com';
-    const headers = { 'Authorization': `token ${GITHUB_TOKEN}`, 'User-Agent': 'cdv-proxy', 'Accept': 'application/vnd.github+json' };
+    const headers = { 'Authorization': `token ${GITHUB_TOKEN}`, 'User-Agent': 'cdv-proxy', 'Accept': 'application/vnd.github+json', 'Cache-Control': 'no-cache' };
 
     const metaRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${slug}/docs-meta.json`, { headers });
     if (!metaRes.ok) return res.json({ ok: true, docs: {} });
