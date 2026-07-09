@@ -354,11 +354,11 @@
   .iata-code{font-weight:800;color:var(--cdv-coral);margin-right:6px;font-size:11px}
 
 /* === SALAS VIP === */
-.lv-search-wrap{padding:20px 22px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.lv-search-input{flex:1;min-width:200px;max-width:400px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:14px;font-family:'Montserrat',sans-serif;font-weight:600;outline:none;text-transform:uppercase;transition:border-color .2s}
+.lv-search-wrap{padding:20px 22px 0;display:flex;gap:0;align-items:center;flex-wrap:wrap}
+.lv-search-input{flex:1;min-width:160px;background:var(--card);border:1px solid var(--border);border-right:none;color:var(--text);padding:10px 14px;border-radius:10px 0 0 10px;font-size:14px;font-family:'Montserrat',sans-serif;font-weight:600;outline:none;text-transform:uppercase;transition:border-color .2s}
 .lv-search-input::placeholder{text-transform:none;font-weight:400;color:var(--muted)}
-.lv-search-input:focus{border-color:var(--cdv-coral)}
-.lv-search-btn{background:var(--cdv-coral);border:none;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s;white-space:nowrap}
+.lv-search-input:focus{border-color:var(--cdv-coral);border-right:none}
+.lv-search-btn{background:var(--cdv-coral);border:none;color:#fff;padding:10px 18px;border-radius:0 10px 10px 0;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s;white-space:nowrap}
 .lv-search-btn:hover{opacity:.85}.lv-search-btn:disabled{opacity:.5;cursor:not-allowed}
 .lv-autocomplete{position:absolute;background:var(--surface);border:1px solid var(--border);border-radius:10px;max-height:260px;overflow-y:auto;z-index:200;width:400px;max-width:calc(100vw - 44px);box-shadow:0 8px 24px rgba(0,0,0,.3);top:100%;left:0;margin-top:4px}
 .lv-autocomplete-item{padding:10px 14px;cursor:pointer;font-size:13px;display:flex;gap:10px;align-items:center;border-bottom:1px solid rgba(61,74,102,.3);transition:background .12s}
@@ -535,7 +535,6 @@
       <div class="lv-aeroporto-nome" id="lv-aeroporto-nome"></div>
       <div class="lv-aeroporto-sub">
         <span id="lv-aeroporto-sub"></span>
-        <span class="lv-fonte-badge" id="lv-fonte-badge"></span>
       </div>
     </div>
     <!-- Filtros -->
@@ -4588,13 +4587,30 @@ function lvExtrairTerminal(terminal) {
   return 'Outros';
 }
 
+// Programas "grandes" — filtros fixos sempre visíveis quando disponíveis
+var LV_REDES_FIXAS = ['LoungeKey','Priority Pass','DragonPass'];
+// Programas de parceria — agrupados no botão "Parcerias"
+var LV_PARCERIAS = [
+  'Amex Centurion','Amex Platinum','JHSF Amex Icon',
+  'Inter Black','Inter Win',
+  'Bradesco Visa Aeternum','Bradesco Elo Nanquim','Elo Diners Club',
+  'Smiles GOL','LATAM Pass elite','Star Alliance Business/First',
+  'BRBCARD exclusivo','Visa Infinite','Diners Club',
+  'Privilege Club Platinum/Gold','oneworld Emerald/Sapphire',
+  'Qatar Airways Business/First','oneworld Business',
+  'Qatar Airways First Class','KLM/SkyTeam Business/First',
+  'British Airways Business/First','Delta Business/First','Delta SkyMiles Medallion',
+  'American Airlines Business/First','TAP Business/First','TAP Miles&Go Platinum/Gold',
+  'Flying Blue Elite','Avianca/Star Alliance Business',
+  'Banco do Brasil Altus Visa Infinite','C6 Bank Carbon Black'
+];
+
 function lvRenderizarFiltros(salas) {
-  // Redes únicas
+  // Descobrir quais programas existem entre as salas do aeroporto
   var redesSet = {};
   salas.forEach(function(s) {
     (s.programas||[]).forEach(function(p) { redesSet[p] = true; });
   });
-  var redes = Object.keys(redesSet).sort();
 
   // Terminais únicos
   var terminaisSet = {};
@@ -4604,13 +4620,24 @@ function lvRenderizarFiltros(salas) {
   var elRedes = document.getElementById('lv-filtro-redes');
   var elTerminais = document.getElementById('lv-filtro-terminais');
 
+  // Montar linha de Rede: Todas | LoungeKey | Priority Pass | DragonPass | Parcerias
+  var redesDisponiveis = LV_REDES_FIXAS.filter(function(r){ return redesSet[r]; });
+  var temParceria = Object.keys(redesSet).some(function(r){ return LV_PARCERIAS.indexOf(r) >= 0; });
+
+  var botoesRede = ['Todas'].concat(redesDisponiveis);
+  if (temParceria) botoesRede.push('__PARCERIAS__');
+
   elRedes.innerHTML = '<span class="lv-filtro-label">Rede</span>' +
-    ['Todas'].concat(redes).map(function(r) {
-      var label = r.replace(' Business/First','').replace(' exclusivo','');
-      var ativo = r === _lvFiltroRede ? ' ativo' : '';
-      return '<button class="lv-filtro-btn' + ativo + '" onclick="lvSetFiltroRede(this.dataset.v)" data-v="' + r.replace(/"/g,'&quot;') + '">' + label + '</button>';
+    botoesRede.map(function(r) {
+      var isParceria = r === '__PARCERIAS__';
+      var val = isParceria ? 'Parcerias' : r;
+      var label = isParceria ? '🤝 Parcerias' : r;
+      var ativo = _lvFiltroRede === val ? ' ativo' : '';
+      return '<button class="lv-filtro-btn' + ativo + '" onclick="lvSetFiltroRede(this.dataset.v)" data-v="' + val + '">' + label + '</button>';
     }).join('');
 
+  // Terminais
+  var seps = document.querySelectorAll('.lv-filtro-sep');
   if (terminais.length > 1) {
     elTerminais.innerHTML = '<span class="lv-filtro-label">Terminal</span>' +
       ['Todos'].concat(terminais).map(function(t) {
@@ -4618,14 +4645,14 @@ function lvRenderizarFiltros(salas) {
         return '<button class="lv-filtro-btn' + ativo + '" onclick="lvSetFiltroTerminal(this.dataset.v)" data-v="' + t.replace(/"/g,'&quot;') + '">' + t + '</button>';
       }).join('');
     elTerminais.style.display='';
-    document.querySelector('.lv-filtro-sep').style.display='';
+    if (seps[0]) seps[0].style.display='';
   } else {
-    elTerminais.innerHTML = '';
+    elTerminais.innerHTML='';
     elTerminais.style.display='none';
-    document.querySelector('.lv-filtro-sep').style.display='none';
+    if (seps[0]) seps[0].style.display='none';
   }
 
-  document.getElementById('lv-filtros').style.display = redes.length > 1 ? '' : 'none';
+  document.getElementById('lv-filtros').style.display = (redesDisponiveis.length > 0 || temParceria) ? '' : 'none';
   lvAplicarFiltros();
 }
 
@@ -4640,7 +4667,14 @@ function lvSetFiltroTerminal(terminal) {
 
 function lvAplicarFiltros() {
   var filtradas = _lvSalasCompletas.filter(function(s, i) {
-    var passaRede = _lvFiltroRede === 'Todas' || (s.programas||[]).includes(_lvFiltroRede);
+    var passaRede;
+    if (_lvFiltroRede === 'Todas') {
+      passaRede = true;
+    } else if (_lvFiltroRede === 'Parcerias') {
+      passaRede = (s.programas||[]).some(function(p){ return LV_PARCERIAS.indexOf(p) >= 0; });
+    } else {
+      passaRede = (s.programas||[]).includes(_lvFiltroRede);
+    }
     var passaTerm = _lvFiltroTerminal === 'Todos' || lvExtrairTerminal(s.terminal) === _lvFiltroTerminal;
     return passaRede && passaTerm;
   });
@@ -4680,15 +4714,7 @@ function lvRenderizarResultado(d) {
   var aeroporto = d.aeroporto, salas = d.salas||[], fonte = d.fonte, buscadoEm = d.buscadoEm;
   document.getElementById('lv-aeroporto-nome').textContent = aeroporto.nome || aeroporto.iata;
   document.getElementById('lv-aeroporto-sub').textContent = [aeroporto.cidade,aeroporto.pais].filter(Boolean).join(', ') || aeroporto.iata;
-  var badge = document.getElementById('lv-fonte-badge');
-  if (fonte==='cache') {
-    var dt = buscadoEm ? new Date(buscadoEm).toLocaleDateString('pt-BR') : '';
-    badge.textContent = dt ? 'LoungeReview · '+dt : 'LoungeReview';
-    badge.className = 'lv-fonte-badge';
-  } else {
-    badge.textContent = 'LoungeReview · ao vivo';
-    badge.className = 'lv-fonte-badge ao-vivo';
-  }
+
   var wrap = document.getElementById('lv-programas-wrap');
   if (!salas.length) {
     wrap.innerHTML = '<div class="lv-empty-state" style="grid-column:1/-1;padding:32px 0"><div class="lv-empty-state-icon">🔍</div><div class="lv-empty-state-title">Nenhuma sala encontrada</div><div class="lv-empty-state-sub">Ainda não catalogamos as salas de '+aeroporto.iata+'.<br>Acesse em <a href="https://loungereview.com" target="_blank" style="color:var(--cdv-coral)">loungereview.com</a>.</div></div>';
