@@ -1,7 +1,7 @@
 {
   "_meta": {
     "versao": "1.0",
-    "atualizadoEm": "2026-07-09T15:00:00.000Z",
+    "atualizadoEm": "2026-07-09T20:00:00.000Z",
     "fonte": "LoungeKey + DragonPass + Priority Pass",
     "totalAeroportos": 92
   },
@@ -681,28 +681,26 @@
         {
           "nome": "Plaza Premium Lounge (Internacional)",
           "slug": "plaza-premium-lounge-gig-terminal-2-international",
-          "terminal": "Terminal 2 (Internacional), Pier Sul, Nível 3",
+          "terminal": "T2 Internacional, Pier Sul, Nível 3",
           "horario": "24h",
-          "localizacao": "Terminal 2 (Internacional), após imigração, segurança e duty free, suba pela escada rolante até o Nível 3.",
-          "overview": "Principal lounge internacional do Galeão. Espaçoso com boa seleção de comida e bebidas. Vista para a pista. Ampla capacidade para o volume do aeroporto.",
+          "localizacao": "Terminal 2 Internacional, após imigração, segurança e duty free. Pier Sul, Nível 3. Suba pela escada rolante logo após o duty free.",
+          "overview": "Principal lounge internacional do Galeão. Espaçoso, boa variedade de comida e bebidas. Vista para a pista. Aceita PP, LK e DragonPass.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio variado",
-              "Snacks e salgados",
-              "Frutas tropicais e doces"
+              "Frutas, snacks e doces"
             ],
             "bebida": [
               "Bar completo",
               "Cervejas, vinhos, destilados",
-              "Café, sucos, refrigerantes"
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas e USB",
               "Televisores",
               "Chuveiros (R$70)",
-              "Monitor de voos",
-              "Vista para a pista"
+              "Monitor de voos"
             ]
           },
           "programas": [
@@ -716,21 +714,18 @@
         {
           "nome": "Plaza Premium Lounge (Doméstico)",
           "slug": "plaza-premium-lounge-gig-terminal-2-domestic",
-          "terminal": "Terminal 2 (Doméstico), Nível 1, área restrita",
+          "terminal": "T2 Doméstico, Nível 1, área restrita",
           "horario": "24h",
-          "localizacao": "Terminal 2 (Doméstico), área restrita, Nível 1, após controle de embarque e raio-X. No corredor principal em direção aos gates.",
-          "overview": "Lounge doméstico do Galeão com mais de 900m² e 220 assentos. Boa variedade de comida e bebidas, Wi-Fi e estações de recarga.",
+          "localizacao": "Terminal 2 Doméstico, área restrita, Nível 1, após controle de embarque e raio-X. No corredor principal em direção aos gates. +900m², 220 assentos.",
+          "overview": "Lounge doméstico espaçoso com 220 assentos. Boa variedade de comida e bebidas, Wi-Fi e estações de recarga. Chuveiros disponíveis.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio",
-              "Snacks e salgados",
-              "Frutas"
+              "Snacks, frutas e doces"
             ],
             "bebida": [
-              "Cervejas",
-              "Vinhos",
-              "Café e bebidas quentes",
-              "Sucos"
+              "Cervejas, vinhos",
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -749,12 +744,45 @@
           "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-gig-terminal-2-domestic/#photos"
         },
         {
+          "nome": "Plaza Premium Lounge (Chegadas/Pública)",
+          "slug": "plaza-premium-lounge-gig-terminal-2-arrivals",
+          "terminal": "T2, landside, dentro do estacionamento, Nível 2",
+          "horario": "24h",
+          "localizacao": "Terminal 2, área pública (landside), dentro do prédio do estacionamento, Nível 2. Acessível no desembarque ou por quem chega com muita antecedência.",
+          "overview": "Único lounge de chegadas do Galeão. Localização incomum (dentro do estacionamento) mas décor elegante. Boa para passageiros em trânsito ou chegando de longa viagem. Menu a la carte no bar — não tem buffet tradicional.",
+          "amenidades": {
+            "comida": [
+              "Menu a la carte no bar (pizza, snacks)",
+              "Suco de laranja natural",
+              "Café espresso artesanal"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Bebidas alcoólicas e não alcoólicas"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Chuveiros",
+              "Quartos privados (taxa)",
+              "Televisores"
+            ]
+          },
+          "obs": "Localização landside dentro do estacionamento.",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-lounge-gig-terminal-2-arrivals/",
+          "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-gig-terminal-2-arrivals/#photos"
+        },
+        {
           "nome": "Star Alliance Lounge",
           "slug": "star-alliance-lounge-gig",
-          "terminal": "Terminal 2 (Internacional), Pier Sul, Nível 3",
+          "terminal": "T2 Internacional, Pier Sul, Nível 3",
           "horario": "24h",
-          "localizacao": "Terminal 2 (Internacional), Nível 3 do pier de embarques internacionais, após passaporte e duty free. Acesso por escadas rolantes ou elevadores.",
-          "overview": "Lounge exclusivo Star Alliance com design inspirado no Rio — madeiras naturais, pedra e concreto. Vista para o Pão de Açúcar e Cristo Redentor. Tranquilo, raramente lotado. Bar com bartender, buffet com sabores brasileiros únicos.",
+          "localizacao": "Terminal 2 Internacional, Nível 3, imediatamente após o Plaza Premium Lounge, após imigração, segurança e duty free.",
+          "overview": "Design inspirado no Rio com madeiras nativas, pedra e concreto. Vista para o Pão de Açúcar e Cristo Redentor. Tranquilo, raramente lotado. Bar com bartender, buffet com sabores brasileiros únicos.",
           "amenidades": {
             "comida": [
               "Buffet completo quente e frio",
@@ -763,13 +791,13 @@
             ],
             "bebida": [
               "Bar completo com bartender",
-              "Coquetéis excelentes",
+              "Coquetéis artesanais",
               "Café barista",
               "Cervejas e vinhos"
             ],
             "outros": [
               "Wi-Fi",
-              "Tomadas e USB com carregamento via lockers",
+              "Tomadas e USB com lockers",
               "Armazenamento de bagagem seguro",
               "Chuveiros",
               "Monitor de voos"
@@ -784,10 +812,10 @@
         {
           "nome": "GOL Smiles (Internacional)",
           "slug": "sala-vip-gol-gig",
-          "terminal": "Terminal 2 (Internacional), Pier Sul, Nível 3",
+          "terminal": "T2 Internacional, Pier Sul, Nível 3",
           "horario": "24h",
-          "localizacao": "Terminal 2 (Internacional), Pier Sul, após imigração, segurança e Duty Free, Nível 3 — após as salas Plaza Premium, Star Alliance e American.",
-          "overview": "Lounge GOL Smiles no setor internacional do Galeão. Espaçoso mas bastante movimentado. Boa seleção de alimentos e bebidas alcoólicas gratuitas. Banheiros bem avaliados.",
+          "localizacao": "Terminal 2 Internacional, Pier Sul, Nível 3 — após as salas Plaza Premium, Star Alliance e American Airlines.",
+          "overview": "Lounge GOL Smiles internacional. Espaçoso mas bastante movimentado. Boa seleção de snacks, sanduíches e bebidas alcoólicas gratuitas.",
           "amenidades": {
             "comida": [
               "Snacks, sanduíches, finger food e doces"
@@ -809,48 +837,51 @@
           "urlFotos": "https://loungereview.com/lounges/sala-vip-gol-gig/#photos"
         },
         {
-          "nome": "Grand Cru (Restaurante – Crédito PP)",
-          "slug": "grand-cru-gig",
-          "terminal": "Terminal 2",
+          "nome": "GOL Smiles (Doméstico)",
+          "slug": "sala-vip-gol-gig-domestic",
+          "terminal": "T2 Doméstico",
           "horario": "24h",
-          "localizacao": "Terminal 2, Galeão.",
-          "overview": "Restaurante aberto a todos os passageiros. Membros Priority Pass Standard/Plus/Prestige recebem crédito de US$28 em alimentos e bebidas (aplica-se também a acompanhantes).",
+          "localizacao": "Terminal 2 Doméstico, área de embarques.",
+          "overview": "Versão doméstica do lounge GOL Smiles no Galeão. Boa seleção de alimentos e bebidas.",
           "amenidades": {
             "comida": [
-              "Menu completo de restaurante premium"
+              "Snacks, sanduíches e salgados",
+              "Frutas e doces"
             ],
             "bebida": [
-              "Carta completa de vinhos e bebidas"
+              "Bebidas alcoólicas",
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
-              "Ambiente restaurante"
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores"
             ]
           },
-          "obs": "Crédito de US$28 F&B para PP Standard/Plus/Prestige. Não é lounge tradicional.",
           "programas": [
-            "Priority Pass"
+            "Smiles GOL"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/grand-cru-gig/",
-          "urlFotos": "https://loungereview.com/lounges/grand-cru-gig/#photos"
+          "urlLoungereview": "https://loungereview.com/lounges/sala-vip-gol-gig/",
+          "urlFotos": "https://loungereview.com/lounges/sala-vip-gol-gig/#photos"
         },
         {
-          "nome": "Bluma (Spa – Crédito LoungeKey/PP)",
+          "nome": "Bluma (Spa – PP/LK)",
           "slug": "singu-gig",
           "terminal": "Galeão (GIG)",
           "horario": "08:00–20:00",
-          "localizacao": "Galeão, Terminal 2. Spa aberto a todos os passageiros.",
-          "overview": "Spa parceiro do LoungeKey e Priority Pass no Galeão. Membros têm acesso a tratamentos gratuitos selecionados.",
+          "localizacao": "Terminal 2, Galeão. Spa aberto a todos os passageiros.",
+          "overview": "Spa parceiro do LoungeKey e Priority Pass. Membros têm tratamentos gratuitos selecionados (massagem, manicure, pedicure, lavagem de cabelo etc.) mediante apresentação do cartão.",
           "amenidades": {
             "comida": [],
             "bebida": [],
             "outros": [
-              "Massagem rápida",
+              "Massagem rápida (20 min)",
               "Manicure e pedicure",
               "Lavagem de cabelo",
               "Foot Spa"
             ]
           },
-          "obs": "Não é lounge tradicional. 1 acesso LoungeKey/PP = tratamentos gratuitos selecionados.",
+          "obs": "Não é lounge tradicional. 1 acesso LK/PP = tratamentos gratuitos selecionados.",
           "programas": [
             "LoungeKey",
             "Priority Pass"
@@ -859,7 +890,7 @@
           "urlFotos": "https://loungereview.com/lounges/singu-gig/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T15:00:00.000Z"
+      "buscadoEm": "2026-07-09T20:00:00.000Z"
     },
     "CGH": {
       "nome": "São Paulo – Congonhas",
@@ -889,7 +920,7 @@
       ],
       "salas": [
         {
-          "nome": "Ambaar Club CGH",
+          "nome": "Ambaar Club",
           "slug": "ambaar-club-cgh",
           "terminal": "Congonhas (CGH), Doméstico, oposto ao gate 8",
           "horario": "05:30–23:00",
@@ -902,8 +933,7 @@
             ],
             "bebida": [
               "Cervejas e vinhos",
-              "Café e bebidas quentes",
-              "Sucos e refrigerantes"
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -924,9 +954,9 @@
           "nome": "Advantage VIP Lounge",
           "slug": "advantage-vip-lounge-cgh",
           "terminal": "Congonhas (CGH), Doméstico, landside (após controle de embarque, antes da segurança)",
-          "horario": "05:30–23:00",
-          "localizacao": "Congonhas, Embarques Domésticos, landside.",
-          "overview": "Lounge Advantage em Congonhas antes da segurança.",
+          "horario": "04:30–22:00",
+          "localizacao": "Congonhas, Embarques Domésticos, landside — após controle do cartão de embarque, antes das máquinas de raio-X. Passageiros internacionais também podem usar.",
+          "overview": "Lounge Advantage em Congonhas, antes da segurança. Ambiente confortável.",
           "amenidades": {
             "comida": [
               "Snacks e opções leves"
@@ -953,12 +983,12 @@
           "nome": "Emerald VIP Lounge by ADVT",
           "slug": "latitude-lounge-cgh",
           "terminal": "Congonhas (CGH), Doméstico, landside, ao lado da farmácia",
-          "horario": "05:30–23:00",
+          "horario": "05:30–22:30",
           "localizacao": "Congonhas, landside, ao lado da farmácia.",
-          "overview": "Lounge Emerald/Advantage em Congonhas, landside. Acesso antes da segurança.",
+          "overview": "Lounge Emerald/Advantage em Congonhas, antes da segurança.",
           "amenidades": {
             "comida": [
-              "Snacks"
+              "Snacks leves"
             ],
             "bebida": [
               "Café",
@@ -977,7 +1007,7 @@
           "urlFotos": "https://loungereview.com/lounges/latitude-lounge-cgh/#photos"
         },
         {
-          "nome": "Bluma (Spa – Crédito LoungeKey/PP)",
+          "nome": "Bluma (Spa – PP/LK)",
           "slug": "bluma-cgh",
           "terminal": "Congonhas (CGH)",
           "horario": "08:00–20:00",
@@ -993,7 +1023,7 @@
               "Foot Spa"
             ]
           },
-          "obs": "Não é lounge tradicional. 1 acesso LoungeKey/PP = 1 tratamento gratuito.",
+          "obs": "1 acesso LK/PP = tratamentos gratuitos selecionados.",
           "programas": [
             "LoungeKey",
             "Priority Pass"
@@ -1002,7 +1032,7 @@
           "urlFotos": "https://loungereview.com/lounges/bluma-cgh/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T15:00:00.000Z"
+      "buscadoEm": "2026-07-09T20:00:00.000Z"
     },
     "BSB": {
       "nome": "Brasília – Presidente Juscelino Kubitschek",
@@ -1041,20 +1071,19 @@
         {
           "nome": "VIP Club Doméstico",
           "slug": "aeroportos-vip-club-bsb-domestic",
-          "terminal": "Terminal 1 (Doméstico), área central de embarque",
+          "terminal": "T1 Doméstico, área de embarque",
           "horario": "24h",
-          "localizacao": "Terminal 1 (Doméstico), dentro da área de embarque, acesso pela escada rolante na região comercial. A sala mais conhecida do aeroporto doméstico.",
-          "overview": "Principal lounge doméstico de Brasília. Atende grande volume de passageiros — pode ficar lotado nos horários de pico. Alimentação simples. Ambiente aberto ao terminal.",
+          "localizacao": "Terminal 1 Doméstico. Dentro da área de embarque, acesso pela escada rolante na região comercial. A sala mais conhecida do aeroporto doméstico.",
+          "overview": "Principal lounge doméstico de Brasília. Pode ficar lotado nos horários de pico. Alimentação simples. Ambiente aberto ao terminal (sem isolamento acústico).",
           "amenidades": {
             "comida": [
-              "Buffet quente com opções variadas",
+              "Buffet quente com prato do dia",
               "Snacks e petiscos",
               "Sobremesas e frutas"
             ],
             "bebida": [
               "Bar com bebidas alcoólicas e não alcoólicas",
-              "Café e bebidas quentes",
-              "Sucos e refrigerantes"
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -1074,9 +1103,9 @@
         {
           "nome": "VIP Club Internacional",
           "slug": "aeroportos-vip-club-bsb-international",
-          "terminal": "Terminal 1 (Internacional), próximo ao Duty Free, vire à esquerda",
+          "terminal": "T1 Internacional, próximo ao Duty Free (vire à esquerda)",
           "horario": "24h",
-          "localizacao": "Terminal 1 (Internacional), próximo ao Duty Free, vire à esquerda.",
+          "localizacao": "Terminal 1 Internacional, próximo ao Duty Free, vire à esquerda.",
           "overview": "Lounge internacional de Brasília. Aceita Priority Pass e pay-in. Boa estrutura para passageiros em voos internacionais.",
           "amenidades": {
             "comida": [
@@ -1085,8 +1114,7 @@
             ],
             "bebida": [
               "Bar completo",
-              "Café e bebidas quentes",
-              "Sucos"
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -1105,10 +1133,10 @@
         {
           "nome": "VIP Express Club Pier Norte",
           "slug": "vip-express-club-pier-norte-bsb",
-          "terminal": "Terminal 1 (Doméstico), próximo ao gate 9, andar superior",
+          "terminal": "T1 Doméstico, próximo ao gate 9, andar superior",
           "horario": "24h",
-          "localizacao": "Terminal 1 (Doméstico), próximo ao gate 9, andar superior. Alternativa estratégica para quem embarca nos portões do Pier Norte.",
-          "overview": "Sala express conveniente para portões do Pier Norte. Ambiente simples mas funcional — lanche, buffet quente com prato do dia (ex: strogonoff), bar e tomadas. Aberta ao terminal, sem isolamento acústico. Banheiro pode ter falta de papel toalha.",
+          "localizacao": "Terminal 1 Doméstico, próximo ao gate 9, andar superior. Alternativa estratégica para embarques no Pier Norte.",
+          "overview": "Sala express conveniente para o Pier Norte. Simples mas funcional: buffet quente, bar e tomadas. Aberta ao terminal (sem isolamento acústico). Pode ficar lotada.",
           "amenidades": {
             "comida": [
               "Buffet quente com prato do dia",
@@ -1116,13 +1144,13 @@
             ],
             "bebida": [
               "Bar com bebidas alcoólicas",
-              "Café e bebidas quentes"
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
-              "Tomadas",
-              "Computadores públicos",
-              "Televisores"
+              "Tomadas e computadores",
+              "Televisores",
+              "Revistas"
             ]
           },
           "programas": [
@@ -1136,9 +1164,9 @@
         {
           "nome": "VIP Express Club Pier Sul",
           "slug": "vip-express-club-pier-sul-bsb",
-          "terminal": "Terminal 1 (Doméstico), próximo ao gate 21, andar superior",
+          "terminal": "T1 Doméstico, próximo ao gate 21, andar superior",
           "horario": "24h",
-          "localizacao": "Terminal 1 (Doméstico), próximo ao gate 21, andar superior. Ideal para quem embarca nos portões do Pier Sul.",
+          "localizacao": "Terminal 1 Doméstico, próximo ao gate 21, andar superior. Ideal para embarques no Pier Sul.",
           "overview": "Sala express no Pier Sul de Brasília. Mesma estrutura do Pier Norte — simples, funcional, boa para escalas curtas.",
           "amenidades": {
             "comida": [
@@ -1147,12 +1175,12 @@
             ],
             "bebida": [
               "Bar com bebidas alcoólicas",
-              "Café e bebidas quentes"
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Revistas e jornais",
+              "Revistas",
               "Televisores"
             ]
           },
@@ -1167,16 +1195,17 @@
         {
           "nome": "Sala VIP BRB",
           "slug": "sala-vip-brb-bsb",
-          "terminal": "Terminal 1 (Doméstico), acesso pela faixa exclusiva de segurança próxima à praça de alimentação",
+          "terminal": "T1 Doméstico, 2º andar (checkpoint exclusivo próximo à praça de alimentação)",
           "horario": "24h",
-          "localizacao": "Terminal 1 (Doméstico). Entrada por checkpoint de segurança exclusivo próximo à praça de alimentação. Subir escada rolante perto da loja Dufry mega store.",
-          "overview": "Sala exclusiva para portadores do cartão BRBCARD (Banco de Brasília). A mais bem equipada do aeroporto — sala de conferência, sala família, chuveiros e checkpoint de segurança próprio. Não aceita Priority Pass.",
+          "localizacao": "T1 Doméstico, 2º andar. Entrada pelo checkpoint de segurança exclusivo próximo à praça de alimentação. Após entrar, suba pela escada rolante perto da loja Dufry mega store.",
+          "overview": "A maior e mais completa sala VIP de Brasília. Exclusiva para portadores do BRBCARD. Possui sala de conferência, sala família, chuveiros e checkpoint próprio. Ambiente amplo e bem avaliado.",
           "amenidades": {
             "comida": [
-              "Snacks e refeições leves"
+              "Snacks e refeições leves",
+              "Café da manhã variado"
             ],
             "bebida": [
-              "Bar completo com bebidas alcoólicas e não alcoólicas",
+              "Bar completo alcoólico e não alcoólico",
               "Café e bebidas quentes"
             ],
             "outros": [
@@ -1188,6 +1217,7 @@
               "Tomadas"
             ]
           },
+          "obs": "Exclusivo BRBCARD — sem acesso via PP, LK ou DP.",
           "programas": [
             "BRBCARD exclusivo"
           ],
@@ -1197,22 +1227,21 @@
         {
           "nome": "Siesta Box Brasília",
           "slug": "siesta-box-brasilia-bsb",
-          "terminal": "Terminal 1, mezanino do Pier Sul, entre gates 43 e 45",
+          "terminal": "T1, mezanino do Pier Sul, entre gates 43 e 45",
           "horario": "24h",
-          "localizacao": "Mezanino do Pier Sul, entre portões 43 e 45.",
-          "overview": "Pods privativos de descanso por hora. Cabines duplas de ~5m² com ar-condicionado, Wi-Fi, TV e tomadas 110/220V. Até 2 horas usando acesso LoungeKey. Sujeito à disponibilidade.",
+          "localizacao": "Mezanino do Pier Sul, entre portões 43 e 45. Cabines individuais de descanso.",
+          "overview": "Cabines individuais de descanso com cama, travesseiros e mesa lateral. Priority Pass = 3h gratuitas. Reserve com antecedência — pode não ter vaga.",
           "amenidades": {
             "comida": [],
             "bebida": [],
             "outros": [
-              "Pods privativos de descanso",
+              "Cabines individuais com cama",
+              "Travesseiros e mesa lateral",
               "Wi-Fi",
-              "TV",
-              "Tomadas 110V e 220V",
               "Ar-condicionado"
             ]
           },
-          "obs": "Cobrado por hora. Cabines duplas. Até 2h via LoungeKey/Priority Pass.",
+          "obs": "Priority Pass = 3h gratuitas. Reserve antecipadamente. Pode lotar.",
           "programas": [
             "LoungeKey",
             "Priority Pass"
@@ -1221,7 +1250,7 @@
           "urlFotos": "https://loungereview.com/lounges/siesta-box-brasilia-bsb/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T15:00:00.000Z"
+      "buscadoEm": "2026-07-09T20:00:00.000Z"
     },
     "SSA": {
       "nome": "Salvador – Dep. Luís Eduardo Magalhães",
@@ -1251,23 +1280,21 @@
       ],
       "salas": [
         {
-          "nome": "Ambaar Club SSA (Airside)",
+          "nome": "Ambaar Club (Airside)",
           "slug": "ambaar-club-ssa-airside",
-          "terminal": "Salvador (SSA), pós-segurança (airside)",
+          "terminal": "Salvador (SSA), após segurança (airside)",
           "horario": "05:00–23:00",
-          "localizacao": "Salvador – Dep. Luís Eduardo Magalhães, área airside (após segurança).",
+          "localizacao": "Salvador – Dep. Luís Eduardo Magalhães, após a segurança (airside).",
           "overview": "Principal lounge de Salvador aceito pelos programas. Ambiente moderno Ambaar com boa seleção de alimentos e bebidas.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio",
-              "Snacks e frutas",
-              "Doces e sobremesas"
+              "Snacks, frutas e doces"
             ],
             "bebida": [
               "Bar com bebidas alcoólicas",
-              "Cerveja, vinho, destilados",
-              "Café e bebidas quentes",
-              "Sucos e refrigerantes"
+              "Cervejas, vinhos",
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -1286,24 +1313,54 @@
           "urlFotos": "https://loungereview.com/lounges/ambaar-club-ssa-airside/#photos"
         },
         {
-          "nome": "Bluma (Spa – Crédito LoungeKey/PP)",
+          "nome": "Ambaar Club (Área Pública)",
+          "slug": "ambaar-club-ssa-landside",
+          "terminal": "Salvador (SSA), landside (área pública)",
+          "horario": "05:00–23:00",
+          "localizacao": "Salvador – Dep. Luís Eduardo Magalhães, área pública (landside), antes da segurança.",
+          "overview": "Versão landside do Ambaar em Salvador. Acessível antes e após o voo, sem cartão de embarque. Boa opção para quem chega cedo ou aguarda passageiros.",
+          "amenidades": {
+            "comida": [
+              "Snacks e lanches leves"
+            ],
+            "bebida": [
+              "Café e bebidas quentes",
+              "Bebidas não alcoólicas"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Ar-condicionado"
+            ]
+          },
+          "obs": "Localização landside — sem necessidade de cartão de embarque.",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/ambaar-club-ssa-airside/",
+          "urlFotos": "https://loungereview.com/lounges/ambaar-club-ssa-airside/#photos"
+        },
+        {
+          "nome": "Bluma (Spa – PP/LK)",
           "slug": "bluma-ssa",
           "terminal": "Salvador (SSA)",
           "horario": "08:00–20:00",
           "localizacao": "Salvador – Dep. Luís Eduardo Magalhães. Spa aberto a todos os passageiros.",
-          "overview": "Spa parceiro do LoungeKey e Priority Pass. Membros têm acesso a tratamentos gratuitos selecionados (massagem, manicure, pedicure, etc.) mediante apresentação do cartão de acesso.",
+          "overview": "Spa parceiro do LoungeKey e Priority Pass. Tratamentos gratuitos selecionados para membros.",
           "amenidades": {
             "comida": [],
             "bebida": [],
             "outros": [
-              "Massagem rápida (20 min)",
+              "Massagem rápida",
               "Manicure e pedicure",
               "Lavagem de cabelo",
-              "Foot Spa",
-              "Ambiente relaxante de spa"
+              "Foot Spa"
             ]
           },
-          "obs": "Não é um lounge tradicional. Tratamentos gratuitos via LoungeKey/PP — cada uso consome 1 acesso.",
+          "obs": "1 acesso LK/PP = tratamentos gratuitos selecionados.",
           "programas": [
             "LoungeKey",
             "Priority Pass"
@@ -1312,7 +1369,7 @@
           "urlFotos": "https://loungereview.com/lounges/bluma-ssa/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T15:00:00.000Z"
+      "buscadoEm": "2026-07-09T20:00:00.000Z"
     },
     "FOR": {
       "nome": "Fortaleza – Pinto Martins Internacional",
@@ -1341,22 +1398,20 @@
       ],
       "salas": [
         {
-          "nome": "Ambaar Club FOR (Doméstico)",
+          "nome": "Ambaar Club (Doméstico)",
           "slug": "ambaar-club-for-domestic",
           "terminal": "Fortaleza (FOR), Doméstico",
           "horario": "05:00–23:00",
-          "localizacao": "Fortaleza – Pinto Martins, setor doméstico.",
-          "overview": "Lounge Ambaar doméstico em Fortaleza. Ambiente moderno com boa estrutura.",
+          "localizacao": "Fortaleza – Pinto Martins, embarques domésticos.",
+          "overview": "Lounge Ambaar doméstico em Fortaleza. Ambiente moderno com boa estrutura de alimentos e bebidas.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio",
               "Snacks e frutas"
             ],
             "bebida": [
-              "Cervejas",
-              "Vinhos",
-              "Café e bebidas quentes",
-              "Sucos"
+              "Bar com bebidas alcoólicas",
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -1374,22 +1429,20 @@
           "urlFotos": "https://loungereview.com/lounges/ambaar-club-for-domestic/#photos"
         },
         {
-          "nome": "Ambaar Club FOR (Internacional)",
+          "nome": "Ambaar Club (Internacional)",
           "slug": "ambaar-club-for-international",
           "terminal": "Fortaleza (FOR), Internacional",
           "horario": "05:00–23:00",
-          "localizacao": "Fortaleza – Pinto Martins, setor internacional.",
-          "overview": "Lounge Ambaar no setor internacional de Fortaleza. Boa infraestrutura para passageiros em voos internacionais.",
+          "localizacao": "Fortaleza – Pinto Martins, embarques internacionais.",
+          "overview": "Versão internacional do Ambaar em Fortaleza. Boa infraestrutura para passageiros em voos internacionais.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio",
               "Snacks"
             ],
             "bebida": [
-              "Cervejas",
-              "Vinhos",
-              "Café e bebidas quentes",
-              "Sucos"
+              "Cervejas e vinhos",
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -1407,7 +1460,7 @@
           "urlFotos": "https://loungereview.com/lounges/ambaar-club-for-international/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T15:00:00.000Z"
+      "buscadoEm": "2026-07-09T20:00:00.000Z"
     },
     "REC": {
       "nome": "Recife – Guararapes Internacional",
@@ -1442,17 +1495,17 @@
           "terminal": "Recife (REC), Doméstico, oposto ao gate A7",
           "horario": "24h",
           "localizacao": "Recife – Guararapes, Embarques Domésticos, oposto ao gate A7.",
-          "overview": "Principal lounge W em Recife, no setor doméstico. Ambiente confortável com culinária local.",
+          "overview": "Principal lounge W em Recife. Ambiente confortável com culinária regional pernambucana. Bem avaliado pelos visitantes.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio",
-              "Snacks e salgados pernambucanos",
+              "Snacks e salgados regionais",
               "Frutas e doces"
             ],
             "bebida": [
               "Bar completo",
               "Cervejas, vinhos, destilados",
-              "Café e bebidas quentes"
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -1471,12 +1524,12 @@
           "urlFotos": "https://loungereview.com/lounges/w-lounge-recife-rec/#photos"
         },
         {
-          "nome": "W Premium Lounge Recife Frevo",
+          "nome": "W Premium Lounge (Doméstico/Internacional)",
           "slug": "w-lounge-frevo-rec",
           "terminal": "Recife (REC), setor adicional",
           "horario": "24h",
           "localizacao": "Recife – Guararapes, segunda unidade W no aeroporto.",
-          "overview": "Segunda unidade W em Recife. Mesmo padrão da rede W Premium com buffet e bar completo.",
+          "overview": "Segunda unidade W em Recife, padrão W Premium com buffet e bar completo.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio",
@@ -1484,7 +1537,7 @@
             ],
             "bebida": [
               "Bar completo",
-              "Café e bebidas quentes"
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -1500,35 +1553,9 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/w-lounge-frevo-rec/",
           "urlFotos": "https://loungereview.com/lounges/w-lounge-frevo-rec/#photos"
-        },
-        {
-          "nome": "Siesta Box Recife",
-          "slug": "siesta-box-recife-rec",
-          "terminal": "Recife (REC)",
-          "horario": "24h",
-          "localizacao": "Recife – Guararapes. Pods de descanso privativos.",
-          "overview": "Pods de descanso privativos. Cabines duplas com ar-condicionado, Wi-Fi, TV e tomadas. Acessível via LoungeKey/Priority Pass (até 2h = 1 acesso).",
-          "amenidades": {
-            "comida": [],
-            "bebida": [],
-            "outros": [
-              "Pods privativos de descanso",
-              "Wi-Fi",
-              "TV",
-              "Tomadas 110V e 220V",
-              "Ar-condicionado"
-            ]
-          },
-          "obs": "Cobrado por hora. Até 2h via LoungeKey/Priority Pass.",
-          "programas": [
-            "LoungeKey",
-            "Priority Pass"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/siesta-box-recife-rec/",
-          "urlFotos": "https://loungereview.com/lounges/siesta-box-recife-rec/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T15:00:00.000Z"
+      "buscadoEm": "2026-07-09T20:00:00.000Z"
     },
     "POA": {
       "nome": "Porto Alegre – Salgado Filho Internacional",
@@ -1562,8 +1589,8 @@
           "slug": "w-premium-lounge-porto-alegre-poa",
           "terminal": "Porto Alegre (POA), Doméstico, mezanino próximo ao gate 116",
           "horario": "24h",
-          "localizacao": "Porto Alegre – Salgado Filho, Embarques Domésticos, nível mezanino, próximo ao gate 116.",
-          "overview": "Principal lounge doméstico de Porto Alegre. Confortável e bem equipado. Boa seleção de comida e bebidas gaúchas.",
+          "localizacao": "Porto Alegre – Salgado Filho, Doméstico, nível mezanino, próximo ao gate 116.",
+          "overview": "Principal lounge doméstico de Porto Alegre. Confortável, bem equipado. Boa seleção de comida e bebidas gaúchas.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio",
@@ -1574,7 +1601,7 @@
               "Bar completo",
               "Vinhos gaúchos",
               "Cervejas",
-              "Café e bebidas quentes"
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -1593,11 +1620,11 @@
           "urlFotos": "https://loungereview.com/lounges/w-premium-lounge-porto-alegre-poa/#photos"
         },
         {
-          "nome": "Ambaar Club POA (Internacional)",
+          "nome": "Ambaar Club (Internacional)",
           "slug": "ambaar-club-poa-international",
           "terminal": "Porto Alegre (POA), Internacional, próximo aos gates 101-102",
           "horario": "05:00–23:00",
-          "localizacao": "Porto Alegre – Salgado Filho, Embarques Internacionais, próximo aos gates 101-102.",
+          "localizacao": "Porto Alegre – Salgado Filho, Internacionals, próximo aos gates 101-102.",
           "overview": "Lounge Ambaar no setor internacional de Porto Alegre. Moderno e bem equipado.",
           "amenidades": {
             "comida": [
@@ -1607,8 +1634,7 @@
             "bebida": [
               "Cervejas",
               "Vinhos",
-              "Café",
-              "Sucos"
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -1624,9 +1650,40 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/ambaar-club-poa-international/",
           "urlFotos": "https://loungereview.com/lounges/ambaar-club-poa-international/#photos"
+        },
+        {
+          "nome": "Ambaar Club (Doméstico)",
+          "slug": "ambaar-club-poa-domestic",
+          "terminal": "Porto Alegre (POA), Doméstico",
+          "horario": "05:00–23:00",
+          "localizacao": "Porto Alegre – Salgado Filho, Embarques Domésticos.",
+          "overview": "Versão doméstica do Ambaar em Porto Alegre. Boa estrutura e ambiente moderno.",
+          "amenidades": {
+            "comida": [
+              "Buffet quente e frio",
+              "Snacks"
+            ],
+            "bebida": [
+              "Cervejas",
+              "Vinhos",
+              "Café, sucos e refrigerantes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/ambaar-club-poa-international/",
+          "urlFotos": "https://loungereview.com/lounges/ambaar-club-poa-international/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T15:00:00.000Z"
+      "buscadoEm": "2026-07-09T20:00:00.000Z"
     },
     "CWB": {
       "nome": "Curitiba – Afonso Pena Internacional",
@@ -4752,15 +4809,15 @@
         {
           "nome": "Harmony Lounge",
           "slug": "harmony-lounge-mao",
-          "terminal": "Manaus (MAO), Embarques",
+          "terminal": "Manaus (MAO), Doméstico e Internacional",
           "horario": "05:00–23:00",
-          "localizacao": "Eduardo Gomes Internacional, área de embarques.",
-          "overview": "Principal lounge de Manaus, porta de entrada para a Amazônia. Ambiente tropical com produtos regionais.",
+          "localizacao": "Eduardo Gomes Internacional, área de embarques. Aceita voos domésticos e internacionais.",
+          "overview": "Única sala VIP de Manaus, porta de entrada para a Amazônia. Ambiente tropical com produtos regionais amazônicos.",
           "amenidades": {
             "comida": [
               "Buffet com produtos regionais amazônicos",
               "Frutas tropicais",
-              "Snacks"
+              "Snacks e lanches"
             ],
             "bebida": [
               "Sucos tropicais amazônicos",
@@ -4783,7 +4840,7 @@
           "urlFotos": "https://loungereview.com/lounges/harmony-lounge-mao/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T15:00:00.000Z"
+      "buscadoEm": "2026-07-09T20:00:00.000Z"
     },
     "FLN": {
       "nome": "Florianópolis – Hercílio Luz Internacional",
@@ -4816,7 +4873,7 @@
           "slug": "the-lounge-florianopolis-fln",
           "terminal": "Florianópolis (FLN), Doméstico",
           "horario": "05:00–23:00",
-          "localizacao": "Florianópolis – Hercílio Luz, embarques domésticos.",
+          "localizacao": "Hercílio Luz, embarques domésticos.",
           "overview": "Principal lounge de Florianópolis, setor doméstico. Ambiente moderno e aconchegante.",
           "amenidades": {
             "comida": [
@@ -4826,8 +4883,7 @@
             "bebida": [
               "Cervejas",
               "Vinhos",
-              "Café e bebidas quentes",
-              "Sucos"
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -4849,8 +4905,8 @@
           "slug": "the-lounge-florianopolis-fln-international",
           "terminal": "Florianópolis (FLN), Internacional",
           "horario": "05:00–23:00",
-          "localizacao": "Florianópolis – Hercílio Luz, embarques internacionais.",
-          "overview": "Lounge internacional de Florianópolis. Mesma rede The Lounge, boa estrutura para voos internacionais.",
+          "localizacao": "Hercílio Luz, embarques internacionais.",
+          "overview": "Lounge internacional de Florianópolis. Mesma rede The Lounge, boa estrutura.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio",
@@ -4859,8 +4915,7 @@
             "bebida": [
               "Cervejas",
               "Vinhos",
-              "Café",
-              "Sucos"
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -4878,7 +4933,7 @@
           "urlFotos": "https://loungereview.com/lounges/the-lounge-florianopolis-fln-international/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T15:00:00.000Z"
+      "buscadoEm": "2026-07-09T20:00:00.000Z"
     },
     "GYN": {
       "nome": "Goiânia – Santa Genoveva",
@@ -4978,12 +5033,12 @@
       ],
       "salas": [
         {
-          "nome": "Sala VIP NAT",
-          "slug": "sala-vip-nat",
-          "terminal": "Natal (NAT), Embarques",
-          "horario": "06:00–22:00",
-          "localizacao": "São Gonçalo do Amarante Internacional, área de embarques.",
-          "overview": "Lounge em Natal com ambiente aconchegante. Boa opção para espera em um dos principais destinos de sol e praia do Brasil.",
+          "nome": "Advantage VIP Lounge (Doméstico)",
+          "slug": "advantage-vip-lounge-nat-domestic",
+          "terminal": "Natal (NAT), Doméstico",
+          "horario": "05:00–23:00",
+          "localizacao": "São Gonçalo do Amarante, embarques domésticos.",
+          "overview": "Principal sala VIP de Natal no setor doméstico. Ambiente Advantage com boa estrutura.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio",
@@ -4991,10 +5046,8 @@
               "Frutas tropicais"
             ],
             "bebida": [
-              "Cervejas",
-              "Vinhos",
-              "Café e bebidas quentes",
-              "Sucos de frutas regionais"
+              "Bar com bebidas alcoólicas",
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -5005,13 +5058,45 @@
           },
           "programas": [
             "LoungeKey",
-            "Priority Pass"
+            "Priority Pass",
+            "DragonPass"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/sala-vip-nat/",
-          "urlFotos": "https://loungereview.com/lounges/sala-vip-nat/#photos"
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-nat-domestic/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-nat-domestic/#photos"
+        },
+        {
+          "nome": "Advantage VIP Lounge (Internacional)",
+          "slug": "advantage-vip-lounge-nat-international",
+          "terminal": "Natal (NAT), Internacional",
+          "horario": "05:00–23:00",
+          "localizacao": "São Gonçalo do Amarante, embarques internacionais.",
+          "overview": "Sala VIP internacional de Natal. Mesma rede Advantage, boa estrutura para voos internacionais.",
+          "amenidades": {
+            "comida": [
+              "Buffet quente e frio",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café, sucos e refrigerantes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Ar-condicionado"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-nat-international/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-nat-international/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T12:00:00.000Z"
+      "buscadoEm": "2026-07-09T20:00:00.000Z"
     },
     "JPA": {
       "nome": "João Pessoa – Presidente Castro Pinto Internacional",
@@ -5156,7 +5241,7 @@
           "terminal": "Navegantes (NVT), Embarques",
           "horario": "05:00–23:00",
           "localizacao": "Ministro Victor Konder Internacional, área de embarques.",
-          "overview": "Lounge W em Navegantes, servindo principalmente Santa Catarina e a região sul do Brasil.",
+          "overview": "Única sala VIP de Navegantes, operada pelo grupo W. Ambiente moderno servindo principalmente Santa Catarina e região sul.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio",
@@ -5184,7 +5269,7 @@
           "urlFotos": "https://loungereview.com/lounges/w-lounge-nvt/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T15:00:00.000Z"
+      "buscadoEm": "2026-07-09T20:00:00.000Z"
     },
     "BPS": {
       "nome": "Porto Seguro – Internacional",
@@ -5210,7 +5295,43 @@
       ],
       "slugs": [
         "brt-lounge-bps"
-      ]
+      ],
+      "salas": [
+        {
+          "nome": "BRT Lounge Porto Seguro",
+          "slug": "brt-lounges-bps",
+          "terminal": "Porto Seguro (BPS), T1, landside, oposto ao estacionamento",
+          "horario": "06:00–22:00",
+          "localizacao": "Porto Seguro, Terminal 1, landside (fora da segurança), oposto ao estacionamento e via de acesso ao aeroporto.",
+          "overview": "Lounge BRT em Porto Seguro, localizado antes da segurança. Ideal para quem chega cedo ou aguarda passageiros.",
+          "amenidades": {
+            "comida": [
+              "Buffet quente e frio",
+              "Snacks regionais"
+            ],
+            "bebida": [
+              "Cervejas",
+              "Vinhos",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Ar-condicionado"
+            ]
+          },
+          "obs": "Localização landside — antes da segurança.",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/brt-lounges-bps/",
+          "urlFotos": "https://loungereview.com/lounges/brt-lounges-bps/#photos"
+        }
+      ],
+      "buscadoEm": "2026-07-09T20:00:00.000Z"
     },
     "IGU": {
       "nome": "Foz do Iguaçu – Cataratas Internacional",
@@ -5239,21 +5360,22 @@
       ],
       "salas": [
         {
-          "nome": "Advantage VIP Lounge",
-          "slug": "advantage-vip-lounge-igu",
+          "nome": "The Lounge Cataratas",
+          "slug": "the-lounge-cataratas-igu",
           "terminal": "Foz do Iguaçu (IGU), Embarques",
           "horario": "05:00–22:00",
           "localizacao": "Cataratas Internacional, área de embarques.",
-          "overview": "Lounge Advantage em Foz do Iguaçu. Boa opção para passageiros visitando as Cataratas.",
+          "overview": "Principal sala VIP de Foz do Iguaçu, operada pela Global Lounge Network. Boa opção para passageiros visitando as Cataratas do Iguaçu.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio",
-              "Snacks regionais"
+              "Snacks regionais",
+              "Frutas"
             ],
             "bebida": [
               "Cervejas",
               "Vinhos",
-              "Café e bebidas quentes"
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
@@ -5267,16 +5389,16 @@
             "Priority Pass",
             "DragonPass"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-igu/",
-          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-igu/#photos"
+          "urlLoungereview": "https://loungereview.com/lounges/the-lounge-cataratas-igu/",
+          "urlFotos": "https://loungereview.com/lounges/the-lounge-cataratas-igu/#photos"
         },
         {
-          "nome": "The Lounge Foz do Iguaçu",
-          "slug": "the-lounge-iguassu-igu",
+          "nome": "Latitude VIP Lounge",
+          "slug": "latitude-vip-lounge-igu",
           "terminal": "Foz do Iguaçu (IGU), Embarques",
           "horario": "05:00–22:00",
           "localizacao": "Cataratas Internacional, área de embarques.",
-          "overview": "Segunda opção de lounge em Foz do Iguaçu, rede The Lounge.",
+          "overview": "Segunda opção de lounge em Foz do Iguaçu, aceita DragonPass.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio",
@@ -5285,7 +5407,7 @@
             "bebida": [
               "Cervejas",
               "Vinhos",
-              "Café"
+              "Café, sucos"
             ],
             "outros": [
               "Wi-Fi",
@@ -5294,14 +5416,14 @@
             ]
           },
           "programas": [
-            "LoungeKey",
-            "Priority Pass"
+            "DragonPass",
+            "LoungeKey"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/the-lounge-iguassu-igu/",
-          "urlFotos": "https://loungereview.com/lounges/the-lounge-iguassu-igu/#photos"
+          "urlLoungereview": "https://loungereview.com/lounges/latitude-vip-lounge-igu/",
+          "urlFotos": "https://loungereview.com/lounges/latitude-vip-lounge-igu/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T15:00:00.000Z"
+      "buscadoEm": "2026-07-09T20:00:00.000Z"
     },
     "AEP": {
       "nome": "Buenos Aires – Jorge Newbery (Aeroparque)",
