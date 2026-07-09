@@ -358,7 +358,7 @@ const PARCEIROS_TIER1 = new Set([
   // Moda
   'lojas renner', 'riachuelo', 'c&a', 'sephora',
   // Beleza
-  'beleza na web',
+  'beleza na web', 'natura',
   // Saúde/Farmácia
   'pague menos', 'drogarias pacheco', 'drogaria são paulo',
   // Alimentação
@@ -464,7 +464,7 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
       return `🛍️ ${v.parceiro} — ${v.ptsBefore} → ${v.ptsNow} pts/${moeda} (+${v.delta})`;
     }).join('\n');
 
-    const titulo = `${count} parceiro${count > 1 ? 's' : ''} tiveram aumento de pontuação com ${progName}`;
+    const titulo = `${count} parceiro${count > 1 ? 's tiveram' : ' teve'} aumento de pontuação com ${progName}`;
 
     const raw = `variacao-${progId}-${new Date().toISOString()}`;
     let hash = 0;
@@ -475,7 +475,7 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
       id,
       titulo,
       emoji:       '📈',
-      resumo:      `${count} parceiro${count > 1 ? 's' : ''} do programa ${progName} tiveram aumento de pontuação na última atualização do Painel do Clube do Viajante.\n\n${linhas}`,
+      resumo:      `${count} parceiro${count > 1 ? 's' : ''} do programa ${progName} ${count > 1 ? 'tiveram' : 'teve'} aumento de pontuação na última atualização do Painel do Clube do Viajante.\n\n${linhas}`,
       descricao:   '',
       programa:    progName,
       bonus:       '',
