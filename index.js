@@ -2013,7 +2013,18 @@ app.get('/lounges/buscar', async (req, res) => {
     const db = await ghGetJson(LOUNGES_DB_PATH, { aeroportos: {} });
     const entrada = db.data.aeroportos?.[iata];
 
-    // Cache válido = tem campo "salas" (novo formato rico)
+    // 1. Cache em memória (mais rápido, evita leitura do GitHub)
+    if (global._loungesCache?.[iata]?.salas?.length) {
+      const mem = global._loungesCache[iata];
+      return res.json({
+        ok: true, fonte: 'cache',
+        buscadoEm: mem.buscadoEm,
+        aeroporto: { iata, nome: entrada?.nome || iata, cidade: entrada?.cidade || '', pais: entrada?.pais || '' },
+        salas: mem.salas
+      });
+    }
+
+    // Cache válido = tem campo "salas" (formato rico no GitHub)
     if (entrada?.salas?.length) {
       return res.json({
         ok: true, fonte: 'cache',
@@ -2027,24 +2038,10 @@ app.get('/lounges/buscar', async (req, res) => {
     const slugsConhecidos = entrada?.slugs || [];
     const salas = await lrBuscarSalasPorIATA(iata, slugsConhecidos);
 
-    // 3. Salva no cache (merge com dados existentes do aeroporto)
-    if (GITHUB_TOKEN) {
-      try {
-        const dbAtual = await ghGetJson(LOUNGES_DB_PATH, { _meta: {}, aeroportos: {} });
-        dbAtual.data.aeroportos = dbAtual.data.aeroportos || {};
-        const base = dbAtual.data.aeroportos[iata] || { nome: `Aeroporto ${iata}`, cidade: '', pais: '', iata };
-        dbAtual.data.aeroportos[iata] = {
-          ...base,
-          salas,
-          buscadoEm: new Date().toISOString()
-        };
-        await ghPutJson(LOUNGES_DB_PATH, dbAtual.data, dbAtual.sha, `feat: lounge cache rico ${iata} (LoungeReview)`);
-      } catch (e) {
-        console.warn('[lounges] Falha ao salvar cache:', e.message);
-      }
-    }
+    // 3. Salva em cache em memória (evita redeploy: NÃO commita no GitHub)
+    if (!global._loungesCache) global._loungesCache = {};
+    global._loungesCache[iata] = { salas, buscadoEm: new Date().toISOString() };
 
-    // 4. Retrocompatibilidade: aeroportos sem salas no cache mas com dados base
     return res.json({
       ok: true,
       fonte: salas.length ? 'busca-ativa' : 'sem-dados',
