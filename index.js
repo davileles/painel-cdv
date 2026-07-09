@@ -928,23 +928,40 @@ const CONCIERGE_REPO = 'davileles/concierge';
 async function getConciergeFile(filename) {
   return new Promise((resolve, reject) => {
     const https = require('https');
-    const options = {
+    // Primeiro buscar SHA via API normal
+    const optsMeta = {
       hostname: 'api.github.com',
       path: `/repos/${CONCIERGE_REPO}/contents/${filename}`,
-      headers: {
-        'Authorization': `token ${GITHUB_TOKEN}`,
-        'User-Agent': 'cdv-proxy',
-        'Accept': 'application/vnd.github+json'
-      }
+      headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'User-Agent': 'cdv-proxy', 'Accept': 'application/vnd.github+json' }
     };
-    https.get(options, (res) => {
-      let raw = '';
-      res.on('data', d => raw += d);
-      res.on('end', () => {
+    https.get(optsMeta, (resMeta) => {
+      let rawMeta = '';
+      resMeta.on('data', d => rawMeta += d);
+      resMeta.on('end', () => {
         try {
-          const data = JSON.parse(raw);
-          const content = JSON.parse(Buffer.from(data.content, 'base64').toString('utf-8'));
-          resolve({ content, sha: data.sha });
+          const meta = JSON.parse(rawMeta);
+          const fileSha = meta.sha;
+          // Se arquivo pequeno e tem content, usar diretamente
+          if (meta.content && meta.encoding === 'base64') {
+            const content = JSON.parse(Buffer.from(meta.content.replace(/\n/g,''), 'base64').toString('utf-8'));
+            return resolve({ content, sha: fileSha });
+          }
+          // Arquivo grande (>1MB): usar raw API
+          const optsRaw = {
+            hostname: 'raw.githubusercontent.com',
+            path: `/davileles/concierge/main/${filename}`,
+            headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'User-Agent': 'cdv-proxy' }
+          };
+          https.get(optsRaw, (resRaw) => {
+            let rawData = '';
+            resRaw.on('data', d => rawData += d);
+            resRaw.on('end', () => {
+              try {
+                const content = JSON.parse(rawData);
+                resolve({ content, sha: fileSha });
+              } catch(e) { reject(e); }
+            });
+          }).on('error', reject);
         } catch(e) { reject(e); }
       });
     }).on('error', reject);
