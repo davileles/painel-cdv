@@ -358,7 +358,7 @@ const PARCEIROS_TIER1 = new Set([
   // Moda
   'lojas renner', 'riachuelo', 'c&a', 'sephora',
   // Beleza
-  'beleza na web', 'natura',
+  'beleza na web', 'natura', 'insider',
   // Saúde/Farmácia
   'pague menos', 'drogarias pacheco', 'drogaria são paulo',
   // Alimentação
