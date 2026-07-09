@@ -365,6 +365,25 @@ app.post('/passagens/registrar', async (req, res) => {
     const corteMs = Date.now() - MAX_DIAS_PASSAGENS * 24 * 60 * 60 * 1000;
     items = items.filter(p => new Date(p.enviadoEm).getTime() >= corteMs);
 
+    // Calcula stats de histórico 180 dias ANTES de inserir a nova entrada
+    // Chave de agrupamento: origem|destino|programa|cabine (igual ao painel)
+    const grupoKey = `${(novaPassagem.origem).toLowerCase()}|${(novaPassagem.destino).toLowerCase()}|${(novaPassagem.programa).toLowerCase()}|${(novaPassagem.cabine).toLowerCase()}`;
+    const corteMs180 = Date.now() - 180 * 24 * 60 * 60 * 1000;
+    const hist180 = items.filter(p =>
+      `${(p.origem||'').toLowerCase()}|${(p.destino||'').toLowerCase()}|${(p.programa||'').toLowerCase()}|${(p.cabine||'').toLowerCase()}` === grupoKey &&
+      new Date(p.enviadoEm).getTime() >= corteMs180 &&
+      p.pontos > 0
+    );
+
+    let hist180Stats = null;
+    if (hist180.length >= 1) {
+      const pontosArr = hist180.map(h => h.pontos);
+      const minPts    = Math.min(...pontosArr);
+      const mediaPts  = Math.round(pontosArr.reduce((a, b) => a + b, 0) / pontosArr.length);
+      const isMin     = Number(pontos) <= minPts;
+      hist180Stats = { minPts, mediaPts, count: hist180.length, isMin };
+    }
+
     // Adiciona nova passagem no início
     items.unshift(novaPassagem);
 
@@ -375,7 +394,7 @@ app.post('/passagens/registrar', async (req, res) => {
       `chore: registra passagem ${origem} → ${destino} (${programa} ${pontos} pts)`
     );
 
-    res.json({ ok: true, id });
+    res.json({ ok: true, id, hist180: hist180Stats });
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }
