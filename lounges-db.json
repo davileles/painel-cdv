@@ -1649,26 +1649,31 @@
       "salas": [
         {
           "nome": "Advantage VIP Lounge (Doméstico)",
-          "slug": "advantage-vip-lounge-cwb-domestic",
-          "terminal": "Curitiba (CWB), Doméstico",
-          "horario": "05:00–23:00",
-          "localizacao": "Afonso Pena Internacional, área de embarques domésticos.",
-          "overview": "Lounge Advantage em Curitiba, setor doméstico. Ambiente confortável com boa estrutura.",
+          "slug": "advantage-vip-lounge-cwb",
+          "terminal": "Terminal 1 (Doméstico), imediatamente após a segurança",
+          "horario": "04:00–23:00",
+          "localizacao": "Terminal 1, Embarques Domésticos, imediatamente após o controle de segurança, à esquerda. Também acessível por passageiros internacionais com cartão de embarque válido.",
+          "overview": "Melhor sala do aeroporto segundo visitantes. Espaço amplo com buffet variado, seleção de bebidas, sala reservada para trabalho e área de descanso. Eleita melhor sala VIP da América Latina entre as conveniadas ao Priority Pass.",
           "amenidades": {
             "comida": [
-              "Buffet quente e frio",
-              "Snacks e frutas"
+              "Buffet com cardápio variado de comidas quentes e frias",
+              "Café da manhã, almoço e jantar",
+              "Snacks e doces"
             ],
             "bebida": [
-              "Cervejas",
-              "Vinhos",
-              "Café e bebidas quentes"
+              "Vinhos e espumantes",
+              "Drinks (em horários específicos)",
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
-              "Tomadas",
+              "Tomadas e USB",
               "Televisores",
-              "Ar-condicionado"
+              "Painel de voos",
+              "Espaço de coworking",
+              "Sala reservada para trabalho",
+              "Poltronas e área de descanso",
+              "Banheiros exclusivos"
             ]
           },
           "programas": [
@@ -1676,31 +1681,30 @@
             "Priority Pass",
             "DragonPass"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-cwb-domestic/",
-          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-cwb-domestic/#photos"
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-cwb/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-cwb/#photos"
         },
         {
           "nome": "Advantage VIP Lounge (Internacional)",
           "slug": "advantage-vip-lounge-cwb-international",
-          "terminal": "Curitiba (CWB), Internacional",
-          "horario": "05:00–23:00",
-          "localizacao": "Afonso Pena Internacional, área de embarques internacionais.",
-          "overview": "Lounge Advantage em Curitiba, setor internacional.",
+          "terminal": "Terminal 1 (Internacional), após a segurança",
+          "horario": "variável",
+          "localizacao": "Terminal 1, Embarques Internacionais, após a segurança. Única sala VIP disponível na área internacional do aeroporto.",
+          "overview": "Sala mais recente e única no setor internacional de Curitiba. Menor que a versão doméstica, mas bem dimensionada para o movimento internacional do aeroporto. Conta com snacks, bebidas e poltronas.",
           "amenidades": {
             "comida": [
-              "Buffet quente e frio",
-              "Snacks"
+              "Snacks e salgados",
+              "Doces e marmitinhas em alguns horários"
             ],
             "bebida": [
-              "Cervejas",
-              "Vinhos",
-              "Café",
-              "Sucos"
+              "Drinks e bebidas alcoólicas (horários específicos)",
+              "Café, sucos e refrigerantes"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Televisores"
+              "Televisores",
+              "Sofás e área de descanso"
             ]
           },
           "programas": [
@@ -1710,9 +1714,91 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-cwb-international/",
           "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-cwb-international/#photos"
+        },
+        {
+          "nome": "Bradesco Cartões Lounge",
+          "slug": "bradesco-cartoes-lounge-cwb",
+          "terminal": "Terminal 1 (Doméstico), após a segurança",
+          "horario": "05:30–22:30",
+          "localizacao": "Terminal 1, Embarques Domésticos, após a segurança.",
+          "overview": "Lounge exclusivo para portadores de cartões Bradesco selecionados (Visa Aeternum, Elo Nanquim, Elo Diners Club e Amex Platinum). Ambiente confortável com lanches e bebidas. Não aceita Priority Pass, LoungeKey ou DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Lanches e petiscos leves",
+              "Snacks e doces"
+            ],
+            "bebida": [
+              "Bebidas alcoólicas e não alcoólicas",
+              "Café e bebidas quentes"
+            ]
+          },
+          "obs": "Exclusivo Bradesco — sem acesso via PP, LK ou DP.",
+          "programas": [
+            "Bradesco Visa Aeternum",
+            "Bradesco Elo Nanquim",
+            "Elo Diners Club",
+            "Amex Platinum"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/bradesco-cartoes-lounge-cwb/",
+          "urlFotos": "https://loungereview.com/lounges/bradesco-cartoes-lounge-cwb/#photos"
+        },
+        {
+          "nome": "VIP Lounge Inter",
+          "slug": "vip-lounge-inter-cwb",
+          "terminal": "Terminal 1 (Doméstico), em frente ao portão 13",
+          "horario": "06:00–22:00",
+          "localizacao": "Terminal 1, saguão de embarque doméstico, em frente ao portão 13.",
+          "overview": "Lounge exclusivo do Banco Inter. Espaço pequeno (capacidade ~30 pessoas) e sem banheiro próprio. Oferece alimentação, bebidas alcoólicas e não alcoólicas, Wi-Fi e painel de voos. Acesso via LoungeKey ou cartão Inter Black/Win.",
+          "amenidades": {
+            "comida": [
+              "Buffet de comidas e bebidas",
+              "Snacks e lanches"
+            ],
+            "bebida": [
+              "Bebidas alcoólicas selecionadas",
+              "Café, sucos e refrigerantes"
+            ],
+            "outros": [
+              "Wi-Fi de alta velocidade",
+              "Painel de voos",
+              "Televisores"
+            ]
+          },
+          "obs": "Sem banheiro próprio. Capacidade limitada (~30 pessoas).",
+          "programas": [
+            "LoungeKey",
+            "Inter Black",
+            "Inter Win"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/vip-lounge-inter-cwb/",
+          "urlFotos": "https://loungereview.com/lounges/vip-lounge-inter-cwb/#photos"
+        },
+        {
+          "nome": "Break Travel Lounge",
+          "slug": "break-travel-lounge-cwb",
+          "terminal": "Terminal 1, Área Pública (landside), nível panorâmico (Piso 2/3)",
+          "horario": "24h",
+          "localizacao": "Terminal 1, área pública (landside), nível panorâmico (Piso 2/3), próximo à praça de alimentação. Acessível antes e após o voo, sem necessidade de cartão de embarque.",
+          "overview": "Única sala landside de Curitiba — ideal para quem chega muito cedo ou aguarda passageiros. Ambiente confortável e aconchegante. Sem banheiro próprio mas o do aeroporto fica próximo. Aceita DragonPass e Visa Infinite.",
+          "amenidades": {
+            "comida": [
+              "Snacks e lanches leves"
+            ],
+            "bebida": [
+              "Bebidas alcoólicas e não alcoólicas",
+              "Café e bebidas quentes"
+            ]
+          },
+          "obs": "Localização landside — antes da segurança. Sem banheiro próprio.",
+          "programas": [
+            "DragonPass",
+            "Visa Infinite"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/break-travel-lounge-cwb/",
+          "urlFotos": "https://loungereview.com/lounges/break-travel-lounge-cwb/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T15:00:00.000Z"
+      "buscadoEm": "2026-07-09T18:00:00.000Z"
     },
     "BEL": {
       "nome": "Belém – Val de Cans Internacional",
