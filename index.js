@@ -367,10 +367,10 @@ app.post('/passagens/registrar', async (req, res) => {
 
     // Calcula stats de histórico 180 dias ANTES de inserir a nova entrada
     // Chave de agrupamento: origem|destino|programa|cabine (igual ao painel)
-    const grupoKey = `${(novaPassagem.origem).toLowerCase()}|${(novaPassagem.destino).toLowerCase()}|${(novaPassagem.programa).toLowerCase()}|${(novaPassagem.cabine).toLowerCase()}`;
+    const grupoKey = `${(novaPassagem.origem).toLowerCase()}|${(novaPassagem.destino).toLowerCase()}|${(novaPassagem.programa).toLowerCase()}|${(novaPassagem.cabine).toLowerCase()}|${(novaPassagem.cia).toLowerCase()}`;
     const corteMs180 = Date.now() - 180 * 24 * 60 * 60 * 1000;
     const hist180 = items.filter(p =>
-      `${(p.origem||'').toLowerCase()}|${(p.destino||'').toLowerCase()}|${(p.programa||'').toLowerCase()}|${(p.cabine||'').toLowerCase()}` === grupoKey &&
+      `${(p.origem||'').toLowerCase()}|${(p.destino||'').toLowerCase()}|${(p.programa||'').toLowerCase()}|${(p.cabine||'').toLowerCase()}|${(p.cia||'').toLowerCase()}` === grupoKey &&
       new Date(p.enviadoEm).getTime() >= corteMs180 &&
       p.pontos > 0
     );
