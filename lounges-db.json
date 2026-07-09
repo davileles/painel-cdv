@@ -156,7 +156,7 @@
           "slug": "w-lounge-guarulhos-gru",
           "terminal": "T1 (Doméstico)",
           "horario": "24h",
-          "localizacao": "Terminal 1, Doméstico. Principal opção para voos Azul.",
+          "localizacao": "Terminal 1, único lounge disponível. Acesso pelo shuttle gratuito a partir do T2 (15-20 min).",
           "overview": "Lounge compacto (36 assentos) mas funcional. Único lounge do T1.",
           "amenidades": {
             "comida": [
@@ -189,9 +189,9 @@
         {
           "nome": "W Premium Lounge T2 The West",
           "slug": "w-lounge-guarulhos-gru-terminal-2",
-          "terminal": "T2 (Doméstico), próximo aos gates 201-205",
+          "terminal": "T2 (Doméstico), após segurança, próximo aos gates 201-205",
           "horario": "24h",
-          "localizacao": "T2 Doméstico, após segurança. Vire à direita, siga até o final, gates 201-205. Acesso para passageiros em trânsito: à direita do carrossel de bagagem.",
+          "localizacao": "T2 Doméstico, após segurança, vire à direita e siga em direção aos gates 201-205. Para passageiros em trânsito: à direita do carrossel de bagagem.",
           "overview": "Muito lotado segundo visitantes recentes. Poucas opções de comida mas o que tem é bom. Banheiro limpo. Pode não ter assentos nos horários de pico.",
           "amenidades": {
             "comida": [
@@ -222,9 +222,9 @@
         {
           "nome": "W Lounge T3 The Pier",
           "slug": "w-lounge-guarulhos-gru-terminal-3",
-          "terminal": "T3 (Internacional), próximo aos gates 323-324",
+          "terminal": "T3 (Internacional), final do pier, próximo aos gates 323-324",
           "horario": "24h",
-          "localizacao": "T3 Internacional, após segurança. Final do pier, lado direito, próximo aos gates 323-324. Andar superior: seção exclusiva Air France La Première.",
+          "localizacao": "T3 Internacional, após segurança. Final do pier, lado direito, próximo aos gates 323-324. Andar superior: seção exclusiva Air France La Première / KLM Business.",
           "overview": "Design elegante com vista para wide-bodies. Café da manhã quente 05:00–10:00. Bar premium. Andar superior com seção exclusiva Air France First/KLM Business. Pode lotar no pico noturno (20:00–24:00).",
           "amenidades": {
             "comida": [
@@ -254,15 +254,16 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/w-lounge-guarulhos-gru-terminal-3/",
           "urlFotos": "https://loungereview.com/lounges/w-lounge-guarulhos-gru-terminal-3/#photos",
-          "foto": "https://i.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/content/guide-w-lounges-sao-paulo-guarulhos-airport-gru/the-pier-w-lounge-t3-gru-airport-2-1754659355.png"
+          "foto": "https://i.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/content/guide-w-lounges-sao-paulo-guarulhos-airport-gru/the-pier-w-lounge-t3-gru-airport-2-1754659355.png",
+          "obs": "PP/LK bloqueados 05:00–09:00 e 21:00–23:00. Andar superior exclusivo Air France First/KLM Business."
         },
         {
           "nome": "Plaza Premium Lounge (T2 Airside)",
           "slug": "plaza-premium-lounge-gru",
-          "terminal": "T2 (Doméstico), após segurança",
-          "horario": "24h",
-          "localizacao": "Terminal 2 Doméstico, após a segurança. Siga pelo corredor, vire à direita no final e suba pela escada rolante ou elevador.",
-          "overview": "Melhor lounge independente do T2. Espaçoso com vista incrível para a pista. Buffet variado com açaí. Limite de 2h. Pode lotar. Aceita apenas Visa e Mastercard.",
+          "terminal": "T2 (Doméstico), após segurança, West Pier, próximo aos gates 209-224",
+          "horario": "05:00–23:00",
+          "localizacao": "T2 Doméstico, West Pier, imediatamente após a segurança doméstica, próximo aos gates 209-224. Atenção: não acessível a passageiros de voos internacionais.",
+          "overview": "1.500m², 355 assentos. O maior lounge independente do T2. Vista para a pista. Buffet brasileiro e internacional com cozinha aberta. Bar com bartenders. Chuveiros incluídos (20 min). Área kids, family room, conferências. Pico: 07:00–09:00 e 18:00–21:00.",
           "amenidades": {
             "comida": [
               "Buffet variado quente e frio",
@@ -292,15 +293,16 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-lounge-gru/",
           "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-gru/#photos",
-          "obs": "Limite de 2h. Aceita Visa e Mastercard."
+          "obs": "Máx. 3h. Crianças <2 anos: grátis. 2-11 anos: desconto. Não acessível a passageiros de voos internacionais.",
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/sao-paulo-guarulhos-international-airport-plaza-premium-lounge-domestic-departures/raw/d7p/LoungePair_GRU_Plaza_Premium_e2c1_1.jpg"
         },
         {
           "nome": "Plaza Premium Lounge (T2 Landside)",
           "slug": "plaza-premium-lounge-gru-landside",
-          "terminal": "T2, landside, próximo ao check-in LATAM (área E)",
-          "horario": "24h",
-          "localizacao": "Terminal 2, área pública, próximo ao check-in LATAM (área E). Antes da segurança.",
-          "overview": "Único lounge landside de GRU. Inclui coworking, salas de conferência, impressão e chuveiros. Wi-Fi incluso mas comida extra tem custo. Visitantes relatam queda de qualidade recente.",
+          "terminal": "T2, landside (antes da segurança), próximo ao check-in D",
+          "horario": "06:00–22:00",
+          "localizacao": "T2, área pública antes da segurança, próximo ao balcão de check-in D, nível de embarques. Acessível a qualquer pessoa — viajantes e não viajantes.",
+          "overview": "70m². Único lounge landside do T2 — ideal para chegadas, esperas pré-voo e acompanhantes. Mais compacto que o airside. Continental breakfast, sanduíches e pratos simples. Sala de reunião disponível.",
           "amenidades": {
             "comida": [
               "Café, chá, água e pão de queijo inclusos",
@@ -326,14 +328,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-lounge-gru-landside/",
           "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-gru-landside/#photos",
-          "obs": "Localização landside (antes da segurança). Alimentos extras têm custo adicional."
+          "obs": "Localização landside — antes da segurança. Espaço compacto com opções mais limitadas que o lounge airside.",
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/sao-paulo-guarulhos-international-airport-plaza-premium-lounge-landside-terminal-2/raw/l3k/LoungePair_GRU_Plaza_Premium_532f_1.png"
         },
         {
           "nome": "Advantage VIP Lounge",
           "slug": "advantage-vip-lounge-gru",
           "terminal": "T2 (Doméstico), após segurança — andar superior",
           "horario": "24h",
-          "localizacao": "Terminal 2 Doméstico, após segurança. Vire à direita, siga até o final, vire à direita novamente e suba pelo elevador ou escada rolante.",
+          "localizacao": "T2 Doméstico, após segurança. Vire à direita, siga até o final do corredor, vire à direita e suba pelo elevador ou escada rolante.",
           "overview": "Espaçoso e confortável com bom buffet quente e bar completo. Pode ficar movimentado às 18h. Business center, sala família e chuveiros. Bem avaliado no geral.",
           "amenidades": {
             "comida": [
@@ -364,7 +367,9 @@
             "DragonPass"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-gru/",
-          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-gru/#photos"
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-gru/#photos",
+          "foto": "https://i.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/content/gru-airport-terminal-2-exterior-image.jpg",
+          "obs": "Business center, sala família, chuveiros. VIP PLUS disponível para quem precisa de mais privacidade. Acesso 24h."
         },
         {
           "nome": "Banco Inter VIP Lounge",
@@ -397,7 +402,8 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/vip-lounge-inter-gru/",
           "urlFotos": "https://loungereview.com/lounges/vip-lounge-inter-gru/#photos",
-          "obs": "Exclusivo Inter Black/Win + LoungeKey. Pequeno — pode lotar."
+          "obs": "Exclusivo Inter Black/Win + LoungeKey. Pequeno e aconchegante — menos lotado que os outros lounges do T2.",
+          "foto": "https://i.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/content/gru-airport-terminal-2-exterior-image.jpg"
         },
         {
           "nome": "The Lounge São Paulo (T2 Doméstico)",
@@ -436,7 +442,7 @@
         {
           "nome": "The Lounge São Paulo / SkyTeam (T2 Internacional)",
           "slug": "skyteam-lounge-gru",
-          "terminal": "T2 (Internacional), após segurança",
+          "terminal": "T2 (Internacional), após segurança — mezanino",
           "horario": "24h",
           "localizacao": "Terminal 2 Internacional, após segurança.",
           "overview": "Lounge da Global Lounge Network, também chamado SkyTeam Lounge. Espaçoso com variedade de assentos (poltronas, mesas, reclinadores, escritórios privativos). Aceita Air Europa e Aeromexico premium.",
@@ -464,7 +470,9 @@
             "DragonPass"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/skyteam-lounge-gru/",
-          "urlFotos": "https://loungereview.com/lounges/skyteam-lounge-gru/#photos"
+          "urlFotos": "https://loungereview.com/lounges/skyteam-lounge-gru/#photos",
+          "foto": "https://i.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/content/gru-airport-terminal-2-exterior-image.jpg",
+          "obs": "Visitantes relatam ambiente sujo e tomadas que não funcionam. Air Europa e Aeromexico têm acesso gratuito. PP/LK aceitam no walk-up."
         },
         {
           "nome": "Nomad Lounge",
@@ -500,10 +508,10 @@
         {
           "nome": "LATAM VIP Lounge",
           "slug": "latam-vip-lounge-gru",
-          "terminal": "T3 (Internacional), 2º andar após segurança",
-          "horario": "24h",
-          "localizacao": "Terminal 3 Internacional, 2º andar, após segurança e imigração. Suba pela escada rolante logo após o duty free.",
-          "overview": "Maior lounge de GRU — buffet de quase 30m com culinária variada. Abundante luz natural, vista para o terminal. Área de entretenimento com tablets e videogames. Exclusivo LATAM.",
+          "terminal": "T3 (Internacional), após controle de passaportes e segurança, próximo aos gates 301-302",
+          "horario": "22:30–18:00 (fechado 18:00–22:30)",
+          "localizacao": "T3 Internacional, após passaporte e segurança, próximo aos gates 301-302.",
+          "overview": "O maior lounge do GRU — 1.835m², 450 lugares. Buffet de ~30m com culinária variada. Luz natural abundante. Zonas distintas para jantar, trabalho, relaxar e entretenimento (tablets e videogames). Chuveiros com produtos tropicais. Bloqueado para PP/LK das 18h às 22:30.",
           "amenidades": {
             "comida": [
               "Buffet quente e frio de ~30m",
@@ -529,12 +537,14 @@
             "LATAM Business/First"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/latam-vip-lounge-gru/",
-          "urlFotos": "https://loungereview.com/lounges/latam-vip-lounge-gru/#photos"
+          "urlFotos": "https://loungereview.com/lounges/latam-vip-lounge-gru/#photos",
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/sao-pauloguarulhos-international-airport-terminal-3-latam-vip-lounge/f5u/683552a9_image.jpg",
+          "obs": "FECHADO para acesso externo das 18:00 às 22:30. Máx. 3h. Exclusivo LATAM fora desse horário."
         },
         {
           "nome": "W Premium Lounge 5th Avenue",
           "slug": "w-premium-lounge-5th-avenue-gru",
-          "terminal": "T3 Internacional, zona central após segurança, entre lojas Havaianas e Heineken",
+          "terminal": "T3 (Internacional), zona central após segurança, entre lojas Havaianas e Heineken",
           "horario": "24h",
           "localizacao": "T3 Internacional, zona central após controle de segurança, entre as lojas Havaianas e Heineken.",
           "overview": "Inaugurada em julho 2024. Design boutique cosmopolita inspirado na 5ª Avenida de Nova York. Substituiu o Centurion Lounge fechado em fevereiro 2025. Exclusivo American Express. Área e menu à la carte exclusivos para Centurion.",
@@ -559,7 +569,7 @@
               "Armazenamento de bagagem"
             ]
           },
-          "obs": "Exclusivo Amex Platinum/Centurion. Centurion: 2 convidados grátis + chuveiro grátis + área exclusiva. Platinum: 1 convidado grátis. Convidados extras: US$50/pessoa.",
+          "obs": "Exclusivo Amex Platinum/Centurion. Centurion: 2 convidados grátis + chuveiro grátis + área exclusiva à la carte. Platinum: 1 convidado grátis.",
           "programas": [
             "Amex Platinum",
             "Amex Centurion",
@@ -569,7 +579,7 @@
           "urlFotos": "https://loungereview.com/lounges/w-premium-lounge-5th-avenue-gru/#photos"
         }
       ],
-      "buscadoEm": "2026-07-10T01:00:00.000Z"
+      "buscadoEm": "2026-07-10T02:00:00.000Z"
     },
     "GIG": {
       "nome": "Rio de Janeiro – Galeão Internacional",
