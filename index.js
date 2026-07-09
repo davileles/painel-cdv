@@ -1788,74 +1788,82 @@ function lrExtrairSlugs(html, iata) {
 }
 
 function lrExtrairDetalhes(html, slug) {
-  const strip = s => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const strip = s => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').replace(/[\u200b-\u200f\u2028\u2029\uFEFF]/g, '').trim();
 
   // Nome
-  const nomeMatch = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
-  const nome = nomeMatch ? strip(nomeMatch[1]) : slug.replace(/-/g, ' ');
-
-  // Horários — LoungeReview usa padrão "Open 24 hours" ou "5:00 am - 11:00 pm"
-  let horario = '';
-  if (/open 24 hours/i.test(html)) {
-    horario = '24h';
-  } else {
-    const hMatch = html.match(/(\d{1,2}:\d{2}\s*(?:am|pm)\s*[-–]\s*\d{1,2}:\d{2}\s*(?:am|pm))/i);
-    if (hMatch) horario = hMatch[1].trim();
+  let nome = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+  if (h1) nome = strip(h1[1]);
+  else {
+    const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+    if (titleMatch) nome = strip(titleMatch[1]).replace(/\s*[-|].*$/, '').replace(/- LoungeReview\.com.*/i, '').trim();
   }
 
-  // Localização no aeroporto — vem nas frases "Terminal X, after security, ..."
+  // Horários
+  let horario = '';
+  if (/open 24 hours|24\s*hours/i.test(html)) {
+    horario = '24h';
+  } else {
+    const hMatch = html.match(/(\d{1,2}:\d{2}\s*(?:am|pm)\s*[-–to]+\s*\d{1,2}:\d{2}\s*(?:am|pm))/i)
+                || html.match(/(\d{2}:\d{2}\s*[-–]\s*\d{2}:\d{2})/);
+    if (hMatch) horario = hMatch[1].replace(/\s+/g, ' ').trim();
+  }
+
+  // Localização
   let localizacao = '';
-  const locMatch = html.match(/(?:Terminal[^.]{5,200}(?:security|gates?|level|floor|hall)[^.]{0,100}\.)/i) ||
-                   html.match(/(?:after security[^.]{5,200}\.)/i) ||
-                   html.match(/(Terminal\s[\w\d]+[^<\n]{10,150})/i);
-  if (locMatch) localizacao = strip(locMatch[0]).replace(/^[–\-\s]+/, '').trim();
+  const locP1 = html.match(/\([A-Z]{3}\)\s*[–-]\s*(Terminal[\s\S]{10,300}?)(?:<|\n{2})/i);
+  const locP2 = html.match(/(Terminal\s+\d[^<.]{10,250}(?:security|gate)[^<.]{0,100}\.)/i);
+  const locP3 = html.match(/((?:after|before|airside|landside)[^<.]{10,250}(?:terminal|gate|level|security)[^<.]{0,150}\.)/i);
+  if (locP1) localizacao = strip(locP1[1]).substring(0, 300);
+  else if (locP2) localizacao = strip(locP2[1]).substring(0, 300);
+  else if (locP3) localizacao = strip(locP3[1]).substring(0, 300);
 
-  // Amenidades — extrai listas de Food, Drinks, Other amenities
+  // Amenidades
   const amenidades = { comida: [], bebida: [], outros: [] };
-  const foodMatch = html.match(/Food:\s*([\s\S]*?)(?:Drinks:|Other amenities:|Overview|Access)/i);
-  const drinkMatch = html.match(/Drinks:\s*([\s\S]*?)(?:Other amenities:|Overview|Access)/i);
-  const otherMatch = html.match(/Other amenities:\s*([\s\S]*?)(?:Overview|Access rules|Comments)/i);
-
-  const extrairLista = bloco => {
-    if (!bloco) return [];
-    return bloco.match(/[-•]\s*([^\n\r<]+)/g)?.map(l => strip(l.replace(/^[-•]\s*/, ''))) || [];
+  const extractList = (sectionHtml) => {
+    if (!sectionHtml) return [];
+    const liItems = sectionHtml.match(/<li[^>]*>([\s\S]*?)<\/li>/gi);
+    if (liItems) return liItems.map(li => strip(li)).filter(s => s.length > 1 && s.length < 80);
+    return sectionHtml.split(/[,;]/).map(s => strip(s)).filter(s => s.length > 2 && s.length < 60);
   };
-
-  amenidades.comida  = extrairLista(foodMatch?.[1]);
-  amenidades.bebida  = extrairLista(drinkMatch?.[1]);
-  amenidades.outros  = extrairLista(otherMatch?.[1]);
+  const foodSect  = html.match(/(?:Food|Comida)[:\s]*(<ul[\s\S]*?<\/ul>|[\s\S]{10,300}?)(?:Drink|Beverage|Other amenities|Overview|Access)/i);
+  const drinkSect = html.match(/(?:Drinks?|Beverages?)[:\s]*(<ul[\s\S]*?<\/ul>|[\s\S]{10,300}?)(?:Other amenities|Overview|Access|$)/i);
+  const otherSect = html.match(/(?:Other amenities?)[:\s]*(<ul[\s\S]*?<\/ul>|[\s\S]{10,300}?)(?:Overview|Access rules|Comments|Reviews|$)/i);
+  amenidades.comida = extractList(foodSect?.[1]).slice(0, 12);
+  amenidades.bebida = extractList(drinkSect?.[1]).slice(0, 10);
+  amenidades.outros = extractList(otherSect?.[1]).slice(0, 12);
+  if (!amenidades.outros.length) {
+    ['Wi-Fi','Shower','Television','Flight monitors','Power outlets','Newspapers','Conference room',
+     'Luggage storage','Air conditioning','Kids area','Business center','Printing','Workstations']
+      .forEach(kw => { if (new RegExp(kw, 'i').test(html)) amenidades.outros.push(kw); });
+  }
 
   // Overview
   let overview = '';
-  const ovMatch = html.match(/(?:Overview|About this lounge)([\s\S]{20,800})(?:Access rules|Access\s+rules|Cards accepted|Comments)/i);
-  if (ovMatch) overview = strip(ovMatch[1]).substring(0, 500);
+  const ovMatch = html.match(/<p[^>]*>([\s\S]{80,600}?)<\/p>/i);
+  if (ovMatch) {
+    const candidate = strip(ovMatch[1]).substring(0, 400);
+    if (!/access wizard|install the|log in|create an|buy access/i.test(candidate)) overview = candidate;
+  }
 
-  // Programas aceitos
+  // Programas
   const programas = [];
-  if (/lounge\s*key/i.test(html) || /loungekey/i.test(html)) programas.push('LoungeKey');
+  if (/lounge\s*key|loungekey/i.test(html)) programas.push('LoungeKey');
   if (/priority\s*pass/i.test(html)) programas.push('Priority Pass');
-  if (/dragonpass/i.test(html) || /dragon\s*pass/i.test(html)) programas.push('DragonPass');
+  if (/dragon\s*pass|dragonpass/i.test(html)) programas.push('DragonPass');
+  if (/diners\s*club/i.test(html)) programas.push('Diners Club');
 
   // Terminal
   let terminal = '';
-  const tMatch = html.match(/Terminal\s+([\w\d\s\(\)\/]+?)(?:,|\s*[-–]|\s*after|\s*before|\s*\n)/i);
+  const tMatch = html.match(/Terminal\s+([\w\d]+(?:\s*[\(\)\/]\s*[\w\d]+)?)/i);
   if (tMatch) terminal = 'Terminal ' + tMatch[1].trim();
 
-  return {
-    nome,
-    slug,
-    terminal,
-    horario,
-    localizacao,
-    overview,
-    amenidades,
-    programas,
+  return { nome, slug, terminal, horario, localizacao, overview, amenidades, programas,
     urlLoungereview: `https://loungereview.com/lounges/${slug}/`,
-    urlFotos: `https://loungereview.com/lounges/${slug}/#photos`
-  };
+    urlFotos: `https://loungereview.com/lounges/${slug}/#photos` };
 }
 
-async function lrBuscarSalasPorIATA(iata) {
+async function lrBuscarSalasPorIATA(iata, slugsConhecidos = []) {
   const headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -1869,27 +1877,17 @@ async function lrBuscarSalasPorIATA(iata) {
     } catch { return ''; }
   };
 
-  // 1. Busca via Google para descobrir os slugs das salas do aeroporto
-  const googleUrl = `https://www.google.com/search?q=site:loungereview.com/lounges/+${iata}&num=20&hl=en`;
-  const htmlGoogle = await fetchSafe(googleUrl);
+  // Usa slugs pré-populados no lounges-db.json
+  const slugs = slugsConhecidos.length ? slugsConhecidos : [];
 
-  // Extrai slugs únicos que contenham o IATA
-  const slugs = new Set();
-  const reLinks = /loungereview\.com\/lounges\/([\w-]+)\//gi;
-  let m;
-  while ((m = reLinks.exec(htmlGoogle)) !== null) {
-    const slug = m[1].toLowerCase();
-    if (slug.includes(iata.toLowerCase()) && slug !== 'lounges') {
-      slugs.add(slug);
-    }
-  }
+  if (slugs.length === 0) return [];
 
-  if (slugs.size === 0) return [];
-
-  // 2. Para cada slug, busca detalhes da página individual
-  const salas = await Promise.all([...slugs].slice(0, 12).map(async slug => {
+  // Para cada slug, busca detalhes da página individual em paralelo
+  const salas = await Promise.all(slugs.slice(0, 15).map(async slug => {
     const html = await fetchSafe(`https://loungereview.com/lounges/${slug}/`);
-    if (!html || html.length < 200) return null;
+    if (!html || html.length < 500) return null;
+    // Ignora salas encerradas permanentemente
+    if (/CLOSED PERMANENTLY/i.test(html)) return null;
     return lrExtrairDetalhes(html, slug);
   }));
 
@@ -2025,8 +2023,9 @@ app.get('/lounges/buscar', async (req, res) => {
       });
     }
 
-    // 2. Busca ao vivo no LoungeReview
-    const salas = await lrBuscarSalasPorIATA(iata);
+    // 2. Busca ao vivo no LoungeReview usando slugs pré-cadastrados
+    const slugsConhecidos = entrada?.slugs || [];
+    const salas = await lrBuscarSalasPorIATA(iata, slugsConhecidos);
 
     // 3. Salva no cache (merge com dados existentes do aeroporto)
     if (GITHUB_TOKEN) {
