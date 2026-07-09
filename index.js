@@ -1768,6 +1768,134 @@ app.get('/parceiros/testar-fetch', async (req, res) => {
 
 const LOUNGES_DB_PATH = 'lounges-db.json';
 
+// ─── LoungeReview parser ──────────────────────────────────────────────────────
+
+function lrExtrairSlugs(html, iata) {
+  // Extrai slugs de salas da página de busca do Google: site:loungereview.com/lounges/ IATA
+  const slugs = new Set();
+  const re = /loungereview\.com\/lounges\/([\w-]+(?:-' + iata.toLowerCase() + r'[\w-]*|[\w-]*-' + iata.toLowerCase() + r'[\w-]*))\//gi;
+  // Padrão direto: qualquer link /lounges/algo-GRU-algo/
+  const reLinks = /loungereview\.com\/lounges\/([\w-]+)\//gi;
+  let m;
+  while ((m = reLinks.exec(html)) !== null) {
+    const slug = m[1].toLowerCase();
+    // filtra slugs que contenham o IATA
+    if (slug.includes(iata.toLowerCase())) {
+      slugs.add(slug);
+    }
+  }
+  return [...slugs];
+}
+
+function lrExtrairDetalhes(html, slug) {
+  const strip = s => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+
+  // Nome
+  const nomeMatch = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+  const nome = nomeMatch ? strip(nomeMatch[1]) : slug.replace(/-/g, ' ');
+
+  // Horários — LoungeReview usa padrão "Open 24 hours" ou "5:00 am - 11:00 pm"
+  let horario = '';
+  if (/open 24 hours/i.test(html)) {
+    horario = '24h';
+  } else {
+    const hMatch = html.match(/(\d{1,2}:\d{2}\s*(?:am|pm)\s*[-–]\s*\d{1,2}:\d{2}\s*(?:am|pm))/i);
+    if (hMatch) horario = hMatch[1].trim();
+  }
+
+  // Localização no aeroporto — vem nas frases "Terminal X, after security, ..."
+  let localizacao = '';
+  const locMatch = html.match(/(?:Terminal[^.]{5,200}(?:security|gates?|level|floor|hall)[^.]{0,100}\.)/i) ||
+                   html.match(/(?:after security[^.]{5,200}\.)/i) ||
+                   html.match(/(Terminal\s[\w\d]+[^<\n]{10,150})/i);
+  if (locMatch) localizacao = strip(locMatch[0]).replace(/^[–\-\s]+/, '').trim();
+
+  // Amenidades — extrai listas de Food, Drinks, Other amenities
+  const amenidades = { comida: [], bebida: [], outros: [] };
+  const foodMatch = html.match(/Food:\s*([\s\S]*?)(?:Drinks:|Other amenities:|Overview|Access)/i);
+  const drinkMatch = html.match(/Drinks:\s*([\s\S]*?)(?:Other amenities:|Overview|Access)/i);
+  const otherMatch = html.match(/Other amenities:\s*([\s\S]*?)(?:Overview|Access rules|Comments)/i);
+
+  const extrairLista = bloco => {
+    if (!bloco) return [];
+    return bloco.match(/[-•]\s*([^\n\r<]+)/g)?.map(l => strip(l.replace(/^[-•]\s*/, ''))) || [];
+  };
+
+  amenidades.comida  = extrairLista(foodMatch?.[1]);
+  amenidades.bebida  = extrairLista(drinkMatch?.[1]);
+  amenidades.outros  = extrairLista(otherMatch?.[1]);
+
+  // Overview
+  let overview = '';
+  const ovMatch = html.match(/(?:Overview|About this lounge)([\s\S]{20,800})(?:Access rules|Access\s+rules|Cards accepted|Comments)/i);
+  if (ovMatch) overview = strip(ovMatch[1]).substring(0, 500);
+
+  // Programas aceitos
+  const programas = [];
+  if (/lounge\s*key/i.test(html) || /loungekey/i.test(html)) programas.push('LoungeKey');
+  if (/priority\s*pass/i.test(html)) programas.push('Priority Pass');
+  if (/dragonpass/i.test(html) || /dragon\s*pass/i.test(html)) programas.push('DragonPass');
+
+  // Terminal
+  let terminal = '';
+  const tMatch = html.match(/Terminal\s+([\w\d\s\(\)\/]+?)(?:,|\s*[-–]|\s*after|\s*before|\s*\n)/i);
+  if (tMatch) terminal = 'Terminal ' + tMatch[1].trim();
+
+  return {
+    nome,
+    slug,
+    terminal,
+    horario,
+    localizacao,
+    overview,
+    amenidades,
+    programas,
+    urlLoungereview: `https://loungereview.com/lounges/${slug}/`,
+    urlFotos: `https://loungereview.com/lounges/${slug}/#photos`
+  };
+}
+
+async function lrBuscarSalasPorIATA(iata) {
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.9',
+  };
+  const fetchSafe = async (url) => {
+    try {
+      const r = await fetch(url, { headers, timeout: 15000 });
+      if (!r.ok) return '';
+      return r.text();
+    } catch { return ''; }
+  };
+
+  // 1. Busca via Google para descobrir os slugs das salas do aeroporto
+  const googleUrl = `https://www.google.com/search?q=site:loungereview.com/lounges/+${iata}&num=20&hl=en`;
+  const htmlGoogle = await fetchSafe(googleUrl);
+
+  // Extrai slugs únicos que contenham o IATA
+  const slugs = new Set();
+  const reLinks = /loungereview\.com\/lounges\/([\w-]+)\//gi;
+  let m;
+  while ((m = reLinks.exec(htmlGoogle)) !== null) {
+    const slug = m[1].toLowerCase();
+    if (slug.includes(iata.toLowerCase()) && slug !== 'lounges') {
+      slugs.add(slug);
+    }
+  }
+
+  if (slugs.size === 0) return [];
+
+  // 2. Para cada slug, busca detalhes da página individual
+  const salas = await Promise.all([...slugs].slice(0, 12).map(async slug => {
+    const html = await fetchSafe(`https://loungereview.com/lounges/${slug}/`);
+    if (!html || html.length < 200) return null;
+    return lrExtrairDetalhes(html, slug);
+  }));
+
+  return salas.filter(Boolean);
+}
+
 function extrairLoungesLoungeKey(html, iata) {
   const salas = [];
   const reLoungeLink = /lounge-finder\/lounge\?loungecode=([A-Z0-9]+)/g;
@@ -1876,50 +2004,85 @@ async function buscarLoungesAoVivo(iata) {
 }
 
 // GET /lounges/buscar?iata=GRU
+// Retorna salas ricas (LoungeReview): nome, horário, localização, amenidades, programas, link fotos
 app.get('/lounges/buscar', async (req, res) => {
   const iata = (req.query.iata || '').toUpperCase().trim();
   if (!iata || !/^[A-Z]{3}$/.test(iata)) {
     return res.status(400).json({ ok: false, erro: 'Parâmetro ?iata= deve ter 3 letras (ex: GRU)' });
   }
   try {
+    // 1. Tenta cache no GitHub
     const db = await ghGetJson(LOUNGES_DB_PATH, { aeroportos: {} });
     const entrada = db.data.aeroportos?.[iata];
-    if (entrada) {
+
+    // Cache válido = tem campo "salas" (novo formato rico)
+    if (entrada?.salas?.length) {
       return res.json({
         ok: true, fonte: 'cache',
-        atualizadoEm: db.data._meta?.atualizadoEm || null,
+        buscadoEm: entrada.buscadoEm || null,
         aeroporto: { iata, nome: entrada.nome, cidade: entrada.cidade, pais: entrada.pais },
-        loungekey:    entrada.loungekey    || [],
-        dragonpass:   entrada.dragonpass   || [],
-        prioritypass: entrada.prioritypass || []
+        salas: entrada.salas
       });
     }
-    // Não está no cache — busca ao vivo
-    const resultado = await buscarLoungesAoVivo(iata);
+
+    // 2. Busca ao vivo no LoungeReview
+    const salas = await lrBuscarSalasPorIATA(iata);
+
+    // 3. Salva no cache (merge com dados existentes do aeroporto)
     if (GITHUB_TOKEN) {
       try {
-        const dbAtual = await ghGetJson(LOUNGES_DB_PATH, { _meta: { atualizadoEm: new Date().toISOString() }, aeroportos: {} });
+        const dbAtual = await ghGetJson(LOUNGES_DB_PATH, { _meta: {}, aeroportos: {} });
         dbAtual.data.aeroportos = dbAtual.data.aeroportos || {};
+        const base = dbAtual.data.aeroportos[iata] || { nome: `Aeroporto ${iata}`, cidade: '', pais: '', iata };
         dbAtual.data.aeroportos[iata] = {
-          nome: `Aeroporto ${iata}`, cidade: '', pais: '', iata,
-          loungekey:    resultado.loungekey,
-          dragonpass:   resultado.dragonpass,
-          prioritypass: resultado.prioritypass,
+          ...base,
+          salas,
           buscadoEm: new Date().toISOString()
         };
-        await ghPutJson(LOUNGES_DB_PATH, dbAtual.data, dbAtual.sha, `chore: add lounge cache ${iata}`);
-      } catch (saveErr) {
-        console.warn('[lounges] Falha ao salvar cache:', saveErr.message);
+        await ghPutJson(LOUNGES_DB_PATH, dbAtual.data, dbAtual.sha, `feat: lounge cache rico ${iata} (LoungeReview)`);
+      } catch (e) {
+        console.warn('[lounges] Falha ao salvar cache:', e.message);
       }
     }
+
+    // 4. Retrocompatibilidade: aeroportos sem salas no cache mas com dados base
     return res.json({
-      ok: true, fonte: 'busca-ativa',
-      atualizadoEm: new Date().toISOString(),
-      aeroporto: { iata, nome: `Aeroporto ${iata}`, cidade: '', pais: '' },
-      loungekey:    resultado.loungekey,
-      dragonpass:   resultado.dragonpass,
-      prioritypass: resultado.prioritypass
+      ok: true,
+      fonte: salas.length ? 'busca-ativa' : 'sem-dados',
+      buscadoEm: new Date().toISOString(),
+      aeroporto: {
+        iata,
+        nome: entrada?.nome || `Aeroporto ${iata}`,
+        cidade: entrada?.cidade || '',
+        pais: entrada?.pais || ''
+      },
+      salas
     });
+
+  } catch (err) {
+    console.error('[lounges]', err);
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// GET /lounges/sala?slug=w-lounge-guarulhos-gru-terminal-3
+// Busca detalhes de uma sala específica (sempre ao vivo)
+app.get('/lounges/sala', async (req, res) => {
+  const slug = (req.query.slug || '').replace(/[^a-z0-9-]/gi, '').toLowerCase();
+  if (!slug) return res.status(400).json({ ok: false, erro: 'Parâmetro ?slug= obrigatório' });
+  try {
+    const r = await fetch(`https://loungereview.com/lounges/${slug}/`, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': 'text/html,application/xhtml+xml',
+        'Accept-Language': 'en-US,en;q=0.9'
+      },
+      timeout: 15000
+    });
+    if (!r.ok) return res.status(404).json({ ok: false, erro: 'Sala não encontrada' });
+    const html = await r.text();
+    const sala = lrExtrairDetalhes(html, slug);
+    res.json({ ok: true, sala });
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }
