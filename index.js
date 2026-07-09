@@ -760,9 +760,14 @@ app.post('/ia/extrair-reserva', (req, res) => {
     '3) pax = total de passageiros listados por nome no documento. ' +
     '4) milhasTotal = total bruto de milhas do documento inteiro, sem dividir. ' +
     '5) Para hotel, preencha os campos hotel* e trechos=[]. ' +
-    '6) Para qualquer tipo de transporte terrestre (transfer aeroporto-hotel, van, táxi, locação de carro): use tipo=\"carro\". ' +
-    '   - Se for transfer/traslado (ponto a ponto, sem devolução): subtipo=\"transfer\", preencha transferOrigem (local de partida), transferDestino (local de chegada), transferData, transferHora, transferPax, transferOp (fornecedor/empresa), transferVeiculo, transferConf, transferValor. ' +
-    '   - Se for locação de carro (cliente retira e devolve): subtipo=\"locacao\", preencha locadora, carroCat, retLocal, devLocal, retData, devData, carroConf, carroValor. ' +
+    '6) Para qualquer transporte terrestre ou aquático: use tipo=\"carro\" e defina subtipo conforme abaixo. ' +
+    '   - Transfer/traslado (van, táxi, shuttle, ponto a ponto sem devolução): subtipo=\"transfer\". ' +
+    '   - Trem, metrô, trem de alta velocidade, trem noturno: subtipo=\"trem\". ' +
+    '   - Ônibus, autocarro, bus turístico, coach: subtipo=\"onibus\". ' +
+    '   - Ferry, balsa, barco, cruzeiro fluvial: subtipo=\"ferry\". ' +
+    '   - Locação/aluguel de carro (cliente retira e devolve): subtipo=\"locacao\". ' +
+    '   Para transfer/trem/onibus/ferry preencha: transferOrigem, transferDestino, transferData, transferHora, transferPax, transferOp, transferVeiculo, transferConf, transferValor. ' +
+    '   Para locacao preencha: locadora, carroCat, retLocal, devLocal, retData, devData, carroConf, carroValor. ' +
     '7) Para passeio/atividade, use tipo=\"passeio\" e preencha passeio*. ' +
     '8) Retorne SOMENTE o JSON, sem explicações.';
 
