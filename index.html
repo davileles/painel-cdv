@@ -4601,13 +4601,16 @@ function lvRenderizarFiltros(salas) {
 
   elRedes.innerHTML = '<span class="lv-filtro-label">Rede</span>' +
     ['Todas'].concat(redes).map(function(r) {
-      return '<button class="lv-filtro-btn'+(r===_lvFiltroRede?' ativo':'')+'" onclick="lvSetFiltroRede(''+r.replace(/'/g,"\'")+'')">' + r.replace(' Business/First','').replace(' exclusivo','') + '</button>';
+      var label = r.replace(' Business/First','').replace(' exclusivo','');
+      var ativo = r === _lvFiltroRede ? ' ativo' : '';
+      return '<button class="lv-filtro-btn' + ativo + '" onclick="lvSetFiltroRede(this.dataset.v)" data-v="' + r.replace(/"/g,'&quot;') + '">' + label + '</button>';
     }).join('');
 
   if (terminais.length > 1) {
     elTerminais.innerHTML = '<span class="lv-filtro-label">Terminal</span>' +
       ['Todos'].concat(terminais).map(function(t) {
-        return '<button class="lv-filtro-btn'+(t===_lvFiltroTerminal?' ativo':'')+'" onclick="lvSetFiltroTerminal(''+t.replace(/'/g,"\'")+'')">' + t + '</button>';
+        var ativo = t === _lvFiltroTerminal ? ' ativo' : '';
+        return '<button class="lv-filtro-btn' + ativo + '" onclick="lvSetFiltroTerminal(this.dataset.v)" data-v="' + t.replace(/"/g,'&quot;') + '">' + t + '</button>';
       }).join('');
     elTerminais.style.display='';
     document.querySelector('.lv-filtro-sep').style.display='';
