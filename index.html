@@ -4547,7 +4547,12 @@ var _lvFiltroTerminal = 'Todos';
 var _lvSalasCompletas = [];
 
 function lvAbrirModal(sala) {
-  document.getElementById('lv-modal-foto').innerHTML = '🛋️';
+  var fotoEl = document.getElementById('lv-modal-foto');
+  if (sala.foto) {
+    fotoEl.innerHTML = '<img src="'+sala.foto+'" alt="'+sala.nome+'" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML=\'🛋️\'">';
+  } else {
+    fotoEl.innerHTML = '🛋️';
+  }
   document.getElementById('lv-modal-nome').textContent = sala.nome;
   var badges = [];
   if (sala.terminal) badges.push('<span class="lv-modal-badge-terminal">📍 '+sala.terminal+'</span>');
@@ -4653,7 +4658,7 @@ function lvAplicarFiltros() {
     var idx = _lvSalasCompletas.indexOf(s);
     var progsHtml = (s.programas||[]).map(lvProgCardBadge).join('');
     return '<div class="lv-card" onclick="lvAbrirModal(window._lvSalas['+idx+'])">'
-      +'<div class="lv-card-img">🛋️</div>'
+      +(s.foto ? '<div class="lv-card-img"><img src="'+s.foto+'" alt="'+s.nome+'" loading="lazy" onerror="this.parentElement.innerHTML=\'🛋️\'"></div>' : '<div class="lv-card-img">🛋️</div>')
       +'<div class="lv-card-body">'
       +'<div class="lv-card-nome">'+s.nome+'</div>'
       +'<div class="lv-card-terminal">'+(s.terminal||'')+'</div>'
