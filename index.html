@@ -424,7 +424,7 @@
 .lv-modal-amenidades{display:flex;flex-wrap:wrap;gap:7px}
 .lv-modal-amenidade{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text);background:rgba(61,74,102,.35);padding:4px 10px;border-radius:20px;font-weight:600}
 .lv-modal-progs{display:flex;flex-wrap:wrap;gap:8px}
-.lv-modal-prog{font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid}
+.lv-modal-prog{font-size:12px;font-weight:800;padding:7px 16px;border-radius:20px;border:1.5px solid;letter-spacing:.2px}
 @media(max-width:640px){
   .lv-search-wrap{padding:14px 10px 0}
   .lv-cards-grid{padding:12px 10px;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
@@ -510,7 +510,7 @@
 
   <!-- Busca -->
   <div class="lv-search-wrap">
-    <div style="position:relative;flex:1;max-width:400px">
+    <div style="position:relative;width:200px;flex-shrink:0">
       <input
         class="lv-search-input"
         id="lv-input"
@@ -4518,15 +4518,39 @@ function lvAmenidadeIcon(texto) {
 }
 
 const LV_PROG_META = {
-  'LoungeKey':           { cor:'#eb5c20' },
-  'Priority Pass':       { cor:'#6b21a8' },
-  'DragonPass':          { cor:'#c41230' },
-  'Diners Club':         { cor:'#0057a8' },
-  'Visa Infinite':       { cor:'#1a1f71' },
-  'Smiles GOL':          { cor:'#ff6600' },
-  'Star Alliance Business/First': { cor:'#555' },
-  'LATAM Pass elite':    { cor:'#e4002b' },
-  'BRBCARD exclusivo':   { cor:'#005596' },
+  'LoungeKey':                    { cor:'#eb5c20' },
+  'Priority Pass':                { cor:'#7c3aed' },
+  'DragonPass':                   { cor:'#c41230' },
+  'Amex Centurion':               { cor:'#1a1a1a' },
+  'Amex Platinum':                { cor:'#9ca3af' },
+  'JHSF Amex Icon':               { cor:'#d4af37' },
+  'Inter Black':                  { cor:'#f97316' },
+  'Inter Win':                    { cor:'#f97316' },
+  'Bradesco Visa Aeternum':        { cor:'#e11d48' },
+  'Bradesco Elo Nanquim':          { cor:'#e11d48' },
+  'Elo Diners Club':              { cor:'#0057a8' },
+  'Diners Club':                  { cor:'#0057a8' },
+  'Visa Infinite':                { cor:'#1a1f71' },
+  'Smiles GOL':                   { cor:'#ff6600' },
+  'LATAM Pass elite':             { cor:'#e4002b' },
+  'BRBCARD exclusivo':            { cor:'#005596' },
+  'Star Alliance Business/First': { cor:'#6b7280' },
+  'oneworld Business':            { cor:'#7c3aed' },
+  'oneworld Business/First':      { cor:'#7c3aed' },
+  'oneworld Emerald/Sapphire':    { cor:'#7c3aed' },
+  'Qatar Airways Business/First': { cor:'#5c0632' },
+  'Qatar Airways First Class':    { cor:'#5c0632' },
+  'KLM/SkyTeam Business/First':   { cor:'#009edb' },
+  'Flying Blue Elite':            { cor:'#009edb' },
+  'LATAM Pass elite':             { cor:'#e4002b' },
+  'British Airways Business/First':{ cor:'#2b4690' },
+  'TAP Business/First':           { cor:'#006341' },
+  'TAP Miles&Go Platinum/Gold':   { cor:'#006341' },
+  'Delta Business/First':         { cor:'#003366' },
+  'Delta SkyMiles Medallion':     { cor:'#003366' },
+  'American Airlines Business/First': { cor:'#0078d2' },
+  'Privilege Club Platinum/Gold': { cor:'#5c0632' },
+  'C6 Bank Carbon Black':         { cor:'#111' },
 };
 
 function lvProgCardBadge(prog) {
@@ -4536,7 +4560,7 @@ function lvProgCardBadge(prog) {
 }
 function lvProgModalBadge(prog) {
   const m = LV_PROG_META[prog] || { cor:'#3d4a66' };
-  return '<span class="lv-modal-prog" style="border-color:'+m.cor+';color:'+m.cor+'">'+prog+'</span>';
+  return '<span class="lv-modal-prog" style="background:'+m.cor+'22;border-color:'+m.cor+';color:#fff;font-weight:800">'+prog+'</span>';
 }
 
 // Estado dos filtros
