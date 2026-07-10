@@ -356,7 +356,7 @@ const PARCEIROS_TIER1 = new Set([
   // Esportes
   'netshoes', 'centauro', 'decathlon', 'asics', 'nike', 'adidas',
   // Moda
-  'lojas renner', 'riachuelo', 'c&a', 'sephora',
+  'lojas renner', 'riachuelo', 'cea', 'sephora',
   // Beleza
   'beleza na web', 'natura', 'insider',
   // Saúde/Farmácia
