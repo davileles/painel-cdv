@@ -510,7 +510,7 @@
 
   <!-- Busca -->
   <div class="lv-search-wrap">
-    <div style="position:relative;width:200px;flex-shrink:0">
+    <div style="position:relative;flex:1;max-width:360px;min-width:160px">
       <input
         class="lv-search-input"
         id="lv-input"
@@ -523,7 +523,7 @@
       />
       <div class="lv-autocomplete" id="lv-autocomplete" style="display:none"></div>
     </div>
-    <button class="lv-search-btn" id="lv-btn" onclick="lvBuscar()">🔍 Buscar</button>
+    <button class="lv-search-btn" id="lv-btn" onclick="lvBuscar()" style="margin-left:10px">🔍 Buscar</button>
   </div>
 
   <!-- Status / loading -->
@@ -4409,10 +4409,16 @@ let lvAutocompleteIdx = -1;
 async function lvCarregarAeroportos() {
   if (lvAeroportosCache) return lvAeroportosCache;
   try {
-    const r = await fetch(CDV_PROXY_AUTH + '/lounges/aeroportos');
+    const r = await fetch('https://raw.githubusercontent.com/davileles/painel-cdv/main/lounges-db.json');
     if (!r.ok) return [];
     const d = await r.json();
-    lvAeroportosCache = d.aeroportos || [];
+    // Montar lista flat de aeroportos com iata, nome, cidade, pais
+    lvAeroportosCache = Object.entries(d.aeroportos || {}).map(([iata, a]) => ({
+      iata,
+      nome: a.nome || a.cidade || iata,
+      cidade: a.cidade || '',
+      pais: a.pais || ''
+    })).sort((a, b) => a.iata.localeCompare(b.iata));
     return lvAeroportosCache;
   } catch { return []; }
 }
