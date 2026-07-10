@@ -3454,7 +3454,7 @@
           "buscadoEm": "2026-07-10T18:00:00.000Z"
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "CDG": {
       "nome": "Paris – Charles de Gaulle",
@@ -4076,7 +4076,7 @@
       "nome": "Frankfurt – Frankfurt International",
       "pais": "Alemanha",
       "cidade": "Frankfurt",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "LuxxLounge",
@@ -4594,7 +4594,7 @@
           "obs": "Sem PP/LK/DP."
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "ORD": {
       "nome": "Chicago – O'Hare Internacional",
@@ -4662,7 +4662,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "LAX": {
       "nome": "Los Angeles Internacional",
@@ -4740,7 +4740,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "EZE": {
       "nome": "Buenos Aires – Ministro Pistarini (Ezeiza)",
@@ -5176,7 +5176,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "LIM": {
       "nome": "Lima – Jorge Chávez Internacional",
@@ -5386,30 +5386,27 @@
         {
           "nome": "Marhaba Lounge (T1 Concourse D)",
           "slug": "marhaba-lounge-dxb-t1",
-          "terminal": "T1 (Sheikh Rashid Terminal), Concourse D — Nível 2, acima dos gates de partida",
+          "terminal": "T1 (Sheikh Rashid Terminal), Concourse D — Nível 2",
           "horario": "24h",
-          "localizacao": "Airside — T1, Nível 2, acima dos gates de partida. Somente voos internacionais.",
-          "overview": "Marhaba Lounge no Terminal 1 de Dubai. Aceita PP, LK e DragonPass. Área kids separada. Sala de orações. Álcool sujeito a restrição no Ramadã. Máx. 3h.",
-          "foto": "https://d10mzz35brm2m8.cloudfront.net/lounge-media/image/DXB-18923.jpg",
+          "localizacao": "Airside — T1, Concourse D, Nível 2, acima dos gates de partida.",
+          "overview": "Marhaba Lounge T1. Aceita PP, LK e DragonPass. Área kids separada. Máx. 3h.",
           "amenidades": {
             "comida": [
-              "Buffet internacional quente e frio"
+              "Buffet variado",
+              "Snacks"
             ],
             "bebida": [
-              "Bar completo (exceto Ramadã)",
-              "Café e sucos"
+              "Bar completo",
+              "Café e bebidas quentes"
             ],
             "outros": [
               "Wi-Fi",
+              "Tomadas",
               "TV",
-              "Área kids",
-              "Sala de orações",
-              "Área fumantes",
-              "Acesso para deficientes",
-              "Cartão digital aceito"
+              "Monitor de voos"
             ]
           },
-          "obs": "Máx. 3h. Crianças <2 anos: grátis. Álcool sujeito a pedido durante o Ramadã.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20220218/37d57a09-7459-40de-8155-a12e525488b0.png",
           "programas": [
             "LoungeKey",
             "Priority Pass",
@@ -5421,128 +5418,16 @@
             "DragonPass"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/marhaba-lounge-dxb-t1/",
-          "urlFotos": "https://loungereview.com/lounges/marhaba-lounge-dxb-t1/#photos"
+          "urlFotos": "https://loungereview.com/lounges/marhaba-lounge-dxb-t1/#photos",
+          "obs": "Máx. 3h. Crianças <2 anos grátis. Álcool sujeito ao Ramadã."
         },
         {
-          "nome": "Al Majlis Lounge (T1 Concourse D)",
-          "slug": "al-majlis-lounge-dxb-t1",
+          "nome": "Ahlan Business Class Lounge (T1 Concourse D)",
+          "slug": "ahlan-business-class-lounge-dxb-t1",
           "terminal": "T1 (Sheikh Rashid Terminal), Concourse D — Nível 2",
           "horario": "24h",
           "localizacao": "Airside — T1, Concourse D, Nível 2.",
-          "overview": "Al Majlis no T1 de Dubai. Aceita DragonPass. Mais tranquilo que o Marhaba. Cardápio à la carte e live cooking station. Máx. 4h.",
-          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20241201/al-majlis-dxb.jpg",
-          "amenidades": {
-            "comida": [
-              "Cardápio à la carte",
-              "Live cooking station",
-              "Buffet quente e frio"
-            ],
-            "bebida": [
-              "Bar completo",
-              "Champagne",
-              "Café"
-            ],
-            "outros": [
-              "Wi-Fi",
-              "Tomadas",
-              "TV",
-              "Chuveiros",
-              "Nap rooms (pago)",
-              "Spa Timeless (pago)",
-              "Acesso para deficientes"
-            ]
-          },
-          "obs": "Máx. 4h. Walk-up: US$55. Nap rooms cobrados.",
-          "programas": [
-            "DragonPass"
-          ],
-          "fontes": [
-            "DragonPass"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/al-majlis-lounge-dxb-t1/",
-          "urlFotos": "https://loungereview.com/lounges/al-majlis-lounge-dxb-t1/#photos"
-        },
-        {
-          "nome": "Marhaba Lounge (T3 Concourse B)",
-          "slug": "marhaba-lounge-dxb-t3b",
-          "terminal": "T3, Concourse B — North side, próximo ao Gate B21, entrada via elevador dedicado do Nível 3",
-          "horario": "24h",
-          "localizacao": "Airside — T3, Concourse B, North side, próximo ao Gate B21. Entrada via elevador dedicado do Nível 3 de Partidas. Somente voos Emirates e Qantas codeshare.",
-          "overview": "Marhaba no T3 Concourse B. Somente para voos Emirates e Qantas codeshare. Máx. 3h.",
-          "foto": "https://d10mzz35brm2m8.cloudfront.net/lounge-media/image/DXB-18923.jpg",
-          "amenidades": {
-            "comida": [
-              "Buffet variado"
-            ],
-            "bebida": [
-              "Bar completo",
-              "Café e sucos"
-            ],
-            "outros": [
-              "Wi-Fi",
-              "TV",
-              "Cadeiras de massagem",
-              "Acesso para deficientes"
-            ]
-          },
-          "obs": "Somente voos Emirates e Qantas codeshare. Máx. 3h. Crianças <2 anos: grátis.",
-          "programas": [
-            "LoungeKey",
-            "Priority Pass",
-            "DragonPass"
-          ],
-          "fontes": [
-            "LoungeKey",
-            "Priority Pass",
-            "DragonPass"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/marhaba-lounge-dxb-t3b/",
-          "urlFotos": "https://loungereview.com/lounges/marhaba-lounge-dxb-t3b/#photos"
-        },
-        {
-          "nome": "Ahlan Lounge (T3 Concourse B)",
-          "slug": "ahlan-lounge-dxb-t3b",
-          "terminal": "T3, Concourse B — East side, próximo ao Gate B26, entrada pelo 'Cadiz Tapas Bar'",
-          "horario": "24h",
-          "localizacao": "Airside — T3, Concourse B, East side, próximo ao Gate B26. Entrada dentro do 'Cadiz Tapas Bar'. Passageiros de Concourse A ou C: calcule 15-20 min extras para o gate.",
-          "overview": "Ahlan Lounge T3B em Dubai. Cadeiras de massagem. Álcool apenas em licores selecionados. Máx. 3h.",
-          "foto": "https://d10mzz35brm2m8.cloudfront.net/lounge-media/image/DXB-18923.jpg",
-          "amenidades": {
-            "comida": [
-              "Buffet internacional"
-            ],
-            "bebida": [
-              "Bar (licores selecionados)",
-              "Café e sucos"
-            ],
-            "outros": [
-              "Wi-Fi",
-              "TV",
-              "Cadeiras de massagem",
-              "Área fumantes"
-            ]
-          },
-          "obs": "Máx. 3h. Crianças <2 anos: grátis. Álcool: 20h-3h durante o Ramadã. Entrada pelo Cadiz Tapas Bar.",
-          "programas": [
-            "LoungeKey",
-            "Priority Pass",
-            "DragonPass"
-          ],
-          "fontes": [
-            "LoungeKey",
-            "Priority Pass"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/ahlan-lounge-dxb-t3b/",
-          "urlFotos": "https://loungereview.com/lounges/ahlan-lounge-dxb-t3b/#photos"
-        },
-        {
-          "nome": "Plaza Premium Lounge (T3 Concourse A)",
-          "slug": "plaza-premium-lounge-dxb-t3a",
-          "terminal": "T3, Concourse A — West Wing, Nível 4, entre os Gates A2 e A3 (lift da área de Duty Free)",
-          "horario": "24h",
-          "localizacao": "Airside — T3, West Wing. Pegue o lift da área de Duty Free até o Nível 4. O lounge fica entre os Gates A2 e A3. Somente voos internacionais e em trânsito.",
-          "overview": "Plaza Premium no T3A de Dubai. Área quieta. Somente voos internacionais. Máx. 2h.",
-          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20241201/plaza-premium-dxb.jpg",
+          "overview": "Ahlan Business Class Lounge T1. Aceita PP, LK e DragonPass. Área kids. Máx. 3h.",
           "amenidades": {
             "comida": [
               "Buffet variado",
@@ -5550,18 +5435,200 @@
             ],
             "bebida": [
               "Bar completo",
-              "Café"
+              "Café e bebidas quentes"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Área quieta",
-              "Sala de orações",
-              "Acesso para deficientes",
-              "Cartão digital aceito"
+              "TV",
+              "Monitor de voos"
             ]
           },
-          "obs": "Máx. 2h. Somente voos internacionais e em trânsito. Crianças <2 anos: grátis.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/images/lounge/Base/N01160/N01160_20201022105007_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/ahlan-business-class-lounge-dxb-t1/",
+          "urlFotos": "https://loungereview.com/lounges/ahlan-business-class-lounge-dxb-t1/#photos",
+          "obs": "Máx. 3h. Crianças <2 anos grátis. Área kids separada."
+        },
+        {
+          "nome": "Ahlan First Class Lounge (T1 Concourse D)",
+          "slug": "ahlan-first-class-lounge-dxb-t1",
+          "terminal": "T1 (Sheikh Rashid Terminal), Concourse D — Nível 2",
+          "horario": "24h",
+          "localizacao": "Airside — T1, Concourse D, Nível 2.",
+          "overview": "Ahlan First Class em T1. Mais calmo e exclusivo que o Business. Cardápio à la carte, live cooking, chuveiros. DragonPass aceito com máx. 4h. Nap rooms disponíveis (cobrado).",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://image.m.dragonpass.com/uploadFile/images/lounge/Base/N01161/N01161_20201022105352_3.jpg",
+          "programas": [
+            "DragonPass"
+          ],
+          "fontes": [
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/ahlan-first-class-lounge-dxb-t1/",
+          "urlFotos": "https://loungereview.com/lounges/ahlan-first-class-lounge-dxb-t1/#photos",
+          "obs": "DragonPass: máx. 4h. Walk-up: US$55. Nap rooms cobrados."
+        },
+        {
+          "nome": "Sleepover (T1 Concourse D)",
+          "slug": "sleepover-dxb-t1",
+          "terminal": "T1, Concourse D",
+          "horario": "08:00–22:00",
+          "localizacao": "T1, Concourse D, Dubai International.",
+          "overview": "Pods de descanso T1. Foto mar/2026.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20260306/201b6d7a-fa7f-4814-87c1-067418ae1c98.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/sleepover-dxb-t1/",
+          "urlFotos": "https://loungereview.com/lounges/sleepover-dxb-t1/#photos",
+          "obs": "PP/LK = 3h Nap Pod ou Lounge Lite."
+        },
+        {
+          "nome": "Ahlan Lounge (T1 Concourse D)",
+          "slug": "ahlan-lounge-t1-dxb",
+          "terminal": "T1, Concourse D",
+          "horario": "24h",
+          "localizacao": "T1, Concourse D, entrada dentro do 'Cadiz Tapas Bar'.",
+          "overview": "Ahlan Lounge T1B. Cadeiras de massagem. Entrada pelo Cadiz Tapas Bar. Máx. 3h.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20241213/485769e3-88c1-4a59-9e9d-00339ab378d4.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/ahlan-lounge-t1-dxb/",
+          "urlFotos": "https://loungereview.com/lounges/ahlan-lounge-t1-dxb/#photos",
+          "obs": "Máx. 3h. Entrada pelo Cadiz Tapas Bar gate B26."
+        },
+        {
+          "nome": "Marhaba Lounge (T2)",
+          "slug": "marhaba-lounge-dxb-t2",
+          "terminal": "T2",
+          "horario": "24h",
+          "localizacao": "T2, Dubai International.",
+          "overview": "Marhaba Lounge T2. Aceita PP, LK e DragonPass. Máx. 2h.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20220218/587dd643-48f5-4f23-9b30-c89000e7d34e.png",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/marhaba-lounge-dxb-t2/",
+          "urlFotos": "https://loungereview.com/lounges/marhaba-lounge-dxb-t2/#photos",
+          "obs": "Máx. 2h. Crianças <2 anos grátis."
+        },
+        {
+          "nome": "Plaza Premium Lounge (T3 Concourse A)",
+          "slug": "plaza-premium-lounge-dxb-t3a",
+          "terminal": "T3, Concourse A — West Wing, Nível 4, entre Gates A2 e A3",
+          "horario": "24h",
+          "localizacao": "Airside — T3, West Wing. Pegue o lift da área de Duty Free até o Nível 4. Entre os Gates A2 e A3. Somente voos internacionais e em trânsito.",
+          "overview": "Plaza Premium T3A. Área quieta. Máx. 2h. Somente voos internacionais.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20221114/84789db6-555f-48a6-92d9-4c3d16c52fa6.jpg",
           "programas": [
             "LoungeKey",
             "Priority Pass",
@@ -5573,41 +5640,197 @@
             "DragonPass"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-lounge-dxb-t3a/",
-          "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-dxb-t3a/#photos"
+          "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-dxb-t3a/#photos",
+          "obs": "Máx. 2h. Somente voos internacionais e em trânsito."
         },
         {
-          "nome": "Sleepover (T3 Concourse B — Pods)",
+          "nome": "Marhaba Lounge (T3 Concourse A)",
+          "slug": "marhaba-lounge-dxb-t3a",
+          "terminal": "T3, Concourse A",
+          "horario": "24h",
+          "localizacao": "T3, Concourse A, Dubai International.",
+          "overview": "Marhaba Lounge T3A. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20220218/4eafd9ff-7a99-424e-a208-ba6f8e44ca3c.png",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/marhaba-lounge-dxb-t3a/",
+          "urlFotos": "https://loungereview.com/lounges/marhaba-lounge-dxb-t3a/#photos"
+        },
+        {
+          "nome": "Marhaba Lounge (T3 Concourse B)",
+          "slug": "marhaba-lounge-dxb-t3b",
+          "terminal": "T3, Concourse B — North side, próximo ao Gate B21",
+          "horario": "24h",
+          "localizacao": "T3, Concourse B, North side. Entrada via elevador do Nível 3.",
+          "overview": "Marhaba T3B. Somente voos Emirates e Qantas codeshare. Máx. 3h.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://image.m.dragonpass.com/uploadFile/images/lounge/Base/N00050/N00050_20160217110429_S4.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/marhaba-lounge-dxb-t3b/",
+          "urlFotos": "https://loungereview.com/lounges/marhaba-lounge-dxb-t3b/#photos",
+          "obs": "Somente voos Emirates e Qantas. Máx. 3h."
+        },
+        {
+          "nome": "Marhaba Lounge (T3 Concourse C)",
+          "slug": "marhaba-lounge-dxb-t3c",
+          "terminal": "T3, Concourse C — entre Gates C21 e C23",
+          "horario": "24h",
+          "localizacao": "T3, Concourse C, East End, entre Gates C21 e C23.",
+          "overview": "Marhaba T3C. Somente voos Emirates e Qantas. Máx. 3h.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20221021/6719ed08-2c7c-4b25-bded-ae216af6ee60.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/marhaba-lounge-dxb-t3c/",
+          "urlFotos": "https://loungereview.com/lounges/marhaba-lounge-dxb-t3c/#photos",
+          "obs": "Somente voos Emirates e Qantas. Máx. 3h."
+        },
+        {
+          "nome": "Ahlan Lounge Executive Floor (T3)",
+          "slug": "ahlan-lounge-executive-floor-dxb",
+          "terminal": "T3",
+          "horario": "24h",
+          "localizacao": "T3, Dubai International.",
+          "overview": "Ahlan Executive Floor T3. Ambiente premium. Aceita DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20240725/2e5646c2-0736-463d-bb07-7cf66415e05c.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/ahlan-lounge-executive-floor-dxb/",
+          "urlFotos": "https://loungereview.com/lounges/ahlan-lounge-executive-floor-dxb/#photos"
+        },
+        {
+          "nome": "Sleepover (T3 Concourse B)",
           "slug": "sleepover-dxb-t3b",
           "terminal": "T3, Concourse B",
           "horario": "08:00–22:00",
-          "localizacao": "Airside — T3, Concourse B.",
-          "overview": "Pods de descanso em Dubai T3B. PP/LK = 3h em Nap Pod (inclui chuveiro, café, água e refrigerantes) OU 3h Lounge Lite (cadeira + chuveiro + café, água e refrigerantes). Crianças <16 anos proibidas nos pods.",
+          "localizacao": "T3, Concourse B, Dubai International.",
+          "overview": "Pods de descanso T3B. Foto mar/2026.",
           "amenidades": {
-            "comida": [],
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
             "bebida": [
-              "Café, água e refrigerantes inclusos"
+              "Bar completo",
+              "Café e bebidas quentes"
             ],
             "outros": [
-              "Nap Pod privativo",
-              "Chuveiro",
               "Wi-Fi",
-              "Ar-condicionado"
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
             ]
           },
-          "obs": "08h-22h. PP/LK = 3h Nap Pod OU 3h Lounge Lite. Crianças <16 anos: não permitidas nos pods (Lounge Lite OK para <2 anos). Cada opção = 1 visita do benefício.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20260306/eed3d239-13f0-4b65-aaab-6376aa6a2245.jpg",
           "programas": [
             "LoungeKey",
             "Priority Pass"
           ],
           "fontes": [
-            "Priority Pass",
-            "LoungeKey"
+            "LoungeKey",
+            "Priority Pass"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/sleepover-dxb-t3b/",
-          "urlFotos": "https://loungereview.com/lounges/sleepover-dxb-t3b/#photos"
+          "urlFotos": "https://loungereview.com/lounges/sleepover-dxb-t3b/#photos",
+          "obs": "PP/LK = 3h Nap Pod ou Lounge Lite. Crianças <16 não nos pods."
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "DOH": {
       "nome": "Doha – Hamad Internacional",
@@ -5904,86 +6127,205 @@
       "buscadoEm": "2026-07-10T22:00:00.000Z"
     },
     "SIN": {
-      "nome": "Singapura – Changi",
-      "cidade": "Singapura",
+      "nome": "Singapore – Changi International Airport",
       "pais": "Singapura",
-      "iata": "SIN",
-      "loungekey": [
+      "cidade": "Singapura",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "SATS Premier Lounge T1",
-          "terminal": "T1",
+          "nome": "SATS Premier Lounge (T1)",
+          "slug": "sats-premier-lounge-sin-t1",
+          "terminal": "T1, após segurança",
           "horario": "24h",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=SIN"
+          "localizacao": "T1, airside.",
+          "overview": "SATS Premier Lounge T1 em Changi — melhor aeroporto do mundo 2026. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/sats-premier-lounge-sin-t1/",
+          "urlFotos": "https://loungereview.com/lounges/sats-premier-lounge-sin-t1/#photos"
         },
         {
-          "nome": "Plaza Premium Lounge T2",
-          "terminal": "T2",
+          "nome": "SATS Premier Lounge (T2)",
+          "slug": "sats-premier-lounge-sin-t2",
+          "terminal": "T2, após segurança",
           "horario": "24h",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=SIN"
-        }
-      ],
-      "dragonpass": [
-        {
-          "nome": "SATS Premier Lounge T1",
-          "terminal": "T1",
-          "horario": "24h",
-          "url": "https://www.dragonpass.com/explore/airport/A11700"
+          "localizacao": "T2, airside.",
+          "overview": "SATS Premier Lounge T2 em Changi. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/sats-premier-lounge-sin-t2/",
+          "urlFotos": "https://loungereview.com/lounges/sats-premier-lounge-sin-t2/#photos"
         },
         {
-          "nome": "Plaza Premium Lounge T3",
-          "terminal": "T3",
+          "nome": "SATS Premier Lounge (T3)",
+          "slug": "sats-premier-lounge-sin-t3",
+          "terminal": "T3, após segurança",
           "horario": "24h",
-          "url": "https://www.dragonpass.com/explore/airport/A11700"
+          "localizacao": "T3, airside.",
+          "overview": "SATS Premier Lounge T3 em Changi. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/sats-premier-lounge-sin-t3/",
+          "urlFotos": "https://loungereview.com/lounges/sats-premier-lounge-sin-t3/#photos"
         }
-      ],
-      "prioritypass": [
-        {
-          "nome": "SATS Premier Lounge T1",
-          "terminal": "T1",
-          "horario": "24h",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SIN"
-        },
-        {
-          "nome": "Plaza Premium T2",
-          "terminal": "T2",
-          "horario": "24h",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SIN"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "NRT": {
-      "nome": "Tóquio – Narita Internacional",
-      "cidade": "Tóquio",
+      "nome": "Tokyo – Narita International Airport",
       "pais": "Japão",
-      "iata": "NRT",
-      "loungekey": [
+      "cidade": "Tokyo",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "IASSFacility Narita T1",
-          "terminal": "T1",
-          "horario": "06:00–21:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=NRT"
-        }
-      ],
-      "dragonpass": [
+          "nome": "IASS Executive Lounge No.1 (T1)",
+          "slug": "iass-executive-lounge-nrt-t1",
+          "terminal": "T1, após segurança",
+          "horario": "07:00–22:00",
+          "localizacao": "T1, airside.",
+          "overview": "IASS Executive Lounge T1 em Narita. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/iass-executive-lounge-nrt-t1/",
+          "urlFotos": "https://loungereview.com/lounges/iass-executive-lounge-nrt-t1/#photos"
+        },
         {
-          "nome": "IASS Executive Lounge",
-          "terminal": "T1",
-          "horario": "06:00–21:00",
-          "url": "https://www.dragonpass.com/explore/airport/A11800"
+          "nome": "IASS Executive Lounge No.2 (T2)",
+          "slug": "iass-executive-lounge-nrt-t2",
+          "terminal": "T2, após segurança",
+          "horario": "07:00–22:00",
+          "localizacao": "T2, airside.",
+          "overview": "IASS Executive Lounge T2 em Narita. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/iass-executive-lounge-nrt-t2/",
+          "urlFotos": "https://loungereview.com/lounges/iass-executive-lounge-nrt-t2/#photos"
         }
-      ],
-      "prioritypass": [
-        {
-          "nome": "IASS Executive Lounge",
-          "terminal": "T1",
-          "horario": "06:00–21:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=NRT"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "BCN": {
       "nome": "Barcelona – El Prat",
@@ -6051,7 +6393,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "FCO": {
       "nome": "Roma – Leonardo da Vinci (Fiumicino)",
@@ -6129,159 +6471,451 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "ATH": {
-      "nome": "Atenas – Eleftherios Venizelos",
-      "cidade": "Atenas",
+      "nome": "Athens – Eleftherios Venizelos Airport",
       "pais": "Grécia",
-      "iata": "ATH",
-      "loungekey": [
+      "cidade": "Atenas",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "Goldair Handling VIP Lounge",
-          "terminal": "Internacional",
-          "horario": "05:00–23:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ATH"
+          "nome": "Aegean Business Lounge (Non-Schengen)",
+          "slug": "aegean-business-lounge-ath-non-schengen",
+          "terminal": "T1, Não-Schengen, após controle de passaportes",
+          "horario": "06:00–22:00",
+          "localizacao": "T1, Non-Schengen, airside.",
+          "overview": "Aegean Business Lounge Não-Schengen em Atenas. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/aegean-business-lounge-ath-non-schengen/",
+          "urlFotos": "https://loungereview.com/lounges/aegean-business-lounge-ath-non-schengen/#photos"
         }
-      ],
-      "dragonpass": [
-        {
-          "nome": "Goldair Handling VIP Lounge",
-          "terminal": "Internacional",
-          "horario": "05:00–23:00",
-          "url": "https://www.dragonpass.com/explore/airport/A12000"
-        }
-      ],
-      "prioritypass": [
-        {
-          "nome": "Goldair Handling VIP Lounge",
-          "terminal": "Internacional",
-          "horario": "05:00–23:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ATH"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "IST": {
-      "nome": "Istambul – Internacional",
-      "cidade": "Istambul",
+      "nome": "Istanbul – Istanbul Airport",
       "pais": "Turquia",
-      "iata": "IST",
-      "loungekey": [
+      "cidade": "Istanbul",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "IST CIP Lounge",
-          "terminal": "Internacional",
+          "nome": "iGA Lounge (Terminal Internacional)",
+          "slug": "iga-lounge-ist-international",
+          "terminal": "Terminal Internacional, após segurança",
           "horario": "24h",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=IST"
-        }
-      ],
-      "dragonpass": [
-        {
-          "nome": "IST CIP Lounge",
-          "terminal": "Internacional",
-          "horario": "24h",
-          "url": "https://www.dragonpass.com/explore/airport/A12100"
-        }
-      ],
-      "prioritypass": [
-        {
-          "nome": "IST CIP Lounge",
-          "terminal": "Internacional",
-          "horario": "24h",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=IST"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
-    },
-    "YYZ": {
-      "nome": "Toronto – Pearson Internacional",
-      "cidade": "Toronto",
-      "pais": "Canadá",
-      "iata": "YYZ",
-      "loungekey": [
-        {
-          "nome": "Air Canada Maple Leaf Lounge T1",
-          "terminal": "T1",
-          "horario": "05:00–23:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=YYZ"
+          "localizacao": "Airside, Terminal Internacional.",
+          "overview": "iGA Lounge — um dos maiores lounges do mundo. Gourmet dining, workspaces, spa, entertainment. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://image.m.dragonpass.com/uploadFile/images/lounge/Base/N02458/N02458_20201010115059_3.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/iga-lounge-ist-international/",
+          "urlFotos": "https://loungereview.com/lounges/iga-lounge-ist-international/#photos"
         },
         {
-          "nome": "Plaza Premium Lounge T1",
-          "terminal": "T1",
+          "nome": "iGA Lounge (Doméstico)",
+          "slug": "iga-lounge-ist-domestic",
+          "terminal": "Terminal Doméstico",
           "horario": "24h",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=YYZ"
-        }
-      ],
-      "dragonpass": [
+          "localizacao": "Terminal Doméstico.",
+          "overview": "iGA Lounge versão doméstica. Foto dez/2025.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20251218/2c64fa7d-fb8c-4ea5-b7fd-d83333fe4cf3.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/iga-lounge-ist-domestic/",
+          "urlFotos": "https://loungereview.com/lounges/iga-lounge-ist-domestic/#photos"
+        },
         {
-          "nome": "Plaza Premium Lounge T1",
-          "terminal": "T1",
+          "nome": "iGA Pop-up Lounge",
+          "slug": "iga-popup-lounge-ist",
+          "terminal": "Terminal Internacional",
           "horario": "24h",
-          "url": "https://www.dragonpass.com/explore/airport/A12200"
-        }
-      ],
-      "prioritypass": [
+          "localizacao": "Terminal Internacional.",
+          "overview": "iGA Pop-up Lounge. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20231027/d55d8368-170d-4562-b577-2c58922f59fb.jpeg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/iga-popup-lounge-ist/",
+          "urlFotos": "https://loungereview.com/lounges/iga-popup-lounge-ist/#photos"
+        },
         {
-          "nome": "Plaza Premium Lounge T1",
-          "terminal": "T1",
+          "nome": "iGA Shower",
+          "slug": "iga-shower-ist",
+          "terminal": "Terminal Internacional",
           "horario": "24h",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=YYZ"
+          "localizacao": "Terminal Internacional.",
+          "overview": "Serviço de chuveiro privativo da iGA. Foto jul/2025.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20250703/aeea3838-42f6-4e16-99c2-d86866e3dfb8.jpg",
+          "programas": [
+            "DragonPass"
+          ],
+          "fontes": [
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/iga-shower-ist/",
+          "urlFotos": "https://loungereview.com/lounges/iga-shower-ist/#photos",
+          "obs": "Somente DragonPass."
+        },
+        {
+          "nome": "iGA Sleepod",
+          "slug": "iga-sleepod-ist",
+          "terminal": "Terminal Internacional",
+          "horario": "24h",
+          "localizacao": "Terminal Internacional.",
+          "overview": "Pods de descanso iGA. Aceita DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20231108/49c5e64b-77f4-4830-ab32-4c29a17b1928.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/iga-sleepod-ist/",
+          "urlFotos": "https://loungereview.com/lounges/iga-sleepod-ist/#photos"
         }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
+    },
+    "YYZ": {
+      "nome": "Toronto – Pearson International Airport",
+      "pais": "Canadá",
+      "cidade": "Toronto",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
+        {
+          "nome": "Air Canada Maple Leaf Lounge (T1 Int'l)",
+          "slug": "air-canada-maple-leaf-lounge-yyz-t1-intl",
+          "terminal": "T1, Internacional, após segurança",
+          "horario": "06:00–23:00",
+          "localizacao": "T1, airside, zona internacional.",
+          "overview": "Air Canada Maple Leaf Lounge T1 Internacional. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspic-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/air-canada-maple-leaf-lounge-yyz-t1-intl/",
+          "urlFotos": "https://loungereview.com/lounges/air-canada-maple-leaf-lounge-yyz-t1-intl/#photos"
+        },
+        {
+          "nome": "Plaza Premium Lounge (T1)",
+          "slug": "plaza-premium-lounge-yyz-t1",
+          "terminal": "T1, Internacional, após segurança",
+          "horario": "05:00–23:00",
+          "localizacao": "T1, airside.",
+          "overview": "Plaza Premium Lounge T1 Toronto. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-lounge-yyz-t1/",
+          "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-yyz-t1/#photos"
+        }
+      ]
     },
     "MEX": {
-      "nome": "Cidade do México – Benito Juárez",
-      "cidade": "Cidade do México",
+      "nome": "Cidade do México – Benito Juárez International Airport",
       "pais": "México",
-      "iata": "MEX",
-      "loungekey": [
+      "cidade": "Cidade do México",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "Terminal 2 VIP Lounge",
-          "terminal": "T2",
-          "horario": "05:00–23:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MEX"
-        }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
+          "nome": "Sala Premier (T1)",
+          "slug": "sala-premier-mex-t1",
+          "terminal": "T1, após segurança",
+          "horario": "24h",
+          "localizacao": "T1, airside.",
+          "overview": "Sala Premier T1 em Cidade do México. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/sala-premier-mex-t1/",
+          "urlFotos": "https://loungereview.com/lounges/sala-premier-mex-t1/#photos"
+        },
         {
-          "nome": "Terminal 2 VIP Lounge",
-          "terminal": "T2",
-          "horario": "05:00–23:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MEX"
+          "nome": "Sala Premier (T2)",
+          "slug": "sala-premier-mex-t2",
+          "terminal": "T2, após segurança",
+          "horario": "24h",
+          "localizacao": "T2, airside.",
+          "overview": "Sala Premier T2 em Cidade do México. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/sala-premier-mex-t2/",
+          "urlFotos": "https://loungereview.com/lounges/sala-premier-mex-t2/#photos"
         }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "GVA": {
-      "nome": "Genebra – Cointrin",
-      "cidade": "Genebra",
+      "nome": "Geneva – Geneva International Airport",
       "pais": "Suíça",
-      "iata": "GVA",
-      "loungekey": [
+      "cidade": "Genebra",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "Club Aspire GVA",
-          "terminal": "Internacional",
-          "horario": "05:00–21:30",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=GVA"
+          "nome": "Skyview Lounge",
+          "slug": "skyview-lounge-gva",
+          "terminal": "Airside, após segurança",
+          "horario": "05:00–21:00",
+          "localizacao": "Airside, após segurança.",
+          "overview": "Skyview Lounge em Genebra. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/skyview-lounge-gva/",
+          "urlFotos": "https://loungereview.com/lounges/skyview-lounge-gva/#photos"
         }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        {
-          "nome": "Club Aspire GVA",
-          "terminal": "Internacional",
-          "horario": "05:00–21:30",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GVA"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "ZRH": {
       "nome": "Zurique – Internacional",
@@ -6352,64 +6986,134 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "MUC": {
-      "nome": "Munique – Internacional",
-      "cidade": "Munique",
+      "nome": "Munich – Munich Airport",
       "pais": "Alemanha",
-      "iata": "MUC",
-      "loungekey": [
+      "cidade": "Munique",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "H-Hotels Lounge T2",
-          "terminal": "T2",
+          "nome": "Stars & Bars Lounge (T2)",
+          "slug": "stars-and-bars-lounge-muc",
+          "terminal": "T2, após segurança",
           "horario": "05:00–22:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MUC"
+          "localizacao": "T2, airside.",
+          "overview": "Stars & Bars Lounge em Munique T2. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/stars-and-bars-lounge-muc/",
+          "urlFotos": "https://loungereview.com/lounges/stars-and-bars-lounge-muc/#photos"
         }
-      ],
-      "dragonpass": [
-        {
-          "nome": "Lufthansa Business Lounge T2",
-          "terminal": "T2",
-          "horario": "05:30–22:00",
-          "url": "https://www.dragonpass.com/explore/airport/A12300"
-        }
-      ],
-      "prioritypass": [
-        {
-          "nome": "H-Hotels Lounge T2",
-          "terminal": "T2",
-          "horario": "05:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MUC"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "VIE": {
-      "nome": "Viena – Internacional",
-      "cidade": "Viena",
+      "nome": "Vienna – Vienna International Airport",
       "pais": "Áustria",
-      "iata": "VIE",
-      "loungekey": [
+      "cidade": "Viena",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "Austrian Airlines Business Lounge",
-          "terminal": "F – Internacional",
+          "nome": "VIENNA Lounge",
+          "slug": "vienna-lounge-vie",
+          "terminal": "T1, Schengen — Nível 2, após segurança, antes do controle de passaportes",
           "horario": "05:00–22:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=VIE"
-        }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
+          "localizacao": "Após segurança, siga para a Vienna Lounge no Nível 2. Antes do controle de passaportes.",
+          "overview": "VIENNA Lounge — principal lounge independente de VIE. Aceita PP, LK e DragonPass (com surcharge €6 para DP).",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/vienna-international-airport-terminal-1-vienna-lounge/raw/d7p/LoungePair_VIE_VIENNA_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/vienna-lounge-vie/",
+          "urlFotos": "https://loungereview.com/lounges/vienna-lounge-vie/#photos",
+          "obs": "DragonPass: surcharge de €6 por visita. Máx. 3h. Crianças <4 anos grátis."
+        },
         {
-          "nome": "Austrian Airlines Business Lounge",
-          "terminal": "F – Internacional",
+          "nome": "SKY Lounge",
+          "slug": "sky-lounge-vie",
+          "terminal": "T1, Não-Schengen — após controle de passaportes, próximo ao Gate D",
           "horario": "05:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=VIE"
+          "localizacao": "T1, zona Não-Schengen, após controle de passaportes.",
+          "overview": "SKY Lounge VIE. Aceita PP e LK. Sem DragonPass (VIENNA = único com DP). Voos intercontinentais.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/vienna-international-airport-terminal-1-vienna-lounge/raw/d7p/LoungePair_VIE_VIENNA_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/sky-lounge-vie/",
+          "urlFotos": "https://loungereview.com/lounges/sky-lounge-vie/#photos",
+          "obs": "Sem DragonPass. Somente voos Não-Schengen."
         }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "ORY": {
       "nome": "Paris – Orly",
@@ -6477,7 +7181,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "MXP": {
       "nome": "Milão – Malpensa",
@@ -6547,7 +7251,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "CPT": {
       "nome": "Cidade do Cabo – Internacional",
@@ -6616,7 +7320,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "JNB": {
       "nome": "Joanesburgo – O.R. Tambo Internacional",
@@ -6695,153 +7399,341 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "BKK": {
-      "nome": "Bangkok – Suvarnabhumi",
-      "cidade": "Bangkok",
+      "nome": "Bangkok – Suvarnabhumi Airport",
       "pais": "Tailândia",
-      "iata": "BKK",
-      "loungekey": [
+      "cidade": "Bangkok",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "Miracle Business Class Lounge",
-          "terminal": "Internacional",
+          "nome": "Miracle Lounge (Concourse C)",
+          "slug": "miracle-lounge-bkk-c",
+          "terminal": "Concourse C, após segurança",
           "horario": "24h",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=BKK"
-        }
-      ],
-      "dragonpass": [
+          "localizacao": "Concourse C, airside.",
+          "overview": "Miracle Lounge Concourse C em Suvarnabhumi. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/miracle-lounge-bkk-c/",
+          "urlFotos": "https://loungereview.com/lounges/miracle-lounge-bkk-c/#photos"
+        },
         {
-          "nome": "Miracle Business Class Lounge",
-          "terminal": "Internacional",
+          "nome": "Miracle Lounge (Concourse D)",
+          "slug": "miracle-lounge-bkk-d",
+          "terminal": "Concourse D, após segurança",
           "horario": "24h",
-          "url": "https://www.dragonpass.com/explore/airport/A12500"
+          "localizacao": "Concourse D, airside.",
+          "overview": "Miracle Lounge Concourse D. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/miracle-lounge-bkk-d/",
+          "urlFotos": "https://loungereview.com/lounges/miracle-lounge-bkk-d/#photos"
         }
-      ],
-      "prioritypass": [
-        {
-          "nome": "Miracle Business Class Lounge",
-          "terminal": "Internacional",
-          "horario": "24h",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BKK"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "HKG": {
-      "nome": "Hong Kong – Internacional",
-      "cidade": "Hong Kong",
+      "nome": "Hong Kong International Airport",
       "pais": "Hong Kong",
-      "iata": "HKG",
-      "loungekey": [
+      "cidade": "Hong Kong",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "Plaza Premium Lounge T1",
-          "terminal": "T1",
+          "nome": "PLAZA PREMIUM Lounge (Midfield)",
+          "slug": "plaza-premium-lounge-hkg-midfield",
+          "terminal": "Midfield Concourse, após segurança",
           "horario": "24h",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=HKG"
-        }
-      ],
-      "dragonpass": [
+          "localizacao": "Midfield Concourse, airside.",
+          "overview": "Plaza Premium Lounge no Midfield Concourse de Hong Kong. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-lounge-hkg-midfield/",
+          "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-hkg-midfield/#photos"
+        },
         {
-          "nome": "Plaza Premium Lounge T1",
-          "terminal": "T1",
+          "nome": "PLAZA PREMIUM Lounge (T1)",
+          "slug": "plaza-premium-lounge-hkg-t1",
+          "terminal": "T1, após segurança",
           "horario": "24h",
-          "url": "https://www.dragonpass.com/explore/airport/A12600"
+          "localizacao": "T1, airside.",
+          "overview": "Plaza Premium Lounge T1 Hong Kong. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-lounge-hkg-t1/",
+          "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-hkg-t1/#photos"
         }
-      ],
-      "prioritypass": [
-        {
-          "nome": "Plaza Premium Lounge T1",
-          "terminal": "T1",
-          "horario": "24h",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=HKG"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "ICN": {
-      "nome": "Seul – Incheon Internacional",
-      "cidade": "Seul",
+      "nome": "Seoul – Incheon International Airport",
       "pais": "Coreia do Sul",
-      "iata": "ICN",
-      "loungekey": [
+      "cidade": "Seoul",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "Morning Calm Premium Lounge T1",
-          "terminal": "T1",
+          "nome": "KAL Business Lounge (T1)",
+          "slug": "kal-business-lounge-icn-t1",
+          "terminal": "T1, após segurança",
           "horario": "24h",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ICN"
-        }
-      ],
-      "dragonpass": [
+          "localizacao": "T1, airside.",
+          "overview": "Korean Air Business Lounge T1 em Incheon. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/kal-business-lounge-icn-t1/",
+          "urlFotos": "https://loungereview.com/lounges/kal-business-lounge-icn-t1/#photos"
+        },
         {
-          "nome": "Morning Calm Premium Lounge T1",
-          "terminal": "T1",
+          "nome": "Morning Calm Premium Lounge",
+          "slug": "morning-calm-premium-lounge-icn",
+          "terminal": "T1, Concourse",
           "horario": "24h",
-          "url": "https://www.dragonpass.com/explore/airport/A12700"
+          "localizacao": "T1, Concourse, Incheon.",
+          "overview": "Morning Calm Premium Lounge em Incheon. Aceita PP e LK.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/morning-calm-premium-lounge-icn/",
+          "urlFotos": "https://loungereview.com/lounges/morning-calm-premium-lounge-icn/#photos"
         }
-      ],
-      "prioritypass": [
-        {
-          "nome": "Morning Calm Premium Lounge T1",
-          "terminal": "T1",
-          "horario": "24h",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ICN"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "CAI": {
-      "nome": "Cairo – Internacional",
-      "cidade": "Cairo",
+      "nome": "Cairo – Cairo International Airport",
       "pais": "Egito",
-      "iata": "CAI",
-      "loungekey": [
+      "cidade": "Cairo",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "Cairo Airport Lounge T2",
-          "terminal": "T2",
+          "nome": "Premium Lounge Cairo",
+          "slug": "premium-lounge-cai",
+          "terminal": "T3, após segurança",
           "horario": "24h",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CAI"
+          "localizacao": "T3, airside.",
+          "overview": "Premium Lounge em Cairo. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/premium-lounge-cai/",
+          "urlFotos": "https://loungereview.com/lounges/premium-lounge-cai/#photos"
         }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        {
-          "nome": "Cairo Airport Lounge T2",
-          "terminal": "T2",
-          "horario": "24h",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CAI"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "CPH": {
-      "nome": "Copenhague – Kastrup",
-      "cidade": "Copenhague",
+      "nome": "Copenhagen – Copenhagen Airport",
       "pais": "Dinamarca",
-      "iata": "CPH",
-      "loungekey": [
+      "cidade": "Copenhague",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "CPH Airport Lounge",
-          "terminal": "Internacional",
+          "nome": "Eventyr Lounge (T3 Non-Schengen)",
+          "slug": "eventyr-lounge-cph",
+          "terminal": "T3, Não-Schengen, após controle de passaportes",
           "horario": "05:00–22:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=CPH"
+          "localizacao": "T3, Non-Schengen, airside.",
+          "overview": "Eventyr Lounge em Copenhagen — zona Não-Schengen. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/eventyr-lounge-cph/",
+          "urlFotos": "https://loungereview.com/lounges/eventyr-lounge-cph/#photos"
         }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        {
-          "nome": "CPH Airport Lounge",
-          "terminal": "Internacional",
-          "horario": "05:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CPH"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "BRU": {
       "nome": "Bruxelas – Nacional",
@@ -6909,262 +7801,521 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "PRG": {
-      "nome": "Praga – Václav Havel",
-      "cidade": "Praga",
+      "nome": "Prague – Václav Havel Airport",
       "pais": "República Tcheca",
-      "iata": "PRG",
-      "loungekey": [
+      "cidade": "Praga",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "Menzies Aviation Lounge T2",
-          "terminal": "T2",
+          "nome": "Erste Premier Lounge",
+          "slug": "erste-premier-lounge-prg",
+          "terminal": "T2, após segurança",
           "horario": "05:00–21:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=PRG"
+          "localizacao": "T2, airside.",
+          "overview": "Erste Premier Lounge em Praga. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/erste-premier-lounge-prg/",
+          "urlFotos": "https://loungereview.com/lounges/erste-premier-lounge-prg/#photos"
         }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        {
-          "nome": "Menzies Aviation Lounge T2",
-          "terminal": "T2",
-          "horario": "05:00–21:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=PRG"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "WAW": {
-      "nome": "Varsóvia – Chopin",
-      "cidade": "Varsóvia",
+      "nome": "Warsaw – Chopin Airport",
       "pais": "Polônia",
-      "iata": "WAW",
-      "loungekey": [
+      "cidade": "Varsóvia",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "LOT Business Lounge",
-          "terminal": "A",
+          "nome": "Fantazja Executive Lounge",
+          "slug": "fantazja-executive-lounge-waw",
+          "terminal": "T1, Schengen/Não-Schengen, após segurança",
           "horario": "05:00–22:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=WAW"
+          "localizacao": "T1, airside.",
+          "overview": "Fantazja Executive Lounge em Varsóvia. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/fantazja-executive-lounge-waw/",
+          "urlFotos": "https://loungereview.com/lounges/fantazja-executive-lounge-waw/#photos"
         }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        {
-          "nome": "LOT Business Lounge",
-          "terminal": "A",
-          "horario": "05:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=WAW"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "MAN": {
-      "nome": "Manchester – Internacional",
-      "cidade": "Manchester",
+      "nome": "Manchester Airport",
       "pais": "Reino Unido",
-      "iata": "MAN",
-      "loungekey": [
+      "cidade": "Manchester",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "Escape Lounge T1",
-          "terminal": "T1",
-          "horario": "04:00–21:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MAN"
+          "nome": "Aspire Lounge (T1)",
+          "slug": "aspire-lounge-man-t1",
+          "terminal": "T1, após segurança",
+          "horario": "05:00–21:00",
+          "localizacao": "T1, airside.",
+          "overview": "Aspire Lounge T1 em Manchester. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/aspire-lounge-man-t1/",
+          "urlFotos": "https://loungereview.com/lounges/aspire-lounge-man-t1/#photos"
         },
         {
-          "nome": "No1 Lounge T2",
-          "terminal": "T2",
-          "horario": "04:00–21:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MAN"
-        }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        {
-          "nome": "Escape Lounge T1",
-          "terminal": "T1",
-          "horario": "04:00–21:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MAN"
+          "nome": "Escape Lounge (T2)",
+          "slug": "escape-lounge-man-t2",
+          "terminal": "T2, após segurança",
+          "horario": "05:00–22:00",
+          "localizacao": "T2, airside.",
+          "overview": "Escape Lounge T2 em Manchester. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/escape-lounge-man-t2/",
+          "urlFotos": "https://loungereview.com/lounges/escape-lounge-man-t2/#photos"
         },
         {
-          "nome": "No1 Lounge T2",
-          "terminal": "T2",
-          "horario": "04:00–21:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MAN"
+          "nome": "Escape Lounge (T3)",
+          "slug": "escape-lounge-man-t3",
+          "terminal": "T3, após segurança",
+          "horario": "05:00–22:00",
+          "localizacao": "T3, airside.",
+          "overview": "Escape Lounge T3 em Manchester. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/escape-lounge-man-t3/",
+          "urlFotos": "https://loungereview.com/lounges/escape-lounge-man-t3/#photos"
         }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "MLE": {
-      "nome": "Maldivas – Velana Internacional",
-      "cidade": "Malé",
+      "nome": "Malé – Velana International Airport",
       "pais": "Maldivas",
-      "iata": "MLE",
-      "loungekey": [
+      "cidade": "Malé",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "MLE VIP Lounge",
-          "terminal": "Internacional",
+          "nome": "VIP Lounge Maldives",
+          "slug": "vip-lounge-mle",
+          "terminal": "Terminal Internacional",
           "horario": "24h",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=MLE"
+          "localizacao": "Terminal Internacional.",
+          "overview": "VIP Lounge em Malé. Aceita PP e LK.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/vip-lounge-mle/",
+          "urlFotos": "https://loungereview.com/lounges/vip-lounge-mle/#photos"
         }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        {
-          "nome": "MLE VIP Lounge",
-          "terminal": "Internacional",
-          "horario": "24h",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MLE"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "SYD": {
-      "nome": "Sydney – Kingsford Smith",
-      "cidade": "Sydney",
+      "nome": "Sydney – Kingsford Smith Airport",
       "pais": "Austrália",
-      "iata": "SYD",
-      "loungekey": [
+      "cidade": "Sydney",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "Plaza Premium Lounge T1",
-          "terminal": "T1 – Internacional",
-          "horario": "24h",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=SYD"
+          "nome": "The International Lounge (T1)",
+          "slug": "the-international-lounge-syd",
+          "terminal": "T1 (Internacional), após segurança",
+          "horario": "06:00–22:00",
+          "localizacao": "T1 Internacional, airside.",
+          "overview": "The International Lounge em Sydney. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/the-international-lounge-syd/",
+          "urlFotos": "https://loungereview.com/lounges/the-international-lounge-syd/#photos"
         }
-      ],
-      "dragonpass": [
-        {
-          "nome": "Plaza Premium Lounge T1",
-          "terminal": "T1 – Internacional",
-          "horario": "24h",
-          "url": "https://www.dragonpass.com/explore/airport/A12800"
-        }
-      ],
-      "prioritypass": [
-        {
-          "nome": "Plaza Premium Lounge T1",
-          "terminal": "T1 – Internacional",
-          "horario": "24h",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SYD"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "AKL": {
-      "nome": "Auckland – Internacional",
-      "cidade": "Auckland",
+      "nome": "Auckland Airport",
       "pais": "Nova Zelândia",
-      "iata": "AKL",
-      "loungekey": [
+      "cidade": "Auckland",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
           "nome": "Air NZ International Lounge",
-          "terminal": "Internacional",
-          "horario": "05:00–22:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=AKL"
+          "slug": "air-nz-international-lounge-akl",
+          "terminal": "Internacional, após segurança",
+          "horario": "24h",
+          "localizacao": "Terminal Internacional, airside.",
+          "overview": "Air New Zealand Lounge em Auckland. Aceita PP e LK.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/air-nz-international-lounge-akl/",
+          "urlFotos": "https://loungereview.com/lounges/air-nz-international-lounge-akl/#photos"
         }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        {
-          "nome": "Air NZ International Lounge",
-          "terminal": "Internacional",
-          "horario": "05:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=AKL"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "GUA": {
-      "nome": "Guatemala – La Aurora Internacional",
-      "cidade": "Guatemala City",
+      "nome": "Guatemala City – La Aurora International Airport",
       "pais": "Guatemala",
-      "iata": "GUA",
-      "loungekey": [],
-      "dragonpass": [],
-      "prioritypass": [
+      "cidade": "Cidade da Guatemala",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "GUA Sala VIP",
-          "terminal": "Internacional",
-          "horario": "05:00–21:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GUA"
+          "nome": "VIP Lounge Guatemala",
+          "slug": "vip-lounge-gua",
+          "terminal": "Após segurança",
+          "horario": "24h",
+          "localizacao": "Airside.",
+          "overview": "VIP Lounge em Guatemala City. Aceita PP e LK.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/vip-lounge-gua/",
+          "urlFotos": "https://loungereview.com/lounges/vip-lounge-gua/#photos"
         }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "UIO": {
-      "nome": "Quito – Mariscal Sucre Internacional",
-      "cidade": "Quito",
+      "nome": "Quito – Mariscal Sucre International Airport",
       "pais": "Equador",
-      "iata": "UIO",
-      "loungekey": [],
-      "dragonpass": [],
-      "prioritypass": [
+      "cidade": "Quito",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "VIP Lounge Quito",
-          "terminal": "Internacional",
-          "horario": "05:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=UIO"
+          "nome": "Sala VIP Internacional",
+          "slug": "sala-vip-internacional-uio",
+          "terminal": "Terminal Internacional, após segurança",
+          "horario": "24h",
+          "localizacao": "Terminal Internacional, airside.",
+          "overview": "Sala VIP Internacional de Quito. Aceita PP e LK.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/sala-vip-internacional-uio/",
+          "urlFotos": "https://loungereview.com/lounges/sala-vip-internacional-uio/#photos"
         }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "ADD": {
-      "nome": "Adis Abeba – Bole Internacional",
-      "cidade": "Adis Abeba",
+      "nome": "Addis Abeba – Bole International Airport",
       "pais": "Etiópia",
-      "iata": "ADD",
-      "loungekey": [
+      "cidade": "Addis Abeba",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "Ethiopian Airlines Cloud 9 Lounge",
-          "terminal": "Internacional",
+          "nome": "Ethiopian Lounge (Internacional)",
+          "slug": "ethiopian-lounge-add",
+          "terminal": "Terminal Internacional, após segurança",
           "horario": "24h",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=ADD"
+          "localizacao": "Terminal Internacional, airside.",
+          "overview": "Ethiopian Airlines Lounge em Addis Abeba. Aceita PP e LK.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/ethiopian-lounge-add/",
+          "urlFotos": "https://loungereview.com/lounges/ethiopian-lounge-add/#photos"
         }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        {
-          "nome": "Ethiopian Airlines Cloud 9 Lounge",
-          "terminal": "Internacional",
-          "horario": "24h",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ADD"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "NBO": {
-      "nome": "Nairóbi – Jomo Kenyatta Internacional",
-      "cidade": "Nairóbi",
+      "nome": "Nairobi – Jomo Kenyatta International Airport",
       "pais": "Quênia",
-      "iata": "NBO",
-      "loungekey": [
+      "cidade": "Nairóbi",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "salas": [
         {
-          "nome": "Gulfstream Premier Lounge",
-          "terminal": "Internacional",
+          "nome": "Mount Kenya Lounge",
+          "slug": "mount-kenya-lounge-nbo",
+          "terminal": "Terminal Internacional, após segurança",
           "horario": "24h",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=NBO"
+          "localizacao": "Terminal Internacional, airside.",
+          "overview": "Mount Kenya Lounge em Nairóbi. Aceita PP, LK e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/mount-kenya-lounge-nbo/",
+          "urlFotos": "https://loungereview.com/lounges/mount-kenya-lounge-nbo/#photos"
         }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        {
-          "nome": "Gulfstream Premier Lounge",
-          "terminal": "Internacional",
-          "horario": "24h",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=NBO"
-        }
-      ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      ]
     },
     "CNF": {
       "nome": "Belo Horizonte – Tancredo Neves Internacional (Confins)",
@@ -7981,7 +9132,7 @@
       "nome": "Vitória – Eurico de Aguiar Salles",
       "pais": "Brasil",
       "cidade": "Vitória",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "The Lounge Vitória",
@@ -8069,7 +9220,7 @@
       "nome": "Maceió – Zumbi dos Palmares",
       "pais": "Brasil",
       "cidade": "Maceió",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Lounge",
@@ -8213,7 +9364,7 @@
       "nome": "João Pessoa – Castro Pinto",
       "pais": "Brasil",
       "cidade": "João Pessoa",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Lounge",
@@ -8253,7 +9404,7 @@
       "nome": "Aracaju – Santa Maria",
       "pais": "Brasil",
       "cidade": "Aracaju",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "Ambaar Lounge Aracaju",
@@ -8325,7 +9476,7 @@
       "nome": "Teresina – Senador Petrônio Portella",
       "pais": "Brasil",
       "cidade": "Teresina",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "The Lounge Teresina",
@@ -8366,7 +9517,7 @@
       "nome": "Campo Grande – Antônio João",
       "pais": "Brasil",
       "cidade": "Campo Grande",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Club",
@@ -8572,8 +9723,8 @@
       "loungekey": [],
       "dragonpass": [],
       "prioritypass": [],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "obs": "Pipeline executado — sem salas PP/LK/DP confirmadas neste aeroporto."
     },
     "BVB": {
       "nome": "Boa Vista – Atlas Brasil Cantanhede Internacional",
@@ -8583,14 +9734,14 @@
       "loungekey": [],
       "dragonpass": [],
       "prioritypass": [],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "obs": "Pipeline executado — sem salas PP/LK/DP confirmadas neste aeroporto."
     },
     "MCP": {
       "nome": "Macapá – Alberto Alcolumbre",
       "pais": "Brasil",
       "cidade": "Macapá",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "The Lounge Macapá",
@@ -8635,14 +9786,14 @@
       "loungekey": [],
       "dragonpass": [],
       "prioritypass": [],
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
-      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
+      "obs": "Pipeline executado — sem salas PP/LK/DP confirmadas neste aeroporto."
     },
     "PMW": {
       "nome": "Palmas – Brigadeiro Lysias Rodrigues",
       "pais": "Brasil",
       "cidade": "Palmas",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "W Café Lounge Palmas",
@@ -8846,7 +9997,7 @@
           "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/porto-seguro-airport-brt-lounge/raw/d7p/LoungePair_BPS_BRT_e2c1_1.jpg"
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "IGU": {
       "nome": "Foz do Iguaçu – Cataratas Internacional",
@@ -9053,7 +10204,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "MVD": {
       "nome": "Montevidéu – Carrasco Internacional",
@@ -9120,7 +10271,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "MDZ": {
       "nome": "Mendoza – El Plumerillo Internacional",
@@ -9186,7 +10337,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "PTY": {
       "nome": "Cidade do Panamá – Tocumen Internacional",
@@ -9275,7 +10426,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "MCO": {
       "nome": "Orlando – Internacional",
@@ -9360,7 +10511,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "FLL": {
       "nome": "Fort Lauderdale – Hollywood Internacional",
@@ -9427,7 +10578,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "EWR": {
       "nome": "Newark – Liberty Internacional",
@@ -9501,7 +10652,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "LGA": {
       "nome": "Nova York – LaGuardia",
@@ -9569,7 +10720,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "IAD": {
       "nome": "Washington – Dulles Internacional",
@@ -9643,7 +10794,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "IAH": {
       "nome": "Houston – George Bush Intercontinental",
@@ -9711,7 +10862,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "LAS": {
       "nome": "Las Vegas – Harry Reid Internacional",
@@ -9831,7 +10982,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "SFO": {
       "nome": "São Francisco – Internacional",
@@ -9914,7 +11065,7 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "OPO": {
       "nome": "Porto – Francisco Sá Carneiro Internacional",
@@ -9984,13 +11135,13 @@
           ]
         }
       ],
-      "buscadoEm": "2026-07-10T18:00:00.000Z"
+      "buscadoEm": "2026-07-10T23:00:00.000Z"
     },
     "AHO": {
       "nome": "Alghero – Fertilia",
       "pais": "Itália",
       "cidade": "Alghero",
-      "buscadoEm": "2026-07-10T03:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "Club Lounge AHO",
@@ -10029,7 +11180,7 @@
       "nome": "Bologna – G. Marconi",
       "pais": "Itália",
       "cidade": "Bologna",
-      "buscadoEm": "2026-07-10T03:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "Prima Vista Lounge",
@@ -10074,7 +11225,7 @@
       "nome": "Curaçao – Hato International",
       "pais": "Curaçao",
       "cidade": "Willemstad",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "VIP Lounge",
@@ -10124,7 +11275,7 @@
       "nome": "Bariloche – Teniente Luis Candelaria",
       "pais": "Argentina",
       "cidade": "San Carlos de Bariloche",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "Bariloche by AMAE Lounge",
@@ -10171,7 +11322,7 @@
       "nome": "Londrina – José Richa",
       "pais": "Brasil",
       "cidade": "Londrina",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "W Lounge Londrina",
@@ -10214,7 +11365,7 @@
       "nome": "Chapecó – Serafin Enoss Bertaso",
       "pais": "Brasil",
       "cidade": "Chapecó",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "The Lounge Chapecó",
@@ -10253,7 +11404,7 @@
       "nome": "Joinville – Lauro Carneiro de Loyola",
       "pais": "Brasil",
       "cidade": "Joinville",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Lounge",
@@ -10294,7 +11445,7 @@
       "nome": "Maringá – Sílvio Name Júnior",
       "pais": "Brasil",
       "cidade": "Maringá",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "W Lounge Maringá",
@@ -10674,7 +11825,7 @@
       "nome": "Vitória da Conquista – Glauber Rocha",
       "pais": "Brasil",
       "cidade": "Vitória da Conquista",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "The Lounge Vitória da Conquista",
@@ -10715,7 +11866,7 @@
       "nome": "Ilhéus – Jorge Amado",
       "pais": "Brasil",
       "cidade": "Ilhéus",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "The Lounge Ilhéus",
@@ -10755,7 +11906,7 @@
       "nome": "Juazeiro do Norte – Orlando Bezerra",
       "pais": "Brasil",
       "cidade": "Juazeiro do Norte",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Lounge",
@@ -10795,7 +11946,7 @@
       "nome": "Jericoacoara – Ariston Pessoa",
       "pais": "Brasil",
       "cidade": "Jericoacoara",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Lounge",
@@ -10836,7 +11987,7 @@
       "nome": "Sinop – Presidente João Figueiredo",
       "pais": "Brasil",
       "cidade": "Sinop",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "BRT Lounge Sinop",
@@ -10877,7 +12028,7 @@
       "nome": "Ribeirão Preto – Leite Lopes",
       "pais": "Brasil",
       "cidade": "Ribeirão Preto",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "W Premium Lounge Ribeirão Preto",
@@ -10919,7 +12070,7 @@
       "nome": "Uberlândia – César Bombonato",
       "pais": "Brasil",
       "cidade": "Uberlândia",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "W Premium Lounge Uberlândia",
@@ -10961,7 +12112,7 @@
       "nome": "Campina Grande – João Suassuna",
       "pais": "Brasil",
       "cidade": "Campina Grande",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Lounge",
@@ -11001,7 +12152,7 @@
       "nome": "Fernando de Noronha",
       "pais": "Brasil",
       "cidade": "Fernando de Noronha",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "Blue Lounge Noronha",
@@ -11042,7 +12193,7 @@
       "nome": "São José do Rio Preto – Prof. Eribelto Reino",
       "pais": "Brasil",
       "cidade": "São José do Rio Preto",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "The Lounge São José do Rio Preto",
@@ -11082,7 +12233,7 @@
       "nome": "Rio de Janeiro – Jacarepaguá",
       "pais": "Brasil",
       "cidade": "Rio de Janeiro",
-      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "buscadoEm": "2026-07-10T23:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Lounge",
