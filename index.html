@@ -4993,9 +4993,7 @@ function mapaCorPrograma(prog) {
 }
 
 async function initMapa() {
-  if (_mapaIniciado && _mapaInstance) return;
-
-  // Carrega Leaflet dinamicamente se ainda não carregado
+  // Carrega Leaflet dinamicamente (uma única vez)
   if (!window.L) {
     await new Promise((resolve, reject) => {
       const link = document.createElement('link');
@@ -5013,8 +5011,15 @@ async function initMapa() {
   const container = document.getElementById('mapa-container');
   if (!container) return;
 
-  // Garante que o container tem altura definida antes de iniciar
-  if (_mapaInstance) { _mapaInstance.remove(); _mapaInstance = null; }
+  // Destrói instância anterior se existir
+  if (_mapaInstance) {
+    _mapaInstance.remove();
+    _mapaInstance = null;
+    _mapaIniciado = false;
+  }
+
+  // Aguarda o container estar visível (display:block já aplicado pelo switchTab)
+  await new Promise(r => setTimeout(r, 80));
 
   _mapaInstance = L.map(container, {
     center: [10, 0],
@@ -5025,10 +5030,12 @@ async function initMapa() {
     attributionControl: false
   });
 
-  // Tile escuro
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 19
   }).addTo(_mapaInstance);
+
+  // Força recalculo de tamanho após render
+  setTimeout(() => { if (_mapaInstance) _mapaInstance.invalidateSize(); }, 200);
 
   _mapaIniciado = true;
   await mapaCarregarPassagens();
