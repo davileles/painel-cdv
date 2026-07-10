@@ -3809,7 +3809,7 @@ const CDV_PROXY_AUTH = 'https://cdv-proxy-production.up.railway.app';
 
 // Acorda o servidor Railway silenciosamente ao carregar a página
 (function warmUpProxy() {
-  const _wup=new AbortController();setTimeout(()=>_wup.abort(),8000);fetch(CDV_PROXY_AUTH + '/ping', { signal: _wup.signal })
+  const _wup=new AbortController();setTimeout(()=>_wup.abort(),20000);fetch(CDV_PROXY_AUTH + '/ping', { signal: _wup.signal })
     .catch(() => {}); // silencioso — só acorda o servidor
 })();
 const LOGIN_KEY  = 'cdv_auth';
@@ -3864,9 +3864,9 @@ async function fazerLogin() {
     return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(tid));
   };
 
-  const tentarVerificar = async () => {
+  const tentarVerificar = async (ms) => {
     const url = CDV_PROXY_AUTH + '/membros/verificar?email=' + encodeURIComponent(email);
-    const res = await fetchComTimeout(url, 15000);
+    const res = await fetchComTimeout(url, ms || 20000);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     return res.json();
   };
@@ -3874,13 +3874,13 @@ async function fazerLogin() {
   try {
     let data;
     try {
-      data = await tentarVerificar();
+      data = await tentarVerificar(20000);
     } catch (e1) {
       // Servidor pode estar acordando (Railway sleep) — aguardar e tentar novamente
-      erroEl.textContent = 'Conectando ao servidor…';
-      await new Promise(r => setTimeout(r, 5000));
+      erroEl.textContent = 'Servidor acordando, aguarde…';
+      await new Promise(r => setTimeout(r, 8000));
       erroEl.textContent = '';
-      data = await tentarVerificar();
+      data = await tentarVerificar(25000);
     }
     if (data.acesso) {
       salvarSessao({ email: data.email, nome: data.nome });
