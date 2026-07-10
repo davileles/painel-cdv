@@ -4960,17 +4960,16 @@ const CITY_COORDS = {
   'Delhi':[28.7041,77.1025],'DEL':[28.7041,77.1025],
 };
 
+const _COORDS_IDX = Object.fromEntries(
+  Object.entries(CITY_COORDS).map(([k,v]) => [k.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(), v])
+);
 function resolverCoords(nome) {
   if (!nome) return null;
   if (CITY_COORDS[nome]) return CITY_COORDS[nome];
-  const norm = nome.normalize('NFD').replace(/[̀-ͯ]/g,'');
-  for (const [k,v] of Object.entries(CITY_COORDS)) {
-    const kn = k.normalize('NFD').replace(/[̀-ͯ]/g,'');
-    if (kn.toLowerCase() === norm.toLowerCase()) return v;
-  }
-  for (const [k,v] of Object.entries(CITY_COORDS)) {
-    const kn = k.normalize('NFD').replace(/[̀-ͯ]/g,'');
-    if (norm.toLowerCase().startsWith(kn.toLowerCase()) || kn.toLowerCase().startsWith(norm.toLowerCase())) return v;
+  const norm = nome.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  if (_COORDS_IDX[norm]) return _COORDS_IDX[norm];
+  for (const [kn,v] of Object.entries(_COORDS_IDX)) {
+    if (norm.startsWith(kn) || kn.startsWith(norm)) return v;
   }
   return null;
 }
@@ -5088,7 +5087,7 @@ function mapaRenderizar() {
   let totalDest = 0;
   for (const [destino, items] of Object.entries(grupos)) {
     const coords = resolverCoords(destino);
-    if (!coords) continue;
+    if (!coords) { console.log('[Mapa] sem coords:', destino); continue; }
     totalDest++;
 
     const qtd    = items.length;
