@@ -4789,32 +4789,6 @@ function lvRenderizarResultado(d) {
 // === /SALAS VIP ===
 
 </script>
-</div><!-- /app-content -->
-
-<!-- Modal Sala VIP — fora do app-content para não interferir com login -->
-<div class="lv-modal-overlay" id="lv-modal-overlay" onclick="lvFecharModal(event)">
-  <div class="lv-modal" id="lv-modal">
-    <div class="lv-modal-close"><button onclick="lvFecharModal(null)">✕</button></div>
-    <div class="lv-modal-foto" id="lv-modal-foto">🛋️</div>
-    <div class="lv-modal-body">
-      <div class="lv-modal-nome" id="lv-modal-nome"></div>
-      <div class="lv-modal-badges" id="lv-modal-badges"></div>
-      <div class="lv-modal-section" id="lv-modal-sec-loc" style="display:none">
-        <div class="lv-modal-section-title">📍 Como chegar</div>
-        <div class="lv-modal-localizacao" id="lv-modal-loc"></div>
-      </div>
-      <div class="lv-modal-section" id="lv-modal-sec-am" style="display:none">
-        <div class="lv-modal-section-title">✨ Amenidades</div>
-        <div class="lv-modal-amenidades" id="lv-modal-am"></div>
-      </div>
-      <div class="lv-modal-section" id="lv-modal-sec-pr" style="display:none">
-        <div class="lv-modal-section-title">🎫 Acesso via</div>
-        <div class="lv-modal-progs" id="lv-modal-pr"></div>
-      </div>
-    </div>
-  </div>
-</div>
-<script src="iata.js"></script>
 <div id="tab-mapa" class="tab-panel" style="display:none">
   <div class="stats" style="margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
     <input id="mapa-filtro-origem" type="text" placeholder="Origem…"
@@ -4844,6 +4818,34 @@ function lvRenderizarResultado(d) {
     <div id="mapa-tooltip-lista" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
 </div>
+
+</div><!-- /app-content -->
+
+<!-- Modal Sala VIP — fora do app-content para não interferir com login -->
+<div class="lv-modal-overlay" id="lv-modal-overlay" onclick="lvFecharModal(event)">
+  <div class="lv-modal" id="lv-modal">
+    <div class="lv-modal-close"><button onclick="lvFecharModal(null)">✕</button></div>
+    <div class="lv-modal-foto" id="lv-modal-foto">🛋️</div>
+    <div class="lv-modal-body">
+      <div class="lv-modal-nome" id="lv-modal-nome"></div>
+      <div class="lv-modal-badges" id="lv-modal-badges"></div>
+      <div class="lv-modal-section" id="lv-modal-sec-loc" style="display:none">
+        <div class="lv-modal-section-title">📍 Como chegar</div>
+        <div class="lv-modal-localizacao" id="lv-modal-loc"></div>
+      </div>
+      <div class="lv-modal-section" id="lv-modal-sec-am" style="display:none">
+        <div class="lv-modal-section-title">✨ Amenidades</div>
+        <div class="lv-modal-amenidades" id="lv-modal-am"></div>
+      </div>
+      <div class="lv-modal-section" id="lv-modal-sec-pr" style="display:none">
+        <div class="lv-modal-section-title">🎫 Acesso via</div>
+        <div class="lv-modal-progs" id="lv-modal-pr"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="iata.js"></script>
+
 <script>
 
 // ══════════════════════════════════════════════════════
