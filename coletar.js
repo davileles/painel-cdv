@@ -145,6 +145,16 @@ function extractPts(g) {
   return isNaN(pts) ? null : Math.round(pts) || pts;
 }
 
+
+// Normaliza nome de parceiro para exibição (corrige abreviações e capitalização)
+function normalizarNomeParceiro(nome) {
+  const OVERRIDES = {
+    'cea': 'C&A',
+  };
+  const lower = nome.toLowerCase().trim();
+  if (OVERRIDES[lower]) return OVERRIDES[lower];
+  return nome.charAt(0).toUpperCase() + nome.slice(1);
+}
 // O heading do programa na página difere do ID interno
 const HEADING_MAP = {
   livelo: 'livelo',
@@ -425,7 +435,7 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
 
       if (!variacoesPorProg[progId]) variacoesPorProg[progId] = [];
       variacoesPorProg[progId].push({
-        parceiro: parceiro.charAt(0).toUpperCase() + parceiro.slice(1),
+        parceiro: normalizarNomeParceiro(parceiro),
         chave,
         ptsBefore,
         ptsNow,
