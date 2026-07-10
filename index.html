@@ -3809,7 +3809,7 @@ const CDV_PROXY_AUTH = 'https://cdv-proxy-production.up.railway.app';
 
 // Acorda o servidor Railway silenciosamente ao carregar a página
 (function warmUpProxy() {
-  const _wup=new AbortController();setTimeout(()=>_wup.abort(),20000);fetch(CDV_PROXY_AUTH + '/ping', { signal: _wup.signal })
+  const _wup=new AbortController();setTimeout(()=>_wup.abort(),8000);fetch(CDV_PROXY_AUTH + '/ping', { signal: _wup.signal })
     .catch(() => {}); // silencioso — só acorda o servidor
 })();
 const LOGIN_KEY  = 'cdv_auth';
@@ -3844,7 +3844,6 @@ function mostrarPainel(sessao) {
   // Aba Salas VIP — só para devs
   const tabLounges = document.getElementById('tab-btn-lounges');
   if (tabLounges && devAcesso()) tabLounges.style.display = '';
-  // Aba Mapa de Emissões — só para devs
   const tabMapa = document.getElementById('tab-btn-mapa');
   if (tabMapa && devAcesso()) tabMapa.style.display = '';
 }
@@ -3864,9 +3863,9 @@ async function fazerLogin() {
     return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(tid));
   };
 
-  const tentarVerificar = async (ms) => {
+  const tentarVerificar = async () => {
     const url = CDV_PROXY_AUTH + '/membros/verificar?email=' + encodeURIComponent(email);
-    const res = await fetchComTimeout(url, ms || 20000);
+    const res = await fetchComTimeout(url, 15000);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     return res.json();
   };
@@ -3874,13 +3873,13 @@ async function fazerLogin() {
   try {
     let data;
     try {
-      data = await tentarVerificar(20000);
+      data = await tentarVerificar();
     } catch (e1) {
       // Servidor pode estar acordando (Railway sleep) — aguardar e tentar novamente
-      erroEl.textContent = 'Servidor acordando, aguarde…';
-      await new Promise(r => setTimeout(r, 8000));
+      erroEl.textContent = 'Conectando ao servidor…';
+      await new Promise(r => setTimeout(r, 5000));
       erroEl.textContent = '';
-      data = await tentarVerificar(25000);
+      data = await tentarVerificar();
     }
     if (data.acesso) {
       salvarSessao({ email: data.email, nome: data.nome });
@@ -4845,9 +4844,7 @@ function lvRenderizarResultado(d) {
   </div>
 </div>
 <script src="iata.js"></script>
-
 <script>
-
 // ══════════════════════════════════════════════════════
 //  MAPA DE EMISSÕES
 // ══════════════════════════════════════════════════════
@@ -4857,10 +4854,10 @@ let _mapaInstance = null;
 let _passagensCache = [];
 
 const CITY_COORDS = {
-  'São Paulo':[-23.5505,-46.6333],'Sao Paulo':[-23.5505,-46.6333],'GRU':[-23.5505,-46.6333],'VCP':[-22.9099,-47.0626],'CGH':[-23.6265,-46.6556],
+  'São Paulo':[-23.5505,-46.6333],'GRU':[-23.5505,-46.6333],'VCP':[-22.9099,-47.0626],'CGH':[-23.6265,-46.6556],
   'Rio de Janeiro':[-22.9068,-43.1729],'GIG':[-22.9068,-43.1729],'SDU':[-22.9068,-43.1729],
   'Brasília':[-15.7801,-47.9292],'BSB':[-15.7801,-47.9292],
-  'Belo Horizonte':[-19.9167,-43.9345],'CNF':[-19.9167,-43.9345],'PLU':[-19.9167,-43.9345],
+  'Belo Horizonte':[-19.9167,-43.9345],'CNF':[-19.9167,-43.9345],
   'Salvador':[-12.9714,-38.5014],'SSA':[-12.9714,-38.5014],
   'Fortaleza':[-3.7172,-38.5432],'FOR':[-3.7172,-38.5432],
   'Recife':[-8.0578,-34.8829],'REC':[-8.0578,-34.8829],
@@ -4888,35 +4885,32 @@ const CITY_COORDS = {
   'Palmas':[-10.2491,-48.3243],'PMW':[-10.2491,-48.3243],
   'Foz do Iguaçu':[-25.5951,-54.5857],'IGU':[-25.5951,-54.5857],
   'Santarém':[-2.4448,-54.7084],'STM':[-2.4448,-54.7084],
-  'Petrolina':[-9.3622,-40.5082],'PNZ':[-9.3622,-40.5082],
-  'Ilhéus':[-14.7956,-39.0335],'IOS':[-14.7956,-39.0335],
-  'Buenos Aires':[-34.6037,-58.3816],'EZE':[-34.6037,-58.3816],'AEP':[-34.6037,-58.3816],
+  'Buenos Aires':[-34.6037,-58.3816],'EZE':[-34.6037,-58.3816],
   'Santiago':[-33.4489,-70.6693],'SCL':[-33.4489,-70.6693],
   'Lima':[-12.0464,-77.0428],'LIM':[-12.0464,-77.0428],
   'Bogotá':[4.7110,-74.0721],'BOG':[4.7110,-74.0721],
-  'Caracas':[10.4806,-66.9036],'CCS':[10.4806,-66.9036],
   'Montevidéu':[-34.9011,-56.1645],'MVD':[-34.9011,-56.1645],
   'Assunção':[-25.2867,-57.6470],'ASU':[-25.2867,-57.6470],
   'Quito':[-0.2295,-78.5243],'UIO':[-0.2295,-78.5243],
   'Medellín':[6.2442,-75.5812],'MDE':[6.2442,-75.5812],
   'Cartagena':[10.3997,-75.5144],'CTG':[10.3997,-75.5144],
   'Cusco':[-13.5319,-71.9675],'CUZ':[-13.5319,-71.9675],
+  'Cancún':[21.1619,-86.8515],'CUN':[21.1619,-86.8515],
   'Miami':[25.7617,-80.1918],'MIA':[25.7617,-80.1918],
-  'Nova York':[40.7128,-74.0060],'New York':[40.7128,-74.0060],'JFK':[40.7128,-74.0060],'EWR':[40.7128,-74.0060],
+  'Nova York':[40.7128,-74.0060],'JFK':[40.7128,-74.0060],'EWR':[40.7128,-74.0060],
   'Los Angeles':[34.0522,-118.2437],'LAX':[34.0522,-118.2437],
   'Orlando':[28.5383,-81.3792],'MCO':[28.5383,-81.3792],
   'Chicago':[41.8781,-87.6298],'ORD':[41.8781,-87.6298],
   'Toronto':[43.6532,-79.3832],'YYZ':[43.6532,-79.3832],
   'Vancouver':[49.2827,-123.1207],'YVR':[49.2827,-123.1207],
   'México':[19.4326,-99.1332],'MEX':[19.4326,-99.1332],
-  'Cancún':[21.1619,-86.8515],'CUN':[21.1619,-86.8515],
   'Cidade do Panamá':[8.9936,-79.5197],'PTY':[8.9936,-79.5197],
   'Lisboa':[38.7223,-9.1393],'LIS':[38.7223,-9.1393],
   'Porto':[41.1579,-8.6291],'OPO':[41.1579,-8.6291],
   'Madrid':[40.4168,-3.7038],'MAD':[40.4168,-3.7038],
   'Barcelona':[41.3851,2.1734],'BCN':[41.3851,2.1734],
-  'Paris':[48.8566,2.3522],'CDG':[48.8566,2.3522],'ORY':[48.8566,2.3522],
-  'Londres':[51.5074,-0.1278],'London':[51.5074,-0.1278],'LHR':[51.5074,-0.1278],'LGW':[51.5074,-0.1278],
+  'Paris':[48.8566,2.3522],'CDG':[48.8566,2.3522],
+  'Londres':[51.5074,-0.1278],'LHR':[51.5074,-0.1278],'LGW':[51.5074,-0.1278],
   'Amsterdam':[52.3676,4.9041],'AMS':[52.3676,4.9041],
   'Frankfurt':[50.1109,8.6821],'FRA':[50.1109,8.6821],
   'Roma':[41.9028,12.4964],'FCO':[41.9028,12.4964],
@@ -4932,12 +4926,6 @@ const CITY_COORDS = {
   'Helsinki':[60.1699,24.9384],'HEL':[60.1699,24.9384],
   'Atenas':[37.9838,23.7275],'ATH':[37.9838,23.7275],
   'Istanbul':[41.0082,28.9784],'IST':[41.0082,28.9784],
-  'Moscou':[55.7558,37.6173],'SVO':[55.7558,37.6173],
-  'Varsóvia':[52.2297,21.0122],'WAW':[52.2297,21.0122],
-  'Praga':[50.0755,14.4378],'PRG':[50.0755,14.4378],
-  'Budapest':[47.4979,19.0402],'BUD':[47.4979,19.0402],
-  'Dublin':[53.3498,-6.2603],'DUB':[53.3498,-6.2603],
-  'Bruxelas':[50.8503,4.3517],'BRU':[50.8503,4.3517],
   'Dubai':[25.2048,55.2708],'DXB':[25.2048,55.2708],
   'Abu Dhabi':[24.4539,54.3773],'AUH':[24.4539,54.3773],
   'Doha':[25.2854,51.5310],'DOH':[25.2854,51.5310],
@@ -4953,7 +4941,7 @@ const CITY_COORDS = {
   'Pequim':[39.9042,116.4074],'PEK':[39.9042,116.4074],
   'Xangai':[31.2304,121.4737],'PVG':[31.2304,121.4737],
   'Hong Kong':[22.3193,114.1694],'HKG':[22.3193,114.1694],
-  'Cingapura':[1.3521,103.8198],'Singapore':[1.3521,103.8198],'SIN':[1.3521,103.8198],
+  'Cingapura':[1.3521,103.8198],'SIN':[1.3521,103.8198],
   'Bangkok':[13.7563,100.5018],'BKK':[13.7563,100.5018],
   'Bali':[-8.3405,115.0920],'DPS':[-8.3405,115.0920],
   'Sydney':[-33.8688,151.2093],'SYD':[-33.8688,151.2093],
@@ -4964,12 +4952,12 @@ const CITY_COORDS = {
 };
 
 const _COORDS_IDX = Object.fromEntries(
-  Object.entries(CITY_COORDS).map(([k,v]) => [k.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(), v])
+  Object.entries(CITY_COORDS).map(([k,v]) => [k.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(), v])
 );
 function resolverCoords(nome) {
   if (!nome) return null;
   if (CITY_COORDS[nome]) return CITY_COORDS[nome];
-  const norm = nome.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const norm = nome.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
   if (_COORDS_IDX[norm]) return _COORDS_IDX[norm];
   for (const [kn,v] of Object.entries(_COORDS_IDX)) {
     if (norm.startsWith(kn) || kn.startsWith(norm)) return v;
@@ -4988,6 +4976,8 @@ function mapaCorPrograma(prog) {
   if (p.includes('iberia')) return '#c0392b';
   if (p.includes('aadvantage')) return '#0068b2';
   if (p.includes('qatar')) return '#8b0000';
+  if (p.includes('tap')) return '#005f9e';
+  if (p.includes('flying blue')) return '#003087';
   return '#6366f1';
 }
 
@@ -5014,7 +5004,6 @@ async function initMapa() {
   const loading = document.getElementById('mapa-loading');
   if (loading) loading.style.display = 'flex';
 
-  // Aguarda o container estar visível
   await new Promise(r => setTimeout(r, 100));
 
   _mapaInstance = L.map(container, {
@@ -5026,7 +5015,7 @@ async function initMapa() {
     maxZoom: 19
   }).addTo(_mapaInstance);
 
-  setTimeout(() => { if (_mapaInstance) { _mapaInstance.invalidateSize(); } }, 300);
+  setTimeout(() => { if (_mapaInstance) _mapaInstance.invalidateSize(); }, 300);
 
   if (loading) loading.style.display = 'none';
   _mapaIniciado = true;
@@ -5040,6 +5029,7 @@ async function initMapa() {
 }
 
 async function mapaCarregarPassagens() {
+  const loading = document.getElementById('mapa-loading');
   try {
     const ctrl = new AbortController();
     setTimeout(() => ctrl.abort(), 15000);
@@ -5051,18 +5041,17 @@ async function mapaCarregarPassagens() {
     mapaRenderizar();
   } catch(e) {
     console.error('[Mapa]', e.message);
-    const loading = document.getElementById('mapa-loading');
-    if (loading) { loading.style.display='flex'; loading.textContent='Erro ao carregar passagens.'; }
+    if (loading) { loading.style.display = 'flex'; loading.textContent = 'Erro ao carregar passagens.'; }
   }
 }
 
 function mapaPopularFiltros() {
   const sel = document.getElementById('mapa-filtro-prog');
   if (!sel) return;
-  const progs = [...new Set(_passagensCache.map(p=>p.programa).filter(Boolean))].sort();
+  const progs = [...new Set(_passagensCache.map(p => p.programa).filter(Boolean))].sort();
   const cur = sel.value;
   sel.innerHTML = '<option value="">Todos os programas</option>' +
-    progs.map(p=>`<option value="${p}"${p===cur?' selected':''}>${p}</option>`).join('');
+    progs.map(p => `<option value="${p}"${p === cur ? ' selected' : ''}>${p}</option>`).join('');
 }
 
 function mapaRenderizar() {
@@ -5073,10 +5062,10 @@ function mapaRenderizar() {
   const filtDest   = (document.getElementById('mapa-filtro-destino')?.value || '').toLowerCase().trim();
 
   let pass = _passagensCache;
-  if (filtProg)   pass = pass.filter(p=>(p.programa||'').toLowerCase()===filtProg);
-  if (filtCabine) pass = pass.filter(p=>(p.cabine||'').toLowerCase().includes(filtCabine));
-  if (filtOrig)   pass = pass.filter(p=>(p.origem||'').toLowerCase().includes(filtOrig));
-  if (filtDest)   pass = pass.filter(p=>(p.destino||'').toLowerCase().includes(filtDest));
+  if (filtProg)   pass = pass.filter(p => (p.programa || '').toLowerCase() === filtProg);
+  if (filtCabine) pass = pass.filter(p => (p.cabine || '').toLowerCase().includes(filtCabine));
+  if (filtOrig)   pass = pass.filter(p => (p.origem  || '').toLowerCase().includes(filtOrig));
+  if (filtDest)   pass = pass.filter(p => (p.destino || '').toLowerCase().includes(filtDest));
 
   _mapaInstance.eachLayer(l => { if (l._mapaEmissao) _mapaInstance.removeLayer(l); });
 
@@ -5090,12 +5079,12 @@ function mapaRenderizar() {
   let totalDest = 0;
   for (const [destino, items] of Object.entries(grupos)) {
     const coords = resolverCoords(destino);
-    if (!coords) { console.log('[Mapa] sem coords:', destino); continue; }
+    if (!coords) continue;
     totalDest++;
 
     const qtd    = items.length;
-    const minPts = Math.min(...items.map(p=>p.pontos||0).filter(v=>v>0));
-    const progs  = [...new Set(items.map(p=>p.programa).filter(Boolean))];
+    const minPts = Math.min(...items.map(p => p.pontos || 0).filter(v => v > 0));
+    const progs  = [...new Set(items.map(p => p.programa).filter(Boolean))];
     const cor    = mapaCorPrograma(progs[0]);
     const raio   = Math.min(36, Math.max(10, 10 + Math.sqrt(qtd) * 4));
 
@@ -5105,10 +5094,10 @@ function mapaRenderizar() {
     });
     marker._mapaEmissao = true;
 
-    const progStr = progs.slice(0,3).join(', ') + (progs.length>3 ? ` +${progs.length-3}` : '');
-    const ptsStr  = minPts > 0 ? `A partir de ${minPts.toLocaleString('pt-BR')} pts` : '';
+    const ptsStr = minPts > 0 ? `A partir de ${minPts.toLocaleString('pt-BR')} pts` : '';
+    const progStr = progs.slice(0, 3).join(', ') + (progs.length > 3 ? ` +${progs.length - 3}` : '');
     marker.bindTooltip(
-      `<b>${destino}</b><br>${qtd} emissão${qtd>1?'ões':''}<br>${ptsStr}<br><small>${progStr}</small>`,
+      `<b>${destino}</b><br>${qtd} emissão${qtd > 1 ? 'ões' : ''}<br>${ptsStr}<br><small>${progStr}</small>`,
       { sticky: true, className: 'mapa-leaflet-tooltip' }
     );
 
@@ -5116,8 +5105,8 @@ function mapaRenderizar() {
       const titulo = document.getElementById('mapa-tooltip-titulo');
       const lista  = document.getElementById('mapa-tooltip-lista');
       const painel = document.getElementById('mapa-tooltip-panel');
-      if (!titulo||!lista||!painel) return;
-      titulo.textContent = '✈️ ' + destino + ' — ' + qtd + ' emissão' + (qtd>1?'ões':'') + ' registrada' + (qtd>1?'s':'');
+      if (!titulo || !lista || !painel) return;
+      titulo.textContent = '✈️ ' + destino + ' — ' + qtd + ' emissão' + (qtd > 1 ? 'ões' : '') + ' registrada' + (qtd > 1 ? 's' : '');
       lista.innerHTML = items.map(function(p) {
         const aprovado = p.fonte !== 'alerta_rejeitado';
         const badge = aprovado
@@ -5125,28 +5114,27 @@ function mapaRenderizar() {
           : '<span style="background:#f5a62322;color:#f5a623;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700">⚠ rejeitado</span>';
         const pts = p.pontos ? p.pontos.toLocaleString('pt-BR') + ' pts' : '—';
         return '<div style="background:var(--surface3,#1e2130);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:3px">'
-          +'<div style="display:flex;justify-content:space-between;align-items:center">'
-          +'<span style="font-weight:700;font-size:13px">'+(p.cia||p.programa||'—')+'</span>'+badge+'</div>'
-          +'<div style="font-size:12px;color:var(--muted)">'+(p.origem||'')+(p.origem&&p.destino?' → ':'')+''+(p.destino||'')+'</div>'
-          +'<div style="font-size:12px">'+(p.programa||'')+' · '+pts+' · '+(p.cabine||'—')+'</div>'
-          +(p.datas_ida?'<div style="font-size:11px;color:var(--muted2)">Ida: '+p.datas_ida.slice(0,80)+'</div>':'')
-          +'</div>';
+          + '<div style="display:flex;justify-content:space-between;align-items:center">'
+          + '<span style="font-weight:700;font-size:13px">' + (p.cia || p.programa || '—') + '</span>' + badge + '</div>'
+          + '<div style="font-size:12px;color:var(--muted)">' + (p.origem || '') + (p.origem && p.destino ? ' → ' : '') + (p.destino || '') + '</div>'
+          + '<div style="font-size:12px">' + (p.programa || '') + ' · ' + pts + ' · ' + (p.cabine || '—') + '</div>'
+          + (p.datas_ida ? '<div style="font-size:11px;color:var(--muted2)">Ida: ' + p.datas_ida.slice(0, 80) + '</div>' : '')
+          + '</div>';
       }).join('');
       painel.style.display = 'block';
-      painel.scrollIntoView({ behavior:'smooth', block:'nearest' });
+      painel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
 
     marker.addTo(_mapaInstance);
   }
 
   const cnt = document.getElementById('mapa-contador');
-  if (cnt) cnt.textContent = totalDest + ' destino' + (totalDest!==1?'s':'') + ' · ' + pass.length + ' emissão' + (pass.length!==1?'ões':'');
+  if (cnt) cnt.textContent = totalDest + ' destino' + (totalDest !== 1 ? 's' : '') + ' · ' + pass.length + ' emissão' + (pass.length !== 1 ? 'ões' : '');
 }
 
 document.addEventListener('change', function(e) {
-  if (e.target && ['mapa-filtro-prog','mapa-filtro-cabine'].includes(e.target.id)) mapaRenderizar();
+  if (e.target && ['mapa-filtro-prog', 'mapa-filtro-cabine'].includes(e.target.id)) mapaRenderizar();
 });
-
 </script>
 <!-- MODAIS (fora do app-content para evitar stacking context) -->
 <!-- MODAL -->
@@ -5203,4 +5191,4 @@ document.addEventListener('change', function(e) {
 </body>
 <!-- deploy-1783333767 -->
 </html>
-<!-- cache-bust:1783727163 -->
+<!-- cache-bust:1783348894 -->
