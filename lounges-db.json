@@ -2568,25 +2568,115 @@
       "buscadoEm": "2026-07-10T08:00:00.000Z"
     },
     "BEL": {
-      "nome": "Belém – Val de Cans Internacional",
-      "cidade": "Belém",
+      "nome": "Belém – Val de Cans",
       "pais": "Brasil",
-      "iata": "BEL",
-      "loungekey": [
+      "cidade": "Belém",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
         {
-          "nome": "Sala VIP BEL",
-          "terminal": "Embarque",
-          "horario": "06:00–22:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=BEL"
-        }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
+          "nome": "W Lounge Belém (Doméstico)",
+          "slug": "w-lounge-belem-bel",
+          "terminal": "Doméstico, após segurança",
+          "horario": "04:00–22:00",
+          "localizacao": "Doméstico, após segurança.",
+          "overview": "W Lounge Belém — Air France e KLM Business têm acesso.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/navegantes-ministro-victor-konder-airport-w-lounge/raw/d7p/LoungePair_NVT_W_Lounge_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass",
+            "Visa Airport Companion",
+            "C6 Bank Carbon Black",
+            "Sisprime Mastercard Black",
+            "Air France Business",
+            "KLM Business"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/w-lounge-belem-bel/",
+          "urlFotos": "https://loungereview.com/lounges/w-lounge-belem-bel/#photos"
+        },
         {
-          "nome": "Sala VIP BEL",
-          "terminal": "Embarque",
+          "nome": "W Premium Lounge Belém (Internacional)",
+          "slug": "w-premium-lounge-belem-bel-international",
+          "terminal": "Internacional, após segurança",
+          "horario": "Conforme voos internacionais",
+          "localizacao": "Internacional, após segurança.",
+          "overview": "W Premium para voos internacionais. TAP acesso incluso.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/navegantes-ministro-victor-konder-airport-w-lounge/raw/d7p/LoungePair_NVT_W_Lounge_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass",
+            "Visa Airport Companion",
+            "C6 Bank Carbon Black",
+            "Sisprime Mastercard Black",
+            "TAP Business/First"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/w-premium-lounge-belem-bel-international/",
+          "urlFotos": "https://loungereview.com/lounges/w-premium-lounge-belem-bel-international/#photos",
+          "obs": "TAP Business/First: acesso gratuito."
+        },
+        {
+          "nome": "Forneria Ouro Preto (restaurante – VAC)",
+          "slug": "forneria-ouro-preto-bel",
+          "terminal": "Área pública",
           "horario": "06:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BEL"
+          "localizacao": "Área pública.",
+          "overview": "Restaurante parceiro VAC.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/salvador-bahia-airport-ambaar-club-airside/raw/d7p/LoungePair_SSA_Ambaar_e2c1_1.jpg",
+          "programas": [
+            "Visa Airport Companion"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/forneria-ouro-preto-bel/",
+          "urlFotos": "https://loungereview.com/lounges/forneria-ouro-preto-bel/#photos",
+          "obs": "Restaurante — crédito VAC."
         }
       ]
     },
@@ -6560,72 +6650,227 @@
     },
     "GYN": {
       "nome": "Goiânia – Santa Genoveva",
-      "cidade": "Goiânia",
       "pais": "Brasil",
-      "iata": "GYN",
-      "loungekey": [],
-      "dragonpass": [],
-      "prioritypass": [
+      "cidade": "Goiânia",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
         {
-          "nome": "Sala VIP GYN",
-          "terminal": "Embarque",
-          "horario": "06:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GYN"
+          "nome": "W Lounge Goiânia",
+          "slug": "w-lounge-goiania-gyn",
+          "terminal": "Doméstico, próximo ao portão 9",
+          "horario": "04:00–22:00",
+          "localizacao": "Doméstico, próximo ao portão 9.",
+          "overview": "W Lounge em Goiânia.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/navegantes-ministro-victor-konder-airport-w-lounge/raw/d7p/LoungePair_NVT_W_Lounge_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass",
+            "Visa Airport Companion",
+            "C6 Bank Carbon Black",
+            "Sisprime Mastercard Black"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/w-lounge-goiania-gyn/",
+          "urlFotos": "https://loungereview.com/lounges/w-lounge-goiania-gyn/#photos"
+        },
+        {
+          "nome": "Advantage VIP Lounge",
+          "slug": "advantage-vip-lounge-gyn",
+          "terminal": "Doméstico",
+          "horario": "05:00–22:00",
+          "localizacao": "Doméstico.",
+          "overview": "Sala Advantage em GYN.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-gyn/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-gyn/#photos"
+        },
+        {
+          "nome": "BRB VIP Lounge – Latitude",
+          "slug": "brb-vip-lounge-latitude-gyn",
+          "terminal": "Doméstico",
+          "horario": "05:00–22:00",
+          "localizacao": "Doméstico.",
+          "overview": "Exclusiva BRBCARD em Goiânia. Sala de conferência disponível.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "BRBCARD exclusivo"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/brb-vip-lounge-latitude-gyn/",
+          "urlFotos": "https://loungereview.com/lounges/brb-vip-lounge-latitude-gyn/#photos",
+          "obs": "Exclusiva BRBCARD."
         }
       ]
     },
     "VIX": {
       "nome": "Vitória – Eurico de Aguiar Salles",
-      "cidade": "Vitória",
       "pais": "Brasil",
-      "iata": "VIX",
-      "loungekey": [
+      "cidade": "Vitória",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
         {
-          "nome": "Sala VIP VIX",
-          "terminal": "Embarque",
-          "horario": "06:00–22:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=VIX"
-        }
-      ],
-      "dragonpass": [],
-      "prioritypass": [
-        {
-          "nome": "Sala VIP VIX",
-          "terminal": "Embarque",
-          "horario": "06:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=VIX"
+          "nome": "The Lounge Vitória",
+          "slug": "the-lounge-vix",
+          "terminal": "Doméstico, após segurança",
+          "horario": "05:00–22:00",
+          "localizacao": "Doméstico, após segurança.",
+          "overview": "Única sala VIP de Vitória.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/florianopolis-hercilio-luz-airport-the-lounge-domestic/raw/d7p/LoungePair_FLN_The_Lounge_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/the-lounge-vix/",
+          "urlFotos": "https://loungereview.com/lounges/the-lounge-vix/#photos"
         }
       ]
     },
     "SLZ": {
-      "nome": "São Luís – Marechal Cunha Machado Internacional",
-      "cidade": "São Luís",
+      "nome": "São Luís – Marechal Cunha Machado",
       "pais": "Brasil",
-      "iata": "SLZ",
-      "loungekey": [],
-      "dragonpass": [],
-      "prioritypass": [
+      "cidade": "São Luís",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
         {
-          "nome": "Sala VIP SLZ",
-          "terminal": "Embarque",
-          "horario": "06:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SLZ"
+          "nome": "The Lounge São Luís",
+          "slug": "the-lounge-slz",
+          "terminal": "Doméstico, 2º andar, após segurança",
+          "horario": "24h",
+          "localizacao": "Após segurança, 2º andar, à direita.",
+          "overview": "Global Lounge Network. 24h. Muito bem avaliada.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://globalloungenetwork.com/wp-content/uploads/2025/04/01.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/the-lounge-slz/",
+          "urlFotos": "https://loungereview.com/lounges/the-lounge-slz/#photos"
         }
       ]
     },
     "MCZ": {
-      "nome": "Maceió – Zumbi dos Palmares Internacional",
-      "cidade": "Maceió",
+      "nome": "Maceió – Zumbi dos Palmares",
       "pais": "Brasil",
-      "iata": "MCZ",
-      "loungekey": [],
-      "dragonpass": [],
-      "prioritypass": [
+      "cidade": "Maceió",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
         {
-          "nome": "Sala VIP MCZ",
-          "terminal": "Embarque",
-          "horario": "06:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MCZ"
+          "nome": "Advantage VIP Lounge",
+          "slug": "advantage-vip-lounge-mcz",
+          "terminal": "Doméstico",
+          "horario": "05:00–22:00",
+          "localizacao": "Doméstico, após segurança.",
+          "overview": "Única sala VIP de Maceió.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-mcz/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-mcz/#photos"
         }
       ]
     },
@@ -6724,68 +6969,306 @@
       "buscadoEm": "2026-07-10T05:00:00.000Z"
     },
     "JPA": {
-      "nome": "João Pessoa – Presidente Castro Pinto Internacional",
-      "cidade": "João Pessoa",
+      "nome": "João Pessoa – Castro Pinto",
       "pais": "Brasil",
-      "iata": "JPA",
-      "loungekey": [],
-      "dragonpass": [],
-      "prioritypass": [
+      "cidade": "João Pessoa",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
         {
-          "nome": "Sala VIP JPA",
-          "terminal": "Embarque",
-          "horario": "06:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=JPA"
+          "nome": "Advantage VIP Lounge",
+          "slug": "advantage-vip-lounge-jpa",
+          "terminal": "Doméstico",
+          "horario": "05:00–22:00",
+          "localizacao": "Doméstico, após segurança.",
+          "overview": "Única sala VIP de João Pessoa.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-jpa/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-jpa/#photos"
         }
       ]
     },
     "AJU": {
       "nome": "Aracaju – Santa Maria",
-      "cidade": "Aracaju",
       "pais": "Brasil",
-      "iata": "AJU",
-      "loungekey": [],
-      "dragonpass": [],
-      "prioritypass": []
+      "cidade": "Aracaju",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "Ambaar Lounge Aracaju",
+          "slug": "ambaar-lounge-aju",
+          "terminal": "Doméstico, após segurança",
+          "horario": "05:00–22:00",
+          "localizacao": "Doméstico, após segurança.",
+          "overview": "Principal sala VIP de Aracaju.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/salvador-bahia-airport-ambaar-club-airside/raw/d7p/LoungePair_SSA_Ambaar_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass",
+            "Visa Airport Companion"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/ambaar-lounge-aju/",
+          "urlFotos": "https://loungereview.com/lounges/ambaar-lounge-aju/#photos"
+        },
+        {
+          "nome": "Advantage VIP Lounge",
+          "slug": "advantage-vip-lounge-aju",
+          "terminal": "Doméstico",
+          "horario": "05:00–22:00",
+          "localizacao": "Doméstico.",
+          "overview": "Segunda sala Advantage em AJU.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-aju/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-aju/#photos"
+        }
+      ]
     },
     "THE": {
       "nome": "Teresina – Senador Petrônio Portella",
-      "cidade": "Teresina",
       "pais": "Brasil",
-      "iata": "THE",
-      "loungekey": [],
-      "dragonpass": [],
-      "prioritypass": []
+      "cidade": "Teresina",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "The Lounge Teresina",
+          "slug": "the-lounge-the",
+          "terminal": "Doméstico",
+          "horario": "Conforme voos",
+          "localizacao": "Doméstico, após segurança.",
+          "overview": "GLN. Sala kids e Zen room. Crianças <12 anos: 1 grátis.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://globalloungenetwork.com/wp-content/uploads/2025/04/01.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/the-lounge-the/",
+          "urlFotos": "https://loungereview.com/lounges/the-lounge-the/#photos",
+          "obs": "Sala kids e Zen room."
+        }
+      ]
     },
     "CGR": {
-      "nome": "Campo Grande – Internacional",
-      "cidade": "Campo Grande",
+      "nome": "Campo Grande – Antônio João",
       "pais": "Brasil",
-      "iata": "CGR",
-      "loungekey": [],
-      "dragonpass": [],
-      "prioritypass": [
+      "cidade": "Campo Grande",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
         {
-          "nome": "Sala VIP CGR",
-          "terminal": "Embarque",
-          "horario": "06:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CGR"
+          "nome": "Advantage VIP Club",
+          "slug": "advantage-vip-lounge-cgr",
+          "terminal": "Doméstico",
+          "horario": "05:00–22:00",
+          "localizacao": "Doméstico, após segurança.",
+          "overview": "Única sala VIP de Campo Grande.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-cgr/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-cgr/#photos"
         }
       ]
     },
     "CGB": {
-      "nome": "Cuiabá – Marechal Rondon Internacional",
-      "cidade": "Cuiabá",
+      "nome": "Cuiabá – Marechal Rondon",
       "pais": "Brasil",
-      "iata": "CGB",
-      "loungekey": [],
-      "dragonpass": [],
-      "prioritypass": [
+      "cidade": "Cuiabá",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
         {
-          "nome": "Sala VIP CGB",
-          "terminal": "Embarque",
-          "horario": "06:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CGB"
+          "nome": "The Lounge Cuiabá",
+          "slug": "the-lounge-cuiaba-cgb",
+          "terminal": "Doméstico, 2º andar, após segurança",
+          "horario": "24h",
+          "localizacao": "2º andar, após segurança.",
+          "overview": "GLN. Nota 10 segundo reviews. 24h.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://globalloungenetwork.com/wp-content/uploads/2025/04/01.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/the-lounge-cuiaba-cgb/",
+          "urlFotos": "https://loungereview.com/lounges/the-lounge-cuiaba-cgb/#photos"
+        },
+        {
+          "nome": "W Lounge Cuiabá",
+          "slug": "w-lounge-cuiaba-cgb",
+          "terminal": "Doméstico, após segurança",
+          "horario": "24h",
+          "localizacao": "Doméstico.",
+          "overview": "W Lounge em Cuiabá.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/navegantes-ministro-victor-konder-airport-w-lounge/raw/d7p/LoungePair_NVT_W_Lounge_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass",
+            "Visa Airport Companion",
+            "C6 Bank Carbon Black",
+            "Sisprime Mastercard Black"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/w-lounge-cuiaba-cgb/",
+          "urlFotos": "https://loungereview.com/lounges/w-lounge-cuiaba-cgb/#photos"
+        },
+        {
+          "nome": "W Premium Lounge Cuiabá",
+          "slug": "w-premium-lounge-cgb",
+          "terminal": "Doméstico, após segurança",
+          "horario": "24h",
+          "localizacao": "Doméstico.",
+          "overview": "W Premium em Cuiabá.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/navegantes-ministro-victor-konder-airport-w-lounge/raw/d7p/LoungePair_NVT_W_Lounge_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass",
+            "Visa Airport Companion",
+            "C6 Bank Carbon Black",
+            "Sisprime Mastercard Black"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/w-premium-lounge-cgb/",
+          "urlFotos": "https://loungereview.com/lounges/w-premium-lounge-cgb/#photos"
         }
       ]
     },
@@ -6808,13 +7291,45 @@
       "prioritypass": []
     },
     "MCP": {
-      "nome": "Macapá – Alberto Alcolumbre Internacional",
-      "cidade": "Macapá",
+      "nome": "Macapá – Alberto Alcolumbre",
       "pais": "Brasil",
-      "iata": "MCP",
-      "loungekey": [],
-      "dragonpass": [],
-      "prioritypass": []
+      "cidade": "Macapá",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "The Lounge Macapá",
+          "slug": "the-lounge-macapa-mcp",
+          "terminal": "Doméstico, 2º andar",
+          "horario": "10:00–18:00 e 22:00–04:00",
+          "localizacao": "Airside, 2º andar.",
+          "overview": "Global Lounge Network. Horário seguindo voos.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://globalloungenetwork.com/wp-content/uploads/2025/04/01.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/the-lounge-macapa-mcp/",
+          "urlFotos": "https://loungereview.com/lounges/the-lounge-macapa-mcp/#photos",
+          "obs": "10h-18h e 22h-4h."
+        }
+      ]
     },
     "RBR": {
       "nome": "Rio Branco – Plácido de Castro Internacional",
@@ -6827,12 +7342,47 @@
     },
     "PMW": {
       "nome": "Palmas – Brigadeiro Lysias Rodrigues",
-      "cidade": "Palmas",
       "pais": "Brasil",
-      "iata": "PMW",
-      "loungekey": [],
-      "dragonpass": [],
-      "prioritypass": []
+      "cidade": "Palmas",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "W Café Lounge Palmas",
+          "slug": "w-cafe-lounge-palmas-pmw",
+          "terminal": "Área pública",
+          "horario": "Conforme voos",
+          "localizacao": "Área pública.",
+          "overview": "W Café em Palmas, área pública. Aceita PP, LK e VAC.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/navegantes-ministro-victor-konder-airport-w-lounge/raw/d7p/LoungePair_NVT_W_Lounge_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass",
+            "Visa Airport Companion",
+            "C6 Bank Carbon Black",
+            "Sisprime Mastercard Black"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/w-cafe-lounge-palmas-pmw/",
+          "urlFotos": "https://loungereview.com/lounges/w-cafe-lounge-palmas-pmw/#photos",
+          "obs": "Área pública."
+        }
+      ]
     },
     "NVT": {
       "nome": "Navegantes – Ministro Victor Konder Internacional",
@@ -8382,6 +8932,761 @@
           "urlLoungereview": "https://loungereview.com/lounges/w-lounge-maringa-mgf/",
           "urlFotos": "https://loungereview.com/lounges/w-lounge-maringa-mgf/#photos",
           "obs": "⚠️ NÃO aceita LoungeKey nem Priority Pass nesta unidade. Apenas VAC, C6 Bank, Sisprime e W Pass (R$180). Área pública."
+        }
+      ]
+    },
+    "SDU": {
+      "nome": "Rio de Janeiro – Santos Dumont",
+      "pais": "Brasil",
+      "cidade": "Rio de Janeiro",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "Advantage VIP Lounge (Airside)",
+          "slug": "advantage-vip-lounge-sdu-airside",
+          "terminal": "Doméstico, após segurança, lado esquerdo, próximo à Polícia Federal",
+          "horario": "05:00–22:00",
+          "localizacao": "Terminal doméstico, após segurança, lado esquerdo, próximo à Polícia Federal.",
+          "overview": "Principal sala VIP do SDU. Aceita PP e LK.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-sdu-airside/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-sdu-airside/#photos"
+        },
+        {
+          "nome": "Advantage VIP Lounge (Área Pública)",
+          "slug": "advantage-vip-lounge-sdu-landside",
+          "terminal": "Área pública (antes da segurança)",
+          "horario": "05:00–22:00",
+          "localizacao": "Área pública, antes da segurança.",
+          "overview": "Segunda unidade Advantage no SDU, área pública. Ideal para chegadas.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-sdu-landside/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-sdu-landside/#photos",
+          "obs": "Área pública."
+        },
+        {
+          "nome": "Bluma Spa",
+          "slug": "singu-sdu",
+          "terminal": "Doméstico, após segurança",
+          "horario": "05:00–22:00",
+          "localizacao": "Após segurança.",
+          "overview": "Spa (ex-Singu). PP oferece tratamentos gratuitos selecionados. Muito bem avaliado.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/singu-sdu/",
+          "urlFotos": "https://loungereview.com/lounges/singu-sdu/#photos",
+          "obs": "PP = tratamentos selecionados. PP Select sem non-lounge: NÃO elegível."
+        },
+        {
+          "nome": "Emerald VIP Lounge by ADVT",
+          "slug": "brb-coworking-latitude-sdu",
+          "terminal": "Área pública",
+          "horario": "05:00–22:00",
+          "localizacao": "Área pública, Santos Dumont.",
+          "overview": "Aceita Visa Airport Companion e DragonPass.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "Visa Airport Companion",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/brb-coworking-latitude-sdu/",
+          "urlFotos": "https://loungereview.com/lounges/brb-coworking-latitude-sdu/#photos"
+        }
+      ]
+    },
+    "VCP": {
+      "nome": "Campinas – Viracopos",
+      "pais": "Brasil",
+      "cidade": "Campinas",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "BRT Lounge",
+          "slug": "brt-lounge-vcp",
+          "terminal": "T1 Internacional, Pier A, em frente gates 6-8",
+          "horario": "05:00–23:00",
+          "localizacao": "Terminal 1 Internacional, Pier A, em frente aos gates 6-8.",
+          "overview": "Espaçosa e bem avaliada. Buffet farto. Em frente aos gates internacionais.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/porto-seguro-airport-brt-lounge/raw/d7p/LoungePair_BPS_BRT_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/brt-lounge-vcp/",
+          "urlFotos": "https://loungereview.com/lounges/brt-lounge-vcp/#photos"
+        },
+        {
+          "nome": "Ambaar Club",
+          "slug": "ambaar-club-vcp",
+          "terminal": "Internacional, após segurança",
+          "horario": "05:00–22:00",
+          "localizacao": "Internacional, após segurança.",
+          "overview": "Sala Ambaar em Viracopos.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/salvador-bahia-airport-ambaar-club-airside/raw/d7p/LoungePair_SSA_Ambaar_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/ambaar-club-vcp/",
+          "urlFotos": "https://loungereview.com/lounges/ambaar-club-vcp/#photos"
+        },
+        {
+          "nome": "Lounge Azul",
+          "slug": "lounge-azul-vcp",
+          "terminal": "T1 Internacional, mezanino, após imigração, em frente ao Duty Free",
+          "horario": "05:00–23:00",
+          "localizacao": "T1, mezanino, após imigração, em frente ao duty free.",
+          "overview": "Exclusivo Azul + PP. Open bar, cadeiras confortáveis, sala família.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/salvador-bahia-airport-ambaar-club-airside/raw/d7p/LoungePair_SSA_Ambaar_e2c1_1.jpg",
+          "programas": [
+            "Priority Pass",
+            "Azul Business/Diamond",
+            "United MileagePlus Gold+"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/lounge-azul-vcp/",
+          "urlFotos": "https://loungereview.com/lounges/lounge-azul-vcp/#photos",
+          "obs": "Azul Economy: R$200 adulto, R$100 criança."
+        },
+        {
+          "nome": "Advantage VIP Lounge",
+          "slug": "advantage-vip-lounge-vcp",
+          "terminal": "Área pública",
+          "horario": "05:00–22:00",
+          "localizacao": "Área pública.",
+          "overview": "Sala Advantage em VCP.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-vcp/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-vcp/#photos"
+        },
+        {
+          "nome": "Siesta Box",
+          "slug": "siesta-box-vcp",
+          "terminal": "Área pública",
+          "horario": "24h",
+          "localizacao": "Área pública, Viracopos.",
+          "overview": "Pods de descanso. PP = 2h gratuitas.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/florianopolis-hercilio-luz-airport-the-lounge-domestic/raw/d7p/LoungePair_FLN_The_Lounge_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/siesta-box-vcp/",
+          "urlFotos": "https://loungereview.com/lounges/siesta-box-vcp/#photos",
+          "obs": "PP = 2h. Sem reserva online."
+        }
+      ]
+    },
+    "VDC": {
+      "nome": "Vitória da Conquista – Glauber Rocha",
+      "pais": "Brasil",
+      "cidade": "Vitória da Conquista",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "The Lounge Vitória da Conquista",
+          "slug": "the-lounge-vdc",
+          "terminal": "Área pública",
+          "horario": "Conforme voos",
+          "localizacao": "Área pública.",
+          "overview": "Única sala VIP, área pública.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/florianopolis-hercilio-luz-airport-the-lounge-domestic/raw/d7p/LoungePair_FLN_The_Lounge_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/the-lounge-vdc/",
+          "urlFotos": "https://loungereview.com/lounges/the-lounge-vdc/#photos",
+          "obs": "Área pública."
+        }
+      ]
+    },
+    "IOS": {
+      "nome": "Ilhéus – Jorge Amado",
+      "pais": "Brasil",
+      "cidade": "Ilhéus",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "The Lounge Ilhéus",
+          "slug": "the-lounge-ios",
+          "terminal": "Doméstico",
+          "horario": "Conforme voos",
+          "localizacao": "Doméstico, após segurança.",
+          "overview": "Única sala VIP de Ilhéus.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/florianopolis-hercilio-luz-airport-the-lounge-domestic/raw/d7p/LoungePair_FLN_The_Lounge_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/the-lounge-ios/",
+          "urlFotos": "https://loungereview.com/lounges/the-lounge-ios/#photos"
+        }
+      ]
+    },
+    "JDO": {
+      "nome": "Juazeiro do Norte – Orlando Bezerra",
+      "pais": "Brasil",
+      "cidade": "Juazeiro do Norte",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "Advantage VIP Lounge",
+          "slug": "advantage-vip-lounge-jdo",
+          "terminal": "Doméstico",
+          "horario": "Conforme voos",
+          "localizacao": "Doméstico.",
+          "overview": "Única sala VIP de Juazeiro do Norte.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-jdo/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-jdo/#photos"
+        }
+      ]
+    },
+    "JJD": {
+      "nome": "Jericoacoara – Ariston Pessoa",
+      "pais": "Brasil",
+      "cidade": "Jericoacoara",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "Advantage VIP Lounge",
+          "slug": "advantage-vip-lounge-jjd",
+          "terminal": "Doméstico",
+          "horario": "Conforme voos",
+          "localizacao": "Doméstico.",
+          "overview": "Única sala VIP de Jericoacoara. Aeroporto sazonal.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-jjd/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-jjd/#photos",
+          "obs": "Confirmar horários."
+        }
+      ]
+    },
+    "OPS": {
+      "nome": "Sinop – Presidente João Figueiredo",
+      "pais": "Brasil",
+      "cidade": "Sinop",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "BRT Lounge Sinop",
+          "slug": "brt-lounges-ops",
+          "terminal": "Área pública",
+          "horario": "Conforme voos",
+          "localizacao": "Área pública.",
+          "overview": "Área pública. Ostras disponíveis segundo reviews.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/porto-seguro-airport-brt-lounge/raw/d7p/LoungePair_BPS_BRT_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass",
+            "Visa Airport Companion"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/brt-lounges-ops/",
+          "urlFotos": "https://loungereview.com/lounges/brt-lounges-ops/#photos",
+          "obs": "Área pública."
+        }
+      ]
+    },
+    "RAO": {
+      "nome": "Ribeirão Preto – Leite Lopes",
+      "pais": "Brasil",
+      "cidade": "Ribeirão Preto",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "W Premium Lounge Ribeirão Preto",
+          "slug": "w-premium-lounge-rao",
+          "terminal": "Doméstico",
+          "horario": "05:00–22:00",
+          "localizacao": "Doméstico.",
+          "overview": "W Premium em Ribeirão Preto.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/navegantes-ministro-victor-konder-airport-w-lounge/raw/d7p/LoungePair_NVT_W_Lounge_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass",
+            "Visa Airport Companion",
+            "C6 Bank Carbon Black",
+            "Sisprime Mastercard Black"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/w-premium-lounge-rao/",
+          "urlFotos": "https://loungereview.com/lounges/w-premium-lounge-rao/#photos"
+        }
+      ]
+    },
+    "UDI": {
+      "nome": "Uberlândia – César Bombonato",
+      "pais": "Brasil",
+      "cidade": "Uberlândia",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "W Premium Lounge Uberlândia",
+          "slug": "w-premium-lounge-udi",
+          "terminal": "Doméstico",
+          "horario": "05:00–22:00",
+          "localizacao": "Doméstico, após segurança.",
+          "overview": "W Premium em Uberlândia.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/navegantes-ministro-victor-konder-airport-w-lounge/raw/d7p/LoungePair_NVT_W_Lounge_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass",
+            "Visa Airport Companion",
+            "C6 Bank Carbon Black",
+            "Sisprime Mastercard Black"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/w-premium-lounge-udi/",
+          "urlFotos": "https://loungereview.com/lounges/w-premium-lounge-udi/#photos"
+        }
+      ]
+    },
+    "CPV": {
+      "nome": "Campina Grande – João Suassuna",
+      "pais": "Brasil",
+      "cidade": "Campina Grande",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "Advantage VIP Lounge",
+          "slug": "advantage-vip-lounge-cpv",
+          "terminal": "Doméstico",
+          "horario": "Conforme voos",
+          "localizacao": "Doméstico.",
+          "overview": "Única sala VIP de Campina Grande.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-cpv/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-cpv/#photos"
+        }
+      ]
+    },
+    "FEN": {
+      "nome": "Fernando de Noronha",
+      "pais": "Brasil",
+      "cidade": "Fernando de Noronha",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "Blue Lounge Noronha",
+          "slug": "blue-lounge-noronha-fen",
+          "terminal": "Terminal principal",
+          "horario": "Conforme voos",
+          "localizacao": "Terminal principal.",
+          "overview": "Única sala VIP de Noronha. Básica mas suficiente.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/florianopolis-hercilio-luz-airport-the-lounge-domestic/raw/d7p/LoungePair_FLN_The_Lounge_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/blue-lounge-noronha-fen/",
+          "urlFotos": "https://loungereview.com/lounges/blue-lounge-noronha-fen/#photos",
+          "obs": "Horário conforme voos."
+        }
+      ]
+    },
+    "SJP": {
+      "nome": "São José do Rio Preto – Prof. Eribelto Reino",
+      "pais": "Brasil",
+      "cidade": "São José do Rio Preto",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "The Lounge São José do Rio Preto",
+          "slug": "the-lounge-sjp",
+          "terminal": "Doméstico",
+          "horario": "Conforme voos",
+          "localizacao": "Doméstico.",
+          "overview": "Única sala VIP de SJP.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/florianopolis-hercilio-luz-airport-the-lounge-domestic/raw/d7p/LoungePair_FLN_The_Lounge_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/the-lounge-sjp/",
+          "urlFotos": "https://loungereview.com/lounges/the-lounge-sjp/#photos"
+        }
+      ]
+    },
+    "RRJ": {
+      "nome": "Rio de Janeiro – Jacarepaguá",
+      "pais": "Brasil",
+      "cidade": "Rio de Janeiro",
+      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "salas": [
+        {
+          "nome": "Advantage VIP Lounge",
+          "slug": "advantage-vip-lounge-rrj",
+          "terminal": "Terminal principal",
+          "horario": "Conforme voos",
+          "localizacao": "Jacarepaguá.",
+          "overview": "Sala Advantage no aeroporto de Jacarepaguá.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Televisores",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/afonso-pena-international-airport-terminal-1-advantage-vip-lounge/raw/d7p/LoungePair_CWB_Advantage_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/advantage-vip-lounge-rrj/",
+          "urlFotos": "https://loungereview.com/lounges/advantage-vip-lounge-rrj/#photos"
         }
       ]
     }
