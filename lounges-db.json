@@ -2847,75 +2847,85 @@
       ],
       "salas": [
         {
-          "nome": "Lounge ANA T1",
+          "nome": "ANA Lounge",
           "slug": "ana-lounge-lis",
-          "terminal": "T1 (Schengen), próximo ao gate 22, acima da Praça Lisboa",
-          "horario": "24h",
-          "localizacao": "Terminal 1 Schengen, próximo ao gate 22, acima da Praça Lisboa.",
-          "overview": "Principal lounge aceito pelos programas em Lisboa. Boa seleção de vinhos portugueses. Ambiente confortável.",
+          "terminal": "T1 (Schengen), após segurança, próximo ao portão 22",
+          "horario": "05:00–22:00",
+          "localizacao": "Após segurança, T1 Schengen, próximo ao portão 22.",
+          "overview": "Principal sala PP/LK/DP de Lisboa. Aceita os 3 programas. Vinhos portugueses em destaque.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20240701/da9b76f8-43ef-48f2-ba64-e5f67774302f.jpg",
           "amenidades": {
             "comida": [
-              "Buffet quente e frio",
-              "Pastéis de nata",
-              "Snacks portugueses"
+              "Buffet variado",
+              "Snacks e queijos portugueses"
             ],
             "bebida": [
               "Vinhos do Douro e Alentejo",
-              "Cervejas",
-              "Café português",
-              "Bar completo"
+              "Bar completo",
+              "Café português"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Televisores",
-              "Chuveiros",
-              "Monitor de voos"
+              "TV",
+              "Monitor de voos",
+              "Sala de conferência",
+              "Acesso para deficientes",
+              "Cartão digital aceito"
             ]
           },
+          "obs": "Aceita PP, LK e DragonPass.",
           "programas": [
             "LoungeKey",
             "Priority Pass",
             "DragonPass"
           ],
+          "fontes": [
+            "DragonPass",
+            "LoungeKey",
+            "Priority Pass"
+          ],
           "urlLoungereview": "https://loungereview.com/lounges/ana-lounge-lis/",
-          "urlFotos": "https://loungereview.com/lounges/ana-lounge-lis/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/lisbon-humberto-delgado-airport-terminal-1-ana-lounge/raw/d7p/LoungePair_LIS_ANA_e2c1_1.jpg"
+          "urlFotos": "https://loungereview.com/lounges/ana-lounge-lis/#photos"
         },
         {
-          "nome": "TAP Air Portugal Lounge Atlântico (Não-Schengen)",
+          "nome": "TAP Air Portugal Lounge Atlântico",
           "slug": "tap-air-portugal-lounge-lis-non-schengen",
-          "terminal": "T1 (Não-Schengen), zona intercontinental",
+          "terminal": "T1, zona Não-Schengen (intercontinental)",
           "horario": "24h",
-          "localizacao": "Terminal 1, zona Não-Schengen para voos intercontinentais.",
-          "overview": "Lounge TAP aberto em 2024 para voos intercontinentais. 380m², 100 passageiros. Vista para o aeroporto. Exclusivo TAP Business/First e status.",
+          "localizacao": "T1, zona intercontinental Não-Schengen.",
+          "overview": "Lounge TAP para voos intercontinentais. Exclusivo TAP Business/First e status Miles&Go.",
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/lisbon-humberto-delgado-airport-terminal-1-ana-lounge/raw/d7p/LoungePair_LIS_ANA_e2c1_1.jpg",
           "amenidades": {
             "comida": [
-              "Buffet quente e frio",
-              "Snacks e doces"
+              "Buffet variado",
+              "Snacks"
             ],
             "bebida": [
               "Vinhos portugueses",
-              "Cervejas",
-              "Café e bebidas quentes"
+              "Bar completo",
+              "Café"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Televisores",
+              "TV",
               "Monitor de voos"
             ]
           },
+          "obs": "Exclusivo TAP. Sem PP/LK/DP.",
           "programas": [
             "TAP Business/First",
             "TAP Miles&Go Platinum/Gold"
           ],
+          "fontes": [
+            "LoungeReview"
+          ],
           "urlLoungereview": "https://loungereview.com/lounges/tap-air-portugal-lounge-lis-non-schengen/",
-          "urlFotos": "https://loungereview.com/lounges/tap-air-portugal-lounge-lis-non-schengen/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/lisbon-humberto-delgado-airport-terminal-1-ana-lounge/raw/d7p/LoungePair_LIS_ANA_e2c1_1.jpg"
+          "urlFotos": "https://loungereview.com/lounges/tap-air-portugal-lounge-lis-non-schengen/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T16:00:00.000Z"
     },
     "MAD": {
       "nome": "Madrid – Barajas Adolfo Suárez",
@@ -3050,116 +3060,85 @@
       ],
       "salas": [
         {
-          "nome": "Air France Lounge T2E Hall L",
+          "nome": "Air France Lounge (T2E Hall L)",
           "slug": "air-france-lounge-cdg-t2e-l",
-          "terminal": "T2E, Hall L, após segurança, próximo aos gates L",
+          "terminal": "T2E, Hall L",
           "horario": "24h",
-          "localizacao": "Terminal 2E, Hall L, após segurança, próximo aos gates L.",
-          "overview": "O flagship intercontinental da Air France em CDG. 3.200m² para 540 passageiros. Remodelado em 2017-2018. Panorâmica da pista, design do bar 'Le Balcon' por Mathieu Lehanneur. Spa Clarins gratuito, saunas, zona quiet sem celulares, daybeds. Excelente.",
+          "localizacao": "T2E, Hall L, após segurança.",
+          "overview": "Flagship Air France. 3.200m², 540 lugares. Bar 'Le Balcon', spa Clarins gratuito, saunas, daybeds, zona quiet.",
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/paris-charles-de-gaulle-airport-terminal-2b-2d-extime-lounge/raw/d7p/LoungePair_CDG_Extime_e2c1_1.jpg",
           "amenidades": {
             "comida": [
-              "Cozinha aberta com pratos quentes gourmet",
-              "Buffet com snacks, entradas e saladas",
+              "Cozinha aberta com pratos gourmet",
               "Padaria e confeitaria"
             ],
             "bebida": [
-              "Bar aberto toda a hora",
-              "Coquetéis do head bartender do Hotel Lancaster",
-              "Vinhos e champagne",
-              "Produtos orgânicos detox"
+              "Bar aberto",
+              "Champagne",
+              "Vinhos e coquetéis"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
               "Chuveiros",
-              "Daybeds e zonas de nap",
+              "Daybeds",
               "Spa Clarins gratuito",
               "Saunas",
-              "Sala família",
-              "Zona quiet sem celular",
-              "Monitor de voos"
+              "Zona quiet"
             ]
           },
           "programas": [
             "Air France/KLM Business/First",
             "Flying Blue Gold/Platinum",
             "SkyTeam Business"
+          ],
+          "fontes": [
+            "LoungeReview"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/air-france-lounge-cdg-t2e-l/",
-          "urlFotos": "https://loungereview.com/lounges/air-france-lounge-cdg-t2e-l/#photos",
-          "obs": "Aceita SkyTeam Business como Priority Pass em alguns horários.",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/paris-charles-de-gaulle-airport-terminal-2b-2d-extime-lounge/raw/d7p/LoungePair_CDG_Extime_e2c1_1.jpg"
+          "urlFotos": "https://loungereview.com/lounges/air-france-lounge-cdg-t2e-l/#photos"
         },
         {
-          "nome": "Air France Lounge T2E Hall K",
-          "slug": "air-france-lounge-cdg-t2e-k",
-          "terminal": "T2E, Hall K, após segurança, próximo aos gates K21-K41, andar inferior",
-          "horario": "24h",
-          "localizacao": "Terminal 2E, Hall K, após segurança, próximo aos gates K21-K41, andar inferior. Remodelado 2025.",
-          "overview": "Remodelado no início de 2025. Espaço de 2.800m² em 3 andares com identidade visual renovada da Air France. Chique e moderno com toques residenciais. Porém ainda não supera o Hall L em experiência.",
-          "amenidades": {
-            "comida": [
-              "Buffet quente e frio",
-              "Snacks e doces"
-            ],
-            "bebida": [
-              "Bar completo",
-              "Vinhos e champagne",
-              "Café e bebidas quentes"
-            ],
-            "outros": [
-              "Wi-Fi",
-              "Tomadas",
-              "Chuveiros",
-              "Televisores",
-              "Monitor de voos"
-            ]
-          },
-          "programas": [
-            "Air France/KLM Business/First",
-            "Flying Blue Gold/Platinum",
-            "SkyTeam Business"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/air-france-lounge-cdg-t2e-k/",
-          "urlFotos": "https://loungereview.com/lounges/air-france-lounge-cdg-t2e-k/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/paris-charles-de-gaulle-airport-terminal-2b-2d-extime-lounge/raw/d7p/LoungePair_CDG_Extime_e2c1_1.jpg"
-        },
-        {
-          "nome": "Extime Lounge T2B-D",
+          "nome": "Extime Lounge (T2B-D)",
           "slug": "extime-lounge-cdg",
-          "terminal": "T2B-2D (Não-Schengen), no edifício conector, logo após segurança e duty free",
+          "terminal": "T2B-2D (Não-Schengen), após segurança, antes do controle de passaportes",
           "horario": "05:00–22:00",
-          "localizacao": "Terminal 2B-2D, Não-Schengen, no edifício conector imediatamente após segurança e duty free. Antes do controle de passaportes.",
-          "overview": "Lounge independente aceito pelos programas em T2B/2D. Inaugurado em 2022 com décor inspirado em apartamentos parisienses. Único lounge independente neste setor. Pode lotar por ser o único disponível.",
+          "localizacao": "T2B-2D, imediatamente após segurança e duty free. Antes do controle de passaportes.",
+          "overview": "Único lounge independente em T2B/2D. Inaugurado 2022. Pode lotar por ser o único disponível.",
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/paris-charles-de-gaulle-airport-terminal-2b-2d-extime-lounge/raw/d7p/LoungePair_CDG_Extime_e2c1_1.jpg",
           "amenidades": {
             "comida": [
-              "Buffet quente e frio de alta qualidade",
+              "Buffet de alta qualidade",
               "Snacks franceses"
             ],
             "bebida": [
               "Vinhos franceses",
               "Cervejas",
-              "Café e bebidas quentes"
+              "Café"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Televisores",
+              "TV",
               "Monitor de voos"
             ]
           },
+          "obs": "Antes do controle de passaportes — calcule tempo extra. Aceita DragonPass (Salon Paris).",
           "programas": [
             "LoungeKey",
             "Priority Pass",
             "DragonPass"
           ],
+          "fontes": [
+            "DragonPass",
+            "LoungeKey",
+            "Priority Pass"
+          ],
           "urlLoungereview": "https://loungereview.com/lounges/extime-lounge-cdg/",
-          "urlFotos": "https://loungereview.com/lounges/extime-lounge-cdg/#photos",
-          "obs": "Antes do controle de passaportes — calcule tempo extra para as filas.",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/paris-charles-de-gaulle-airport-terminal-2b-2d-extime-lounge/raw/d7p/LoungePair_CDG_Extime_e2c1_1.jpg"
+          "urlFotos": "https://loungereview.com/lounges/extime-lounge-cdg/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T16:00:00.000Z"
     },
     "LHR": {
       "nome": "Londres – Heathrow",
@@ -3228,60 +3207,133 @@
       ],
       "salas": [
         {
-          "nome": "Plaza Premium Lounge T2",
+          "nome": "Plaza Premium Lounge (T2)",
           "slug": "plaza-premium-lounge-lhr-t2a",
-          "terminal": "T2A, Lounge A3, próximo ao Transfer Desk",
+          "terminal": "T2A, Lounge A3",
           "horario": "05:00–22:00",
-          "localizacao": "Terminal 2A, Lounge A3, próximo ao Transfer Desk. T2B (voos long-haul) fica 10-15 min a pé.",
-          "overview": "8.100 ft², sem janelas mas design elegante com parede LED de velas. Bar como peça central. Buffet generoso. Apenas 2 drinks incluídos na entrada — extras cobrados. 4 chuveiros pequenos. Pode lotar.",
+          "localizacao": "T2A, Lounge A3, próximo ao Transfer Desk.",
+          "overview": "8.100 ft². Bar central. Buffet generoso. Apenas 2 drinks incluídos — extras cobrados. 4 chuveiros compactos.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/trafficsiteImg/20260302/1e784d2b-7c2f-4bd4-85dd-f31104048fb9.jpg",
           "amenidades": {
             "comida": [
-              "Buffet completo quente e frio",
-              "Snacks e doces"
+              "Buffet completo quente e frio"
             ],
             "bebida": [
-              "Bar completo (2 drinks incluídos, extras cobrados)",
-              "Champagne premium (custo adicional)",
+              "Bar completo (2 drinks incluídos)",
               "Café e sucos"
             ],
             "outros": [
               "Wi-Fi",
-              "Tomadas em todos os assentos",
-              "Chuveiros (4, compactos)",
-              "Salas de nap",
-              "Massagens"
+              "Tomadas",
+              "Chuveiros (4)",
+              "Monitor de voos"
             ]
           },
+          "obs": "Atenção: T2B fica 10-15 min a pé. Sem janelas. 2 drinks incluídos.",
           "programas": [
             "LoungeKey",
             "Priority Pass",
             "DragonPass"
+          ],
+          "fontes": [
+            "DragonPass",
+            "LoungeKey",
+            "Priority Pass"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-lounge-lhr-t2a/",
-          "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-lhr-t2a/#photos",
-          "obs": "Atenção: T2B fica 10-15 min a pé. Sem janelas.",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-plaza-premium-lounge/raw/d7p/LoungePair_LHR_Plaza_Premium_T2_e2c1_1.jpg"
+          "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-lhr-t2a/#photos"
         },
         {
-          "nome": "No.1 Lounge T2",
+          "nome": "No1 Lounge (T2)",
           "slug": "no1-lounge-heathrow-lhr",
-          "terminal": "T2, próximo ao gate A18, andar inferior",
+          "terminal": "T2, próximo ao portão A18",
           "horario": "05:00–21:00",
-          "localizacao": "Terminal 2, próximo ao gate A18, andar inferior.",
-          "overview": "Design residencial elegante com piso de madeira, sofás curvos e mesas de mármore. Sem janelas (subterrâneo) mas atmosfera sofisticada. Buffet e bar. Pode lotar — pré-reserva recomendada. Sem chuveiros nesta localização.",
+          "localizacao": "T2, próximo ao portão A18, andar inferior.",
+          "overview": "Design residencial elegante. Sem janelas (subterrâneo). Pré-reserva recomendada. Sem chuveiros.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20250225/da618a59-5915-4028-8a64-c4b7c1aefb30.jpeg",
           "amenidades": {
             "comida": [
-              "Snacks e buffet quente",
-              "Opções variadas"
+              "Snacks e buffet quente"
             ],
             "bebida": [
               "Bar completo",
-              "Café e bebidas quentes"
+              "Café e chá"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Televisores"
+              "TV"
+            ]
+          },
+          "obs": "Sem chuveiros. Sem janelas. Pré-reserva recomendada.",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "DragonPass",
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/no1-lounge-heathrow-lhr/",
+          "urlFotos": "https://loungereview.com/lounges/no1-lounge-heathrow-lhr/#photos"
+        },
+        {
+          "nome": "Plaza Premium Lounge (Chegadas T2)",
+          "slug": "plaza-premium-lounge-lhr-arrivals",
+          "terminal": "T2, área de chegadas",
+          "horario": "05:00–22:00",
+          "localizacao": "T2, área de chegadas internacionais.",
+          "overview": "Lounge de chegadas no LHR T2. Aceita DragonPass, PP e LK. Ideal para quem acaba de chegar e quer descansar ou tomar banho antes de continuar.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20260303/f1b741d5-825e-4d53-87d4-4a1d13e686a9.jpg",
+          "amenidades": {
+            "comida": [
+              "Buffet variado"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e sucos"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Chuveiros",
+              "Monitor de voos"
+            ]
+          },
+          "obs": "Lounge de CHEGADAS — ideal para quem acabou de aterrissar.",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-lounge-lhr-arrivals/",
+          "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-lhr-arrivals/#photos"
+        },
+        {
+          "nome": "No1 Heathrow (T3)",
+          "slug": "no1-lounge-heathrow-t3-lhr",
+          "terminal": "T3, Lounge H",
+          "horario": "05:00–21:00",
+          "localizacao": "T3, Lounge H.",
+          "overview": "No1 Lounge no T3 de Heathrow. Aceita DragonPass, PP e LK.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/trafficsiteImg/20260318/9ebc556f-19b7-4acd-ad6f-524e3a2761c3.jpeg",
+          "amenidades": {
+            "comida": [
+              "Buffet variado"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e chá"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV"
             ]
           },
           "programas": [
@@ -3289,112 +3341,112 @@
             "Priority Pass",
             "DragonPass"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/no1-lounge-heathrow-lhr/",
-          "urlFotos": "https://loungereview.com/lounges/no1-lounge-heathrow-lhr/#photos",
-          "obs": "Sem chuveiros. Sem janelas. Pré-reserva recomendada.",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-no1-lounge/raw/d7p/LoungePair_LHR_No1_T2_e2c1_1.jpg"
-        },
-        {
-          "nome": "Clubrooms T3",
-          "slug": "clubrooms-lhr",
-          "terminal": "T3, Lounge F, próximo aos gates 13-22",
-          "horario": "24h",
-          "localizacao": "Terminal 3, Lounge F, próximo aos gates 13-22.",
-          "overview": "Operado pela No.1 Traveller. Ambiente sereno, menos cheio que o No.1 Lounge. Comida similar ao No.1 mas sem à la carte. Espaço com múltiplas salas e cantos privados — explore além da entrada que parece cheia.",
-          "amenidades": {
-            "comida": [
-              "Snacks e buffet quente",
-              "Opções variadas"
-            ],
-            "bebida": [
-              "Bar completo",
-              "Café e bebidas quentes"
-            ],
-            "outros": [
-              "Wi-Fi",
-              "Tomadas",
-              "Televisores",
-              "Áreas privadas"
-            ]
-          },
-          "programas": [
-            "LoungeKey",
-            "Priority Pass",
+          "fontes": [
             "DragonPass"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/clubrooms-lhr/",
-          "urlFotos": "https://loungereview.com/lounges/clubrooms-lhr/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-3-clubrooms/raw/d7p/LoungePair_LHR_Clubrooms_T3_e2c1_1.jpg"
+          "urlFotos": "https://loungereview.com/lounges/clubrooms-lhr/#photos"
         },
         {
-          "nome": "AA Admirals Club T3",
-          "slug": "american-airlines-admirals-club-lhr",
-          "terminal": "T3, Lounge H, próximo aos gates 13-22",
-          "horario": "24h",
-          "localizacao": "Terminal 3, Lounge H, próximo aos gates 13-22.",
-          "overview": "Espaçoso com boa seleção de bebidas e café da manhã. Pode ficar lotado. Sem champagne para a maioria dos membros.",
+          "nome": "Blush Lounge (T3)",
+          "slug": "blush-lounge-lhr",
+          "terminal": "T3",
+          "horario": "05:00–21:00",
+          "localizacao": "T3, Heathrow.",
+          "overview": "Blush Lounge by Plaza Premium Group no T3. Aceita DragonPass.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20230113/b5694764-d34d-49c6-a745-03c117a6c3e2.jpg",
           "amenidades": {
             "comida": [
-              "Buffet de café da manhã",
-              "Snacks e salgados"
+              "Buffet variado"
             ],
             "bebida": [
               "Bar completo",
-              "Cervejas e vinhos",
-              "Café e chá"
+              "Café"
             ],
             "outros": [
               "Wi-Fi",
-              "Tomadas",
-              "Televisores",
-              "Chuveiros",
-              "Business center"
+              "Tomadas"
             ]
           },
           "programas": [
-            "American Airlines Business/First",
-            "oneworld Business/First"
+            "DragonPass"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/american-airlines-admirals-club-lhr/",
-          "urlFotos": "https://loungereview.com/lounges/american-airlines-admirals-club-lhr/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-3-clubrooms/raw/d7p/LoungePair_LHR_Clubrooms_T3_e2c1_1.jpg"
+          "fontes": [
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/blush-lounge-lhr/",
+          "urlFotos": "https://loungereview.com/lounges/blush-lounge-lhr/#photos"
         },
         {
-          "nome": "Qantas London Lounge T3",
-          "slug": "qantas-london-lounge-lhr",
-          "terminal": "T3, próximo aos gates oneworld",
-          "horario": "24h",
-          "localizacao": "Terminal 3.",
-          "overview": "Dois andares com escadaria impressionante. Bar de gin com 14 variedades. Restaurante no andar térreo com serviço à mesa quando aberto. Quando só o andar superior está aberto, experiência mais básica. Melhor que BA e AA no T3 segundo visitantes.",
+          "nome": "Plaza Premium Lounge (T4)",
+          "slug": "plaza-premium-lounge-lhr-t4",
+          "terminal": "T4",
+          "horario": "05:00–22:00",
+          "localizacao": "T4, Heathrow.",
+          "overview": "Plaza Premium no T4. Aceita DragonPass, PP e LK.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20240906/378f7cd0-2710-4238-a855-588b6ce753f4.jpg",
           "amenidades": {
             "comida": [
-              "Restaurante com serviço à mesa (quando aberto)",
-              "Buffet no andar superior"
+              "Buffet variado"
             ],
             "bebida": [
-              "Bar de gin premium (14 variedades)",
-              "Cervejas e vinhos",
-              "Café e chá"
+              "Bar completo",
+              "Café e sucos"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
               "Chuveiros",
-              "Business center",
-              "Sala família",
-              "Televisores"
+              "Monitor de voos"
             ]
           },
           "programas": [
-            "oneworld Business/First",
-            "Qantas frequent flyers"
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/qantas-london-lounge-lhr/",
-          "urlFotos": "https://loungereview.com/lounges/qantas-london-lounge-lhr/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-3-clubrooms/raw/d7p/LoungePair_LHR_Clubrooms_T3_e2c1_1.jpg"
+          "fontes": [
+            "DragonPass",
+            "LoungeKey"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-lounge-lhr-t4/",
+          "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-lhr-t4/#photos"
+        },
+        {
+          "nome": "Plaza Premium Lounge (T5)",
+          "slug": "plaza-premium-lounge-lhr-t5",
+          "terminal": "T5",
+          "horario": "05:00–22:00",
+          "localizacao": "T5, Heathrow — terminal British Airways.",
+          "overview": "Plaza Premium no T5 (terminal BA). Aceita DragonPass. Fotos de fev/2026.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/trafficsiteImg/20260204/50156929-ef1d-4ef5-ad38-00160519d701.jpg",
+          "amenidades": {
+            "comida": [
+              "Buffet variado"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e sucos"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Chuveiros",
+              "Monitor de voos"
+            ]
+          },
+          "obs": "T5 = terminal British Airways. Aceita DragonPass.",
+          "programas": [
+            "DragonPass"
+          ],
+          "fontes": [
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-lounge-lhr-t5/",
+          "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-lhr-t5/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T16:00:00.000Z"
     },
     "AMS": {
       "nome": "Amsterdã – Schiphol",
@@ -3438,27 +3490,27 @@
       ],
       "salas": [
         {
-          "nome": "Aspire Lounge 26",
+          "nome": "Aspire Lounge (26)",
           "slug": "servisair-menzies-lounge-ams-shenghen",
-          "terminal": "Departure Lounge 2 (Schengen), Lounge 26, após segurança, Pier D",
+          "terminal": "Schengen, Lounge 26, após segurança, Pier D",
           "horario": "05:00–21:00",
-          "localizacao": "Departure Lounge 2 (Schengen), Airport Lounge 26, imediatamente após segurança, próximo ao Pier D.",
-          "overview": "Principal lounge independente aceito pelos programas em Schiphol. Localizado na zona Schengen.",
+          "localizacao": "Zona Schengen, Airport Lounge 26, imediatamente após segurança, próximo ao Pier D.",
+          "overview": "Principal lounge independente aceito pelos programas em Schiphol. Zona Schengen.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/images/lounge/Base/N00347/N00347_20200401100716_S1.jpg",
           "amenidades": {
             "comida": [
               "Buffet quente e frio",
-              "Snacks e queijos holandeses"
+              "Queijos holandeses"
             ],
             "bebida": [
-              "Cervejas (Heineken)",
-              "Vinhos",
+              "Bar completo",
               "Gênebra holandesa",
-              "Café e bebidas quentes"
+              "Café"
             ],
             "outros": [
               "Wi-Fi",
-              "Tomadas e USB",
-              "Televisores",
+              "Tomadas",
+              "TV",
               "Chuveiros",
               "Monitor de voos"
             ]
@@ -3468,30 +3520,68 @@
             "Priority Pass",
             "DragonPass"
           ],
+          "fontes": [
+            "DragonPass",
+            "LoungeKey",
+            "Priority Pass"
+          ],
           "urlLoungereview": "https://loungereview.com/lounges/servisair-menzies-lounge-ams-shenghen/",
-          "urlFotos": "https://loungereview.com/lounges/servisair-menzies-lounge-ams-shenghen/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg"
+          "urlFotos": "https://loungereview.com/lounges/servisair-menzies-lounge-ams-shenghen/#photos"
         },
         {
-          "nome": "KLM Crown Lounge 52 (Non-Schengen)",
-          "slug": "klm-crown-lounge-52-ams-non-schengen",
-          "terminal": "T2 (Non-Schengen), Lounge 52",
-          "horario": "24h",
-          "localizacao": "Terminal 2 (Non-Schengen), Airport Lounge 52.",
-          "overview": "Principal lounge KLM/SkyTeam para voos intercontinentais. Enorme — fácil encontrar assento mesmo cheio. Lockers disponíveis. Comida mediocre para o porte. Localização inconveniente para alguns gates.",
+          "nome": "Aspire Lounge (41)",
+          "slug": "aspire-lounge-41-ams",
+          "terminal": "Non-Schengen, Lounge 41",
+          "horario": "05:00–21:00",
+          "localizacao": "Zona Non-Schengen, Lounge 41.",
+          "overview": "Segunda unidade Aspire em Schiphol, na zona Non-Schengen. Ideal para voos intercontinentais. Foto fev/2024.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20240226/7944e0b1-0537-49fa-a783-d62ce3757db3.jpg",
           "amenidades": {
             "comida": [
-              "Buffet quente e frio",
-              "Snacks variados"
+              "Buffet quente e frio"
             ],
             "bebida": [
-              "Bar self-service com cervejas e vinhos",
-              "Café e bebidas quentes"
+              "Bar completo",
+              "Café"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Televisores",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "obs": "Zona Non-Schengen — para voos intercontinentais.",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/aspire-lounge-41-ams/",
+          "urlFotos": "https://loungereview.com/lounges/aspire-lounge-41-ams/#photos"
+        },
+        {
+          "nome": "KLM Crown Lounge 52 (Non-Schengen)",
+          "slug": "klm-crown-lounge-52-ams-non-schengen",
+          "terminal": "Non-Schengen, Lounge 52",
+          "horario": "24h",
+          "localizacao": "Non-Schengen, Lounge 52.",
+          "overview": "Principal lounge KLM/SkyTeam intercontinental. Enorme. Lockers disponíveis.",
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg",
+          "amenidades": {
+            "comida": [
+              "Buffet quente e frio"
+            ],
+            "bebida": [
+              "Bar self-service",
+              "Café"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
               "Chuveiros",
               "Lockers",
               "Business center",
@@ -3502,67 +3592,14 @@
             "KLM/SkyTeam Business/First",
             "Flying Blue Elite"
           ],
+          "fontes": [
+            "LoungeReview"
+          ],
           "urlLoungereview": "https://loungereview.com/lounges/klm-crown-lounge-52-ams-non-schengen/",
-          "urlFotos": "https://loungereview.com/lounges/klm-crown-lounge-52-ams-non-schengen/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg"
-        },
-        {
-          "nome": "KLM Crown Lounge 25 (Schengen)",
-          "slug": "klm-crown-lounge-25-ams-schengen",
-          "terminal": "Departure Lounge 1 (Schengen), Lounge 25, imediatamente após segurança",
-          "horario": "24h",
-          "localizacao": "Departure Lounge 1 (Schengen), Airport Lounge 25, imediatamente após segurança.",
-          "overview": "Lounge KLM Schengen recentemente expandido. Espaçoso, limpo e bem gerido. Staff muito elogiado. Boa variedade de comida, sistema de chuveiros eficiente, sleep chambers e spa.",
-          "amenidades": {
-            "comida": [
-              "Buffet quente e frio",
-              "Snacks e queijos holandeses"
-            ],
-            "bebida": [
-              "Bar com cervejas e vinhos",
-              "Café e bebidas quentes"
-            ],
-            "outros": [
-              "Wi-Fi",
-              "Tomadas",
-              "Televisores",
-              "Chuveiros (sistema eficiente)",
-              "Sleep chambers",
-              "Spa",
-              "Monitor de voos"
-            ]
-          },
-          "programas": [
-            "KLM/SkyTeam Business/First",
-            "Flying Blue Elite"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/klm-crown-lounge-25-ams-schengen/",
-          "urlFotos": "https://loungereview.com/lounges/klm-crown-lounge-25-ams-schengen/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/amsterdam-schiphol-airport-aspire-lounge-26/raw/d7p/LoungePair_AMS_Aspire_26_e2c1_1.jpg"
-        },
-        {
-          "nome": "XpresSpa Concourse D (Spa – PP)",
-          "slug": "xpresspa-ams-concourse-d",
-          "terminal": "Concourse D, próximo ao gate D8",
-          "horario": "24h",
-          "localizacao": "Concourse D, próximo ao gate D8.",
-          "overview": "Spa parceiro do Priority Pass. Membros têm acesso a sessão de massagem automática de 20 minutos.",
-          "amenidades": {
-            "comida": [],
-            "bebida": [],
-            "outros": [
-              "Sessão de massagem autônoma de 20 min em poltrona massageadora"
-            ]
-          },
-          "programas": [
-            "Priority Pass"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/xpresspa-ams-concourse-d/",
-          "urlFotos": "https://loungereview.com/lounges/xpresspa-ams-concourse-d/#photos",
-          "obs": "PP = sessão de 20 min gratuita em poltrona massageadora."
+          "urlFotos": "https://loungereview.com/lounges/klm-crown-lounge-52-ams-non-schengen/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T16:00:00.000Z"
     },
     "FRA": {
       "nome": "Frankfurt – Internacional",
@@ -3658,240 +3695,17 @@
       ],
       "salas": [
         {
-          "nome": "AA Flagship Lounge",
-          "slug": "american-airlines-flagship-lounge-mia",
-          "terminal": "Concourse D, próximo ao gate D30",
-          "horario": "24h",
-          "localizacao": "Concourse D, próximo ao gate D30.",
-          "overview": "O maior Flagship Lounge da American Airlines (29.000 ft², 475 assentos). Espaçoso e bem avaliado — ceviche bar, champagne grátis, bar self-service com destilados premium. Pode lotar no bar. Long and narrow layout.",
-          "amenidades": {
-            "comida": [
-              "Buffet variado quente e frio",
-              "Ceviche bar exclusivo",
-              "Snacks e doces"
-            ],
-            "bebida": [
-              "Bar self-service premium completo",
-              "Champagne grátis",
-              "Vinhos e destilados top shelf",
-              "Café e sucos"
-            ],
-            "outros": [
-              "Wi-Fi",
-              "Tomadas em todos os assentos",
-              "Televisores",
-              "Chuveiros",
-              "Business center",
-              "Monitor de voos"
-            ]
-          },
-          "programas": [
-            "American Airlines Business/First",
-            "oneworld Business/First"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/american-airlines-flagship-lounge-mia/",
-          "urlFotos": "https://loungereview.com/lounges/american-airlines-flagship-lounge-mia/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/miami-international-airport-concourse-d-american-airlines-flagship-lounge/raw/d7p/LoungePair_MIA_AA_Flagship_e2c1_1.jpg"
-        },
-        {
-          "nome": "AA Admirals Club",
-          "slug": "american-airlines-admirals-club-mia-d30",
-          "terminal": "Concourse D, oposto ao gate D30",
-          "horario": "24h",
-          "localizacao": "Concourse D, oposto ao gate D30.",
-          "overview": "Maior que a média dos Admirals Clubs mas frequentemente superlotado. Wi-Fi fraco. Longe de muitos gates domésticos. Boa localização para voos internacionais.",
-          "amenidades": {
-            "comida": [
-              "Snacks e salgados leves"
-            ],
-            "bebida": [
-              "Cervejas",
-              "Vinhos",
-              "Café e sucos"
-            ],
-            "outros": [
-              "Wi-Fi (lento)",
-              "Tomadas",
-              "Televisores",
-              "Salas de conferência"
-            ]
-          },
-          "programas": [
-            "American Airlines Business/First",
-            "oneworld Business/First"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/american-airlines-admirals-club-mia-d30/",
-          "urlFotos": "https://loungereview.com/lounges/american-airlines-admirals-club-mia-d30/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/miami-international-airport-concourse-d-american-airlines-flagship-lounge/raw/d7p/LoungePair_MIA_AA_Flagship_e2c1_1.jpg"
-        },
-        {
           "nome": "Avianca & TAP Air Portugal Lounge",
           "slug": "avianca-and-tap-portugal-vip-lounge-mia",
-          "terminal": "Concourse J, gate J6, nível 3",
+          "terminal": "Concourse J, portão J6, nível 3",
           "horario": "24h",
-          "localizacao": "Concourse J, oposto ao gate J6, nível 3.",
+          "localizacao": "Concourse J, oposto ao portão J6, nível 3.",
           "overview": "Considerado por muitos visitantes o MELHOR lounge de Miami. Amplo, cardápio via QR Code, serviço elogiado. Reserva recomendada nos horários de pico.",
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/miami-international-airport-concourse-j-avianca-tap-air-portugal-lounge/raw/d7p/LoungePair_MIA_Avianca_TAP_e2c1_1.jpg",
           "amenidades": {
             "comida": [
               "Cardápio completo via QR Code",
               "Pratos variados quentes e frios"
-            ],
-            "bebida": [
-              "Bar completo",
-              "Cervejas",
-              "Vinhos",
-              "Café e sucos"
-            ],
-            "outros": [
-              "Wi-Fi",
-              "Tomadas",
-              "Televisores",
-              "Monitor de voos"
-            ]
-          },
-          "programas": [
-            "LoungeKey",
-            "Priority Pass",
-            "DragonPass"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/avianca-and-tap-portugal-vip-lounge-mia/",
-          "urlFotos": "https://loungereview.com/lounges/avianca-and-tap-portugal-vip-lounge-mia/#photos",
-          "obs": "Reserva recomendada nos horários de pico.",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/miami-international-airport-concourse-j-avianca-tap-air-portugal-lounge/raw/d7p/LoungePair_MIA_Avianca_TAP_e2c1_1.jpg"
-        },
-        {
-          "nome": "LATAM VIP Lounge",
-          "slug": "latam-vip-lounge-vip-lounge-miami-mia",
-          "terminal": "Concourse J, oposto ao gate J6, nível 3",
-          "horario": "24h",
-          "localizacao": "Concourse J, oposto ao gate J6, nível 3.",
-          "overview": "Design desatualizado e espaço pequeno para o volume de passageiros. Staff frequentemente criticado por grosseria. Comida com críticas negativas. Único chuveiro. Exclusivo LATAM.",
-          "amenidades": {
-            "comida": [
-              "Sanduíches, sopas e pratos de arroz"
-            ],
-            "bebida": [
-              "Bar com vinhos e licores",
-              "Sucos frescos e espresso"
-            ],
-            "outros": [
-              "Wi-Fi",
-              "Tomadas",
-              "Televisores",
-              "Chuveiro (apenas 1)",
-              "Business center com Macs"
-            ]
-          },
-          "programas": [
-            "LATAM Pass elite"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/latam-vip-lounge-vip-lounge-miami-mia/",
-          "urlFotos": "https://loungereview.com/lounges/latam-vip-lounge-vip-lounge-miami-mia/#photos",
-          "obs": "Design datado, espaço limitado, staff com críticas negativas. Apenas 1 chuveiro.",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/ezeiza-international-airport-terminal-a-aeropuertos-vip-club-departures/raw/d7p/LoungePair_EZE_VIP_Club_e2c1_1.jpg"
-        },
-        {
-          "nome": "British Airways Lounge",
-          "slug": "british-airways-lounge-mia",
-          "terminal": "Concourse E, próximo aos gates E20-E33, andar superior",
-          "horario": "24h",
-          "localizacao": "Concourse E, próximo aos gates E20-E33, andar superior.",
-          "overview": "O maior lounge BA fora de Londres (13.000 ft²). Design inspirado em Art Deco de Miami com mural 'London Calling'. Cinco zonas distintas: bar central, área de jantar, focus pods, área relaxamento e chuveiros. Cocktail exclusivo Prickly Margarita. Melhor que o Admirals Club segundo visitantes.",
-          "amenidades": {
-            "comida": [
-              "Buffet com ingredientes locais de Miami com toque britânico",
-              "Snacks e salgados"
-            ],
-            "bebida": [
-              "Bar completo com menu de coquetéis",
-              "Prickly Margarita (exclusivo da casa)",
-              "Cervejas locais e destilados"
-            ],
-            "outros": [
-              "Wi-Fi",
-              "Tomadas",
-              "Televisores",
-              "Chuveiros (inspirados em espreguiçadeiras de Miami)",
-              "Monitor de voos"
-            ]
-          },
-          "programas": [
-            "British Airways Business/First",
-            "oneworld Business/First"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/british-airways-lounge-mia/",
-          "urlFotos": "https://loungereview.com/lounges/british-airways-lounge-mia/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-3-clubrooms/raw/d7p/LoungePair_LHR_Clubrooms_T3_e2c1_1.jpg"
-        },
-        {
-          "nome": "Turkish Airlines Lounge",
-          "slug": "turkish-airlines-lounge-mia",
-          "terminal": "Concourse E, após segurança (acessível dos Concourses D e E)",
-          "horario": "24h",
-          "localizacao": "Concourse E, após segurança. Acessível dos Concourses D e E.",
-          "overview": "Único lounge do Concourse E. Pequeno, superlotado e sem tomadas nos assentos. Café turco e chá de maçã são destaques. Bar limitado para padrão americano. Considerado espartano pela maioria.",
-          "amenidades": {
-            "comida": [
-              "Buffet com pitadas de inspiração turca"
-            ],
-            "bebida": [
-              "Café turco",
-              "Chá de maçã",
-              "Bar self-service limitado"
-            ],
-            "outros": [
-              "Wi-Fi",
-              "Televisores",
-              "Monitor de voos"
-            ]
-          },
-          "programas": [
-            "LoungeKey",
-            "Priority Pass",
-            "DragonPass"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/turkish-airlines-lounge-mia/",
-          "urlFotos": "https://loungereview.com/lounges/turkish-airlines-lounge-mia/#photos",
-          "obs": "Pequeno e superlotado. Sem tomadas nos assentos. Opção limitada mas única no Concourse E.",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-no1-lounge/raw/d7p/LoungePair_LHR_No1_T2_e2c1_1.jpg"
-        },
-        {
-          "nome": "Corona Beach House (Restaurante – crédito PP)",
-          "slug": "corona-beach-house-mia",
-          "terminal": "MIA",
-          "horario": "24h",
-          "localizacao": "Miami International.",
-          "overview": "Restaurante com crédito Priority Pass. Comida elogiada como excelente para padrão aeroportuário. Serviço pode ser lento. Gorjeta de 18% adicionada automaticamente.",
-          "amenidades": {
-            "comida": [
-              "Cardápio completo de restaurante",
-              "Comida muito bem avaliada"
-            ],
-            "bebida": [
-              "Carta completa de bebidas e coquetéis"
-            ],
-            "outros": [
-              "Ambiente restaurante"
-            ]
-          },
-          "programas": [
-            "Priority Pass"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/corona-beach-house-mia/",
-          "urlFotos": "https://loungereview.com/lounges/corona-beach-house-mia/#photos",
-          "obs": "Crédito PP disponível. Gorjeta de 18% automática. Serviço lento."
-        },
-        {
-          "nome": "Delta Sky Club",
-          "slug": "delta-sky-club-mia",
-          "terminal": "Concourse H, entre os Concourses H e J",
-          "horario": "24h",
-          "localizacao": "Concourse H, entre os Concourses H e J.",
-          "overview": "Décor inspirado nas praias da Flórida com tons turquesa, branco e dourado. Assentos individuais com tomadas ao alcance. Novo e bem equipado.",
-          "amenidades": {
-            "comida": [
-              "Buffet quente e frio",
-              "Snacks e frutas"
             ],
             "bebida": [
               "Bar completo",
@@ -3900,21 +3714,100 @@
             ],
             "outros": [
               "Wi-Fi",
-              "Tomadas em todos os assentos",
-              "Televisores",
+              "Tomadas",
+              "TV",
               "Monitor de voos"
             ]
           },
+          "obs": "Reserva recomendada nos horários de pico.",
           "programas": [
-            "Delta Business/First",
-            "Delta SkyMiles Medallion"
+            "LoungeKey",
+            "Priority Pass"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/delta-sky-club-mia/",
-          "urlFotos": "https://loungereview.com/lounges/delta-sky-club-mia/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-no1-lounge/raw/d7p/LoungePair_LHR_No1_T2_e2c1_1.jpg"
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/avianca-and-tap-portugal-vip-lounge-mia/",
+          "urlFotos": "https://loungereview.com/lounges/avianca-and-tap-portugal-vip-lounge-mia/#photos"
+        },
+        {
+          "nome": "AA Flagship Lounge",
+          "slug": "american-airlines-flagship-lounge-mia",
+          "terminal": "Concourse D, próximo ao portão D30",
+          "horario": "24h",
+          "localizacao": "Concourse D, próximo ao portão D30.",
+          "overview": "Maior Flagship Lounge da AA (29.000 ft², 475 assentos). Ceviche bar, champagne, bar self-service premium.",
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/miami-international-airport-concourse-d-american-airlines-flagship-lounge/raw/d7p/LoungePair_MIA_AA_Flagship_e2c1_1.jpg",
+          "amenidades": {
+            "comida": [
+              "Buffet completo",
+              "Ceviche bar exclusivo",
+              "Snacks e doces"
+            ],
+            "bebida": [
+              "Bar self-service premium",
+              "Champagne grátis",
+              "Vinhos top shelf"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Chuveiros",
+              "Vista para o apron",
+              "Monitor de voos"
+            ]
+          },
+          "obs": "Exclusivo AA Business/First e oneworld.",
+          "programas": [
+            "American Airlines Business/First",
+            "oneworld Business/First"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/american-airlines-flagship-lounge-mia/",
+          "urlFotos": "https://loungereview.com/lounges/american-airlines-flagship-lounge-mia/#photos"
+        },
+        {
+          "nome": "Turkish Airlines Lounge",
+          "slug": "turkish-airlines-lounge-mia",
+          "terminal": "Concourse E, após segurança",
+          "horario": "24h",
+          "localizacao": "Concourse E, após segurança.",
+          "overview": "Único lounge do Concourse E. Pequeno, pode lotar. Café turco e chá de maçã são destaques.",
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-no1-lounge/raw/d7p/LoungePair_LHR_No1_T2_e2c1_1.jpg",
+          "amenidades": {
+            "comida": [
+              "Buffet com inspiração turca"
+            ],
+            "bebida": [
+              "Café turco",
+              "Chá de maçã",
+              "Bar self-service limitado"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "obs": "Pequeno e superlotado. Sem tomadas nos assentos. ⚠️ DragonPass NÃO tem lounge em MIA — apenas crédito em restaurantes (Shula's, The Counter, Budlight).",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/turkish-airlines-lounge-mia/",
+          "urlFotos": "https://loungereview.com/lounges/turkish-airlines-lounge-mia/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T16:00:00.000Z"
     },
     "JFK": {
       "nome": "Nova York – John F. Kennedy",
@@ -4235,79 +4128,16 @@
       ],
       "salas": [
         {
-          "nome": "Aeropuertos VIP Club (Embarques)",
-          "slug": "aeropuertos-vip-club-eze-departures",
-          "terminal": "Terminal A, landside, próximo ao ATM",
-          "horario": "24h",
-          "localizacao": "Terminal A, antes da segurança, próximo ao ATM. Acessível pelos Terminais A, B e C.",
-          "overview": "Lounge de embarques no Ezeiza antes da segurança cobrindo todos os terminais. Políticas rígidas sem flexibilidade para mudanças de voo.",
-          "amenidades": {
-            "comida": [
-              "Snacks e refeições leves"
-            ],
-            "bebida": [
-              "Bar completo",
-              "Café e bebidas quentes"
-            ],
-            "outros": [
-              "Wi-Fi",
-              "Tomadas",
-              "Televisores",
-              "Salas de conferência",
-              "Fast Track"
-            ]
-          },
-          "programas": [
-            "LoungeKey",
-            "Priority Pass",
-            "DragonPass"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/aeropuertos-vip-club-eze-departures/",
-          "urlFotos": "https://loungereview.com/lounges/aeropuertos-vip-club-eze-departures/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/ezeiza-international-airport-terminal-a-aeropuertos-vip-club-departures/raw/d7p/LoungePair_EZE_VIP_Club_e2c1_1.jpg"
-        },
-        {
-          "nome": "Aeropuertos VIP Club (Chegadas)",
-          "slug": "aeropuertos-vip-club-eze-arrivals",
-          "terminal": "Terminal A, antes da imigração",
-          "horario": "24h",
-          "localizacao": "Terminal A, antes da imigração. Acessível pelos Terminais A, B e C.",
-          "overview": "Lounge de chegadas no Ezeiza. Ideal para passageiros em trânsito.",
-          "amenidades": {
-            "comida": [
-              "Snacks e refeições leves"
-            ],
-            "bebida": [
-              "Bar completo",
-              "Café e bebidas quentes"
-            ],
-            "outros": [
-              "Wi-Fi",
-              "Tomadas",
-              "Televisores",
-              "Fast Track"
-            ]
-          },
-          "programas": [
-            "LoungeKey",
-            "Priority Pass",
-            "DragonPass"
-          ],
-          "urlLoungereview": "https://loungereview.com/lounges/aeropuertos-vip-club-eze-arrivals/",
-          "urlFotos": "https://loungereview.com/lounges/aeropuertos-vip-club-eze-arrivals/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/ezeiza-international-airport-terminal-a-aeropuertos-vip-club-arrivals/raw/d7p/LoungePair_EZE_VIP_Club_Arr_e2c1_1.jpg"
-        },
-        {
           "nome": "Ezeiza Lounge",
           "slug": "ezeiza-lounge-eze",
-          "terminal": "EZE, Internacional",
+          "terminal": "Internacional, após segurança",
           "horario": "24h",
-          "localizacao": "Buenos Aires – Ezeiza, área internacional.",
-          "overview": "Lounge independente no Ezeiza com boa estrutura e ambiente tranquilo.",
+          "localizacao": "Airside, após segurança.",
+          "overview": "Lounge independente em Ezeiza. Aceita DP, PP e LK. Capacidade limitada — pode ter fila.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20230117/bba915ef-ab2e-4f74-827c-b68c51b91ed3.jpg",
           "amenidades": {
             "comida": [
-              "Buffet completo",
-              "Snacks"
+              "Buffet variado"
             ],
             "bebida": [
               "Bar completo",
@@ -4316,76 +4146,167 @@
             "outros": [
               "Wi-Fi",
               "Tomadas",
+              "TV",
               "Chuveiros",
-              "Televisores"
+              "Monitor de voos"
             ]
           },
+          "obs": "Acesso sujeito à capacidade. Crianças <18 devem ser acompanhadas por adulto.",
           "programas": [
             "LoungeKey",
             "Priority Pass",
             "DragonPass"
           ],
+          "fontes": [
+            "DragonPass",
+            "LoungeKey",
+            "Priority Pass"
+          ],
           "urlLoungereview": "https://loungereview.com/lounges/ezeiza-lounge-eze/",
-          "urlFotos": "https://loungereview.com/lounges/ezeiza-lounge-eze/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/ezeiza-international-airport-terminal-a-aeropuertos-vip-club-departures/raw/d7p/LoungePair_EZE_VIP_Club_e2c1_1.jpg"
+          "urlFotos": "https://loungereview.com/lounges/ezeiza-lounge-eze/#photos"
         },
         {
-          "nome": "LATAM VIP Lounge",
+          "nome": "LATAM Lounge",
           "slug": "latam-vip-lounge-eze",
-          "terminal": "Terminal B, próximo ao gate 9",
+          "terminal": "Internacional, após passaporte e segurança, nível 2, em frente ao portão 9",
           "horario": "24h",
-          "localizacao": "Terminal B, próximo ao gate 9.",
-          "overview": "Lounge exclusivo LATAM em Ezeiza. Para passageiros premium e com status LATAM.",
+          "localizacao": "Airside, após passaporte e segurança, nível 2, em frente ao portão 9.",
+          "overview": "Lounge LATAM em Ezeiza. Aceita DragonPass (membros LATAM Pass). Crianças <2 anos: grátis.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20231108/fae96e21-a3b7-4aa2-9f0a-a08ac8d2204f.jpg",
           "amenidades": {
             "comida": [
-              "Buffet quente e frio"
+              "Buffet variado"
             ],
             "bebida": [
-              "Vinhos e destilados",
+              "Bar completo",
               "Café e sucos"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Televisores",
-              "Chuveiros"
+              "TV",
+              "Monitor de voos"
             ]
           },
+          "obs": "Quem não voa LATAM/Delta/Aeromexico/Qatar e não é membro LATAM Pass deve se cadastrar gratuitamente no QR na recepção.",
           "programas": [
-            "LATAM Pass elite"
+            "DragonPass",
+            "LATAM Pass elite",
+            "Delta Business/First",
+            "Aeromexico Business",
+            "Qatar Airways Business"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/latam-vip-lounge-eze/",
-          "urlFotos": "https://loungereview.com/lounges/latam-vip-lounge-eze/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/ezeiza-international-airport-terminal-a-aeropuertos-vip-club-departures/raw/d7p/LoungePair_EZE_VIP_Club_e2c1_1.jpg"
-        },
-        {
-          "nome": "My Pod by W Lounge",
-          "slug": "my-pod-by-w-lounge-eze",
-          "terminal": "Entre o Terminal Internacional e o Terminal Doméstico",
-          "horario": "24h",
-          "localizacao": "Entre o Terminal Internacional de Chegadas e o Terminal Doméstico.",
-          "overview": "Pods de descanso da rede W em Ezeiza. Ideal para escalas longas.",
-          "amenidades": {
-            "comida": [],
-            "bebida": [],
-            "outros": [
-              "Pods privativos de descanso",
-              "Wi-Fi",
-              "Tomadas",
-              "Ar-condicionado"
-            ]
-          },
-          "programas": [
-            "LoungeKey",
-            "Priority Pass",
+          "fontes": [
             "DragonPass"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/my-pod-by-w-lounge-eze/",
-          "urlFotos": "https://loungereview.com/lounges/my-pod-by-w-lounge-eze/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/tancredo-neves-international-airport-terminal-1-brt-lounge-confins/raw/d7p/LoungePair_CNF_BRT_Confins_e2c1_3.jpg"
+          "urlLoungereview": "https://loungereview.com/lounges/latam-vip-lounge-eze/",
+          "urlFotos": "https://loungereview.com/lounges/latam-vip-lounge-eze/#photos"
+        },
+        {
+          "nome": "BBVA Lounge",
+          "slug": "bbva-lounge-eze",
+          "terminal": "Internacional, airside",
+          "horario": "24h",
+          "localizacao": "Airside, após segurança.",
+          "overview": "Sala bancária BBVA em Ezeiza. Aceita DragonPass. Foto mar/2024.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20240314/22dd60ad-efe2-4dfa-a671-e3ab8b3f26d9.jpeg",
+          "amenidades": {
+            "comida": [
+              "Buffet variado"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "obs": "Exclusivo DragonPass e clientes BBVA elegíveis.",
+          "programas": [
+            "DragonPass"
+          ],
+          "fontes": [
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/bbva-lounge-eze/",
+          "urlFotos": "https://loungereview.com/lounges/bbva-lounge-eze/#photos"
+        },
+        {
+          "nome": "Star Alliance Lounge",
+          "slug": "star-alliance-lounge-eze",
+          "terminal": "Internacional, airside",
+          "horario": "24h",
+          "localizacao": "Airside, após segurança.",
+          "overview": "Lounge Star Alliance em Ezeiza. Aceita DragonPass. Foto nov/2024.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20241129/423cdf5b-17bb-44c0-96d3-d27b9b735c6c.jpg",
+          "amenidades": {
+            "comida": [
+              "Buffet variado"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e sucos"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Chuveiros",
+              "Monitor de voos"
+            ]
+          },
+          "obs": "Exclusivo Star Alliance Business/First e DragonPass.",
+          "programas": [
+            "DragonPass",
+            "Star Alliance Business/First"
+          ],
+          "fontes": [
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/star-alliance-lounge-eze/",
+          "urlFotos": "https://loungereview.com/lounges/star-alliance-lounge-eze/#photos"
+        },
+        {
+          "nome": "Aeropuertos VIP Club (Embarques)",
+          "slug": "aeropuertos-vip-club-eze-departures",
+          "terminal": "Terminal A, landside — antes da segurança",
+          "horario": "24h",
+          "localizacao": "Terminal A, antes da segurança, próximo ao ATM.",
+          "overview": "Lounge landside cobrindo Terminais A, B e C. Aceita PP e LK.",
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/ezeiza-international-airport-terminal-a-aeropuertos-vip-club-departures/raw/d7p/LoungePair_EZE_VIP_Club_e2c1_1.jpg",
+          "amenidades": {
+            "comida": [
+              "Snacks e refeições leves"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Fast Track"
+            ]
+          },
+          "obs": "Landside — antes da segurança.",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/aeropuertos-vip-club-eze-departures/",
+          "urlFotos": "https://loungereview.com/lounges/aeropuertos-vip-club-eze-departures/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T16:00:00.000Z"
     },
     "SCL": {
       "nome": "Santiago – Arturo Merino Benítez",
@@ -4422,26 +4343,101 @@
       ],
       "salas": [
         {
-          "nome": "Primeclass Pacifico Sala Metropolis",
-          "slug": "primeclass-pacifico-sala-metropolis-scl",
-          "terminal": "Santiago (SCL), Internacional, após segurança",
-          "horario": "06:00–23:00",
-          "localizacao": "Arturo Merino Benítez, área internacional pós-segurança.",
-          "overview": "Principal lounge independente de Santiago aceito pelos programas. Vinhos chilenos em destaque.",
+          "nome": "Salon Pacific Club (T1 Internacional)",
+          "slug": "salon-pacific-club-t1-scl",
+          "terminal": "T1 (Internacional), após passaporte e segurança",
+          "horario": "24h",
+          "localizacao": "T1 Internacional, após controle de passaportes e segurança.",
+          "overview": "Principal lounge DP/PP/LK de Santiago para voos internacionais. Foto set/2024.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20240913/fa482131-d09c-46f0-a01c-1175db405d6a.jpeg",
           "amenidades": {
             "comida": [
-              "Buffet quente e frio",
-              "Snacks e salgados"
+              "Buffet variado",
+              "Snacks"
             ],
             "bebida": [
               "Vinhos chilenos",
-              "Cervejas",
-              "Café e bebidas quentes"
+              "Bar completo",
+              "Café"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Televisores",
+              "TV",
+              "Monitor de voos",
+              "Acesso para deficientes"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "DragonPass",
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/salon-pacific-club-t1-scl/",
+          "urlFotos": "https://loungereview.com/lounges/salon-pacific-club-t1-scl/#photos"
+        },
+        {
+          "nome": "The Lounge Nacional",
+          "slug": "the-lounge-scl-nacional",
+          "terminal": "T1 (Doméstico), após segurança",
+          "horario": "05:00–23:00",
+          "localizacao": "T1, área doméstica, após segurança.",
+          "overview": "The Lounge no setor doméstico de Santiago. Aceita DP, PP e LK. Foto jun/2024.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20240627/f7dd4dc9-51c2-459e-aa8b-dfd46d768947.jpg",
+          "amenidades": {
+            "comida": [
+              "Buffet variado"
+            ],
+            "bebida": [
+              "Vinhos chilenos",
+              "Bar completo",
+              "Café"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/the-lounge-scl-nacional/",
+          "urlFotos": "https://loungereview.com/lounges/the-lounge-scl-nacional/#photos"
+        },
+        {
+          "nome": "Salon Pacific Club (Nacional)",
+          "slug": "primeclass-pacifico-sala-metropolis-scl",
+          "terminal": "T1 (Doméstico/Internacional), após segurança",
+          "horario": "05:00–23:00",
+          "localizacao": "T1, área de embarque, após segurança.",
+          "overview": "Salon Pacific Club Nacional em Santiago. Aceita DP, PP e LK. Vinhos chilenos em destaque.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20240627/9e2b8ac3-c556-48b2-9078-e930226ea53f.jpg",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Vinhos chilenos premium",
+              "Bar completo",
+              "Café"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
               "Chuveiros",
               "Monitor de voos"
             ]
@@ -4451,12 +4447,16 @@
             "Priority Pass",
             "DragonPass"
           ],
+          "fontes": [
+            "DragonPass",
+            "LoungeKey",
+            "Priority Pass"
+          ],
           "urlLoungereview": "https://loungereview.com/lounges/primeclass-pacifico-sala-metropolis-scl/",
-          "urlFotos": "https://loungereview.com/lounges/primeclass-pacifico-sala-metropolis-scl/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/comodoro-arturo-merino-benitez-international-airport-international-terminal-the-lounge/raw/d7p/LoungePair_SCL_The_Lounge_e2c1_1.jpg"
+          "urlFotos": "https://loungereview.com/lounges/primeclass-pacifico-sala-metropolis-scl/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T16:00:00.000Z"
     },
     "BOG": {
       "nome": "Bogotá – El Dorado Internacional",
@@ -4560,45 +4560,85 @@
         {
           "nome": "The Club LIM",
           "slug": "the-club-lim-lim",
-          "terminal": "Lima (LIM), Internacional",
+          "terminal": "Internacional, mezanino do novo terminal, após segurança",
           "horario": "24h",
-          "localizacao": "Jorge Chávez Internacional, área internacional pós-segurança.",
-          "overview": "Principal lounge independente de Lima aceito pelos programas. Boa culinária peruana.",
+          "localizacao": "Após o checkpoint de segurança, vire à direita e siga os letreiros 'Airport Lounges'. Suba pela escada rolante até o mezanino e siga o corredor até o lounge. Somente voos internacionais.",
+          "overview": "Inaugurado jun/2025 no novo terminal internacional. Design inspirado na cultura peruana com arte local. Ergonomia premium, showers, meeting spaces, área quieta. Código LK: LIM11.",
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg",
           "amenidades": {
             "comida": [
-              "Buffet quente e frio",
-              "Pratos peruanos tradicionais",
-              "Snacks e frutas"
+              "Buffet variado com pratos peruanos",
+              "Snacks e frutas tropicais"
             ],
             "bebida": [
               "Pisco Sour e coquetéis peruanos",
-              "Cervejas e vinhos",
-              "Café e bebidas quentes"
+              "Bar completo",
+              "Café"
             ],
             "outros": [
               "Wi-Fi",
-              "Tomadas e USB",
-              "Televisores",
+              "Tomadas",
               "Chuveiros",
-              "Monitor de voos"
+              "Área quieta",
+              "Work stations privados",
+              "Monitor de voos",
+              "Acesso para deficientes"
             ]
           },
+          "obs": "Somente voos internacionais. Acesso até 3h antes do voo. Crianças <2 anos: grátis. <18 anos: acompanhado de adulto. Inaugurado jun/2025 no novo terminal.",
           "programas": [
             "LoungeKey",
             "Priority Pass",
             "DragonPass"
           ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
           "urlLoungereview": "https://loungereview.com/lounges/the-club-lim-lim/",
-          "urlFotos": "https://loungereview.com/lounges/the-club-lim-lim/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg"
+          "urlFotos": "https://loungereview.com/lounges/the-club-lim-lim/#photos"
+        },
+        {
+          "nome": "El Salon by Newrest",
+          "slug": "el-salon-by-newrest-lim",
+          "terminal": "Internacional, após segurança",
+          "horario": "24h",
+          "localizacao": "Área internacional, após segurança.",
+          "overview": "El Salon by Newrest no Lima. Segunda opção PP/LK. Código PP: LIM10.",
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg",
+          "amenidades": {
+            "comida": [
+              "Buffet variado"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/el-salon-by-newrest-lim/",
+          "urlFotos": "https://loungereview.com/lounges/el-salon-by-newrest-lim/#photos"
         },
         {
           "nome": "LATAM Lounge Lima",
           "slug": "latam-lounge-lim",
-          "terminal": "Lima (LIM), Internacional",
+          "terminal": "Internacional, após passaporte e segurança",
           "horario": "24h",
-          "localizacao": "Jorge Chávez Internacional, área internacional.",
+          "localizacao": "Airside, após controle de passaportes.",
           "overview": "Lounge exclusivo LATAM em Lima. Boa estrutura para passageiros premium.",
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/ezeiza-international-airport-terminal-a-aeropuertos-vip-club-departures/raw/d7p/LoungePair_EZE_VIP_Club_e2c1_1.jpg",
           "amenidades": {
             "comida": [
               "Buffet completo",
@@ -4611,19 +4651,22 @@
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Televisores",
+              "TV",
               "Chuveiros"
             ]
           },
+          "obs": "Exclusivo LATAM. Sem PP/LK/DP.",
           "programas": [
             "LATAM Pass elite"
           ],
+          "fontes": [
+            "LoungeReview"
+          ],
           "urlLoungereview": "https://loungereview.com/lounges/latam-lounge-lim/",
-          "urlFotos": "https://loungereview.com/lounges/latam-lounge-lim/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/ezeiza-international-airport-terminal-a-aeropuertos-vip-club-departures/raw/d7p/LoungePair_EZE_VIP_Club_e2c1_1.jpg"
+          "urlFotos": "https://loungereview.com/lounges/latam-lounge-lim/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T16:00:00.000Z"
     },
     "DXB": {
       "nome": "Dubai – Internacional",
@@ -5015,7 +5058,10 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/al-maha-lounge-doh/",
           "urlFotos": "https://loungereview.com/lounges/al-maha-lounge-doh/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/hamad-international-airport-al-maha-lounge-south/raw/d7p/LoungePair_DOH_Al_Maha_e2c1_1.jpg"
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20250213/a48beba8-fff1-4414-94f7-abcc894b6369.jpg",
+          "fontes": [
+            "DragonPass"
+          ]
         },
         {
           "nome": "Al Maha Lounge Southeast",
@@ -5050,7 +5096,10 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/al-maha-lounge-southeast-doh/",
           "urlFotos": "https://loungereview.com/lounges/al-maha-lounge-southeast-doh/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/hamad-international-airport-al-maha-lounge-south/raw/d7p/LoungePair_DOH_Al_Maha_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/hamad-international-airport-al-maha-lounge-south/raw/d7p/LoungePair_DOH_Al_Maha_e2c1_1.jpg",
+          "fontes": [
+            "DragonPass"
+          ]
         },
         {
           "nome": "Sleepover South (Pods de Descanso)",
@@ -5078,7 +5127,7 @@
           "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/hamad-international-airport-al-maha-lounge-south/raw/d7p/LoungePair_DOH_Al_Maha_e2c1_1.jpg"
         }
       ],
-      "buscadoEm": "2026-07-09T23:00:00.000Z"
+      "buscadoEm": "2026-07-10T16:00:00.000Z"
     },
     "SIN": {
       "nome": "Singapura – Changi",
