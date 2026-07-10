@@ -433,6 +433,19 @@
   .lv-modal-overlay{align-items:flex-end;padding:0}
 }
 /* === /SALAS VIP === */
+
+/* Mapa de Emissões — tooltip Leaflet */
+.mapa-leaflet-tooltip {
+  background: #0d1117 !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+  color: #e2e8f0 !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+  padding: 6px 10px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,.5) !important;
+}
+.mapa-leaflet-tooltip::before { display:none !important; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -477,6 +490,7 @@
   <button class="main-tab" data-tab="passagens">✈️ Passagens</button>
   <button class="main-tab" data-tab="milhas">📋 Gestão de Milhas</button>
   <button class="main-tab" data-tab="lounges" id="tab-btn-lounges" style="display:none">🛋️ Salas VIP</button>
+  <button class="main-tab" data-tab="mapa" id="tab-btn-mapa" style="display:none">🗺️ Mapa de Emissões</button>
 </div>
 
 <div id="tab-comparador" class="tab-panel">
@@ -1121,6 +1135,26 @@
   <div class="stats" id="pass-stats"></div>
   <div class="grid" id="pass-grid">
     <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando passagens…</div></div>
+  </div>
+</div>
+
+<!-- ══ MAPA DE EMISSÕES ══ -->
+<div id="tab-mapa" class="tab-panel" style="display:none">
+  <div style="margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <select id="mapa-filtro-prog" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;font-size:13px">
+      <option value="">Todos os programas</option>
+    </select>
+    <select id="mapa-filtro-cabine" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;font-size:13px">
+      <option value="">Todas as cabines</option>
+      <option value="Executiva">Executiva</option>
+      <option value="Economica">Econômica</option>
+    </select>
+    <span id="mapa-contador" style="font-size:13px;color:var(--muted);margin-left:auto"></span>
+  </div>
+  <div id="mapa-container" style="width:100%;height:520px;border-radius:14px;overflow:hidden;border:1px solid var(--border2);background:#0d1117"></div>
+  <div id="mapa-tooltip-panel" style="display:none;margin-top:14px;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:16px">
+    <div style="font-weight:700;font-size:15px;margin-bottom:10px" id="mapa-tooltip-titulo"></div>
+    <div id="mapa-tooltip-lista" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
 </div>
 
@@ -2301,11 +2335,13 @@ function switchTab(tab){
   document.getElementById('tab-passagens').style.display = tab==='passagens'?'block':'none';
   document.getElementById('tab-milhas').style.display  = tab==='milhas'  ?'block':'none';
   document.getElementById('tab-lounges').style.display = tab==='lounges' ?'block':'none';
+  document.getElementById('tab-mapa').style.display    = tab==='mapa'    ?'block':'none';
   window.scrollTo({top:0, behavior:'smooth'});
   if(tab==='radar')    loadOfertas(false);
   if(tab==='passagens') loadPassagens(false);
   if(tab==='milhas')   initMilhas();
   if(tab==='lounges')  lvCarregarAeroportos();
+  if(tab==='mapa')     initMapa();
   try{localStorage.setItem('cdv_active_tab', tab);}catch(e){}
 }
 
@@ -3828,6 +3864,9 @@ function mostrarPainel(sessao) {
   // Aba Salas VIP — só para devs
   const tabLounges = document.getElementById('tab-btn-lounges');
   if (tabLounges && devAcesso()) tabLounges.style.display = '';
+  // Aba Mapa de Emissões — só para devs
+  const tabMapa = document.getElementById('tab-btn-mapa');
+  if (tabMapa && devAcesso()) tabMapa.style.display = '';
 }
 async function fazerLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
@@ -4795,7 +4834,325 @@ function lvRenderizarResultado(d) {
     </div>
   </div>
 </div>
-<script src="iata.js"></script>
+<script src="iata.js">
+
+// ══════════════════════════════════════════════════════
+//  MAPA DE EMISSÕES
+// ══════════════════════════════════════════════════════
+const MAPA_PROXY = 'https://cdv-proxy-production.up.railway.app';
+let _mapaIniciado = false;
+let _mapaInstance = null;
+let _passagensCache = [];
+
+// Coordenadas de cidades brasileiras e internacionais comuns
+const CITY_COORDS = {
+  // Brasil
+  'São Paulo': [-23.5505, -46.6333], 'Sao Paulo': [-23.5505, -46.6333], 'GRU': [-23.5505, -46.6333],
+  'Rio de Janeiro': [-22.9068, -43.1729], 'RIO': [-22.9068, -43.1729], 'GIG': [-22.9068, -43.1729],
+  'Brasília': [-15.7801, -47.9292], 'BSB': [-15.7801, -47.9292],
+  'Belo Horizonte': [-19.9167, -43.9345], 'CNF': [-19.9167, -43.9345],
+  'Salvador': [-12.9714, -38.5014], 'SSA': [-12.9714, -38.5014],
+  'Fortaleza': [-3.7172, -38.5432], 'FOR': [-3.7172, -38.5432],
+  'Recife': [-8.0578, -34.8829], 'REC': [-8.0578, -34.8829],
+  'Porto Alegre': [-30.0277, -51.2287], 'POA': [-30.0277, -51.2287],
+  'Curitiba': [-25.4284, -49.2733], 'CWB': [-25.4284, -49.2733],
+  'Manaus': [-3.1019, -60.0250], 'MAO': [-3.1019, -60.0250],
+  'Belém': [-1.4558, -48.5044], 'BEL': [-1.4558, -48.5044],
+  'Natal': [-5.7945, -35.2110], 'NAT': [-5.7945, -35.2110],
+  'Maceió': [-9.6658, -35.7350], 'MCZ': [-9.6658, -35.7350],
+  'João Pessoa': [-7.1195, -34.8450], 'JPA': [-7.1195, -34.8450],
+  'Teresina': [-5.0892, -42.8019], 'THE': [-5.0892, -42.8019],
+  'São Luís': [-2.5297, -44.3028], 'SLZ': [-2.5297, -44.3028],
+  'Campo Grande': [-20.4697, -54.6201], 'CGR': [-20.4697, -54.6201],
+  'Cuiabá': [-15.5961, -56.0967], 'CGB': [-15.5961, -56.0967],
+  'Goiânia': [-16.6869, -49.2648], 'GYN': [-16.6869, -49.2648],
+  'Florianópolis': [-27.5954, -48.5480], 'FLN': [-27.5954, -48.5480],
+  'Uberlândia': [-18.9186, -48.2772], 'UDI': [-18.9186, -48.2772],
+  'Campinas': [-22.9099, -47.0626], 'VCP': [-22.9099, -47.0626],
+  'Vitória': [-20.3155, -40.3128], 'VIX': [-20.3155, -40.3128],
+  'Aracaju': [-10.9472, -37.0731], 'AJU': [-10.9472, -37.0731],
+  'Macapá': [0.0356, -51.0705], 'MCP': [0.0356, -51.0705],
+  'Porto Velho': [-8.7612, -63.9004], 'PVH': [-8.7612, -63.9004],
+  'Rio Branco': [-9.9754, -67.8249], 'RBR': [-9.9754, -67.8249],
+  'Boa Vista': [2.8235, -60.6758], 'BVB': [2.8235, -60.6758],
+  'Palmas': [-10.2491, -48.3243], 'PMW': [-10.2491, -48.3243],
+  'Santarém': [-2.4448, -54.7084], 'STM': [-2.4448, -54.7084],
+  'Petrolina': [-9.3622, -40.5082], 'PNZ': [-9.3622, -40.5082],
+  'Ilhéus': [-14.7956, -39.0335], 'IOS': [-14.7956, -39.0335],
+  'Foz do Iguaçu': [-25.5951, -54.5857], 'IGU': [-25.5951, -54.5857],
+  // América do Sul
+  'Buenos Aires': [-34.6037, -58.3816], 'EZE': [-34.6037, -58.3816], 'AEP': [-34.6037, -58.3816],
+  'Santiago': [-33.4489, -70.6693], 'SCL': [-33.4489, -70.6693],
+  'Lima': [-12.0464, -77.0428], 'LIM': [-12.0464, -77.0428],
+  'Bogotá': [4.7110, -74.0721], 'BOG': [4.7110, -74.0721],
+  'Caracas': [10.4806, -66.9036], 'CCS': [10.4806, -66.9036],
+  'Montevidéu': [-34.9011, -56.1645], 'MVD': [-34.9011, -56.1645],
+  'Assunção': [-25.2867, -57.6470], 'ASU': [-25.2867, -57.6470],
+  'Quito': [-0.2295, -78.5243], 'UIO': [-0.2295, -78.5243],
+  'Medellín': [6.2442, -75.5812], 'MDE': [6.2442, -75.5812],
+  'Cartagena': [10.3997, -75.5144], 'CTG': [10.3997, -75.5144],
+  'Cusco': [-13.5319, -71.9675], 'CUZ': [-13.5319, -71.9675],
+  // América do Norte/Central
+  'Miami': [25.7617, -80.1918], 'MIA': [25.7617, -80.1918],
+  'Nova York': [40.7128, -74.0060], 'New York': [40.7128, -74.0060], 'JFK': [40.7128, -74.0060], 'EWR': [40.7128, -74.0060],
+  'Los Angeles': [34.0522, -118.2437], 'LAX': [34.0522, -118.2437],
+  'Orlando': [28.5383, -81.3792], 'MCO': [28.5383, -81.3792],
+  'Chicago': [41.8781, -87.6298], 'ORD': [41.8781, -87.6298],
+  'Toronto': [43.6532, -79.3832], 'YYZ': [43.6532, -79.3832],
+  'Vancouver': [49.2827, -123.1207], 'YVR': [49.2827, -123.1207],
+  'México': [19.4326, -99.1332], 'MEX': [19.4326, -99.1332],
+  'Cancún': [21.1619, -86.8515], 'CUN': [21.1619, -86.8515],
+  'Cidade do Panamá': [8.9936, -79.5197], 'PTY': [8.9936, -79.5197],
+  'San José': [9.9281, -84.0907], 'SJO': [9.9281, -84.0907],
+  // Europa
+  'Lisboa': [38.7223, -9.1393], 'LIS': [38.7223, -9.1393],
+  'Porto': [41.1579, -8.6291], 'OPO': [41.1579, -8.6291],
+  'Madrid': [40.4168, -3.7038], 'MAD': [40.4168, -3.7038],
+  'Barcelona': [41.3851, 2.1734], 'BCN': [41.3851, 2.1734],
+  'Paris': [48.8566, 2.3522], 'CDG': [48.8566, 2.3522], 'ORY': [48.8566, 2.3522],
+  'Londres': [51.5074, -0.1278], 'London': [51.5074, -0.1278], 'LHR': [51.5074, -0.1278], 'LGW': [51.5074, -0.1278],
+  'Amsterdam': [52.3676, 4.9041], 'AMS': [52.3676, 4.9041],
+  'Frankfurt': [50.1109, 8.6821], 'FRA': [50.1109, 8.6821],
+  'Roma': [41.9028, 12.4964], 'Rome': [41.9028, 12.4964], 'FCO': [41.9028, 12.4964],
+  'Milão': [45.4654, 9.1859], 'Milan': [45.4654, 9.1859], 'MXP': [45.4654, 9.1859],
+  'Zurique': [47.3769, 8.5417], 'Zürich': [47.3769, 8.5417], 'ZRH': [47.3769, 8.5417],
+  'Genebra': [46.2044, 6.1432], 'GVA': [46.2044, 6.1432],
+  'Viena': [48.2082, 16.3738], 'Vienna': [48.2082, 16.3738], 'VIE': [48.2082, 16.3738],
+  'Berlim': [52.5200, 13.4050], 'Berlin': [52.5200, 13.4050], 'BER': [52.5200, 13.4050],
+  'Munique': [48.1351, 11.5820], 'Munich': [48.1351, 11.5820], 'MUC': [48.1351, 11.5820],
+  'Zurique': [47.3769, 8.5417], 'ZRH': [47.3769, 8.5417],
+  'Copenhague': [55.6761, 12.5683], 'CPH': [55.6761, 12.5683],
+  'Estocolmo': [59.3293, 18.0686], 'ARN': [59.3293, 18.0686],
+  'Oslo': [59.9139, 10.7522], 'OSL': [59.9139, 10.7522],
+  'Helsinki': [60.1699, 24.9384], 'HEL': [60.1699, 24.9384],
+  'Atenas': [37.9838, 23.7275], 'ATH': [37.9838, 23.7275],
+  'Istanbul': [41.0082, 28.9784], 'İstanbul': [41.0082, 28.9784], 'IST': [41.0082, 28.9784],
+  'Moscou': [55.7558, 37.6173], 'SVO': [55.7558, 37.6173],
+  'Varsóvia': [52.2297, 21.0122], 'WAW': [52.2297, 21.0122],
+  'Praga': [50.0755, 14.4378], 'PRG': [50.0755, 14.4378],
+  'Budapest': [47.4979, 19.0402], 'BUD': [47.4979, 19.0402],
+  'Dublin': [53.3498, -6.2603], 'DUB': [53.3498, -6.2603],
+  'Bruxelas': [50.8503, 4.3517], 'BRU': [50.8503, 4.3517],
+  // Oriente Médio / África
+  'Dubai': [25.2048, 55.2708], 'DXB': [25.2048, 55.2708],
+  'Abu Dhabi': [24.4539, 54.3773], 'AUH': [24.4539, 54.3773],
+  'Doha': [25.2854, 51.5310], 'DOH': [25.2854, 51.5310],
+  'Tel Aviv': [32.0853, 34.7818], 'TLV': [32.0853, 34.7818],
+  'Cairo': [30.0444, 31.2357], 'CAI': [30.0444, 31.2357],
+  'Johannesburgo': [-26.2041, 28.0473], 'Johannesburg': [-26.2041, 28.0473], 'JNB': [-26.2041, 28.0473],
+  'Lagos': [6.5244, 3.3792], 'LOS': [6.5244, 3.3792],
+  'Nairóbi': [-1.2921, 36.8219], 'NBO': [-1.2921, 36.8219],
+  'Luanda': [-8.8368, 13.2343], 'LAD': [-8.8368, 13.2343],
+  // Ásia / Oceania
+  'Tóquio': [35.6762, 139.6503], 'Tokyo': [35.6762, 139.6503], 'NRT': [35.6762, 139.6503], 'HND': [35.6762, 139.6503],
+  'Osaka': [34.6937, 135.5023], 'KIX': [34.6937, 135.5023],
+  'Seul': [37.5665, 126.9780], 'Seoul': [37.5665, 126.9780], 'ICN': [37.5665, 126.9780],
+  'Pequim': [39.9042, 116.4074], 'Beijing': [39.9042, 116.4074], 'PEK': [39.9042, 116.4074],
+  'Xangai': [31.2304, 121.4737], 'Shanghai': [31.2304, 121.4737], 'PVG': [31.2304, 121.4737],
+  'Hong Kong': [22.3193, 114.1694], 'HKG': [22.3193, 114.1694],
+  'Cingapura': [1.3521, 103.8198], 'Singapore': [1.3521, 103.8198], 'SIN': [1.3521, 103.8198],
+  'Bangkok': [13.7563, 100.5018], 'BKK': [13.7563, 100.5018],
+  'Bali': [-8.3405, 115.0920], 'DPS': [-8.3405, 115.0920],
+  'Sydney': [-33.8688, 151.2093], 'SYD': [-33.8688, 151.2093],
+  'Melbourne': [-37.8136, 144.9631], 'MEL': [-37.8136, 144.9631],
+  'Auckland': [-36.8485, 174.7633], 'AKL': [-36.8485, 174.7633],
+  'Mumbai': [19.0760, 72.8777], 'BOM': [19.0760, 72.8777],
+  'Dehli': [28.7041, 77.1025], 'Delhi': [28.7041, 77.1025], 'DEL': [28.7041, 77.1025],
+};
+
+function resolverCoords(nome) {
+  if (!nome) return null;
+  // Tenta exato
+  if (CITY_COORDS[nome]) return CITY_COORDS[nome];
+  // Tenta normalizado (sem acento, lowercase)
+  const norm = nome.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  for (const [k,v] of Object.entries(CITY_COORDS)) {
+    const kn = k.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    if (kn.toLowerCase() === norm.toLowerCase()) return v;
+  }
+  // Tenta parcial
+  for (const [k,v] of Object.entries(CITY_COORDS)) {
+    const kn = k.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    if (norm.toLowerCase().includes(kn.toLowerCase()) || kn.toLowerCase().includes(norm.toLowerCase())) return v;
+  }
+  return null;
+}
+
+function mapaCorPrograma(prog) {
+  const map = {
+    'LATAM Pass':'#dc2626','Smiles':'#f97316','Azul Fidelidade':'#0ea5e9',
+    'Livelo':'#df0979','Esfera':'#e8371b','TudoAzul':'#0ea5e9',
+    'Tudo Azul':'#0ea5e9','iberia plus':'#c0392b','Iberia Plus':'#c0392b',
+    'AAdvantage':'#0068b2'
+  };
+  if (!prog) return '#6366f1';
+  for (const [k,v] of Object.entries(map)) {
+    if (prog.toLowerCase().includes(k.toLowerCase())) return v;
+  }
+  return '#6366f1';
+}
+
+async function initMapa() {
+  if (_mapaIniciado && _mapaInstance) return;
+
+  // Carrega Leaflet dinamicamente se ainda não carregado
+  if (!window.L) {
+    await new Promise((resolve, reject) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
+      document.head.appendChild(link);
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  const container = document.getElementById('mapa-container');
+  if (!container) return;
+
+  // Garante que o container tem altura definida antes de iniciar
+  if (_mapaInstance) { _mapaInstance.remove(); _mapaInstance = null; }
+
+  _mapaInstance = L.map(container, {
+    center: [10, 0],
+    zoom: 2,
+    minZoom: 2,
+    maxZoom: 10,
+    zoomControl: true,
+    attributionControl: false
+  });
+
+  // Tile escuro
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19
+  }).addTo(_mapaInstance);
+
+  _mapaIniciado = true;
+  await mapaCarregarPassagens();
+}
+
+async function mapaCarregarPassagens() {
+  try {
+    const r = await fetch(MAPA_PROXY + '/passagens/listar?t=' + Date.now(), {
+      signal: (function(){ const c=new AbortController(); setTimeout(()=>c.abort(),15000); return c.signal; })()
+    });
+    if (!r.ok) throw new Error('status ' + r.status);
+    const data = await r.json();
+    _passagensCache = data.items || [];
+    mapaPopularFiltros();
+    mapaRenderizar();
+  } catch(e) {
+    console.error('[Mapa] Erro ao carregar passagens:', e.message);
+  }
+}
+
+function mapaPopularFiltros() {
+  const sel = document.getElementById('mapa-filtro-prog');
+  if (!sel) return;
+  const progs = [...new Set(_passagensCache.map(p=>p.programa).filter(Boolean))].sort();
+  const savedVal = sel.value;
+  sel.innerHTML = '<option value="">Todos os programas</option>' +
+    progs.map(p => `<option value="${p}"${p===savedVal?' selected':''}>${p}</option>`).join('');
+}
+
+function mapaRenderizar() {
+  if (!_mapaInstance) return;
+
+  const filtProg   = (document.getElementById('mapa-filtro-prog')?.value   || '').toLowerCase();
+  const filtCabine = (document.getElementById('mapa-filtro-cabine')?.value || '').toLowerCase();
+
+  let passagens = _passagensCache;
+  if (filtProg)   passagens = passagens.filter(p => (p.programa||'').toLowerCase() === filtProg);
+  if (filtCabine) passagens = passagens.filter(p => (p.cabine||'').toLowerCase().includes(filtCabine));
+
+  // Remove marcadores anteriores
+  _mapaInstance.eachLayer(l => { if (l._mapaEmissao) _mapaInstance.removeLayer(l); });
+
+  // Agrupa por destino
+  const grupos = {};
+  for (const p of passagens) {
+    const nome = p.destino || '';
+    if (!nome) continue;
+    if (!grupos[nome]) grupos[nome] = [];
+    grupos[nome].push(p);
+  }
+
+  let totalDestinos = 0;
+  for (const [destino, items] of Object.entries(grupos)) {
+    const coords = resolverCoords(destino);
+    if (!coords) continue;
+    totalDestinos++;
+
+    const qtd = items.length;
+    const minPts = Math.min(...items.map(p=>p.pontos||0).filter(v=>v>0));
+    const progs  = [...new Set(items.map(p=>p.programa).filter(Boolean))];
+    const cor    = mapaCorPrograma(progs[0]);
+
+    // Raio proporcional à quantidade (mín 10, máx 36)
+    const raio = Math.min(36, Math.max(10, 10 + Math.sqrt(qtd) * 4));
+
+    const marker = L.circleMarker(coords, {
+      radius:      raio,
+      fillColor:   cor,
+      color:       '#fff',
+      weight:      1.5,
+      opacity:     0.9,
+      fillOpacity: 0.75
+    });
+    marker._mapaEmissao = true;
+
+    // Tooltip flutuante
+    const progStr = progs.slice(0,3).join(', ') + (progs.length>3 ? ` +${progs.length-3}` : '');
+    const ptsStr  = minPts > 0 ? `A partir de ${minPts.toLocaleString('pt-BR')} pts` : '';
+    marker.bindTooltip(
+      `<b>${destino}</b><br>${qtd} emissão${qtd>1?'ões':''}<br>${ptsStr}<br><small>${progStr}</small>`,
+      { sticky: true, className: 'mapa-leaflet-tooltip' }
+    );
+
+    // Click → painel lateral com detalhes
+    marker.on('click', function() {
+      const titulo = document.getElementById('mapa-tooltip-titulo');
+      const lista  = document.getElementById('mapa-tooltip-lista');
+      const painel = document.getElementById('mapa-tooltip-panel');
+      if (!titulo || !lista || !painel) return;
+
+      titulo.textContent = '✈️ ' + destino + ' — ' + qtd + ' emissão' + (qtd>1?'ões':'') + ' registradas';
+      lista.innerHTML = items.map(function(p) {
+        var aprovado = p.fonte !== 'alerta_rejeitado';
+        var badge = aprovado
+          ? '<span style="background:#22c55e22;color:#22c55e;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700">✓ enviado</span>'
+          : '<span style="background:#f5a62322;color:#f5a623;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700">⚠ rejeitado</span>';
+        var pts = p.pontos ? p.pontos.toLocaleString('pt-BR') + ' pts' : '—';
+        var origem = p.origem ? p.origem + ' → ' + (p.destino||'') : '';
+        return '<div style="background:var(--surface3,#1e2130);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:3px">'
+          + '<div style="display:flex;justify-content:space-between;align-items:center">'
+          + '<span style="font-weight:700;font-size:13px">' + (p.cia||p.programa||'—') + '</span>' + badge + '</div>'
+          + '<div style="font-size:12px;color:var(--muted)">' + origem + '</div>'
+          + '<div style="font-size:12px">' + (p.programa||'') + ' · ' + pts + ' · ' + (p.cabine||'—') + '</div>'
+          + (p.datas_ida ? '<div style="font-size:11px;color:var(--muted2)">Ida: '+p.datas_ida.slice(0,80)+'</div>' : '')
+          + '</div>';
+      }).join('');
+      painel.style.display = 'block';
+      painel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    marker.addTo(_mapaInstance);
+  }
+
+  const contador = document.getElementById('mapa-contador');
+  if (contador) contador.textContent = totalDestinos + ' destino' + (totalDestinos!==1?'s':'') + ' · ' + passagens.length + ' emissão' + (passagens.length!==1?'ões':'');
+}
+
+// Filtros reativos
+document.addEventListener('change', function(e) {
+  if (e.target && (e.target.id === 'mapa-filtro-prog' || e.target.id === 'mapa-filtro-cabine')) {
+    mapaRenderizar();
+  }
+});
+</script>
 <!-- MODAIS (fora do app-content para evitar stacking context) -->
 <!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay">
