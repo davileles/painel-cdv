@@ -3087,10 +3087,16 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/premium-lounge-mad/",
           "urlFotos": "https://loungereview.com/lounges/premium-lounge-mad/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/adolfo-suarez-madrid-barajas-airport-terminal-4-premium-lounge/raw/d7p/LoungePair_MAD_Premium_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/adolfo-suarez-madrid-barajas-airport-terminal-4-premium-lounge/raw/d7p/LoungePair_MAD_Premium_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "buscadoEm": "2026-07-10T18:00:00.000Z"
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "CDG": {
       "nome": "Paris – Charles de Gaulle",
@@ -3682,50 +3688,55 @@
       "buscadoEm": "2026-07-10T16:00:00.000Z"
     },
     "FRA": {
-      "nome": "Frankfurt – Internacional",
-      "cidade": "Frankfurt",
+      "nome": "Frankfurt – Frankfurt International",
       "pais": "Alemanha",
-      "iata": "FRA",
-      "loungekey": [
+      "cidade": "Frankfurt",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "salas": [
         {
-          "nome": "Lufthansa Senator Lounge T1",
-          "terminal": "T1 – B/C",
-          "horario": "06:00–22:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=FRA"
-        },
-        {
-          "nome": "The Squaire Business Lounge",
-          "terminal": "T1 – A",
-          "horario": "05:00–22:00",
-          "url": "https://airport.mastercard.com/pt/lounge-finder/airport?airportcode=FRA"
+          "nome": "LuxxLounge",
+          "slug": "luxxlounge-fra",
+          "terminal": "T1 (Terminal 1), após segurança",
+          "horario": "05:00–23:00",
+          "localizacao": "Airside — T1, após segurança.",
+          "overview": "Único lounge independente em Frankfurt aceito por PP, LK e DragonPass. Buffet europeu, chuveiros, sala de conferência. Foto out/2025.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20251010/4dc4d73f-af50-41ad-bafe-32fa751679c6.jpg",
+          "amenidades": {
+            "comida": [
+              "Buffet europeu variado",
+              "Snacks e frutas"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Vinhos alemães",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "Chuveiros",
+              "Sala de conferência",
+              "TV",
+              "Monitor de voos",
+              "Acesso para deficientes"
+            ]
+          },
+          "obs": "Único lounge PP/LK/DP em FRA.",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "DragonPass",
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/luxxlounge-fra/",
+          "urlFotos": "https://loungereview.com/lounges/luxxlounge-fra/#photos"
         }
       ],
-      "dragonpass": [
-        {
-          "nome": "The Squaire Business Lounge",
-          "terminal": "T1",
-          "horario": "05:00–22:00",
-          "url": "https://www.dragonpass.com/explore/airport/A10800"
-        }
-      ],
-      "prioritypass": [
-        {
-          "nome": "The Squaire Business Lounge",
-          "terminal": "T1 – A",
-          "horario": "05:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FRA"
-        },
-        {
-          "nome": "Plaza Premium Lounge",
-          "terminal": "T2",
-          "horario": "05:00–22:00",
-          "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=FRA"
-        }
-      ],
-      "slugs": [
-        "the-squaire-business-lounge-fra",
-        "lufthansa-senator-lounge-fra"
-      ]
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "MIA": {
       "nome": "Miami – Internacional",
@@ -3931,111 +3942,188 @@
       ],
       "salas": [
         {
-          "nome": "Air France Lounge T1",
-          "slug": "air-france-lounge-jfk",
-          "terminal": "T1, após segurança",
-          "horario": "24h",
-          "localizacao": "Terminal 1, após segurança. Atenção: gates JFK não são conectados airside — só acessível com voo partindo do T1 (Lufthansa, Korean Air e outras).",
-          "overview": "Flagship Air France nos EUA. Design moderno com chuveiros e comida quente. Aceita Priority Pass. Localização limitante — apenas para passageiros do T1.",
+          "nome": "Air France Lounge (T1)",
+          "slug": "air-france-lounge-jfk-t1",
+          "terminal": "T1, após segurança, próximo ao Gate 1",
+          "horario": "07:00–21:00",
+          "localizacao": "Airside — T1, próximo ao Gate 1. Somente voos internacionais.",
+          "overview": "Melhor lounge independente do T1. Vinhos franceses, queijos. Crianças <18 e não-viajantes internacionais NÃO admitidos.",
           "amenidades": {
             "comida": [
-              "Buffet quente e frio",
-              "Snacks e doces"
+              "Buffet variado",
+              "Snacks"
             ],
             "bebida": [
               "Bar completo",
-              "Vinhos franceses",
               "Café e bebidas quentes"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Chuveiros",
-              "Televisores",
+              "TV",
               "Monitor de voos"
             ]
           },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/jfk-air-france-lounge-t1/raw/d7p/LoungePair_JFK_AF_e2c1_1.jpg",
           "programas": [
             "LoungeKey",
             "Priority Pass",
             "DragonPass"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/air-france-lounge-jfk/",
-          "urlFotos": "https://loungereview.com/lounges/air-france-lounge-jfk/#photos",
-          "obs": "Apenas acessível para voos que partem do T1.",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/new-york-jfk-airport-terminal-1-air-france-lounge/raw/d7p/LoungePair_JFK_AF_e2c1_1.jpg"
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/air-france-lounge-jfk-t1/",
+          "urlFotos": "https://loungereview.com/lounges/air-france-lounge-jfk-t1/#photos",
+          "obs": "Somente voos internacionais. Crianças <18: não admitidas. Não-viajantes internacionais: não admitidos."
         },
         {
-          "nome": "American Express Centurion Lounge T4",
-          "slug": "american-express-centurion-lounge-jfk",
-          "terminal": "T4, imediatamente após segurança, à esquerda das escadas para gates A2-A3",
-          "horario": "24h",
-          "localizacao": "Terminal 4, imediatamente após o checkpoint de segurança, à esquerda das escadas para gates A2-A3.",
-          "overview": "Centurion Lounge flagship dos EUA. Décor premium com living wall, piso de madeira e móveis de designer. Chef de celebridade, refeições completas gratuitas, bar premium, spa e chuveiros de luxo.",
+          "nome": "Primeclass Lounge (T1)",
+          "slug": "primeclass-lounge-jfk-t1",
+          "terminal": "T1, após segurança, entre filas E e F",
+          "horario": "08:00–00:00",
+          "localizacao": "Airside — T1, próximo ao checkpoint TSA, entre filas E e F.",
+          "overview": "Lounge independente no T1. Aceita PP e LK. Pode lotar em horário de pico.",
           "amenidades": {
             "comida": [
-              "Refeições completas preparadas por chef de celebridade",
-              "Buffet e à la carte"
+              "Buffet variado",
+              "Snacks"
             ],
             "bebida": [
-              "Bar premium completo",
-              "Coquetéis autorais",
-              "Champagne e vinhos finos"
+              "Bar completo",
+              "Café e bebidas quentes"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Chuveiros de luxo",
-              "Spa",
-              "Sala família",
-              "Napping pods",
+              "TV",
               "Monitor de voos"
             ]
           },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/jfk-primeclass-lounge-t1/raw/d7p/LoungePair_JFK_Primeclass_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/primeclass-lounge-jfk-t1/",
+          "urlFotos": "https://loungereview.com/lounges/primeclass-lounge-jfk-t1/#photos",
+          "obs": "Somente viajantes internacionais. Pode ser recusado na lotação."
+        },
+        {
+          "nome": "Chase Sapphire Lounge (T4)",
+          "slug": "chase-sapphire-lounge-jfk-t4",
+          "terminal": "T4, após segurança, Gate B31",
+          "horario": "04:45–23:30",
+          "localizacao": "Airside — T4, Gate B31.",
+          "overview": "Um dos melhores lounges de crédito do T4. Café Joe Coffee, workspaces, showers reserváveis, Wi-Fi rápido.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/jfk-chase-sapphire-lounge-t4/raw/d7p/LoungePair_JFK_Chase_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/chase-sapphire-lounge-jfk-t4/",
+          "urlFotos": "https://loungereview.com/lounges/chase-sapphire-lounge-jfk-t4/#photos",
+          "obs": "Somente T4. Showers reserváveis. Workspaces."
+        },
+        {
+          "nome": "Virgin Atlantic Clubhouse (T4)",
+          "slug": "virgin-atlantic-clubhouse-jfk",
+          "terminal": "T4, após segurança",
+          "horario": "09:00–20:00",
+          "localizacao": "Airside — T4.",
+          "overview": "Virgin Atlantic Clubhouse em JFK T4. Design britânico icônico. Aceita PP e LK.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/jfk-virgin-atlantic-clubhouse-t4/raw/d7p/LoungePair_JFK_VA_e2c1_1.jpg",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/virgin-atlantic-clubhouse-jfk/",
+          "urlFotos": "https://loungereview.com/lounges/virgin-atlantic-clubhouse-jfk/#photos",
+          "obs": "Somente T4."
+        },
+        {
+          "nome": "Centurion Lounge Amex (T4)",
+          "slug": "centurion-lounge-jfk-t4",
+          "terminal": "T4, após segurança",
+          "horario": "08:00–22:00",
+          "localizacao": "Airside — T4.",
+          "overview": "Exclusivo Amex Centurion/Platinum. Sem PP/LK/DP.",
+          "amenidades": {
+            "comida": [
+              "Buffet variado",
+              "Snacks"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e bebidas quentes"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Monitor de voos"
+            ]
+          },
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/jfk-centurion-lounge-t4/raw/d7p/LoungePair_JFK_Centurion_e2c1_1.jpg",
           "programas": [
             "Amex Centurion",
             "Amex Platinum"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/american-express-centurion-lounge-jfk/",
-          "urlFotos": "https://loungereview.com/lounges/american-express-centurion-lounge-jfk/#photos",
-          "obs": "Exclusivo Amex Platinum/Centurion.",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-no1-lounge/raw/d7p/LoungePair_LHR_No1_T2_e2c1_1.jpg"
-        },
-        {
-          "nome": "Virgin Atlantic Clubhouse T4",
-          "slug": "plaza-premium-clubhouse-jfk",
-          "terminal": "T4",
-          "horario": "24h",
-          "localizacao": "Terminal 4, gerido pela Plaza Premium.",
-          "overview": "Ex-Clubhouse Virgin Atlantic, agora gerido pela Plaza Premium. Aberto para pay-in a todos os passageiros com boarding pass do T4.",
-          "amenidades": {
-            "comida": [
-              "Refeições e buffet variado"
-            ],
-            "bebida": [
-              "Bar completo",
-              "Cervejas e vinhos",
-              "Café e sucos"
-            ],
-            "outros": [
-              "Wi-Fi",
-              "Tomadas",
-              "Chuveiros",
-              "Televisores",
-              "Monitor de voos"
-            ]
-          },
-          "programas": [
-            "LoungeKey",
-            "Priority Pass",
+          "fontes": [
             "DragonPass"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-clubhouse-jfk/",
-          "urlFotos": "https://loungereview.com/lounges/plaza-premium-clubhouse-jfk/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-plaza-premium-lounge/raw/d7p/LoungePair_LHR_Plaza_Premium_T2_e2c1_1.jpg"
+          "urlLoungereview": "https://loungereview.com/lounges/centurion-lounge-jfk-t4/",
+          "urlFotos": "https://loungereview.com/lounges/centurion-lounge-jfk-t4/#photos",
+          "obs": "Sem PP/LK/DP."
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "ORD": {
       "nome": "Chicago – O'Hare Internacional",
@@ -4095,10 +4183,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/the-club-ord/",
           "urlFotos": "https://loungereview.com/lounges/the-club-ord/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "LAX": {
       "nome": "Los Angeles Internacional",
@@ -4162,15 +4255,21 @@
             ]
           },
           "programas": [
-            "American Airlines Business/First",
-            "oneworld Business/First"
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/american-airlines-flagship-lounge-lax/",
           "urlFotos": "https://loungereview.com/lounges/american-airlines-flagship-lounge-lax/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/miami-international-airport-concourse-d-american-airlines-flagship-lounge/raw/d7p/LoungePair_MIA_AA_Flagship_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/miami-international-airport-concourse-d-american-airlines-flagship-lounge/raw/d7p/LoungePair_MIA_AA_Flagship_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "EZE": {
       "nome": "Buenos Aires – Ministro Pistarini (Ezeiza)",
@@ -4598,10 +4697,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/copa-airlines-lounge-bog/",
           "urlFotos": "https://loungereview.com/lounges/copa-airlines-lounge-bog/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/tocumen-international-airport-terminal-1-copa-club/raw/d7p/LoungePair_PTY_Copa_Club_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/tocumen-international-airport-terminal-1-copa-club/raw/d7p/LoungePair_PTY_Copa_Club_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "LIM": {
       "nome": "Lima – Jorge Chávez Internacional",
@@ -4808,112 +4912,230 @@
       ],
       "salas": [
         {
-          "nome": "Marhaba Lounge T3B",
-          "slug": "marhaba-lounge-dxb-t3b",
-          "terminal": "Dubai (DXB), T3, Concourse B, próximo ao gate B21, andar superior",
+          "nome": "Marhaba Lounge (T1 Concourse D)",
+          "slug": "marhaba-lounge-dxb-t1",
+          "terminal": "T1 (Sheikh Rashid Terminal), Concourse D — Nível 2, acima dos gates de partida",
           "horario": "24h",
-          "localizacao": "Terminal 3, Concourse B, próximo ao gate B21, andar superior.",
-          "overview": "Lounge Marhaba no Concourse B do T3 (Emirates). Luxuoso, aberto 24h.",
+          "localizacao": "Airside — T1, Nível 2, acima dos gates de partida. Somente voos internacionais.",
+          "overview": "Marhaba Lounge no Terminal 1 de Dubai. Aceita PP, LK e DragonPass. Área kids separada. Sala de orações. Álcool sujeito a restrição no Ramadã. Máx. 3h.",
+          "foto": "https://d10mzz35brm2m8.cloudfront.net/lounge-media/image/DXB-18923.jpg",
           "amenidades": {
             "comida": [
-              "Buffet quente e frio",
-              "Pratos do Oriente Médio",
-              "Snacks internacionais"
+              "Buffet internacional quente e frio"
             ],
             "bebida": [
-              "Sucos frescos",
-              "Café árabe e chá",
-              "Bebidas não alcoólicas premium"
+              "Bar completo (exceto Ramadã)",
+              "Café e sucos"
             ],
             "outros": [
               "Wi-Fi",
-              "Tomadas e USB",
-              "Televisores",
-              "Chuveiros",
-              "Monitor de voos",
-              "Sala de oração"
+              "TV",
+              "Área kids",
+              "Sala de orações",
+              "Área fumantes",
+              "Acesso para deficientes",
+              "Cartão digital aceito"
             ]
           },
+          "obs": "Máx. 3h. Crianças <2 anos: grátis. Álcool sujeito a pedido durante o Ramadã.",
           "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/marhaba-lounge-dxb-t1/",
+          "urlFotos": "https://loungereview.com/lounges/marhaba-lounge-dxb-t1/#photos"
+        },
+        {
+          "nome": "Al Majlis Lounge (T1 Concourse D)",
+          "slug": "al-majlis-lounge-dxb-t1",
+          "terminal": "T1 (Sheikh Rashid Terminal), Concourse D — Nível 2",
+          "horario": "24h",
+          "localizacao": "Airside — T1, Concourse D, Nível 2.",
+          "overview": "Al Majlis no T1 de Dubai. Aceita DragonPass. Mais tranquilo que o Marhaba. Cardápio à la carte e live cooking station. Máx. 4h.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20241201/al-majlis-dxb.jpg",
+          "amenidades": {
+            "comida": [
+              "Cardápio à la carte",
+              "Live cooking station",
+              "Buffet quente e frio"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Champagne",
+              "Café"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "Tomadas",
+              "TV",
+              "Chuveiros",
+              "Nap rooms (pago)",
+              "Spa Timeless (pago)",
+              "Acesso para deficientes"
+            ]
+          },
+          "obs": "Máx. 4h. Walk-up: US$55. Nap rooms cobrados.",
+          "programas": [
+            "DragonPass"
+          ],
+          "fontes": [
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/al-majlis-lounge-dxb-t1/",
+          "urlFotos": "https://loungereview.com/lounges/al-majlis-lounge-dxb-t1/#photos"
+        },
+        {
+          "nome": "Marhaba Lounge (T3 Concourse B)",
+          "slug": "marhaba-lounge-dxb-t3b",
+          "terminal": "T3, Concourse B — North side, próximo ao Gate B21, entrada via elevador dedicado do Nível 3",
+          "horario": "24h",
+          "localizacao": "Airside — T3, Concourse B, North side, próximo ao Gate B21. Entrada via elevador dedicado do Nível 3 de Partidas. Somente voos Emirates e Qantas codeshare.",
+          "overview": "Marhaba no T3 Concourse B. Somente para voos Emirates e Qantas codeshare. Máx. 3h.",
+          "foto": "https://d10mzz35brm2m8.cloudfront.net/lounge-media/image/DXB-18923.jpg",
+          "amenidades": {
+            "comida": [
+              "Buffet variado"
+            ],
+            "bebida": [
+              "Bar completo",
+              "Café e sucos"
+            ],
+            "outros": [
+              "Wi-Fi",
+              "TV",
+              "Cadeiras de massagem",
+              "Acesso para deficientes"
+            ]
+          },
+          "obs": "Somente voos Emirates e Qantas codeshare. Máx. 3h. Crianças <2 anos: grátis.",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "fontes": [
             "LoungeKey",
             "Priority Pass",
             "DragonPass"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/marhaba-lounge-dxb-t3b/",
-          "urlFotos": "https://loungereview.com/lounges/marhaba-lounge-dxb-t3b/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/dubai-international-airport-terminal-3-concourse-b-marhaba-lounge/raw/d7p/LoungePair_DXB_Marhaba_T3B_e2c1_1.jpg"
+          "urlFotos": "https://loungereview.com/lounges/marhaba-lounge-dxb-t3b/#photos"
         },
         {
-          "nome": "Al Majlis Lounge T1",
-          "slug": "al-majlis-lounge-dxb-terminal-1",
-          "terminal": "Dubai (DXB), T1, Concourse D, após segurança",
+          "nome": "Ahlan Lounge (T3 Concourse B)",
+          "slug": "ahlan-lounge-dxb-t3b",
+          "terminal": "T3, Concourse B — East side, próximo ao Gate B26, entrada pelo 'Cadiz Tapas Bar'",
           "horario": "24h",
-          "localizacao": "Terminal 1, Concourse D, após a segurança.",
-          "overview": "Lounge no Terminal 1 de Dubai. Boa estrutura para passageiros em conexão no T1.",
+          "localizacao": "Airside — T3, Concourse B, East side, próximo ao Gate B26. Entrada dentro do 'Cadiz Tapas Bar'. Passageiros de Concourse A ou C: calcule 15-20 min extras para o gate.",
+          "overview": "Ahlan Lounge T3B em Dubai. Cadeiras de massagem. Álcool apenas em licores selecionados. Máx. 3h.",
+          "foto": "https://d10mzz35brm2m8.cloudfront.net/lounge-media/image/DXB-18923.jpg",
           "amenidades": {
             "comida": [
-              "Buffet quente e frio",
-              "Pratos do Oriente Médio"
+              "Buffet internacional"
             ],
             "bebida": [
-              "Sucos frescos",
-              "Café árabe",
-              "Bebidas não alcoólicas"
+              "Bar (licores selecionados)",
+              "Café e sucos"
             ],
             "outros": [
               "Wi-Fi",
-              "Tomadas",
-              "Televisores",
-              "Chuveiros",
-              "Monitor de voos",
-              "Sala de oração"
+              "TV",
+              "Cadeiras de massagem",
+              "Área fumantes"
             ]
           },
+          "obs": "Máx. 3h. Crianças <2 anos: grátis. Álcool: 20h-3h durante o Ramadã. Entrada pelo Cadiz Tapas Bar.",
           "programas": [
             "LoungeKey",
             "Priority Pass",
             "DragonPass"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/al-majlis-lounge-dxb-terminal-1/",
-          "urlFotos": "https://loungereview.com/lounges/al-majlis-lounge-dxb-terminal-1/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/dubai-international-airport-terminal-1-concourse-d-ahlan-business-lounge/raw/d7p/LoungePair_DXB_Ahlan_Business_e2c1_1.jpg"
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/ahlan-lounge-dxb-t3b/",
+          "urlFotos": "https://loungereview.com/lounges/ahlan-lounge-dxb-t3b/#photos"
         },
         {
-          "nome": "Plaza Premium Lounge T3A",
-          "slug": "plaza-premium-lounge-dxb",
-          "terminal": "Dubai (DXB), T3, Concourse A, entre gates A2-A3",
+          "nome": "Plaza Premium Lounge (T3 Concourse A)",
+          "slug": "plaza-premium-lounge-dxb-t3a",
+          "terminal": "T3, Concourse A — West Wing, Nível 4, entre os Gates A2 e A3 (lift da área de Duty Free)",
           "horario": "24h",
-          "localizacao": "Terminal 3, Concourse A, entre gates A2-A3.",
-          "overview": "Plaza Premium no Terminal 3 de Dubai. Boa estrutura para passageiros em conexão.",
+          "localizacao": "Airside — T3, West Wing. Pegue o lift da área de Duty Free até o Nível 4. O lounge fica entre os Gates A2 e A3. Somente voos internacionais e em trânsito.",
+          "overview": "Plaza Premium no T3A de Dubai. Área quieta. Somente voos internacionais. Máx. 2h.",
+          "foto": "https://image.m.dragonpass.com/uploadFile/undefined/20241201/plaza-premium-dxb.jpg",
           "amenidades": {
             "comida": [
-              "Buffet quente e frio",
-              "Snacks do Oriente Médio"
+              "Buffet variado",
+              "Snacks"
             ],
             "bebida": [
-              "Sucos frescos",
-              "Café árabe e chá",
-              "Bebidas não alcoólicas"
+              "Bar completo",
+              "Café"
             ],
             "outros": [
               "Wi-Fi",
               "Tomadas",
-              "Televisores",
-              "Chuveiros",
-              "Sala de oração"
+              "Área quieta",
+              "Sala de orações",
+              "Acesso para deficientes",
+              "Cartão digital aceito"
             ]
           },
+          "obs": "Máx. 2h. Somente voos internacionais e em trânsito. Crianças <2 anos: grátis.",
           "programas": [
             "LoungeKey",
             "Priority Pass",
             "DragonPass"
           ],
-          "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-lounge-dxb/",
-          "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-dxb/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/dubai-international-airport-terminal-3-concourse-a-plaza-premium-lounge/raw/d7p/LoungePair_DXB_Plaza_Premium_e2c1_1.jpg"
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/plaza-premium-lounge-dxb-t3a/",
+          "urlFotos": "https://loungereview.com/lounges/plaza-premium-lounge-dxb-t3a/#photos"
+        },
+        {
+          "nome": "Sleepover (T3 Concourse B — Pods)",
+          "slug": "sleepover-dxb-t3b",
+          "terminal": "T3, Concourse B",
+          "horario": "08:00–22:00",
+          "localizacao": "Airside — T3, Concourse B.",
+          "overview": "Pods de descanso em Dubai T3B. PP/LK = 3h em Nap Pod (inclui chuveiro, café, água e refrigerantes) OU 3h Lounge Lite (cadeira + chuveiro + café, água e refrigerantes). Crianças <16 anos proibidas nos pods.",
+          "amenidades": {
+            "comida": [],
+            "bebida": [
+              "Café, água e refrigerantes inclusos"
+            ],
+            "outros": [
+              "Nap Pod privativo",
+              "Chuveiro",
+              "Wi-Fi",
+              "Ar-condicionado"
+            ]
+          },
+          "obs": "08h-22h. PP/LK = 3h Nap Pod OU 3h Lounge Lite. Crianças <16 anos: não permitidas nos pods (Lounge Lite OK para <2 anos). Cada opção = 1 visita do benefício.",
+          "programas": [
+            "LoungeKey",
+            "Priority Pass"
+          ],
+          "fontes": [
+            "Priority Pass",
+            "LoungeKey"
+          ],
+          "urlLoungereview": "https://loungereview.com/lounges/sleepover-dxb-t3b/",
+          "urlFotos": "https://loungereview.com/lounges/sleepover-dxb-t3b/#photos"
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "DOH": {
       "nome": "Doha – Hamad Internacional",
@@ -5255,7 +5477,9 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SIN"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "NRT": {
       "nome": "Tóquio – Narita Internacional",
@@ -5285,7 +5509,9 @@
           "horario": "06:00–21:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=NRT"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "BCN": {
       "nome": "Barcelona – El Prat",
@@ -5345,10 +5571,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/aena-colomer-lounge-bcn/",
           "urlFotos": "https://loungereview.com/lounges/aena-colomer-lounge-bcn/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/adolfo-suarez-madrid-barajas-airport-terminal-4-premium-lounge/raw/d7p/LoungePair_MAD_Premium_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/adolfo-suarez-madrid-barajas-airport-terminal-4-premium-lounge/raw/d7p/LoungePair_MAD_Premium_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "FCO": {
       "nome": "Roma – Leonardo da Vinci (Fiumicino)",
@@ -5418,10 +5649,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/sala-michelangelo-fco/",
           "urlFotos": "https://loungereview.com/lounges/sala-michelangelo-fco/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-no1-lounge/raw/d7p/LoungePair_LHR_No1_T2_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-no1-lounge/raw/d7p/LoungePair_LHR_No1_T2_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "ATH": {
       "nome": "Atenas – Eleftherios Venizelos",
@@ -5451,7 +5687,9 @@
           "horario": "05:00–23:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ATH"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "IST": {
       "nome": "Istambul – Internacional",
@@ -5481,7 +5719,9 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=IST"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "YYZ": {
       "nome": "Toronto – Pearson Internacional",
@@ -5517,7 +5757,9 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=YYZ"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "MEX": {
       "nome": "Cidade do México – Benito Juárez",
@@ -5540,7 +5782,9 @@
           "horario": "05:00–23:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MEX"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "GVA": {
       "nome": "Genebra – Cointrin",
@@ -5563,7 +5807,9 @@
           "horario": "05:00–21:30",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GVA"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "ZRH": {
       "nome": "Zurique – Internacional",
@@ -5626,10 +5872,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/swiss-business-lounge-zurich-a/",
           "urlFotos": "https://loungereview.com/lounges/swiss-business-lounge-zurich-a/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-no1-lounge/raw/d7p/LoungePair_LHR_No1_T2_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-no1-lounge/raw/d7p/LoungePair_LHR_No1_T2_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "MUC": {
       "nome": "Munique – Internacional",
@@ -5659,7 +5910,9 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MUC"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "VIE": {
       "nome": "Viena – Internacional",
@@ -5682,7 +5935,9 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=VIE"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "ORY": {
       "nome": "Paris – Orly",
@@ -5742,10 +5997,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/salon-bercy-ory/",
           "urlFotos": "https://loungereview.com/lounges/salon-bercy-ory/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/paris-charles-de-gaulle-airport-terminal-2b-2d-extime-lounge/raw/d7p/LoungePair_CDG_Extime_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/paris-charles-de-gaulle-airport-terminal-2b-2d-extime-lounge/raw/d7p/LoungePair_CDG_Extime_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "MXP": {
       "nome": "Milão – Malpensa",
@@ -5807,10 +6067,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/vip-lounge-mxp-t1/",
           "urlFotos": "https://loungereview.com/lounges/vip-lounge-mxp-t1/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-no1-lounge/raw/d7p/LoungePair_LHR_No1_T2_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-no1-lounge/raw/d7p/LoungePair_LHR_No1_T2_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "CPT": {
       "nome": "Cidade do Cabo – Internacional",
@@ -5871,10 +6136,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/slow-lounge-cpt/",
           "urlFotos": "https://loungereview.com/lounges/slow-lounge-cpt/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/cape-town-international-airport-slow-lounge/raw/d7p/LoungePair_CPT_SLOW_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/cape-town-international-airport-slow-lounge/raw/d7p/LoungePair_CPT_SLOW_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "JNB": {
       "nome": "Joanesburgo – O.R. Tambo Internacional",
@@ -5945,10 +6215,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/bidvest-premier-lounge-jnb/",
           "urlFotos": "https://loungereview.com/lounges/bidvest-premier-lounge-jnb/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/or-tambo-international-airport-bidvest-premier-lounge/raw/d7p/LoungePair_JNB_Bidvest_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/or-tambo-international-airport-bidvest-premier-lounge/raw/d7p/LoungePair_JNB_Bidvest_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "BKK": {
       "nome": "Bangkok – Suvarnabhumi",
@@ -5978,7 +6253,9 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=BKK"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "HKG": {
       "nome": "Hong Kong – Internacional",
@@ -6008,7 +6285,9 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=HKG"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "ICN": {
       "nome": "Seul – Incheon Internacional",
@@ -6038,7 +6317,9 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ICN"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "CAI": {
       "nome": "Cairo – Internacional",
@@ -6061,7 +6342,9 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CAI"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "CPH": {
       "nome": "Copenhague – Kastrup",
@@ -6084,7 +6367,9 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=CPH"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "BRU": {
       "nome": "Bruxelas – Nacional",
@@ -6144,10 +6429,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/no1-lounge-bru/",
           "urlFotos": "https://loungereview.com/lounges/no1-lounge-bru/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-no1-lounge/raw/d7p/LoungePair_LHR_No1_T2_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/london-heathrow-airport-terminal-2-no1-lounge/raw/d7p/LoungePair_LHR_No1_T2_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "PRG": {
       "nome": "Praga – Václav Havel",
@@ -6170,7 +6460,9 @@
           "horario": "05:00–21:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=PRG"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "WAW": {
       "nome": "Varsóvia – Chopin",
@@ -6193,7 +6485,9 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=WAW"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "MAN": {
       "nome": "Manchester – Internacional",
@@ -6228,7 +6522,9 @@
           "horario": "04:00–21:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MAN"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "MLE": {
       "nome": "Maldivas – Velana Internacional",
@@ -6251,7 +6547,9 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=MLE"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "SYD": {
       "nome": "Sydney – Kingsford Smith",
@@ -6281,7 +6579,9 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=SYD"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "AKL": {
       "nome": "Auckland – Internacional",
@@ -6304,7 +6604,9 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=AKL"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "GUA": {
       "nome": "Guatemala – La Aurora Internacional",
@@ -6320,7 +6622,9 @@
           "horario": "05:00–21:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=GUA"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "UIO": {
       "nome": "Quito – Mariscal Sucre Internacional",
@@ -6336,7 +6640,9 @@
           "horario": "05:00–22:00",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=UIO"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "ADD": {
       "nome": "Adis Abeba – Bole Internacional",
@@ -6359,7 +6665,9 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=ADD"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "NBO": {
       "nome": "Nairóbi – Jomo Kenyatta Internacional",
@@ -6382,7 +6690,9 @@
           "horario": "24h",
           "url": "https://www.prioritypass.com/pt-BR/airport-lounges?location=NBO"
         }
-      ]
+      ],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "CNF": {
       "nome": "Belo Horizonte – Tancredo Neves Internacional (Confins)",
@@ -7168,7 +7478,7 @@
       "nome": "Vitória – Eurico de Aguiar Salles",
       "pais": "Brasil",
       "cidade": "Vitória",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "The Lounge Vitória",
@@ -7256,7 +7566,7 @@
       "nome": "Maceió – Zumbi dos Palmares",
       "pais": "Brasil",
       "cidade": "Maceió",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Lounge",
@@ -7400,7 +7710,7 @@
       "nome": "João Pessoa – Castro Pinto",
       "pais": "Brasil",
       "cidade": "João Pessoa",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Lounge",
@@ -7440,7 +7750,7 @@
       "nome": "Aracaju – Santa Maria",
       "pais": "Brasil",
       "cidade": "Aracaju",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "Ambaar Lounge Aracaju",
@@ -7512,7 +7822,7 @@
       "nome": "Teresina – Senador Petrônio Portella",
       "pais": "Brasil",
       "cidade": "Teresina",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "The Lounge Teresina",
@@ -7553,7 +7863,7 @@
       "nome": "Campo Grande – Antônio João",
       "pais": "Brasil",
       "cidade": "Campo Grande",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Club",
@@ -7724,7 +8034,9 @@
       "iata": "PVH",
       "loungekey": [],
       "dragonpass": [],
-      "prioritypass": []
+      "prioritypass": [],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "BVB": {
       "nome": "Boa Vista – Atlas Brasil Cantanhede Internacional",
@@ -7733,13 +8045,15 @@
       "iata": "BVB",
       "loungekey": [],
       "dragonpass": [],
-      "prioritypass": []
+      "prioritypass": [],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "MCP": {
       "nome": "Macapá – Alberto Alcolumbre",
       "pais": "Brasil",
       "cidade": "Macapá",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "The Lounge Macapá",
@@ -7783,13 +8097,15 @@
       "iata": "RBR",
       "loungekey": [],
       "dragonpass": [],
-      "prioritypass": []
+      "prioritypass": [],
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
+      "obs": "Pipeline pendente — pesquisa nas 3 fontes oficiais não executada ainda."
     },
     "PMW": {
       "nome": "Palmas – Brigadeiro Lysias Rodrigues",
       "pais": "Brasil",
       "cidade": "Palmas",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "W Café Lounge Palmas",
@@ -7992,7 +8308,7 @@
           "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/porto-seguro-airport-brt-lounge/raw/d7p/LoungePair_BPS_BRT_e2c1_1.jpg"
         }
       ],
-      "buscadoEm": "2026-07-10T05:00:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "IGU": {
       "nome": "Foz do Iguaçu – Cataratas Internacional",
@@ -8191,10 +8507,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/aeropuertos-vip-club-aep/",
           "urlFotos": "https://loungereview.com/lounges/aeropuertos-vip-club-aep/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/ezeiza-international-airport-terminal-a-aeropuertos-vip-club-departures/raw/d7p/LoungePair_EZE_VIP_Club_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/ezeiza-international-airport-terminal-a-aeropuertos-vip-club-departures/raw/d7p/LoungePair_EZE_VIP_Club_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "MVD": {
       "nome": "Montevidéu – Carrasco Internacional",
@@ -8253,10 +8574,15 @@
             "DragonPass"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/vip-lounge-mvd/",
-          "urlFotos": "https://loungereview.com/lounges/vip-lounge-mvd/#photos"
+          "urlFotos": "https://loungereview.com/lounges/vip-lounge-mvd/#photos",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "MDZ": {
       "nome": "Mendoza – El Plumerillo Internacional",
@@ -8308,15 +8634,21 @@
             ]
           },
           "programas": [
-            "LoungeKey",
-            "Priority Pass"
+            "Priority Pass",
+            "DragonPass",
+            "LoungeKey"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/sala-vip-mendoza-mdz/",
           "urlFotos": "https://loungereview.com/lounges/sala-vip-mendoza-mdz/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/ezeiza-international-airport-terminal-a-aeropuertos-vip-club-departures/raw/d7p/LoungePair_EZE_VIP_Club_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/ezeiza-international-airport-terminal-a-aeropuertos-vip-club-departures/raw/d7p/LoungePair_EZE_VIP_Club_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "PTY": {
       "nome": "Cidade do Panamá – Tocumen Internacional",
@@ -8397,10 +8729,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/copa-club-lounge-pty/",
           "urlFotos": "https://loungereview.com/lounges/copa-club-lounge-pty/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/tocumen-international-airport-terminal-1-copa-club/raw/d7p/LoungePair_PTY_Copa_Club_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/tocumen-international-airport-terminal-1-copa-club/raw/d7p/LoungePair_PTY_Copa_Club_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "MCO": {
       "nome": "Orlando – Internacional",
@@ -8477,10 +8814,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/the-club-at-mco-mco/",
           "urlFotos": "https://loungereview.com/lounges/the-club-at-mco-mco/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "FLL": {
       "nome": "Fort Lauderdale – Hollywood Internacional",
@@ -8539,10 +8881,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/the-club-at-fll/",
           "urlFotos": "https://loungereview.com/lounges/the-club-at-fll/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "EWR": {
       "nome": "Newark – Liberty Internacional",
@@ -8608,10 +8955,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/the-club-ewr/",
           "urlFotos": "https://loungereview.com/lounges/the-club-ewr/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "LGA": {
       "nome": "Nova York – LaGuardia",
@@ -8671,10 +9023,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/the-club-lga/",
           "urlFotos": "https://loungereview.com/lounges/the-club-lga/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "IAD": {
       "nome": "Washington – Dulles Internacional",
@@ -8740,10 +9097,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/the-club-iad/",
           "urlFotos": "https://loungereview.com/lounges/the-club-iad/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "IAH": {
       "nome": "Houston – George Bush Intercontinental",
@@ -8803,10 +9165,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/the-club-iah/",
           "urlFotos": "https://loungereview.com/lounges/the-club-iah/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "LAS": {
       "nome": "Las Vegas – Harry Reid Internacional",
@@ -8880,7 +9247,12 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/the-club-las-t1/",
           "urlFotos": "https://loungereview.com/lounges/the-club-las-t1/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         },
         {
           "nome": "The Club LAS T3",
@@ -8913,10 +9285,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/the-club-las-t3/",
           "urlFotos": "https://loungereview.com/lounges/the-club-las-t3/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/orlando-international-airport-terminal-b-airside-4-the-club-at-mco/raw/d7p/LoungePair_MCO_The_Club_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "SFO": {
       "nome": "São Francisco – Internacional",
@@ -8991,10 +9368,15 @@
           "urlLoungereview": "https://loungereview.com/lounges/air-france-lounge-sfo/",
           "urlFotos": "https://loungereview.com/lounges/air-france-lounge-sfo/#photos",
           "obs": "Não conectado airside aos outros terminais — apenas para voos do International Terminal A.",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/paris-charles-de-gaulle-airport-terminal-2b-2d-extime-lounge/raw/d7p/LoungePair_CDG_Extime_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/paris-charles-de-gaulle-airport-terminal-2b-2d-extime-lounge/raw/d7p/LoungePair_CDG_Extime_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "OPO": {
       "nome": "Porto – Francisco Sá Carneiro Internacional",
@@ -9056,10 +9438,15 @@
           ],
           "urlLoungereview": "https://loungereview.com/lounges/ana-airport-lounge-2-opo/",
           "urlFotos": "https://loungereview.com/lounges/ana-airport-lounge-2-opo/#photos",
-          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/lisbon-humberto-delgado-airport-terminal-1-ana-lounge/raw/d7p/LoungePair_LIS_ANA_e2c1_1.jpg"
+          "foto": "https://is.loungepair.com/cdn-cgi/image/fit=scale-down,format=auto,width=800,quality=85/images-prod/images/lisbon-humberto-delgado-airport-terminal-1-ana-lounge/raw/d7p/LoungePair_LIS_ANA_e2c1_1.jpg",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ],
-      "buscadoEm": "2026-07-09T23:30:00.000Z"
+      "buscadoEm": "2026-07-10T18:00:00.000Z"
     },
     "AHO": {
       "nome": "Alghero – Fertilia",
@@ -9149,7 +9536,7 @@
       "nome": "Curaçao – Hato International",
       "pais": "Curaçao",
       "cidade": "Willemstad",
-      "buscadoEm": "2026-07-10T03:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "VIP Lounge",
@@ -9186,7 +9573,12 @@
             "DragonPass"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/cap-vip-lounge-cur/",
-          "urlFotos": "https://loungereview.com/lounges/cap-vip-lounge-cur/#photos"
+          "urlFotos": "https://loungereview.com/lounges/cap-vip-lounge-cur/#photos",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ]
     },
@@ -9194,7 +9586,7 @@
       "nome": "Bariloche – Teniente Luis Candelaria",
       "pais": "Argentina",
       "cidade": "San Carlos de Bariloche",
-      "buscadoEm": "2026-07-10T03:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "Bariloche by AMAE Lounge",
@@ -9228,7 +9620,12 @@
             "DragonPass"
           ],
           "urlLoungereview": "https://loungereview.com/lounges/aeropuertos-vip-club-bariloche-brc/",
-          "urlFotos": "https://loungereview.com/lounges/aeropuertos-vip-club-bariloche-brc/#photos"
+          "urlFotos": "https://loungereview.com/lounges/aeropuertos-vip-club-bariloche-brc/#photos",
+          "fontes": [
+            "LoungeKey",
+            "Priority Pass",
+            "DragonPass"
+          ]
         }
       ]
     },
@@ -9236,7 +9633,7 @@
       "nome": "Londrina – José Richa",
       "pais": "Brasil",
       "cidade": "Londrina",
-      "buscadoEm": "2026-07-10T11:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "W Lounge Londrina",
@@ -9279,7 +9676,7 @@
       "nome": "Chapecó – Serafin Enoss Bertaso",
       "pais": "Brasil",
       "cidade": "Chapecó",
-      "buscadoEm": "2026-07-10T07:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "The Lounge Chapecó",
@@ -9318,7 +9715,7 @@
       "nome": "Joinville – Lauro Carneiro de Loyola",
       "pais": "Brasil",
       "cidade": "Joinville",
-      "buscadoEm": "2026-07-10T07:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Lounge",
@@ -9359,7 +9756,7 @@
       "nome": "Maringá – Sílvio Name Júnior",
       "pais": "Brasil",
       "cidade": "Maringá",
-      "buscadoEm": "2026-07-10T07:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "W Lounge Maringá",
@@ -9676,7 +10073,7 @@
       "nome": "Vitória da Conquista – Glauber Rocha",
       "pais": "Brasil",
       "cidade": "Vitória da Conquista",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "The Lounge Vitória da Conquista",
@@ -9717,7 +10114,7 @@
       "nome": "Ilhéus – Jorge Amado",
       "pais": "Brasil",
       "cidade": "Ilhéus",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "The Lounge Ilhéus",
@@ -9757,7 +10154,7 @@
       "nome": "Juazeiro do Norte – Orlando Bezerra",
       "pais": "Brasil",
       "cidade": "Juazeiro do Norte",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Lounge",
@@ -9797,7 +10194,7 @@
       "nome": "Jericoacoara – Ariston Pessoa",
       "pais": "Brasil",
       "cidade": "Jericoacoara",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Lounge",
@@ -9838,7 +10235,7 @@
       "nome": "Sinop – Presidente João Figueiredo",
       "pais": "Brasil",
       "cidade": "Sinop",
-      "buscadoEm": "2026-07-10T11:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "BRT Lounge Sinop",
@@ -9879,7 +10276,7 @@
       "nome": "Ribeirão Preto – Leite Lopes",
       "pais": "Brasil",
       "cidade": "Ribeirão Preto",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "W Premium Lounge Ribeirão Preto",
@@ -9921,7 +10318,7 @@
       "nome": "Uberlândia – César Bombonato",
       "pais": "Brasil",
       "cidade": "Uberlândia",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "W Premium Lounge Uberlândia",
@@ -9963,7 +10360,7 @@
       "nome": "Campina Grande – João Suassuna",
       "pais": "Brasil",
       "cidade": "Campina Grande",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Lounge",
@@ -10003,7 +10400,7 @@
       "nome": "Fernando de Noronha",
       "pais": "Brasil",
       "cidade": "Fernando de Noronha",
-      "buscadoEm": "2026-07-10T11:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "Blue Lounge Noronha",
@@ -10044,7 +10441,7 @@
       "nome": "São José do Rio Preto – Prof. Eribelto Reino",
       "pais": "Brasil",
       "cidade": "São José do Rio Preto",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "The Lounge São José do Rio Preto",
@@ -10084,7 +10481,7 @@
       "nome": "Rio de Janeiro – Jacarepaguá",
       "pais": "Brasil",
       "cidade": "Rio de Janeiro",
-      "buscadoEm": "2026-07-10T09:00:00.000Z",
+      "buscadoEm": "2026-07-10T18:00:00.000Z",
       "salas": [
         {
           "nome": "Advantage VIP Lounge",
