@@ -177,21 +177,37 @@ function parseComparemaniaPts(html, progId) {
     .replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/<style[\s\S]*?<\/style>/gi, '');
 
-  // Extrai todos os pares de <a href> (nome do parceiro) + texto de pontuação
-  // O Smiles e outros programas têm estrutura:
-  // <td><a href="...">Nome</a></td><td><a href="...">A cada 1 real gasto...</a></td>
-  // Usa split por </tr> para processar linha a linha sem regex greedy
-  const rows = clean.split(/<\/tr>/i);
-  for (const row of rows) {
-    // Divide a linha em células pelo fechamento de </td>
-    const cells = row.split(/<\/td>/i);
-    if (cells.length < 2) continue;
+  // Extrai blocos <tr>...</tr> completos com regex não-greedy.
+  // Isso evita o problema do split(/<\/tr>/) que falhava quando tags <tr>/<td>
+  // tinham atributos, quebras de linha ou entidades HTML nos atributos —
+  // resultando em ~54 parceiros perdidos (CEA, Shopee, Boticário, Decolar, etc.)
+  const trPattern = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
+  let trMatch;
+  while ((trMatch = trPattern.exec(clean)) !== null) {
+    const trContent = trMatch[1];
 
-    // Primeiro <td>: extrai o nome e href via <a>
-    const aMatch = cells[0].match(/<a([^>]*)>([\s\S]*?)<\/a>/i);
+    // Extrai células <td>...</td> completas
+    const tdPattern = /<td[^>]*>([\s\S]*?)<\/td>/gi;
+    const tds = [];
+    let tdMatch;
+    while ((tdMatch = tdPattern.exec(trContent)) !== null) {
+      tds.push(tdMatch[1]);
+    }
+    if (tds.length < 2) continue;
+
+    // Primeiro <td>: extrai nome e href via <a>
+    const aMatch = tds[0].match(/<a([^>]*)>([\s\S]*?)<\/a>/i);
     if (!aMatch) continue;
-    const name = aMatch[2].replace(/<[^>]*>/g, '').trim();
+    let name = aMatch[2].replace(/<[^>]*>/g, '').trim();
+    // Decode entidades HTML (o DOMParser faz isso automaticamente; aqui fazemos manual)
+    name = name
+      .replace(/&#x([0-9a-fA-F]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
+      .replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d))
+      .replace(/&amp;/g, '&').replace(/&apos;/g, "'").replace(/&#39;/g, "'")
+      .replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ').replace(/&shy;/g, '')
+      .trim();
     if (!name) continue;
+
     const hrefMatch = aMatch[1].match(/href=["']([^"']+)["']/i);
     const rawHref = hrefMatch ? hrefMatch[1] : '';
     const partnerLink = rawHref
@@ -199,22 +215,18 @@ function parseComparemaniaPts(html, progId) {
       : '';
 
     // Segundo <td>: texto de pontuação (remove tags)
-    const ptsTxt = cells[1].replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    const ptsTxt = tds[1].replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
     const pts = extractPts(ptsTxt);
     if (!pts) continue;
 
-    // O Comparemania não diferencia dólar de real no texto da pontuação —
-    // usa sempre "por 1 real gasto" mesmo para ofertas em dólar.
-    // Mantemos lista de parceiros+programa conhecidos como dólar.
-    // Atualize esta lista manualmente quando uma oferta mudar de moeda.
     const DOLLAR_EXCEPTIONS = {
-      'hertz':                ['livelo'],
+      'hertz':                 ['livelo'],
       'localiza internacional':['livelo'],
-      'rentcars':             ['livelo'],
-      'travelex':             ['livelo'],
-      'booking':              ['livelo'],
-      'kaligo':               ['livelo', 'esfera', 'smiles', 'azul', 'latam'],
-      'aliexpress':           ['livelo', 'esfera', 'smiles', 'azul', 'latam'],
+      'rentcars':              ['livelo'],
+      'travelex':              ['livelo'],
+      'booking':               ['livelo'],
+      'kaligo':                ['livelo', 'esfera', 'smiles', 'azul', 'latam'],
+      'aliexpress':            ['livelo', 'esfera', 'smiles', 'azul', 'latam'],
     };
     const dollar = (DOLLAR_EXCEPTIONS[name.toLowerCase().trim()] || []).includes(progId);
 
