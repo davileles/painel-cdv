@@ -457,7 +457,7 @@ function tempoAtras(iso){
   if(!iso)return'';
   const h=Math.floor((Date.now()-new Date(iso))/3600000);
   const d=Math.floor(h/24);
-  return d>0?'ha '+d+' dia'+(d>1?'s',''):h>0?'ha '+h+'h':'agora';
+  return d>0?'ha '+d+' dia'+(d>1?'s':''):h>0?'ha '+h+'h':'agora';
 }
 
 /* ── RENDER ─────────────────────────────────────────────── */
