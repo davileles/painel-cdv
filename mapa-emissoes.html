@@ -294,12 +294,28 @@ const PROG_CORES={'latam':'#dc2626','smiles':'#f97316','azul':'#0ea5e9','azul fi
 function corProg(p){if(!p)return'#6366f1';const s=p.toLowerCase();for(const[k,v]of Object.entries(PROG_CORES))if(s.includes(k))return v;return'#6366f1';}
 
 function flag(dest){
-  const d=norm(dest);
-  const M={'paris':'\uD83C\uDDEB\uD83C\uDDF7','cdg':'\uD83C\uDDEB\uD83C\uDDF7','ory':'\uD83C\uDDEB\uD83C\uDDF7','lisboa':'\uD83C\uDDF5\uD83C\uDDF9','lis':'\uD83C\uDDF5\uD83C\uDDF9','porto':'\uD83C\uDDF5\uD83C\uDDF9','opo':'\uD83C\uDDF5\uD83C\uDDF9','madrid':'\uD83C\uDDEA\uD83C\uDDF8','barcelona':'\uD83C\uDDEA\uD83C\uDDF8','mad':'\uD83C\uDDEA\uD83C\uDDF8','bcn':'\uD83C\uDDEA\uD83C\uDDF8','roma':'\uD83C\uDDEE\uD83C\uDDF9','milao':'\uD83C\uDDEE\uD83C\uDDF9','fco':'\uD83C\uDDEE\uD83C\uDDF9','mxp':'\uD83C\uDDEE\uD83C\uDDF9','berlim':'\uD83C\uDDE9\uD83C\uDDEA','munique':'\uD83C\uDDE9\uD83C\uDDEA','frankfurt':'\uD83C\uDDE9\uD83C\uDDEA','ber':'\uD83C\uDDE9\uD83C\uDDEA','fra':'\uD83C\uDDE9\uD83C\uDDEA','muc':'\uD83C\uDDE9\uD83C\uDDEA','amsterdam':'\uD83C\uDDF3\uD83C\uDDF1','ams':'\uD83C\uDDF3\uD83C\uDDF1','londres':'\uD83C\uDDEC\uD83C\uDDE7','lhr':'\uD83C\uDDEC\uD83C\uDDE7','lgw':'\uD83C\uDDEC\uD83C\uDDE7','zurique':'\uD83C\uDDE8\uD83C\uDDED','genebra':'\uD83C\uDDE8\uD83C\uDDED','zrh':'\uD83C\uDDE8\uD83C\uDDED','viena':'\uD83C\uDDE6\uD83C\uDDF9','vie':'\uD83C\uDDE6\uD83C\uDDF9','atenas':'\uD83C\uDDEC\uD83C\uDDF7','istanbul':'\uD83C\uDDF9\uD83C\uDDF7','ist':'\uD83C\uDDF9\uD83C\uDDF7','nova york':'\uD83C\uDDFA\uD83C\uDDF8','jfk':'\uD83C\uDDFA\uD83C\uDDF8','ewr':'\uD83C\uDDFA\uD83C\uDDF8','miami':'\uD83C\uDDFA\uD83C\uDDF8','mia':'\uD83C\uDDFA\uD83C\uDDF8','orlando':'\uD83C\uDDFA\uD83C\uDDF8','chicago':'\uD83C\uDDFA\uD83C\uDDF8','los angeles':'\uD83C\uDDFA\uD83C\uDDF8','lax':'\uD83C\uDDFA\uD83C\uDDF8','toronto':'\uD83C\uDDE8\uD83C\uDDE6','vancouver':'\uD83C\uDDE8\uD83C\uDDE6','cancun':'\uD83C\uDDF2\uD83C\uDDFD','cun':'\uD83C\uDDF2\uD83C\uDDFD','mexico':'\uD83C\uDDF2\uD83C\uDDFD','buenos aires':'\uD83C\uDDE6\uD83C\uDDF7','eze':'\uD83C\uDDE6\uD83C\uDDF7','santiago':'\uD83C\uDDE8\uD83C\uDDF1','scl':'\uD83C\uDDE8\uD83C\uDDF1','lima':'\uD83C\uDDF5\uD83C\uDDEA','lim':'\uD83C\uDDF5\uD83C\uDDEA','bogota':'\uD83C\uDDE8\uD83C\uDDF4','dubai':'\uD83C\uDDE6\uD83C\uDDEA','dxb':'\uD83C\uDDE6\uD83C\uDDEA','abu dhabi':'\uD83C\uDDE6\uD83C\uDDEA','doha':'\uD83C\uDDF6\uD83C\uDDE6','doh':'\uD83C\uDDF6\uD83C\uDDE6','toquio':'\uD83C\uDDEF\uD83C\uDDF5','nrt':'\uD83C\uDDEF\uD83C\uDDF5','osaka':'\uD83C\uDDEF\uD83C\uDDF5','seul':'\uD83C\uDDF0\uD83C\uDDF7','icn':'\uD83C\uDDF0\uD83C\uDDF7','bali':'\uD83C\uDDEE\uD83C\uDDE9','dps':'\uD83C\uDDEE\uD83C\uDDE9','sydney':'\uD83C\uDDE6\uD83C\uDDFA','melbourne':'\uD83C\uDDE6\uD83C\uDDFA','bangkok':'\uD83C\uDDF9\uD83C\uDDED','bkk':'\uD83C\uDDF9\uD83C\uDDED','cingapura':'\uD83C\uDDF8\uD83C\uDDEC','sin':'\uD83C\uDDF8\uD83C\uDDEC','hong kong':'\uD83C\uDDED\uD83C\uDDF0','hkg':'\uD83C\uDDED\uD83C\uDDF0','johannesburgo':'\uD83C\uDDFF\uD83C\uDDE6'};
-  for(const[k,v]of Object.entries(M))if(d===k||d.startsWith(k))return v;
-  const br=['sao paulo','rio de janeiro','brasilia','belo horizonte','salvador','fortaleza','recife','curitiba','porto alegre','manaus','belem','natal','maceio','campo grande','goiania','florianopolis','uberlandia','campinas','vitoria','foz'];
-  for(const b of br)if(d.includes(b)||norm(b).startsWith(d.substring(0,4)))return'\uD83C\uDDE7\uD83C\uDDF7';
-  return'\u2708\uFE0F';
+  var n = (dest||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  var M = {
+    'belo horizonte':'\uD83C\uDDE7\uD83C\uDDF7','brasilia':'\uD83C\uDDE7\uD83C\uDDF7','campinas':'\uD83C\uDDE7\uD83C\uDDF7','campo grande':'\uD83C\uDDE7\uD83C\uDDF7',
+    'cuiaba':'\uD83C\uDDE7\uD83C\uDDF7','curitiba':'\uD83C\uDDE7\uD83C\uDDF7','fernando de noronha':'\uD83C\uDDE7\uD83C\uDDF7','florianopolis':'\uD83C\uDDE7\uD83C\uDDF7',
+    'fortaleza':'\uD83C\uDDE7\uD83C\uDDF7','foz do iguacu':'\uD83C\uDDE7\uD83C\uDDF7','goiania':'\uD83C\uDDE7\uD83C\uDDF7','ilheus':'\uD83C\uDDE7\uD83C\uDDF7',
+    'joinville':'\uD83C\uDDE7\uD83C\uDDF7','londrina':'\uD83C\uDDE7\uD83C\uDDF7','maceio':'\uD83C\uDDE7\uD83C\uDDF7','natal':'\uD83C\uDDE7\uD83C\uDDF7','navegantes':'\uD83C\uDDE7\uD83C\uDDF7',
+    'palmas':'\uD83C\uDDE7\uD83C\uDDF7','porto alegre':'\uD83C\uDDE7\uD83C\uDDF7','recife':'\uD83C\uDDE7\uD83C\uDDF7','ribeirao preto':'\uD83C\uDDE7\uD83C\uDDF7',
+    'rio de janeiro':'\uD83C\uDDE7\uD83C\uDDF7','salvador':'\uD83C\uDDE7\uD83C\uDDF7','sao paulo':'\uD83C\uDDE7\uD83C\uDDF7','teresina':'\uD83C\uDDE7\uD83C\uDDF7',
+    'uberlandia':'\uD83C\uDDE7\uD83C\uDDF7','vitoria':'\uD83C\uDDE7\uD83C\uDDF7',
+    'bogota':'\uD83C\uDDE8\uD83C\uDDF4','boston':'\uD83C\uDDFA\uD83C\uDDF8','buenos aires':'\uD83C\uDDE6\uD83C\uDDF7','cancun':'\uD83C\uDDF2\uD83C\uDDFD',
+    'cartagena':'\uD83C\uDDE8\uD83C\uDDF4','chicago':'\uD83C\uDDFA\uD83C\uDDF8','cidade do cabo':'\uD83C\uDDFF\uD83C\uDDE6',
+    'fort lauderdale':'\uD83C\uDDFA\uD83C\uDDF8','houston':'\uD83C\uDDFA\uD83C\uDDF8','lima':'\uD83C\uDDF5\uD83C\uDDEA','miami':'\uD83C\uDDFA\uD83C\uDDF8',
+    'montevideu':'\uD83C\uDDFA\uD83C\uDDFE','nova york':'\uD83C\uDDFA\uD83C\uDDF8','orlando':'\uD83C\uDDFA\uD83C\uDDF8','punta cana':'\uD83C\uDDE9\uD83C\uDDF4',
+    'san jose':'\uD83C\uDDE8\uD83C\uDDF7','santa cruz de la sierra':'\uD83C\uDDE7\uD83C\uDDF4','santiago':'\uD83C\uDDE8\uD83C\uDDF1','washington':'\uD83C\uDDFA\uD83C\uDDF8',
+    'amsterdam':'\uD83C\uDDF3\uD83C\uDDF1','amsterda':'\uD83C\uDDF3\uD83C\uDDF1','barcelona':'\uD83C\uDDEA\uD83C\uDDF8','frankfurt':'\uD83C\uDDE9\uD83C\uDDEA',
+    'joanesburgo':'\uD83C\uDDFF\uD83C\uDDE6','johannesburgo':'\uD83C\uDDFF\uD83C\uDDE6','lisboa':'\uD83C\uDDF5\uD83C\uDDF9','londra':'\uD83C\uDDEE\uD83C\uDDF9',
+    'londres':'\uD83C\uDDEC\uD83C\uDDE7','madrid':'\uD83C\uDDEA\uD83C\uDDF8','milao':'\uD83C\uDDEE\uD83C\uDDF9','paris':'\uD83C\uDDEB\uD83C\uDDF7','porto':'\uD83C\uDDF5\uD83C\uDDF9',
+    'roma':'\uD83C\uDDEE\uD83C\uDDF9','zurique':'\uD83C\uDDE8\uD83C\uDDED',
+    'abu dhabi':'\uD83C\uDDE6\uD83C\uDDEA','dubai':'\uD83C\uDDE6\uD83C\uDDEA',
+    'assuncao':'\uD83C\uDDF5\uD83C\uDDFE',
+  };
+  return M[n] || '\u2708\uFE0F';
 }
 
 function fmtPts(n){if(!n||n===Infinity)return null;return n>=1000?Math.round(n/1000)+'k':String(n);}
