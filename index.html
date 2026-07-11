@@ -477,7 +477,6 @@
   <button class="main-tab" data-tab="passagens">✈️ Passagens</button>
   <button class="main-tab" data-tab="milhas">📋 Gestão de Milhas</button>
   <button class="main-tab" data-tab="lounges" id="tab-btn-lounges" style="display:none">🛋️ Salas VIP</button>
-  <button class="main-tab" data-tab="calculadoras" id="tab-btn-calculadoras" style="display:none">🧮 Calculadoras</button>
 </div>
 
 <div id="tab-comparador" class="tab-panel">
@@ -2302,13 +2301,11 @@ function switchTab(tab){
   document.getElementById('tab-passagens').style.display = tab==='passagens'?'block':'none';
   document.getElementById('tab-milhas').style.display  = tab==='milhas'  ?'block':'none';
   document.getElementById('tab-lounges').style.display = tab==='lounges' ?'block':'none';
-  document.getElementById('tab-calculadoras').style.display = tab==='calculadoras'?'block':'none';
   window.scrollTo({top:0, behavior:'smooth'});
   if(tab==='radar')    loadOfertas(false);
   if(tab==='passagens') loadPassagens(false);
   if(tab==='milhas')   initMilhas();
   if(tab==='lounges')  lvCarregarAeroportos();
-  if(tab==='calculadoras') initCalculadoras();
   try{localStorage.setItem('cdv_active_tab', tab);}catch(e){}
 }
 
@@ -3831,9 +3828,6 @@ function mostrarPainel(sessao) {
   // Aba Salas VIP — só para devs
   const tabLounges = document.getElementById('tab-btn-lounges');
   if (tabLounges && devAcesso()) tabLounges.style.display = '';
-  // Aba Calculadoras — disponível para todos os membros
-  const tabCalc = document.getElementById('tab-btn-calculadoras');
-  if (tabCalc) tabCalc.style.display = '';
 }
 async function fazerLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
@@ -3871,7 +3865,7 @@ async function fazerLogin() {
     }
     if (data.acesso) {
       salvarSessao({ email: data.email, nome: data.nome });
-      try { mostrarPainel(data); } catch(eUI) { console.error('[CDV UI]', eUI); }
+      mostrarPainel(data);
     } else {
       const msgs = {
         nao_encontrado: 'E-mail não encontrado. Verifique se é o mesmo da sua assinatura.',
@@ -4801,150 +4795,6 @@ function lvRenderizarResultado(d) {
     </div>
   </div>
 </div>
-
-<!-- ══════════════════════════════════════════
-     ABA: CALCULADORAS (DEV ONLY)
-══════════════════════════════════════════ -->
-<div id="tab-calculadoras" class="tab-panel" style="display:none">
-  <div style="padding:20px 22px;max-width:600px;margin:0 auto">
-
-    <div style="margin-bottom:28px">
-      <div style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:4px">🧮 Calculadoras</div>
-      <div style="font-size:12px;color:var(--muted)">Ferramentas para análise de decisão de viagens</div>
-    </div>
-
-    <!-- CALCULADORA 1: Pontos para Reserva -->
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px">
-      <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:4px">🏨 Pontos para Reserva</div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:18px">Descubra quantos pontos você precisa para pagar uma hospedagem — baseado na paridade 20 EUR = 1.000 pontos.</div>
-
-      <!-- Cotação EUR -->
-      <div id="calc-cotacao-box" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
-        <div style="font-size:20px">💶</div>
-        <div>
-          <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Cotação EUR (Turismo)</div>
-          <div id="calc-cotacao-valor" style="font-size:16px;font-weight:800;color:var(--text)">Buscando…</div>
-          <div id="calc-cotacao-data" style="font-size:10px;color:var(--muted)"></div>
-        </div>
-        <button onclick="calcBuscarCotacao()" style="margin-left:auto;background:transparent;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:7px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--cdv-coral)';this.style.color='var(--cdv-coral)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🔄 Atualizar</button>
-      </div>
-
-      <!-- Input valor em R$ -->
-      <div style="margin-bottom:16px">
-        <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Valor da Hospedagem</label>
-        <div style="display:flex;gap:8px;align-items:center">
-          <div style="position:relative;flex:1">
-            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;font-weight:700;color:var(--muted)">R$</span>
-            <input type="number" id="calc-valor-brl" placeholder="0,00" min="0" step="0.01"
-              style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;padding:10px 12px 10px 36px;outline:none;box-sizing:border-box"
-              oninput="calcRecalcular()"
-              onfocus="this.style.borderColor='var(--cdv-coral)'" onblur="this.style.borderColor='var(--border)'"/>
-          </div>
-          <span style="color:var(--muted);font-size:13px">=</span>
-          <div style="position:relative;flex:1">
-            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;font-weight:700;color:var(--muted)">€</span>
-            <input type="number" id="calc-valor-eur" placeholder="0,00" min="0" step="0.01"
-              style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;padding:10px 12px 10px 30px;outline:none;box-sizing:border-box"
-              oninput="calcRecalcularDeEur()"
-              onfocus="this.style.borderColor='var(--cdv-coral)'" onblur="this.style.borderColor='var(--border)'"/>
-          </div>
-        </div>
-        <div style="font-size:10px;color:var(--muted);margin-top:5px">Preencha em R$ ou € — o outro campo é calculado automaticamente.</div>
-      </div>
-
-      <!-- Resultado -->
-      <div id="calc-resultado" style="display:none;background:var(--bg);border:1px solid rgba(255,88,94,.3);border-radius:10px;padding:16px;margin-top:4px">
-        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Pontos necessários</div>
-        <div id="calc-pts-valor" style="font-size:32px;font-weight:900;color:var(--cdv-coral);line-height:1">—</div>
-        <div id="calc-pts-detalhe" style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5"></div>
-      </div>
-
-    </div><!-- /card calculadora 1 -->
-
-    <div id="calc-mais-em-breve" style="background:var(--surface);border:1px dashed var(--border);border-radius:14px;padding:20px;text-align:center;color:var(--muted);font-size:12px">
-      ✦ Mais calculadoras em breve
-    </div>
-
-  </div>
-</div>
-
-<script>
-// ══════════════════════════════════════════════════════════════════════
-//  CALCULADORAS (DEV)
-// ══════════════════════════════════════════════════════════════════════
-let calcCotacaoEur = null;
-let calcInitialized = false;
-
-async function calcBuscarCotacao() {
-  const el = document.getElementById('calc-cotacao-valor');
-  const elData = document.getElementById('calc-cotacao-data');
-  el.textContent = 'Buscando…';
-  elData.textContent = '';
-  try {
-    // AwesomeAPI — cotação turismo EUR→BRL
-    const r = await fetch('https://economia.awesomeapi.com.br/json/last/EUR-BRL', {signal: AbortSignal.timeout(6000)});
-    const d = await r.json();
-    const taxa = parseFloat(d['EURBRL']?.ask);
-    if (!taxa || isNaN(taxa)) throw new Error('taxa inválida');
-    calcCotacaoEur = taxa;
-    el.textContent = 'R$ ' + taxa.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
-    const dt = new Date();
-    elData.textContent = 'Atualizado em ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-    calcRecalcular();
-  } catch(e) {
-    el.textContent = 'Erro ao buscar cotação';
-    elData.textContent = 'Tente novamente';
-    console.error('[CDV Calc] cotação EUR:', e);
-  }
-}
-
-function calcRecalcular() {
-  if (!calcCotacaoEur) return;
-  const brl = parseFloat(document.getElementById('calc-valor-brl').value);
-  if (!brl || isNaN(brl) || brl <= 0) {
-    document.getElementById('calc-resultado').style.display = 'none';
-    document.getElementById('calc-valor-eur').value = '';
-    return;
-  }
-  const eur = brl / calcCotacaoEur;
-  document.getElementById('calc-valor-eur').value = eur.toFixed(2);
-  calcMostrarResultado(eur, brl);
-}
-
-function calcRecalcularDeEur() {
-  if (!calcCotacaoEur) return;
-  const eur = parseFloat(document.getElementById('calc-valor-eur').value);
-  if (!eur || isNaN(eur) || eur <= 0) {
-    document.getElementById('calc-resultado').style.display = 'none';
-    document.getElementById('calc-valor-brl').value = '';
-    return;
-  }
-  const brl = eur * calcCotacaoEur;
-  document.getElementById('calc-valor-brl').value = brl.toFixed(2);
-  calcMostrarResultado(eur, brl);
-}
-
-function calcMostrarResultado(eur, brl) {
-  // Paridade: 20 EUR = 1.000 pontos
-  const pontos = Math.ceil(eur / 20) * 1000;
-  const blocos = Math.ceil(eur / 20);
-  const resEl = document.getElementById('calc-resultado');
-  resEl.style.display = 'block';
-  document.getElementById('calc-pts-valor').textContent = pontos.toLocaleString('pt-BR') + ' pts';
-  document.getElementById('calc-pts-detalhe').innerHTML =
-    '<b style="color:var(--text)">' + eur.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' EUR</b>' +
-    ' ÷ 20 = <b style="color:var(--text)">' + blocos + ' bloco' + (blocos !== 1 ? 's' : '') + '</b>' +
-    ' × 1.000 pts &nbsp;|&nbsp; Cotação turismo: <b style="color:var(--text)">R$ ' +
-    calcCotacaoEur.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '/EUR</b>';
-}
-
-function initCalculadoras() {
-  if (calcInitialized) return;
-  calcInitialized = true;
-  calcBuscarCotacao();
-}
-</script>
-
 <script src="iata.js"></script>
 <!-- MODAIS (fora do app-content para evitar stacking context) -->
 <!-- MODAL -->
