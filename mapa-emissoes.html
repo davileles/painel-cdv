@@ -2,76 +2,155 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mapa de Emissões — CDV</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mapa de Emissoes — Clube do Viajante</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#0a0c12;color:#e2e8f0;font-family:'Inter',system-ui,sans-serif;min-height:100vh}
-.header{padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px}
-.header h1{font-size:18px;font-weight:600;color:#fff}
-.header span{font-size:13px;color:rgba(255,255,255,.4)}
-.controls{padding:16px 24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid rgba(255,255,255,.06)}
-.controls input,.controls select{
-  background:rgba(255,255,255,.06);color:#e2e8f0;
-  border:1px solid rgba(255,255,255,.12);border-radius:8px;
-  padding:8px 12px;font-size:13px;outline:none;
-  transition:border-color .2s
+:root{
+  --bg:#1e2535;--surface:#2a3246;--card:#323c54;--border:#3d4a66;
+  --text:#eeeeee;--muted:#8a9bbf;--muted2:#5a6a8a;
+  --accent:#ff585e;--accent2:#e04449;--green:#34d399;
+  --latam:#dc2626;--smiles:#f97316;--azul:#0ea5e9;
+  --livelo:#df0979;--esfera:#e8371b;--iberia:#c0392b;
+  --tap:#005f9e;--flying:#003087;--aadvantage:#0068b2;--qatar:#8b0000;
 }
-.controls input:focus,.controls select:focus{border-color:rgba(210,168,90,.6)}
-.controls input{width:140px}
-#contador{font-size:12px;color:rgba(255,255,255,.35);margin-left:auto}
-#mapa-wrap{position:relative;margin:20px 24px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
-#mapa{height:520px;background:#0d1117}
-#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  color:rgba(255,255,255,.4);font-size:14px;background:#0d1117;z-index:1000}
-#painel-detalhe{display:none;margin:0 24px 24px;background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px}
-#painel-titulo{font-weight:700;font-size:15px;margin-bottom:12px;color:#fff}
-#painel-lista{display:flex;flex-direction:column;gap:8px}
-.card-emissao{background:rgba(255,255,255,.05);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
-.card-emissao .cia{font-weight:700;font-size:13px}
-.card-emissao .rota{font-size:12px;color:rgba(255,255,255,.45)}
-.card-emissao .meta{font-size:12px;color:rgba(255,255,255,.65)}
-.card-emissao .datas{font-size:11px;color:rgba(255,255,255,.3)}
-.badge-ok{background:rgba(34,197,94,.15);color:#22c55e;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700}
-.badge-rej{background:rgba(245,166,35,.15);color:#f5a623;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700}
-.leaflet-tooltip{background:#0d1117!important;border:1px solid rgba(255,255,255,.15)!important;
-  color:#e2e8f0!important;border-radius:8px!important;font-size:12px!important;
-  padding:6px 10px!important;box-shadow:0 4px 20px rgba(0,0,0,.6)!important}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;font-size:14px;min-height:100vh}
+
+/* HEADER */
+header{background:var(--surface);border-bottom:3px solid var(--accent);padding:14px 22px;
+  display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:200}
+.logo{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.3px}
+.logo span{color:var(--accent)}
+header p{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* FILTROS */
+.filtros{padding:12px 22px;border-bottom:1px solid var(--border);
+  display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:var(--surface)}
+.filtros input,.filtros select{
+  background:var(--card);color:var(--text);
+  border:1px solid var(--border);border-radius:8px;
+  padding:7px 11px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;
+  transition:border-color .2s}
+.filtros input:focus,.filtros select:focus{border-color:var(--accent)}
+.filtros input{width:130px}
+#contador{font-size:11px;color:var(--muted2);margin-left:auto;font-weight:600}
+
+/* MAPA */
+#mapa-wrap{margin:20px 22px;border-radius:14px;border:1px solid var(--border);overflow:hidden;position:relative}
+#mapa{height:500px;background:#131c2e}
+#loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:10px;background:#131c2e;z-index:999;color:var(--muted);font-size:13px}
+.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);
+  border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* LEAFLET OVERRIDES */
+.leaflet-tooltip{
+  background:var(--surface)!important;border:1px solid var(--border)!important;
+  color:var(--text)!important;border-radius:8px!important;font-size:12px!important;
+  font-family:'Montserrat',sans-serif!important;padding:7px 11px!important;
+  box-shadow:0 4px 20px rgba(0,0,0,.5)!important;font-weight:500!important}
 .leaflet-tooltip::before{display:none!important}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9000;
+  display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  width:100%;max-width:420px;max-height:90vh;overflow-y:auto;position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;
+  color:var(--muted);font-size:20px;cursor:pointer;line-height:1;padding:2px 6px;
+  border-radius:6px;transition:background .15s}
+.modal-close:hover{background:var(--card)}
+.modal-flag{font-size:38px;padding:24px 24px 0;text-align:center}
+.modal-dest{font-size:22px;font-weight:800;padding:8px 24px 4px;color:var(--text)}
+.modal-sub{font-size:12px;color:var(--muted);padding:0 24px 16px;border-bottom:1px solid var(--border)}
+.melhor-box{margin:16px 24px;background:var(--card);border-radius:12px;padding:14px 16px;
+  border:1px solid var(--border)}
+.melhor-label{font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--accent);margin-bottom:4px;text-transform:uppercase}
+.melhor-prog{font-size:18px;font-weight:800;color:var(--text)}
+.melhor-pts{font-size:13px;color:var(--muted);margin-top:2px}
+.prog-table{margin:0 24px 8px;width:calc(100% - 48px)}
+.prog-table-header{display:grid;grid-template-columns:1fr auto auto;gap:8px;
+  font-size:10px;font-weight:700;letter-spacing:.6px;color:var(--muted2);
+  text-transform:uppercase;padding:8px 0 6px;border-bottom:1px solid var(--border)}
+.prog-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;
+  align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.prog-row:last-child{border-bottom:none}
+.prog-nome{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.prog-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.prog-pts{font-size:13px;font-weight:700;color:var(--text);text-align:right}
+.prog-pts.eco{color:var(--green)}
+.prog-pts.exec{color:var(--azul)}
+.prog-pts.na{color:var(--muted2);font-weight:400}
+.modal-oport{margin:0 24px 20px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);
+  border-radius:12px;padding:12px 14px}
+.oport-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green);
+  color:#0a1a12;font-size:10px;font-weight:800;border-radius:20px;padding:2px 8px;
+  letter-spacing:.4px;margin-bottom:8px;text-transform:uppercase}
+.oport-rota{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px}
+.oport-pts{font-size:20px;font-weight:800;color:var(--green)}
+.oport-pts span{font-size:13px;font-weight:500;color:var(--muted);margin-left:4px}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <span>✈️</span>
-  <h1>Mapa de Emissões</h1>
-  <span>Clube do Viajante</span>
-</div>
+<header>
+  <div>
+    <div class="logo">Clube do <span>Viajante</span></div>
+    <p>Mapa de Emissoes por Milhas</p>
+  </div>
+</header>
 
-<div class="controls">
-  <input id="f-origem"  type="text" placeholder="Origem…"   oninput="render()">
-  <input id="f-destino" type="text" placeholder="Destino…"  oninput="render()">
+<div class="filtros">
+  <input id="f-origem"  type="text" placeholder="Origem..." oninput="render()">
+  <input id="f-destino" type="text" placeholder="Destino..." oninput="render()">
   <select id="f-prog" onchange="render()">
     <option value="">Todos os programas</option>
   </select>
   <select id="f-cabine" onchange="render()">
     <option value="">Todas as cabines</option>
     <option value="Executiva">Executiva</option>
-    <option value="Economica">Econômica</option>
+    <option value="Economica">Economica</option>
   </select>
   <span id="contador"></span>
 </div>
 
 <div id="mapa-wrap">
-  <div id="loading">Carregando passagens…</div>
+  <div id="loading"><div class="spinner"></div>Carregando passagens...</div>
   <div id="mapa"></div>
 </div>
 
-<div id="painel-detalhe">
-  <div id="painel-titulo"></div>
-  <div id="painel-lista"></div>
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="fecharModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="fecharModal(null)">x</button>
+    <div class="modal-flag" id="m-flag"></div>
+    <div class="modal-dest" id="m-dest"></div>
+    <div class="modal-sub" id="m-sub"></div>
+    <div class="melhor-box" id="m-melhor" style="display:none">
+      <div class="melhor-label">Melhor opcao</div>
+      <div class="melhor-prog" id="m-melhor-prog"></div>
+      <div class="melhor-pts" id="m-melhor-pts"></div>
+    </div>
+    <div class="prog-table" id="m-tabela" style="display:none">
+      <div class="prog-table-header">
+        <span>Programa</span>
+        <span style="text-align:right">Econ.</span>
+        <span style="text-align:right">Exec.</span>
+      </div>
+      <div id="m-linhas"></div>
+    </div>
+    <div class="modal-oport" id="m-oport" style="display:none">
+      <div class="oport-badge">Ultima emissao encontrada</div>
+      <div class="oport-rota" id="m-oport-rota"></div>
+      <div class="oport-pts" id="m-oport-pts"></div>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -79,8 +158,53 @@ body{background:#0a0c12;color:#e2e8f0;font-family:'Inter',system-ui,sans-serif;m
 const PROXY = 'https://cdv-proxy-production.up.railway.app';
 let passagens = [], mapa = null;
 
+const PROG_CORES = {
+  'latam':'#dc2626','smiles':'#f97316','azul':'#0ea5e9','azul fidelidade':'#0ea5e9',
+  'livelo':'#df0979','esfera':'#e8371b','iberia':'#c0392b','iberia plus':'#c0392b',
+  'tap':'#005f9e','tap miles':'#005f9e','flying blue':'#003087',
+  'aadvantage':'#0068b2','qatar':'#8b0000','default':'#6366f1'
+};
+function corProg(prog) {
+  if (!prog) return PROG_CORES.default;
+  const p = prog.toLowerCase();
+  for (const [k,v] of Object.entries(PROG_CORES)) {
+    if (p.includes(k)) return v;
+  }
+  return PROG_CORES.default;
+}
+
+// Flags por pais/regiao (heuristico pelo nome do destino)
+function flagDestino(dest) {
+  const d = norm(dest);
+  if (d.includes('paris')||d.includes('lyon')||d.includes('nice')) return '\uD83C\uDDEB\uD83C\uDDF7';
+  if (d.includes('lisboa')||d.includes('porto')||d.includes('lis')||d.includes('opo')) return '\uD83C\uDDF5\uD83C\uDDF9';
+  if (d.includes('madrid')||d.includes('barcelona')||d.includes('ibiza')) return '\uD83C\uDDEA\uD83C\uDDF8';
+  if (d.includes('roma')||d.includes('milao')||d.includes('veneza')) return '\uD83C\uDDEE\uD83C\uDDF9';
+  if (d.includes('berlim')||d.includes('munique')||d.includes('frankfurt')) return '\uD83C\uDDE9\uD83C\uDDEA';
+  if (d.includes('amsterdam')) return '\uD83C\uDDF3\uD83C\uDDF1';
+  if (d.includes('londres')||d.includes('london')) return '\uD83C\uDDEC\uD83C\uDDE7';
+  if (d.includes('zurique')||d.includes('genebra')) return '\uD83C\uDDE8\uD83C\uDDED';
+  if (d.includes('nova york')||d.includes('miami')||d.includes('orlando')||d.includes('chicago')||d.includes('los angeles')) return '\uD83C\uDDFA\uD83C\uDDF8';
+  if (d.includes('toronto')||d.includes('vancouver')) return '\uD83C\uDDE8\uD83C\uDDE6';
+  if (d.includes('cancun')||d.includes('mexico')) return '\uD83C\uDDF2\uD83C\uDDFD';
+  if (d.includes('buenos aires')) return '\uD83C\uDDE6\uD83C\uDDF7';
+  if (d.includes('santiago')) return '\uD83C\uDDE8\uD83C\uDDF1';
+  if (d.includes('lima')) return '\uD83C\uDDF5\uD83C\uDDEA';
+  if (d.includes('bogota')) return '\uD83C\uDDE8\uD83C\uDDF4';
+  if (d.includes('dubai')||d.includes('abu dhabi')) return '\uD83C\uDDE6\uD83C\uDDEA';
+  if (d.includes('doha')) return '\uD83C\uDDF6\uD83C\uDDE6';
+  if (d.includes('toquio')||d.includes('osaka')) return '\uD83C\uDDEF\uD83C\uDDF5';
+  if (d.includes('seul')) return '\uD83C\uDDF0\uD83C\uDDF7';
+  if (d.includes('bali')||d.includes('jakarta')) return '\uD83C\uDDEE\uD83C\uDDE9';
+  if (d.includes('sydney')||d.includes('melbourne')) return '\uD83C\uDDE6\uD83C\uDDFA';
+  if (d.includes('bangkok')) return '\uD83C\uDDF9\uD83C\uDDED';
+  if (d.includes('cingapura')) return '\uD83C\uDDF8\uD83C\uDDEC';
+  if (d.includes('hong kong')) return '\uD83C\uDDED\uD83C\uDDF0';
+  return '\u2708\uFE0F';
+}
+
 const COORDS = {
-  'Sao Paulo':[-23.5505,-46.6333],'Sao Paulo':[-23.5505,-46.6333],'GRU':[-23.5505,-46.6333],'VCP':[-22.9099,-47.0626],
+  'Sao Paulo':[-23.5505,-46.6333],'GRU':[-23.5505,-46.6333],'VCP':[-22.9099,-47.0626],'CGH':[-23.6265,-46.6556],
   'Rio de Janeiro':[-22.9068,-43.1729],'GIG':[-22.9068,-43.1729],
   'Brasilia':[-15.7801,-47.9292],'BSB':[-15.7801,-47.9292],
   'Belo Horizonte':[-19.9167,-43.9345],'CNF':[-19.9167,-43.9345],
@@ -94,8 +218,6 @@ const COORDS = {
   'Natal':[-5.7945,-35.211],'NAT':[-5.7945,-35.211],
   'Maceio':[-9.6658,-35.735],'MCZ':[-9.6658,-35.735],
   'Joao Pessoa':[-7.1195,-34.845],'JPA':[-7.1195,-34.845],
-  'Teresina':[-5.0892,-42.8019],'THE':[-5.0892,-42.8019],
-  'Sao Luis':[-2.5297,-44.3028],'SLZ':[-2.5297,-44.3028],
   'Campo Grande':[-20.4697,-54.6201],'CGR':[-20.4697,-54.6201],
   'Cuiaba':[-15.5961,-56.0967],'CGB':[-15.5961,-56.0967],
   'Goiania':[-16.6869,-49.2648],'GYN':[-16.6869,-49.2648],
@@ -104,14 +226,7 @@ const COORDS = {
   'Campinas':[-22.9099,-47.0626],
   'Vitoria':[-20.3155,-40.3128],'VIX':[-20.3155,-40.3128],
   'Aracaju':[-10.9472,-37.0731],'AJU':[-10.9472,-37.0731],
-  'Macapa':[0.0356,-51.0705],'MCP':[0.0356,-51.0705],
-  'Porto Velho':[-8.7612,-63.9004],'PVH':[-8.7612,-63.9004],
-  'Rio Branco':[-9.9754,-67.8249],'RBR':[-9.9754,-67.8249],
-  'Boa Vista':[2.8235,-60.6758],'BVB':[2.8235,-60.6758],
-  'Palmas':[-10.2491,-48.3243],'PMW':[-10.2491,-48.3243],
   'Foz do Iguacu':[-25.5951,-54.5857],'IGU':[-25.5951,-54.5857],
-  'Santarem':[-2.4448,-54.7084],'STM':[-2.4448,-54.7084],
-  'Petrolina':[-9.3622,-40.5082],'PNZ':[-9.3622,-40.5082],
   'Buenos Aires':[-34.6037,-58.3816],'EZE':[-34.6037,-58.3816],
   'Santiago':[-33.4489,-70.6693],'SCL':[-33.4489,-70.6693],
   'Lima':[-12.0464,-77.0428],'LIM':[-12.0464,-77.0428],
@@ -120,8 +235,6 @@ const COORDS = {
   'Assuncao':[-25.2867,-57.647],'ASU':[-25.2867,-57.647],
   'Quito':[-0.2295,-78.5243],'UIO':[-0.2295,-78.5243],
   'Medellin':[6.2442,-75.5812],'MDE':[6.2442,-75.5812],
-  'Cartagena':[10.3997,-75.5144],'CTG':[10.3997,-75.5144],
-  'Cusco':[-13.5319,-71.9675],'CUZ':[-13.5319,-71.9675],
   'Cancun':[21.1619,-86.8515],'CUN':[21.1619,-86.8515],
   'Miami':[25.7617,-80.1918],'MIA':[25.7617,-80.1918],
   'Nova York':[40.7128,-74.006],'JFK':[40.7128,-74.006],'EWR':[40.7128,-74.006],
@@ -178,15 +291,11 @@ const COORDS = {
   'Delhi':[28.7041,77.1025],'DEL':[28.7041,77.1025],
 };
 
-// Normaliza cidade para lookup: remove acentos, lowercase
 function norm(s) {
   return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
 }
-
-// Índice normalizado
 const IDX = {};
 for (const [k,v] of Object.entries(COORDS)) IDX[norm(k)] = v;
-
 function coords(nome) {
   if (!nome) return null;
   const n = norm(nome);
@@ -197,20 +306,10 @@ function coords(nome) {
   return null;
 }
 
-function cor(prog) {
-  if (!prog) return '#6366f1';
-  const p = prog.toLowerCase();
-  if (p.includes('latam'))      return '#dc2626';
-  if (p.includes('smiles'))     return '#f97316';
-  if (p.includes('azul'))       return '#0ea5e9';
-  if (p.includes('livelo'))     return '#df0979';
-  if (p.includes('esfera'))     return '#e8371b';
-  if (p.includes('iberia'))     return '#c0392b';
-  if (p.includes('tap'))        return '#005f9e';
-  if (p.includes('flying'))     return '#003087';
-  if (p.includes('aadvantage')) return '#0068b2';
-  if (p.includes('qatar'))      return '#8b0000';
-  return '#6366f1';
+function fmtPts(n) {
+  if (!n || n === Infinity) return null;
+  if (n >= 1000) return Math.round(n/1000) + 'k';
+  return String(n);
 }
 
 async function carregar() {
@@ -219,13 +318,13 @@ async function carregar() {
     setTimeout(() => ctrl.abort(), 20000);
     const r = await fetch(PROXY + '/passagens/listar?t=' + Date.now(), { signal: ctrl.signal });
     if (!r.ok) throw new Error('HTTP ' + r.status);
-    const data = await r.json();
-    passagens = data.items || [];
+    passagens = (await r.json()).items || [];
     popularFiltros();
     iniciarMapa();
     render();
   } catch(e) {
-    document.getElementById('loading').textContent = 'Erro ao carregar: ' + e.message;
+    document.getElementById('loading').innerHTML =
+      '<span style="color:#ff585e">Erro ao carregar: ' + e.message + '</span>';
   }
 }
 
@@ -233,7 +332,7 @@ function popularFiltros() {
   const sel = document.getElementById('f-prog');
   const progs = [...new Set(passagens.map(p => p.programa).filter(Boolean))].sort();
   sel.innerHTML = '<option value="">Todos os programas</option>' +
-    progs.map(p => `<option value="${p}">${p}</option>`).join('');
+    progs.map(p => '<option value="' + p + '">' + p + '</option>').join('');
 }
 
 function iniciarMapa() {
@@ -248,7 +347,6 @@ function iniciarMapa() {
 
 function render() {
   if (!mapa) return;
-
   const fp = document.getElementById('f-prog').value.toLowerCase();
   const fc = document.getElementById('f-cabine').value.toLowerCase();
   const fo = norm(document.getElementById('f-origem').value);
@@ -260,10 +358,8 @@ function render() {
   if (fo) ps = ps.filter(p => norm(p.origem).includes(fo));
   if (fd) ps = ps.filter(p => norm(p.destino).includes(fd));
 
-  // Remover marcadores anteriores
   mapa.eachLayer(l => { if (l._cdv) mapa.removeLayer(l); });
 
-  // Agrupar por destino
   const grupos = {};
   for (const p of ps) {
     if (!p.destino) continue;
@@ -276,50 +372,140 @@ function render() {
     const c = coords(dest);
     if (!c) continue;
     nd++;
-
     const qtd  = items.length;
-    const pts  = Math.min(...items.map(p => p.pontos||0).filter(v => v > 0));
     const prog = [...new Set(items.map(p => p.programa).filter(Boolean))][0];
     const raio = Math.min(36, Math.max(10, 10 + Math.sqrt(qtd) * 4));
+    const cor  = corProg(prog);
 
     const mk = L.circleMarker(c, {
-      radius: raio, fillColor: cor(prog),
-      color: '#fff', weight: 1.5, opacity: .9, fillOpacity: .75
+      radius: raio, fillColor: cor,
+      color: 'rgba(255,255,255,.3)', weight: 1.5, opacity: 1, fillOpacity: .85
     });
     mk._cdv = true;
 
+    const minPts = Math.min(...items.map(p => p.pontos||0).filter(v => v > 0));
     mk.bindTooltip(
-      '<b>' + dest + '</b><br>' + qtd + ' emiss' + (qtd > 1 ? 'oes' : 'ao') +
-      (pts > 0 ? '<br>' + pts.toLocaleString('pt-BR') + ' pts min.' : ''),
+      '<b style="font-size:13px">' + dest + '</b>' +
+      '<br><span style="color:#8a9bbf">' + qtd + ' emissao' + (qtd>1?'es':'') + '</span>' +
+      (minPts > 0 ? '<br><span style="color:#34d399;font-weight:700">' + minPts.toLocaleString('pt-BR') + ' pts min.</span>' : ''),
       { sticky: true }
     );
 
-    mk.on('click', function() {
-      const titulo = document.getElementById('painel-titulo');
-      const lista  = document.getElementById('painel-lista');
-      const painel = document.getElementById('painel-detalhe');
-      titulo.textContent = dest + ' — ' + qtd + ' emiss' + (qtd > 1 ? 'oes' : 'ao') + ' registrada' + (qtd > 1 ? 's' : '');
-      lista.innerHTML = items.map(function(p) {
-        const ok    = p.fonte !== 'alerta_rejeitado';
-        const badge = ok ? '<span class="badge-ok">enviado</span>' : '<span class="badge-rej">rejeitado</span>';
-        const pts   = p.pontos ? p.pontos.toLocaleString('pt-BR') + ' pts' : '-';
-        return '<div class="card-emissao">'
-          + '<div style="display:flex;justify-content:space-between"><span class="cia">' + (p.cia||p.programa||'-') + '</span>' + badge + '</div>'
-          + '<div class="rota">' + (p.origem||'') + (p.origem && p.destino ? ' > ' : '') + (p.destino||'') + '</div>'
-          + '<div class="meta">' + (p.programa||'') + ' | ' + pts + ' | ' + (p.cabine||'-') + '</div>'
-          + (p.datas_ida ? '<div class="datas">Ida: ' + p.datas_ida.slice(0,80) + '</div>' : '')
-          + '</div>';
-      }).join('');
-      painel.style.display = 'block';
-      painel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    });
-
+    mk.on('click', function() { abrirModal(dest, items); });
     mk.addTo(mapa);
   }
 
   document.getElementById('contador').textContent =
-    nd + ' destino' + (nd !== 1 ? 's' : '') + ' | ' + ps.length + ' emiss' + (ps.length !== 1 ? 'oes' : 'ao');
+    nd + ' destino' + (nd!==1?'s':'') + '  |  ' +
+    ps.length + ' emissao' + (ps.length!==1?'es':'');
 }
+
+function abrirModal(dest, items) {
+  // Flag
+  document.getElementById('m-flag').textContent = flagDestino(dest);
+  document.getElementById('m-dest').textContent = dest;
+
+  const total = items.length;
+  const progs = [...new Set(items.map(p => p.programa).filter(Boolean))];
+  document.getElementById('m-sub').textContent =
+    total + ' emissao' + (total>1?'es':'') + ' registrada' + (total>1?'s':'') +
+    '  |  ' + progs.length + ' programa' + (progs.length>1?'s':'');
+
+  // Agrupar por programa — menor pts eco e exec
+  const porProg = {};
+  for (const p of items) {
+    const prog = p.programa || 'Outros';
+    if (!porProg[prog]) porProg[prog] = { eco: Infinity, exec: Infinity, ultimo: null };
+    const pts = p.pontos || 0;
+    if (!pts) continue;
+    const cab = (p.cabine||'').toLowerCase();
+    if (cab.includes('exec')) {
+      if (pts < porProg[prog].exec) porProg[prog].exec = pts;
+    } else {
+      if (pts < porProg[prog].eco) porProg[prog].eco = pts;
+    }
+    if (!porProg[prog].ultimo || new Date(p.enviadoEm) > new Date(porProg[prog].ultimo.enviadoEm)) {
+      porProg[prog].ultimo = p;
+    }
+  }
+
+  // Ordenar por menor pts eco
+  const sorted = Object.entries(porProg).sort((a,b) => {
+    const pa = a[1].eco === Infinity ? a[1].exec : a[1].eco;
+    const pb = b[1].eco === Infinity ? b[1].exec : b[1].eco;
+    return pa - pb;
+  });
+
+  // Melhor opcao
+  const [melhorProg, melhorDados] = sorted[0] || [null,null];
+  const mbox = document.getElementById('m-melhor');
+  if (melhorProg) {
+    const minMelhor = melhorDados.eco !== Infinity ? melhorDados.eco : melhorDados.exec;
+    document.getElementById('m-melhor-prog').textContent = melhorProg;
+    document.getElementById('m-melhor-pts').textContent =
+      'A partir de ' + minMelhor.toLocaleString('pt-BR') + ' pontos';
+    document.getElementById('m-melhor-prog').style.color = corProg(melhorProg);
+    mbox.style.display = 'block';
+  } else {
+    mbox.style.display = 'none';
+  }
+
+  // Tabela por programa
+  const tabela = document.getElementById('m-tabela');
+  const linhas = document.getElementById('m-linhas');
+  if (sorted.length > 0) {
+    linhas.innerHTML = sorted.map(([prog, d]) => {
+      const eco  = fmtPts(d.eco);
+      const exec = fmtPts(d.exec);
+      return '<div class="prog-row">'
+        + '<div class="prog-nome"><span class="prog-dot" style="background:' + corProg(prog) + '"></span>' + prog + '</div>'
+        + '<div class="prog-pts eco">' + (eco  || '<span class="na">-</span>') + '</div>'
+        + '<div class="prog-pts exec">' + (exec || '<span class="na">-</span>') + '</div>'
+        + '</div>';
+    }).join('');
+    tabela.style.display = 'block';
+  } else {
+    tabela.style.display = 'none';
+  }
+
+  // Ultima emissao encontrada
+  const oport = document.getElementById('m-oport');
+  // Pegar a mais recente de todas
+  const recente = items.filter(p => p.pontos > 0 && p.fonte !== 'alerta_rejeitado')
+    .sort((a,b) => new Date(b.enviadoEm||0) - new Date(a.enviadoEm||0))[0];
+  if (recente) {
+    const quando = recente.enviadoEm ? tempoAtras(recente.enviadoEm) : '';
+    document.getElementById('m-oport-rota').textContent =
+      (recente.origem||'') + (recente.origem&&recente.destino ? ' > ' : '') + (recente.destino||'');
+    document.getElementById('m-oport-pts').innerHTML =
+      recente.pontos.toLocaleString('pt-BR') +
+      ' <span>' + (recente.programa||'') + (quando ? '  |  ' + quando : '') + '</span>';
+    oport.style.display = 'block';
+    // Atualizar badge com tempo
+    oport.querySelector('.oport-badge').textContent =
+      'Ultima emissao' + (quando ? '  ' + quando : '');
+  } else {
+    oport.style.display = 'none';
+  }
+
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function tempoAtras(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const h = Math.floor(diff / 3600000);
+  const d = Math.floor(h / 24);
+  if (d > 0) return 'ha ' + d + ' dia' + (d>1?'s':'');
+  if (h > 0) return 'ha ' + h + 'h';
+  return 'agora';
+}
+
+function fecharModal(e) {
+  if (e && e.target !== document.getElementById('modal-overlay')) return;
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharModal(null); });
 
 carregar();
 </script>
