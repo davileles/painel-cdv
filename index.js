@@ -2112,6 +2112,164 @@ app.get('/lounges/aeroportos', async (req, res) => {
   }
 });
 
+
+// ── CONCIERGE: Arquivos de reserva (bilhetes, vouchers) ─────────────────────
+// Salva em arquivos/RES-xxx.ext no repo davileles/concierge
+// Suporta múltiplos arquivos: arquivos/RES-xxx_0.ext, arquivos/RES-xxx_1.ext ...
+
+// POST /concierge/arquivo
+// Body: { reservaId, base64, mediaType, nome }
+// Salva o arquivo como arquivos/{reservaId}_{idx}.json contendo { base64, mediaType, nome }
+app.post('/concierge/arquivo', async (req, res) => {
+  try {
+    const { reservaId, base64, mediaType, nome } = req.body || {};
+    if (!reservaId || !base64 || !mediaType) {
+      return res.status(400).json({ ok: false, erro: 'reservaId, base64 e mediaType são obrigatórios' });
+    }
+    // Sanitizar reservaId para uso como nome de arquivo
+    const safeId = String(reservaId).replace(/[^a-zA-Z0-9\-_]/g, '');
+    if (!safeId) return res.status(400).json({ ok: false, erro: 'reservaId inválido' });
+
+    // Descobrir próximo índice disponível (suporte a múltiplos arquivos)
+    let idx = 0;
+    const apiBase = `https://api.github.com/repos/${CONCIERGE_REPO}/contents/arquivos/`;
+    const headers = {
+      'Authorization': `token ${GITHUB_TOKEN}`,
+      'User-Agent': 'cdv-proxy',
+      'Accept': 'application/vnd.github+json'
+    };
+    try {
+      const listRes = await fetch(apiBase, { headers });
+      if (listRes.ok) {
+        const listData = await listRes.json();
+        if (Array.isArray(listData)) {
+          const prefix = safeId + '_';
+          const existing = listData.filter(f => f.name.startsWith(prefix));
+          idx = existing.length;
+        }
+      }
+    } catch(e) { /* pasta pode não existir ainda, idx = 0 */ }
+
+    const filename = `arquivos/${safeId}_${idx}.json`;
+    const payload = JSON.stringify({ base64, mediaType, nome: nome || '' });
+    const encoded = Buffer.from(payload).toString('base64');
+
+    // Verificar se já existe (para pegar SHA e sobrescrever se necessário)
+    let sha = null;
+    try {
+      const checkRes = await fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/${filename}`, { headers });
+      if (checkRes.ok) { const cd = await checkRes.json(); sha = cd.sha || null; }
+    } catch(e) {}
+
+    const putBody = {
+      message: `arquivo: ${safeId}_${idx}`,
+      content: encoded
+    };
+    if (sha) putBody.sha = sha;
+
+    const putRes = await fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/${filename}`, {
+      method: 'PUT',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify(putBody)
+    });
+    if (!putRes.ok) {
+      const putErr = await putRes.json().catch(() => ({}));
+      throw new Error(putErr.message || `GitHub PUT falhou (${putRes.status})`);
+    }
+    res.json({ ok: true, filename, idx });
+  } catch(e) {
+    console.error('[concierge/arquivo POST]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// GET /concierge/arquivo/:reservaId
+// Retorna lista de arquivos da reserva: [{ idx, nome, mediaType, base64 }, ...]
+app.get('/concierge/arquivo/:reservaId', async (req, res) => {
+  try {
+    const safeId = String(req.params.reservaId || '').replace(/[^a-zA-Z0-9\-_]/g, '');
+    if (!safeId) return res.status(400).json({ ok: false, erro: 'reservaId inválido' });
+
+    const headers = {
+      'Authorization': `token ${GITHUB_TOKEN}`,
+      'User-Agent': 'cdv-proxy',
+      'Accept': 'application/vnd.github+json'
+    };
+
+    // Listar pasta arquivos/
+    const listRes = await fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/arquivos/`, { headers });
+    if (!listRes.ok) return res.json({ ok: true, arquivos: [] });
+
+    const listData = await listRes.json();
+    if (!Array.isArray(listData)) return res.json({ ok: true, arquivos: [] });
+
+    const prefix = safeId + '_';
+    const arquivosRepo = listData
+      .filter(f => f.name.startsWith(prefix) && f.name.endsWith('.json'))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    if (!arquivosRepo.length) return res.json({ ok: true, arquivos: [] });
+
+    // Buscar conteúdo de cada arquivo em paralelo
+    const resultados = await Promise.all(arquivosRepo.map(async (f) => {
+      try {
+        // Preferir raw para evitar problema de encoding: none em arquivos grandes
+        const rawRes = await fetch(
+          `https://raw.githubusercontent.com/${CONCIERGE_REPO}/main/${f.path}`,
+          { headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'User-Agent': 'cdv-proxy' } }
+        );
+        if (!rawRes.ok) return null;
+        const text = await rawRes.text();
+        const parsed = JSON.parse(text);
+        const idxMatch = f.name.match(/_(\d+)\.json$/);
+        return { idx: idxMatch ? parseInt(idxMatch[1]) : 0, nome: parsed.nome || f.name, mediaType: parsed.mediaType, base64: parsed.base64 };
+      } catch(e) { return null; }
+    }));
+
+    res.json({ ok: true, arquivos: resultados.filter(Boolean) });
+  } catch(e) {
+    console.error('[concierge/arquivo GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// DELETE /concierge/arquivo/:reservaId/:idx
+// Remove um arquivo específico da reserva
+app.delete('/concierge/arquivo/:reservaId/:idx', async (req, res) => {
+  try {
+    const safeId = String(req.params.reservaId || '').replace(/[^a-zA-Z0-9\-_]/g, '');
+    const idx    = parseInt(req.params.idx);
+    if (!safeId || isNaN(idx)) return res.status(400).json({ ok: false, erro: 'reservaId ou idx inválido' });
+
+    const filename = `arquivos/${safeId}_${idx}.json`;
+    const headers = {
+      'Authorization': `token ${GITHUB_TOKEN}`,
+      'User-Agent': 'cdv-proxy',
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+
+    // Pegar SHA para poder deletar
+    const checkRes = await fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/${filename}`, { headers });
+    if (!checkRes.ok) return res.status(404).json({ ok: false, erro: 'Arquivo não encontrado' });
+    const checkData = await checkRes.json();
+
+    const delRes = await fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/${filename}`, {
+      method: 'DELETE',
+      headers,
+      body: JSON.stringify({ message: `remove: ${filename}`, sha: checkData.sha })
+    });
+    if (!delRes.ok) {
+      const delErr = await delRes.json().catch(() => ({}));
+      throw new Error(delErr.message || `GitHub DELETE falhou (${delRes.status})`);
+    }
+    res.json({ ok: true });
+  } catch(e) {
+    console.error('[concierge/arquivo DELETE]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 // ══════════════════════════════════════════════════════════════════════════════
 
 app.listen(PORT, '0.0.0.0', () => {
