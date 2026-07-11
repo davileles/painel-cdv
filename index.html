@@ -3831,9 +3831,9 @@ function mostrarPainel(sessao) {
   // Aba Salas VIP — só para devs
   const tabLounges = document.getElementById('tab-btn-lounges');
   if (tabLounges && devAcesso()) tabLounges.style.display = '';
-  // Aba Calculadoras — só para devs
+  // Aba Calculadoras — disponível para todos os membros
   const tabCalc = document.getElementById('tab-btn-calculadoras');
-  if (tabCalc && devAcesso()) tabCalc.style.display = '';
+  if (tabCalc) tabCalc.style.display = '';
 }
 async function fazerLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
@@ -3871,7 +3871,7 @@ async function fazerLogin() {
     }
     if (data.acesso) {
       salvarSessao({ email: data.email, nome: data.nome });
-      mostrarPainel(data);
+      try { mostrarPainel(data); } catch(eUI) { console.error('[CDV UI]', eUI); }
     } else {
       const msgs = {
         nao_encontrado: 'E-mail não encontrado. Verifique se é o mesmo da sua assinatura.',
