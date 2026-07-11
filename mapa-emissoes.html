@@ -11,126 +11,99 @@
   --bg:#1e2535;--surface:#2a3246;--card:#323c54;--border:#3d4a66;
   --text:#eeeeee;--muted:#8a9bbf;--muted2:#5a6a8a;
   --accent:#ff585e;--green:#34d399;--blue:#60a5fa;
-  --latam:#dc2626;--smiles:#f97316;--azul:#0ea5e9;
-  --livelo:#df0979;--esfera:#e8371b;--iberia:#c0392b;
-  --tap:#005f9e;--flying:#003087;--aa:#0068b2;--qatar:#8b0000;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;
-  font-size:14px;min-height:100vh;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
 
-/* HEADER */
-header{background:var(--surface);border-bottom:3px solid var(--accent);
-  padding:14px 24px;display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:100;gap:12px}
+header{background:var(--surface);border-bottom:3px solid var(--accent);padding:14px 24px;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .logo{font-size:16px;font-weight:800;letter-spacing:-.3px}
 .logo em{color:var(--accent);font-style:normal}
 .tagline{font-size:11px;color:var(--muted);margin-top:2px}
 #contador-header{font-size:12px;color:var(--muted);font-weight:600;
   background:var(--card);padding:6px 14px;border-radius:20px;border:1px solid var(--border)}
 
-/* FILTROS */
 .filtros{padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--border);
   display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .filtros input,.filtros select{
   background:var(--card);color:var(--text);border:1px solid var(--border);
   border-radius:20px;padding:7px 14px;font-size:12px;font-family:'Montserrat',sans-serif;
   outline:none;transition:border-color .2s,box-shadow .2s}
-.filtros input:focus,.filtros select:focus{
-  border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,88,94,.15)}
+.filtros input:focus,.filtros select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,88,94,.15)}
 .filtros input{width:130px}
-.filtros select{cursor:pointer}
 
-/* SVG MAP CONTAINER */
-#map-stage{position:relative;width:100%;background:var(--bg);
-  overflow:hidden;cursor:grab;user-select:none}
-#map-stage:active{cursor:grabbing}
-#map-svg-wrap{position:relative;width:100%;height:100%}
-#worldmap{width:100%;height:100%;display:block}
+#map-stage{position:relative;width:100%;background:var(--bg)}
+#worldsvg{width:100%;height:auto;display:block}
 
-/* PIN MARKERS */
-.pin{cursor:pointer;transition:transform .15s}
-.pin:hover .pin-circle{filter:brightness(1.2)}
-.pin-pulse{animation:pulse 2.5s ease-in-out infinite}
-@keyframes pulse{
-  0%,100%{opacity:.35;r:attr(r)}
-  50%{opacity:.1}
-}
-.pin-enter{animation:pinIn .35s cubic-bezier(.34,1.56,.64,1) both}
-@keyframes pinIn{
-  from{transform:scale(0) translateY(10px);opacity:0}
-  to{transform:scale(1) translateY(0);opacity:1}
-}
+/* Pins */
+.pin{cursor:pointer}
+.pin circle.halo{animation:pulse 2.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.25}50%{opacity:.05}}
+.pin-enter{animation:pinIn .4s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes pinIn{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
 
-/* TOOLTIP FLUTUANTE */
+/* Tooltip */
 #tooltip{position:fixed;background:var(--surface);border:1px solid var(--border);
   border-radius:10px;padding:10px 14px;font-size:12px;pointer-events:none;
-  opacity:0;transition:opacity .15s;z-index:500;box-shadow:0 8px 30px rgba(0,0,0,.5);
-  max-width:200px;white-space:nowrap}
+  opacity:0;transition:opacity .12s;z-index:500;box-shadow:0 8px 30px rgba(0,0,0,.5);
+  min-width:150px}
 #tooltip.show{opacity:1}
-#tooltip strong{font-size:13px;display:block;margin-bottom:2px}
-#tooltip .tt-pts{color:var(--green);font-weight:700}
-#tooltip .tt-qtd{color:var(--muted);font-size:11px}
+#tooltip b{font-size:13px;display:block;margin-bottom:3px;color:var(--text)}
+#tooltip .tt-pts{color:var(--green);font-weight:700;display:block}
+#tooltip .tt-qtd{color:var(--muted);font-size:11px;display:block}
 
-/* MODAL */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;
+/* Loading */
+#loading{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;background:var(--bg);z-index:50}
+.spinner{width:30px;height:30px;border:3px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9000;
   display:none;align-items:center;justify-content:center;padding:20px;
   backdrop-filter:blur(4px)}
-.overlay.open{display:flex;animation:fadeIn .2s ease}
+.overlay.open{display:flex;animation:fadeIn .18s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;
   width:100%;max-width:400px;max-height:88vh;overflow-y:auto;position:relative;
-  box-shadow:0 24px 80px rgba(0,0,0,.7);animation:slideUp .25s cubic-bezier(.34,1.2,.64,1)}
-@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+  box-shadow:0 24px 80px rgba(0,0,0,.7);animation:slideUp .22s cubic-bezier(.34,1.2,.64,1)}
+@keyframes slideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
 .modal::-webkit-scrollbar{width:4px}
-.modal::-webkit-scrollbar-track{background:transparent}
 .modal::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-.m-close{position:absolute;top:14px;right:14px;background:var(--card);
-  border:1px solid var(--border);color:var(--muted);width:28px;height:28px;
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:14px;transition:all .15s;z-index:1}
+.m-close{position:absolute;top:14px;right:14px;background:var(--card);border:1px solid var(--border);
+  color:var(--muted);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;font-size:14px;transition:all .15s;z-index:1;border:none}
 .m-close:hover{background:var(--border);color:var(--text)}
-.m-hero{padding:28px 24px 20px;text-align:center;border-bottom:1px solid var(--border)}
-.m-flag{font-size:48px;margin-bottom:10px;display:block;
-  filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
-.m-dest{font-size:24px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px}
+.m-hero{padding:28px 24px 18px;text-align:center;border-bottom:1px solid var(--border)}
+.m-flag{font-size:46px;display:block;margin-bottom:10px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
+.m-dest{font-size:22px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px}
 .m-sub{font-size:12px;color:var(--muted)}
-.m-best{margin:16px 20px;background:linear-gradient(135deg,rgba(52,211,153,.12),rgba(52,211,153,.04));
-  border:1px solid rgba(52,211,153,.25);border-radius:14px;padding:16px;text-align:center}
-.m-best-label{font-size:10px;font-weight:700;letter-spacing:1px;
-  color:var(--green);text-transform:uppercase;margin-bottom:6px}
-.m-best-prog{font-size:20px;font-weight:800;margin-bottom:4px}
+.m-best{margin:16px 20px;background:linear-gradient(135deg,rgba(52,211,153,.1),rgba(52,211,153,.03));
+  border:1px solid rgba(52,211,153,.22);border-radius:14px;padding:16px;text-align:center}
+.m-best-label{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--green);text-transform:uppercase;margin-bottom:5px}
+.m-best-prog{font-size:19px;font-weight:800;margin-bottom:3px}
 .m-best-pts{font-size:13px;color:var(--muted)}
-.m-section{padding:0 20px 6px}
-.m-section-title{font-size:10px;font-weight:700;letter-spacing:.8px;
-  color:var(--muted2);text-transform:uppercase;margin-bottom:8px;padding-top:14px}
+.m-section{padding:0 20px 4px}
+.m-section-title{font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--muted2);
+  text-transform:uppercase;margin-bottom:8px;padding-top:14px}
 .prog-list{display:flex;flex-direction:column;gap:6px}
 .prog-item{background:var(--card);border:1px solid var(--border);border-radius:10px;
   padding:10px 14px;display:flex;align-items:center;gap:10px}
-.prog-item .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.prog-item .nome{flex:1;font-size:13px;font-weight:600}
-.prog-item .pts-wrap{display:flex;gap:8px}
-.prog-item .pts-eco{background:rgba(52,211,153,.15);color:var(--green);
-  border-radius:6px;padding:3px 8px;font-size:12px;font-weight:700}
-.prog-item .pts-exec{background:rgba(96,165,250,.15);color:var(--blue);
-  border-radius:6px;padding:3px 8px;font-size:12px;font-weight:700}
-.prog-item .pts-na{color:var(--muted2);font-size:12px;padding:3px 4px}
-.m-oport{margin:6px 20px 20px;background:var(--card);border:1px solid var(--border);
-  border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px}
-.m-oport-badge{display:inline-flex;align-items:center;gap:4px;
-  background:rgba(255,88,94,.15);color:var(--accent);
-  font-size:10px;font-weight:700;border-radius:20px;padding:3px 10px;
-  width:fit-content;letter-spacing:.4px;text-transform:uppercase}
-.m-oport-rota{font-size:14px;font-weight:700}
-.m-oport-pts{font-size:22px;font-weight:900;color:var(--accent)}
-.m-oport-pts span{font-size:12px;font-weight:500;color:var(--muted);margin-left:4px}
-
-/* LOADING */
-#loading{position:absolute;inset:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:14px;background:var(--bg);z-index:50}
-.spinner{width:32px;height:32px;border:3px solid var(--border);
-  border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+.prog-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.prog-nome{flex:1;font-size:13px;font-weight:600}
+.prog-pts{display:flex;gap:6px}
+.pts-eco{background:rgba(52,211,153,.15);color:var(--green);border-radius:6px;padding:3px 8px;font-size:12px;font-weight:700}
+.pts-exec{background:rgba(96,165,250,.15);color:var(--blue);border-radius:6px;padding:3px 8px;font-size:12px;font-weight:700}
+.pts-na{color:var(--muted2);font-size:12px;padding:3px 4px}
+.m-oport{margin:8px 20px 20px;background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:5px}
+.oport-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,88,94,.15);
+  color:var(--accent);font-size:10px;font-weight:700;border-radius:20px;
+  padding:3px 10px;width:fit-content;letter-spacing:.3px;text-transform:uppercase}
+.oport-rota{font-size:14px;font-weight:700}
+.oport-pts{font-size:21px;font-weight:900;color:var(--accent)}
+.oport-pts span{font-size:12px;font-weight:500;color:var(--muted);margin-left:4px}
 </style>
 </head>
 <body>
@@ -144,8 +117,8 @@ header{background:var(--surface);border-bottom:3px solid var(--accent);
 </header>
 
 <div class="filtros">
-  <input id="f-origem"  type="text" placeholder="&#9992; Origem..."  oninput="render()">
-  <input id="f-destino" type="text" placeholder="&#127759; Destino..." oninput="render()">
+  <input id="f-origem"  type="text" placeholder="Origem..."   oninput="render()">
+  <input id="f-destino" type="text" placeholder="Destino..."  oninput="render()">
   <select id="f-prog" onchange="render()"><option value="">Todos os programas</option></select>
   <select id="f-cabine" onchange="render()">
     <option value="">Todas as cabines</option>
@@ -155,92 +128,144 @@ header{background:var(--surface);border-bottom:3px solid var(--accent);
 </div>
 
 <div id="map-stage">
-  <div id="loading"><div class="spinner"></div><span style="color:var(--muted);font-size:13px">Carregando passagens...</span></div>
-  <div id="map-svg-wrap">
-    <!-- SVG do mapa-mundi simplificado e estilizado -->
-    <svg id="worldmap" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="bg-grad" cx="50%" cy="50%" r="70%">
-          <stop offset="0%" stop-color="#252f45"/>
-          <stop offset="100%" stop-color="#1a2030"/>
-        </radialGradient>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="3" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-      <rect width="1000" height="500" fill="url(#bg-grad)"/>
+  <div id="loading"><div class="spinner"></div><span style="color:var(--muted);font-size:13px">Carregando...</span></div>
 
-      <!-- Grade de meridianos/paralelos suave -->
-      <g stroke="rgba(255,255,255,.04)" stroke-width=".5" fill="none">
-        <line x1="0" y1="125" x2="1000" y2="125"/>
-        <line x1="0" y1="250" x2="1000" y2="250"/>
-        <line x1="0" y1="375" x2="1000" y2="375"/>
-        <line x1="250" y1="0" x2="250" y2="500"/>
-        <line x1="500" y1="0" x2="500" y2="500"/>
-        <line x1="750" y1="0" x2="750" y2="500"/>
-      </g>
+  <!--
+    Mapa SVG ilustrativo: projecao equiretangular 1000x500
+    x = (lon + 180) / 360 * 1000
+    y = (90 - lat) / 180 * 500
+    Continentes desenhados com coordenadas reais simplificadas
+  -->
+  <svg id="worldsvg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="bggrad" cx="50%" cy="40%" r="70%">
+        <stop offset="0%" stop-color="#252f45"/>
+        <stop offset="100%" stop-color="#191e2e"/>
+      </radialGradient>
+      <filter id="soft"><feGaussianBlur stdDeviation="1.5"/></filter>
+    </defs>
+    <rect width="1000" height="500" fill="url(#bggrad)"/>
 
-      <!-- Continentes simplificados — formas suaves e ilustrativas -->
-      <!-- América do Norte -->
-      <path d="M95,60 Q120,45 160,50 Q200,55 220,80 Q240,100 235,130 Q230,155 210,170
-               Q190,185 175,195 Q160,205 150,220 Q138,235 130,245 Q115,255 105,245
-               Q85,230 80,210 Q70,185 75,165 Q78,145 85,120 Q90,90 95,60Z"
-            fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
-      <!-- América Central -->
-      <path d="M150,220 Q160,215 175,225 Q185,235 180,250 Q170,260 158,255 Q148,248 150,220Z"
-            fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.1)" stroke-width=".8"/>
-      <!-- América do Sul -->
-      <path d="M155,265 Q175,255 195,265 Q215,278 220,305 Q225,335 215,365
-               Q205,390 190,405 Q175,415 160,408 Q142,398 138,375
-               Q130,350 132,320 Q134,295 145,278 Q150,270 155,265Z"
-            fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
-      <!-- Europa -->
-      <path d="M430,65 Q450,55 475,60 Q495,65 505,80 Q510,95 500,108
-               Q488,120 472,125 Q455,128 440,120 Q425,112 422,95 Q420,78 430,65Z"
-            fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
-      <!-- Africa -->
-      <path d="M445,140 Q465,130 490,138 Q515,148 520,175 Q528,205 522,240
-               Q515,270 500,295 Q485,315 465,320 Q445,322 430,305
-               Q415,288 412,260 Q408,228 415,198 Q422,168 435,150 Q440,144 445,140Z"
-            fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
-      <!-- Asia -->
-      <path d="M510,55 Q560,40 640,45 Q710,50 760,65 Q800,78 820,100
-               Q840,125 830,155 Q818,185 790,200 Q755,215 710,215
-               Q665,215 625,200 Q585,185 558,165 Q528,142 515,118
-               Q505,95 510,55Z"
-            fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
-      <!-- Oriente Medio -->
-      <path d="M520,155 Q540,148 560,155 Q575,165 572,185 Q568,202 550,208
-               Q532,212 520,200 Q510,188 515,170 Q517,160 520,155Z"
-            fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.1)" stroke-width=".8"/>
-      <!-- India -->
-      <path d="M600,165 Q618,158 632,168 Q645,180 638,205 Q630,225 612,228
-               Q595,228 588,210 Q582,193 592,176 Q596,168 600,165Z"
-            fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.1)" stroke-width=".8"/>
-      <!-- Sudeste Asiatico -->
-      <path d="M710,175 Q730,168 748,178 Q762,190 755,210 Q745,225 728,228
-               Q710,228 702,212 Q696,196 706,183 Q708,178 710,175Z"
-            fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.1)" stroke-width=".8"/>
-      <!-- Oceania -->
-      <path d="M750,300 Q780,288 815,295 Q848,305 855,330 Q860,352 840,368
-               Q818,382 790,378 Q762,372 750,352 Q740,332 745,315 Q747,306 750,300Z"
-            fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+    <!-- Grade geografica sutil -->
+    <g stroke="rgba(255,255,255,.035)" stroke-width=".8" fill="none">
+      <!-- paralelos: 60N, 30N, 0, 30S, 60S -->
+      <line x1="0" y1="83"  x2="1000" y2="83"/>   <!-- 60N -->
+      <line x1="0" y1="167" x2="1000" y2="167"/>  <!-- 30N -->
+      <line x1="0" y1="250" x2="1000" y2="250"/>  <!-- equador -->
+      <line x1="0" y1="333" x2="1000" y2="333"/>  <!-- 30S -->
+      <line x1="0" y1="417" x2="1000" y2="417"/>  <!-- 60S -->
+      <!-- meridianos: -120, -60, 0, 60, 120 -->
+      <line x1="167" y1="0" x2="167" y2="500"/>
+      <line x1="333" y1="0" x2="333" y2="500"/>
+      <line x1="500" y1="0" x2="500" y2="500"/>
+      <line x1="667" y1="0" x2="667" y2="500"/>
+      <line x1="833" y1="0" x2="833" y2="500"/>
+    </g>
 
-      <!-- Marcadores injetados via JS -->
-      <g id="markers"></g>
-    </svg>
-  </div>
-  <div id="tooltip">
-    <strong id="tt-dest"></strong>
-    <span class="tt-pts" id="tt-pts"></span>
-    <span class="tt-qtd" id="tt-qtd"></span>
-  </div>
+    <!-- Equador destacado -->
+    <line x1="0" y1="250" x2="1000" y2="250" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+
+    <!--
+      CONTINENTES — coordenadas reais em graus, convertidas:
+      America do Norte: grosso modo lon -170 a -50, lat 15 a 75
+      America do Sul: lon -82 a -34, lat -55 a 13
+      Europa: lon -25 a 45, lat 35 a 72
+      Africa: lon -18 a 52, lat -35 a 38
+      Asia: lon 25 a 145, lat 5 a 75
+      Oceania: lon 112 a 180, lat -47 a -10
+    -->
+
+    <!-- America do Norte (simplificada) -->
+    <path fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.14)" stroke-width=".8"
+      d="M83,70 L150,58 L195,65 L222,85 L238,108 L245,135 L240,160
+         L228,178 L215,190 L205,208 L198,225 L188,235 L178,228
+         L162,235 L148,242 L138,250 L125,245 L110,232
+         L95,210 L82,188 L75,165 L76,140 L80,115 L83,90 Z"/>
+    <!-- Gronelandia -->
+    <path fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.1)" stroke-width=".6"
+      d="M278,42 L305,35 L325,40 L330,58 L318,72 L298,75 L280,65 Z"/>
+    <!-- Cuba / Caribe -->
+    <path fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.09)" stroke-width=".5"
+      d="M188,220 L205,216 L210,225 L200,232 L185,228 Z"/>
+
+    <!-- America do Sul -->
+    <path fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.14)" stroke-width=".8"
+      d="M163,235 L182,230 L200,238 L215,255 L222,278 L225,305
+         L220,335 L210,362 L195,382 L178,392 L162,385 L148,368
+         L140,345 L138,318 L142,292 L150,268 L158,248 Z"/>
+
+    <!-- Europa -->
+    <path fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.14)" stroke-width=".8"
+      d="M430,95 L445,82 L462,78 L480,82 L498,92 L510,105
+         L508,120 L495,132 L478,138 L458,138 L440,130 L428,118 Z"/>
+    <!-- Escandinavia -->
+    <path fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.1)" stroke-width=".6"
+      d="M468,58 L480,50 L492,54 L498,68 L492,82 L478,82 L465,72 Z"/>
+    <!-- Peninsula Iberica -->
+    <path fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.1)" stroke-width=".6"
+      d="M428,118 L445,115 L458,120 L458,138 L440,142 L426,132 Z"/>
+    <!-- Italia -->
+    <path fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.09)" stroke-width=".5"
+      d="M478,118 L488,115 L492,125 L485,140 L478,148 L472,138 L474,125 Z"/>
+    <!-- Grecia -->
+    <path fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.09)" stroke-width=".5"
+      d="M508,125 L518,122 L520,132 L512,138 L506,132 Z"/>
+
+    <!-- Africa -->
+    <path fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.14)" stroke-width=".8"
+      d="M445,155 L465,148 L490,150 L512,162 L525,185 L528,215
+         L522,248 L510,275 L492,298 L472,308 L452,305 L435,288
+         L425,262 L422,232 L428,202 L435,175 Z"/>
+    <!-- Madagascar -->
+    <path fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.09)" stroke-width=".5"
+      d="M546,288 L552,275 L558,285 L555,305 L548,308 Z"/>
+
+    <!-- Asia (massa principal) -->
+    <path fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.14)" stroke-width=".8"
+      d="M510,105 L545,88 L592,72 L650,62 L710,58 L762,65
+         L805,80 L835,100 L845,125 L835,152 L812,172 L778,185
+         L735,192 L690,190 L648,182 L608,170 L572,155 L542,138
+         L520,122 Z"/>
+    <!-- Peninsula Arabica -->
+    <path fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.1)" stroke-width=".6"
+      d="M540,168 L558,162 L575,170 L580,192 L568,210 L550,215 L535,200 L532,180 Z"/>
+    <!-- India -->
+    <path fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.1)" stroke-width=".6"
+      d="M602,168 L622,162 L638,172 L640,198 L628,222 L610,228
+         L595,215 L590,195 L596,175 Z"/>
+    <!-- Sudeste Asiatico -->
+    <path fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.1)" stroke-width=".6"
+      d="M700,185 L725,178 L748,185 L758,205 L748,222 L728,228
+         L710,220 L700,205 Z"/>
+    <!-- Japao (aprox) -->
+    <path fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.09)" stroke-width=".5"
+      d="M818,115 L826,108 L832,118 L826,132 L818,128 Z"/>
+    <!-- Coreia -->
+    <path fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.09)" stroke-width=".5"
+      d="M798,122 L808,118 L812,130 L804,135 L796,130 Z"/>
+
+    <!-- Oceania -->
+    <path fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.14)" stroke-width=".8"
+      d="M752,305 L785,292 L820,295 L848,312 L858,338 L845,362
+         L820,375 L792,372 L768,355 L755,330 Z"/>
+    <!-- Nova Zelandia -->
+    <path fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.09)" stroke-width=".5"
+      d="M872,362 L880,352 L886,362 L880,375 L872,372 Z"/>
+
+    <!-- Marcadores injetados via JS -->
+    <g id="markers"></g>
+  </svg>
+</div>
+
+<div id="tooltip">
+  <b id="tt-dest"></b>
+  <span class="tt-pts" id="tt-pts"></span>
+  <span class="tt-qtd" id="tt-qtd"></span>
 </div>
 
 <!-- MODAL -->
 <div class="overlay" id="overlay" onclick="fecharModal(event)">
-  <div class="modal" id="modal">
+  <div class="modal">
     <button class="m-close" onclick="fecharModal(null)">&#10005;</button>
     <div class="m-hero">
       <span class="m-flag" id="m-flag"></span>
@@ -257,119 +282,120 @@ header{background:var(--surface);border-bottom:3px solid var(--accent);
       <div class="prog-list" id="m-linhas"></div>
     </div>
     <div class="m-oport" id="m-oport" style="display:none">
-      <div class="m-oport-badge" id="m-oport-badge">&#9889; Ultima emissao</div>
-      <div class="m-oport-rota" id="m-oport-rota"></div>
-      <div class="m-oport-pts"  id="m-oport-pts"></div>
+      <div class="oport-badge" id="m-oport-badge">&#9889; Ultima emissao</div>
+      <div class="oport-rota" id="m-oport-rota"></div>
+      <div class="oport-pts"  id="m-oport-pts"></div>
     </div>
   </div>
 </div>
 
 <script>
 const PROXY = 'https://cdv-proxy-production.up.railway.app';
-let passagens = [];
+let passagens = [], grupos_atual = {};
 
-// Projecao equiretangular simples: lon/lat -> x/y no viewBox 1000x500
-function proj(lon, lat) {
-  const x = (lon + 180) / 360 * 1000;
-  const y = (90 - lat) / 180 * 500;
-  return [x, y];
+// Projecao equiretangular: lat/lon -> x/y no viewBox 1000x500
+// x = (lon + 180) / 360 * 1000
+// y = (90 - lat) / 180 * 500
+function proj(lat, lon) {
+  return [(lon + 180) / 360 * 1000, (90 - lat) / 180 * 500];
 }
 
-const CITY_COORDS = {
-  'Sao Paulo':[-46.6333,-23.5505],'GRU':[-46.6333,-23.5505],'VCP':[-47.0626,-22.9099],'CGH':[-46.6556,-23.6265],
-  'Rio de Janeiro':[-43.1729,-22.9068],'GIG':[-43.1729,-22.9068],
-  'Brasilia':[-47.9292,-15.7801],'BSB':[-47.9292,-15.7801],
-  'Belo Horizonte':[-43.9345,-19.9167],'CNF':[-43.9345,-19.9167],
-  'Salvador':[-38.5014,-12.9714],'SSA':[-38.5014,-12.9714],
-  'Fortaleza':[-38.5432,-3.7172],'FOR':[-38.5432,-3.7172],
-  'Recife':[-34.8829,-8.0578],'REC':[-34.8829,-8.0578],
-  'Porto Alegre':[-51.2287,-30.0277],'POA':[-51.2287,-30.0277],
-  'Curitiba':[-49.2733,-25.4284],'CWB':[-49.2733,-25.4284],
-  'Manaus':[-60.025,-3.1019],'MAO':[-60.025,-3.1019],
-  'Belem':[-48.5044,-1.4558],'BEL':[-48.5044,-1.4558],
-  'Natal':[-35.211,-5.7945],'NAT':[-35.211,-5.7945],
-  'Maceio':[-35.735,-9.6658],'MCZ':[-35.735,-9.6658],
-  'Joao Pessoa':[-34.845,-7.1195],'JPA':[-34.845,-7.1195],
-  'Campo Grande':[-54.6201,-20.4697],'CGR':[-54.6201,-20.4697],
-  'Cuiaba':[-56.0967,-15.5961],'CGB':[-56.0967,-15.5961],
-  'Goiania':[-49.2648,-16.6869],'GYN':[-49.2648,-16.6869],
-  'Florianopolis':[-48.548,-27.5954],'FLN':[-48.548,-27.5954],
-  'Uberlandia':[-48.2772,-18.9186],'UDI':[-48.2772,-18.9186],
-  'Campinas':[-47.0626,-22.9099],
-  'Vitoria':[-40.3128,-20.3155],'VIX':[-40.3128,-20.3155],
-  'Foz do Iguacu':[-54.5857,-25.5951],'IGU':[-54.5857,-25.5951],
-  'Buenos Aires':[-58.3816,-34.6037],'EZE':[-58.3816,-34.6037],
-  'Santiago':[-70.6693,-33.4489],'SCL':[-70.6693,-33.4489],
-  'Lima':[-77.0428,-12.0464],'LIM':[-77.0428,-12.0464],
-  'Bogota':[-74.0721,4.711],'BOG':[-74.0721,4.711],
-  'Montevideu':[-56.1645,-34.9011],'MVD':[-56.1645,-34.9011],
-  'Assuncao':[-57.647,-25.2867],'ASU':[-57.647,-25.2867],
-  'Quito':[-78.5243,-0.2295],'UIO':[-78.5243,-0.2295],
-  'Medellin':[-75.5812,6.2442],'MDE':[-75.5812,6.2442],
-  'Cancun':[-86.8515,21.1619],'CUN':[-86.8515,21.1619],
-  'Miami':[-80.1918,25.7617],'MIA':[-80.1918,25.7617],
-  'Nova York':[-74.006,40.7128],'JFK':[-74.006,40.7128],'EWR':[-74.006,40.7128],
-  'Los Angeles':[-118.2437,34.0522],'LAX':[-118.2437,34.0522],
-  'Orlando':[-81.3792,28.5383],'MCO':[-81.3792,28.5383],
-  'Chicago':[-87.6298,41.8781],'ORD':[-87.6298,41.8781],
-  'Toronto':[-79.3832,43.6532],'YYZ':[-79.3832,43.6532],
-  'Vancouver':[-123.1207,49.2827],'YVR':[-123.1207,49.2827],
-  'Mexico':[-99.1332,19.4326],'MEX':[-99.1332,19.4326],
-  'Cidade do Panama':[-79.5197,8.9936],'PTY':[-79.5197,8.9936],
-  'Lisboa':[-9.1393,38.7223],'LIS':[-9.1393,38.7223],
-  'Porto':[-8.6291,41.1579],'OPO':[-8.6291,41.1579],
-  'Madrid':[-3.7038,40.4168],'MAD':[-3.7038,40.4168],
-  'Barcelona':[2.1734,41.3851],'BCN':[2.1734,41.3851],
-  'Paris':[2.3522,48.8566],'CDG':[2.3522,48.8566],'ORY':[2.3522,48.8566],
-  'Londres':[-0.1278,51.5074],'LHR':[-0.1278,51.5074],'LGW':[-0.1278,51.5074],
-  'Amsterdam':[4.9041,52.3676],'AMS':[4.9041,52.3676],
-  'Frankfurt':[8.6821,50.1109],'FRA':[8.6821,50.1109],
-  'Roma':[12.4964,41.9028],'FCO':[12.4964,41.9028],
-  'Milao':[9.1859,45.4654],'MXP':[9.1859,45.4654],
-  'Zurique':[8.5417,47.3769],'ZRH':[8.5417,47.3769],
-  'Genebra':[6.1432,46.2044],'GVA':[6.1432,46.2044],
-  'Viena':[16.3738,48.2082],'VIE':[16.3738,48.2082],
-  'Berlim':[13.405,52.52],'BER':[13.405,52.52],
-  'Munique':[11.582,48.1351],'MUC':[11.582,48.1351],
-  'Copenhague':[12.5683,55.6761],'CPH':[12.5683,55.6761],
-  'Estocolmo':[18.0686,59.3293],'ARN':[18.0686,59.3293],
-  'Oslo':[10.7522,59.9139],'OSL':[10.7522,59.9139],
-  'Helsinki':[24.9384,60.1699],'HEL':[24.9384,60.1699],
-  'Atenas':[23.7275,37.9838],'ATH':[23.7275,37.9838],
-  'Istanbul':[28.9784,41.0082],'IST':[28.9784,41.0082],
-  'Dubai':[55.2708,25.2048],'DXB':[55.2708,25.2048],
-  'Abu Dhabi':[54.3773,24.4539],'AUH':[54.3773,24.4539],
-  'Doha':[51.531,25.2854],'DOH':[51.531,25.2854],
-  'Tel Aviv':[34.7818,32.0853],'TLV':[34.7818,32.0853],
-  'Cairo':[31.2357,30.0444],'CAI':[31.2357,30.0444],
-  'Johannesburgo':[28.0473,-26.2041],'JNB':[28.0473,-26.2041],
-  'Lagos':[3.3792,6.5244],'LOS':[3.3792,6.5244],
-  'Nairobi':[36.8219,-1.2921],'NBO':[36.8219,-1.2921],
-  'Luanda':[13.2343,-8.8368],'LAD':[13.2343,-8.8368],
-  'Toquio':[139.6503,35.6762],'NRT':[139.6503,35.6762],'HND':[139.6503,35.6762],
-  'Osaka':[135.5023,34.6937],'KIX':[135.5023,34.6937],
-  'Seul':[126.978,37.5665],'ICN':[126.978,37.5665],
-  'Pequim':[116.4074,39.9042],'PEK':[116.4074,39.9042],
-  'Xangai':[121.4737,31.2304],'PVG':[121.4737,31.2304],
-  'Hong Kong':[114.1694,22.3193],'HKG':[114.1694,22.3193],
-  'Cingapura':[103.8198,1.3521],'SIN':[103.8198,1.3521],
-  'Bangkok':[100.5018,13.7563],'BKK':[100.5018,13.7563],
-  'Bali':[115.092,-8.3405],'DPS':[115.092,-8.3405],
-  'Sydney':[151.2093,-33.8688],'SYD':[151.2093,-33.8688],
-  'Melbourne':[144.9631,-37.8136],'MEL':[144.9631,-37.8136],
-  'Auckland':[174.7633,-36.8485],'AKL':[174.7633,-36.8485],
-  'Mumbai':[72.8777,19.076],'BOM':[72.8777,19.076],
-  'Delhi':[77.1025,28.7041],'DEL':[77.1025,28.7041],
+// [lat, lon] — latitude primeiro, longitude segundo
+const CITIES = {
+  'Sao Paulo':       [-23.5505,-46.6333], 'GRU': [-23.5505,-46.6333], 'CGH': [-23.6265,-46.6556], 'VCP': [-22.9099,-47.0626],
+  'Rio de Janeiro':  [-22.9068,-43.1729], 'GIG': [-22.9068,-43.1729],
+  'Brasilia':        [-15.7801,-47.9292], 'BSB': [-15.7801,-47.9292],
+  'Belo Horizonte':  [-19.9167,-43.9345], 'CNF': [-19.9167,-43.9345],
+  'Salvador':        [-12.9714,-38.5014], 'SSA': [-12.9714,-38.5014],
+  'Fortaleza':       [ -3.7172,-38.5432], 'FOR': [ -3.7172,-38.5432],
+  'Recife':          [ -8.0578,-34.8829], 'REC': [ -8.0578,-34.8829],
+  'Porto Alegre':    [-30.0277,-51.2287], 'POA': [-30.0277,-51.2287],
+  'Curitiba':        [-25.4284,-49.2733], 'CWB': [-25.4284,-49.2733],
+  'Manaus':          [ -3.1019,-60.0250], 'MAO': [ -3.1019,-60.0250],
+  'Belem':           [ -1.4558,-48.5044], 'BEL': [ -1.4558,-48.5044],
+  'Natal':           [ -5.7945,-35.2110], 'NAT': [ -5.7945,-35.2110],
+  'Maceio':          [ -9.6658,-35.7350], 'MCZ': [ -9.6658,-35.7350],
+  'Joao Pessoa':     [ -7.1195,-34.8450], 'JPA': [ -7.1195,-34.8450],
+  'Campo Grande':    [-20.4697,-54.6201], 'CGR': [-20.4697,-54.6201],
+  'Cuiaba':          [-15.5961,-56.0967], 'CGB': [-15.5961,-56.0967],
+  'Goiania':         [-16.6869,-49.2648], 'GYN': [-16.6869,-49.2648],
+  'Florianopolis':   [-27.5954,-48.5480], 'FLN': [-27.5954,-48.5480],
+  'Uberlandia':      [-18.9186,-48.2772], 'UDI': [-18.9186,-48.2772],
+  'Campinas':        [-22.9099,-47.0626],
+  'Vitoria':         [-20.3155,-40.3128], 'VIX': [-20.3155,-40.3128],
+  'Foz do Iguacu':   [-25.5951,-54.5857], 'IGU': [-25.5951,-54.5857],
+  'Buenos Aires':    [-34.6037,-58.3816], 'EZE': [-34.6037,-58.3816],
+  'Santiago':        [-33.4489,-70.6693], 'SCL': [-33.4489,-70.6693],
+  'Lima':            [-12.0464,-77.0428], 'LIM': [-12.0464,-77.0428],
+  'Bogota':          [  4.7110,-74.0721], 'BOG': [  4.7110,-74.0721],
+  'Montevideu':      [-34.9011,-56.1645], 'MVD': [-34.9011,-56.1645],
+  'Assuncao':        [-25.2867,-57.6470], 'ASU': [-25.2867,-57.6470],
+  'Quito':           [ -0.2295,-78.5243], 'UIO': [ -0.2295,-78.5243],
+  'Medellin':        [  6.2442,-75.5812], 'MDE': [  6.2442,-75.5812],
+  'Cancun':          [ 21.1619,-86.8515], 'CUN': [ 21.1619,-86.8515],
+  'Miami':           [ 25.7617,-80.1918], 'MIA': [ 25.7617,-80.1918],
+  'Nova York':       [ 40.7128,-74.0060], 'JFK': [ 40.7128,-74.0060], 'EWR': [ 40.7128,-74.0060],
+  'Los Angeles':     [ 34.0522,-118.243], 'LAX': [ 34.0522,-118.243],
+  'Orlando':         [ 28.5383,-81.3792], 'MCO': [ 28.5383,-81.3792],
+  'Chicago':         [ 41.8781,-87.6298], 'ORD': [ 41.8781,-87.6298],
+  'Toronto':         [ 43.6532,-79.3832], 'YYZ': [ 43.6532,-79.3832],
+  'Vancouver':       [ 49.2827,-123.121], 'YVR': [ 49.2827,-123.121],
+  'Mexico':          [ 19.4326,-99.1332], 'MEX': [ 19.4326,-99.1332],
+  'Cidade do Panama':[ 8.99360,-79.5197], 'PTY': [ 8.99360,-79.5197],
+  'Lisboa':          [ 38.7223, -9.1393], 'LIS': [ 38.7223, -9.1393],
+  'Porto':           [ 41.1579, -8.6291], 'OPO': [ 41.1579, -8.6291],
+  'Madrid':          [ 40.4168, -3.7038], 'MAD': [ 40.4168, -3.7038],
+  'Barcelona':       [ 41.3851,  2.1734], 'BCN': [ 41.3851,  2.1734],
+  'Paris':           [ 48.8566,  2.3522], 'CDG': [ 48.8566,  2.3522], 'ORY': [ 48.8566,  2.3522],
+  'Londres':         [ 51.5074, -0.1278], 'LHR': [ 51.5074, -0.1278], 'LGW': [ 51.5074, -0.1278],
+  'Amsterdam':       [ 52.3676,  4.9041], 'AMS': [ 52.3676,  4.9041],
+  'Frankfurt':       [ 50.1109,  8.6821], 'FRA': [ 50.1109,  8.6821],
+  'Roma':            [ 41.9028, 12.4964], 'FCO': [ 41.9028, 12.4964],
+  'Milao':           [ 45.4654,  9.1859], 'MXP': [ 45.4654,  9.1859],
+  'Zurique':         [ 47.3769,  8.5417], 'ZRH': [ 47.3769,  8.5417],
+  'Genebra':         [ 46.2044,  6.1432], 'GVA': [ 46.2044,  6.1432],
+  'Viena':           [ 48.2082, 16.3738], 'VIE': [ 48.2082, 16.3738],
+  'Berlim':          [ 52.5200, 13.4050], 'BER': [ 52.5200, 13.4050],
+  'Munique':         [ 48.1351, 11.5820], 'MUC': [ 48.1351, 11.5820],
+  'Copenhague':      [ 55.6761, 12.5683], 'CPH': [ 55.6761, 12.5683],
+  'Estocolmo':       [ 59.3293, 18.0686], 'ARN': [ 59.3293, 18.0686],
+  'Oslo':            [ 59.9139, 10.7522], 'OSL': [ 59.9139, 10.7522],
+  'Helsinki':        [ 60.1699, 24.9384], 'HEL': [ 60.1699, 24.9384],
+  'Atenas':          [ 37.9838, 23.7275], 'ATH': [ 37.9838, 23.7275],
+  'Istanbul':        [ 41.0082, 28.9784], 'IST': [ 41.0082, 28.9784],
+  'Dubai':           [ 25.2048, 55.2708], 'DXB': [ 25.2048, 55.2708],
+  'Abu Dhabi':       [ 24.4539, 54.3773], 'AUH': [ 24.4539, 54.3773],
+  'Doha':            [ 25.2854, 51.5310], 'DOH': [ 25.2854, 51.5310],
+  'Tel Aviv':        [ 32.0853, 34.7818], 'TLV': [ 32.0853, 34.7818],
+  'Cairo':           [ 30.0444, 31.2357], 'CAI': [ 30.0444, 31.2357],
+  'Johannesburgo':   [-26.2041, 28.0473], 'JNB': [-26.2041, 28.0473],
+  'Lagos':           [  6.5244,  3.3792], 'LOS': [  6.5244,  3.3792],
+  'Nairobi':         [ -1.2921, 36.8219], 'NBO': [ -1.2921, 36.8219],
+  'Luanda':          [ -8.8368, 13.2343], 'LAD': [ -8.8368, 13.2343],
+  'Toquio':          [ 35.6762, 139.650], 'NRT': [ 35.6762, 139.650], 'HND': [ 35.6762, 139.650],
+  'Osaka':           [ 34.6937, 135.502], 'KIX': [ 34.6937, 135.502],
+  'Seul':            [ 37.5665, 126.978], 'ICN': [ 37.5665, 126.978],
+  'Pequim':          [ 39.9042, 116.407], 'PEK': [ 39.9042, 116.407],
+  'Xangai':          [ 31.2304, 121.474], 'PVG': [ 31.2304, 121.474],
+  'Hong Kong':       [ 22.3193, 114.169], 'HKG': [ 22.3193, 114.169],
+  'Cingapura':       [  1.3521, 103.820], 'SIN': [  1.3521, 103.820],
+  'Bangkok':         [ 13.7563, 100.502], 'BKK': [ 13.7563, 100.502],
+  'Bali':            [ -8.3405, 115.092], 'DPS': [ -8.3405, 115.092],
+  'Sydney':          [-33.8688, 151.209], 'SYD': [-33.8688, 151.209],
+  'Melbourne':       [-37.8136, 144.963], 'MEL': [-37.8136, 144.963],
+  'Auckland':        [-36.8485, 174.763], 'AKL': [-36.8485, 174.763],
+  'Mumbai':          [ 19.0760, 72.8777], 'BOM': [ 19.0760, 72.8777],
+  'Delhi':           [ 28.7041, 77.1025], 'DEL': [ 28.7041, 77.1025],
 };
 
 function norm(s){return(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
 const IDX={};
-for(const[k,v]of Object.entries(CITY_COORDS))IDX[norm(k)]=v;
+for(const[k,v]of Object.entries(CITIES))IDX[norm(k)]=v;
 function getCoords(nome){
   if(!nome)return null;
   const n=norm(nome);
   if(IDX[n])return IDX[n];
-  for(const[k,v]of Object.entries(IDX)){if(n.startsWith(k)||k.startsWith(n))return v;}
+  for(const[k,v]of Object.entries(IDX))if(n.startsWith(k)||k.startsWith(n))return v;
   return null;
 }
 
@@ -380,66 +406,66 @@ const PROG_CORES={
 };
 function corProg(p){
   if(!p)return'#6366f1';
-  const s=p.toLowerCase();
+  const s=(p||'').toLowerCase();
   for(const[k,v]of Object.entries(PROG_CORES))if(s.includes(k))return v;
   return'#6366f1';
 }
 
 function flag(dest){
   const d=norm(dest);
-  if(d.includes('paris')||d.includes('cdg')||d.includes('ory'))return'\uD83C\uDDEB\uD83C\uDDF7';
-  if(d.includes('lisboa')||d.includes('porto')||d.includes('lis')||d.includes('opo'))return'\uD83C\uDDF5\uD83C\uDDF9';
-  if(d.includes('madrid')||d.includes('barcelona')||d.includes('mad')||d.includes('bcn'))return'\uD83C\uDDEA\uD83C\uDDF8';
-  if(d.includes('roma')||d.includes('milao')||d.includes('fco')||d.includes('mxp'))return'\uD83C\uDDEE\uD83C\uDDF9';
-  if(d.includes('berlim')||d.includes('munique')||d.includes('frankfurt'))return'\uD83C\uDDE9\uD83C\uDDEA';
-  if(d.includes('amsterdam')||d.includes('ams'))return'\uD83C\uDDF3\uD83C\uDDF1';
-  if(d.includes('londres')||d.includes('lhr')||d.includes('lgw'))return'\uD83C\uDDEC\uD83C\uDDE7';
-  if(d.includes('zurique')||d.includes('genebra'))return'\uD83C\uDDE8\uD83C\uDDED';
-  if(d.includes('nova york')||d.includes('jfk')||d.includes('ewr'))return'\uD83C\uDDFA\uD83C\uDDF8';
-  if(d.includes('miami')||d.includes('orlando')||d.includes('chicago')||d.includes('los angeles'))return'\uD83C\uDDFA\uD83C\uDDF8';
-  if(d.includes('toronto')||d.includes('vancouver'))return'\uD83C\uDDE8\uD83C\uDDE6';
-  if(d.includes('cancun')||d.includes('mexico'))return'\uD83C\uDDF2\uD83C\uDDFD';
-  if(d.includes('buenos aires'))return'\uD83C\uDDE6\uD83C\uDDF7';
-  if(d.includes('santiago'))return'\uD83C\uDDE8\uD83C\uDDF1';
-  if(d.includes('lima'))return'\uD83C\uDDF5\uD83C\uDDEA';
-  if(d.includes('bogota'))return'\uD83C\uDDE8\uD83C\uDDF4';
-  if(d.includes('dubai')||d.includes('abu dhabi')||d.includes('dxb'))return'\uD83C\uDDE6\uD83C\uDDEA';
-  if(d.includes('doha')||d.includes('doh'))return'\uD83C\uDDF6\uD83C\uDDE6';
-  if(d.includes('toquio')||d.includes('osaka')||d.includes('nrt'))return'\uD83C\uDDEF\uD83C\uDDF5';
-  if(d.includes('seul')||d.includes('icn'))return'\uD83C\uDDF0\uD83C\uDDF7';
-  if(d.includes('bali')||d.includes('dps'))return'\uD83C\uDDEE\uD83C\uDDE9';
-  if(d.includes('sydney')||d.includes('melbourne'))return'\uD83C\uDDE6\uD83C\uDDFA';
-  if(d.includes('bangkok')||d.includes('bkk'))return'\uD83C\uDDF9\uD83C\uDDED';
-  if(d.includes('cingapura')||d.includes('sin'))return'\uD83C\uDDF8\uD83C\uDDEC';
-  if(d.includes('hong kong')||d.includes('hkg'))return'\uD83C\uDDED\uD83C\uDDF0';
-  if(d.includes('johannesburgo'))return'\uD83C\uDDFF\uD83C\uDDE6';
+  const flags={
+    paris:'\uD83C\uDDEB\uD83C\uDDF7',cdg:'\uD83C\uDDEB\uD83C\uDDF7',ory:'\uD83C\uDDEB\uD83C\uDDF7',
+    lisboa:'\uD83C\uDDF5\uD83C\uDDF9',lis:'\uD83C\uDDF5\uD83C\uDDF9',porto:'\uD83C\uDDF5\uD83C\uDDF9',opo:'\uD83C\uDDF5\uD83C\uDDF9',
+    madrid:'\uD83C\uDDEA\uD83C\uDDF8',barcelona:'\uD83C\uDDEA\uD83C\uDDF8',mad:'\uD83C\uDDEA\uD83C\uDDF8',bcn:'\uD83C\uDDEA\uD83C\uDDF8',
+    roma:'\uD83C\uDDEE\uD83C\uDDF9',milao:'\uD83C\uDDEE\uD83C\uDDF9',fco:'\uD83C\uDDEE\uD83C\uDDF9',mxp:'\uD83C\uDDEE\uD83C\uDDF9',
+    berlim:'\uD83C\uDDE9\uD83C\uDDEA',munique:'\uD83C\uDDE9\uD83C\uDDEA',frankfurt:'\uD83C\uDDE9\uD83C\uDDEA',ber:'\uD83C\uDDE9\uD83C\uDDEA',fra:'\uD83C\uDDE9\uD83C\uDDEA',muc:'\uD83C\uDDE9\uD83C\uDDEA',
+    amsterdam:'\uD83C\uDDF3\uD83C\uDDF1',ams:'\uD83C\uDDF3\uD83C\uDDF1',
+    londres:'\uD83C\uDDEC\uD83C\uDDE7',lhr:'\uD83C\uDDEC\uD83C\uDDE7',lgw:'\uD83C\uDDEC\uD83C\uDDE7',
+    zurique:'\uD83C\uDDE8\uD83C\uDDED',genebra:'\uD83C\uDDE8\uD83C\uDDED',zrh:'\uD83C\uDDE8\uD83C\uDDED',gva:'\uD83C\uDDE8\uD83C\uDDED',
+    viena:'\uD83C\uDDE6\uD83C\uDDF9',vie:'\uD83C\uDDE6\uD83C\uDDF9',
+    atenas:'\uD83C\uDDEC\uD83C\uDDF7',ath:'\uD83C\uDDEC\uD83C\uDDF7',
+    istanbul:'\uD83C\uDDF9\uD83C\uDDF7',ist:'\uD83C\uDDF9\uD83C\uDDF7',
+    'nova york':'\uD83C\uDDFA\uD83C\uDDF8',jfk:'\uD83C\uDDFA\uD83C\uDDF8',ewr:'\uD83C\uDDFA\uD83C\uDDF8',miami:'\uD83C\uDDFA\uD83C\uDDF8',mia:'\uD83C\uDDFA\uD83C\uDDF8',
+    orlando:'\uD83C\uDDFA\uD83C\uDDF8',mco:'\uD83C\uDDFA\uD83C\uDDF8',chicago:'\uD83C\uDDFA\uD83C\uDDF8',ord:'\uD83C\uDDFA\uD83C\uDDF8',
+    'los angeles':'\uD83C\uDDFA\uD83C\uDDF8',lax:'\uD83C\uDDFA\uD83C\uDDF8',
+    toronto:'\uD83C\uDDE8\uD83C\uDDE6',yyZ:'\uD83C\uDDE8\uD83C\uDDE6',vancouver:'\uD83C\uDDE8\uD83C\uDDE6',yvr:'\uD83C\uDDE8\uD83C\uDDE6',
+    cancun:'\uD83C\uDDF2\uD83C\uDDFD',cun:'\uD83C\uDDF2\uD83C\uDDFD',mexico:'\uD83C\uDDF2\uD83C\uDDFD',mex:'\uD83C\uDDF2\uD83C\uDDFD',
+    'buenos aires':'\uD83C\uDDE6\uD83C\uDDF7',eze:'\uD83C\uDDE6\uD83C\uDDF7',
+    santiago:'\uD83C\uDDE8\uD83C\uDDF1',scl:'\uD83C\uDDE8\uD83C\uDDF1',
+    lima:'\uD83C\uDDF5\uD83C\uDDEA',lim:'\uD83C\uDDF5\uD83C\uDDEA',
+    bogota:'\uD83C\uDDE8\uD83C\uDDF4',bog:'\uD83C\uDDE8\uD83C\uDDF4',
+    dubai:'\uD83C\uDDE6\uD83C\uDDEA',dxb:'\uD83C\uDDE6\uD83C\uDDEA','abu dhabi':'\uD83C\uDDE6\uD83C\uDDEA',auh:'\uD83C\uDDE6\uD83C\uDDEA',
+    doha:'\uD83C\uDDF6\uD83C\uDDE6',doh:'\uD83C\uDDF6\uD83C\uDDE6',
+    toquio:'\uD83C\uDDEF\uD83C\uDDF5',nrt:'\uD83C\uDDEF\uD83C\uDDF5',hnd:'\uD83C\uDDEF\uD83C\uDDF5',osaka:'\uD83C\uDDEF\uD83C\uDDF5',kix:'\uD83C\uDDEF\uD83C\uDDF5',
+    seul:'\uD83C\uDDF0\uD83C\uDDF7',icn:'\uD83C\uDDF0\uD83C\uDDF7',
+    bali:'\uD83C\uDDEE\uD83C\uDDE9',dps:'\uD83C\uDDEE\uD83C\uDDE9',
+    sydney:'\uD83C\uDDE6\uD83C\uDDFA',syd:'\uD83C\uDDE6\uD83C\uDDFA',melbourne:'\uD83C\uDDE6\uD83C\uDDFA',mel:'\uD83C\uDDE6\uD83C\uDDFA',
+    bangkok:'\uD83C\uDDF9\uD83C\uDDED',bkk:'\uD83C\uDDF9\uD83C\uDDED',
+    cingapura:'\uD83C\uDDF8\uD83C\uDDEC',sin:'\uD83C\uDDF8\uD83C\uDDEC',
+    'hong kong':'\uD83C\uDDED\uD83C\uDDF0',hkg:'\uD83C\uDDED\uD83C\uDDF0',
+    johannesburgo:'\uD83C\uDDFF\uD83C\uDDE6',jnb:'\uD83C\uDDFF\uD83C\uDDE6',
+  };
+  for(const[k,v]of Object.entries(flags))if(d===k||d.startsWith(k))return v;
+  // Brasil por padrao para cidades brasileiras
+  const br=['sao paulo','rio','brasilia','belo horizonte','salvador','fortaleza','recife','curitiba','porto alegre','manaus','belem'];
+  for(const b of br)if(d.includes(b))return'\uD83C\uDDE7\uD83C\uDDF7';
   return'\u2708\uFE0F';
 }
 
-function fmtPts(n){
-  if(!n||n===Infinity)return null;
-  if(n>=1000)return Math.round(n/1000)+'k';
-  return String(n);
-}
-
+function fmtPts(n){if(!n||n===Infinity)return null;return n>=1000?Math.round(n/1000)+'k':String(n);}
 function tempoAtras(iso){
   if(!iso)return'';
-  const d=Math.floor((Date.now()-new Date(iso))/86400000);
   const h=Math.floor((Date.now()-new Date(iso))/3600000);
-  if(d>0)return'ha '+d+' dia'+(d>1?'s':'');
-  if(h>0)return'ha '+h+'h';
-  return'agora';
+  const d=Math.floor(h/24);
+  return d>0?'ha '+d+' dia'+(d>1?'s',''):h>0?'ha '+h+'h':'agora';
 }
 
-/* ── MAPA SVG ───────────────────────────────────────────── */
-let grupos_atual = {};
-
+/* ── RENDER ─────────────────────────────────────────────── */
 function render(){
   const fp=document.getElementById('f-prog').value.toLowerCase();
   const fc=document.getElementById('f-cabine').value.toLowerCase();
   const fo=norm(document.getElementById('f-origem').value);
   const fd=norm(document.getElementById('f-destino').value);
-
   let ps=passagens;
   if(fp)ps=ps.filter(p=>(p.programa||'').toLowerCase()===fp);
   if(fc)ps=ps.filter(p=>(p.cabine||'').toLowerCase().includes(fc));
@@ -447,143 +473,122 @@ function render(){
   if(fd)ps=ps.filter(p=>norm(p.destino).includes(fd));
 
   const grupos={};
-  for(const p of ps){
-    if(!p.destino)continue;
-    if(!grupos[p.destino])grupos[p.destino]=[];
-    grupos[p.destino].push(p);
-  }
+  for(const p of ps){if(!p.destino)continue;if(!grupos[p.destino])grupos[p.destino]=[];grupos[p.destino].push(p);}
   grupos_atual=grupos;
 
   const el=document.getElementById('markers');
   el.innerHTML='';
-
+  const NS='http://www.w3.org/2000/svg';
   let nd=0;
-  const svgNS='http://www.w3.org/2000/svg';
 
   for(const[dest,items]of Object.entries(grupos)){
-    const c=getCoords(dest);
-    if(!c)continue;
-    nd++;
-
-    const[lon,lat]=c;
-    const[x,y]=proj(lon,lat);
+    const c=getCoords(dest);if(!c)continue;nd++;
+    const[lat,lon]=c;
+    const[x,y]=proj(lat,lon);
     const qtd=items.length;
     const prog=[...new Set(items.map(p=>p.programa).filter(Boolean))][0];
     const cor=corProg(prog);
     const minPts=Math.min(...items.map(p=>p.pontos||0).filter(v=>v>0));
-    const r=Math.min(18,Math.max(7,7+Math.sqrt(qtd)*2.5));
+    const r=Math.min(20,Math.max(8,8+Math.sqrt(qtd)*2.8));
 
-    const g=document.createElementNS(svgNS,'g');
+    const g=document.createElementNS(NS,'g');
     g.setAttribute('class','pin pin-enter');
-    g.style.transformOrigin=x+'px '+y+'px';
-    g.style.cursor='pointer';
+    g.style.transformOrigin=`${x}px ${y}px`;
 
     // Halo pulsante
-    const halo=document.createElementNS(svgNS,'circle');
+    const halo=document.createElementNS(NS,'circle');
     halo.setAttribute('cx',x);halo.setAttribute('cy',y);
-    halo.setAttribute('r',r+5);halo.setAttribute('fill',cor);
-    halo.setAttribute('opacity','0.2');halo.setAttribute('class','pin-pulse');
-    halo.style.transformOrigin=x+'px '+y+'px';
+    halo.setAttribute('r',r+6);halo.setAttribute('fill',cor);
+    halo.setAttribute('class','halo');halo.style.transformOrigin=`${x}px ${y}px`;
     g.appendChild(halo);
 
-    // Circulo principal
-    const circ=document.createElementNS(svgNS,'circle');
-    circ.setAttribute('cx',x);circ.setAttribute('cy',y);
-    circ.setAttribute('r',r);circ.setAttribute('fill',cor);
-    circ.setAttribute('stroke','rgba(255,255,255,.4)');
+    // Circulo
+    const circ=document.createElementNS(NS,'circle');
+    circ.setAttribute('cx',x);circ.setAttribute('cy',y);circ.setAttribute('r',r);
+    circ.setAttribute('fill',cor);circ.setAttribute('stroke','rgba(255,255,255,.35)');
     circ.setAttribute('stroke-width','1.5');
     g.appendChild(circ);
 
-    // Emoji ou letra no centro
-    if(r>=11){
-      const txt=document.createElementNS(svgNS,'text');
-      txt.setAttribute('x',x);txt.setAttribute('y',y+1);
-      txt.setAttribute('text-anchor','middle');txt.setAttribute('dominant-baseline','middle');
-      txt.setAttribute('font-size',r*0.9);txt.setAttribute('fill','#fff');
-      txt.setAttribute('font-weight','800');txt.setAttribute('font-family','Montserrat,sans-serif');
-      txt.setAttribute('pointer-events','none');
-      txt.textContent=flag(dest);
-      g.appendChild(txt);
+    // Flag ou emoji no centro
+    if(r>=12){
+      const t=document.createElementNS(NS,'text');
+      t.setAttribute('x',x);t.setAttribute('y',y+1);
+      t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','middle');
+      t.setAttribute('font-size',Math.min(r*0.95,14));t.setAttribute('fill','#fff');
+      t.setAttribute('pointer-events','none');
+      t.textContent=flag(dest);
+      g.appendChild(t);
     }
 
-    // Eventos
-    g.addEventListener('mouseenter',function(e){mostrarTooltip(e,dest,minPts,qtd);});
-    g.addEventListener('mousemove',function(e){moverTooltip(e);});
+    g.addEventListener('mouseenter',e=>mostrarTooltip(e,dest,minPts,qtd));
+    g.addEventListener('mousemove',e=>moverTooltip(e));
     g.addEventListener('mouseleave',esconderTooltip);
-    g.addEventListener('click',function(){abrirModal(dest,grupos_atual[dest]||[]);});
-
+    g.addEventListener('click',()=>abrirModal(dest,grupos_atual[dest]||[]));
     el.appendChild(g);
   }
 
-  const cnt=nd+' destino'+(nd!==1?'s':'')+' \u00b7 '+ps.length+' emissao'+(ps.length!==1?'es':'');
-  document.getElementById('contador-header').textContent=cnt;
+  document.getElementById('contador-header').textContent=
+    nd+' destino'+(nd!==1?'s':'')+' \u00b7 '+ps.length+' emissao'+(ps.length!==1?'es':'');
 }
 
 /* ── TOOLTIP ─────────────────────────────────────────────── */
-const ttEl=document.getElementById('tooltip');
+const tt=document.getElementById('tooltip');
 function mostrarTooltip(e,dest,pts,qtd){
   document.getElementById('tt-dest').textContent=dest;
   document.getElementById('tt-pts').textContent=pts>0?pts.toLocaleString('pt-BR')+' pts min.':'';
   document.getElementById('tt-qtd').textContent=qtd+' emissao'+(qtd>1?'es':'');
-  moverTooltip(e);ttEl.classList.add('show');
+  moverTooltip(e);tt.classList.add('show');
 }
-function moverTooltip(e){
-  ttEl.style.left=(e.clientX+14)+'px';ttEl.style.top=(e.clientY-10)+'px';
-}
-function esconderTooltip(){ttEl.classList.remove('show');}
+function moverTooltip(e){tt.style.left=(e.clientX+14)+'px';tt.style.top=(e.clientY-10)+'px';}
+function esconderTooltip(){tt.classList.remove('show');}
 
 /* ── MODAL ───────────────────────────────────────────────── */
 function abrirModal(dest,items){
   document.getElementById('m-flag').textContent=flag(dest);
   document.getElementById('m-dest').textContent=dest;
-  const total=items.length;
   const progs=[...new Set(items.map(p=>p.programa).filter(Boolean))];
   document.getElementById('m-sub').textContent=
-    total+' emissao'+(total>1?'es':'')+' registrada'+(total>1?'s':'')+
-    '  \u00b7  '+progs.length+' programa'+(progs.length>1?'s':'');
+    items.length+' emissao'+(items.length>1?'es':'')+' \u00b7 '+progs.length+' programa'+(progs.length>1?'s':'');
 
-  // Agrupar por programa
   const porProg={};
   for(const p of items){
     const pg=p.programa||'Outros';
-    if(!porProg[pg])porProg[pg]={eco:Infinity,exec:Infinity,recente:null};
+    if(!porProg[pg])porProg[pg]={eco:Infinity,exec:Infinity,rec:null};
     const pts=p.pontos||0;if(!pts)continue;
     const cab=(p.cabine||'').toLowerCase();
     if(cab.includes('exec')){if(pts<porProg[pg].exec)porProg[pg].exec=pts;}
     else{if(pts<porProg[pg].eco)porProg[pg].eco=pts;}
-    if(!porProg[pg].recente||new Date(p.enviadoEm)>new Date(porProg[pg].recente.enviadoEm))
-      porProg[pg].recente=p;
+    if(!porProg[pg].rec||new Date(p.enviadoEm)>new Date(porProg[pg].rec.enviadoEm))porProg[pg].rec=p;
   }
   const sorted=Object.entries(porProg).sort((a,b)=>{
-    const pa=a[1].eco===Infinity?a[1].exec:a[1].eco;
-    const pb=b[1].eco===Infinity?b[1].exec:b[1].eco;
+    const pa=a[1].eco!==Infinity?a[1].eco:a[1].exec;
+    const pb=b[1].eco!==Infinity?b[1].eco:b[1].exec;
     return pa-pb;
   });
 
   // Melhor
-  const mbox=document.getElementById('m-best');
+  const mb=document.getElementById('m-best');
   if(sorted.length){
     const[bp,bd]=sorted[0];
     const min=bd.eco!==Infinity?bd.eco:bd.exec;
-    document.getElementById('m-best-prog').textContent=bp;
-    document.getElementById('m-best-prog').style.color=corProg(bp);
+    const el=document.getElementById('m-best-prog');
+    el.textContent=bp;el.style.color=corProg(bp);
     document.getElementById('m-best-pts').textContent='A partir de '+min.toLocaleString('pt-BR')+' pontos';
-    mbox.style.display='block';
-  }else mbox.style.display='none';
+    mb.style.display='block';
+  }else mb.style.display='none';
 
   // Tabela
   const tw=document.getElementById('m-tabela-wrap');
-  const ml=document.getElementById('m-linhas');
   if(sorted.length){
-    ml.innerHTML=sorted.map(([pg,d])=>{
+    document.getElementById('m-linhas').innerHTML=sorted.map(([pg,d])=>{
       const eco=fmtPts(d.eco),exec=fmtPts(d.exec);
-      return'<div class="prog-item">'
-        +'<span class="dot" style="background:'+corProg(pg)+'"></span>'
-        +'<span class="nome">'+pg+'</span>'
-        +'<div class="pts-wrap">'
-        +(eco?'<span class="pts-eco">'+eco+'</span>':'<span class="pts-na">-</span>')
-        +(exec?'<span class="pts-exec">'+exec+'</span>':'<span class="pts-na">-</span>')
-        +'</div></div>';
+      return`<div class="prog-item">
+        <span class="prog-dot" style="background:${corProg(pg)}"></span>
+        <span class="prog-nome">${pg}</span>
+        <div class="prog-pts">
+          ${eco?`<span class="pts-eco">${eco}</span>`:'<span class="pts-na">-</span>'}
+          ${exec?`<span class="pts-exec">${exec}</span>`:'<span class="pts-na">-</span>'}
+        </div></div>`;
     }).join('');
     tw.style.display='block';
   }else tw.style.display='none';
@@ -593,14 +598,12 @@ function abrirModal(dest,items){
   const rec=items.filter(p=>p.pontos>0&&p.fonte!=='alerta_rejeitado')
     .sort((a,b)=>new Date(b.enviadoEm||0)-new Date(a.enviadoEm||0))[0];
   if(rec){
-    const quando=tempoAtras(rec.enviadoEm);
-    document.getElementById('m-oport-badge').textContent=
-      '\u26A1 Ultima emissao'+(quando?' \u00b7 '+quando:'');
+    const q=tempoAtras(rec.enviadoEm);
+    document.getElementById('m-oport-badge').textContent='\u26A1 Ultima emissao'+(q?' \u00b7 '+q:'');
     document.getElementById('m-oport-rota').textContent=
       (rec.origem||'')+(rec.origem&&rec.destino?' \u2192 ':'')+( rec.destino||'');
     document.getElementById('m-oport-pts').innerHTML=
-      rec.pontos.toLocaleString('pt-BR')+
-      ' <span>'+(rec.programa||'')+'</span>';
+      rec.pontos.toLocaleString('pt-BR')+' <span>'+(rec.programa||'')+'</span>';
     op.style.display='flex';
   }else op.style.display='none';
 
@@ -612,24 +615,22 @@ function fecharModal(e){
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fecharModal(null);});
 
-/* ── CARREGAR DADOS ──────────────────────────────────────── */
+/* ── CARREGAR ────────────────────────────────────────────── */
 async function carregar(){
   try{
-    const ctrl=new AbortController();
-    setTimeout(()=>ctrl.abort(),20000);
+    const ctrl=new AbortController();setTimeout(()=>ctrl.abort(),20000);
     const r=await fetch(PROXY+'/passagens/listar?t='+Date.now(),{signal:ctrl.signal});
     if(!r.ok)throw new Error('HTTP '+r.status);
     passagens=(await r.json()).items||[];
-    // Popular filtro de programas
     const sel=document.getElementById('f-prog');
     const progs=[...new Set(passagens.map(p=>p.programa).filter(Boolean))].sort();
     sel.innerHTML='<option value="">Todos os programas</option>'+
-      progs.map(p=>'<option value="'+p+'">'+p+'</option>').join('');
+      progs.map(p=>`<option value="${p}">${p}</option>`).join('');
     document.getElementById('loading').style.display='none';
     render();
   }catch(e){
     document.getElementById('loading').innerHTML=
-      '<span style="color:#ff585e;font-size:13px">Erro: '+e.message+'</span>';
+      `<span style="color:#ff585e;font-size:13px">Erro: ${e.message}</span>`;
   }
 }
 carregar();
