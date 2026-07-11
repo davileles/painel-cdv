@@ -214,8 +214,14 @@ function parseComparemaniaPts(html, progId) {
       ? (rawHref.startsWith('http') ? rawHref : 'https://www.comparemania.com.br' + rawHref)
       : '';
 
-    // Segundo <td>: texto de pontuação (remove tags)
-    const ptsTxt = tds[1].replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    // Segundo <td>: texto de pontuação (remove tags + decode entidades HTML)
+    // Necessário porque o HTML cru pode ter "at&#xE9;" em vez de "até", quebrando o extractPts
+    const ptsTxtRaw = tds[1].replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    const ptsTxt = ptsTxtRaw
+      .replace(/&#x([0-9a-fA-F]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
+      .replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d))
+      .replace(/&amp;/g, '&').replace(/&apos;/g, "'").replace(/&#39;/g, "'")
+      .replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ').replace(/&shy;/g, '');
     const pts = extractPts(ptsTxt);
     if (!pts) continue;
 
