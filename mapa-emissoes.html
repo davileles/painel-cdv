@@ -73,7 +73,7 @@ var TABELA={"Belo Horizonte": [-19.9167, -43.9345, "BR", "Brasil"], "Brasilia": 
 var PROG_CORES={"LATAM Pass": "#dc2626", "Smiles": "#f97316", "Azul Fidelidade": "#0ea5e9", "Azul pelo Mundo": "#0ea5e9", "Flying Blue": "#003087", "Iberia Plus": "#c0392b", "TAP Miles&Go": "#005f9e", "AAdvantage": "#0068b2", "Finnair Plus": "#003580", "Privilege Club": "#8b0000"};
 var FLAGS={"BR":"&#x1F1E7;&#x1F1F7;","US":"&#x1F1FA;&#x1F1F8;","AR":"&#x1F1E6;&#x1F1F7;","CL":"&#x1F1E8;&#x1F1F1;","PE":"&#x1F1F5;&#x1F1EA;","CO":"&#x1F1E8;&#x1F1F4;","UY":"&#x1F1FA;&#x1F1FE;","PY":"&#x1F1F5;&#x1F1FE;","BO":"&#x1F1E7;&#x1F1F4;","CR":"&#x1F1E8;&#x1F1F7;","DO":"&#x1F1E9;&#x1F1F4;","MX":"&#x1F1F2;&#x1F1FD;","PT":"&#x1F1F5;&#x1F1F9;","ES":"&#x1F1EA;&#x1F1F8;","FR":"&#x1F1EB;&#x1F1F7;","GB":"&#x1F1EC;&#x1F1E7;","DE":"&#x1F1E9;&#x1F1EA;","NL":"&#x1F1F3;&#x1F1F1;","IT":"&#x1F1EE;&#x1F1F9;","CH":"&#x1F1E8;&#x1F1ED;","AE":"&#x1F1E6;&#x1F1EA;","ZA":"&#x1F1FF;&#x1F1E6;"};
 function norm(s){return(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
-function lookup(dest){return TABELA[norm(dest)]||null;}
+var TIDX={};(function(){for(var k in TABELA){TIDX[norm(k)]=TABELA[k];}})();function lookup(dest){return TIDX[norm(dest)]||null;}
 function corProg(p){return p&&PROG_CORES[p]?PROG_CORES[p]:'#6366f1';}
 function fmtPts(n){if(!n||n===Infinity)return null;return n>=1000?Math.round(n/1000)+'k':String(n);}
 function tempoAtras(iso){if(!iso)return'';var h=Math.floor((Date.now()-new Date(iso))/3600000),d=Math.floor(h/24);if(d>0)return'ha '+d+' dia'+(d>1?'s':'');if(h>0)return'ha '+h+'h';return'agora';}
