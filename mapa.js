@@ -99,11 +99,11 @@ const CITY_COORDS={
   'Mumbai':[19.076,72.8777],'BOM':[19.076,72.8777],
   'Delhi':[28.7041,77.1025],'DEL':[28.7041,77.1025],
 };
-const _CI=Object.fromEntries(Object.entries(CITY_COORDS).map(([k,v])=>[k.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(),v]));
+const _CI=Object.fromEntries(Object.entries(CITY_COORDS).map(([k,v])=>[k.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),v]));
 function resolverCoords(n){
   if(!n)return null;
   if(CITY_COORDS[n])return CITY_COORDS[n];
-  const r=n.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+  const r=n.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
   if(_CI[r])return _CI[r];
   for(const[k,v]of Object.entries(_CI)){if(r.startsWith(k)||k.startsWith(r))return v;}
   return null;
