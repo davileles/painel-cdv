@@ -39,7 +39,7 @@ header{background:var(--surface);border-bottom:3px solid var(--accent);padding:1
 
 /* Leaflet overrides — tiles coloridos, oceano azul escuro */
 .leaflet-container{background:#1a2540}
-.leaflet-tile-pane{filter:saturate(0.7) brightness(0.85)}
+.leaflet-tile-pane{filter:saturate(0.8) brightness(0.78) hue-rotate(5deg)}
 
 /* PIN customizado */
 .pin-wrapper{position:relative;cursor:pointer}
@@ -181,8 +181,9 @@ function initMapa() {
   });
 
   // Tile estilo aquarela/ilustrativo — Stamen Watercolor via Stadia
-  L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg', {
-    maxZoom: 16,
+  // CartoDB Voyager — colorido, amigável, sem autenticação
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19,
     attribution: ''
   }).addTo(mapaLeaflet);
 
