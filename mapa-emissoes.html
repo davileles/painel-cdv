@@ -176,8 +176,10 @@ let passagens = [], mapaLeaflet = null, camadaMarcadores = null;
 /* ── MAPA ─────────────────────────────────────────────── */
 function initMapa() {
   mapaLeaflet = L.map('map', {
-    center: [20, 10], zoom: 2, minZoom: 2, maxZoom: 6,
-    attributionControl: false, zoomControl: true
+    center: [20, 10], zoom: 2, minZoom: 2, maxZoom: 8,
+    attributionControl: false, zoomControl: true,
+    maxBounds: [[-85, -180], [85, 180]],
+    maxBoundsViscosity: 1.0
   });
 
   // Tile estilo aquarela/ilustrativo — Stamen Watercolor via Stadia
@@ -467,6 +469,11 @@ async function carregar(){
     const progs=[...new Set(passagens.map(p=>p.programa).filter(Boolean))].sort();
     sel.innerHTML='<option value="">Todos os programas</option>'+progs.map(p=>`<option value="${p}">${p}</option>`).join('');
     render();
+    // Ajustar zoom para mostrar todos os destinos
+    try {
+      const bounds = camadaMarcadores.getBounds();
+      if (bounds.isValid()) mapaLeaflet.fitBounds(bounds, {padding: [40, 40], maxZoom: 4});
+    } catch(_) {}
   }catch(e){
     document.getElementById('badge-count').textContent='Erro: '+e.message;
     initMapa();
