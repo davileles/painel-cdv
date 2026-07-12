@@ -1125,7 +1125,32 @@
 </div>
 
 <script>
-const PROXY = 'https://cdv-proxy-production.up.railway.app/fetch';
+// ── Ambiente (DEV vs PROD) ───────────────────────────────────────────────────
+const IS_DEV = location.search.includes('env=dev');
+const _BASE  = 'https://cdv-proxy-production.up.railway.app';
+// Headers adicionados a todos os fetches do proxy quando em modo DEV
+function devHeaders() {
+  return IS_DEV ? { 'Content-Type': 'application/json', 'x-cdv-env': 'dev' } : { 'Content-Type': 'application/json' };
+}
+function devFetch(url, opts = {}) {
+  if (!IS_DEV) return fetch(url, opts);
+  const headers = Object.assign({}, opts.headers || {}, { 'x-cdv-env': 'dev' });
+  return fetch(url, { ...opts, headers });
+}
+// Exibe badge DEV no topo da página quando em modo de testes
+if (IS_DEV) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const badge = document.createElement('div');
+    badge.textContent = '🧪 MODO DEV — dados isolados';
+    badge.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#f59e0b;color:#000;text-align:center;font-size:12px;font-weight:700;padding:4px 0;letter-spacing:.5px';
+    document.body.prepend(badge);
+  });
+}
+// ─────────────────────────────────────────────────────────────────────────────
+const PROXY          = _BASE + '/fetch';
+const CDV_PROXY_PASS = _BASE;
+const MILHAS_PROXY   = _BASE;
+const CDV_PROXY_AUTH = _BASE;
 const PROGRAMS = [
   { id:'livelo',  name:'Livelo',      color:'#df0979', dim:'rgba(223,9,121,0.15)',
     url:'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-livelo' },
@@ -1830,7 +1855,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 // ─── Aba Passagens ─────────────────────────────────────────────────────────────
 const PASSAGENS_URL = 'passagens.json';
-const CDV_PROXY_PASS = 'https://cdv-proxy-production.up.railway.app';
+// (unificado em _BASE acima)
 let passagensData = [];
 let passagensLoaded = false;
 
@@ -2312,7 +2337,7 @@ function switchTab(tab){
 // ══════════════════════════════════════════════════════
 //  GESTÃO DE MILHAS
 // ══════════════════════════════════════════════════════
-const MILHAS_PROXY = 'https://cdv-proxy-production.up.railway.app';
+// (unificado em _BASE acima)
 
 const MILHAS_PROGS = [
   {id:'aadvantage', name:'AAdvantage',      color:'#0068b2'},
@@ -2385,7 +2410,7 @@ async function perfilCarregar(){
   const email = milhasGetEmail();
   if(!email){ milhasPerfis=[]; perfilRenderChips(); return; }
   try{
-    const r = await fetch(`${MILHAS_PROXY}/perfis/listar?email=${encodeURIComponent(email)}`);
+    const r = await devFetch(`${MILHAS_PROXY}/perfis/listar?email=${encodeURIComponent(email)}`);
     const d = await r.json();
     if(d.ok && Array.isArray(d.perfis) && d.perfis.length>0){
       milhasPerfis = d.perfis;
@@ -2408,7 +2433,7 @@ async function perfilSalvar(){
   const email = milhasGetEmail();
   if(!email) return;
   try{
-    await fetch(`${MILHAS_PROXY}/perfis/salvar`,{
+    await devFetch(`${MILHAS_PROXY}/perfis/salvar`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({email, perfis:milhasPerfis})
     });
@@ -2529,7 +2554,7 @@ async function perfilAbrirGeral(){
   const resultados = await Promise.all(milhasPerfis.map(async p=>{
     const key = p.isPrincipal ? emailBase : emailBase+'|'+p.id;
     try{
-      const r = await fetch(`${MILHAS_PROXY}/milhas/listar?email=${encodeURIComponent(key)}`);
+      const r = await devFetch(`${MILHAS_PROXY}/milhas/listar?email=${encodeURIComponent(key)}`);
       const d = await r.json();
       return {perfil:p, key, registros: d.ok ? d.registros : []};
     }catch{ return {perfil:p, key, registros:[]}; }
@@ -2651,7 +2676,7 @@ async function milhasCarregar(){
   const key=milhasGetPerfilKey();
   if(!email||!key){milhasRegistros=[];milhasFIFO={};return;}
   try{
-    const r=await fetch(`${MILHAS_PROXY}/milhas/listar?email=${encodeURIComponent(key)}`);
+    const r=await devFetch(`${MILHAS_PROXY}/milhas/listar?email=${encodeURIComponent(key)}`);
     if(!r.ok)throw new Error('err');
     const d=await r.json();
     if(d.ok && Array.isArray(d.registros)){
@@ -2672,7 +2697,7 @@ async function milhasSalvarRemoto(registros){
   const key=milhasGetPerfilKey();
   if(!key)return false;
   try{
-    const r=await fetch(`${MILHAS_PROXY}/milhas/salvar`,{
+    const r=await devFetch(`${MILHAS_PROXY}/milhas/salvar`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({email:key,registros})
     });
@@ -3232,7 +3257,7 @@ async function assCarregar(){
   const email = milhasGetPerfilKey();
   if(!email){ milhasAssinaturas=[]; return; }
   try{
-    const r = await fetch(`${MILHAS_PROXY}/assinaturas/listar?email=${encodeURIComponent(email)}`);
+    const r = await devFetch(`${MILHAS_PROXY}/assinaturas/listar?email=${encodeURIComponent(email)}`);
     if(r.ok){ const d=await r.json(); if(d.ok && Array.isArray(d.assinaturas)){ milhasAssinaturas=d.assinaturas; assSalvarLocal(); return; } }
     throw new Error('remoto falhou');
   }catch{
@@ -3243,7 +3268,7 @@ async function assCarregar(){
 async function assSalvarRemoto(){
   const email=milhasGetPerfilKey(); if(!email)return false;
   try{
-    const r=await fetch(`${MILHAS_PROXY}/assinaturas/salvar`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,assinaturas:milhasAssinaturas})});
+    const r=await devFetch(`${MILHAS_PROXY}/assinaturas/salvar`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,assinaturas:milhasAssinaturas})});
     return r.ok;
   }catch{return false;}
 }
@@ -3464,7 +3489,7 @@ async function excluirLancamento(id){
 
   // Sincroniza com o proxy (envia registros atualizados + novo snapshot FIFO)
   try{
-    await fetch(`${MILHAS_PROXY}/milhas/excluir`,{
+    await devFetch(`${MILHAS_PROXY}/milhas/excluir`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({email,id})
     });
@@ -3789,7 +3814,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // ── Login ─────────────────────────────────────────────────────────────────────
-const CDV_PROXY_AUTH = 'https://cdv-proxy-production.up.railway.app';
+// (unificado em _BASE acima)
 
 // Acorda o servidor Railway silenciosamente ao carregar a página
 (function warmUpProxy() {
@@ -3842,7 +3867,8 @@ async function fazerLogin() {
   const fetchComTimeout = (url, ms) => {
     const ctrl = new AbortController();
     const tid = setTimeout(() => ctrl.abort(), ms);
-    return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(tid));
+    const hdrs = IS_DEV ? { 'x-cdv-env': 'dev' } : {};
+    return fetch(url, { signal: ctrl.signal, headers: hdrs }).finally(() => clearTimeout(tid));
   };
 
   const tentarVerificar = async () => {
@@ -4190,7 +4216,7 @@ let milhasCartoes = [];
 async function cartaoCarregar(){
   const email = milhasGetPerfilKey(); if(!email){ milhasCartoes=[]; return; }
   try{
-    const r = await fetch(`${MILHAS_PROXY}/cartoes/listar?email=${encodeURIComponent(email)}`);
+    const r = await devFetch(`${MILHAS_PROXY}/cartoes/listar?email=${encodeURIComponent(email)}`);
     if(r.ok){ const d=await r.json(); if(d.ok && Array.isArray(d.cartoes)){ milhasCartoes=d.cartoes; cartaoSalvarLocal(); return; } }
     throw new Error('remoto falhou');
   }catch{
@@ -4201,7 +4227,7 @@ async function cartaoCarregar(){
 async function cartaoSalvarRemoto(){
   const email=milhasGetPerfilKey(); if(!email)return false;
   try{
-    const r=await fetch(`${MILHAS_PROXY}/cartoes/salvar`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,cartoes:milhasCartoes})});
+    const r=await devFetch(`${MILHAS_PROXY}/cartoes/salvar`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,cartoes:milhasCartoes})});
     return r.ok;
   }catch{return false;}
 }
