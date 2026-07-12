@@ -379,7 +379,7 @@
     .passagens-controls,.radar-search-wrap{position:sticky;top:112px;z-index:88}
 
     /* ── KPIs de milhas: 2 colunas em mobile ── */
-    #milhas-kpis,#geral-kpis{grid-template-columns:repeat(2,1fr)!important}
+    #milhas-kpis,#geral-kpis,.milhas-kpi-grid{grid-template-columns:repeat(2,1fr)!important}
     #milhas-charts-row{grid-template-columns:1fr!important}
     .milhas-kpi-val{font-size:22px!important}
 
@@ -387,18 +387,12 @@
     .lv-modal{
       max-height:88vh;
       border-radius:16px 16px 0 0;
-      display:flex;
-      flex-direction:column;
     }
-    .lv-modal-overlay{align-items:flex-end;padding:0}
-    .lv-modal-foto{height:140px!important;flex-shrink:0}
+    .lv-modal-overlay{align-items:flex-end!important;padding:0!important}
+    .lv-modal-foto{height:130px!important}
     .lv-modal-body{
-      overflow-y:auto;
-      -webkit-overflow-scrolling:touch;
-      flex:1;
-      padding-bottom:calc(16px + env(safe-area-inset-bottom));
+      padding-bottom:calc(20px + env(safe-area-inset-bottom));
     }
-    .lv-modal-close{flex-shrink:0}
 
     /* ── Calculadoras ── */
     .calcs-grid{padding:14px 10px;gap:14px}
@@ -419,9 +413,9 @@
   .milhas-input:focus{border-color:var(--cdv-coral)}
   .milhas-input::placeholder{color:var(--muted2)}
   .milhas-input[type=number]::-webkit-outer-spin-button,.milhas-input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
-  #milhas-kpis,#geral-kpis{grid-template-columns:repeat(5,1fr)}
+  #milhas-kpis,#geral-kpis,.milhas-kpi-grid{grid-template-columns:repeat(5,1fr)}
   .milhas-kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden}
-  @media(max-width:640px){#milhas-kpis{grid-template-columns:repeat(2,1fr)!important}#milhas-charts-row{grid-template-columns:1fr!important}}
+  @media(max-width:640px){#milhas-kpis,#geral-kpis,.milhas-kpi-grid{grid-template-columns:repeat(2,1fr)!important}#milhas-charts-row{grid-template-columns:1fr!important}}
   .milhas-kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
   .milhas-kpi-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
   .milhas-kpi-val{font-size:28px;font-weight:900;line-height:1.1}
@@ -513,9 +507,9 @@
 .lv-empty-state-sub{font-size:13px}
 /* Modal */
 .lv-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9998;display:none;align-items:center;justify-content:center;padding:16px}
-.lv-modal-overlay.open{display:flex}
-.lv-modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;position:relative;display:flex;flex-direction:column}
-.lv-modal-close{position:sticky;top:0;z-index:10;display:flex;justify-content:flex-end;padding:14px 16px 0;background:var(--surface)}
+.lv-modal-overlay.open{display:flex;align-items:center}
+.lv-modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:560px;max-height:90vh;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.lv-modal-close{flex-shrink:0;z-index:10;display:flex;justify-content:flex-end;padding:14px 16px 0;background:var(--surface)}
 .lv-modal-close button{background:rgba(61,74,102,.5);border:none;color:var(--text);width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .lv-modal-close button:hover{background:rgba(255,88,94,.3)}
 .lv-modal-foto{width:100%;height:200px;object-fit:cover;background:linear-gradient(135deg,rgba(42,50,70,.9),rgba(18,110,255,.2));display:flex;align-items:center;justify-content:center;font-size:60px;color:rgba(255,255,255,.15);flex-shrink:0}
@@ -1118,7 +1112,7 @@
       </div>
 
       <!-- KPI cards de resgates -->
-      <div id="resgates-kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px"></div>
+      <div id="resgates-kpis" class="milhas-kpi-grid" style="display:grid;gap:12px;margin-bottom:20px"></div>
 
       <!-- Aviso quando não há resgates com valor em dinheiro -->
       <div id="resgates-aviso" style="display:none;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:20px;text-align:center;color:var(--muted);font-size:13px;margin-bottom:16px">
