@@ -2317,7 +2317,24 @@ function closeOfertaModal(){
 
 // ── Emails com acesso a abas em desenvolvimento ───────────────────────────
 const DEV_EMAILS = ['davileles@gmail.com'];
-function devAcesso(){ const s=lerSessao(); return s && DEV_EMAILS.includes(s.email); }
+
+// devAcesso() — true se o usuário é dev OU está em modo ?env=dev
+function devAcesso() {
+  if (IS_DEV) return true;
+  const s = lerSessao();
+  return s && DEV_EMAILS.includes(s.email);
+}
+
+// Exibe um elemento de aba que está oculto por padrão (style="display:none")
+// Use em mostrarPainel() para cada feature em desenvolvimento:
+//   mostrarAba('tab-btn-minha-nova-aba');
+// Quando quiser lançar para produção: remova o style="display:none" da aba
+// e remova a chamada de mostrarAba() — um commit só.
+function mostrarAba(id) {
+  if (!devAcesso()) return;
+  const el = document.getElementById(id);
+  if (el) el.style.display = '';
+}
 
 function switchTab(tab){
   document.querySelectorAll('.main-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
@@ -3851,8 +3868,9 @@ function mostrarPainel(sessao) {
   const tabMilhas = document.querySelector('.main-tab[data-tab="milhas"]');
   if (tabMilhas) tabMilhas.style.display = '';
   // Aba Salas VIP — só para devs
-  const tabLounges = document.getElementById('tab-btn-lounges');
-  if (tabLounges && devAcesso()) tabLounges.style.display = '';
+  // Abas restritas a devs / modo ?env=dev
+  // Para lançar uma aba para produção: remova a linha abaixo e o style="display:none" do HTML
+  mostrarAba('tab-btn-lounges');
 }
 async function fazerLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
