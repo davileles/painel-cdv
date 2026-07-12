@@ -558,54 +558,212 @@
 </div><!-- /tab-lounges -->
 
 <div id="tab-calculadoras" class="tab-panel" style="display:none">
-  <div style="max-width:560px;margin:32px auto;padding:0 16px">
 
-    <!-- Cabeçalho -->
-    <div style="margin-bottom:28px">
-      <h2 style="font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--text);margin:0 0 6px">
-        🏨 Accor — Pontos por Hospedagem
-      </h2>
-      <p style="color:var(--muted);font-size:13px;margin:0">
-        Cada 1.000 pontos ALL equivale a €20 no valor da hospedagem.<br>
-        Informe o valor em reais exibido no site da Accor.
-      </p>
-    </div>
+  <style>
+    /* ── Grid de calculadoras ─────────────────────────────────────── */
+    .calcs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 24px;
+      padding: 28px 24px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    /* Corpo da calculadora — efeito de aparelho físico */
+    .calc-device {
+      background: #1a2035;
+      border: 1px solid #2e3a52;
+      border-radius: 18px;
+      box-shadow: 0 2px 0 #111826, 0 8px 32px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.04);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Faixa de cor no topo — identidade de cada calculadora */
+    .calc-brand-bar {
+      height: 4px;
+      width: 100%;
+    }
+    /* Área de cabeçalho com nome e ícone */
+    .calc-header {
+      padding: 16px 18px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #252f45;
+    }
+    .calc-icon {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+    .calc-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      color: #eeeeee;
+      letter-spacing: .3px;
+      line-height: 1.3;
+    }
+    .calc-subtitle {
+      font-size: 10px;
+      color: #8a9bbf;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+    /* Visor — onde aparece o resultado */
+    .calc-display {
+      background: #0f1622;
+      margin: 14px 14px 0;
+      border-radius: 10px;
+      padding: 14px 16px 12px;
+      border: 1px solid #1e2a3e;
+      min-height: 72px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .calc-display-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #4a5a7a;
+      margin-bottom: 4px;
+    }
+    .calc-display-value {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: #eeeeee;
+      line-height: 1;
+      letter-spacing: -.5px;
+    }
+    .calc-display-value.placeholder {
+      font-size: 18px;
+      color: #2e3a52;
+      font-weight: 600;
+    }
+    .calc-display-sub {
+      font-size: 10px;
+      color: #8a9bbf;
+      margin-top: 5px;
+      line-height: 1.4;
+    }
+    /* Área de inputs */
+    .calc-body {
+      padding: 14px 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+    .calc-field-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #8a9bbf;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .calc-input-wrap {
+      position: relative;
+    }
+    .calc-input-prefix {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      font-weight: 700;
+      color: #5a6a8a;
+      pointer-events: none;
+    }
+    .calc-input {
+      width: 100%;
+      box-sizing: border-box;
+      background: #141d2e;
+      border: 1px solid #2a3550;
+      border-radius: 8px;
+      color: #eeeeee;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 10px 10px 10px 34px;
+      outline: none;
+      transition: border-color .15s;
+      -moz-appearance: textfield;
+    }
+    .calc-input::-webkit-inner-spin-button,
+    .calc-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .calc-input:focus { border-color: var(--cdv-coral); }
+    .calc-input::placeholder { color: #2e3a52; }
+    /* Rodapé da calculadora — info extra */
+    .calc-footer {
+      padding: 10px 14px 14px;
+      font-size: 10px;
+      color: #4a5a7a;
+      line-height: 1.5;
+      border-top: 1px solid #1e2a3e;
+    }
+    .calc-cotacao-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #1e2a3e;
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 10px;
+      color: #8a9bbf;
+      font-weight: 600;
+    }
+    @media(max-width:600px){
+      .calcs-grid { padding: 16px 12px; gap: 16px; }
+    }
+  </style>
 
-    <!-- Card principal -->
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 24px;margin-bottom:16px">
+  <div class="calcs-grid">
 
-      <label style="display:block;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:8px;text-transform:uppercase">
-        Valor da hospedagem (R$)
-      </label>
-      <div style="position:relative;margin-bottom:20px">
-        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;font-weight:700">R$</span>
-        <input id="calc-accor-brl"
-          type="number" min="0" step="0.01" placeholder="0,00"
-          oninput="calcAccor()"
-          style="width:100%;box-sizing:border-box;padding:14px 14px 14px 42px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:18px;font-weight:700;font-family:'Montserrat',sans-serif;outline:none">
+    <!-- ── Calculadora: Accor Pontos ──────────────────────────────── -->
+    <div class="calc-device">
+      <div class="calc-brand-bar" style="background:linear-gradient(90deg,#c8a84b,#e8c96a)"></div>
+      <div class="calc-header">
+        <div class="calc-icon" style="background:rgba(200,168,75,.12)">🏨</div>
+        <div>
+          <div class="calc-title">Accor ALL — Pontos por Hospedagem</div>
+          <div class="calc-subtitle">1.000 pts = €20 no valor da diária</div>
+        </div>
       </div>
 
-      <!-- Cotação do dia -->
-      <div id="calc-accor-cotacao" style="font-size:12px;color:var(--muted);margin-bottom:20px;min-height:18px">
-        Carregando cotação do euro…
+      <!-- Visor -->
+      <div class="calc-display">
+        <div class="calc-display-label">Pontos ALL necessários</div>
+        <div id="calc-accor-pontos" class="calc-display-value placeholder">— pts</div>
+        <div id="calc-accor-pontos-sub" class="calc-display-sub"></div>
       </div>
 
-      <!-- Resultado -->
-      <div id="calc-accor-result" style="display:none;background:linear-gradient(135deg,rgba(255,88,94,.12),rgba(255,88,94,.04));border:1px solid rgba(255,88,94,.25);border-radius:12px;padding:20px 18px;text-align:center">
-        <div style="font-size:12px;font-weight:700;color:var(--cdv-coral);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">Pontos ALL necessários</div>
-        <div id="calc-accor-pontos" style="font-size:42px;font-weight:800;color:var(--text);font-family:'Montserrat',sans-serif;line-height:1"></div>
-        <div id="calc-accor-pontos-sub" style="font-size:13px;color:var(--muted);margin-top:8px"></div>
+      <!-- Inputs -->
+      <div class="calc-body">
+        <div>
+          <div class="calc-field-label">Valor da hospedagem</div>
+          <div class="calc-input-wrap">
+            <span class="calc-input-prefix">R$</span>
+            <input id="calc-accor-brl" class="calc-input"
+              type="number" min="0" step="0.01" placeholder="0,00"
+              oninput="calcAccor()">
+          </div>
+        </div>
       </div>
 
+      <!-- Rodapé -->
+      <div class="calc-footer">
+        <span id="calc-accor-cotacao" class="calc-cotacao-badge">⏳ carregando câmbio…</span>
+        &nbsp;Conversão EUR/BRL em tempo real.
+      </div>
     </div>
-
-    <!-- Explicação -->
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;font-size:13px;color:var(--muted);line-height:1.6">
-      <strong style="color:var(--text)">Como funciona?</strong><br>
-      1. O valor em R$ é convertido para € usando a cotação do dia.<br>
-      2. Divide-se o valor em euros por 20 para obter os blocos de 1.000 pts.<br>
-      3. Resultado = blocos × 1.000 pontos ALL.
-    </div>
+    <!-- /calc-accor -->
 
   </div>
 </div><!-- /tab-calculadoras -->
@@ -3899,9 +4057,9 @@ async function calcAccorBuscarCotacao() {
     const r = await fetch('https://economia.awesomeapi.com.br/json/last/EUR-BRL', { signal: ctrl.signal });
     const d = await r.json();
     _calcAccorEur = parseFloat(d.EURBRL.ask);
-    if (elCot) elCot.textContent = `Cotação do dia: 1 € = R$ ${_calcAccorEur.toFixed(4)}`;
+    if (elCot) elCot.innerHTML = `📡 1 € = R$ ${_calcAccorEur.toFixed(4)}`;
   } catch (e) {
-    if (elCot) elCot.textContent = 'Não foi possível carregar a cotação. Tente novamente.';
+    if (elCot) elCot.innerHTML = '⚠️ câmbio indisponível';
   }
 }
 
@@ -3911,24 +4069,25 @@ function calcAccorInit() {
 }
 
 function calcAccor() {
-  const brl = parseFloat(document.getElementById('calc-accor-brl').value);
-  const elResult = document.getElementById('calc-accor-result');
+  const brl     = parseFloat(document.getElementById('calc-accor-brl').value);
   const elPontos = document.getElementById('calc-accor-pontos');
   const elSub    = document.getElementById('calc-accor-pontos-sub');
 
   if (!brl || brl <= 0 || !_calcAccorEur) {
-    elResult.style.display = 'none';
+    elPontos.textContent = '— pts';
+    elPontos.className   = 'calc-display-value placeholder';
+    elSub.textContent    = '';
     return;
   }
 
-  const eur    = brl / _calcAccorEur;              // valor em euros
-  const blocos = eur / 20;                          // cada 20€ = 1.000 pts
-  const pontos = Math.ceil(blocos) * 1000;          // arredonda pra cima (bloco inteiro)
-  const pontosExato = blocos * 1000;                // valor exato sem arredondamento
+  const eur         = brl / _calcAccorEur;
+  const blocos      = eur / 20;
+  const pontos      = Math.ceil(blocos) * 1000;
+  const pontosExato = Math.round(blocos * 1000);
 
   elPontos.textContent = pontos.toLocaleString('pt-BR') + ' pts';
-  elSub.textContent    = `R$ ${brl.toLocaleString('pt-BR',{minimumFractionDigits:2})} = € ${eur.toFixed(2)} → ${pontosExato.toFixed(0)} pts exatos (arredondado para cima em blocos de 1.000)`;
-  elResult.style.display = 'block';
+  elPontos.className   = 'calc-display-value';
+  elSub.textContent    = `€ ${eur.toFixed(2)} · ${pontosExato.toLocaleString('pt-BR')} pts exatos · arredondado para cima`;
 }
 
 // ── Login ─────────────────────────────────────────────────────────────────────
