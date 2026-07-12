@@ -19,7 +19,7 @@
     --cdv-navy:#2a3246;--cdv-coral:#ff585e;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;font-size:14px;min-height:100vh}
+  body{background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;font-size:14px;min-height:100vh;scroll-padding-top:160px}
 
   header{background:var(--surface);border-bottom:3px solid var(--accent);padding:14px 22px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
   .logo-row{display:flex;align-items:center;gap:14px}
@@ -30,7 +30,7 @@
   .refresh-btn{background:var(--cdv-coral);border:none;color:#fff;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s}
   .refresh-btn:hover{opacity:.85}
   .refresh-btn:disabled{opacity:.5;cursor:not-allowed}
-  .prog-bar{padding:8px 22px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--bg)}
+  .prog-bar{padding:8px 22px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--bg);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .prog-fbtn{border:1px solid;background:var(--surface);padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;opacity:.4}
   .prog-fbtn.active{opacity:1;background:var(--card)}
   .prog-fbtn:hover{opacity:.85}
@@ -294,6 +294,96 @@
     .main-tabs{top:73px;padding:0 10px}
     .main-tab{padding:12px 12px;font-size:12px}
     .radar-bar{padding:12px 14px 0}
+  }
+
+  /* ══════════════════════════════════════════════════
+     RESPONSIVIDADE MOBILE — melhorias globais
+  ══════════════════════════════════════════════════ */
+  @media(max-width:600px){
+
+    /* ── Header ── */
+    header{padding:10px 14px;gap:8px}
+    .brand-name{font-size:15px}
+    .brand-sub{font-size:10px}
+    #header-nome-membro{font-size:11px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+    /* ── Login ── */
+    .login-box{padding:28px 20px;border-radius:12px}
+    .login-title{font-size:18px}
+
+    /* ── Abas principais: scroll horizontal ── */
+    .main-tabs{
+      overflow-x:auto;
+      overflow-y:hidden;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+      flex-wrap:nowrap;
+    }
+    .main-tabs::-webkit-scrollbar{display:none}
+    .main-tab{white-space:nowrap;flex-shrink:0;font-size:11px;padding:12px 10px}
+
+    /* ── Barra de programas (Comparador) ── */
+    .prog-bar{padding:8px 12px;gap:5px}
+    .prog-fbtn{font-size:10px;padding:4px 9px}
+
+    /* ── Busca Radar e Passagens ── */
+    .radar-search-wrap{padding:8px 12px;gap:6px}
+    .radar-search{width:100%!important}
+    .passagens-controls{padding:8px 12px;gap:6px}
+    .passagens-search{width:100%!important}
+
+    /* ── Modal de oferta: sheet bottom em mobile ── */
+    .oferta-modal{
+      max-width:100%!important;
+      max-height:92vh;
+      border-radius:16px 16px 0 0;
+      margin:0;
+    }
+    #oferta-modal-overlay{align-items:flex-end;padding:0}
+    .oferta-modal-grid{grid-template-columns:1fr!important}
+
+    /* ── Gestão de Milhas: barra de sub-navegação ── */
+    #milhas-controls-bar{top:112px}
+    #milhas-controls-bar > div:first-child{
+      padding:8px 12px;
+      gap:6px;
+      scrollbar-width:none;
+    }
+    #milhas-controls-bar > div:first-child::-webkit-scrollbar{display:none}
+    .milhas-view-btn{font-size:11px!important;padding:5px 10px!important}
+
+    /* Ocultar filtros de milhas em tela pequena (ficam num segundo row) */
+    #milhas-filtros-wrap{
+      display:none!important
+    }
+    #milhas-filtros-mobile{display:flex!important}
+
+    /* ── Botões tipo lançamento (CRÉDITO/DÉBITO/TRANSFERÊNCIA) ── */
+    .milhas-tipo-btn{min-width:0!important;font-size:11px!important;padding:8px 6px!important}
+
+    /* ── Grids de formulário 2-col → 1-col em mobile ── */
+    [style*="grid-template-columns:1fr 1fr"],
+    [style*="grid-template-columns: 1fr 1fr"]{
+      grid-template-columns:1fr!important
+    }
+    [style*="grid-template-columns:1fr 1fr 1fr"],
+    [style*="grid-template-columns: 1fr 1fr 1fr"]{
+      grid-template-columns:1fr!important
+    }
+
+    /* ── Tabela de milhas: colunas menos relevantes ocultas ── */
+    .milhas-table .col-obs,
+    .milhas-table .col-fonte{display:none}
+
+    /* ── Padding geral das abas ── */
+    .passagens-controls,.radar-search-wrap{position:sticky;top:112px;z-index:88}
+
+    /* ── Salas VIP modal: sheet bottom ── */
+    .lv-modal{max-height:92vh;border-radius:14px 14px 0 0}
+    .lv-modal-overlay{align-items:flex-end;padding:0}
+
+    /* ── Calculadoras ── */
+    .calcs-grid{padding:14px 10px;gap:14px}
   }
 
   /* ── Perfis ─────────────────────────────────────────────────────────────────── */
@@ -848,6 +938,17 @@
           <option value="">Todas as subcategorias</option>
         </select>
       </div>
+    </div>
+    <!-- Filtros mobile — visível só em telas pequenas via CSS -->
+    <div id="milhas-filtros-mobile" style="display:none;padding:0 12px 8px;gap:6px;flex-wrap:wrap">
+      <select id="milhas-filter-prog-mob" onchange="document.getElementById('milhas-filter-prog').value=this.value;renderMilhasTabela()" style="flex:1;min-width:120px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
+        <option value="">Todos os programas</option>
+      </select>
+      <select id="milhas-filter-tipo-mob" onchange="document.getElementById('milhas-filter-tipo').value=this.value;renderMilhasTabela()" style="flex:1;min-width:100px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
+        <option value="">Todos os tipos</option>
+        <option value="credito">Créditos</option>
+        <option value="debito">Débitos</option>
+      </select>
     </div>
   </div>
 
@@ -2945,10 +3046,10 @@ async function initMilhas(){
   if(!milhasInitialized){
     milhasInitialized=true;
     // populate selects
-    ['ml-programa','ml-prog-origem','ml-prog-destino','milhas-filter-prog','ass-programa'].forEach(id=>{
+    ['ml-programa','ml-prog-origem','ml-prog-destino','milhas-filter-prog','milhas-filter-prog-mob','ass-programa'].forEach(id=>{
       const el=document.getElementById(id);
       if(!el)return;
-      if(id==='milhas-filter-prog') el.innerHTML='<option value="">Todos os programas</option>';
+      if(id==='milhas-filter-prog'||id==='milhas-filter-prog-mob') el.innerHTML='<option value="">Todos os programas</option>';
       else el.innerHTML='';
       // Ordem alfabética para filtros; ordem original para selects de lançamento
       const progs = id==='milhas-filter-prog'
@@ -3964,7 +4065,7 @@ function renderMilhasTabela(){
         <th style="text-align:right">Qtde (pts)</th>
         <th style="text-align:right">Custo (R$)</th>
         <th style="text-align:right">R$/1k</th>
-        <th>Obs.</th>
+        <th class="col-obs">Obs.</th>
         <th></th>
       </tr></thead>
       <tbody>
@@ -3988,7 +4089,7 @@ function renderMilhasTabela(){
           <td style="text-align:right;font-weight:700">${sinal}</td>
           <td style="text-align:right;color:var(--muted)">${r.custo>0?'R$ '+r.custo.toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}</td>
           <td style="text-align:right;color:${cpmColor};font-size:11px;font-weight:700" title="${cpmTitle}">${cpmLabel}</td>
-          <td style="color:var(--muted);font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.obs||''}">${r.obs||'—'}</td>
+          <td class="col-obs" style="color:var(--muted);font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.obs||''}">${r.obs||'—'}</td>
           <td style="white-space:nowrap" onclick="event.stopPropagation()">
             <button class="milhas-del-btn" onclick="editarLancamento('${r.id}')" style="border-color:rgba(96,165,250,.3);color:#60a5fa;margin-right:4px" onmouseover="this.style.background='rgba(96,165,250,.12)'" onmouseout="this.style.background='transparent'">Editar</button>
             <button class="milhas-del-btn" onclick="excluirLancamento('${r.id}')">Excluir</button>
@@ -4452,7 +4553,7 @@ function renderMilhasResgates(){
         <th>Data</th>
         <th>Programa</th>
         <th>Subcategoria</th>
-        <th>Obs.</th>
+        <th class="col-obs">Obs.</th>
         <th style="text-align:right">Milhas</th>
         <th style="text-align:right">Custo Milhas</th>
         <th style="text-align:right">Valor Dinheiro</th>
@@ -4468,7 +4569,7 @@ function renderMilhasResgates(){
           <td style="white-space:nowrap">${milhasFormatData(r.data)}</td>
           <td><span class="milhas-prog-dot" style="background:${cor}"></span>${milhasNomePrograma(r.programa)}</td>
           <td style="color:var(--muted);font-size:11px">${milhasLabelSubcat(r.tipo,r.subcat)}</td>
-          <td style="color:var(--muted);font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.obs||''}">${r.obs||'—'}</td>
+          <td class="col-obs" style="color:var(--muted);font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.obs||''}">${r.obs||'—'}</td>
           <td style="text-align:right;color:#f87171;font-weight:700">−${milhasFormatNum(r.qtde)}</td>
           <td style="text-align:right;color:var(--muted)">${r.custoMilhas>0?'R$ '+r.custoMilhas.toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}</td>
           <td style="text-align:right;color:#60a5fa;font-weight:700">R$ ${r.valorDinheiro.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
