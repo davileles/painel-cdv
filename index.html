@@ -476,7 +476,7 @@
   <button class="main-tab" data-tab="radar">📡 Radar de Ofertas</button>
   <button class="main-tab" data-tab="passagens">✈️ Passagens</button>
   <button class="main-tab" data-tab="milhas">📋 Gestão de Milhas</button>
-  <button class="main-tab" data-tab="lounges" id="tab-btn-lounges" style="display:none">🛋️ Salas VIP</button>
+  <button class="main-tab" data-tab="lounges" id="tab-btn-lounges">🛋️ Salas VIP</button>
 </div>
 
 <div id="tab-comparador" class="tab-panel">
@@ -3868,9 +3868,7 @@ function mostrarPainel(sessao) {
   const tabMilhas = document.querySelector('.main-tab[data-tab="milhas"]');
   if (tabMilhas) tabMilhas.style.display = '';
   // Aba Salas VIP — só para devs
-  // Abas restritas a devs / modo ?env=dev
-  // Para lançar uma aba para produção: remova a linha abaixo e o style="display:none" do HTML
-  mostrarAba('tab-btn-lounges');
+
 }
 async function fazerLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
