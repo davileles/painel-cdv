@@ -1,4 +1,4 @@
-// CDV Proxy — redeploy 2026-07-11 20:51
+// CDV Proxy — redeploy 2026-07-12 env-dev
 const express = require('express');
 const fetch = require('node-fetch');
 
@@ -8,6 +8,27 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO || 'davileles/cdv-compras-bonificadas';
 
 const ALLOWED = ['comparemania.com.br', 'passageirodeprimeira.com'];
+
+// ── Modo DEV ──────────────────────────────────────────────────────────────────
+// Requisições com header "x-cdv-env: dev" lêem/escrevem arquivos *-dev.json
+// Ex: milhas.json → milhas-dev.json, membros.json → membros-dev.json
+// O middleware abaixo injeta req.isDevMode e sobrescreve ghGetJson/ghPutJson
+// localmente via res.locals para não afetar o contexto de produção.
+function devPath(filePath) {
+  return filePath.replace(/\.json$/, '-dev.json');
+}
+app.use((req, res, next) => {
+  res.locals.isDevMode = req.headers['x-cdv-env'] === 'dev';
+  next();
+});
+function ghGetJsonDev(filePath, fallback, devMode) {
+  return ghGetJson(devMode ? devPath(filePath) : filePath, fallback);
+}
+function ghPutJsonDev(filePath, jsonData, sha, message, devMode) {
+  const path = devMode ? devPath(filePath) : filePath;
+  const msg  = devMode ? `[DEV] ${message}` : message;
+  return ghPutJson(path, jsonData, sha, msg);
+}
 
 app.use(express.json({ limit: '20mb' }));
 
@@ -444,7 +465,8 @@ app.get('/membros/verificar', async (req, res) => {
   const email = (req.query.email || '').toLowerCase().trim();
   if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
   try {
-    const dados = await ghGetJson(MEMBROS_PATH, { membros: [] });
+    const devMode = res.locals.isDevMode;
+    const dados = await ghGetJsonDev(MEMBROS_PATH, { membros: [] }, devMode);
     const membro = (dados.data.membros || []).find(m => m.email === email);
     if (!membro) return res.json({ ok: false, acesso: false, motivo: 'nao_encontrado' });
     if (membro.status !== 'ativo') return res.json({ ok: false, acesso: false, motivo: 'inativo', nome: membro.nome });
@@ -530,7 +552,8 @@ app.get('/perfis/listar', async (req, res) => {
   const email = (req.query.email || '').toLowerCase().trim();
   if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
   try {
-    const atual = await ghGetJson(PERFIS_PATH, { perfis: [] });
+    const devMode = res.locals.isDevMode;
+    const atual = await ghGetJsonDev(PERFIS_PATH, { perfis: [] }, devMode);
     const perfis = (atual.data.perfis || []).filter(p => p.email === email);
     res.json({ ok: true, perfis });
   } catch (err) {
@@ -571,7 +594,8 @@ app.get('/milhas/listar', async (req, res) => {
   const email = (req.query.email || '').toLowerCase().trim();
   if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
   try {
-    const atual = await ghGetJson(MILHAS_PATH, { registros: [] });
+    const devMode = res.locals.isDevMode;
+    const atual = await ghGetJsonDev(MILHAS_PATH, { registros: [] }, devMode);
     const registros = (atual.data.registros || []).filter(r => r.email === email);
     res.json({ ok: true, registros });
   } catch (err) {
@@ -661,7 +685,8 @@ app.get('/cartoes/listar', async (req, res) => {
   const email = (req.query.email || '').toLowerCase().trim();
   if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
   try {
-    const atual = await ghGetJson(CARTOES_PATH, { cartoes: [] });
+    const devMode = res.locals.isDevMode;
+    const atual = await ghGetJsonDev(CARTOES_PATH, { cartoes: [] }, devMode);
     const cartoes = (atual.data.cartoes || []).filter(c => c.email === email);
     res.json({ ok: true, cartoes });
   } catch (err) {
@@ -701,7 +726,8 @@ app.get('/assinaturas/listar', async (req, res) => {
   const email = (req.query.email || '').toLowerCase().trim();
   if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
   try {
-    const atual = await ghGetJson(ASSINATURAS_PATH, { assinaturas: [] });
+    const devMode = res.locals.isDevMode;
+    const atual = await ghGetJsonDev(ASSINATURAS_PATH, { assinaturas: [] }, devMode);
     const assinaturas = (atual.data.assinaturas || []).filter(a => a.email === email);
     res.json({ ok: true, assinaturas });
   } catch (err) {
