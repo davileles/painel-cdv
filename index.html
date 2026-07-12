@@ -477,6 +477,7 @@
   <button class="main-tab" data-tab="passagens">✈️ Passagens</button>
   <button class="main-tab" data-tab="milhas">📋 Gestão de Milhas</button>
   <button class="main-tab" data-tab="lounges" id="tab-btn-lounges">🛋️ Salas VIP</button>
+  <button class="main-tab" data-tab="calculadoras" id="tab-btn-calculadoras" style="display:none">🧮 Calculadoras</button>
 </div>
 
 <div id="tab-comparador" class="tab-panel">
@@ -555,6 +556,59 @@
   </div>
 
 </div><!-- /tab-lounges -->
+
+<div id="tab-calculadoras" class="tab-panel" style="display:none">
+  <div style="max-width:560px;margin:32px auto;padding:0 16px">
+
+    <!-- Cabeçalho -->
+    <div style="margin-bottom:28px">
+      <h2 style="font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--text);margin:0 0 6px">
+        🏨 Accor — Pontos por Hospedagem
+      </h2>
+      <p style="color:var(--muted);font-size:13px;margin:0">
+        Cada 1.000 pontos ALL equivale a €20 no valor da hospedagem.<br>
+        Informe o valor em reais exibido no site da Accor.
+      </p>
+    </div>
+
+    <!-- Card principal -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 24px;margin-bottom:16px">
+
+      <label style="display:block;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:8px;text-transform:uppercase">
+        Valor da hospedagem (R$)
+      </label>
+      <div style="position:relative;margin-bottom:20px">
+        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;font-weight:700">R$</span>
+        <input id="calc-accor-brl"
+          type="number" min="0" step="0.01" placeholder="0,00"
+          oninput="calcAccor()"
+          style="width:100%;box-sizing:border-box;padding:14px 14px 14px 42px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:18px;font-weight:700;font-family:'Montserrat',sans-serif;outline:none">
+      </div>
+
+      <!-- Cotação do dia -->
+      <div id="calc-accor-cotacao" style="font-size:12px;color:var(--muted);margin-bottom:20px;min-height:18px">
+        Carregando cotação do euro…
+      </div>
+
+      <!-- Resultado -->
+      <div id="calc-accor-result" style="display:none;background:linear-gradient(135deg,rgba(255,88,94,.12),rgba(255,88,94,.04));border:1px solid rgba(255,88,94,.25);border-radius:12px;padding:20px 18px;text-align:center">
+        <div style="font-size:12px;font-weight:700;color:var(--cdv-coral);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">Pontos ALL necessários</div>
+        <div id="calc-accor-pontos" style="font-size:42px;font-weight:800;color:var(--text);font-family:'Montserrat',sans-serif;line-height:1"></div>
+        <div id="calc-accor-pontos-sub" style="font-size:13px;color:var(--muted);margin-top:8px"></div>
+      </div>
+
+    </div>
+
+    <!-- Explicação -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;font-size:13px;color:var(--muted);line-height:1.6">
+      <strong style="color:var(--text)">Como funciona?</strong><br>
+      1. O valor em R$ é convertido para € usando a cotação do dia.<br>
+      2. Divide-se o valor em euros por 20 para obter os blocos de 1.000 pts.<br>
+      3. Resultado = blocos × 1.000 pontos ALL.
+    </div>
+
+  </div>
+</div><!-- /tab-calculadoras -->
 
 <div id="tab-milhas" class="tab-panel" style="display:none">
 
@@ -2342,12 +2396,14 @@ function switchTab(tab){
   document.getElementById('tab-radar').style.display = tab==='radar'?'block':'none';
   document.getElementById('tab-passagens').style.display = tab==='passagens'?'block':'none';
   document.getElementById('tab-milhas').style.display  = tab==='milhas'  ?'block':'none';
-  document.getElementById('tab-lounges').style.display = tab==='lounges' ?'block':'none';
+  document.getElementById('tab-lounges').style.display       = tab==='lounges'      ?'block':'none';
+  document.getElementById('tab-calculadoras').style.display  = tab==='calculadoras' ?'block':'none';
   window.scrollTo({top:0, behavior:'smooth'});
-  if(tab==='radar')    loadOfertas(false);
-  if(tab==='passagens') loadPassagens(false);
-  if(tab==='milhas')   initMilhas();
-  if(tab==='lounges')  lvCarregarAeroportos();
+  if(tab==='radar')        loadOfertas(false);
+  if(tab==='passagens')    loadPassagens(false);
+  if(tab==='milhas')       initMilhas();
+  if(tab==='lounges')      lvCarregarAeroportos();
+  if(tab==='calculadoras') calcAccorInit();
   try{localStorage.setItem('cdv_active_tab', tab);}catch(e){}
 }
 
@@ -3830,6 +3886,51 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+// ══════════════════════════════════════════════════════
+//  CALCULADORA ACCOR
+// ══════════════════════════════════════════════════════
+let _calcAccorEur = null; // cotação EUR/BRL em cache
+
+async function calcAccorBuscarCotacao() {
+  const elCot = document.getElementById('calc-accor-cotacao');
+  try {
+    const ctrl = new AbortController();
+    setTimeout(() => ctrl.abort(), 8000);
+    const r = await fetch('https://economia.awesomeapi.com.br/json/last/EUR-BRL', { signal: ctrl.signal });
+    const d = await r.json();
+    _calcAccorEur = parseFloat(d.EURBRL.ask);
+    if (elCot) elCot.textContent = `Cotação do dia: 1 € = R$ ${_calcAccorEur.toFixed(4)}`;
+  } catch (e) {
+    if (elCot) elCot.textContent = 'Não foi possível carregar a cotação. Tente novamente.';
+  }
+}
+
+function calcAccorInit() {
+  if (_calcAccorEur) return; // já carregou
+  calcAccorBuscarCotacao();
+}
+
+function calcAccor() {
+  const brl = parseFloat(document.getElementById('calc-accor-brl').value);
+  const elResult = document.getElementById('calc-accor-result');
+  const elPontos = document.getElementById('calc-accor-pontos');
+  const elSub    = document.getElementById('calc-accor-pontos-sub');
+
+  if (!brl || brl <= 0 || !_calcAccorEur) {
+    elResult.style.display = 'none';
+    return;
+  }
+
+  const eur    = brl / _calcAccorEur;              // valor em euros
+  const blocos = eur / 20;                          // cada 20€ = 1.000 pts
+  const pontos = Math.ceil(blocos) * 1000;          // arredonda pra cima (bloco inteiro)
+  const pontosExato = blocos * 1000;                // valor exato sem arredondamento
+
+  elPontos.textContent = pontos.toLocaleString('pt-BR') + ' pts';
+  elSub.textContent    = `R$ ${brl.toLocaleString('pt-BR',{minimumFractionDigits:2})} = € ${eur.toFixed(2)} → ${pontosExato.toFixed(0)} pts exatos (arredondado para cima em blocos de 1.000)`;
+  elResult.style.display = 'block';
+}
+
 // ── Login ─────────────────────────────────────────────────────────────────────
 // (unificado em _BASE acima)
 
@@ -3867,6 +3968,8 @@ function mostrarPainel(sessao) {
   // Aba Gestão de Milhas disponível para todos os membros
   const tabMilhas = document.querySelector('.main-tab[data-tab="milhas"]');
   if (tabMilhas) tabMilhas.style.display = '';
+  // Abas em desenvolvimento — remover mostrarAba() ao lançar para produção
+  mostrarAba('tab-btn-calculadoras');
   // Aba Salas VIP — só para devs
 
 }
