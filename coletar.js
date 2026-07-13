@@ -570,13 +570,20 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
         '* Média (últimos 6 meses): ' + mediaPts6m + ' pts/' + moedaT1,
       ].join('\n');
 
-      // Link direto: usa o link /redirecionar/oferta já salvo no historico.json
-      // (populado via POST /parceiros/resolver-links no proxy — roda uma vez manualmente)
-      const linkSalvo = (
-        snapshotAtual[parceiroKey] && snapshotAtual[parceiroKey].links && snapshotAtual[parceiroKey].links[progId]
-      ) || '';
+      // Link direto: busca no historico consolidado (campo links salvo via /parceiros/resolver-links).
+      // snapshotAtual é só o snapshot do dia e não carrega links — precisamos buscar no historico.
+      const datasComLink = Object.keys(historico).sort().reverse();
+      let linkSalvo = '';
+      for (const d of datasComLink) {
+        const snapD = historico[d] || {};
+        const dadosD = snapD[parceiroKey] || {};
+        if (dadosD.links && dadosD.links[progId]) {
+          linkSalvo = dadosD.links[progId];
+          break;
+        }
+      }
       const linkT1 = linkSalvo || 'https://painel.clubedoviajante.com.br';
-      if (!linkSalvo) console.log('[LinkT1] Link não encontrado para ' + parceiroKey + '/' + progId + ' — usando painel. Execute POST /parceiros/resolver-links para popular.');
+      if (!linkSalvo) console.log('[LinkT1] Link não encontrado para ' + parceiroKey + '/' + progId + ' — usando painel.');
 
       const ofertaT1 = {
         id:        idT1,
