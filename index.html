@@ -6100,22 +6100,26 @@ async function mapaInit() {
   if (mapaInited) { mapaRenderAll(); return; }
   mapaInited = true;
 
-  // Esconder loading IMEDIATAMENTE
+  // 1. Setar mapa inline PRIMEIRO — sempre disponível, sem fetch
+  if (!_mapaWorldPaths) {
+    _mapaWorldPaths = MAPA_WORLD_INLINE;
+    mapaWorld = MAPA_WORLD_INLINE;
+  }
+
+  // 2. Esconder loading e renderizar mapa com países imediatamente
   const loadEl = document.getElementById('map-loading');
   if (loadEl) loadEl.style.display = 'none';
-
-  // Renderizar painel inicial (vazio) imediatamente
   mapaRenderAll();
   mapaAttachEvents();
 
-  // Reutilizar dados já carregados pela aba Passagens
+  // 3. Reutilizar passagensData se já carregado
   if (passagensData && passagensData.length > 0) {
     mapaItems = passagensData;
     mapaRenderAll();
     return;
   }
 
-  // Buscar passagens.json diretamente (fetch leve, ~200ms)
+  // 4. Buscar passagens.json (fetch ~200ms)
   if (!passagensLoaded) {
     try {
       const r = await fetch(PASSAGENS_URL + '?t=' + Date.now(), {cache:'no-cache'});
@@ -6124,16 +6128,9 @@ async function mapaInit() {
         mapaItems = j.items || [];
         passagensData = mapaItems;
         passagensLoaded = true;
-        mapaRenderAll(); // re-renderiza com cidades
+        mapaRenderAll();
       }
-    } catch(e) { /* sem dados, mapa fica vazio */ }
-  }
-
-  // Usar mapa inline (sem fetch externo)
-  if (!_mapaWorldPaths) {
-    _mapaWorldPaths = MAPA_WORLD_INLINE;
-    mapaWorld = MAPA_WORLD_INLINE;
-    mapaRenderSVG();
+    } catch(e) { /* sem cidades, mapa de países já visível */ }
   }
 }
 
