@@ -6079,25 +6079,37 @@ async function mapaInit() {
   if (mapaInited) { mapaRenderAll(); return; }
   mapaInited = true;
 
-  // Reutilizar passagensData se já carregado pela aba Passagens
-  if (passagensData && passagensData.length > 0) {
-    mapaItems = passagensData;
-  } else {
-    try {
-      const ctrl = new AbortController();
-      setTimeout(() => ctrl.abort(), 6000);
-      const r = await fetch(PASSAGENS_URL + '?t=' + Date.now(), {cache:'no-cache', signal: ctrl.signal});
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const j = await r.json();
-      mapaItems = j.items || [];
-      if (!passagensData || !passagensData.length) passagensData = mapaItems;
-    } catch(e) { mapaItems = []; }
-  }
-
+  // Esconder loading IMEDIATAMENTE
   const loadEl = document.getElementById('map-loading');
   if (loadEl) loadEl.style.display = 'none';
+
+  // Renderizar painel inicial (vazio) imediatamente
   mapaRenderAll();
   mapaAttachEvents();
+
+  // Reutilizar dados já carregados pela aba Passagens
+  if (passagensData && passagensData.length > 0) {
+    mapaItems = passagensData;
+    mapaRenderAll();
+    return;
+  }
+
+  // Aguardar loadPassagens (disparar se necessário) e re-renderizar quando chegar
+  if (!passagensLoaded) {
+    loadPassagens(false); // dispara o fetch (não await — roda em paralelo)
+    // Polling leve: checar a cada 300ms por até 15s
+    let tentativas = 0;
+    const poll = setInterval(() => {
+      tentativas++;
+      if (passagensData && passagensData.length > 0) {
+        clearInterval(poll);
+        mapaItems = passagensData;
+        mapaRenderAll();
+      } else if (tentativas >= 50) { // 15s
+        clearInterval(poll);
+      }
+    }, 300);
+  }
 
   // GeoJSON em background com timeout
   if (!_mapaWorldPaths) {
