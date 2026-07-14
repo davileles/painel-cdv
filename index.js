@@ -2297,6 +2297,87 @@ app.delete('/concierge/arquivo/:reservaId/:idx', async (req, res) => {
   }
 });
 
+// ── IA: Gerar reclamação formal (CDC / ANAC 400 / Convenção de Montreal) ──────
+app.post('/ia/reclamacao', (req, res) => {
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+  if (!ANTHROPIC_API_KEY) {
+    return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY não configurada no servidor.' });
+  }
+
+  const { empresa, servico, data, problema, contato, impacto, solucao, plataforma } = req.body;
+  if (!empresa || !problema || !solucao) {
+    return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: empresa, problema, solucao.' });
+  }
+
+  const plataformaLabel = plataforma === 'reclame_aqui' ? 'Reclame Aqui' : 'Consumidor.gov.br';
+  const camposLabel = plataforma === 'reclame_aqui'
+    ? '(Título, Categoria, Descrição do Problema, O que você espera da empresa)'
+    : '(Problema, Impacto, Solução Esperada)';
+
+  const prompt = `Você é um especialista em defesa do consumidor brasileiro. Redija uma reclamação formal para publicação na plataforma ${plataformaLabel}.
+
+DADOS DO CASO:
+- Empresa: ${empresa}
+- Serviço: ${servico || 'não especificado'}
+- Data do ocorrido: ${data || 'não informada'}
+- Problema: ${problema}
+- Tentativas de contato: ${contato || 'não realizadas'}
+- Impacto sofrido: ${impacto || 'não especificado'}
+- Solução esperada: ${solucao}
+
+INSTRUÇÕES:
+1. Redija o TEXTO DA RECLAMAÇÃO com linguagem formal, objetiva e fundamentada juridicamente. Estrutura: introdução do caso → descrição detalhada → tentativas de solução → fundamento legal (CDC, Resolução ANAC 400 se for voo, Convenção de Montreal se aplicável) → pedido claro de solução → encerramento respeitoso. Máximo 3.000 caracteres.
+2. Sugira um TÍTULO para a reclamação (máximo 100 caracteres, direto e descritivo).
+3. Preencha os CAMPOS DA PLATAFORMA específicos para ${plataformaLabel} ${camposLabel}.
+
+Responda APENAS em JSON válido, sem markdown, sem texto fora do JSON:
+{"texto":"texto completo da reclamação","titulo":"sugestão de título","campos":"campos formatados como CAMPO: valor\nCAMPO: valor"}`;
+
+  const bodyPayload = JSON.stringify({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 1000,
+    messages: [{ role: 'user', content: prompt }]
+  });
+
+  const https = require('https');
+  const options = {
+    hostname: 'api.anthropic.com',
+    path: '/v1/messages',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(bodyPayload),
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01'
+    }
+  };
+
+  const apiReq = https.request(options, (apiRes) => {
+    let raw = '';
+    apiRes.on('data', (chunk) => { raw += chunk; });
+    apiRes.on('end', () => {
+      console.log('[ia/reclamacao] status:', apiRes.statusCode);
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed.error) return res.json({ ok: false, erro: parsed.error.message });
+        const texto = (parsed.content && parsed.content[0] && parsed.content[0].text) || '';
+        const clean = texto.replace(/```json|```/g, '').trim();
+        try {
+          const result = JSON.parse(clean);
+          return res.json({ ok: true, ...result });
+        } catch(e) {
+          return res.json({ ok: false, erro: 'Resposta inesperada da IA.', raw: clean });
+        }
+      } catch(e) {
+        return res.json({ ok: false, erro: 'Erro ao processar resposta da IA.' });
+      }
+    });
+  });
+  apiReq.on('error', (e) => { res.json({ ok: false, erro: e.message }); });
+  apiReq.write(bodyPayload);
+  apiReq.end();
+});
+
 // ══════════════════════════════════════════════════════════════════════════════
 
 app.listen(PORT, '0.0.0.0', () => {
