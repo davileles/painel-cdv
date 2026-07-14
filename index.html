@@ -581,7 +581,7 @@
   <button class="main-tab" data-tab="milhas">📋 Gestão de Milhas</button>
   <button class="main-tab" data-tab="lounges" id="tab-btn-lounges">🛋️ Salas VIP</button>
   <button class="main-tab" data-tab="calculadoras" id="tab-btn-calculadoras">🧮 Calculadoras</button>
-  <button class="main-tab" data-tab="reclamacoes" id="tab-btn-reclamacoes">⚖️ Reclamações</button>
+  <button class="main-tab" data-tab="reclamacoes" id="tab-btn-reclamacoes" style="display:none">⚖️ Reclamações</button>
 </div>
 
 <div id="tab-comparador" class="tab-panel">
@@ -4643,10 +4643,10 @@ function mostrarPainel(sessao) {
   // Aba Gestão de Milhas disponível para todos os membros
   const tabMilhas = document.querySelector('.main-tab[data-tab="milhas"]');
   if (tabMilhas) tabMilhas.style.display = '';
+  // Reclamações — dev only por enquanto
+  mostrarAba('tab-btn-reclamacoes');
   // Calculadoras disponível para todos os assinantes
   mostrarAba('tab-btn-calculadoras');
-  // Reclamações disponível para todos os assinantes
-  mostrarAba('tab-btn-reclamacoes');
   // Aba Salas VIP — só para devs
 
 }
