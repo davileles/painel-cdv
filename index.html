@@ -2906,7 +2906,7 @@ let passagensLoaded = false;
 async function loadPassagens(force) {
   if (passagensLoaded && !force) return;
   const grid = document.getElementById('pass-grid');
-  grid.innerHTML = '<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando passagens…</div></div>';
+  if (grid) grid.innerHTML = '<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando passagens…</div></div>';
   try {
     const res = await fetch(PASSAGENS_URL + '?t=' + Date.now(), {cache:'no-cache'});
     if (!res.ok) throw new Error('passagens.json não encontrado');
@@ -6094,21 +6094,18 @@ async function mapaInit() {
     return;
   }
 
-  // Aguardar loadPassagens (disparar se necessário) e re-renderizar quando chegar
+  // Buscar passagens.json diretamente (fetch leve, ~200ms)
   if (!passagensLoaded) {
-    loadPassagens(false); // dispara o fetch (não await — roda em paralelo)
-    // Polling leve: checar a cada 300ms por até 15s
-    let tentativas = 0;
-    const poll = setInterval(() => {
-      tentativas++;
-      if (passagensData && passagensData.length > 0) {
-        clearInterval(poll);
-        mapaItems = passagensData;
-        mapaRenderAll();
-      } else if (tentativas >= 50) { // 15s
-        clearInterval(poll);
+    try {
+      const r = await fetch(PASSAGENS_URL + '?t=' + Date.now(), {cache:'no-cache'});
+      if (r.ok) {
+        const j = await r.json();
+        mapaItems = j.items || [];
+        passagensData = mapaItems;
+        passagensLoaded = true;
+        mapaRenderAll(); // re-renderiza com cidades
       }
-    }, 300);
+    } catch(e) { /* sem dados, mapa fica vazio */ }
   }
 
   // GeoJSON em background com timeout
