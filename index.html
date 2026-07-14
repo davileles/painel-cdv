@@ -225,7 +225,7 @@
   .main-tab{background:transparent;border:1px solid transparent;border-radius:10px;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:12.5px;font-weight:700;padding:9px 15px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;white-space:nowrap;flex-shrink:0}
   .main-tab:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
   .main-tab.active{color:var(--cdv-coral);background:rgba(255,88,94,.12);border-color:rgba(255,88,94,.45)}
-  .tab-panel{display:none}
+  .tab-panel{display:block}
 
   /* ── Radar de Ofertas ────────────────────────────────────────────────────── */
   .radar-bar{display:none}
@@ -672,7 +672,7 @@
 </div>
 
 <div id="tab-radar" class="tab-panel" style="display:none">
-  <div class="radar-search-wrap"><div style="position:relative;display:inline-block"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none;z-index:1">🔎</span><input type="text" class="radar-search" id="radar-search" placeholder="Buscar oferta, programa ou loja…" oninput="renderOfertas()" style="padding-left:34px"></div>
+  <div class="radar-search-wrap"><div style="position:relative;display:inline-block"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none;z-index:1">🔎</span><input type="text" class="radar-search" id="radar-search" placeholder="Buscar oferta, programa ou loja…" oninput="renderOfertas()" style="padding-left:34px"></div></div>
   <div class="cat-bar" id="radar-cat-bar"></div>
   <div class="grid" id="radar-grid">
     <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando ofertas…</div></div>
