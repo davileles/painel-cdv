@@ -6057,6 +6057,7 @@ function mapaGetCounts() {
     if (!it.origem || !it.destino || it.origem === it.destino) continue;
     const o = mapaCanon(it.origem), d = mapaCanon(it.destino);
     if (!o || !d || o === d) continue;
+    // Contar em ambas as direções para que cidades-destino apareçam no mapa
     counts[o] = (counts[o]||0) + 1;
     counts[d] = (counts[d]||0) + 1;
     const k = o+'|'+d;
@@ -6064,6 +6065,8 @@ function mapaGetCounts() {
   }
   return {counts, routes};
 }
+
+// Retorna destinos partindo de orig (rotas diretas orig→dest)
 function mapaGetDestsOf(orig) {
   const {routes} = mapaGetCounts();
   const res = {};
@@ -6074,7 +6077,24 @@ function mapaGetDestsOf(orig) {
   return res;
 }
 
-// ── INIT / CARREGAMENTO ─────────────────────────────────
+// Retorna origens que chegam em dest (rotas orig→dest onde dest === cidade clicada)
+function mapaGetOrigensFor(dest) {
+  const {routes} = mapaGetCounts();
+  const res = {};
+  for (const k of Object.keys(routes)) {
+    const [o,d] = k.split('|');
+    if (d === dest) res[o] = routes[k];
+  }
+  return res;
+}
+
+// Uma cidade é "só destino" se não tem rotas partindo dela
+function mapaIsSoDestino(cidade) {
+  return Object.keys(mapaGetDestsOf(cidade)).length === 0 &&
+         Object.keys(mapaGetOrigensFor(cidade)).length > 0;
+}
+
+
 async function mapaInit() {
   if (mapaInited) { mapaRenderAll(); return; }
   mapaInited = true;
@@ -6238,11 +6258,23 @@ function mapaUpdateViewBox() {
 function mapaClick(n) {
   if (mapaDrag && mapaDrag.moved) return;
   const destsOf = mapaOrigem ? mapaGetDestsOf(mapaOrigem) : {};
-  if (!mapaOrigem) { mapaOrigem = n; mapaDestino = null; }
+  if (!mapaOrigem) {
+    // Se cidade só aparece como destino, mostrar origens que chegam nela
+    if (mapaIsSoDestino(n)) {
+      mapaOrigem = null; mapaDestino = n; // modo invertido: destino fixo
+    } else {
+      mapaOrigem = n; mapaDestino = null;
+    }
+  }
   else if (n === mapaOrigem) { mapaOrigem = null; mapaDestino = null; }
-  else if (n === mapaDestino) { mapaDestino = null; }
-  else if (destsOf[n]) { mapaDestino = n; }
-  else { mapaOrigem = n; mapaDestino = null; }
+  else if (n === mapaDestino) { mapaOrigem = null; mapaDestino = null; }
+  else if (destsOf[n]) { mapaDestino = n; }  // destino normal
+  else {
+    // Pode ser cidade só-destino: verificar se é destino a partir da origem atual
+    const origensFor = mapaGetOrigensFor(n);
+    if (origensFor[mapaOrigem]) { mapaDestino = n; }
+    else { mapaOrigem = n; mapaDestino = null; }
+  }
   mapaRenderPainel();
   mapaRenderSVG();
 }
@@ -6276,8 +6308,10 @@ function mapaRenderSVG() {
 
   // Rotas curvas
   if (orig && cityPos[orig]) {
+    // Modo normal: rotas partindo de orig
+    const destsOfOrig = mapaGetDestsOf(orig);
     const po = cityPos[orig];
-    for (const d of Object.keys(destsOf)) {
+    for (const d of Object.keys(destsOfOrig)) {
       const pd = cityPos[d]; if(!pd) continue;
       const sel = d === dest;
       const mx=(po.x+pd.x)/2, my=(po.y+pd.y)/2;
@@ -6289,20 +6323,40 @@ function mapaRenderSVG() {
       path.setAttribute('fill','none');
       frag.appendChild(path);
     }
+  } else if (!orig && dest && cityPos[dest]) {
+    // Modo destino-fixo: rotas chegando em dest
+    const origensFor = mapaGetOrigensFor(dest);
+    const pd = cityPos[dest];
+    for (const o of Object.keys(origensFor)) {
+      const po = cityPos[o]; if(!po) continue;
+      const mx=(po.x+pd.x)/2, my=(po.y+pd.y)/2;
+      const dist=Math.hypot(pd.x-po.x,pd.y-po.y);
+      const path = document.createElementNS(NS,'path');
+      path.setAttribute('d',`M${po.x.toFixed(1)} ${po.y.toFixed(1)} Q${mx.toFixed(1)} ${(my-Math.max(8,dist*.18)).toFixed(1)} ${pd.x.toFixed(1)} ${pd.y.toFixed(1)}`);
+      path.setAttribute('stroke','rgba(251,191,36,.65)');
+      path.setAttribute('stroke-width',(1.1/k).toFixed(2));
+      path.setAttribute('fill','none');
+      frag.appendChild(path);
+    }
   }
 
   // Cidades + labels
   for (const n of Object.keys(counts)) {
     const p = cityPos[n], cnt = counts[n]; if(!p) continue;
-    const isO=n===orig, isD=n===dest, isDest=!!destsOf[n];
+    const isO=n===orig, isD=n===dest;
+    // Destinos relevantes dependem do modo
+    let isRel = false;
+    if (orig) isRel = !!mapaGetDestsOf(orig)[n];
+    else if (dest) isRel = !!mapaGetOrigensFor(dest)[n];
     const baseR = isO||isD ? 7 : 3.2+Math.min(4.5,Math.sqrt(cnt)*.8);
     const circle = document.createElementNS(NS,'circle');
     circle.setAttribute('cx',p.x.toFixed(1)); circle.setAttribute('cy',p.y.toFixed(1));
     circle.setAttribute('r',(baseR/k).toFixed(2));
-    circle.setAttribute('fill', isO?'#ff585e':isD?'#fbbf24':isDest?'#ffb27c':'#5f7096');
+    circle.setAttribute('fill', isO?'#ff585e':isD?'#fbbf24':isRel?'#ffb27c':'#5f7096');
     circle.setAttribute('stroke','#1a2135');
     circle.setAttribute('stroke-width',(1/k).toFixed(2));
-    circle.setAttribute('opacity', orig&&!isO&&!isD&&!isDest?'0.35':'1');
+    const hasSelection = orig||dest;
+    circle.setAttribute('opacity', hasSelection&&!isO&&!isD&&!isRel?'0.35':'1');
     circle.style.cursor='pointer';
     circle.addEventListener('click', ()=>mapaClick(n));
     const title=document.createElementNS(NS,'title');
@@ -6343,7 +6397,6 @@ function mapaRenderPainel() {
 
   const orig = mapaOrigem, dest = mapaDestino;
   const {routes} = mapaGetCounts();
-  const destsOf = orig ? mapaGetDestsOf(orig) : {};
   const fmt = n => (n||0).toLocaleString('pt-BR');
 
   const hide = el => { if(el) el.style.display='none'; };
@@ -6357,7 +6410,8 @@ function mapaRenderPainel() {
     statsEl.textContent = `${mapaItems.length} registros · ${Object.keys(counts).length} cidades`;
   }
 
-  if (!orig) {
+  // Sem seleção → mostrar top cidades
+  if (!orig && !dest) {
     show(elNone);
     const {counts} = mapaGetCounts();
     const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,8);
@@ -6368,11 +6422,31 @@ function mapaRenderPainel() {
     return;
   }
 
+  // Modo "destino fixo": cidade só-destino clicada — mostrar origens que chegam lá
+  if (!orig && dest) {
+    show(elOrigem);
+    const nameEl = document.getElementById('map-origem-name');
+    const cntEl  = document.getElementById('map-dest-count');
+    const listEl = document.getElementById('map-dest-list');
+    const origensFor = mapaGetOrigensFor(dest);
+    if (nameEl) nameEl.innerHTML = `🛬 Chegando em <span style="color:#fbbf24">${dest}</span>`;
+    const origensSorted = Object.entries(origensFor)
+      .map(([o,its])=>({d:o, min:Math.min(...its.map(i=>i.pontos||0)), n:its.length}))
+      .sort((a,b)=>a.min-b.min);
+    if (cntEl) cntEl.textContent = origensSorted.length + ' origem' + (origensSorted.length!==1?'ns':'') + ' com emissão para este destino · clique para ver detalhes';
+    if (listEl) listEl.innerHTML = origensSorted.map(x =>
+      `<button onclick="mapaOrigem='${x.d.replace(/'/g,"\'")}';\ mapaDestino='${dest.replace(/'/g,"\'")}';\ mapaRenderPainel();\ mapaRenderSVG();" style="display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border-ctrl);border-radius:10px;padding:8px 12px;cursor:pointer;font-family:'Montserrat',sans-serif;color:var(--text);width:100%;transition:border-color .15s" onmouseover="this.style.borderColor='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)'"><span style="font-size:11.5px;font-weight:800;flex:1;text-align:left">✈️ ${x.d} → ${dest}</span><span style="font-size:12px;font-weight:900;color:#ff585e">${fmt(x.min)}<span style="font-size:9px;color:var(--muted);font-weight:600"> pts</span></span><span style="font-size:9px;font-weight:700;color:var(--muted2)">${x.n}×</span></button>`
+    ).join('');
+    return;
+  }
+
+  // Origem selecionada, sem destino → mostrar destinos partindo
   if (orig && !dest) {
     show(elOrigem);
     const nameEl = document.getElementById('map-origem-name');
     const cntEl  = document.getElementById('map-dest-count');
     const listEl = document.getElementById('map-dest-list');
+    const destsOf = mapaGetDestsOf(orig);
     if (nameEl) nameEl.textContent = '📍 ' + orig;
     const destsSorted = Object.entries(destsOf)
       .map(([d,items])=>({d, min:Math.min(...items.map(i=>i.pontos||0)), n:items.length}))
