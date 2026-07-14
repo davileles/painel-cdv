@@ -2352,12 +2352,12 @@ Responda APENAS em JSON válido, sem markdown, sem texto fora do JSON:
     }
   };
 
+  const chunks = [];
   const apiReq = https.request(options, (apiRes) => {
-    let raw = '';
-    apiRes.on('data', (chunk) => { raw += chunk; });
+    apiRes.on('data', (chunk) => { chunks.push(chunk); });
     apiRes.on('end', () => {
-      console.log('[ia/reclamacao] status:', apiRes.statusCode);
-      console.log('[ia/reclamacao] raw:', raw.slice(0,300));
+      const raw = Buffer.concat(chunks).toString('utf-8');
+      console.log('[ia/reclamacao] status:', apiRes.statusCode, 'raw len:', raw.length, 'preview:', raw.slice(0,120));
       try {
         const parsed = JSON.parse(raw);
         if (parsed.error) { console.error('[ia/reclamacao] API error:', parsed.error); return res.json({ ok: false, erro: parsed.error.message }); }
@@ -2367,16 +2367,17 @@ Responda APENAS em JSON válido, sem markdown, sem texto fora do JSON:
           const result = JSON.parse(clean);
           return res.json({ ok: true, ...result });
         } catch(e) {
-          console.error('[ia/reclamacao] JSON parse error. clean:', clean.slice(0,200));
+          console.error('[ia/reclamacao] JSON parse error:', e.message, 'clean:', clean.slice(0,300));
           return res.json({ ok: false, erro: 'Resposta inesperada da IA.', raw: clean });
         }
       } catch(e) {
-        console.error('[ia/reclamacao] outer parse error:', e.message, 'raw:', raw.slice(0,200));
+        console.error('[ia/reclamacao] outer parse error:', e.message, 'raw:', raw.slice(0,300));
         return res.json({ ok: false, erro: 'Erro ao processar resposta da IA.' });
       }
     });
   });
-  apiReq.on('error', (e) => { res.json({ ok: false, erro: e.message }); });
+  apiReq.on('error', (e) => { console.error('[ia/reclamacao] req error:', e.message); res.json({ ok: false, erro: e.message }); });
+  apiReq.setTimeout(55000, () => { apiReq.destroy(); res.json({ ok: false, erro: 'Timeout ao chamar API Anthropic.' }); });
   apiReq.write(bodyPayload);
   apiReq.end();
 });
