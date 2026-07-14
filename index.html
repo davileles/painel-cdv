@@ -225,7 +225,7 @@
   .main-tab{background:transparent;border:1px solid transparent;border-radius:10px;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:12.5px;font-weight:700;padding:9px 15px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;white-space:nowrap;flex-shrink:0}
   .main-tab:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
   .main-tab.active{color:var(--cdv-coral);background:rgba(255,88,94,.12);border-color:rgba(255,88,94,.45)}
-  .tab-panel{display:block}
+  .tab-panel{display:none}
 
   /* ── Radar de Ofertas ────────────────────────────────────────────────────── */
   .radar-bar{display:none}
@@ -652,7 +652,7 @@
   </div>
 </div>
 
-<div id="tab-comparador" class="tab-panel">
+<div id="tab-comparador" class="tab-panel" style="display:none">
 <div class="controls">
   <div style="position:relative;flex:1;min-width:180px;max-width:340px"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="search" placeholder="Buscar parceiro ou categoria…" oninput="render()" style="width:100%;padding-left:34px"></div>
   <select class="srt" id="sort" onchange="render()">
@@ -4759,7 +4759,7 @@ document.getElementById('main-tabs').addEventListener('click',e=>{
 (function(){
   try{
     const saved=localStorage.getItem('cdv_active_tab');
-    if(saved) switchTab(saved);
+    if(saved && saved !== 'milhas') switchTab(saved);
     else switchTab('inicio');
   }catch(e){ switchTab('inicio'); }
 })();
