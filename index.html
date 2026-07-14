@@ -6443,8 +6443,9 @@ function mapaRenderPainel() {
   const isInt = mapaIsInternacional(orig, dest);
   const rotaEl = document.getElementById('map-pair-rota');
   const rotaExecEl = document.getElementById('map-pair-rota-exec');
-  if (rotaEl) rotaEl.textContent = orig + ' → ' + dest;
-  if (rotaExecEl) rotaExecEl.textContent = orig + ' → ' + dest;
+  const rotaTxt = orig + ' ⇄ ' + dest;
+  if (rotaEl) rotaEl.textContent = rotaTxt;
+  if (rotaExecEl) rotaExecEl.textContent = rotaTxt;
 
   function buildProgCards(progMap, badgeColor) {
     const sorted = Object.values(progMap).sort((a,b)=>a.pontos-b.pontos);
