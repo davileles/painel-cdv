@@ -2389,48 +2389,73 @@ function renderInicio() {
 }
 
 function renderHomeMilhas() {
-  // Aguarda dados de milhas carregados
   const saldoEl = document.getElementById('home-saldo-total');
-  const topEl = document.getElementById('home-top-saldos');
-  const econEl = document.getElementById('home-economia');
-  const sessao = lerSessao();
-  if (!sessao) return;
-  // Se milhas ainda não carregadas, tenta buscar silenciosamente
-  if (typeof milhasData === 'undefined' || !milhasData) {
-    if (saldoEl) saldoEl.innerHTML = '— <span style="font-size:13px;color:var(--muted);font-weight:700">pts</span>';
-    return;
+  const topEl   = document.getElementById('home-top-saldos');
+  const econEl  = document.getElementById('home-economia');
+
+  function _exibir() {
+    const key  = milhasGetPerfilKey();
+    if (!key) {
+      if (saldoEl) saldoEl.innerHTML = '— <span style="font-size:13px;color:var(--muted);font-weight:700">pts</span>';
+      if (econEl)  econEl.textContent = 'Faça login para ver suas milhas';
+      return;
+    }
+    const regs = milhasRegistros.filter(r => r.email === key || !r.email);
+    if (!regs.length) {
+      if (saldoEl) saldoEl.innerHTML = '0 <span style="font-size:13px;color:var(--muted);font-weight:700">pts</span>';
+      if (topEl)   topEl.innerHTML   = '';
+      if (econEl)  econEl.textContent = 'Nenhum lançamento registrado ainda';
+      return;
+    }
+    // Saldo por programa (mesma lógica do renderMilhasDashboard)
+    const saldos = {};
+    regs.forEach(r => {
+      if (saldos[r.programa] === undefined) saldos[r.programa] = 0;
+      if (r.tipo === 'credito') saldos[r.programa] += (r.qtde || 0);
+      else if (r.tipo === 'debito') saldos[r.programa] -= (r.qtde || 0);
+    });
+    const total = Object.values(saldos).reduce((a, b) => a + (b > 0 ? b : 0), 0);
+    if (saldoEl) saldoEl.innerHTML = total.toLocaleString('pt-BR') + ' <span style="font-size:13px;color:var(--muted);font-weight:700">pts</span>';
+    // Atualizar pill do header
+    const hEl = document.getElementById('header-saldo-total');
+    if (hEl && total > 0) { hEl.innerHTML = '💎 ' + total.toLocaleString('pt-BR') + ' pts'; hEl.style.display = 'inline-flex'; }
+    // Top 3
+    const sorted = Object.entries(saldos).filter(([,v]) => v > 0).sort((a,b) => b[1]-a[1]).slice(0,3);
+    if (topEl) {
+      topEl.innerHTML = sorted.map(([pid, val]) => {
+        const prog = MILHAS_PROGS.find(x => x.id === pid) || {name: pid, color: '#98a8cc'};
+        return '<div style="display:flex;align-items:center;gap:8px">' +
+          '<span style="width:8px;height:8px;border-radius:50%;background:' + prog.color + ';flex-shrink:0"></span>' +
+          '<span style="font-size:11.5px;color:var(--muted);font-weight:600;flex:1">' + prog.name + '</span>' +
+          '<span style="font-size:12px;font-weight:800">' + val.toLocaleString('pt-BR') + '</span>' +
+          '</div>';
+      }).join('') || '<div style="font-size:11px;color:var(--muted)">Sem saldo positivo</div>';
+    }
+    // Custo total
+    const custo = regs.filter(r => r.custo > 0).reduce((a,r) => a + r.custo, 0);
+    if (econEl) {
+      if (custo > 0) econEl.innerHTML = 'Investido no total: <strong style="color:#a78bfa">R$ ' + custo.toLocaleString('pt-BR', {minimumFractionDigits:2}) + '</strong>';
+      else econEl.textContent = 'Registre o custo das milhas para ver o total';
+    }
   }
-  const perfil = milhasData.perfis ? (milhasData.perfis[milhasPerfilAtivo||0]||milhasData.perfis[0]) : null;
-  if (!perfil) return;
-  const registros = perfil.registros || [];
-  const saldoPorProg = {};
-  registros.forEach(r => {
-    const delta = r.tipo === 'credito' ? (r.quantidade||0) : r.tipo === 'debito' ? -(r.quantidade||0) : (r.tipoTransf==='saida' ? -(r.quantidade||0) : (r.quantidade||0));
-    const pid = r.programa||'';
-    saldoPorProg[pid] = (saldoPorProg[pid]||0) + delta;
-  });
-  const total = Object.values(saldoPorProg).reduce((a,b)=>a+Math.max(b,0),0);
-  if (saldoEl) saldoEl.innerHTML = `${total.toLocaleString('pt-BR')} <span style="font-size:13px;color:var(--muted);font-weight:700">pts</span>`;
-  // Top 3
-  const sorted = Object.entries(saldoPorProg).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).slice(0,3);
-  if (topEl) {
-    const PROG_COLORS = {aadvantage:'#0068b2',all:'#8B0000',azul:'#0ea5e9',brb:'#005ca9',btg:'#f5a623',c6atomos:'#f5c518',carrefour:'#0066cc',cvc:'#e8371b',esfera:'#e8371b',gollog:'#f97316',iberia:'#dd2222',inter:'#ff7a00',itauunibanco:'#f36f21',latam:'#dc2626',livelo:'#df0979',nubank:'#8a05be',pontosforyou:'#e04449',santander:'#ec0000',sicredi:'#00a54f',smiles:'#f97316',tam:'#dc2626',tudo_azul:'#0ea5e9',wiz:'#ff0000'};
-    topEl.innerHTML = sorted.map(([pid,val])=>{
-      const prog = MILHAS_PROGS ? MILHAS_PROGS.find(x=>x.id===pid) : null;
-      const name = prog ? prog.name : pid;
-      const color = prog ? prog.color : (PROG_COLORS[pid]||'#98a8cc');
-      return `<div style="display:flex;align-items:center;gap:8px">
-        <span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0"></span>
-        <span style="font-size:11.5px;color:var(--muted);font-weight:600;flex:1">${name}</span>
-        <span style="font-size:12px;font-weight:800">${val.toLocaleString('pt-BR')}</span>
-      </div>`;
-    }).join('');
-  }
-  if (econEl) {
-    const custo = registros.filter(r=>r.tipo==='credito'&&r.custo).reduce((a,r)=>a+(r.custo||0),0);
-    if (custo > 0) econEl.innerHTML = `Custo total registrado: <strong style="color:var(--purple,#a78bfa)">R$ ${custo.toLocaleString('pt-BR',{minimumFractionDigits:2})}</strong>`;
-    else econEl.textContent = 'Registre milhas para ver o resumo';
-  }
+
+  // Se já tem dados carregados → exibir direto
+  if (milhasRegistros && milhasRegistros.length > 0) { _exibir(); return; }
+
+  // Senão → buscar silenciosamente via proxy
+  const key = milhasGetPerfilKey();
+  if (!key) { _exibir(); return; }
+  if (saldoEl) saldoEl.innerHTML = '<span style="font-size:12px;color:var(--muted)">Carregando...</span>';
+  devFetch(MILHAS_PROXY + '/milhas/listar?email=' + encodeURIComponent(key))
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(d => {
+      if (d.ok && Array.isArray(d.registros)) milhasRegistros = d.registros;
+      _exibir();
+    })
+    .catch(() => {
+      if (saldoEl) saldoEl.innerHTML = '— <span style="font-size:13px;color:var(--muted);font-weight:700">pts</span>';
+      if (econEl)  econEl.textContent = 'Erro ao carregar milhas';
+    });
 }
 
 function renderHomeRadar() {
