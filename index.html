@@ -580,7 +580,8 @@
   <button class="main-tab" data-tab="passagens">✈️ Passagens</button>
   <button class="main-tab" data-tab="milhas">📋 Gestão de Milhas</button>
   <button class="main-tab" data-tab="lounges" id="tab-btn-lounges">🛋️ Salas VIP</button>
-  <button class="main-tab" data-tab="calculadoras" id="tab-btn-calculadoras" style="display:none">🧮 Calculadoras</button>
+  <button class="main-tab" data-tab="calculadoras" id="tab-btn-calculadoras">🧮 Calculadoras</button>
+  <button class="main-tab" data-tab="reclamacoes" id="tab-btn-reclamacoes">⚖️ Reclamações</button>
 </div>
 
 <div id="tab-comparador" class="tab-panel">
@@ -932,6 +933,283 @@
 
   </div>
 </div><!-- /tab-calculadoras -->
+
+<div id="tab-reclamacoes" class="tab-panel" style="display:none">
+<style>
+  .recl-wrap{max-width:760px;margin:0 auto;padding:24px 22px 60px}
+  .recl-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px}
+  .recl-title{font-size:13px;font-weight:800;color:var(--cdv-coral);text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .recl-field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+  .recl-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
+  .recl-input{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:13px;padding:10px 12px;outline:none;transition:border-color .15s;width:100%}
+  .recl-input:focus{border-color:var(--cdv-coral)}
+  .recl-textarea{resize:vertical;min-height:80px}
+  .recl-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .recl-btn{width:100%;padding:13px;background:var(--cdv-coral);color:#fff;border:none;border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:opacity .15s;letter-spacing:.3px}
+  .recl-btn:hover{opacity:.88}
+  .recl-btn:disabled{opacity:.5;cursor:not-allowed}
+  .recl-result{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word}
+  .recl-result-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .recl-copy-btn{flex:1;padding:10px;background:transparent;border:1px solid rgba(255,88,94,.4);color:var(--cdv-coral);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s}
+  .recl-copy-btn:hover{background:rgba(255,88,94,.08)}
+  .recl-step{display:none}.recl-step.active{display:block}
+  .recl-loader{text-align:center;padding:32px 0;color:var(--muted);font-size:13px}
+  .recl-loader-dot{animation:reclDot 1.2s infinite both}
+  .recl-loader-dot:nth-child(2){animation-delay:.2s}.recl-loader-dot:nth-child(3){animation-delay:.4s}
+  @keyframes reclDot{0%,80%,100%{opacity:.2}40%{opacity:1}}
+  .recl-tipo-row{display:flex;gap:8px}
+  .recl-tipo-btn{flex:1;padding:10px;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;text-align:center}
+  .recl-tipo-btn.sel{border-color:var(--cdv-coral);color:var(--cdv-coral);background:rgba(255,88,94,.08)}
+  .recl-section-divider{font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin:8px 0 14px;padding-top:14px;border-top:1px solid var(--border)}
+  .recl-fb{font-size:12px;font-weight:700;text-align:center;min-height:16px;margin-top:6px;color:var(--cdv-coral)}
+</style>
+
+<div class="recl-wrap">
+  <div class="recl-card">
+    <div class="recl-title">⚖️ Gerador de Reclamações</div>
+    <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:20px">Descreva o seu caso nos campos abaixo. A IA irá redigir uma reclamação formal e fundamentada no CDC, na Resolução ANAC 400 e na Convenção de Montreal (quando aplicável), pronta para colar no <strong style="color:var(--text)">Consumidor.gov</strong> ou <strong style="color:var(--text)">Reclame Aqui</strong>.</p>
+
+    <!-- STEP 1: FORMULÁRIO -->
+    <div id="recl-step-form" class="recl-step active">
+
+      <div class="recl-section-divider">📋 Dados do Caso</div>
+
+      <div class="recl-row2">
+        <div class="recl-field">
+          <label class="recl-label">Empresa envolvida</label>
+          <input class="recl-input" id="recl-empresa" placeholder="Ex: LATAM, Booking, Smiles…"/>
+        </div>
+        <div class="recl-field">
+          <label class="recl-label">Tipo de serviço</label>
+          <select class="recl-input" id="recl-servico">
+            <option value="">Selecionar…</option>
+            <option value="voo">✈️ Voo</option>
+            <option value="hotel">🏨 Hotel / Hospedagem</option>
+            <option value="programa_fidelidade">🎯 Programa de Fidelidade / Milhas</option>
+            <option value="seguro_viagem">🛡️ Seguro de Viagem</option>
+            <option value="locacao_carro">🚗 Locação de Carro</option>
+            <option value="compra_online">🛒 Compra Online</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="recl-row2">
+        <div class="recl-field">
+          <label class="recl-label">Data do ocorrido</label>
+          <input class="recl-input" id="recl-data" type="date"/>
+        </div>
+        <div class="recl-field">
+          <label class="recl-label">Plataforma de destino</label>
+          <div class="recl-tipo-row" style="margin-top:4px">
+            <button class="recl-tipo-btn sel" id="recl-tipo-cgov" onclick="reclSelecionarTipo('consumidor_gov')">Consumidor.gov</button>
+            <button class="recl-tipo-btn" id="recl-tipo-raqui" onclick="reclSelecionarTipo('reclame_aqui')">Reclame Aqui</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="recl-section-divider">📝 Relato</div>
+
+      <div class="recl-field">
+        <label class="recl-label">O que aconteceu?</label>
+        <textarea class="recl-input recl-textarea" id="recl-problema" style="min-height:100px" placeholder="Descreva o problema com o máximo de detalhes: o que foi prometido, o que ocorreu, datas, números de pedido, voo, reserva etc."></textarea>
+      </div>
+
+      <div class="recl-field">
+        <label class="recl-label">Já tentou contato com a empresa?</label>
+        <textarea class="recl-input recl-textarea" style="min-height:60px" id="recl-contato" placeholder="Ex: Liguei 3x para o SAC, protocolo 123456. A empresa disse que… / Ainda não tentei."></textarea>
+      </div>
+
+      <div class="recl-field">
+        <label class="recl-label">Impacto sofrido</label>
+        <textarea class="recl-input recl-textarea" style="min-height:60px" id="recl-impacto" placeholder="Ex: Perdi R$ 1.200, perdi conexão, fiquei 8h no aeroporto, tive prejuízo emocional significativo…"></textarea>
+      </div>
+
+      <div class="recl-field">
+        <label class="recl-label">O que você espera como solução?</label>
+        <textarea class="recl-input recl-textarea" style="min-height:60px" id="recl-solucao" placeholder="Ex: Reembolso integral de R$ 1.200, reemissão das milhas, voucher de compensação…"></textarea>
+      </div>
+
+      <p id="recl-erro" class="recl-fb" style="color:#f87171"></p>
+      <button class="recl-btn" id="recl-gerar-btn" onclick="reclGerar()">⚖️ Gerar Reclamação</button>
+    </div>
+
+    <!-- STEP 2: LOADING -->
+    <div id="recl-step-loading" class="recl-step">
+      <div class="recl-loader">
+        <div style="font-size:28px;margin-bottom:12px">⚖️</div>
+        <div style="margin-bottom:10px;font-weight:700;color:var(--text)">Redigindo sua reclamação…</div>
+        <div style="display:flex;justify-content:center;gap:6px;margin-top:8px">
+          <span class="recl-loader-dot" style="font-size:22px">●</span>
+          <span class="recl-loader-dot" style="font-size:22px">●</span>
+          <span class="recl-loader-dot" style="font-size:22px">●</span>
+        </div>
+        <div style="font-size:11px;margin-top:16px;color:var(--muted)">Analisando o caso e aplicando o CDC, ANAC 400 e Convenção de Montreal…</div>
+      </div>
+    </div>
+
+    <!-- STEP 3: RESULTADO -->
+    <div id="recl-step-resultado" class="recl-step">
+      <div class="recl-section-divider" style="border-top:none;padding-top:0;margin-top:0">💬 Texto da Reclamação</div>
+      <div id="recl-texto-resultado" class="recl-result"></div>
+      <div class="recl-result-actions">
+        <button class="recl-copy-btn" onclick="reclCopiar('recl-texto-resultado','recl-fb-texto')">📋 Copiar texto</button>
+      </div>
+      <p id="recl-fb-texto" class="recl-fb"></p>
+
+      <div id="recl-titulo-wrap" style="margin-top:20px;display:none">
+        <div class="recl-section-divider">🏷️ Sugestão de Título</div>
+        <div id="recl-titulo-resultado" class="recl-result" style="font-weight:700"></div>
+        <div class="recl-result-actions">
+          <button class="recl-copy-btn" onclick="reclCopiar('recl-titulo-resultado','recl-fb-titulo')">📋 Copiar título</button>
+        </div>
+        <p id="recl-fb-titulo" class="recl-fb"></p>
+      </div>
+
+      <div id="recl-campos-wrap" style="margin-top:20px;display:none">
+        <div class="recl-section-divider">📋 Campos da Plataforma</div>
+        <div id="recl-campos-resultado" class="recl-result"></div>
+        <div class="recl-result-actions">
+          <button class="recl-copy-btn" onclick="reclCopiar('recl-campos-resultado','recl-fb-campos')">📋 Copiar campos</button>
+        </div>
+        <p id="recl-fb-campos" class="recl-fb"></p>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button class="recl-copy-btn" style="flex:0 0 auto;padding:10px 20px" onclick="reclNovo()">🔄 Nova Reclamação</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var reclTipo = 'consumidor_gov';
+  var ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
+
+  function reclSelecionarTipo(t){
+    reclTipo = t;
+    document.getElementById('recl-tipo-cgov').classList.toggle('sel', t==='consumidor_gov');
+    document.getElementById('recl-tipo-raqui').classList.toggle('sel', t==='reclame_aqui');
+  }
+  window.reclSelecionarTipo = reclSelecionarTipo;
+
+  function reclMostrarStep(step){
+    ['recl-step-form','recl-step-loading','recl-step-resultado'].forEach(function(id){
+      document.getElementById(id).classList.remove('active');
+    });
+    document.getElementById(step).classList.add('active');
+  }
+
+  function reclCopiar(id, fbId){
+    var texto = document.getElementById(id).innerText || document.getElementById(id).textContent;
+    var fb = document.getElementById(fbId);
+    function done(){ fb.textContent = '✅ Copiado!'; setTimeout(function(){ fb.textContent=''; }, 3000); }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(texto).then(done).catch(function(){
+        var ta=document.createElement('textarea'); ta.value=texto; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done();
+      });
+    } else {
+      var ta=document.createElement('textarea'); ta.value=texto; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done();
+    }
+  }
+  window.reclCopiar = reclCopiar;
+
+  function reclNovo(){
+    reclMostrarStep('recl-step-form');
+    document.getElementById('recl-erro').textContent = '';
+  }
+  window.reclNovo = reclNovo;
+
+  async function reclGerar(){
+    var empresa = (document.getElementById('recl-empresa').value||'').trim();
+    var servico = document.getElementById('recl-servico').value;
+    var data    = (document.getElementById('recl-data').value||'').trim();
+    var problema= (document.getElementById('recl-problema').value||'').trim();
+    var contato = (document.getElementById('recl-contato').value||'').trim();
+    var impacto = (document.getElementById('recl-impacto').value||'').trim();
+    var solucao = (document.getElementById('recl-solucao').value||'').trim();
+    var erroEl  = document.getElementById('recl-erro');
+    erroEl.textContent = '';
+
+    if(!empresa){ erroEl.textContent = 'Informe o nome da empresa.'; return; }
+    if(!problema){ erroEl.textContent = 'Descreva o problema ocorrido.'; return; }
+    if(!solucao){ erroEl.textContent = 'Informe o que espera como solução.'; return; }
+
+    reclMostrarStep('recl-step-loading');
+
+    var servicoLabel = {
+      voo:'voo aéreo', hotel:'hospedagem', programa_fidelidade:'programa de fidelidade/milhas',
+      seguro_viagem:'seguro de viagem', locacao_carro:'locação de carro',
+      compra_online:'compra online', outro:'serviço'
+    }[servico] || 'serviço';
+
+    var plataformaLabel = reclTipo === 'consumidor_gov' ? 'Consumidor.gov.br' : 'Reclame Aqui';
+
+    var promptUsuario = `Você é um especialista em defesa do consumidor brasileiro. Redija uma reclamação formal para publicação na plataforma ${plataformaLabel}.
+
+DADOS DO CASO:
+- Empresa: ${empresa}
+- Serviço: ${servicoLabel}
+- Data do ocorrido: ${data || 'não informada'}
+- Problema: ${problema}
+- Tentativas de contato: ${contato || 'não realizadas'}
+- Impacto sofrido: ${impacto || 'não especificado'}
+- Solução esperada: ${solucao}
+
+INSTRUÇÕES:
+1. Redija o TEXTO DA RECLAMAÇÃO com linguagem formal, objetiva e fundamentada juridicamente. Estrutura: introdução do caso → descrição detalhada → tentativas de solução → fundamento legal (CDC, Resolução ANAC 400 se for voo, Convenção de Montreal se aplicável) → pedido claro de solução → encerramento respeitoso. Máximo 3.000 caracteres.
+2. Sugira um TÍTULO para a reclamação (máximo 100 caracteres, direto e descritivo).
+3. Preencha os CAMPOS DA PLATAFORMA específicos para ${plataformaLabel}${reclTipo==='consumidor_gov' ? ' (Problema, Impacto, Solução Esperada)' : ' (Título, Categoria, Descrição do Problema, O que você espera da empresa)'}.
+
+Responda APENAS em JSON válido, sem markdown, sem texto fora do JSON:
+{
+  "texto": "texto completo da reclamação aqui",
+  "titulo": "sugestão de título aqui",
+  "campos": "campos preenchidos para ${plataformaLabel} aqui, formatados como:\nCAMPO: valor\nCAMPO: valor"
+}`;
+
+    try {
+      var resp = await fetch(ANTHROPIC_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: promptUsuario }]
+        })
+      });
+      var dados = await resp.json();
+      var raw = (dados.content||[]).map(function(b){ return b.text||''; }).join('');
+      var clean = raw.replace(/```json|```/g,'').trim();
+      var parsed = JSON.parse(clean);
+
+      document.getElementById('recl-texto-resultado').textContent = parsed.texto || '(sem resposta)';
+
+      if(parsed.titulo){
+        document.getElementById('recl-titulo-resultado').textContent = parsed.titulo;
+        document.getElementById('recl-titulo-wrap').style.display = 'block';
+      } else {
+        document.getElementById('recl-titulo-wrap').style.display = 'none';
+      }
+
+      if(parsed.campos){
+        document.getElementById('recl-campos-resultado').textContent = parsed.campos;
+        document.getElementById('recl-campos-wrap').style.display = 'block';
+      } else {
+        document.getElementById('recl-campos-wrap').style.display = 'none';
+      }
+
+      reclMostrarStep('recl-step-resultado');
+    } catch(e) {
+      reclMostrarStep('recl-step-form');
+      document.getElementById('recl-erro').textContent = 'Erro ao gerar reclamação. Tente novamente.';
+    }
+  }
+  window.reclGerar = reclGerar;
+})();
+</script>
+</div><!-- /tab-reclamacoes -->
 
 <div id="tab-milhas" class="tab-panel" style="display:none">
 
@@ -2732,6 +3010,7 @@ function switchTab(tab){
   document.getElementById('tab-milhas').style.display  = tab==='milhas'  ?'block':'none';
   document.getElementById('tab-lounges').style.display       = tab==='lounges'      ?'block':'none';
   document.getElementById('tab-calculadoras').style.display  = tab==='calculadoras' ?'block':'none';
+  document.getElementById('tab-reclamacoes').style.display    = tab==='reclamacoes'   ?'block':'none';
   window.scrollTo({top:0, behavior:'smooth'});
   if(tab==='radar')        loadOfertas(false);
   if(tab==='passagens')    loadPassagens(false);
@@ -4364,8 +4643,10 @@ function mostrarPainel(sessao) {
   // Aba Gestão de Milhas disponível para todos os membros
   const tabMilhas = document.querySelector('.main-tab[data-tab="milhas"]');
   if (tabMilhas) tabMilhas.style.display = '';
-  // Abas em desenvolvimento — remover mostrarAba() ao lançar para produção
+  // Calculadoras disponível para todos os assinantes
   mostrarAba('tab-btn-calculadoras');
+  // Reclamações disponível para todos os assinantes
+  mostrarAba('tab-btn-reclamacoes');
   // Aba Salas VIP — só para devs
 
 }
