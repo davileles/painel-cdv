@@ -583,6 +583,7 @@
   <button class="main-tab active" data-tab="comparador">🏆 Comparador</button>
   <button class="main-tab" data-tab="radar">📡 Radar de Ofertas</button>
   <button class="main-tab" data-tab="passagens">✈️ Passagens</button>
+  <button class="main-tab" data-tab="mapa" id="tab-btn-mapa">🗺️ Mapa de Emissões</button>
   <button class="main-tab" data-tab="milhas">📋 Gestão de Milhas</button>
   <button class="main-tab" data-tab="lounges" id="tab-btn-lounges">🛋️ Salas VIP</button>
   <button class="main-tab" data-tab="calculadoras" id="tab-btn-calculadoras">🧮 Calculadoras</button>
@@ -1841,6 +1842,53 @@
   <div class="grid" id="pass-grid">
     <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando passagens…</div></div>
   </div>
+
+<div id="tab-mapa" class="tab-panel" style="display:none">
+  <div style="padding:14px 24px 12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--border-ctrl)">
+    <div>
+      <div style="font-size:15px;font-weight:900">🗺️ Mapa de Emissões</div>
+      <div style="font-size:11.5px;color:var(--muted);margin-top:2px">Clique numa cidade para ver os destinos registrados; clique num destino para comparar programas.</div>
+    </div>
+    <span id="map-stats" style="margin-left:auto;font-size:11px;color:var(--muted2);font-weight:600;white-space:nowrap"></span>
+    <button onclick="mapaLimpar()" style="background:transparent;border:1px solid var(--border-ctrl);color:var(--muted);padding:7px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;white-space:nowrap" onmouseover="this.style.borderColor='#ff585e';this.style.color='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)';this.style.color='var(--muted)'">✕ Limpar seleção</button>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:16px;padding:16px 24px">
+    <div style="width:100%;background:#1a2135;border:1px solid var(--border);border-radius:14px;overflow:hidden;position:relative">
+      <svg id="cdv-map-svg" viewBox="0 40 1000 357" style="display:block;width:100%;height:auto;cursor:grab;user-select:none"></svg>
+      <div style="position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:6px">
+        <button onclick="mapaZoom(1.5)" style="width:32px;height:32px;border-radius:9px;background:#262e42;border:1px solid var(--border-ctrl);color:var(--text);font-size:16px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;line-height:1" onmouseover="this.style.borderColor='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)'">＋</button>
+        <button onclick="mapaZoom(1/1.5)" style="width:32px;height:32px;border-radius:9px;background:#262e42;border:1px solid var(--border-ctrl);color:var(--text);font-size:16px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;line-height:1" onmouseover="this.style.borderColor='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)'">−</button>
+        <button onclick="mapaResetZoom()" style="width:32px;height:32px;border-radius:9px;background:#262e42;border:1px solid var(--border-ctrl);color:var(--muted);font-size:13px;cursor:pointer;font-family:'Montserrat',sans-serif;line-height:1" onmouseover="this.style.borderColor='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)'">⟲</button>
+      </div>
+      <div id="map-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(26,33,53,.7);font-size:12px;font-weight:700;color:var(--muted)">Carregando registros…</div>
+      <div style="position:absolute;left:12px;bottom:10px;display:flex;gap:12px;font-size:9.5px;font-weight:700;color:var(--muted2);background:rgba(26,33,53,.8);padding:4px 10px;border-radius:8px">
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff585e;margin-right:4px;vertical-align:middle"></span>origem</span>
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#fbbf24;margin-right:4px;vertical-align:middle"></span>destino</span>
+        <span>tamanho = nº registros · scroll = zoom · arrastar = mover</span>
+      </div>
+    </div>
+    <div style="width:100%;display:flex;flex-direction:column;gap:10px">
+      <div id="map-state-none" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px">
+        <div style="font-size:13px;font-weight:900;margin-bottom:4px">📍 Escolha uma origem</div>
+        <div style="font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:14px">Clique numa cidade no mapa ou escolha uma das mais movimentadas:</div>
+        <div id="map-top-cities" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px"></div>
+      </div>
+      <div id="map-state-origem" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px">
+        <div style="font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--muted2);margin-bottom:3px">Partindo de</div>
+        <div id="map-origem-name" style="font-size:17px;font-weight:900;color:#ff585e;margin-bottom:4px"></div>
+        <div id="map-dest-count" style="font-size:11.5px;color:var(--muted);margin-bottom:12px"></div>
+        <div id="map-dest-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px"></div>
+      </div>
+      <div id="map-state-pair" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px">
+        <div style="font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--muted2);margin-bottom:3px">Melhores valores</div>
+        <div id="map-pair-rota" style="font-size:17px;font-weight:900;margin-bottom:4px"></div>
+        <div id="map-pair-count" style="font-size:11.5px;color:var(--muted);margin-bottom:14px"></div>
+        <div id="map-pair-progs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -3321,18 +3369,20 @@ function mostrarAba(id) {
 
 function switchTab(tab){
   document.querySelectorAll('.main-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
-  document.getElementById('tab-inicio').style.display     = tab==='inicio'      ?'block':'none';
-  document.getElementById('tab-comparador').style.display = tab==='comparador'  ?'block':'none';
-  document.getElementById('tab-radar').style.display      = tab==='radar'       ?'block':'none';
-  document.getElementById('tab-passagens').style.display  = tab==='passagens'   ?'block':'none';
-  document.getElementById('tab-milhas').style.display     = tab==='milhas'      ?'block':'none';
-  document.getElementById('tab-lounges').style.display    = tab==='lounges'     ?'block':'none';
-  document.getElementById('tab-calculadoras').style.display = tab==='calculadoras'?'block':'none';
-  document.getElementById('tab-reclamacoes').style.display = tab==='reclamacoes'?'block':'none';
+  document.getElementById('tab-inicio').style.display       = tab==='inicio'       ?'block':'none';
+  document.getElementById('tab-comparador').style.display   = tab==='comparador'   ?'block':'none';
+  document.getElementById('tab-radar').style.display        = tab==='radar'        ?'block':'none';
+  document.getElementById('tab-passagens').style.display    = tab==='passagens'    ?'block':'none';
+  document.getElementById('tab-mapa').style.display         = tab==='mapa'         ?'block':'none';
+  document.getElementById('tab-milhas').style.display       = tab==='milhas'       ?'block':'none';
+  document.getElementById('tab-lounges').style.display      = tab==='lounges'      ?'block':'none';
+  document.getElementById('tab-calculadoras').style.display = tab==='calculadoras' ?'block':'none';
+  document.getElementById('tab-reclamacoes').style.display  = tab==='reclamacoes'  ?'block':'none';
   window.scrollTo({top:0, behavior:'smooth'});
   if(tab==='inicio')       renderInicio();
   if(tab==='radar')        loadOfertas(false);
   if(tab==='passagens')    loadPassagens(false);
+  if(tab==='mapa')         mapaInit();
   if(tab==='milhas')       initMilhas();
   if(tab==='lounges')      lvCarregarAeroportos();
   if(tab==='calculadoras') calcAccorInit();
@@ -5907,6 +5957,405 @@ function lvRenderizarResultado(d) {
   document.getElementById('lv-result').style.display='block';
   document.getElementById('lv-result').scrollIntoView({behavior:'smooth',block:'start'});
 }
+
+
+// ══════════════════════════════════════════════════════
+//  MAPA DE EMISSÕES
+// ══════════════════════════════════════════════════════
+
+const MAPA_COORDS = {
+  'sao paulo':['São Paulo',-23.55,-46.63],'rio de janeiro':['Rio de Janeiro',-22.91,-43.17],'salvador':['Salvador',-12.97,-38.5],
+  'belo horizonte':['Belo Horizonte',-19.92,-43.94],'curitiba':['Curitiba',-25.43,-49.27],'recife':['Recife',-8.05,-34.9],
+  'brasilia':['Brasília',-15.79,-47.88],'porto alegre':['Porto Alegre',-30.03,-51.23],'florianopolis':['Florianópolis',-27.59,-48.55],
+  'fortaleza':['Fortaleza',-3.72,-38.54],'goiania':['Goiânia',-16.68,-49.25],'vitoria':['Vitória',-20.32,-40.34],
+  'campo grande':['Campo Grande',-20.44,-54.65],'campinas':['Campinas',-22.91,-47.06],'navegantes':['Navegantes',-26.9,-48.65],
+  'uberlandia':['Uberlândia',-18.92,-48.28],'natal':['Natal',-5.79,-35.21],'palmas':['Palmas',-10.24,-48.36],
+  'maceio':['Maceió',-9.67,-35.74],'joinville':['Joinville',-26.3,-48.85],'fernando de noronha':['Fernando de Noronha',-3.85,-32.42],
+  'teresina':['Teresina',-5.09,-42.8],'foz do iguacu':['Foz do Iguaçu',-25.55,-54.59],'londrina':['Londrina',-23.31,-51.16],
+  'sao luis':['São Luís',-2.53,-44.3],'belem':['Belém',-1.46,-48.5],'manaus':['Manaus',-3.12,-60.02],'cuiaba':['Cuiabá',-15.6,-56.1],
+  'ribeirao preto':['Ribeirão Preto',-21.18,-47.81],'joao pessoa':['João Pessoa',-7.12,-34.86],'ilheus':['Ilhéus',-14.79,-39.05],
+  'buenos aires':['Buenos Aires',-34.6,-58.38],'santiago':['Santiago',-33.45,-70.67],'assuncao':['Assunção',-25.28,-57.63],
+  'lima':['Lima',-12.05,-77.04],'bogota':['Bogotá',4.71,-74.07],'montevideu':['Montevidéu',-34.9,-56.16],
+  'cordoba':['Córdoba',-31.42,-64.18],'cartagena':['Cartagena',10.39,-75.51],'santa cruz de la sierra':['Santa Cruz de la Sierra',-17.78,-63.18],
+  'miami':['Miami',25.76,-80.19],'nova york':['Nova York',40.71,-74.01],'cancun':['Cancún',21.16,-86.85],
+  'san jose':['San José',9.93,-84.08],'washington':['Washington',38.9,-77.04],'orlando':['Orlando',28.54,-81.38],
+  'houston':['Houston',29.76,-95.37],'chicago':['Chicago',41.88,-87.63],'punta cana':['Punta Cana',18.58,-68.4],
+  'sao francisco':['São Francisco',37.77,-122.42],'boston':['Boston',42.36,-71.06],'fort lauderdale':['Fort Lauderdale',26.12,-80.14],
+  'paris':['Paris',48.86,2.35],'madrid':['Madrid',40.42,-3.7],'roma':['Roma',41.9,12.5],'barcelona':['Barcelona',41.39,2.17],
+  'londres':['Londres',51.51,-0.13],'amsterda':['Amsterdã',52.37,4.9],'lisboa':['Lisboa',38.72,-9.14],'frankfurt':['Frankfurt',50.11,8.68],
+  'milao':['Milão',45.46,9.19],'zurique':['Zurique',47.38,8.54],'porto':['Porto',41.15,-8.61],
+  'cidade do cabo':['Cidade do Cabo',-33.92,18.42],'joanesburgo':['Joanesburgo',-26.2,28.05],'dubai':['Dubai',25.2,55.27],
+  'toquio':['Tóquio',35.68,139.69],'xangai':['Xangai',31.23,121.47],'doha':['Doha',25.29,51.53],'seul':['Seul',37.57,126.98],
+  'casablanca':['Casablanca',33.57,-7.59],'abu dhabi':['Abu Dhabi',24.45,54.38],
+};
+const MAPA_PROG_COLORS = {
+  'Smiles':'#f97316','LATAM Pass':'#dc2626','Azul Fidelidade':'#0ea5e9','Azul pelo Mundo':'#38bdf8',
+  'AAdvantage':'#0068b2','Finnair Plus':'#5b79e0','Iberia Plus':'#d7192d','TAP':'#3fa96f',
+  'TAP Miles&Go':'#3fa96f','Flying Blue':'#6083f5','Privilege Club':'#b04a75',
+};
+
+let mapaItems = [];
+let mapaWorld = [];
+let mapaVB = {x:0, y:40, w:1000};
+let mapaOrigem = null;
+let mapaDestino = null;
+let mapaDrag = null;
+let mapaInited = false;
+
+function mapaProj(lat, lon) {
+  return [(lon + 170) / 340 * 1000, (75 - lat) / 135 * 397];
+}
+function mapaNorm(s) {
+  return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+}
+function mapaCanon(s) {
+  const c = MAPA_COORDS[mapaNorm(s)];
+  return c ? c[0] : null;
+}
+
+async function mapaInit() {
+  if (mapaInited) { mapaRenderAll(); return; }
+  mapaInited = true;
+  // Carregar passagens.json
+  try {
+    const r = await fetch(PASSAGENS_URL + '?t=' + Date.now(), {cache:'no-cache'});
+    const j = await r.json();
+    mapaItems = j.items || [];
+  } catch(e) { console.warn('[CDV Mapa] Erro ao carregar passagens:', e); }
+  // Carregar GeoJSON do mundo
+  try {
+    const r = await fetch('https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json');
+    const gj = await r.json();
+    const paths = [];
+    for (const f of gj.features) {
+      const g = f.geometry; if (!g) continue;
+      const polys = g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : [];
+      let d = '';
+      for (const poly of polys) {
+        for (const ring of poly) {
+          ring.forEach((pt, i) => {
+            const [x, y] = mapaProj(pt[1], pt[0]);
+            d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+          });
+          d += 'Z';
+        }
+      }
+      if (d) paths.push(d);
+    }
+    mapaWorld = paths;
+  } catch(e) { console.warn('[CDV Mapa] Erro ao carregar GeoJSON:', e); }
+  const loadEl = document.getElementById('map-loading');
+  if (loadEl) loadEl.style.display = 'none';
+  mapaRenderAll();
+  mapaAttachEvents();
+}
+
+function mapaAttachEvents() {
+  const svg = document.getElementById('cdv-map-svg');
+  if (!svg || svg.dataset.evBound) return;
+  svg.dataset.evBound = '1';
+  svg.addEventListener('wheel', e => {
+    e.preventDefault();
+    const [px, py] = mapaSvgPoint(e);
+    mapaZoomAt(e.deltaY < 0 ? 1.25 : 0.8, px, py);
+  }, {passive: false});
+  svg.addEventListener('mousedown', e => {
+    mapaDrag = {sx: e.clientX, sy: e.clientY, vb: {...mapaVB}, moved: false};
+    svg.style.cursor = 'grabbing';
+  });
+  svg.addEventListener('mousemove', e => {
+    if (!mapaDrag) return;
+    const r = svg.getBoundingClientRect();
+    const dx = (e.clientX - mapaDrag.sx) / r.width * mapaDrag.vb.w;
+    const dy = (e.clientY - mapaDrag.sy) / r.height * (mapaDrag.vb.w * 0.357);
+    if (Math.abs(e.clientX - mapaDrag.sx) + Math.abs(e.clientY - mapaDrag.sy) > 3) mapaDrag.moved = true;
+    const h = mapaDrag.vb.w * 0.357;
+    mapaVB = {
+      x: Math.max(0, Math.min(1000 - mapaDrag.vb.w, mapaDrag.vb.x - dx)),
+      y: Math.max(40, Math.min(397 - h, mapaDrag.vb.y - dy)),
+      w: mapaDrag.vb.w,
+    };
+    mapaUpdateSVG();
+  });
+  svg.addEventListener('mouseup',    () => { mapaDrag = null; svg.style.cursor = 'grab'; });
+  svg.addEventListener('mouseleave', () => { mapaDrag = null; svg.style.cursor = 'grab'; });
+  // Touch support
+  svg.addEventListener('touchstart', e => {
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    mapaDrag = {sx: t.clientX, sy: t.clientY, vb: {...mapaVB}, moved: false};
+  }, {passive: true});
+  svg.addEventListener('touchmove', e => {
+    if (!mapaDrag || e.touches.length !== 1) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    const r = svg.getBoundingClientRect();
+    const dx = (t.clientX - mapaDrag.sx) / r.width * mapaDrag.vb.w;
+    const dy = (t.clientY - mapaDrag.sy) / r.height * (mapaDrag.vb.w * 0.357);
+    if (Math.abs(t.clientX - mapaDrag.sx) + Math.abs(t.clientY - mapaDrag.sy) > 3) mapaDrag.moved = true;
+    const h = mapaDrag.vb.w * 0.357;
+    mapaVB = {
+      x: Math.max(0, Math.min(1000 - mapaDrag.vb.w, mapaDrag.vb.x - dx)),
+      y: Math.max(40, Math.min(397 - h, mapaDrag.vb.y - dy)),
+      w: mapaDrag.vb.w,
+    };
+    mapaUpdateSVG();
+    mapaDrag.sx = t.clientX; mapaDrag.sy = t.clientY; mapaDrag.vb = {...mapaVB};
+  }, {passive: false});
+  svg.addEventListener('touchend', () => { mapaDrag = null; });
+}
+
+function mapaSvgPoint(e) {
+  const svg = document.getElementById('cdv-map-svg');
+  if (!svg) return [500, 200];
+  const r = svg.getBoundingClientRect();
+  return [mapaVB.x + (e.clientX - r.left) / r.width * mapaVB.w,
+          mapaVB.y + (e.clientY - r.top)  / r.height * (mapaVB.w * 0.357)];
+}
+function mapaZoomAt(f, px, py) {
+  const w = Math.min(1000, Math.max(60, mapaVB.w / f));
+  const h = w * 0.357; const oh = mapaVB.w * 0.357;
+  let x = px - (px - mapaVB.x) * (w / mapaVB.w);
+  let y = py - (py - mapaVB.y) * (h / oh);
+  x = Math.max(0, Math.min(1000 - w, x));
+  y = Math.max(40, Math.min(397 - h, y));
+  mapaVB = {x, y, w};
+  mapaUpdateSVG();
+}
+function mapaZoom(f) {
+  mapaZoomAt(f, mapaVB.x + mapaVB.w / 2, mapaVB.y + mapaVB.w * 0.357 / 2);
+}
+function mapaResetZoom() {
+  mapaVB = {x: 0, y: 40, w: 1000};
+  mapaUpdateSVG();
+}
+
+function mapaClick(n) {
+  if (mapaDrag && mapaDrag.moved) return;
+  if (!mapaOrigem) { mapaOrigem = n; mapaDestino = null; mapaRenderPainel(); return; }
+  if (n === mapaOrigem) { mapaOrigem = null; mapaDestino = null; mapaRenderPainel(); return; }
+  if (n === mapaDestino) { mapaDestino = null; mapaRenderPainel(); return; }
+  const destsOf = mapaGetDestsOf(mapaOrigem);
+  if (destsOf[n]) { mapaDestino = n; }
+  else { mapaOrigem = n; mapaDestino = null; }
+  mapaRenderPainel();
+  mapaUpdateSVG();
+}
+
+function mapaGetCounts() {
+  const counts = {}, routes = {};
+  for (const it of mapaItems) {
+    const o = mapaCanon(it.origem), d = mapaCanon(it.destino);
+    if (!o || !d || o === d) continue;
+    counts[o] = (counts[o] || 0) + 1;
+    counts[d] = (counts[d] || 0) + 1;
+    const k = o + '|' + d;
+    (routes[k] = routes[k] || []).push(it);
+  }
+  return {counts, routes};
+}
+function mapaGetDestsOf(orig) {
+  const {routes} = mapaGetCounts();
+  const res = {};
+  Object.keys(routes).forEach(k => {
+    const [o, d] = k.split('|');
+    if (o === orig) res[d] = routes[k];
+  });
+  return res;
+}
+
+function mapaUpdateSVG() {
+  const svg = document.getElementById('cdv-map-svg');
+  if (!svg) return;
+  const vb = mapaVB;
+  svg.setAttribute('viewBox', `${vb.x.toFixed(1)} ${vb.y.toFixed(1)} ${vb.w.toFixed(1)} ${(vb.w * 0.357).toFixed(1)}`);
+}
+
+function mapaRenderAll() {
+  mapaRenderSVG();
+  mapaRenderPainel();
+  // Stats
+  const {counts, routes} = mapaGetCounts();
+  const statsEl = document.getElementById('map-stats');
+  if (statsEl) statsEl.textContent = `${mapaItems.length} registros · ${Object.keys(counts).length} cidades · ${Object.keys(routes).length} rotas`;
+}
+
+function mapaRenderSVG() {
+  const svg = document.getElementById('cdv-map-svg');
+  if (!svg) return;
+  const vb = mapaVB;
+  svg.setAttribute('viewBox', `${vb.x.toFixed(1)} ${vb.y.toFixed(1)} ${vb.w.toFixed(1)} ${(vb.w * 0.357).toFixed(1)}`);
+  const NS = 'http://www.w3.org/2000/svg';
+  svg.innerHTML = '';
+  const k = Math.max(1, Math.sqrt(1000 / vb.w));
+
+  // Países
+  for (const d of mapaWorld) {
+    const path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('fill', '#28324c');
+    path.setAttribute('stroke', '#4a5a82');
+    path.setAttribute('stroke-width', (0.7 / k).toFixed(2));
+    svg.appendChild(path);
+  }
+
+  // Calcular dados
+  const {counts, routes} = mapaGetCounts();
+  const cityPos = {};
+  Object.values(MAPA_COORDS).forEach(([n, lat, lon]) => {
+    if (!cityPos[n]) { const [x, y] = mapaProj(lat, lon); cityPos[n] = {x, y}; }
+  });
+  const orig = mapaOrigem, dest = mapaDestino;
+  const destsOf = orig ? mapaGetDestsOf(orig) : {};
+
+  // Rotas
+  if (orig && cityPos[orig]) {
+    const po = cityPos[orig];
+    Object.keys(destsOf).forEach(d => {
+      const pd = cityPos[d]; if (!pd) return;
+      const sel = d === dest;
+      const mx = (po.x + pd.x) / 2, my = (po.y + pd.y) / 2;
+      const dist = Math.hypot(pd.x - po.x, pd.y - po.y);
+      const path = document.createElementNS(NS, 'path');
+      path.setAttribute('d', `M${po.x.toFixed(1)} ${po.y.toFixed(1)} Q${mx.toFixed(1)} ${(my - Math.max(8, dist * 0.18)).toFixed(1)} ${pd.x.toFixed(1)} ${pd.y.toFixed(1)}`);
+      path.setAttribute('stroke', sel ? '#fbbf24' : 'rgba(255,88,94,.65)');
+      path.setAttribute('stroke-width', ((sel ? 2.2 : 1.1) / k).toFixed(2));
+      path.setAttribute('fill', 'none');
+      svg.appendChild(path);
+    });
+  }
+
+  // Cidades
+  Object.keys(counts).forEach(n => {
+    const p = cityPos[n], cnt = counts[n];
+    if (!p) return;
+    const isO = n === orig, isD = n === dest;
+    const isDest = !!destsOf[n];
+    const baseR = isO || isD ? 7 : 3.2 + Math.min(4.5, Math.sqrt(cnt) * 0.8);
+    const circle = document.createElementNS(NS, 'circle');
+    circle.setAttribute('cx', p.x.toFixed(1));
+    circle.setAttribute('cy', p.y.toFixed(1));
+    circle.setAttribute('r', (baseR / k).toFixed(2));
+    circle.setAttribute('fill', isO ? '#ff585e' : isD ? '#fbbf24' : isDest ? '#ffb27c' : '#5f7096');
+    circle.setAttribute('stroke', '#1a2135');
+    circle.setAttribute('stroke-width', (1 / k).toFixed(2));
+    circle.setAttribute('opacity', orig && !isO && !isD && !isDest ? '0.4' : '1');
+    circle.style.cursor = 'pointer';
+    circle.addEventListener('click', () => mapaClick(n));
+    const title = document.createElementNS(NS, 'title');
+    title.textContent = n + ' · ' + cnt + ' registro' + (cnt > 1 ? 's' : '');
+    circle.appendChild(title);
+    svg.appendChild(circle);
+    // Label quando zoom alto ou selecionado
+    if (isO || isD || k > 2.2) {
+      const text = document.createElementNS(NS, 'text');
+      text.setAttribute('x', p.x.toFixed(1));
+      text.setAttribute('y', (p.y - 9 / k - baseR / k).toFixed(1));
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('font-size', (11 / k).toFixed(2));
+      text.setAttribute('font-weight', '800');
+      text.setAttribute('fill', '#eeeeee');
+      text.setAttribute('stroke', '#1a2135');
+      text.setAttribute('stroke-width', (3 / k).toFixed(2));
+      text.setAttribute('paint-order', 'stroke');
+      text.setAttribute('font-family', 'Montserrat, sans-serif');
+      text.style.pointerEvents = 'none';
+      text.textContent = n;
+      svg.appendChild(text);
+    }
+  });
+}
+
+function mapaRenderPainel() {
+  const noneEl   = document.getElementById('map-state-none');
+  const origemEl = document.getElementById('map-state-origem');
+  const pairEl   = document.getElementById('map-state-pair');
+  if (!noneEl) return;
+  const orig = mapaOrigem, dest = mapaDestino;
+  const {routes} = mapaGetCounts();
+  const destsOf = orig ? mapaGetDestsOf(orig) : {};
+  const fmt = n => n.toLocaleString('pt-BR');
+
+  if (!orig) {
+    noneEl.style.display   = 'block';
+    origemEl.style.display = 'none';
+    pairEl.style.display   = 'none';
+    // Top cidades
+    const {counts} = mapaGetCounts();
+    const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, 8);
+    const topEl = document.getElementById('map-top-cities');
+    if (topEl) {
+      topEl.innerHTML = top.map(([n, c]) =>
+        `<button onclick="mapaClick('${n.replace(/'/g,"\'")}')" style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border-ctrl);border-radius:10px;padding:9px 13px;cursor:pointer;font-family:'Montserrat',sans-serif;color:var(--text);width:100%;transition:border-color .15s" onmouseover="this.style.borderColor='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)'">
+          <span style="font-size:12px;font-weight:800">${n}</span>
+          <span style="font-size:10.5px;font-weight:700;color:var(--muted2)">${c} reg.</span>
+        </button>`
+      ).join('');
+    }
+  } else if (orig && !dest) {
+    noneEl.style.display   = 'none';
+    origemEl.style.display = 'block';
+    pairEl.style.display   = 'none';
+    document.getElementById('map-origem-name').textContent = '📍 ' + orig;
+    document.getElementById('map-dest-count').textContent  = Object.keys(destsOf).length + ' destinos com registro · clique num destino para comparar programas';
+    const destList = Object.entries(destsOf)
+      .map(([d, items]) => ({d, min: Math.min(...items.map(i => i.pontos || 0)), n: items.length}))
+      .sort((a, b) => a.min - b.min);
+    const destEl = document.getElementById('map-dest-list');
+    if (destEl) {
+      destEl.innerHTML = destList.map(x =>
+        `<button onclick="mapaClick('${x.d.replace(/'/g,"\'")}')" style="display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border-ctrl);border-radius:10px;padding:9px 13px;cursor:pointer;font-family:'Montserrat',sans-serif;color:var(--text);width:100%;transition:border-color .15s" onmouseover="this.style.borderColor='#fbbf24'" onmouseout="this.style.borderColor='var(--border-ctrl)'">
+          <span style="font-size:12px;font-weight:800;flex:1;text-align:left">✈️ ${x.d}</span>
+          <span style="font-size:12px;font-weight:900;color:#ff585e">${fmt(x.min)} <span style="font-size:9.5px;color:var(--muted);font-weight:600">pts</span></span>
+          <span style="font-size:9.5px;font-weight:700;color:var(--muted2);white-space:nowrap">${x.n} reg.</span>
+        </button>`
+      ).join('');
+    }
+  } else {
+    noneEl.style.display   = 'none';
+    origemEl.style.display = 'none';
+    pairEl.style.display   = 'block';
+    document.getElementById('map-pair-rota').textContent  = orig + ' → ' + dest;
+    const items = routes[orig + '|' + dest] || [];
+    document.getElementById('map-pair-count').textContent = items.length + ' registros para este par · menor pontuação por programa';
+    // Melhor por programa
+    const by = {};
+    items.forEach(i => { if (!by[i.programa] || i.pontos < by[i.programa].pontos) by[i.programa] = i; });
+    const sorted = Object.values(by).sort((a, b) => a.pontos - b.pontos);
+    const progsEl = document.getElementById('map-pair-progs');
+    if (progsEl) {
+      progsEl.innerHTML = sorted.map((it, idx) => {
+        const color  = MAPA_PROG_COLORS[it.programa] || '#a78bfa';
+        const border = idx === 0 ? '#ff585e' : 'var(--border-ctrl)';
+        const cabine = (it.cabine || '').replace('Economica','Econômica');
+        const visto  = it.enviadoEm ? 'visto em ' + new Date(it.enviadoEm).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}) : '';
+        return `<div style="background:var(--card);border:1px solid ${border};border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <div style="display:flex;align-items:center;gap:9px;min-width:0">
+            <span style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${color}"></span>
+            <div style="min-width:0">
+              <div style="font-size:12.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.programa}</div>
+              ${idx === 0 ? '<div style="font-size:9.5px;font-weight:800;color:#ff585e;margin-top:2px">✓ Melhor opção</div>' : ''}
+              <div style="font-size:9.5px;color:var(--muted2);margin-top:2px">✈️ ${it.cia || ''} · ${cabine} · ${visto}</div>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:19px;font-weight:900;color:${color}">${fmt(it.pontos || 0)}</div>
+            <div style="font-size:9.5px;color:var(--muted)">pts</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+  mapaRenderSVG();
+}
+
+function mapaLimpar() {
+  mapaOrigem = null;
+  mapaDestino = null;
+  mapaRenderPainel();
+  mapaUpdateSVG();
+}
+
 // === /SALAS VIP ===
 
 </script>
