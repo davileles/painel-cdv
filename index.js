@@ -2335,7 +2335,7 @@ Responda APENAS em JSON válido, sem markdown, sem texto fora do JSON:
 
   const bodyPayload = JSON.stringify({
     model: 'claude-sonnet-4-6',
-    max_tokens: 1000,
+    max_tokens: 2000,
     messages: [{ role: 'user', content: prompt }]
   });
 
@@ -2357,18 +2357,21 @@ Responda APENAS em JSON válido, sem markdown, sem texto fora do JSON:
     apiRes.on('data', (chunk) => { raw += chunk; });
     apiRes.on('end', () => {
       console.log('[ia/reclamacao] status:', apiRes.statusCode);
+      console.log('[ia/reclamacao] raw:', raw.slice(0,300));
       try {
         const parsed = JSON.parse(raw);
-        if (parsed.error) return res.json({ ok: false, erro: parsed.error.message });
+        if (parsed.error) { console.error('[ia/reclamacao] API error:', parsed.error); return res.json({ ok: false, erro: parsed.error.message }); }
         const texto = (parsed.content && parsed.content[0] && parsed.content[0].text) || '';
         const clean = texto.replace(/```json|```/g, '').trim();
         try {
           const result = JSON.parse(clean);
           return res.json({ ok: true, ...result });
         } catch(e) {
+          console.error('[ia/reclamacao] JSON parse error. clean:', clean.slice(0,200));
           return res.json({ ok: false, erro: 'Resposta inesperada da IA.', raw: clean });
         }
       } catch(e) {
+        console.error('[ia/reclamacao] outer parse error:', e.message, 'raw:', raw.slice(0,200));
         return res.json({ ok: false, erro: 'Erro ao processar resposta da IA.' });
       }
     });
