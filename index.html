@@ -6016,15 +6016,30 @@ function mapaCanon(s) {
 async function mapaInit() {
   if (mapaInited) { mapaRenderAll(); return; }
   mapaInited = true;
-  // Carregar passagens.json
+
+  // 1. Carregar passagens.json primeiro → renderiza cidades imediatamente
   try {
     const r = await fetch(PASSAGENS_URL + '?t=' + Date.now(), {cache:'no-cache'});
+    if (!r.ok) throw new Error('passagens.json ' + r.status);
     const j = await r.json();
     mapaItems = j.items || [];
-  } catch(e) { console.warn('[CDV Mapa] Erro ao carregar passagens:', e); }
-  // Carregar GeoJSON do mundo
+  } catch(e) { console.warn('[CDV Mapa] passagens:', e); }
+
+  // Esconder loading e renderizar cidades já
+  const loadEl = document.getElementById('map-loading');
+  if (loadEl) loadEl.style.display = 'none';
+  mapaRenderAll();
+  mapaAttachEvents();
+
+  // 2. Carregar GeoJSON em background (com timeout de 8s)
   try {
-    const r = await fetch('https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json');
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const r = await fetch(
+      'https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json',
+      {signal: ctrl.signal}
+    );
+    clearTimeout(timer);
     const gj = await r.json();
     const paths = [];
     for (const f of gj.features) {
@@ -6043,12 +6058,10 @@ async function mapaInit() {
       if (d) paths.push(d);
     }
     mapaWorld = paths;
-  } catch(e) { console.warn('[CDV Mapa] Erro ao carregar GeoJSON:', e); }
-  const loadEl = document.getElementById('map-loading');
-  if (loadEl) loadEl.style.display = 'none';
-  mapaRenderAll();
-  mapaAttachEvents();
+    mapaRenderSVG(); // re-renderiza com países
+  } catch(e) { console.warn('[CDV Mapa] GeoJSON timeout ou erro (mapa continua sem fronteiras):', e); }
 }
+
 
 function mapaAttachEvents() {
   const svg = document.getElementById('cdv-map-svg');
