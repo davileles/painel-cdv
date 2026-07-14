@@ -1085,8 +1085,6 @@
 <script>
 (function(){
   var reclTipo = 'consumidor_gov';
-  var ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
-
   function reclSelecionarTipo(t){
     reclTipo = t;
     document.getElementById('recl-tipo-cgov').classList.toggle('sel', t==='consumidor_gov');
@@ -1144,57 +1142,35 @@
       compra_online:'compra online', outro:'serviço'
     }[servico] || 'serviço';
 
-    var plataformaLabel = reclTipo === 'consumidor_gov' ? 'Consumidor.gov.br' : 'Reclame Aqui';
-
-    var promptUsuario = `Você é um especialista em defesa do consumidor brasileiro. Redija uma reclamação formal para publicação na plataforma ${plataformaLabel}.
-
-DADOS DO CASO:
-- Empresa: ${empresa}
-- Serviço: ${servicoLabel}
-- Data do ocorrido: ${data || 'não informada'}
-- Problema: ${problema}
-- Tentativas de contato: ${contato || 'não realizadas'}
-- Impacto sofrido: ${impacto || 'não especificado'}
-- Solução esperada: ${solucao}
-
-INSTRUÇÕES:
-1. Redija o TEXTO DA RECLAMAÇÃO com linguagem formal, objetiva e fundamentada juridicamente. Estrutura: introdução do caso → descrição detalhada → tentativas de solução → fundamento legal (CDC, Resolução ANAC 400 se for voo, Convenção de Montreal se aplicável) → pedido claro de solução → encerramento respeitoso. Máximo 3.000 caracteres.
-2. Sugira um TÍTULO para a reclamação (máximo 100 caracteres, direto e descritivo).
-3. Preencha os CAMPOS DA PLATAFORMA específicos para ${plataformaLabel}${reclTipo==='consumidor_gov' ? ' (Problema, Impacto, Solução Esperada)' : ' (Título, Categoria, Descrição do Problema, O que você espera da empresa)'}.
-
-Responda APENAS em JSON válido, sem markdown, sem texto fora do JSON:
-{
-  "texto": "texto completo da reclamação aqui",
-  "titulo": "sugestão de título aqui",
-  "campos": "campos preenchidos para ${plataformaLabel} aqui, formatados como:\nCAMPO: valor\nCAMPO: valor"
-}`;
-
     try {
-      var resp = await fetch(ANTHROPIC_API, {
+      var resp = await fetch('https://cdv-proxy-production.up.railway.app/ia/reclamacao', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 1000,
-          messages: [{ role: 'user', content: promptUsuario }]
+          empresa: empresa,
+          servico: servicoLabel,
+          data: data,
+          problema: problema,
+          contato: contato,
+          impacto: impacto,
+          solucao: solucao,
+          plataforma: reclTipo
         })
       });
       var dados = await resp.json();
-      var raw = (dados.content||[]).map(function(b){ return b.text||''; }).join('');
-      var clean = raw.replace(/```json|```/g,'').trim();
-      var parsed = JSON.parse(clean);
+      if(!dados.ok) throw new Error(dados.erro || 'Erro desconhecido');
 
-      document.getElementById('recl-texto-resultado').textContent = parsed.texto || '(sem resposta)';
+      document.getElementById('recl-texto-resultado').textContent = dados.texto || '(sem resposta)';
 
-      if(parsed.titulo){
-        document.getElementById('recl-titulo-resultado').textContent = parsed.titulo;
+      if(dados.titulo){
+        document.getElementById('recl-titulo-resultado').textContent = dados.titulo;
         document.getElementById('recl-titulo-wrap').style.display = 'block';
       } else {
         document.getElementById('recl-titulo-wrap').style.display = 'none';
       }
 
-      if(parsed.campos){
-        document.getElementById('recl-campos-resultado').textContent = parsed.campos;
+      if(dados.campos){
+        document.getElementById('recl-campos-resultado').textContent = dados.campos;
         document.getElementById('recl-campos-wrap').style.display = 'block';
       } else {
         document.getElementById('recl-campos-wrap').style.display = 'none';
