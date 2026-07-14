@@ -1860,7 +1860,7 @@
 
     <!-- COLUNA ESQUERDA: Mapa -->
     <div style="flex:0 0 58%;min-width:0;padding:14px 12px 14px 24px;display:flex;flex-direction:column;gap:10px">
-      <div style="position:relative;background:#1a2135;border:1px solid var(--border);border-radius:14px;overflow:hidden;flex:1">
+      <div style="position:relative;background:#111827;border:1px solid var(--border);border-radius:14px;overflow:hidden;flex:1">
         <svg id="cdv-map-svg" viewBox="0 40 1000 357" style="display:block;width:100%;height:100%;min-height:360px;cursor:grab;user-select:none"></svg>
         <!-- Zoom controls -->
         <div style="position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:5px">
@@ -6294,9 +6294,9 @@ function mapaRenderSVG() {
   for (const d of mapaWorld) {
     const path = document.createElementNS(NS,'path');
     path.setAttribute('d', d);
-    path.setAttribute('fill','#28324c');
-    path.setAttribute('stroke','#4a5a82');
-    path.setAttribute('stroke-width',(0.7/k).toFixed(2));
+    path.setAttribute('fill','#2d3f62');
+    path.setAttribute('stroke','#5a729e');
+    path.setAttribute('stroke-width',(0.8/k).toFixed(2));
     frag.appendChild(path);
   }
 
