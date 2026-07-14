@@ -7,60 +7,62 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
   :root {
-    --bg:#1e2535;--surface:#2a3246;--card:#323c54;--border:#3d4a66;
-    --text:#eeeeee;--muted:#8a9bbf;--muted2:#5a6a8a;
-    --livelo:#df0979;--livelo-dim:rgba(223,9,121,0.15);
-    --esfera:#e8371b;--esfera-dim:rgba(232,55,27,0.15);
-    --smiles:#f97316;--smiles-dim:rgba(249,115,22,0.15);
-    --azul:#0ea5e9;--azul-dim:rgba(14,165,233,0.15);
-    --latam:#dc2626;--latam-dim:rgba(220,38,38,0.15);
+    --bg:#1c2333;--surface:#262e42;--card:#2e3850;--card-deep:#222a3d;--border:#323d58;--border-ctrl:#3a4560;
+    --text:#eeeeee;--muted:#98a8cc;--muted2:#7688ad;
+    --livelo:#df0979;--livelo-dim:rgba(223,9,121,0.14);
+    --esfera:#e8371b;--esfera-dim:rgba(232,55,27,0.14);
+    --smiles:#f97316;--smiles-dim:rgba(249,115,22,0.14);
+    --azul:#0ea5e9;--azul-dim:rgba(14,165,233,0.14);
+    --latam:#dc2626;--latam-dim:rgba(220,38,38,0.14);
     --green:#34d399;--dollar:#60a5fa;--dollar-dim:rgba(96,165,250,0.12);
     --red:#f87171;--accent:#ff585e;--accent2:#e04449;--blue:#126eff;
-    --cdv-navy:#2a3246;--cdv-coral:#ff585e;
+    --cdv-navy:#262e42;--cdv-coral:#ff585e;
+    --cat-clube:#fbbf24;--cat-trans:#60a5fa;--cat-compra:#34d399;--cat-bonif:#a78bfa;--cat-cart:#ff585e;--cat-geral:#98a8cc;
+    --amber:#fbbf24;--purple:#a78bfa;--orange-fire:#fb923c;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;font-size:14px;min-height:100vh;scroll-padding-top:160px}
 
-  header{background:var(--surface);border-bottom:3px solid var(--accent);padding:14px 22px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header{background:var(--surface);border-bottom:2px solid var(--accent);padding:12px 24px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
   .logo-row{display:flex;align-items:center;gap:14px}
-  .logo-bird{width:52px;height:52px;flex-shrink:0;object-fit:contain;border-radius:8px}
+  .logo-bird{width:44px;height:44px;flex-shrink:0;object-fit:contain;border-radius:10px}
   .brand{display:flex;flex-direction:column;gap:2px}
-  .brand-name{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.3px;line-height:1.1}
-  .brand-sub{font-size:11px;font-weight:600;color:var(--accent);letter-spacing:1px;text-transform:uppercase}
-  .refresh-btn{background:var(--cdv-coral);border:none;color:#fff;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s}
+  .brand-name{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.3px;line-height:1.1}
+  .brand-sub{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:1.2px;text-transform:uppercase}
+  .refresh-btn{background:var(--cdv-coral);border:none;color:#fff;padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s}
   .refresh-btn:hover{opacity:.85}
   .refresh-btn:disabled{opacity:.5;cursor:not-allowed}
-  .prog-bar{padding:8px 22px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--bg);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .prog-fbtn{border:1px solid;background:var(--surface);padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;opacity:.4}
-  .prog-fbtn.active{opacity:1;background:var(--card)}
-  .prog-fbtn:hover{opacity:.85}
+  .prog-bar{padding:10px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--border);background:var(--bg);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .prog-fbtn{border:1px solid;background:transparent;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+  .prog-fbtn.active{opacity:1}
+  .prog-fbtn:hover{opacity:.85;background:rgba(255,255,255,.04)}
 
-  .controls{padding:10px 22px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:80px;z-index:99}
-  input[type=text]{background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:8px;font-size:13px;font-family:'Montserrat',sans-serif;width:210px;outline:none;transition:border-color .2s}
-  input[type=text]:focus{border-color:var(--cdv-coral)}
+  .controls{padding:14px 24px 10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:120px;z-index:80}
+  input[type=text]{background:var(--card);border:1px solid var(--border-ctrl);color:var(--text);padding:9px 12px 9px 34px;border-radius:10px;font-size:13px;font-family:'Montserrat',sans-serif;width:240px;outline:none;transition:border-color .2s}
+  input[type=text]:focus{border-color:var(--cdv-coral);outline:none}
   input[type=text]::placeholder{color:var(--muted)}
-  .fbtn{border:1px solid var(--border);background:transparent;color:var(--muted);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;white-space:nowrap;transition:all .15s}
+  .fbtn{border:1px solid var(--border-ctrl);background:transparent;color:var(--muted);padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;white-space:nowrap;transition:all .15s}
   .fbtn:hover{color:var(--text);border-color:var(--cdv-coral)}
-  .fbtn.active{background:rgba(255,88,94,.12);border-color:var(--cdv-coral);color:var(--cdv-coral)}
-  select.srt{background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;cursor:pointer;outline:none}
+  .fbtn.active{background:rgba(255,88,94,.12);border-color:rgba(255,88,94,.6);color:var(--cdv-coral)}
+  select.srt{background:var(--card);border:1px solid var(--border-ctrl);color:var(--text);padding:9px 12px;border-radius:10px;font-size:12px;font-family:'Montserrat',sans-serif;cursor:pointer;outline:none}
 
-  .cat-bar{padding:8px 22px 10px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
-  .cbtn{border:1px solid var(--border);background:transparent;color:var(--muted);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Montserrat',sans-serif;display:flex;align-items:center;gap:4px;white-space:nowrap;transition:all .15s}
+  .cat-bar{padding:10px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--border)}
+  .cbtn{border:1px solid var(--border-ctrl);background:transparent;color:var(--muted);padding:6px 11px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;display:flex;align-items:center;gap:4px;white-space:nowrap;transition:all .15s}
   .cbtn:hover{border-color:var(--text);color:var(--text)}
-  .cbtn.active{background:rgba(255,88,94,.12);border-color:var(--cdv-coral);color:var(--cdv-coral)}
+  .cbtn.active{background:rgba(255,88,94,.12);border-color:rgba(255,88,94,.6);color:var(--cdv-coral)}
   .cbtn .cc{background:var(--border);border-radius:4px;padding:1px 5px;font-size:10px;color:var(--muted);font-weight:700}
   .cbtn.active .cc{background:var(--cdv-coral);color:#fff}
 
-  .stats{display:flex;gap:18px;padding:9px 22px;border-bottom:1px solid var(--border);flex-wrap:wrap;font-size:12px;color:var(--muted)}
+  .stats{display:flex;gap:18px;padding:4px 0;border:none;flex-wrap:wrap;font-size:12px;color:var(--muted)}
   .stats strong{color:var(--text);font-size:14px;font-weight:700}
   .sdot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px}
 
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;padding:18px 22px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;padding:20px 24px}
 
   /* CARD */
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s,transform .15s}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:9px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s,transform .15s}
   .card:hover{transform:translateY(-2px)}
-  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px}
   .card.winner-livelo::before{background:var(--livelo)}
   .card.winner-esfera::before{background:var(--esfera)}
   .card.winner-smiles::before{background:var(--smiles)}
@@ -81,7 +83,7 @@
   .fbtn-fire:hover{background:rgba(251,146,60,.1)}
   .fbtn-fire.active{background:rgba(251,146,60,.15);border-color:#fb923c}
   .pts-row{display:flex;align-items:baseline;gap:4px}
-  .pts-val{font-size:26px;font-weight:900;line-height:1}
+  .pts-val{font-size:30px;font-weight:900;line-height:1}
   .winner-livelo .pts-val{color:var(--livelo)}
   .winner-esfera .pts-val{color:var(--esfera)}
   .winner-smiles .pts-val{color:var(--smiles)}
@@ -181,14 +183,14 @@
   /* MODAL */
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center;padding:20px}
   .modal-overlay.open{display:flex}
-  .modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:420px;width:100%;position:relative}
-  .modal-close{position:absolute;top:14px;right:16px;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1}
-  .modal-close:hover{color:var(--text)}
+  .modal{background:var(--surface);border:1px solid var(--border-ctrl);border-radius:16px;padding:24px;max-width:440px;width:100%;position:relative;max-height:85vh;overflow-y:auto}
+  .modal-close{position:absolute;top:14px;right:16px;background:rgba(58,69,96,.5);border:none;color:var(--text);font-size:15px;cursor:pointer;line-height:1;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .modal-close:hover{background:rgba(255,88,94,.3)}
   .modal-name{font-size:18px;font-weight:800;margin-bottom:4px}
   .modal-cat{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:20px}
   .modal-rows{display:flex;flex-direction:column;gap:10px}
   #hist-chart{height:200px!important}
-  .modal-row{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;transition:border-color .15s,background .15s}
+  .modal-row{background:var(--card);border:1px solid var(--border-ctrl);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;transition:border-color .15s,background .15s}
   .modal-row:hover{background:var(--card);border-color:var(--muted)}
   .modal-row.best:hover{border-color:var(--cdv-coral);background:#1f1f38}
   .modal-row.best{border-color:var(--cdv-coral)}
@@ -219,16 +221,17 @@
   .alerta-fb{font-size:12px;font-weight:700;text-align:center;min-height:16px;margin-top:8px}
 
   /* ── Abas principais ─────────────────────────────────────────────────────── */
-  .main-tabs{display:flex;gap:0;padding:0 22px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:81px;z-index:90}
-  .main-tab{background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;padding:14px 18px;cursor:pointer;transition:color .15s,border-color .15s}
-  .main-tab:hover{color:var(--text)}
-  .main-tab.active{color:var(--cdv-coral);border-bottom-color:var(--cdv-coral)}
+  .main-tabs{display:flex;gap:4px;padding:8px 20px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:70px;z-index:90;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .main-tab{background:transparent;border:1px solid transparent;border-radius:10px;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:12.5px;font-weight:700;padding:9px 15px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;white-space:nowrap;flex-shrink:0}
+  .main-tab:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+  .main-tab.active{color:var(--cdv-coral);background:rgba(255,88,94,.12);border-color:rgba(255,88,94,.45)}
   .tab-panel{display:block}
 
   /* ── Radar de Ofertas ────────────────────────────────────────────────────── */
   .radar-bar{display:none}
   .radar-title{font-size:12px;color:var(--muted);font-weight:600}
-  .oferta-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:border-color .15s,transform .15s;position:relative}
+  .oferta-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:9px;cursor:pointer;transition:border-color .15s,transform .15s;position:relative}
+  .oferta-card:hover:not(.encerrada){transform:translateY(-2px);border-color:var(--cat-color,var(--cdv-coral))}
   .oferta-card.encerrada{opacity:.45}
   .oferta-card.encerrada:hover{opacity:.7}
   .oferta-encerrada-badge{display:inline-block;font-size:8px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;background:rgba(248,113,113,.18);color:#f87171;padding:2px 7px;border-radius:5px;white-space:nowrap}
@@ -260,15 +263,15 @@
   .radar-search::placeholder{color:var(--muted)}
 
   /* ── Aba Passagens ─────────────────────────────────────────────────────────── */
-  .passagens-controls{padding:10px 22px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--bg)}
-  .passagens-search{background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:8px;font-size:13px;font-family:'Montserrat',sans-serif;width:210px;outline:none;transition:border-color .2s}
+  .passagens-controls{background:var(--bg)}
+  .passagens-search{background:var(--card);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:10px;font-size:13px;font-family:'Montserrat',sans-serif;width:100%;outline:none;transition:border-color .2s}
   .passagens-search:focus{border-color:var(--cdv-coral)}
   .passagens-search::placeholder{color:var(--muted)}
-  .pass-card{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--cdv-coral);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;cursor:default;transition:border-color .15s,transform .15s}
+  .pass-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;cursor:default;transition:border-color .15s,transform .15s}
   .pass-card:hover{transform:translateY(-2px);border-color:var(--cdv-coral)}
   .pass-rota{font-size:15px;font-weight:800;color:var(--text);line-height:1.2}
   .pass-rota span{color:var(--cdv-coral)}
-  .pass-pts{font-size:26px;font-weight:900;color:var(--cdv-coral);line-height:1}
+  .pass-pts{font-size:27px;font-weight:900;color:var(--cdv-coral);line-height:1}
   .pass-pts-lbl{font-size:11px;color:var(--muted)}
   .pass-info-col{display:flex;flex-direction:column;gap:4px;margin-top:2px}
   .pass-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--card);border:1px solid var(--border);color:var(--muted)}
@@ -376,7 +379,7 @@
     .milhas-table .col-fonte{display:none}
 
     /* ── Padding geral das abas ── */
-    .passagens-controls,.radar-search-wrap{position:sticky;top:112px;z-index:88}
+    .passagens-controls,.radar-search-wrap{position:sticky;top:120px;z-index:88}
 
     /* ── KPIs de milhas: 2 colunas em mobile ── */
     #milhas-kpis,#geral-kpis,.milhas-kpi-grid{grid-template-columns:repeat(2,1fr)!important}
@@ -457,7 +460,7 @@
   .iata-code{font-weight:800;color:var(--cdv-coral);margin-right:6px;font-size:11px}
 
 /* === SALAS VIP === */
-.lv-search-wrap{padding:20px 22px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lv-search-wrap{padding:16px 24px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--border)}
 .lv-search-input{flex:1;max-width:300px;min-width:120px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:14px;font-family:'Montserrat',sans-serif;font-weight:600;outline:none;text-transform:uppercase;transition:border-color .2s}
 .lv-search-input::placeholder{text-transform:none;font-weight:400;color:var(--muted)}
 .lv-search-input:focus{border-color:var(--cdv-coral)}
@@ -565,17 +568,19 @@
     <img class="logo-bird" src="logocdv.png" onerror="this.style.display='none'" alt="Clube do Viajante"/>
     <div class="brand">
       <span class="brand-name">Clube do Viajante</span>
-      <span class="brand-sub">Painel de ofertas</span>
+      <span class="brand-sub">Painel do Membro</span>
     </div>
   </div>
-  <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+  <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+    <span id="header-saldo-total" style="display:none;align-items:center;gap:6px;background:rgba(255,88,94,.1);border:1px solid rgba(255,88,94,.3);color:#ff585e;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:800;white-space:nowrap;flex-shrink:0"></span>
     <span id="header-nome-membro" style="font-size:12px;font-weight:700;color:var(--muted)"></span>
-    <button onclick="fazerLogout()" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='#f87171';this.style.color='#f87171'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Sair</button>
+    <button onclick="fazerLogout()" style="background:transparent;border:1px solid var(--border-ctrl);color:var(--muted);padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='#f87171';this.style.color='#f87171'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Sair</button>
   </div>
 </header>
 
 <div class="main-tabs" id="main-tabs">
-  <button class="main-tab active" data-tab="comparador">🏆 Comparador de Pontos</button>
+  <button class="main-tab" data-tab="inicio" id="tab-btn-inicio">🏠 Início</button>
+  <button class="main-tab active" data-tab="comparador">🏆 Comparador</button>
   <button class="main-tab" data-tab="radar">📡 Radar de Ofertas</button>
   <button class="main-tab" data-tab="passagens">✈️ Passagens</button>
   <button class="main-tab" data-tab="milhas">📋 Gestão de Milhas</button>
@@ -584,9 +589,72 @@
   <button class="main-tab" data-tab="reclamacoes" id="tab-btn-reclamacoes" style="display:none">⚖️ Reclamações</button>
 </div>
 
+<div id="tab-inicio" class="tab-panel" style="display:none">
+  <div style="max-width:1180px;margin:0 auto;padding:22px 24px 40px">
+    <!-- Topo saudação -->
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+      <div>
+        <div id="inicio-saudacao" style="font-size:22px;font-weight:900;letter-spacing:-.4px">Olá 👋</div>
+        <div id="inicio-data" style="font-size:12px;color:var(--muted);margin-top:3px"></div>
+      </div>
+      <button onclick="switchTab('milhas')" style="background:#ff585e;border:none;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">＋ Novo lançamento</button>
+    </div>
+
+    <!-- Checklist onboarding -->
+    <div id="inicio-onboarding" style="display:none;background:linear-gradient(120deg,rgba(255,88,94,.1),rgba(255,88,94,.03));border:1px solid rgba(255,88,94,.3);border-radius:14px;padding:18px 20px;margin-bottom:20px;animation:fadeUp .4s ease both">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
+        <div style="font-size:14px;font-weight:800">🚀 Comece bem no painel <span id="onboarding-count" style="color:var(--muted);font-weight:600;font-size:12px"></span></div>
+        <button onclick="dismissOnboarding()" style="background:transparent;border:none;color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;text-decoration:underline">Ocultar</button>
+      </div>
+      <div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px;margin-bottom:14px;overflow:hidden"><div id="onboarding-bar" style="height:100%;background:#ff585e;border-radius:3px;transition:width .4s ease"></div></div>
+      <div id="onboarding-passos" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px"></div>
+    </div>
+
+    <!-- 3 cards resumo -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:22px">
+      <!-- Card Milhas -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">💰 Suas milhas</div>
+          <button onclick="switchTab('milhas')" style="background:transparent;border:none;color:#ff585e;font-size:11px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Ver gestão →</button>
+        </div>
+        <div id="home-saldo-total" style="font-size:30px;font-weight:900;line-height:1">— <span style="font-size:13px;color:var(--muted);font-weight:700">pts</span></div>
+        <div id="home-top-saldos" style="display:flex;flex-direction:column;gap:6px"></div>
+        <div id="home-economia" style="font-size:10.5px;color:var(--muted2);margin-top:auto;padding-top:8px;border-top:1px solid var(--border)">Carregando…</div>
+      </div>
+      <!-- Card Radar -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">📡 Radar de ofertas</div>
+          <button onclick="switchTab('radar')" style="background:transparent;border:none;color:#ff585e;font-size:11px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Ver todas →</button>
+        </div>
+        <div id="home-radar-resumo" style="font-size:13px;font-weight:700">Carregando…</div>
+        <div id="home-radar-lista" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+      <!-- Card Passagens -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">✈️ Passagens em destaque</div>
+          <button onclick="switchTab('passagens')" style="background:transparent;border:none;color:#ff585e;font-size:11px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Ver todas →</button>
+        </div>
+        <div id="home-passagens-lista" style="display:flex;flex-direction:column;gap:8px"><div style="color:var(--muted);font-size:12px">Carregando…</div></div>
+      </div>
+    </div>
+
+    <!-- Em alta no comparador -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-size:14px;font-weight:800">🔥 Em alta no Comparador hoje</div>
+      <button onclick="switchTab('comparador')" style="background:transparent;border:none;color:#ff585e;font-size:11px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Abrir comparador →</button>
+    </div>
+    <div id="home-em-alta" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+      <div style="color:var(--muted);font-size:12px;grid-column:1/-1">Carregando…</div>
+    </div>
+  </div>
+</div>
+
 <div id="tab-comparador" class="tab-panel">
 <div class="controls">
-  <input type="text" id="search" placeholder="Buscar parceiro ou categoria…" oninput="render()">
+  <div style="position:relative;flex:1;min-width:180px;max-width:340px"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="search" placeholder="Buscar parceiro ou categoria…" oninput="render()" style="width:100%;padding-left:34px"></div>
   <select class="srt" id="sort" onchange="render()">
     <option value="pts_desc">Maior pontuação</option>
     <option value="pts_asc">Menor pontuação</option>
@@ -604,7 +672,7 @@
 </div>
 
 <div id="tab-radar" class="tab-panel" style="display:none">
-  <div class="radar-search-wrap"><input type="text" class="radar-search" id="radar-search" placeholder="Buscar oferta…" oninput="renderOfertas()"></div>
+  <div class="radar-search-wrap"><div style="position:relative;display:inline-block"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none;z-index:1">🔎</span><input type="text" class="radar-search" id="radar-search" placeholder="Buscar oferta, programa ou loja…" oninput="renderOfertas()" style="padding-left:34px"></div>
   <div class="cat-bar" id="radar-cat-bar"></div>
   <div class="grid" id="radar-grid">
     <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando ofertas…</div></div>
@@ -652,11 +720,20 @@
     <div class="lv-cards-grid" id="lv-programas-wrap"></div>
   </div>
 
-  <!-- Estado vazio inicial -->
-  <div class="lv-empty-state" id="lv-empty-state">
-    <div class="lv-empty-state-icon">🛋️</div>
-    <div class="lv-empty-state-title">Consulte salas VIP por aeroporto</div>
-    <div class="lv-empty-state-sub">Digite o código IATA (GRU, LIS, CDG…) ou o nome do aeroporto e clique em Buscar.</div>
+  <!-- Estado vazio inicial — Hero redesign -->
+  <div class="lv-empty-state" id="lv-empty-state" style="text-align:center;padding:56px 24px;max-width:640px;margin:0 auto">
+    <div style="font-size:44px;margin-bottom:14px">🛋️</div>
+    <div style="font-size:20px;font-weight:900;margin-bottom:6px">Qual sala VIP você pode acessar?</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:22px">Digite o aeroporto e veja todas as salas com os programas que dão acesso — Priority Pass, LoungeKey, DragonPass, cartões e companhias.</div>
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted2);margin-bottom:10px">Aeroportos populares:</div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <button onclick="document.getElementById('lv-input').value='GRU';lvOnInput('GRU');lvBuscar()" style="border:1px solid var(--border-ctrl);background:var(--surface);color:var(--muted);padding:8px 16px;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='#ff585e';this.style.color='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)';this.style.color='var(--muted)'">GRU</button>
+      <button onclick="document.getElementById('lv-input').value='GIG';lvOnInput('GIG');lvBuscar()" style="border:1px solid var(--border-ctrl);background:var(--surface);color:var(--muted);padding:8px 16px;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='#ff585e';this.style.color='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)';this.style.color='var(--muted)'">GIG</button>
+      <button onclick="document.getElementById('lv-input').value='CNF';lvOnInput('CNF');lvBuscar()" style="border:1px solid var(--border-ctrl);background:var(--surface);color:var(--muted);padding:8px 16px;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='#ff585e';this.style.color='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)';this.style.color='var(--muted)'">CNF</button>
+      <button onclick="document.getElementById('lv-input').value='BSB';lvOnInput('BSB');lvBuscar()" style="border:1px solid var(--border-ctrl);background:var(--surface);color:var(--muted);padding:8px 16px;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='#ff585e';this.style.color='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)';this.style.color='var(--muted)'">BSB</button>
+      <button onclick="document.getElementById('lv-input').value='LIS';lvOnInput('LIS');lvBuscar()" style="border:1px solid var(--border-ctrl);background:var(--surface);color:var(--muted);padding:8px 16px;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='#ff585e';this.style.color='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)';this.style.color='var(--muted)'">LIS</button>
+      <button onclick="document.getElementById('lv-input').value='MIA';lvOnInput('MIA');lvBuscar()" style="border:1px solid var(--border-ctrl);background:var(--surface);color:var(--muted);padding:8px 16px;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='#ff585e';this.style.color='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)';this.style.color='var(--muted)'">MIA</button>
+    </div>
   </div>
 
 </div><!-- /tab-lounges -->
@@ -1249,11 +1326,11 @@
   <div id="milhas-controls-bar" style="background:var(--bg);position:sticky;top:120px;z-index:89;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
     <!-- Linha 1: botões de navegação + filtros à direita na mesma linha -->
     <div style="padding:10px 22px;display:flex;gap:8px;align-items:center;flex-wrap:nowrap;overflow-x:auto">
-      <button class="milhas-view-btn active" data-view="registros" onclick="milhasSetView('registros')" style="background:rgba(255,88,94,.12);border:1px solid var(--cdv-coral);color:var(--cdv-coral);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">📋 Registros</button>
-      <button class="milhas-view-btn" data-view="novo" onclick="milhasSetView('novo')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">＋ Novo Lançamento</button>
-      <button class="milhas-view-btn" data-view="assinaturas" onclick="milhasSetView('assinaturas')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">🔁 Assinaturas</button>
-      <button class="milhas-view-btn" data-view="cartoes" onclick="milhasSetView('cartoes')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">💳 Cartões</button>
-      <button class="milhas-view-btn" data-view="resgates" onclick="milhasSetView('resgates')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">✈️ Resgates</button>
+      <button class="milhas-view-btn active" data-view="registros" onclick="milhasSetView('registros')" style="background:rgba(255,88,94,.12);border:1px solid var(--cdv-coral);color:var(--cdv-coral);padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">📋 Registros</button>
+      <button class="milhas-view-btn" data-view="novo" onclick="milhasSetView('novo')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">＋ Novo Lançamento</button>
+      <button class="milhas-view-btn" data-view="assinaturas" onclick="milhasSetView('assinaturas')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">🔁 Assinaturas</button>
+      <button class="milhas-view-btn" data-view="cartoes" onclick="milhasSetView('cartoes')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">💳 Cartões</button>
+      <button class="milhas-view-btn" data-view="resgates" onclick="milhasSetView('resgates')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">✈️ Resgates</button>
       <div id="milhas-filtros-wrap" style="margin-left:auto;display:flex;gap:6px;flex-shrink:0">
         <select id="milhas-filter-prog" onchange="renderMilhasTabela()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;cursor:pointer">
           <option value="">Todos os programas</option>
@@ -1299,8 +1376,8 @@
           <div style="font-size:11px;color:var(--muted);margin-top:3px">Pontos lançados automaticamente todo mês na data de vencimento</div>
         </div>
         <div style="display:flex;gap:8px">
-          <button onclick="assToggleForm()" id="ass-btn-novo" style="background:var(--cdv-coral);border:none;color:#fff;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">＋ Nova</button>
-          <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">← Voltar</button>
+          <button onclick="assToggleForm()" id="ass-btn-novo" style="background:var(--cdv-coral);border:none;color:#fff;padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">＋ Nova</button>
+          <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">← Voltar</button>
         </div>
       </div>
 
@@ -1362,7 +1439,7 @@
           <div style="font-size:16px;font-weight:800;color:var(--text)">✈️ Resgates & Economia</div>
           <div style="font-size:11px;color:var(--muted);margin-top:3px">Análise do valor economizado em cada resgate vs. pagar em dinheiro</div>
         </div>
-        <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">← Voltar</button>
+        <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">← Voltar</button>
       </div>
 
       <!-- KPI cards de resgates -->
@@ -1450,8 +1527,8 @@
           <div style="font-size:11px;color:var(--muted);margin-top:3px">Cartões vinculados aos lançamentos de crédito</div>
         </div>
         <div style="display:flex;gap:8px">
-          <button onclick="cartaoToggleForm()" id="cartao-btn-novo" style="background:var(--cdv-coral);border:none;color:#fff;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">＋ Novo</button>
-          <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">← Voltar</button>
+          <button onclick="cartaoToggleForm()" id="cartao-btn-novo" style="background:var(--cdv-coral);border:none;color:#fff;padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">＋ Novo</button>
+          <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif">← Voltar</button>
         </div>
       </div>
 
@@ -1503,7 +1580,7 @@
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:780px;margin:0 auto">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <div style="font-size:16px;font-weight:800;color:var(--text)">＋ Novo Lançamento de Milhas</div>
-        <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='var(--text)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">← Voltar</button>
+        <button onclick="milhasSetView('registros')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='var(--text)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">← Voltar</button>
       </div>
 
       <!-- TIPO OPERAÇÃO -->
@@ -1749,8 +1826,8 @@
 </div>
 
 <div id="tab-passagens" class="tab-panel" style="display:none">
-  <div class="passagens-controls">
-    <input type="text" class="passagens-search" id="pass-search" placeholder="Buscar rota, programa, CIA…" oninput="renderPassagens()">
+  <div class="passagens-controls" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 24px 10px;border-bottom:1px solid var(--border)">
+    <div style="position:relative;flex:1;min-width:180px;max-width:340px"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" class="passagens-search" id="pass-search" placeholder="Buscar rota, programa, CIA…" oninput="renderPassagens()" style="width:100%;padding-left:34px"></div>
     <select class="srt" id="pass-filtro-prog" onchange="renderPassagens()" style="margin-left:0">
       <option value="">Todos os programas</option>
     </select>
@@ -1759,8 +1836,8 @@
       <option value="pts_asc">Menor pontuação</option>
       <option value="pts_desc">Maior pontuação</option>
     </select>
+    <div class="stats" id="pass-stats" style="margin-left:auto;border:none;padding:0;font-size:12px;color:var(--muted)"></div>
   </div>
-  <div class="stats" id="pass-stats"></div>
   <div class="grid" id="pass-grid">
     <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando passagens…</div></div>
   </div>
@@ -2146,8 +2223,7 @@ function render(){
   });
 
   document.getElementById('stats').innerHTML=
-    `<span><span class="sdot" style="background:var(--text)"></span>Total: <strong>${partners.length}</strong></span>`+
-    `<span><span class="sdot" style="background:var(--cdv-coral)"></span>Exibindo: <strong>${list.length}</strong></span>`
+    `<span style="margin-left:auto"><strong style="color:var(--text);font-weight:800">${list.length}</strong> parceiros</span>`
 
   buildCatBar();
 
@@ -2277,6 +2353,226 @@ function closeModal(){
   if(histDiv) histDiv.style.display='none';
   if(histBtn) histBtn.textContent='📈 Ver histórico';
 }
+// ══════════════════════════════════════════════════════
+//  ABA INÍCIO
+// ══════════════════════════════════════════════════════
+function renderInicio() {
+  // Saudação
+  const s = lerSessao();
+  const nome = s ? (s.nome || s.email.split('@')[0]) : 'Membro';
+  const hr = new Date().getHours();
+  const periodo = hr < 12 ? 'Bom dia' : hr < 18 ? 'Boa tarde' : 'Boa noite';
+  const el = document.getElementById('inicio-saudacao');
+  if (el) el.innerHTML = `${periodo}, ${nome} 👋`;
+  const dataEl = document.getElementById('inicio-data');
+  if (dataEl) {
+    const d = new Date();
+    const dias = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+    const meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+    dataEl.textContent = `${dias[d.getDay()]}, ${d.getDate()} de ${meses[d.getMonth()]} · aqui está o resumo do seu dia de milhas`;
+  }
+
+  // Onboarding
+  renderOnboarding();
+
+  // Card de milhas
+  renderHomeMilhas();
+
+  // Card radar
+  renderHomeRadar();
+
+  // Card passagens
+  renderHomePassagens();
+
+  // Em alta no comparador
+  renderHomeEmAlta();
+}
+
+function renderHomeMilhas() {
+  // Aguarda dados de milhas carregados
+  const saldoEl = document.getElementById('home-saldo-total');
+  const topEl = document.getElementById('home-top-saldos');
+  const econEl = document.getElementById('home-economia');
+  const sessao = lerSessao();
+  if (!sessao) return;
+  // Se milhas ainda não carregadas, tenta buscar silenciosamente
+  if (typeof milhasData === 'undefined' || !milhasData) {
+    if (saldoEl) saldoEl.innerHTML = '— <span style="font-size:13px;color:var(--muted);font-weight:700">pts</span>';
+    return;
+  }
+  const perfil = milhasData.perfis ? (milhasData.perfis[milhasPerfilAtivo||0]||milhasData.perfis[0]) : null;
+  if (!perfil) return;
+  const registros = perfil.registros || [];
+  const saldoPorProg = {};
+  registros.forEach(r => {
+    const delta = r.tipo === 'credito' ? (r.quantidade||0) : r.tipo === 'debito' ? -(r.quantidade||0) : (r.tipoTransf==='saida' ? -(r.quantidade||0) : (r.quantidade||0));
+    const pid = r.programa||'';
+    saldoPorProg[pid] = (saldoPorProg[pid]||0) + delta;
+  });
+  const total = Object.values(saldoPorProg).reduce((a,b)=>a+Math.max(b,0),0);
+  if (saldoEl) saldoEl.innerHTML = `${total.toLocaleString('pt-BR')} <span style="font-size:13px;color:var(--muted);font-weight:700">pts</span>`;
+  // Top 3
+  const sorted = Object.entries(saldoPorProg).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  if (topEl) {
+    const PROG_COLORS = {aadvantage:'#0068b2',all:'#8B0000',azul:'#0ea5e9',brb:'#005ca9',btg:'#f5a623',c6atomos:'#f5c518',carrefour:'#0066cc',cvc:'#e8371b',esfera:'#e8371b',gollog:'#f97316',iberia:'#dd2222',inter:'#ff7a00',itauunibanco:'#f36f21',latam:'#dc2626',livelo:'#df0979',nubank:'#8a05be',pontosforyou:'#e04449',santander:'#ec0000',sicredi:'#00a54f',smiles:'#f97316',tam:'#dc2626',tudo_azul:'#0ea5e9',wiz:'#ff0000'};
+    topEl.innerHTML = sorted.map(([pid,val])=>{
+      const prog = MILHAS_PROGS ? MILHAS_PROGS.find(x=>x.id===pid) : null;
+      const name = prog ? prog.name : pid;
+      const color = prog ? prog.color : (PROG_COLORS[pid]||'#98a8cc');
+      return `<div style="display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0"></span>
+        <span style="font-size:11.5px;color:var(--muted);font-weight:600;flex:1">${name}</span>
+        <span style="font-size:12px;font-weight:800">${val.toLocaleString('pt-BR')}</span>
+      </div>`;
+    }).join('');
+  }
+  if (econEl) {
+    const custo = registros.filter(r=>r.tipo==='credito'&&r.custo).reduce((a,r)=>a+(r.custo||0),0);
+    if (custo > 0) econEl.innerHTML = `Custo total registrado: <strong style="color:var(--purple,#a78bfa)">R$ ${custo.toLocaleString('pt-BR',{minimumFractionDigits:2})}</strong>`;
+    else econEl.textContent = 'Registre milhas para ver o resumo';
+  }
+}
+
+function renderHomeRadar() {
+  const resumoEl = document.getElementById('home-radar-resumo');
+  const listaEl = document.getElementById('home-radar-lista');
+  if (!ofertasData || !ofertasData.items) {
+    if (resumoEl) resumoEl.textContent = 'Carregando radar…';
+    // Load silently
+    loadOfertas(false).then(() => renderHomeRadar()).catch(()=>{});
+    return;
+  }
+  const items = ofertasData.items;
+  const ativas = items.filter(o => !isOfertaEncerrada(o));
+  const urgentes = ativas.filter(o => {
+    const d = parsePrazoData(o.prazo);
+    if (!d) return false;
+    return (d - Date.now()) <= 48 * 60 * 60 * 1000;
+  });
+  if (resumoEl) resumoEl.innerHTML = `${ativas.length} ofertas ativas · <span style="color:#f87171;font-weight:800">${urgentes.length} terminam em até 48h</span>`;
+  if (listaEl) {
+    const top3 = ativas.slice(0,3);
+    listaEl.innerHTML = top3.map(o => {
+      const cat = o.categoria||'geral';
+      const prazoCfg = prazoHumano(o.prazo, false);
+      return `<div onclick="switchTab('radar')" style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border-ctrl);border-radius:10px;padding:9px 12px;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)'">
+        <span style="font-size:16px">${o.emoji||'📰'}</span>
+        <span style="font-size:11.5px;font-weight:700;flex:1;line-height:1.35">${o.titulo}</span>
+        <span style="font-size:10px;font-weight:800;color:${prazoCfg.color};white-space:nowrap">${prazoCfg.text.replace('⏳ ','')}</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+function renderHomePassagens() {
+  const listaEl = document.getElementById('home-passagens-lista');
+  if (!listaEl) return;
+  if (!passagensData || !passagensData.length) {
+    listaEl.innerHTML = '<div style="color:var(--muted);font-size:12px">Carregando passagens…</div>';
+    loadPassagens(false).then(()=>renderHomePassagens()).catch(()=>{});
+    return;
+  }
+  const corte = Date.now() - 3*24*60*60*1000;
+  const recent = passagensData.filter(p=>new Date(p.enviadoEm)>=corte);
+  if (!recent.length) { listaEl.innerHTML = '<div style="color:var(--muted);font-size:12px">Nenhuma passagem nos últimos 3 dias.</div>'; return; }
+  // Find minimum historical
+  const histMap = {};
+  passagensData.forEach(p=>{ const k=grupoKey(p); if(!histMap[k])histMap[k]=[]; histMap[k].push(p); });
+  const sorted = recent.sort((a,b)=>(a.pontos||0)-(b.pontos||0));
+  listaEl.innerHTML = sorted.slice(0,3).map((p,idx) => {
+    const k = grupoKey(p);
+    const grupo = histMap[k]||[];
+    const corte180 = Date.now()-180*24*60*60*1000;
+    const hist180 = grupo.filter(h=>new Date(h.enviadoEm)>=corte180);
+    const minPts = hist180.length ? Math.min(...hist180.map(h=>h.pontos||0)) : 0;
+    const isMin = hist180.length>=2 && p.pontos===minPts;
+    if (idx===0 && isMin) {
+      const mediaPts = Math.round(hist180.reduce((a,h)=>a+(h.pontos||0),0)/hist180.length);
+      const pct = mediaPts ? Math.round(Math.abs(p.pontos-mediaPts)/mediaPts*100) : 0;
+      const below = p.pontos < mediaPts;
+      return `<div onclick="abrirPassagemModal('${p.id}')" style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.3);border-radius:10px;padding:12px 14px;cursor:pointer">
+        <div style="font-size:10px;font-weight:800;color:#fbbf24;letter-spacing:.4px;margin-bottom:4px">🔥 MÍNIMO HISTÓRICO</div>
+        <div style="font-size:15px;font-weight:900">${p.origem} <span style="color:#ff585e">→</span> ${p.destino}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px"><strong style="color:var(--text);font-size:16px;font-weight:900">${(p.pontos||0).toLocaleString('pt-BR')}</strong> pts · ${p.programa||''}</div>
+        ${hist180.length>=2?`<div style="font-size:10.5px;color:${below?'#34d399':'#f87171'};font-weight:700;margin-top:4px">${below?'↓':'↑'} ${pct}% ${below?'abaixo':'acima'} da média de 180 dias</div>`:''}
+      </div>`;
+    }
+    return `<div onclick="abrirPassagemModal('${p.id}')" style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border-ctrl);border-radius:10px;padding:9px 12px;cursor:pointer" onmouseover="this.style.borderColor='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)'">
+      <span style="font-size:12px;font-weight:800;flex:1">${p.origem} <span style="color:#ff585e">→</span> ${p.destino} · ${normalizarCabine(p.cabine)||''}</span>
+      <span style="font-size:11px;font-weight:800">${(p.pontos||0).toLocaleString('pt-BR')} pts</span>
+    </div>`;
+  }).join('');
+}
+
+function renderHomeEmAlta() {
+  const el = document.getElementById('home-em-alta');
+  if (!el) return;
+  if (!partners || !partners.length) { setTimeout(()=>renderHomeEmAlta(),1000); return; }
+  const fire = partners.filter(p=>isAboveAverage(p)).slice(0,4);
+  if (!fire.length) { el.innerHTML='<div style="color:var(--muted);font-size:12px">Carregando comparador…</div>'; return; }
+  const PROGRAMS_MAP = {};
+  if (typeof PROGRAMS !== 'undefined') PROGRAMS.forEach(p=>PROGRAMS_MAP[p.id]=p);
+  el.innerHTML = fire.map(p => {
+    const best = p.bestProg==='both' ? Object.keys(p.programs)[0] : p.bestProg;
+    const prog = PROGRAMS_MAP[best]||{name:best,color:'#ff585e'};
+    return `<div onclick="openModal('${encodeURIComponent(p.name).replace(/'/g,"\'")}')" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s,border-color .15s" onmouseover="this.style.transform='translateY(-2px)';this.style.borderColor='${prog.color}'" onmouseout="this.style.transform='';this.style.borderColor='var(--border)'">
+      <div style="position:absolute;top:0;left:0;bottom:0;width:3px;background:${prog.color}"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:12.5px;font-weight:800;padding-left:6px">${p.name}</div>
+        <span style="font-size:9px;font-weight:800;background:rgba(251,146,60,.15);color:#fb923c;border-radius:4px;padding:2px 6px">🔥</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:4px;padding-left:6px">
+        <span style="font-size:24px;font-weight:900;color:${prog.color};line-height:1">${p.bestPts}</span>
+        <span style="font-size:10.5px;color:var(--muted)">pts/R$</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:5px;padding-left:6px">melhor na <strong style="color:${prog.color}">${prog.name}</strong></div>
+    </div>`;
+  }).join('');
+}
+
+function renderOnboarding() {
+  const el = document.getElementById('inicio-onboarding');
+  if (!el) return;
+  try { if(localStorage.getItem('cdv_onboarding_dismissed')==='1'){el.style.display='none';return;} } catch(e){}
+  const s = lerSessao();
+  const temMilhas = typeof milhasData !== 'undefined' && milhasData && (milhasData.perfis||[]).some(pf=>(pf.registros||[]).length>0);
+  const temAlerta = false; // simplificado
+  const passos = [
+    {icon:'✅',titulo:'Entre com seu e-mail',sub:'Feito! Sua assinatura está ativa.',done:true,go:null},
+    {icon:'📋',titulo:'Registre suas milhas',sub:'Cadastre seus saldos para acompanhar tudo.',done:temMilhas,go:'milhas'},
+    {icon:'🔔',titulo:'Crie um alerta',sub:'Seja avisado quando uma pontuação bater sua meta.',done:false,go:'comparador'},
+    {icon:'📡',titulo:'Conheça o Radar',sub:'As melhores promoções, selecionadas todo dia.',done:false,go:'radar'},
+  ];
+  const concluidos = passos.filter(p=>p.done).length;
+  const countEl = document.getElementById('onboarding-count');
+  if (countEl) countEl.textContent = `— ${concluidos} de 4 passos concluídos`;
+  const barEl = document.getElementById('onboarding-bar');
+  if (barEl) barEl.style.width = (concluidos/4*100)+'%';
+  const passosEl = document.getElementById('onboarding-passos');
+  if (passosEl) {
+    passosEl.innerHTML = passos.map(pa => {
+      const bg = pa.done ? 'rgba(52,211,153,.08)' : 'var(--surface)';
+      const bd = pa.done ? 'rgba(52,211,153,.3)' : 'var(--border-ctrl)';
+      const fg = pa.done ? '#34d399' : 'var(--text)';
+      return `<div onclick="${pa.go?`switchTab('${pa.go}')`:'void 0'}" style="background:${bg};border:1px solid ${bd};border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;cursor:${pa.go?'pointer':'default'};transition:border-color .15s" ${pa.go?`onmouseover="this.style.borderColor='#ff585e'" onmouseout="this.style.borderColor='${bd}'"`:''}>
+        <span style="font-size:15px;line-height:1;margin-top:1px">${pa.icon}</span>
+        <div>
+          <div style="font-size:12px;font-weight:800;color:${fg}">${pa.titulo}</div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.4">${pa.sub}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  el.style.display = 'block';
+}
+
+function dismissOnboarding() {
+  try { localStorage.setItem('cdv_onboarding_dismissed','1'); } catch(e){}
+  const el = document.getElementById('inicio-onboarding');
+  if (el) el.style.display = 'none';
+}
+
+
 
 let histChart = null;
 let currentModalPartner = null;
@@ -2572,8 +2868,7 @@ function renderPassagens() {
   const grid = document.getElementById('pass-grid');
   const stats = document.getElementById('pass-stats');
 
-  stats.innerHTML = `<span><span class="sdot" style="background:var(--text)"></span>Total: <strong>${passagensData.length}</strong></span>` +
-    `<span><span class="sdot" style="background:var(--cdv-coral)"></span>Exibindo: <strong>${items.length}</strong></span>`;
+  stats.innerHTML = `<strong style="color:var(--text);font-weight:800">${items.length}</strong> <span>emissões nos últimos 3 dias</span>`;
 
   if (!items.length) {
     grid.innerHTML = '<div class="status-box" style="color:var(--muted)">Nenhuma passagem encontrada.</div>';
@@ -2632,17 +2927,19 @@ function renderPassagens() {
     const fonteClass = p.fonte === 'alerta' ? 'pass-fonte-alerta' : 'pass-fonte-emissao';
     const fonteTxt   = p.fonte === 'alerta' ? 'Alerta' : 'Emissão';
 
-    return `<div class="pass-card" onclick="abrirPassagemModal('${p.id}')" style="cursor:pointer">
-      <div class="pass-rota">${p.origem} <span>→</span> ${p.destino}</div>
-      ${isAtualMin ? '<div class="pass-badge-minimo">🔥 Mínimo histórico</div>' : ''}
+    const bdColor = isAtualMin ? 'rgba(251,191,36,.4)' : 'var(--border)';
+    return `<div class="pass-card" onclick="abrirPassagemModal('${p.id}')" style="cursor:pointer;border-color:${bdColor}">
+      ${isAtualMin ? '<div style=\'display:inline-flex;align-items:center;gap:5px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.35);color:#fbbf24;font-size:9.5px;font-weight:800;padding:3px 9px;border-radius:6px;letter-spacing:.4px;width:fit-content;text-transform:uppercase;margin-bottom:4px\'>🔥 Mínimo histórico</div>' : ''}
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div class="pass-rota" style="font-size:17px;font-weight:900;line-height:1.2">${p.origem} <span style="color:#ff585e">→</span> ${p.destino}</div>
+        ${p.cabine ? `<span style="font-size:9.5px;font-weight:800;color:var(--muted);background:var(--card);border-radius:5px;padding:3px 7px;white-space:nowrap">${normalizarCabine(p.cabine)}</span>` : ''}
+      </div>
       <div style="display:flex;align-items:baseline;gap:4px">
         <span class="pass-pts">${(p.pontos||0).toLocaleString('pt-BR')}</span>
         <span class="pass-pts-lbl">pts</span>
       </div>
-      <div class="pass-info-col">
-        ${p.programa ? `<span class="pass-badge">🎟️ ${p.programa}</span>` : ''}
-        ${p.cia ? `<span class="pass-badge">✈️ ${p.cia}</span>` : ''}
-        ${p.cabine ? `<span class="pass-badge">💺 ${normalizarCabine(p.cabine)}</span>` : ''}
+      <div class="pass-info-col" style="font-size:11px;color:var(--muted);font-weight:600">
+        ${p.programa ? `🎟️ ${p.programa}` : ''}${p.cia ? ` · ✈️ ${p.cia}` : ''}
       </div>
       ${histHtml}
     </div>`;
@@ -2762,6 +3059,23 @@ const OFERTA_CAT_LABELS = {
   transferencia:'🔄 Transferência', compra:'💰 Compra de pontos', compra_bonificada:'🛍️ Compra bonificada',
   clube:'🎫 Clube', cartao:'💳 Cartões', geral:'📰 Geral'
 };
+const OFERTA_CAT_COLORS = {
+  clube:'#fbbf24', transferencia:'#60a5fa', compra:'#34d399',
+  compra_bonificada:'#a78bfa', cartao:'#ff585e', geral:'#98a8cc'
+};
+function ofertaCatColor(cat){ return OFERTA_CAT_COLORS[cat]||'#98a8cc'; }
+function prazoHumano(prazo, encerrada){
+  if(encerrada) return {text:'Encerrada', color:'#f87171'};
+  if(!prazo||prazo.toLowerCase()==='não informado'||prazo.toLowerCase()==='sem prazo') return {text:'⏳ sem prazo definido', color:'#7688ad'};
+  const d=parsePrazoData(prazo);
+  if(!d) return {text:'⏳ '+prazo, color:'#f97316'};
+  const now=new Date(); const diff=Math.round((d-now)/(1000*60*60*24));
+  if(diff<0) return {text:'Encerrada', color:'#f87171'};
+  if(diff===0) return {text:'⏳ termina hoje', color:'#f87171'};
+  if(diff===1) return {text:'⏳ termina amanhã', color:'#f87171'};
+  if(diff<=2) return {text:`⏳ termina em ${diff} dias`, color:'#f87171'};
+  return {text:'⏳ até '+formatPrazoDDMM(prazo), color:'#f97316'};
+}
 
 async function loadOfertas(force){
   if(ofertasLoaded && !force) return;
@@ -2862,16 +3176,18 @@ function renderOfertas(){
     const encerrada=isOfertaEncerrada(o);
     const temPrazo=o.prazo&&o.prazo.toLowerCase()!=='não informado';
     const ddmm=temPrazo?formatPrazoDDMM(o.prazo):'';
+    const catColor=ofertaCatColor(o.categoria);
+    const prazoCfg=prazoHumano(o.prazo, encerrada);
     return `
-    <div class="oferta-card${encerrada?' encerrada':''}" data-oferta-id="${o.id}">
+    <div class="oferta-card${encerrada?' encerrada':''}" data-oferta-id="${o.id}" style="--cat-color:${catColor}">
       <div class="oferta-card-top">
-        <span class="oferta-emoji">${o.emoji||'📰'}</span>
-        <span class="oferta-cat-badge">${(OFERTA_CAT_LABELS[o.categoria]||o.categoria||'').replace(/^[^ ]+ /,'')}</span>
+        <span style="width:38px;height:38px;border-radius:10px;background:${catColor}18;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0">${o.emoji||'📰'}</span>
+        <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;padding:4px 9px;border-radius:6px;background:${catColor}18;color:${catColor};white-space:nowrap">${(OFERTA_CAT_LABELS[o.categoria]||o.categoria||'').replace(/^[^ ]+ /,'')}</span>
       </div>
       <div class="oferta-titulo">${o.titulo}</div>
       <div class="oferta-resumo-mini">${o.resumo||''}</div>
       <div class="oferta-card-foot">
-        ${ddmm?`<span class="oferta-prazo-mini">⏳ ${ddmm}</span>`:'<span></span>'}
+        <span style="font-size:10.5px;font-weight:800;color:${prazoCfg.color}">${prazoCfg.text}</span>
         ${encerrada?'<span class="oferta-encerrada-badge">Encerrada</span>':''}
       </div>
     </div>
@@ -2980,14 +3296,16 @@ function mostrarAba(id) {
 
 function switchTab(tab){
   document.querySelectorAll('.main-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
-  document.getElementById('tab-comparador').style.display = tab==='comparador'?'block':'none';
-  document.getElementById('tab-radar').style.display = tab==='radar'?'block':'none';
-  document.getElementById('tab-passagens').style.display = tab==='passagens'?'block':'none';
-  document.getElementById('tab-milhas').style.display  = tab==='milhas'  ?'block':'none';
-  document.getElementById('tab-lounges').style.display       = tab==='lounges'      ?'block':'none';
-  document.getElementById('tab-calculadoras').style.display  = tab==='calculadoras' ?'block':'none';
-  document.getElementById('tab-reclamacoes').style.display    = tab==='reclamacoes'   ?'block':'none';
+  document.getElementById('tab-inicio').style.display     = tab==='inicio'      ?'block':'none';
+  document.getElementById('tab-comparador').style.display = tab==='comparador'  ?'block':'none';
+  document.getElementById('tab-radar').style.display      = tab==='radar'       ?'block':'none';
+  document.getElementById('tab-passagens').style.display  = tab==='passagens'   ?'block':'none';
+  document.getElementById('tab-milhas').style.display     = tab==='milhas'      ?'block':'none';
+  document.getElementById('tab-lounges').style.display    = tab==='lounges'     ?'block':'none';
+  document.getElementById('tab-calculadoras').style.display = tab==='calculadoras'?'block':'none';
+  document.getElementById('tab-reclamacoes').style.display = tab==='reclamacoes'?'block':'none';
   window.scrollTo({top:0, behavior:'smooth'});
+  if(tab==='inicio')       renderInicio();
   if(tab==='radar')        loadOfertas(false);
   if(tab==='passagens')    loadPassagens(false);
   if(tab==='milhas')       initMilhas();
@@ -4441,9 +4759,9 @@ document.getElementById('main-tabs').addEventListener('click',e=>{
 (function(){
   try{
     const saved=localStorage.getItem('cdv_active_tab');
-    if(saved && saved !== 'milhas') switchTab(saved);
-    else switchTab('comparador');
-  }catch(e){ switchTab('comparador'); }
+    if(saved) switchTab(saved);
+    else switchTab('inicio');
+  }catch(e){ switchTab('inicio'); }
 })();
 
 
