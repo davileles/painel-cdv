@@ -2334,6 +2334,14 @@ function pool(){
       if(eq>bestAerialEquiv){bestAerialEquiv=eq;bestAerialPts=activeMap[pid].pts;bestAerialProg=pid;}
     }
 
+    // Se filtro Inter está ativo (sozinho ou com outros), Inter tem prioridade de exibição
+    if(activeProgs!==null && activeProgs.has('inter') && activeMap['inter']){
+      return {...p,bestPts:activeMap['inter'].pts,bestProg:'inter'};
+    }
+    // Parceiro só tem Inter (sem nenhum programa de milhas)
+    if(!bestBaseProg && !bestAerialProg && activeMap['inter']){
+      return {...p,bestPts:activeMap['inter'].pts,bestProg:'inter'};
+    }
     if(bestAerialProg&&bestAerialEquiv>bestBaseEquiv) return {...p,bestPts:bestAerialPts,bestProg:bestAerialProg};
     if(bestBaseProg) return {...p,bestPts:bestBasePts,bestProg:bestBaseProg};
     return {...p,bestPts:bestAerialPts||0,bestProg:bestAerialProg};
@@ -2393,7 +2401,7 @@ function render(){
       ${p.ate?'<div class="pts-ate">até</div>':''}
       <div class="pts-row">
         <span class="pts-val">${p.bestPts}</span>
-        <span class="pts-lbl">pts/${lbl(p)}</span>
+        <span class="pts-lbl">${p.bestProg==='inter'?'':'pts/'}${lbl(p)}</span>
       </div>
       <div class="prog-badges">${progBadges(p)}</div>
       ${p.dollar?'<span class="tag-dollar">em U$ turismo</span>':''}
