@@ -6435,7 +6435,7 @@ function mapaRenderPainel() {
     if (nameEl) nameEl.innerHTML = `🛬 Chegando em <span style="color:#fbbf24">${dest}</span>`;
     const origensSorted = Object.entries(origensFor)
       .map(([o,its])=>({d:o, min:Math.min(...its.map(i=>i.pontos||0)), n:its.length}))
-      .sort((a,b)=>a.min-b.min);
+      .sort((a,b)=>a.d.localeCompare(b.d,"pt-BR"));
     if (cntEl) cntEl.textContent = origensSorted.length + ' origem' + (origensSorted.length!==1?'ns':'') + ' com emissão para este destino · clique para ver detalhes';
     if (listEl) listEl.innerHTML = origensSorted.map(x =>
       `<button onclick="mapaOrigem='${x.d.replace(/'/g,"\'")}';\ mapaDestino='${dest.replace(/'/g,"\'")}';\ mapaRenderPainel();\ mapaRenderSVG();" style="display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border-ctrl);border-radius:10px;padding:8px 12px;cursor:pointer;font-family:'Montserrat',sans-serif;color:var(--text);width:100%;transition:border-color .15s" onmouseover="this.style.borderColor='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)'"><span style="font-size:11.5px;font-weight:800;flex:1;text-align:left">✈️ ${x.d} → ${dest}</span><span style="font-size:12px;font-weight:900;color:#ff585e">${fmt(x.min)}<span style="font-size:9px;color:var(--muted);font-weight:600"> pts</span></span><span style="font-size:9px;font-weight:700;color:var(--muted2)">${x.n}×</span></button>`
@@ -6453,7 +6453,7 @@ function mapaRenderPainel() {
     if (nameEl) nameEl.textContent = '📍 ' + orig;
     const destsSorted = Object.entries(destsOf)
       .map(([d,items])=>({d, min:Math.min(...items.map(i=>i.pontos||0)), n:items.length}))
-      .sort((a,b)=>a.min-b.min);
+      .sort((a,b)=>a.d.localeCompare(b.d,"pt-BR"));
     if (cntEl) cntEl.textContent = destsSorted.length + ' destino' + (destsSorted.length!==1?'s':'') + ' · clique para comparar programas';
     if (listEl) listEl.innerHTML = destsSorted.map(x =>
       `<button onclick="mapaClick('${x.d.replace(/'/g,"\'")}')" style="display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border-ctrl);border-radius:10px;padding:8px 12px;cursor:pointer;font-family:'Montserrat',sans-serif;color:var(--text);width:100%;transition:border-color .15s" onmouseover="this.style.borderColor='#fbbf24'" onmouseout="this.style.borderColor='var(--border-ctrl)'"><span style="font-size:11.5px;font-weight:800;flex:1;text-align:left">✈️ ${x.d}</span><span style="font-size:12px;font-weight:900;color:#ff585e">${fmt(x.min)}<span style="font-size:9px;color:var(--muted);font-weight:600"> pts</span></span><span style="font-size:9px;font-weight:700;color:var(--muted2)">${x.n}×</span></button>`
