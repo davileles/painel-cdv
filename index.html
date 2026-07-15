@@ -2450,7 +2450,7 @@ function renderModalRows(p, links={}){
         <div>
           <div class="modal-prog-name">${prog.name}</div>
           ${isBest?'<div class="best-badge">✓ Melhor opção</div>':''}
-          <div style="font-size:10px;color:var(--muted);margin-top:2px">${loading?'⟳ carregando link…':hasLink?'↗ Ir para o parceiro':'— sem link disponível'}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px">${loading?'⟳ carregando link…':hasLink?'↗ Ir para o parceiro':pid==='inter'?'↗ Acesse o app do Banco Inter':'— sem link disponível'}</div>
         </div>
       </div>
       <div style="text-align:right">
