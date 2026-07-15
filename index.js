@@ -292,6 +292,26 @@ app.post('/ofertas/rejeitar', async (req, res) => {
   }
 });
 
+// ── Enfileirar oferta no baileys-server para envio via WhatsApp ───────────────
+// Proxy para /radar/enviar do baileys-server, mantendo o gerador desacoplado.
+const BAILEYS_URL = process.env.BAILEYS_URL || 'https://baileys-server-production-ebfe.up.railway.app';
+
+app.post('/ofertas/enviar', async (req, res) => {
+  const { id, mensagem, grupo } = req.body || {};
+  if (!mensagem?.trim()) return res.status(400).json({ ok: false, erro: 'mensagem obrigatória' });
+  try {
+    const r = await fetch(BAILEYS_URL + '/radar/enviar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, mensagem, grupo: grupo || 'cdv_ofertas' }),
+    });
+    const d = await r.json();
+    res.status(r.status).json(d);
+  } catch(err) {
+    res.status(502).json({ ok: false, erro: 'Baileys inacessível: ' + err.message });
+  }
+});
+
 // ── Publicar oferta diretamente no radar ──────────────────────────────────────
 app.post('/ofertas/publicar', async (req, res) => {
   const oferta = req.body || {};
