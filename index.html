@@ -6093,11 +6093,13 @@ function mapaGetCounts() {
 
 // Retorna destinos partindo de orig (rotas diretas orig→dest)
 function mapaGetDestsOf(orig) {
+  // Bidirecional: retorna destinos onde orig é origem OU destino nos registros
   const {routes} = mapaGetCounts();
   const res = {};
   for (const k of Object.keys(routes)) {
     const [o,d] = k.split('|');
-    if (o === orig) res[d] = routes[k];
+    if (o === orig && !res[d]) res[d] = routes[k];
+    else if (d === orig && !res[o]) res[o] = routes[k];
   }
   return res;
 }
@@ -6113,10 +6115,9 @@ function mapaGetOrigensFor(dest) {
   return res;
 }
 
-// Uma cidade é "só destino" se não tem rotas partindo dela
+// Com busca bidirecional, nenhuma cidade é "só destino" se tem pares
 function mapaIsSoDestino(cidade) {
-  return Object.keys(mapaGetDestsOf(cidade)).length === 0 &&
-         Object.keys(mapaGetOrigensFor(cidade)).length > 0;
+  return false;
 }
 
 
