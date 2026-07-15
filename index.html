@@ -6137,9 +6137,17 @@ async function mapaInit() {
   mapaRenderAll();
   mapaAttachEvents();
 
+  // Filtro: apenas últimos 180 dias
+  function mapaFiltrar180(items) {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 180);
+    const cutoffStr = cutoff.toISOString().slice(0,10);
+    return items.filter(p => (p.enviadoEm || '') >= cutoffStr);
+  }
+
   // 3. Reutilizar passagensData se já carregado
   if (passagensData && passagensData.length > 0) {
-    mapaItems = passagensData;
+    mapaItems = mapaFiltrar180(passagensData);
     mapaRenderAll();
     return;
   }
@@ -6150,8 +6158,8 @@ async function mapaInit() {
       const r = await fetch(PASSAGENS_URL + '?t=' + Date.now(), {cache:'no-cache'});
       if (r.ok) {
         const j = await r.json();
-        mapaItems = j.items || [];
-        passagensData = mapaItems;
+        passagensData = j.items || [];
+        mapaItems = mapaFiltrar180(passagensData);
         passagensLoaded = true;
         mapaRenderAll();
       }
