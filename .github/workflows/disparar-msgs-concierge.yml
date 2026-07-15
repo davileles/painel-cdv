@@ -1,0 +1,23 @@
+name: Disparar mensagens automáticas do Concierge
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # toda hora (UTC) → cobre 06h–23h BRT com margem
+  workflow_dispatch:        # permite rodar manualmente pelo GitHub
+
+jobs:
+  disparar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Disparar mensagens programadas
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node disparar-msgs-concierge.js
