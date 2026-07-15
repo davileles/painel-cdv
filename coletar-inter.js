@@ -1,29 +1,30 @@
 // coletar-inter.js
 // Executado pelo GitHub Action (coletar-historico.yml — mesmo workflow do Comparemania).
-// 1. Acessa a API pública do Shopping Inter (marketplace-api.web.bancointer.com.br)
-// 2. Extrai o cashbackValue (%) de cada Gift Card
-// 3. Salva/atualiza o historico.json com o snapshot do dia no programa "inter"
-//
-// Estrutura no historico.json:
-//   "2026-07-15": {
-//     "ifood": { programs: { inter: { pts: 10, dollar: false } } },
-//     "uber":  { programs: { inter: { pts: 2,  dollar: false } } },
-//     ...
-//   }
-//
-// Isso permite que o Comparador do painel-cdv exiba o Inter como mais um programa,
-// com suporte a filtros, badges, "acima da média" e histórico — igual ao Livelo/Esfera.
-//
-// Uso: node coletar-inter.js
+// 1. Acessa a API pública do Shopping Inter via proxy Railway (evita bloqueio ASN)
+// 2. Extrai cashbackValue (%) de cada Gift Card
+// 3. Salva/atualiza historico.json com snapshot do dia no programa "inter"
+// 4. Detecta aumentos de cashback e gera ofertas pendentes:
+//    - 1 oferta agrupada por programa (todos os parceiros que subiram)
+//    - 1 oferta individual para cada parceiro Tier 1 que subiu
 
 const fs   = require('fs');
 const path = require('path');
 
-const HISTORICO_FILE = path.join(__dirname, 'historico.json');
-// A API do Inter bloqueia IPs de datacenter (GitHub Actions = ASN bloqueado).
-// A requisição é roteada pelo proxy Railway do CDV, que tem IP não bloqueado.
+const HISTORICO_FILE   = path.join(__dirname, 'historico.json');
+const PENDENTES_FILE   = path.join(__dirname, 'ofertas-pendentes.json');
+const NOTIF_FILE       = path.join(__dirname, 'variacoes-notificadas.json');
+
 const PROXY_URL = process.env.CDV_PROXY_URL || 'https://cdv-proxy-production.up.railway.app';
-const API_URL = `${PROXY_URL}/inter/gift-cards`;
+const API_URL   = `${PROXY_URL}/inter/gift-cards`;
+
+// Parceiros com mensagem individual detalhada (Tier 1 Inter)
+const PARCEIROS_TIER1_INTER = new Set([
+  'bacio di latte',
+  'outback',
+  'uber',
+  'assaí',
+  'airbnb',
+]);
 
 // ── HTTP helper ───────────────────────────────────────────────────────────────
 async function fetchDirect(url, timeoutMs = 20000) {
@@ -46,40 +47,192 @@ async function fetchDirect(url, timeoutMs = 20000) {
 }
 
 // Normaliza nome do gift card para chave do historico.json
-// (mesmo padrão lowercase trim do coletar.js e do index.html)
 function normalizarChave(name) {
   return (name || '')
-    .replace(/^Gift Card\s*/i, '')  // remove prefixo "Gift Card "
+    .replace(/^Gift Card\s*/i, '')
     .toLowerCase()
     .trim();
 }
 
-// ── Categorização (mesmas regras do CAT_RULES do index.html) ─────────────────
-function categorize(n) {
-  const CAT_RULES = [
-    [/uber|99.taxi|buser|clickbus/i, 'Transporte'],
-    [/playstation|xbox|steam|nintendo|razer|nuuvem|game|garena|riot|blizzard/i, 'Games'],
-    [/ifood|rappi|zé.delivery|delivery/i, 'Alimentação'],
-    [/netflix|spotify|deezer|hbo|disney|globoplay|apple.tv|amazon.prime|paramount/i, 'Streaming'],
-    [/amazon|shopee|mercado.livre|magalu|magazine/i, 'Marketplace'],
-    [/booking|decolar|hoteis|airbnb/i, 'Viagem'],
-    [/farmácia|droga|drogaria|drogal/i, 'Farmácia'],
-    [/petlove|petz|cobasi/i, 'Pet'],
-    [/assaí|assai|carrefour|sam.?s.club|supernosso/i, 'Supermercado'],
-    [/claro|tim\b|vivo|oi\b/i, 'Telecom'],
-    [/renner|riachuelo|c.?&.?a\b|cea\b|zattini|dafiti|centauro|netshoes/i, 'Moda'],
-    [/sephora|beleza|natura|boticário|eudora/i, 'Beleza'],
-    [/bagaggio|samsonite/i, 'Viagem'],
-    [/outback|madero|cvc|bob.s/i, 'Alimentação'],
-    [/electrolux|brastemp|consul|samsung|lg\b|acer|multilaser/i, 'Eletrônicos'],
-    [/google|apple\b|microsoft/i, 'Tech'],
-    [/tok.stok|leroy|telhanorte|leroy.merlin/i, 'Casa'],
-    [/cinemark|ingresso/i, 'Entretenimento'],
-    [/itunes|app.store/i, 'Tech'],
-    [/google.play/i, 'Tech'],
-  ];
-  for (const [re, c] of CAT_RULES) if (re.test(n)) return c;
-  return 'Gift Card';
+// Nome de exibição capitalizado
+function nomeExibicao(chave) {
+  return chave.charAt(0).toUpperCase() + chave.slice(1);
+}
+
+// Hash simples para gerar IDs de oferta
+function hashId(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return 'inter_' + h.toString(36);
+}
+
+// ── Detectar variações e gerar ofertas pendentes ──────────────────────────────
+async function gerarOfertasVariacao(snapHoje, historico, hoje) {
+  // Comparar com snapshot do dia ANTERIOR
+  const datasAnteriores = Object.keys(historico)
+    .filter(d => d < hoje)
+    .sort()
+    .reverse();
+
+  if (!datasAnteriores.length) {
+    console.log('[Inter] Sem snapshot anterior — pulando comparação.');
+    return;
+  }
+
+  const dataAnterior = datasAnteriores[0];
+  const snapAnterior = historico[dataAnterior] || {};
+  console.log(`[Inter] Comparando com snapshot de ${dataAnterior}`);
+
+  // Controle de notificações do dia (evita duplicatas)
+  let notifRaw = {};
+  if (fs.existsSync(NOTIF_FILE)) {
+    try { notifRaw = JSON.parse(fs.readFileSync(NOTIF_FILE, 'utf8')); } catch(e) {}
+  }
+  const notifAtual = {};
+  for (const [data, entries] of Object.entries(notifRaw)) {
+    if (data >= hoje) notifAtual[data] = entries;
+  }
+  const notifHoje = notifAtual[hoje] || {};
+
+  // Detectar aumentos
+  const variacoes = []; // { chave, nome, ptsAntes, ptsAgora, delta, link }
+
+  for (const [chave, dadosHoje] of Object.entries(snapHoje)) {
+    const ptsHoje = dadosHoje.programs?.inter?.pts;
+    if (!ptsHoje) continue;
+
+    const dadosAnt = snapAnterior[chave];
+    const ptsAntes = dadosAnt?.programs?.inter?.pts;
+    if (!ptsAntes || ptsHoje <= ptsAntes) continue;
+
+    const chaveNotif = `inter__${chave}`;
+    if (notifHoje[chaveNotif] === ptsHoje) continue; // já notificado hoje
+
+    variacoes.push({
+      chave,
+      nome: nomeExibicao(chave),
+      ptsAntes,
+      ptsAgora: ptsHoje,
+      delta: ptsHoje - ptsAntes,
+      link: dadosHoje.links?.inter || 'https://shopping.inter.co/gift-card',
+    });
+
+    notifHoje[chaveNotif] = ptsHoje;
+  }
+
+  if (!variacoes.length) {
+    console.log('[Inter] Nenhuma variação nova de cashback.');
+    return;
+  }
+
+  console.log(`[Inter] ${variacoes.length} parceiro(s) com aumento de cashback`);
+
+  // Carrega ofertas pendentes
+  let pendentesDados = { geradoEm: null, items: [] };
+  if (fs.existsSync(PENDENTES_FILE)) {
+    try { pendentesDados = JSON.parse(fs.readFileSync(PENDENTES_FILE, 'utf8')); } catch(e) {}
+  }
+  const itensPendentes = Array.isArray(pendentesDados.items) ? pendentesDados.items : [];
+  const novasOfertas = [];
+
+  // ── Oferta agrupada (todos os parceiros) ────────────────────────────────────
+  const count = variacoes.length;
+  const linhas = variacoes
+    .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))
+    .map(v => `🏦 ${v.nome} — ${v.ptsAntes}% → ${v.ptsAgora}% (+${v.delta}%)`)
+    .join('\n');
+
+  const tituloAgrupado = `${count} parceiro${count > 1 ? 's tiveram' : ' teve'} aumento de cashback no Shopping Inter`;
+
+  novasOfertas.push({
+    id: hashId(`inter-grupo-${hoje}-${Date.now()}`),
+    titulo: tituloAgrupado,
+    emoji: '🏦',
+    resumo: `${count} parceiro${count > 1 ? 's' : ''} do Shopping Inter ${count > 1 ? 'tiveram' : 'teve'} aumento de cashback na última atualização do Painel do Clube do Viajante.\n\n${linhas}`,
+    descricao: '',
+    programa: 'Inter',
+    bonus: '',
+    prazo: '',
+    categoria: 'compra_bonificada',
+    loja: 'Shopping Inter',
+    cupom: '',
+    link: 'https://shopping.inter.co/gift-card',
+    importante: '',
+    milheiro: '',
+    tetoTransferencia: '',
+    restricoes: [],
+    publicadoEm: new Date().toISOString(),
+    tipoVariacao: true,
+  });
+
+  console.log(`[Inter] Oferta agrupada: "${tituloAgrupado}"`);
+
+  // ── Ofertas individuais Tier 1 ───────────────────────────────────────────────
+  for (const v of variacoes) {
+    if (!PARCEIROS_TIER1_INTER.has(v.chave)) continue;
+
+    // Estatísticas históricas (últimos 6 meses)
+    const hoje6m = new Date();
+    hoje6m.setMonth(hoje6m.getMonth() - 6);
+    const corte6m = hoje6m.toISOString().split('T')[0];
+
+    const pts6m = Object.entries(historico)
+      .filter(([d]) => d >= corte6m && d < hoje)
+      .map(([, snap]) => snap[v.chave]?.programs?.inter?.pts)
+      .filter(v => v != null);
+
+    const maxPts6m = Math.max(v.ptsAgora, ...(pts6m.length ? pts6m : [v.ptsAntes]));
+    const mediaPts6m = pts6m.length
+      ? Math.round(pts6m.reduce((a, b) => a + b, 0) / pts6m.length * 10) / 10
+      : v.ptsAntes;
+
+    const tituloT1 = `${v.ptsAgora}% de cashback em ${v.nome} no Shopping Inter`;
+
+    const resumoT1 = [
+      `${v.nome} aumentou o cashback no Shopping Inter.`,
+      '',
+      `* Cashback anterior: ${v.ptsAntes}%`,
+      `* Cashback atual: ${v.ptsAgora}% (+${v.delta}%)`,
+      `* Maior cashback (últimos 6 meses): ${maxPts6m}%`,
+      `* Média (últimos 6 meses): ${mediaPts6m}%`,
+    ].join('\n');
+
+    novasOfertas.push({
+      id: hashId(`inter-t1-${v.chave}-${hoje}-${Date.now()}`),
+      titulo: tituloT1,
+      emoji: '⭐',
+      resumo: resumoT1,
+      descricao: '',
+      programa: 'Inter',
+      bonus: '',
+      prazo: '',
+      categoria: 'compra_bonificada',
+      loja: v.nome,
+      cupom: '',
+      link: v.link,
+      importante: '',
+      milheiro: '',
+      tetoTransferencia: '',
+      restricoes: [],
+      publicadoEm: new Date().toISOString(),
+      tipoVariacao: true,
+      tier1: true,
+    });
+
+    console.log(`[Inter Tier 1] Oferta individual: "${tituloT1}"`);
+  }
+
+  // Salva controle de notificações
+  notifAtual[hoje] = notifHoje;
+  fs.writeFileSync(NOTIF_FILE, JSON.stringify(notifAtual, null, 2));
+
+  // Adiciona novas ofertas no início das pendentes
+  fs.writeFileSync(PENDENTES_FILE, JSON.stringify({
+    geradoEm: new Date().toISOString(),
+    items: [...novasOfertas, ...itensPendentes],
+  }, null, 2));
+
+  console.log(`[Inter] ${novasOfertas.length} oferta(s) adicionada(s) às pendentes.`);
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
@@ -87,7 +240,7 @@ async function main() {
   const hoje = new Date().toISOString().split('T')[0];
   console.log(`[Inter] Iniciando coleta para ${hoje}`);
 
-  // 1. Carrega historico.json existente
+  // 1. Carrega historico.json
   let historico = {};
   if (fs.existsSync(HISTORICO_FILE)) {
     try {
@@ -97,7 +250,7 @@ async function main() {
     }
   }
 
-  // 2. Chama API do Inter
+  // 2. Chama API do Inter via proxy Railway
   console.log('[Inter] Consultando API do Shopping Inter…');
   let giftCards = [];
   try {
@@ -114,54 +267,46 @@ async function main() {
     process.exit(1);
   }
 
-  // 3. Monta snapshot do dia para o programa "inter"
-  // Garante que o snapshot do dia existe
+  // 3. Monta snapshot do dia
   if (!historico[hoje]) historico[hoje] = {};
   const snapHoje = historico[hoje];
 
-  let atualizados = 0;
   for (const gc of giftCards) {
     const chave = normalizarChave(gc.name);
     if (!chave) continue;
 
-    // Inicializa entrada do parceiro se não existir
     if (!snapHoje[chave]) snapHoje[chave] = { programs: {} };
     if (!snapHoje[chave].programs) snapHoje[chave].programs = {};
 
-    // Salva cashback% como pts no programa "inter" (mesmo campo que livelo/esfera usam)
     snapHoje[chave].programs.inter = {
       pts: gc.cashbackValue,
       dollar: false,
       slug: gc.slug,
     };
 
-    // Adiciona link direto para a página do gift card no Shopping Inter
     if (!snapHoje[chave].links) snapHoje[chave].links = {};
     snapHoje[chave].links.inter = `https://shopping.inter.co/gift-card/${gc.slug}`;
-
-    atualizados++;
   }
 
-  console.log(`[Inter] ${atualizados} parceiros atualizados no historico.json`);
+  console.log(`[Inter] ${giftCards.length} parceiros atualizados no historico.json`);
 
-  // 4. Remove dias com mais de 180 dias
+  // 4. Detecta variações e gera ofertas
+  await gerarOfertasVariacao(snapHoje, historico, hoje);
+
+  // 5. Remove dias com mais de 180 dias
   const corte = new Date();
   corte.setDate(corte.getDate() - 180);
   const corteStr = corte.toISOString().split('T')[0];
-  let removidos = 0;
   for (const data of Object.keys(historico)) {
-    if (data < corteStr) { delete historico[data]; removidos++; }
+    if (data < corteStr) delete historico[data];
   }
-  if (removidos) console.log(`[Inter] ${removidos} dia(s) antigos removidos`);
 
-  // 5. Salva historico.json
+  // 6. Salva historico.json
   fs.writeFileSync(HISTORICO_FILE, JSON.stringify(historico, null, 2));
   console.log(`[Inter] historico.json salvo com ${Object.keys(historico).length} dias.`);
 
-  // Resumo: top 5
-  const top5 = giftCards
-    .sort((a, b) => b.cashbackValue - a.cashbackValue)
-    .slice(0, 5);
+  // Resumo top 5
+  const top5 = [...giftCards].sort((a, b) => b.cashbackValue - a.cashbackValue).slice(0, 5);
   console.log('\n🏆 Top 5 cashbacks Inter hoje:');
   top5.forEach(gc => console.log(`  ${gc.cashbackValue}% — ${gc.name}`));
 }
