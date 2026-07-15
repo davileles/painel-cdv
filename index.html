@@ -14,6 +14,7 @@
     --smiles:#f97316;--smiles-dim:rgba(249,115,22,0.14);
     --azul:#0ea5e9;--azul-dim:rgba(14,165,233,0.14);
     --latam:#dc2626;--latam-dim:rgba(220,38,38,0.14);
+    --inter:#00a859;--inter-dim:rgba(0,168,89,0.14);
     --green:#34d399;--dollar:#60a5fa;--dollar-dim:rgba(96,165,250,0.12);
     --red:#f87171;--accent:#ff585e;--accent2:#e04449;--blue:#126eff;
     --cdv-navy:#262e42;--cdv-coral:#ff585e;
@@ -68,12 +69,14 @@
   .card.winner-smiles::before{background:var(--smiles)}
   .card.winner-azul::before{background:var(--azul)}
   .card.winner-latam::before{background:var(--latam)}
+  .card.winner-inter::before{background:var(--inter)}
   .card.winner-both::before{background:linear-gradient(90deg,var(--cdv-coral),#f97316)}
   .card.winner-livelo:hover{border-color:var(--livelo)}
   .card.winner-esfera:hover{border-color:var(--esfera)}
   .card.winner-smiles:hover{border-color:var(--smiles)}
   .card.winner-azul:hover{border-color:var(--azul)}
   .card.winner-latam:hover{border-color:var(--latam)}
+  .card.winner-inter:hover{border-color:var(--inter)}
   .card.winner-both:hover{border-color:var(--cdv-coral)}
   .card.is-dollar:hover{border-color:var(--dollar)}
 
@@ -100,6 +103,7 @@
   .pbdg-smiles{background:var(--smiles-dim);color:var(--smiles);border:1px solid rgba(249,115,22,.3)}
   .pbdg-azul{background:var(--azul-dim);color:var(--azul);border:1px solid rgba(14,165,233,.3)}
   .pbdg-latam{background:var(--latam-dim);color:var(--latam);border:1px solid rgba(220,38,38,.3)}
+  .pbdg-inter{background:var(--inter-dim);color:var(--inter);border:1px solid rgba(0,168,89,.3)}
 
   .tag-dollar{background:var(--dollar-dim);border:1px solid rgba(96,165,250,.2);border-radius:5px;padding:2px 7px;font-size:10px;color:var(--dollar);font-weight:600;width:fit-content}
   .card-foot{margin-top:auto;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
@@ -1968,6 +1972,8 @@ const PROGRAMS = [
     url:'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-tudo-azul' },
   { id:'latam',   name:'LATAM Pass',  color:'#dc2626', dim:'rgba(220,38,38,0.15)',
     url:'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-latam-pass' },
+  { id:'inter',   name:'Inter',        color:'#00a859', dim:'rgba(0,168,89,0.15)',
+    url:'https://shopping.inter.co/gift-card', cashback:true },
 ];
 
 const CAT_RULES=[
@@ -2045,7 +2051,7 @@ function parseHTML(html, progId){
   return out;
 }
 
-const EQUIV={livelo:1,esfera:1,smiles:1/1.8,azul:1/1.9,latam:1/1.25};
+const EQUIV={livelo:1,esfera:1,smiles:1/1.8,azul:1/1.9,latam:1/1.25,inter:1};
 // Fator de conversão dólar→real para comparação justa (1 U$ ≈ 5 R$)
 // Parceiros em dólar têm pts/U$ dividido por 5 para equiparar com pts/R$
 const DOLLAR_FACTOR = 5;
@@ -2317,13 +2323,15 @@ function render(){
   if(!list.length){document.getElementById('grid').innerHTML='<div class="status-box" style="color:var(--muted)">Nenhum parceiro encontrado.</div>';return;}
 
   const lbl=p=>{
+    if(p.bestProg==='inter') return '%';
     const bp=p.programs[p.bestProg==='both'?Object.keys(p.programs)[0]:p.bestProg]||{};
     return (bp.per>1)?`R$${bp.per}`:bp.dollar?'U$':'R$';
   };
 
   const progBadges=p=>Object.entries(p.programs).map(([pid,d])=>{
     const pr=PROGRAMS.find(x=>x.id===pid);
-    return `<span class="pbdg pbdg-${pid}">${pr.name} ${d.pts}</span>`;
+    const unidade=pid==='inter'?'%':'pts';
+    return `<span class="pbdg pbdg-${pid}">${pr.name} ${d.pts}${unidade}</span>`;
   }).join('');
 
   const winnerClass=p=>p.bestProg==='both'?'winner-both':`winner-${p.bestProg}`;
@@ -2354,6 +2362,7 @@ const directUrlCache={};
 const PROG_NAME_MAP={azul:'tudo azul','latam':'latam pass',livelo:'livelo',esfera:'esfera',smiles:'smiles'};
 
 function resolveLink(pid, links){
+  if(pid==='inter') return links.inter||'';
   const key=PROG_NAME_MAP[pid]||pid;
   return links[key]||links[pid]||'';
 }
@@ -2366,7 +2375,7 @@ function renderModalRows(p, links={}){
     const prog=PROGRAMS.find(x=>x.id===pid);
     const equiv=data.pts*(EQUIV[pid]||1);
     const isBest=Math.abs(equiv-bestEquivReal)<0.01;
-    const lbl=(data.per>1)?`R$${data.per}`:data.dollar?'U$':'R$';
+    const lbl=pid==='inter'?'%':(data.per>1)?`R$${data.per}`:data.dollar?'U$':'R$';
     const destUrl=resolveLink(pid,links);
     const linksLoaded=Object.keys(links).length>0;
     const loading=!linksLoaded;
