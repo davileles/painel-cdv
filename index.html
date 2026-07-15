@@ -2225,6 +2225,46 @@ async function fetchRedirectLinks(partnerUrl){
 
 let partners=[],activeCat='all',activeFilters=new Set(),activeProgs=null,filtroAcimaMedia=false;
 
+// Injeta no array `partners` os parceiros cujos dados vêm exclusivamente do historico.json
+// (programas com cashback:true, ex: Inter Gift Cards).
+// Chamada após carregarHistorico() e mergePartners() para não bloquear o fluxo principal.
+function injetarProgramasCashback(){
+  const progsCashback = PROGRAMS.filter(p=>p.cashback);
+  if(!progsCashback.length || !Object.keys(historico).length) return;
+
+  // Pega snapshot mais recente
+  const dataAtual = Object.keys(historico).sort().at(-1);
+  const snap = historico[dataAtual] || {};
+
+  for(const prog of progsCashback){
+    for(const [chave, dados] of Object.entries(snap)){
+      const progData = dados.programs?.[prog.id];
+      if(!progData) continue;
+      const pts = typeof progData==='object' ? progData.pts : progData;
+      if(!pts) continue;
+
+      // Procurar se já existe no partners (pode ter sido coletado pelo Comparemania também)
+      const existing = partners.find(p=>p.name.toLowerCase().trim()===chave);
+      if(existing){
+        // Adiciona o programa cashback no parceiro já existente
+        existing.programs[prog.id] = { pts, dollar:false, url: dados.links?.[prog.id]||'' };
+      } else {
+        // Cria novo parceiro só com o programa cashback
+        partners.push({
+          name: chave.charAt(0).toUpperCase()+chave.slice(1),
+          cat: categorize(chave),
+          dollar: false,
+          ate: false,
+          programs: { [prog.id]: { pts, dollar:false, url: dados.links?.[prog.id]||'' } },
+          bestPts: pts,
+          bestProg: prog.id,
+        });
+      }
+    }
+  }
+  console.log('[CDV] Programas cashback injetados:', progsCashback.map(p=>p.id).join(', '));
+}
+
 async function loadData(){
   document.getElementById('grid').innerHTML='<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px" id="load-msg">Iniciando consulta…</div></div>';
   document.getElementById('cat-bar').innerHTML='';
@@ -2235,12 +2275,15 @@ async function loadData(){
   try{
     const allData={};
     for(const prog of PROGRAMS){
+      if(prog.cashback) continue; // cashback (ex: Inter) vem só do historico.json
       allData[prog.id]=await fetchProg(prog,log);
     }
     partners=mergePartners(allData);
     if(!partners.length) throw new Error('Nenhum parceiro encontrado.');
 
     await carregarHistorico();
+    // Injeta dados do Inter (e demais programas cashback) vindos do historico.json
+    injetarProgramasCashback();
     buildCatBar();buildProgFilters();render();
 
   }catch(e){
