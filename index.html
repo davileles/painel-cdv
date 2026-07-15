@@ -5140,7 +5140,8 @@ function mostrarPainel(sessao) {
   if (tabMilhas) tabMilhas.style.display = '';
   // Calculadoras disponível para todos os assinantes
   // Aba Salas VIP — só para devs
-
+  // Renderiza aba Início ao carregar (garante que nome apareça imediatamente)
+  switchTab('inicio');
 }
 async function fazerLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
