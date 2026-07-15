@@ -543,6 +543,26 @@
   .lv-modal-overlay{align-items:flex-end;padding:0}
 }
 /* === /SALAS VIP === */
+
+/* === MAPA DE EMISSÕES — RESPONSIVO MOBILE === */
+@media(max-width:900px){
+  .mapa-header{padding:12px 14px 10px!important}
+  .mapa-header > div:first-child{order:1;flex:1 1 100%}
+  #map-stats{order:2;margin-left:0!important}
+  .mapa-busca-wrap{order:3;flex:1 1 auto;min-width:0}
+  .mapa-busca-wrap input{width:100%!important}
+  .mapa-header > button{order:4;flex:0 0 auto}
+  .mapa-layout{flex-direction:column!important;min-height:0!important}
+  .mapa-col-svg{flex:none!important;width:100%;padding:12px 14px 10px!important}
+  .mapa-col-svg > div{min-height:280px!important}
+  #cdv-map-svg{min-height:280px!important}
+  .mapa-col-painel{flex:none!important;width:100%;padding:0 14px 14px!important;overflow-y:visible!important}
+}
+@media(max-width:480px){
+  .mapa-col-svg > div{min-height:240px!important}
+  #cdv-map-svg{min-height:240px!important}
+}
+/* === /MAPA DE EMISSÕES === */
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -1850,13 +1870,13 @@
 
 <div id="tab-mapa" class="tab-panel" style="display:none">
   <!-- Header -->
-  <div style="padding:14px 24px 12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--border-ctrl)">
+  <div class="mapa-header" style="padding:14px 24px 12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--border-ctrl)">
     <div>
       <div style="font-size:15px;font-weight:900">🗺️ Mapa de Emissões</div>
       <div style="font-size:11.5px;color:var(--muted);margin-top:2px">Clique numa cidade para ver destinos; clique num destino para comparar programas.</div>
     </div>
     <span id="map-stats" style="margin-left:auto;font-size:11px;color:var(--muted2);font-weight:600;white-space:nowrap"></span>
-    <div style="position:relative">
+    <div class="mapa-busca-wrap" style="position:relative">
       <input id="map-busca" type="text" placeholder="🔍 Buscar cidade..." oninput="mapaBusca(this.value)" autocomplete="off"
         style="background:var(--card);border:1px solid var(--border-ctrl);border-radius:10px;padding:6px 12px 6px 10px;font-size:11.5px;font-family:'Montserrat',sans-serif;color:var(--text);width:180px;outline:none"
         onfocus="this.style.borderColor='#ff585e'" onblur="this.style.borderColor='var(--border-ctrl)'">
@@ -1865,11 +1885,11 @@
     <button onclick="mapaLimpar()" style="background:transparent;border:1px solid var(--border-ctrl);color:var(--muted);padding:6px 12px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif" onmouseover="this.style.borderColor='#ff585e';this.style.color='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)';this.style.color='var(--muted)'">✕ Limpar</button>
   </div>
 
-  <!-- Layout side-by-side -->
-  <div style="display:flex;gap:0;align-items:stretch;min-height:480px">
+  <!-- Layout side-by-side (empilha em mobile via .mapa-layout) -->
+  <div class="mapa-layout" style="display:flex;gap:0;align-items:stretch;min-height:480px">
 
     <!-- COLUNA ESQUERDA: Mapa -->
-    <div style="flex:0 0 58%;min-width:0;padding:14px 12px 14px 24px;display:flex;flex-direction:column;gap:10px">
+    <div class="mapa-col-svg" style="flex:0 0 58%;min-width:0;padding:14px 12px 14px 24px;display:flex;flex-direction:column;gap:10px">
       <div style="position:relative;background:#111827;border:1px solid var(--border);border-radius:14px;overflow:hidden;flex:1">
         <svg id="cdv-map-svg" viewBox="0 40 1000 357" style="display:block;width:100%;height:100%;min-height:360px;cursor:grab;user-select:none"></svg>
         <!-- Zoom controls -->
@@ -1890,7 +1910,7 @@
     </div>
 
     <!-- COLUNA DIREITA: Painel de seleção -->
-    <div style="flex:1;min-width:0;padding:14px 24px 14px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:10px">
+    <div class="mapa-col-painel" style="flex:1;min-width:0;padding:14px 24px 14px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:10px">
 
       <!-- Estado: nenhuma origem -->
       <div id="map-state-none" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;flex:1">
