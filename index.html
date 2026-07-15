@@ -6065,6 +6065,7 @@ const MAPA_BRASIL = new Set(['São Paulo','Rio de Janeiro','Belo Horizonte','Cur
   'João Pessoa','Ilhéus','Foz do Iguaçu','Fernando de Noronha','São Luís','São Francisco']);
 
 let mapaItems = [];
+let _mapaCountsCache = null; // cache invalidado quando mapaItems muda
 let mapaWorld = [];
 let mapaVB = {x:0, y:40, w:1000};
 let mapaOrigem = null;
@@ -6083,18 +6084,19 @@ function mapaIsExec(cabine) { return /execut|business/i.test(cabine||''); }
 
 // ── DADOS ──────────────────────────────────────────────
 function mapaGetCounts() {
+  if (_mapaCountsCache) return _mapaCountsCache;
   const counts = {}, routes = {};
   for (const it of mapaItems) {
     if (!it.origem || !it.destino || it.origem === it.destino) continue;
     const o = mapaCanon(it.origem), d = mapaCanon(it.destino);
     if (!o || !d || o === d) continue;
-    // Contar em ambas as direções para que cidades-destino apareçam no mapa
     counts[o] = (counts[o]||0) + 1;
     counts[d] = (counts[d]||0) + 1;
     const k = o+'|'+d;
     (routes[k] = routes[k]||[]).push(it);
   }
-  return {counts, routes};
+  _mapaCountsCache = {counts, routes};
+  return _mapaCountsCache;
 }
 
 // Retorna destinos partindo de orig (rotas diretas orig→dest)
@@ -6153,7 +6155,7 @@ async function mapaInit() {
 
   // 3. Reutilizar passagensData se já carregado
   if (passagensData && passagensData.length > 0) {
-    mapaItems = mapaFiltrar180(passagensData);
+    mapaItems = mapaFiltrar180(passagensData); _mapaCountsCache = null;
     mapaRenderAll();
     return;
   }
@@ -6165,7 +6167,7 @@ async function mapaInit() {
       if (r.ok) {
         const j = await r.json();
         passagensData = j.items || [];
-        mapaItems = mapaFiltrar180(passagensData);
+        mapaItems = mapaFiltrar180(passagensData); _mapaCountsCache = null;
         passagensLoaded = true;
         mapaRenderAll();
       }
