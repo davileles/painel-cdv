@@ -32,7 +32,7 @@ const PROCESSADOS_FILE = path.join(__dirname, 'ofertas-processados.json');
 const FEEDS = [
   { categoria: 'transferencia',     url: 'https://passageirodeprimeira.com/categorias/promocoes/transferencia-de-pontos/feed/' },
   { categoria: 'compra',            url: 'https://passageirodeprimeira.com/categorias/promocoes/compra-de-pontos/feed/' },
-  { categoria: 'compra_bonificada', url: 'https://passageirodeprimeira.com/categorias/promocoes/compre-e-pontue/feed/' },
+  // compra_bonificada removido — coleta automática via coletar.js já acompanha pontuação por parceiro
   { categoria: 'clube',             url: 'https://passageirodeprimeira.com/categorias/promocoes/clube-de-pontos/feed/' },
   { categoria: 'cartao',            url: 'https://passageirodeprimeira.com/categorias/promocoes/bancos-e-cartoes/feed/' },
 ];
