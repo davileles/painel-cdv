@@ -2627,7 +2627,7 @@ function renderHomeEmAlta() {
   el.innerHTML = fire.map(p => {
     const best = p.bestProg==='both' ? Object.keys(p.programs)[0] : p.bestProg;
     const prog = PROGRAMS_MAP[best]||{name:best,color:'#ff585e'};
-    return `<div onclick="openModal('${encodeURIComponent(p.name).replace(/'/g,"\'")}')" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s,border-color .15s" onmouseover="this.style.transform='translateY(-2px)';this.style.borderColor='${prog.color}'" onmouseout="this.style.transform='';this.style.borderColor='var(--border)'">
+    return `<div data-emalta-name="${p.name.replace(/"/g,'&quot;')}" onclick="openModal(this.dataset.emaltaName)" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s,border-color .15s" onmouseover="this.style.transform='translateY(-2px)';this.style.borderColor='${prog.color}'" onmouseout="this.style.transform='';this.style.borderColor='var(--border)'">
       <div style="position:absolute;top:0;left:0;bottom:0;width:3px;background:${prog.color}"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
         <div style="font-size:12.5px;font-weight:800;padding-left:6px">${p.name}</div>
