@@ -2818,6 +2818,7 @@ function renderHistChart(partnerName){
     smiles: [2,2],
     azul:   [10,3],
     latam:  [4,2,1,2],
+    inter:  [],
   };
 
       if(vals.some(v=>v!==null)){
@@ -2868,7 +2869,7 @@ function renderHistChart(partnerName){
           borderColor: '#3d4a66',
           borderWidth: 1,
           callbacks: {
-            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y ?? '—'} pts/R$`
+            label: ctx => ctx.dataset.label.includes('Inter') ? ` ${ctx.dataset.label}: ${ctx.parsed.y ?? '—'}%` : ` ${ctx.dataset.label}: ${ctx.parsed.y ?? '—'} pts/R$`
           }
         }
       },
