@@ -2248,6 +2248,13 @@ function injetarProgramasCashback(){
       if(existing){
         // Adiciona o programa cashback no parceiro já existente
         existing.programs[prog.id] = { pts, dollar:false, url: dados.links?.[prog.id]||'' };
+        // Recalcula bestPts/bestProg considerando todos os programas agora
+        let bestE=0, bestP=null;
+        for(const [pid2,pd2] of Object.entries(existing.programs)){
+          const eq=(pd2.pts||0)*(EQUIV[pid2]||1);
+          if(eq>bestE){bestE=eq;bestP=pid2;existing.bestPts=pd2.pts;}
+        }
+        if(bestP) existing.bestProg=bestP;
       } else {
         // Cria novo parceiro só com o programa cashback
         partners.push({
@@ -2441,7 +2448,7 @@ function renderModalRows(p, links={}){
       <div style="text-align:right">
         ${data.ate?'<div style="font-size:9px;color:var(--muted);margin-bottom:0">até</div>':''}
         <div class="modal-pts" style="color:${prog.color}">${data.pts}</div>
-        <div class="modal-pts-lbl">pts/${lbl}</div>
+        <div class="modal-pts-lbl">${pid==='inter'?'':'pts/'}${lbl}</div>
       </div>
     </a>`;
   }).join('');
