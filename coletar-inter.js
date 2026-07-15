@@ -20,7 +20,10 @@ const fs   = require('fs');
 const path = require('path');
 
 const HISTORICO_FILE = path.join(__dirname, 'historico.json');
-const API_URL = 'https://marketplace-api.web.bancointer.com.br/site/giftcard/inter/v1/giftcards/search?lang=pt-BR&category=';
+// A API do Inter bloqueia IPs de datacenter (GitHub Actions = ASN bloqueado).
+// A requisição é roteada pelo proxy Railway do CDV, que tem IP não bloqueado.
+const PROXY_URL = process.env.CDV_PROXY_URL || 'https://cdv-proxy-production.up.railway.app';
+const API_URL = `${PROXY_URL}/inter/gift-cards`;
 
 // ── HTTP helper ───────────────────────────────────────────────────────────────
 async function fetchDirect(url, timeoutMs = 20000) {
