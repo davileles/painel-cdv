@@ -1225,6 +1225,31 @@ app.post('/concierge/modelos', async (req, res) => {
   }
 });
 
+// GET /concierge/msgs-enviadas — log de mensagens automáticas já enviadas
+app.get('/concierge/msgs-enviadas', async (req, res) => {
+  try {
+    const { content } = await getConciergeFile('msgs-enviadas.json');
+    res.json({ ok: true, data: content });
+  } catch(e) {
+    res.json({ ok: true, data: [] }); // arquivo ainda não existe = nenhum envio
+  }
+});
+
+// POST /concierge/msgs-enviadas — salva log de mensagens automáticas
+app.post('/concierge/msgs-enviadas', async (req, res) => {
+  try {
+    const { data } = req.body;
+    if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
+    let sha = null;
+    try { ({ sha } = await getConciergeFile('msgs-enviadas.json')); } catch(e) {}
+    await putConciergeFile('msgs-enviadas.json', data, sha);
+    res.json({ ok: true });
+  } catch(e) {
+    console.error('[concierge/msgs-enviadas POST]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 // GET /parceiros — lista parceiros do snapshot filtrados por categoria viagem
 const PARCEIROS_VIAGEM = new Set([
   // ✈️ Aéreo / Transporte
