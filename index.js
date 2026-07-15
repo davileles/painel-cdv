@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO || 'davileles/cdv-compras-bonificadas';
 
-const ALLOWED = ['comparemania.com.br', 'passageirodeprimeira.com'];
+const ALLOWED = ['comparemania.com.br', 'passageirodeprimeira.com', 'marketplace-api.web.bancointer.com.br'];
 
 // ── Modo DEV ──────────────────────────────────────────────────────────────────
 // Requisições com header "x-cdv-env: dev" lêem/escrevem arquivos *-dev.json
@@ -42,6 +42,29 @@ app.use((req, res, next) => {
 
 // Health check / warm-up
 app.get('/ping', (req, res) => res.json({ ok: true, ts: Date.now() }));
+
+// ── Gift Cards do Shopping Inter ──────────────────────────────────────────────
+// Proxy para a API pública do Inter, que bloqueia IPs de datacenter (GitHub Actions).
+// O coletar-inter.js chama este endpoint para contornar o bloqueio por ASN.
+app.get('/inter/gift-cards', async (req, res) => {
+  const API = 'https://marketplace-api.web.bancointer.com.br/site/giftcard/inter/v1/giftcards/search?lang=pt-BR&category=';
+  try {
+    const response = await fetch(API, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Accept': 'application/json, */*',
+        'Accept-Language': 'pt-BR,pt;q=0.9',
+        'Cache-Control': 'no-cache',
+      },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!response.ok) return res.status(response.status).json({ error: `Inter API retornou ${response.status}` });
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // ── Fetch para análise de ofertas (sem restrição de domínio) ─────────────────
 app.get('/fetch-oferta', async (req, res) => {
