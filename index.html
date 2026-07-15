@@ -6437,7 +6437,10 @@ function mapaRenderPainel() {
   }
 
   // Par selecionado: separar eco/exec para internacionais
-  const items = routes[orig+'|'+dest] || [];
+  // Combinar SEMPRE as duas direções: orig→dest e dest→orig
+  const itemsDirA = (routes[orig+'|'+dest] || []);
+  const itemsDirB = (routes[dest+'|'+orig] || []).map(it => ({...it, _dirInversa: true}));
+  const items = [...itemsDirA, ...itemsDirB];
   if (!items.length) { show(elPairEmpty); return; }
 
   const isInt = mapaIsInternacional(orig, dest);
