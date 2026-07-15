@@ -6028,22 +6028,27 @@ const MAPA_PROG_COLORS = {
 };
 // Custo de 1.000 pontos em R$ por programa (R$/1000 pts)
 // Usado para calcular valor real e determinar "Melhor opção" no mapa de emissões
+// Custo de 1.000 pontos em R$ por programa — definido pelo Clube do Viajante
 const MAPA_PROG_CUSTO_MILHEIRO = {
-  'LATAM Pass': 26,
+  'Azul Fidelidade': 15,
+  'Azul pelo Mundo': 15,
   'Smiles': 16,
-  'Azul Fidelidade': 20,
-  'Azul pelo Mundo': 20,
-  'Livelo': 28,
-  'AAdvantage': 25,
-  'Finnair Plus': 22,
-  'Iberia Plus': 22,
-  'TAP': 20,
-  'TAP Miles&Go': 20,
+  'LATAM Pass': 26,
+  'Esfera': 30,
+  'Livelo': 30,
   'Flying Blue': 80,
-  'Privilege Club': 22,
+  'TAP': 50,
+  'TAP Miles&Go': 50,
+  'Executive Club': 60,
+  'Finnair Plus': 60,
+  'Iberia Plus': 60,
+  'Privilege Club': 60,
+  'SUMA': 80,
+  'AAdvantage': 100,
 };
 function mapaCustoReal(programa, pontos) {
-  const cpm = MAPA_PROG_CUSTO_MILHEIRO[programa] || 20;
+  const cpm = MAPA_PROG_CUSTO_MILHEIRO[programa] || null;
+  if (!cpm || !pontos) return null;
   return (pontos / 1000) * cpm;
 }
 // Cidades brasileiras para detectar rotas domésticas
@@ -6471,7 +6476,14 @@ function mapaRenderPainel() {
 
   function buildProgCards(progMap, badgeColor) {
     // Ordena por custo real estimado (R$) usando custo por milheiro de cada programa
-    const sorted = Object.values(progMap).sort((a,b)=>mapaCustoReal(a.programa,a.pontos)-mapaCustoReal(b.programa,b.pontos));
+    const sorted = Object.values(progMap).sort((a,b) => {
+      const ca = mapaCustoReal(a.programa, a.pontos);
+      const cb = mapaCustoReal(b.programa, b.pontos);
+      if (ca !== null && cb !== null) return ca - cb;
+      if (ca !== null) return -1;
+      if (cb !== null) return 1;
+      return (a.pontos||0) - (b.pontos||0);
+    });
     if (!sorted.length) return '';
     return sorted.map((it,idx) => {
       const color = MAPA_PROG_COLORS[it.programa] || '#a78bfa';
@@ -6479,7 +6491,7 @@ function mapaRenderPainel() {
       const cabine = (it.cabine||'').replace('Economica','Econômica');
       const visto = it.enviadoEm ? new Date(it.enviadoEm).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}) : '';
       const custoR = mapaCustoReal(it.programa, it.pontos||0);
-      const custoFmt = custoR.toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:0,maximumFractionDigits:0});
+      const custoFmt = custoR !== null ? custoR.toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:0,maximumFractionDigits:0}) : '';
       const progKey = it.programa.replace(/'/g,"\'");
       const rotaKey = (orig+'|'+dest).replace(/'/g,"\'");
       return `<div onclick="mapaAbrirPassagensModal('${rotaKey}','${progKey}')" style="background:var(--card);border:1px solid ${border};border-radius:11px;padding:10px 13px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='${color}'" onmouseout="this.style.borderColor='${border}'">
@@ -6494,7 +6506,7 @@ function mapaRenderPainel() {
         <div style="text-align:right;flex-shrink:0">
           <div style="font-size:18px;font-weight:900;color:${color};line-height:1">${fmt(it.pontos||0)}</div>
           <div style="font-size:9px;color:var(--muted)">pts</div>
-          <div style="font-size:9px;color:var(--muted2);margin-top:1px">≈ ${custoFmt}</div>
+          ${custoFmt ? '<div style="font-size:9px;color:var(--muted2);margin-top:1px">≈ '+custoFmt+'</div>' : ''}
         </div>
       </div>`;
     }).join('');
@@ -6540,7 +6552,7 @@ function mapaAbrirPassagensModal(rotaKey, programa) {
   }).sort((a,b) => a.pontos - b.pontos);
 
   const color = MAPA_PROG_COLORS[programa] || '#a78bfa';
-  const cpm = MAPA_PROG_CUSTO_MILHEIRO[programa] || 20;
+  const cpm = MAPA_PROG_CUSTO_MILHEIRO[programa] || null;
   const fmt = n => (n||0).toLocaleString('pt-BR');
   const MESES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
   function fmtData(iso) {
@@ -6551,7 +6563,7 @@ function mapaAbrirPassagensModal(rotaKey, programa) {
 
   const rows = items.map(it => {
     const custoR = mapaCustoReal(it.programa, it.pontos||0);
-    const custoFmt = custoR.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+    const custoFmt = custoR !== null ? custoR.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : '';
     const cabine = (it.cabine||'').replace('Economica','Econômica');
     const dataCap = it.enviadoEm ? fmtData(it.enviadoEm) : '—';
     const dirLabel = (it.origem !== origK) ? `<span style="font-size:9px;color:var(--muted2)"> (volta)</span>` : '';
@@ -6564,7 +6576,7 @@ function mapaAbrirPassagensModal(rotaKey, programa) {
       <div style="text-align:right;flex-shrink:0">
         <div style="font-size:20px;font-weight:900;color:${color};line-height:1">${fmt(it.pontos||0)}</div>
         <div style="font-size:9px;color:var(--muted)">pts</div>
-        <div style="font-size:10px;color:var(--muted2);margin-top:2px">≈ ${custoFmt}</div>
+        ${custoFmt ? '<div style="font-size:10px;color:var(--muted2);margin-top:2px">≈ '+custoFmt+'</div>' : ''}
       </div>
     </div>`;
   }).join('');
@@ -6585,7 +6597,7 @@ function mapaAbrirPassagensModal(rotaKey, programa) {
           <span style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0"></span>
           <span style="font-size:15px;font-weight:900">${programa}</span>
         </div>
-        <div style="font-size:12px;color:var(--muted);margin-top:4px">${origK} ⇄ ${destK} · Custo: R$ ${cpm}/1.000 pts</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">${origK} ⇄ ${destK}${cpm ? ' · R$ '+cpm+'/1.000 pts' : ''}</div>
       </div>
       <button onclick="document.getElementById('mapa-pass-modal-overlay').style.display='none'" style="background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;padding:4px">✕</button>
     </div>
