@@ -6392,6 +6392,12 @@ function mapaRenderSVG() {
   }
 
   const {counts} = mapaGetCounts();
+  // Se não há dados ainda, renderizar só o mapa de países (não apagar o que estava)
+  if (!Object.keys(counts).length && !mapaOrigem && !mapaDestino) {
+    svg.setAttribute('viewBox',`${vb.x.toFixed(1)} ${vb.y.toFixed(1)} ${vb.w.toFixed(1)} ${(vb.w*0.357).toFixed(1)}`);
+    svg.replaceChildren(frag);
+    return;
+  }
   const cityPos = {};
   Object.values(MAPA_COORDS).forEach(([n,lat,lon])=>{ if(!cityPos[n]){const[x,y]=mapaProj(lat,lon);cityPos[n]={x,y};} });
   const orig = mapaOrigem, dest = mapaDestino;
@@ -6441,14 +6447,17 @@ function mapaRenderSVG() {
     }
   }
 
+  // Pré-calcular destinos relevantes UMA VEZ fora do loop
+  const destsOfOrig = orig ? mapaGetDestsOf(orig) : {};
+  const origensForDest = (!orig && dest) ? mapaGetOrigensFor(dest) : {};
+
   // Cidades + labels
   for (const n of Object.keys(counts)) {
     const p = cityPos[n], cnt = counts[n]; if(!p) continue;
     const isO=n===orig, isD=n===dest;
-    // Destinos relevantes dependem do modo
     let isRel = false;
-    if (orig) isRel = !!mapaGetDestsOf(orig)[n];
-    else if (dest) isRel = !!mapaGetOrigensFor(dest)[n];
+    if (orig) isRel = !!destsOfOrig[n];
+    else if (dest) isRel = !!origensForDest[n];
     const baseR = isO||isD ? 7 : 3.2+Math.min(4.5,Math.sqrt(cnt)*.8);
     const circle = document.createElementNS(NS,'circle');
     circle.setAttribute('cx',p.x.toFixed(1)); circle.setAttribute('cy',p.y.toFixed(1));
