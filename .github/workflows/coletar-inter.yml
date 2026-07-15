@@ -1,0 +1,23 @@
+name: Coletar Inter Gift Cards
+
+on:
+  schedule:
+    - cron: '0 9,21 * * *'   # 06h e 18h horário de Brasília (UTC-3)
+  workflow_dispatch:           # disparo manual
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Coletar cashbacks Inter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: davileles/painel-cdv
+        run: node coletar-inter.js
