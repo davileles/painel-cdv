@@ -1852,6 +1852,12 @@
       <div style="font-size:11.5px;color:var(--muted);margin-top:2px">Clique numa cidade para ver destinos; clique num destino para comparar programas.</div>
     </div>
     <span id="map-stats" style="margin-left:auto;font-size:11px;color:var(--muted2);font-weight:600;white-space:nowrap"></span>
+    <div style="position:relative">
+      <input id="map-busca" type="text" placeholder="🔍 Buscar cidade..." oninput="mapaBusca(this.value)" autocomplete="off"
+        style="background:var(--card);border:1px solid var(--border-ctrl);border-radius:10px;padding:6px 12px 6px 10px;font-size:11.5px;font-family:'Montserrat',sans-serif;color:var(--text);width:180px;outline:none"
+        onfocus="this.style.borderColor='#ff585e'" onblur="this.style.borderColor='var(--border-ctrl)'">
+      <div id="map-busca-dropdown" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#1a2035;border:1px solid var(--border-ctrl);border-radius:10px;z-index:200;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
+    </div>
     <button onclick="mapaLimpar()" style="background:transparent;border:1px solid var(--border-ctrl);color:var(--muted);padding:6px 12px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif" onmouseover="this.style.borderColor='#ff585e';this.style.color='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)';this.style.color='var(--muted)'">✕ Limpar</button>
   </div>
 
@@ -6289,7 +6295,81 @@ function mapaClick(n) {
   mapaRenderPainel();
   mapaRenderSVG();
 }
-function mapaLimpar() { mapaOrigem = null; mapaDestino = null; mapaRenderPainel(); mapaRenderSVG(); }
+function mapaLimpar() {
+  mapaOrigem = null; mapaDestino = null;
+  const inp = document.getElementById('map-busca');
+  if (inp) inp.value = '';
+  const dd = document.getElementById('map-busca-dropdown');
+  if (dd) dd.style.display = 'none';
+  mapaRenderPainel(); mapaRenderSVG();
+}
+
+function mapaBusca(q) {
+  const dd = document.getElementById('map-busca-dropdown');
+  if (!dd) return;
+  q = q.trim().toLowerCase();
+  if (!q) { dd.style.display = 'none'; return; }
+
+  // Coletar todas as cidades com registros nos últimos 180 dias
+  const cidades = new Set();
+  mapaItems.forEach(p => { if(p.origem) cidades.add(p.origem); if(p.destino) cidades.add(p.destino); });
+
+  const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const qn = norm(q);
+  const matches = [...cidades].filter(c => norm(c).includes(qn)).sort((a,b) => {
+    const an = norm(a), bn = norm(b);
+    if (an.startsWith(qn) && !bn.startsWith(qn)) return -1;
+    if (!an.startsWith(qn) && bn.startsWith(qn)) return 1;
+    return a.localeCompare(b,'pt-BR');
+  }).slice(0, 10);
+
+  if (!matches.length) { dd.style.display = 'none'; return; }
+
+  dd.innerHTML = matches.map(c => {
+    const isOrig = c === mapaOrigem;
+    const isDest = c === mapaDestino;
+    const badge = isOrig ? ' <span style="font-size:9px;color:#ff585e">origem</span>' : isDest ? ' <span style="font-size:9px;color:#fbbf24">destino</span>' : '';
+    return `<div onclick="mapaBuscaSelecionar('${c.replace(/'/g,"\'")}');return false"
+      style="padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;border-bottom:1px solid var(--border-ctrl);display:flex;align-items:center;justify-content:space-between"
+      onmouseover="this.style.background='rgba(255,88,94,.12)'" onmouseout="this.style.background=''"
+    >📍 ${c}${badge}</div>`;
+  }).join('');
+  dd.style.display = 'block';
+}
+
+function mapaBuscaSelecionar(cidade) {
+  const dd = document.getElementById('map-busca-dropdown');
+  const inp = document.getElementById('map-busca');
+  if (dd) dd.style.display = 'none';
+  if (inp) inp.value = '';
+
+  // Lógica igual ao mapaClick
+  if (!mapaOrigem) {
+    mapaOrigem = cidade;
+  } else if (!mapaDestino && cidade !== mapaOrigem) {
+    mapaDestino = cidade;
+  } else {
+    mapaOrigem = cidade; mapaDestino = null;
+  }
+  mapaRenderPainel(); mapaRenderSVG();
+  // Centralizar no mapa se possível
+  const coords = Object.values(MAPA_COORDS).find(([n])=>n===cidade);
+  if (coords) {
+    const [,lat,lon] = coords;
+    const [x,y] = mapaProj(lat,lon);
+    mapaVB.x = x - mapaVB.w/2;
+    mapaVB.y = y - mapaVB.w*0.357/2;
+    mapaRenderSVG();
+  }
+}
+
+// Fechar dropdown ao clicar fora
+document.addEventListener('click', e => {
+  if (!e.target.closest('#map-busca') && !e.target.closest('#map-busca-dropdown')) {
+    const dd = document.getElementById('map-busca-dropdown');
+    if (dd) dd.style.display = 'none';
+  }
+});
 
 // ── RENDER SVG ──────────────────────────────────────────
 function mapaRenderSVG() {
@@ -6318,19 +6398,29 @@ function mapaRenderSVG() {
   const destsOf = orig ? mapaGetDestsOf(orig) : {};
 
   // Rotas curvas
-  if (orig && cityPos[orig]) {
-    // Modo normal: rotas partindo de orig
+  if (orig && dest && cityPos[orig] && cityPos[dest]) {
+    // Par selecionado: mostrar APENAS a linha entre origem e destino
+    const po = cityPos[orig], pd = cityPos[dest];
+    const mx=(po.x+pd.x)/2, my=(po.y+pd.y)/2;
+    const dist=Math.hypot(pd.x-po.x,pd.y-po.y);
+    const path = document.createElementNS(NS,'path');
+    path.setAttribute('d',`M${po.x.toFixed(1)} ${po.y.toFixed(1)} Q${mx.toFixed(1)} ${(my-Math.max(8,dist*.18)).toFixed(1)} ${pd.x.toFixed(1)} ${pd.y.toFixed(1)}`);
+    path.setAttribute('stroke','#fbbf24');
+    path.setAttribute('stroke-width',(2.5/k).toFixed(2));
+    path.setAttribute('fill','none');
+    frag.appendChild(path);
+  } else if (orig && cityPos[orig]) {
+    // Só origem: mostrar todas as rotas partindo dela
     const destsOfOrig = mapaGetDestsOf(orig);
     const po = cityPos[orig];
     for (const d of Object.keys(destsOfOrig)) {
       const pd = cityPos[d]; if(!pd) continue;
-      const sel = d === dest;
       const mx=(po.x+pd.x)/2, my=(po.y+pd.y)/2;
       const dist=Math.hypot(pd.x-po.x,pd.y-po.y);
       const path = document.createElementNS(NS,'path');
       path.setAttribute('d',`M${po.x.toFixed(1)} ${po.y.toFixed(1)} Q${mx.toFixed(1)} ${(my-Math.max(8,dist*.18)).toFixed(1)} ${pd.x.toFixed(1)} ${pd.y.toFixed(1)}`);
-      path.setAttribute('stroke', sel?'#fbbf24':'rgba(255,88,94,.65)');
-      path.setAttribute('stroke-width',((sel?2.2:1.1)/k).toFixed(2));
+      path.setAttribute('stroke','rgba(255,88,94,.65)');
+      path.setAttribute('stroke-width',(1.1/k).toFixed(2));
       path.setAttribute('fill','none');
       frag.appendChild(path);
     }
