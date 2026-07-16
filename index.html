@@ -572,17 +572,35 @@
   <div class="login-box">
     <img class="login-logo" src="logocdv.png" onerror="this.style.display='none'" alt="CDV"/>
     <div class="login-title">Painel CDV</div>
-    <div class="login-sub">Digite o e-mail cadastrado na sua assinatura</div>
-    <div class="login-label">E-mail</div>
-    <input class="login-input" id="login-email" type="email" placeholder="seu@email.com" autocomplete="email"/>
-    <div class="login-erro" id="login-erro"></div>
-    <button class="login-btn" id="login-btn" onclick="fazerLogin()">Entrar</button>
-    <div style="font-size:11px;color:var(--muted2);text-align:center;margin-bottom:14px">Acesso exclusivo para membros do Clube do Viajante</div>
-    <a href="https://pay.hub.la/d5XDuFTjQtmrWJlN5CP1" target="_blank" rel="noopener"
-      style="display:block;width:100%;padding:11px;background:transparent;border:2px solid var(--cdv-coral);color:var(--cdv-coral);border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;text-decoration:none;box-sizing:border-box;transition:all .2s"
-      onmouseover="this.style.background='rgba(255,88,94,.1)'" onmouseout="this.style.background='transparent'">
-      🚀 Quero fazer parte do Clube do Viajante Premium para ter acesso ao painel!
-    </a>
+
+    <!-- Step 1: e-mail -->
+    <div id="login-step1" style="width:100%;display:flex;flex-direction:column;align-items:center">
+      <div class="login-sub">Digite o e-mail cadastrado na sua assinatura</div>
+      <div class="login-label">E-mail</div>
+      <input class="login-input" id="login-email" type="email" placeholder="seu@email.com" autocomplete="email"/>
+      <div class="login-erro" id="login-erro"></div>
+      <button class="login-btn" id="login-btn" onclick="enviarCodigo()">Enviar código</button>
+      <div style="font-size:11px;color:var(--muted2);text-align:center;margin-bottom:14px">Acesso exclusivo para membros do Clube do Viajante</div>
+      <a href="https://pay.hub.la/d5XDuFTjQtmrWJlN5CP1" target="_blank" rel="noopener"
+        style="display:block;width:100%;padding:11px;background:transparent;border:2px solid var(--cdv-coral);color:var(--cdv-coral);border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;text-decoration:none;box-sizing:border-box;transition:all .2s"
+        onmouseover="this.style.background='rgba(255,88,94,.1)'" onmouseout="this.style.background='transparent'">
+        🚀 Quero fazer parte do Clube do Viajante Premium para ter acesso ao painel!
+      </a>
+    </div>
+
+    <!-- Step 2: código OTP -->
+    <div id="login-step2" style="width:100%;display:none;flex-direction:column;align-items:center">
+      <div class="login-sub" id="login-otp-sub">Enviamos um código para <strong id="login-otp-email"></strong></div>
+      <div class="login-label">Código de 6 dígitos</div>
+      <input class="login-input" id="login-codigo" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code" style="letter-spacing:8px;font-size:22px;text-align:center"/>
+      <div class="login-erro" id="login-otp-erro"></div>
+      <button class="login-btn" id="login-otp-btn" onclick="verificarCodigo()">Verificar código</button>
+      <button onclick="voltarStep1()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Montserrat',sans-serif;margin-bottom:8px">← Usar outro e-mail</button>
+      <div id="login-reenviar" style="font-size:12px;color:var(--muted);text-align:center">
+        Não recebeu? <button onclick="reenviarCodigo()" style="background:transparent;border:none;color:var(--cdv-coral);font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;padding:0">Reenviar</button>
+      </div>
+    </div>
+
   </div>
 </div>
 <div id="app-content">
@@ -5143,70 +5161,118 @@ function mostrarPainel(sessao) {
   // Renderiza aba Início ao carregar (garante que nome apareça imediatamente)
   switchTab('inicio');
 }
-async function fazerLogin() {
+// ── Login OTP ─────────────────────────────────────────────────────────────────
+function _postProxy(path, body) {
+  const ctrl = new AbortController();
+  const tid = setTimeout(() => ctrl.abort(), 15000);
+  const hdrs = { 'Content-Type': 'application/json', ...(IS_DEV ? { 'x-cdv-env': 'dev' } : {}) };
+  return fetch(CDV_PROXY_AUTH + path, { method: 'POST', headers: hdrs, body: JSON.stringify(body), signal: ctrl.signal })
+    .finally(() => clearTimeout(tid));
+}
+
+async function enviarCodigo() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
   const erroEl = document.getElementById('login-erro');
   const btn = document.getElementById('login-btn');
   erroEl.textContent = '';
   if (!email || !email.includes('@')) { erroEl.textContent = 'Digite um e-mail válido.'; return; }
   btn.disabled = true;
-  btn.textContent = 'Verificando...';
-
-  // Fetch com timeout manual (compatível com todos os browsers)
-  const fetchComTimeout = (url, ms) => {
-    const ctrl = new AbortController();
-    const tid = setTimeout(() => ctrl.abort(), ms);
-    const hdrs = IS_DEV ? { 'x-cdv-env': 'dev' } : {};
-    return fetch(url, { signal: ctrl.signal, headers: hdrs }).finally(() => clearTimeout(tid));
-  };
-
-  const tentarVerificar = async () => {
-    const url = CDV_PROXY_AUTH + '/membros/verificar?email=' + encodeURIComponent(email);
-    const res = await fetchComTimeout(url, 15000);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    return res.json();
-  };
-
+  btn.textContent = 'Enviando…';
   try {
-    let data;
+    let res;
     try {
-      data = await tentarVerificar();
+      res = await _postProxy('/membros/enviar-codigo', { email });
     } catch (e1) {
-      // Servidor pode estar acordando (Railway sleep) — aguardar e tentar novamente
       erroEl.textContent = 'Conectando ao servidor…';
       await new Promise(r => setTimeout(r, 5000));
       erroEl.textContent = '';
-      data = await tentarVerificar();
+      res = await _postProxy('/membros/enviar-codigo', { email });
     }
-    if (data.acesso) {
-      salvarSessao({ email: data.email, nome: data.nome });
-      mostrarPainel(data);
+    const data = await res.json();
+    if (data.ok) {
+      document.getElementById('login-step1').style.display = 'none';
+      const step2 = document.getElementById('login-step2');
+      step2.style.display = 'flex';
+      document.getElementById('login-otp-email').textContent = email;
+      document.getElementById('login-codigo').value = '';
+      document.getElementById('login-otp-erro').textContent = '';
+      setTimeout(() => document.getElementById('login-codigo').focus(), 100);
     } else {
       const msgs = {
         nao_encontrado: 'E-mail não encontrado. Verifique se é o mesmo da sua assinatura.',
         inativo: 'Sua assinatura está inativa. Renove para acessar o painel.'
       };
-      erroEl.textContent = msgs[data.motivo] || 'Acesso negado.';
+      erroEl.textContent = msgs[data.motivo] || 'Não foi possível enviar o código.';
     }
   } catch (e) {
     erroEl.textContent = 'Servidor indisponível. Tente novamente em instantes.';
-    console.error('[CDV login]', e);
+    console.error('[CDV otp-enviar]', e);
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Entrar';
+    btn.textContent = 'Enviar código';
   }
 }
-// Enter no campo dispara login
+
+async function verificarCodigo() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const codigo = document.getElementById('login-codigo').value.trim();
+  const erroEl = document.getElementById('login-otp-erro');
+  const btn = document.getElementById('login-otp-btn');
+  erroEl.textContent = '';
+  if (!codigo || codigo.length < 6) { erroEl.textContent = 'Digite o código de 6 dígitos.'; return; }
+  btn.disabled = true;
+  btn.textContent = 'Verificando…';
+  try {
+    const res = await _postProxy('/membros/verificar-codigo', { email, codigo });
+    const data = await res.json();
+    if (data.ok && data.acesso) {
+      salvarSessao({ email: data.email, nome: data.nome });
+      mostrarPainel(data);
+    } else {
+      const msgs = {
+        invalido: 'Código incorreto. Verifique e tente novamente.',
+        expirado: 'Código expirado. Solicite um novo código.',
+        nao_encontrado: 'Sessão expirada. Solicite um novo código.'
+      };
+      erroEl.textContent = msgs[data.motivo] || 'Código inválido.';
+    }
+  } catch (e) {
+    erroEl.textContent = 'Erro ao verificar. Tente novamente.';
+    console.error('[CDV otp-verificar]', e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Verificar código';
+  }
+}
+
+async function reenviarCodigo() {
+  voltarStep1();
+  await enviarCodigo();
+}
+
+function voltarStep1() {
+  document.getElementById('login-step2').style.display = 'none';
+  document.getElementById('login-step1').style.display = 'flex';
+  document.getElementById('login-erro').textContent = '';
+  document.getElementById('login-otp-erro').textContent = '';
+}
+
+// Enter nos campos dispara ações
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('login-email').addEventListener('keydown', e => { if (e.key === 'Enter') fazerLogin(); });
+  document.getElementById('login-email').addEventListener('keydown', e => { if (e.key === 'Enter') enviarCodigo(); });
+  document.getElementById('login-codigo').addEventListener('keydown', e => { if (e.key === 'Enter') verificarCodigo(); });
+  // Formatar input: só dígitos
+  document.getElementById('login-codigo').addEventListener('input', e => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+  });
 });
 
 function fazerLogout() {
   localStorage.removeItem(LOGIN_KEY);
   document.getElementById('app-content').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
+  voltarStep1();
   document.getElementById('login-email').value = '';
-  document.getElementById('login-erro').textContent = '';
   document.getElementById('header-nome-membro').textContent = '';
 }
 // Verifica sessão salva ao carregar
