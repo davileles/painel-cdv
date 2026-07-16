@@ -199,7 +199,20 @@ async function ghGetJson(filePath, fallback) {
   const res = await fetch(apiBase, { compress: false, headers: ghHeaders(true) });
   if (res.status === 404) return { data: fallback, sha: null };
   const data = await res.json();
-  if (!res.ok || !data.content) return { data: fallback, sha: null };
+  if (!res.ok) return { data: fallback, sha: null };
+  // Arquivo >1MB: GitHub retorna encoding:'none' e content vazio — buscar via raw URL
+  if (data.encoding === 'none' || !data.content) {
+    const sha = data.sha || null;
+    try {
+      const rawUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${filePath}`;
+      const rawRes = await fetch(rawUrl, { compress: false, headers: ghHeaders(true) });
+      if (!rawRes.ok) return { data: fallback, sha };
+      const parsed = await rawRes.json();
+      return { data: parsed, sha };
+    } catch (e) {
+      return { data: fallback, sha };
+    }
+  }
   try {
     return { data: JSON.parse(Buffer.from(data.content, 'base64').toString('utf8')), sha: data.sha };
   } catch (e) {
