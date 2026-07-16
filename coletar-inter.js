@@ -18,12 +18,13 @@ const PROXY_URL = process.env.CDV_PROXY_URL || 'https://cdv-proxy-production.up.
 const API_URL   = `${PROXY_URL}/inter/gift-cards`;
 
 // Parceiros com mensagem individual detalhada (Tier 1 Inter)
+// Chaves devem corresponder ao resultado de normalizarChave(gc.name)
 const PARCEIROS_TIER1_INTER = new Set([
   'bacio di latte',
-  'outback',
+  'outback steakhouse',
+  'airbnb',
   'uber',
   'assaí',
-  'airbnb',
 ]);
 
 // ── HTTP helper ───────────────────────────────────────────────────────────────
