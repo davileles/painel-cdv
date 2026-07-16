@@ -503,6 +503,81 @@ app.post('/passagens/excluir', async (req, res) => {
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
+// ── OTP: store em memória (email → { codigo, expira, nome, produtos }) ────────
+const otpStore = new Map();
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const OTP_TTL = 10 * 60 * 1000; // 10 minutos
+
+function gerarCodigo() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+// ── Membros: enviar código OTP por e-mail ────────────────────────────────────
+app.post('/membros/enviar-codigo', async (req, res) => {
+  const email = ((req.body || {}).email || '').toLowerCase().trim();
+  if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
+  try {
+    const devMode = res.locals.isDevMode;
+    const dados = await ghGetJsonDev(MEMBROS_PATH, { membros: [] }, devMode);
+    const membro = (dados.data.membros || []).find(m => m.email === email);
+    if (!membro) return res.json({ ok: false, motivo: 'nao_encontrado' });
+    if (membro.status !== 'ativo') return res.json({ ok: false, motivo: 'inativo', nome: membro.nome });
+
+    const codigo = gerarCodigo();
+    otpStore.set(email, { codigo, expira: Date.now() + OTP_TTL, nome: membro.nome, produtos: membro.produtos });
+
+    if (!RESEND_API_KEY) {
+      // Modo dev sem Resend: loga o código no servidor
+      console.log(`[OTP-DEV] ${email} → ${codigo}`);
+      return res.json({ ok: true, dev: true });
+    }
+
+    const emailRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: 'Clube do Viajante <noreply@clubedoviajante.com.br>',
+        to: [email],
+        subject: `Seu código de acesso: ${codigo}`,
+        html: `
+          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0a0c12;color:#fff;border-radius:12px">
+            <h2 style="color:#FF6B5B;margin-bottom:8px">Clube do Viajante</h2>
+            <p style="color:#aaa;margin-bottom:24px">Use o código abaixo para acessar seu painel. Ele expira em <strong>10 minutos</strong>.</p>
+            <div style="background:#1a1d2e;border-radius:10px;padding:24px;text-align:center;letter-spacing:12px;font-size:32px;font-weight:900;color:#FF6B5B;margin-bottom:24px">${codigo}</div>
+            <p style="color:#666;font-size:12px">Se você não solicitou este código, ignore este e-mail.</p>
+          </div>`
+      })
+    });
+    if (!emailRes.ok) {
+      const errBody = await emailRes.text();
+      console.error('[OTP-RESEND]', errBody);
+      return res.status(500).json({ ok: false, erro: 'Falha ao enviar e-mail' });
+    }
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// ── Membros: verificar código OTP ────────────────────────────────────────────
+app.post('/membros/verificar-codigo', (req, res) => {
+  const { email, codigo } = req.body || {};
+  const emailNorm = (email || '').toLowerCase().trim();
+  const codigoNorm = (codigo || '').trim();
+  if (!emailNorm || !codigoNorm) return res.status(400).json({ ok: false, erro: 'E-mail e código obrigatórios' });
+
+  const entrada = otpStore.get(emailNorm);
+  if (!entrada) return res.json({ ok: false, motivo: 'nao_encontrado' });
+  if (Date.now() > entrada.expira) {
+    otpStore.delete(emailNorm);
+    return res.json({ ok: false, motivo: 'expirado' });
+  }
+  if (entrada.codigo !== codigoNorm) return res.json({ ok: false, motivo: 'invalido' });
+
+  otpStore.delete(emailNorm);
+  res.json({ ok: true, acesso: true, nome: entrada.nome, email: emailNorm, produtos: entrada.produtos });
+});
+
 // ── Membros: verificar acesso por e-mail ─────────────────────────────────────
 app.get('/membros/verificar', async (req, res) => {
   const email = (req.query.email || '').toLowerCase().trim();
