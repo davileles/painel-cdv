@@ -607,6 +607,40 @@ app.get('/membros/verificar', async (req, res) => {
   }
 });
 
+// ── Preferência de tema por membro ───────────────────────────────────────────
+app.get('/membros/tema', async (req, res) => {
+  const email = (req.query.email || '').toLowerCase().trim();
+  if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
+  try {
+    const devMode = res.locals.isDevMode;
+    const dados = await ghGetJsonDev(MEMBROS_PATH, { membros: [] }, devMode);
+    const membro = (dados.data.membros || []).find(m => m.email === email);
+    if (!membro) return res.status(404).json({ ok: false, erro: 'Membro não encontrado' });
+    res.json({ ok: true, tema: membro.tema || 'dark' });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+app.post('/membros/tema', async (req, res) => {
+  const { email, tema } = req.body || {};
+  if (!email || !tema) return res.status(400).json({ ok: false, erro: 'E-mail e tema obrigatórios' });
+  if (!['dark', 'light'].includes(tema)) return res.status(400).json({ ok: false, erro: 'Tema inválido' });
+  try {
+    const devMode = res.locals.isDevMode;
+    const dados = await ghGetJsonDev(MEMBROS_PATH, { membros: [] }, devMode);
+    const membros = dados.data.membros || [];
+    const idx = membros.findIndex(m => m.email === email.toLowerCase().trim());
+    if (idx === -1) return res.status(404).json({ ok: false, erro: 'Membro não encontrado' });
+    membros[idx].tema = tema;
+    const shaDados = await ghGetJsonDev(MEMBROS_PATH, { membros: [] }, devMode);
+    await ghPutJsonDev(MEMBROS_PATH, { ...shaDados.data, membros }, shaDados.sha, `chore: tema ${tema} para ${email}`, devMode);
+    res.json({ ok: true, tema });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
 // ── Webhook Hubla: member_added / member_removed ──────────────────────────────
 app.post('/webhook/hubla-membros', async (req, res) => {
   // Valida token
