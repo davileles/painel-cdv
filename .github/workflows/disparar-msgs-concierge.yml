@@ -1,8 +1,9 @@
 name: Disparar mensagens automáticas do Concierge
 
 on:
-  schedule:
-    - cron: '0 * * * *'   # toda hora (UTC) → cobre 06h–23h BRT com margem
+  # ⏸️ MIGRADO para davileles/concierge — ver .github/workflows/disparar-msgs-concierge.yml lá.
+  # Gatilho schedule removido aqui para evitar envio duplicado durante a transição.
+  # Mantido workflow_dispatch como fallback manual caso a migração precise ser revertida.
   workflow_dispatch:        # permite rodar manualmente pelo GitHub
 
 jobs:
