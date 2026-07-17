@@ -21,6 +21,27 @@
     --cat-clube:#fbbf24;--cat-trans:#60a5fa;--cat-compra:#34d399;--cat-bonif:#a78bfa;--cat-cart:#ff585e;--cat-geral:#98a8cc;
     --amber:#fbbf24;--purple:#a78bfa;--orange-fire:#fb923c;
   }
+  /* ── Tema Claro ─────────────────────────────────────────────────────────── */
+  [data-theme="light"] {
+    --bg:#f0f2f7;--surface:#ffffff;--card:#f7f8fc;--card-deep:#eef0f7;--border:#dde2ef;--border-ctrl:#c8d0e4;
+    --text:#1a2035;--muted:#5a6a8a;--muted2:#9aaabf;
+    --green:#16a34a;--dollar:#2563eb;--dollar-dim:rgba(37,99,235,0.10);
+    --red:#dc2626;--accent:#ff585e;--accent2:#e04449;--blue:#126eff;
+    --cdv-navy:#2a3246;--cdv-coral:#ff585e;
+    --inter:#008c49;--inter-dim:rgba(0,140,73,0.10);
+    --livelo-dim:rgba(223,9,121,0.10);--esfera-dim:rgba(232,55,27,0.10);
+    --smiles-dim:rgba(249,115,22,0.10);--azul-dim:rgba(14,165,233,0.10);
+    --latam-dim:rgba(220,38,38,0.10);
+    --cat-clube:#d97706;--cat-trans:#2563eb;--cat-compra:#16a34a;--cat-bonif:#7c3aed;--cat-cart:#ff585e;--cat-geral:#5a6a8a;
+    --amber:#d97706;--purple:#7c3aed;--orange-fire:#ea580c;
+  }
+  [data-theme="light"] body { background:var(--bg); }
+  [data-theme="light"] header { box-shadow:0 2px 8px rgba(26,32,53,0.07); }
+  [data-theme="light"] .main-tabs { background:var(--surface); border-bottom:1px solid var(--border); }
+  [data-theme="light"] .main-tab { color:var(--muted); }
+  [data-theme="light"] .main-tab.active { background:var(--accent); color:#fff; }
+  [data-theme="light"] .login-box { box-shadow:0 8px 32px rgba(26,32,53,0.10); }
+  /* ────────────────────────────────────────────────────────────────────────── */
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;font-size:14px;min-height:100vh;scroll-padding-top:160px}
 
@@ -591,7 +612,7 @@
     <!-- Step 2: código OTP -->
     <div id="login-step2" style="width:100%;display:none;flex-direction:column;align-items:center">
       <div class="login-sub" id="login-otp-sub">Enviamos um código para <strong id="login-otp-email"></strong></div>
-      <div class="login-label">Código de 6 dígitos</div>
+      <div class="login-label" style="align-self:center;text-align:center">Código de 6 dígitos</div>
       <input class="login-input" id="login-codigo" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code" style="letter-spacing:8px;font-size:22px;text-align:center"/>
       <div class="login-erro" id="login-otp-erro"></div>
       <button class="login-btn" id="login-otp-btn" onclick="verificarCodigo()">Verificar código</button>
@@ -616,6 +637,7 @@
   <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
     <span id="header-saldo-total" style="display:none;align-items:center;gap:6px;background:rgba(255,88,94,.1);border:1px solid rgba(255,88,94,.3);color:#ff585e;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:800;white-space:nowrap;flex-shrink:0"></span>
     <span id="header-nome-membro" style="font-size:12px;font-weight:700;color:var(--muted)"></span>
+    <button id="btn-tema" onclick="alternarTema()" title="Alternar tema claro/escuro" style="background:transparent;border:1px solid var(--border-ctrl);color:var(--muted);padding:5px 10px;border-radius:8px;font-size:14px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;line-height:1" onmouseover="this.style.borderColor='var(--cdv-coral)'" onmouseout="this.style.borderColor='var(--border-ctrl)'">🌙</button>
     <button onclick="fazerLogout()" style="background:transparent;border:1px solid var(--border-ctrl);color:var(--muted);padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='#f87171';this.style.color='#f87171'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Sair</button>
   </div>
 </header>
@@ -5153,6 +5175,8 @@ function mostrarPainel(sessao) {
   // Mostra nome no header se existir
   const nomeEl = document.getElementById('header-nome-membro');
   if (nomeEl && sessao?.nome) nomeEl.textContent = '👤 ' + sessao.nome.split(' ')[0];
+  // Carrega preferência de tema do servidor
+  if (sessao?.email) carregarTema(sessao.email);
   // Aba Gestão de Milhas disponível para todos os membros
   const tabMilhas = document.querySelector('.main-tab[data-tab="milhas"]');
   if (tabMilhas) tabMilhas.style.display = '';
@@ -5160,6 +5184,35 @@ function mostrarPainel(sessao) {
   // Aba Salas VIP — só para devs
   // Renderiza aba Início ao carregar (garante que nome apareça imediatamente)
   switchTab('inicio');
+}
+// ── Tema claro/escuro ─────────────────────────────────────────────────────────
+function _aplicarTema(tema) {
+  document.documentElement.setAttribute('data-theme', tema);
+  const btn = document.getElementById('btn-tema');
+  if (btn) btn.textContent = tema === 'light' ? '☀️' : '🌙';
+}
+
+async function carregarTema(email) {
+  try {
+    const res = await fetch(CDV_PROXY_AUTH + '/membros/tema?email=' + encodeURIComponent(email));
+    const data = await res.json();
+    if (data.ok) _aplicarTema(data.tema || 'dark');
+  } catch (e) {
+    console.warn('[CDV tema] Não foi possível carregar preferência de tema', e);
+  }
+}
+
+async function alternarTema() {
+  const atual = document.documentElement.getAttribute('data-theme') || 'dark';
+  const novo  = atual === 'dark' ? 'light' : 'dark';
+  _aplicarTema(novo);
+  const sessao = lerSessao();
+  if (!sessao?.email) return;
+  try {
+    await _postProxy('/membros/tema', { email: sessao.email, tema: novo });
+  } catch (e) {
+    console.warn('[CDV tema] Falha ao salvar preferência', e);
+  }
 }
 // ── Login OTP ─────────────────────────────────────────────────────────────────
 function _postProxy(path, body) {
