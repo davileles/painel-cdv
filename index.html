@@ -106,6 +106,10 @@
   .fbtn-fire{border:1px solid rgba(251,146,60,.5);background:transparent;color:#fb923c;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;white-space:nowrap;transition:all .15s}
   .fbtn-fire:hover{background:rgba(251,146,60,.1)}
   .fbtn-fire.active{background:rgba(251,146,60,.15);border-color:#fb923c}
+  .comp-toggle-btn{border:1.5px solid var(--border-ctrl);background:var(--card);color:var(--muted);padding:8px 16px;border-radius:20px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s}
+  .comp-toggle-btn.active{background:#ff585e;border-color:#ff585e;color:#fff}
+  .transf-late-badge{background:rgba(251,146,60,.15);color:#fb923c;border:1px solid rgba(251,146,60,.4)}
+  .transf-active-badge{background:rgba(52,211,153,.15);color:#34d399;border:1px solid rgba(52,211,153,.4)}
   .pts-row{display:flex;align-items:baseline;gap:4px}
   .pts-val{font-size:30px;font-weight:900;line-height:1}
   .winner-livelo .pts-val{color:var(--livelo)}
@@ -718,6 +722,13 @@
 </div>
 
 <div id="tab-comparador" class="tab-panel" style="display:none">
+
+<div style="display:flex;gap:8px;margin-bottom:14px">
+  <button id="comp-toggle-compras" class="comp-toggle-btn active" onclick="setComparadorView('compras')">🛍️ Compras</button>
+  <button id="comp-toggle-transferencias" class="comp-toggle-btn" onclick="setComparadorView('transferencias')">🔁 Transferências</button>
+</div>
+
+<div id="comparador-compras-view">
 <div class="controls">
   <div style="position:relative;flex:1;min-width:180px;max-width:340px"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="search" placeholder="Buscar parceiro ou categoria…" oninput="render()" style="width:100%;padding-left:34px"></div>
   <select class="srt" id="sort" onchange="render()">
@@ -734,6 +745,19 @@
 <div class="grid" id="grid">
   <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Buscando parceiros…</div></div>
 </div>
+</div>
+
+<div id="comparador-transferencias-view" style="display:none">
+<div class="controls">
+  <div style="position:relative;flex:1;min-width:180px;max-width:340px"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="transf-search" placeholder="Buscar destino…" oninput="renderTransferencias()" style="width:100%;padding-left:34px"></div>
+  <button class="fbtn-fire" id="btn-transf-ativas" onclick="toggleTransfSoAtivas()">🔥 Só ativas agora</button>
+</div>
+<div class="stats" id="transf-stats"></div>
+<div class="grid" id="transf-grid">
+  <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando transferências…</div></div>
+</div>
+</div>
+
 </div>
 
 <div id="tab-radar" class="tab-panel" style="display:none">
@@ -2147,6 +2171,194 @@ function decodeHistKey(s){
     .toLowerCase().trim();
 }
 
+// ══ COMPARADOR DE TRANSFERÊNCIAS BONIFICADAS ══
+let historicoTransferencias = null;
+let filtroTransfSoAtivas = false;
+
+async function carregarHistoricoTransferencias(){
+  try{
+    const r = await fetch('historico-transferencias.json',{cache:'no-cache'});
+    if(!r.ok) return;
+    historicoTransferencias = await r.json();
+    console.log('[CDV] Histórico de transferências carregado:', (historicoTransferencias.items||[]).length, 'registros');
+  }catch(e){ console.log('[CDV] historico-transferencias.json não encontrado ainda'); }
+}
+
+function setComparadorView(view){
+  const btnCompras = document.getElementById('comp-toggle-compras');
+  const btnTransf = document.getElementById('comp-toggle-transferencias');
+  const viewCompras = document.getElementById('comparador-compras-view');
+  const viewTransf = document.getElementById('comparador-transferencias-view');
+  const isCompras = view === 'compras';
+  btnCompras.classList.toggle('active', isCompras);
+  btnTransf.classList.toggle('active', !isCompras);
+  viewCompras.style.display = isCompras ? '' : 'none';
+  viewTransf.style.display = isCompras ? 'none' : '';
+  if(!isCompras) renderTransferencias();
+}
+
+function toggleTransfSoAtivas(){
+  filtroTransfSoAtivas = !filtroTransfSoAtivas;
+  document.getElementById('btn-transf-ativas').classList.toggle('active', filtroTransfSoAtivas);
+  renderTransferencias();
+}
+
+function normalizarBuscaT(s){
+  return (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+}
+
+// Estatísticas de UMA chave (um par origem→destino específico)
+function calcularStatsGrupoTransf(records){
+  const ordenados = [...records].sort((a,b)=> a.dataInicio.localeCompare(b.dataInicio));
+  const bonuses = ordenados.map(r=>r.bonusMax);
+  const bonusMedio = Math.round(bonuses.reduce((a,b)=>a+b,0)/bonuses.length);
+  const bonusMaximo = Math.max(...bonuses);
+  const hoje = new Date().toISOString().slice(0,10);
+  const ativa = ordenados.find(r => r.prazo && r.dataInicio <= hoje && hoje <= r.prazo) || null;
+
+  let freqMediaDias = null, proximaEstimada = null;
+  if (ordenados.length >= 2){
+    const datas = ordenados.map(r => new Date(r.dataInicio+'T00:00:00'));
+    const gaps = [];
+    for (let i=1;i<datas.length;i++) gaps.push((datas[i]-datas[i-1])/86400000);
+    freqMediaDias = Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length);
+    const ultima = datas[datas.length-1];
+    proximaEstimada = new Date(ultima.getTime()+freqMediaDias*86400000).toISOString().slice(0,10);
+  }
+
+  const ultimo = ordenados[ordenados.length-1];
+  const atrasada = !ativa && proximaEstimada!=null && proximaEstimada < hoje;
+
+  return {
+    qtd: ordenados.length,
+    bonusMedio, bonusMaximo,
+    ultimaData: ultimo.dataInicio,
+    ultimoBonus: ultimo.bonusMax,
+    ultimoPrazo: ultimo.prazo,
+    ativa, freqMediaDias, proximaEstimada, atrasada,
+  };
+}
+
+// Agrupa os registros: primeiro por chave (origem→destino), depois por destino
+function agruparTransferencias(){
+  const porChave = {};
+  for (const r of ((historicoTransferencias||{}).items||[])){
+    (porChave[r.chave] = porChave[r.chave] || []).push(r);
+  }
+  const porDestino = {};
+  for (const chave in porChave){
+    const records = porChave[chave];
+    const stats = calcularStatsGrupoTransf(records);
+    const destino = records[0].destino;
+    const origem = records[0].origem;
+    (porDestino[destino] = porDestino[destino] || []).push({ chave, origem, destino, stats });
+  }
+  return porDestino;
+}
+
+function formatarDataBRTransf(iso){
+  const m = (iso||'').match(/(\d{4})-(\d{2})-(\d{2})/);
+  return m ? `${m[3]}/${m[2]}` : (iso||'');
+}
+
+function renderTransferencias(){
+  const gridEl = document.getElementById('transf-grid');
+  const statsEl = document.getElementById('transf-stats');
+  if (!historicoTransferencias){
+    gridEl.innerHTML = '<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando transferências…</div></div>';
+    return;
+  }
+
+  const busca = normalizarBuscaT((document.getElementById('transf-search')||{}).value || '');
+  const porDestino = agruparTransferencias();
+
+  let destinos = Object.keys(porDestino).map(destino=>{
+    const origens = porDestino[destino];
+    const temAtiva = origens.some(o=>o.stats.ativa);
+    const temAtrasada = origens.some(o=>o.stats.atrasada);
+    const bonusMaxGeral = Math.max(...origens.map(o=>o.stats.bonusMaximo));
+    return { destino, origens, temAtiva, temAtrasada, bonusMaxGeral };
+  });
+
+  if (busca) destinos = destinos.filter(d => normalizarBuscaT(d.destino).indexOf(busca)!==-1);
+  if (filtroTransfSoAtivas) destinos = destinos.filter(d => d.temAtiva);
+
+  destinos.sort((a,b)=>{
+    if (a.temAtiva !== b.temAtiva) return a.temAtiva ? -1 : 1;
+    if (a.temAtrasada !== b.temAtrasada) return a.temAtrasada ? -1 : 1;
+    return b.bonusMaxGeral - a.bonusMaxGeral;
+  });
+
+  const totalCombinacoes = Object.values(porDestino).reduce((s,o)=>s+o.length,0);
+  statsEl.textContent = `${destinos.length} destino${destinos.length===1?'':'s'} · ${totalCombinacoes} combinaç${totalCombinacoes===1?'ão':'ões'} rastreada${totalCombinacoes===1?'':'s'}`;
+
+  if (!destinos.length){
+    gridEl.innerHTML = '<div class="status-box"><div style="color:var(--muted);font-size:13px">Nenhum destino encontrado.</div></div>';
+    return;
+  }
+
+  gridEl.innerHTML = destinos.map(d=>{
+    const badge = d.temAtiva
+      ? '<div class="fire-badge" style="background:rgba(52,211,153,.15);color:#34d399;border-color:rgba(52,211,153,.4)">🔥 Ativa agora</div>'
+      : d.temAtrasada
+      ? '<div class="fire-badge">⏰ Atrasada</div>'
+      : '';
+    return `<div class="card" onclick="abrirModalTransf('${encodeURIComponent(d.destino)}')">
+      <div class="pname">${d.destino}</div>
+      ${badge}
+      <div class="pts-row">
+        <span class="pts-val">${d.bonusMaxGeral}%</span>
+        <span class="pts-lbl">bônus máx.</span>
+      </div>
+      <div class="card-foot">${d.origens.length} origem${d.origens.length===1?'':'s'} rastreada${d.origens.length===1?'':'s'}</div>
+    </div>`;
+  }).join('');
+}
+
+function abrirModalTransf(destinoEncoded){
+  const destino = decodeURIComponent(destinoEncoded);
+  const porDestino = agruparTransferencias();
+  const origens = (porDestino[destino]||[]).sort((a,b)=>{
+    if (!!a.stats.ativa !== !!b.stats.ativa) return a.stats.ativa ? -1 : 1;
+    return b.stats.bonusMaximo - a.stats.bonusMaximo;
+  });
+
+  document.getElementById('transf-modal-name').textContent = destino;
+  document.getElementById('transf-modal-cat').textContent = `${origens.length} origem${origens.length===1?'':'s'} rastreada${origens.length===1?'':'s'}`;
+
+  document.getElementById('transf-modal-rows').innerHTML = origens.map(o=>{
+    const s = o.stats;
+    const statusHtml = s.ativa
+      ? `<div style="font-size:11px;color:#34d399;font-weight:800;margin-top:2px">🔥 Ativa: ${s.ativa.bonusMax}% até ${formatarDataBRTransf(s.ativa.prazo)}</div>`
+      : `<div style="font-size:11px;color:var(--muted);margin-top:2px">Última: ${s.ultimoBonus}% em ${formatarDataBRTransf(s.ultimaData)}${s.atrasada?' · ⏰ atrasada':''}</div>`;
+    const freqHtml = s.freqMediaDias!=null
+      ? `<div style="font-size:10px;color:var(--muted2);margin-top:2px">Sobe a cada ~${s.freqMediaDias} dias · possível próxima: ${formatarDataBRTransf(s.proximaEstimada)}</div>`
+      : `<div style="font-size:10px;color:var(--muted2);margin-top:2px">Só ${s.qtd} registro — sem padrão de frequência ainda</div>`;
+    return `<div class="modal-row" style="cursor:default">
+      <div class="modal-prog">
+        <div class="modal-prog-dot" style="background:#ff585e"></div>
+        <div>
+          <div class="modal-prog-name">${o.origem}</div>
+          ${statusHtml}
+          ${freqHtml}
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div class="modal-pts" style="color:#ff585e">${s.bonusMedio}%</div>
+        <div class="modal-pts-lbl">média (máx ${s.bonusMaximo}%)</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('transf-modal-overlay').classList.add('open');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const closeBtn = document.getElementById('transf-modal-close-btn');
+  const overlay = document.getElementById('transf-modal-overlay');
+  if (closeBtn) closeBtn.addEventListener('click', ()=> overlay.classList.remove('open'));
+  if (overlay) overlay.addEventListener('click', (e)=>{ if (e.target===overlay) overlay.classList.remove('open'); });
+});
+
 // Calcula média histórica usando UM valor por dia (ignora o dia atual)
 // Isso garante que uma pontuação alta que se mantém continue sendo considerada "acima da média"
 function mediaHistoricaDiaria(partnerKey, progId){
@@ -2361,6 +2573,7 @@ async function loadData(){
     if(!partners.length) throw new Error('Nenhum parceiro encontrado.');
 
     await carregarHistorico();
+    carregarHistoricoTransferencias(); // não bloqueia — grid de transferências só é montado ao abrir o toggle
     // Injeta dados do Inter (e demais programas cashback) vindos do historico.json
     injetarProgramasCashback();
     buildCatBar();buildProgFilters();render();
@@ -7154,6 +7367,16 @@ function mapaRenderAll() {
   </div>
 </div>
 
+
+<!-- MODAL TRANSFERÊNCIA -->
+<div class="modal-overlay" id="transf-modal-overlay">
+  <div class="modal">
+    <button class="modal-close" id="transf-modal-close-btn">×</button>
+    <div class="modal-name" id="transf-modal-name"></div>
+    <div class="modal-cat" id="transf-modal-cat"></div>
+    <div class="modal-rows" id="transf-modal-rows"></div>
+  </div>
+</div>
 
 <!-- MODAL PASSAGEM -->
 <div class="modal-overlay" id="pass-modal-overlay">
