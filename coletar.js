@@ -550,6 +550,14 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
         ? Math.round(pts6m.reduce((a, b) => a + b, 0) / pts6m.length * 10) / 10
         : v.ptsBefore;
 
+      // Classificação vs. média histórica de 6 meses (mesmo critério de ±20%
+      // usado pelo isAboveAverage() do Comparador, pra manter consistência)
+      let classificacaoT1 = 'dentro_padrao';
+      if (mediaPts6m > 0) {
+        if (v.ptsNow >= mediaPts6m * 1.2) classificacaoT1 = 'acima_padrao';
+        else if (v.ptsNow <= mediaPts6m * 0.8) classificacaoT1 = 'abaixo_padrao';
+      }
+
       const rawT1 = 'variacao-tier1-' + parceiroKey + '-' + progId + '-' + new Date().toISOString();
       let hashT1 = 0;
       for (let i = 0; i < rawT1.length; i++) hashT1 = (hashT1 * 31 + rawT1.charCodeAt(i)) >>> 0;
@@ -605,6 +613,20 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
         publicadoEm: new Date().toISOString(),
         tipoVariacao: true,
         tier1: true,
+        // Comparação com o histórico já pré-calculada aqui (fonte de verdade = historico.json),
+        // pra não precisar reanalisar nada na hora da aprovação — só exibir.
+        historicoComparacao: {
+          parceiro: v.parceiro,
+          programa: progName,
+          pontuacaoAtual: v.ptsNow,
+          pontuacaoAnterior: v.ptsBefore,
+          mediaHistorica6m: mediaPts6m,
+          maximoHistorico6m: maxPts6m,
+          amostras6m: pts6m.length,
+          classificacao: classificacaoT1,
+          moeda: moedaT1,
+          dataDeteccao: new Date().toISOString().slice(0, 10),
+        },
       };
 
       novasOfertas.push(ofertaT1);
