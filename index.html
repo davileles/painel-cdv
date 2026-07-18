@@ -2769,13 +2769,13 @@ function renderModalRows(p, links={}){
 }
 
 // Calcula, por programa, a frequência de altas de pontuação de um parceiro
-// usando SOMENTE os últimos 6 meses do historico.json — janela deliberadamente
+// usando SOMENTE os últimos 12 meses do historico.json — janela deliberadamente
 // curta pra não capturar mudança de comportamento de longo prazo do parceiro.
 function calcularPadraoAltas(p) {
   const partnerKey = p.name.toLowerCase().trim();
   const hojeStr = new Date().toISOString().split('T')[0];
   const corteDate = new Date();
-  corteDate.setMonth(corteDate.getMonth() - 6);
+  corteDate.setMonth(corteDate.getMonth() - 12);
   const corte = corteDate.toISOString().split('T')[0];
 
   const datas = Object.keys(historico).filter(d => d >= corte && d <= hojeStr).sort();
