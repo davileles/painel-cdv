@@ -2534,6 +2534,80 @@ function renderModalRows(p, links={}){
   }).join('');
 }
 
+// Calcula, por programa, a frequência de altas de pontuação de um parceiro
+// usando SOMENTE os últimos 6 meses do historico.json — janela deliberadamente
+// curta pra não capturar mudança de comportamento de longo prazo do parceiro.
+function calcularPadraoAltas(p) {
+  const partnerKey = p.name.toLowerCase().trim();
+  const hojeStr = new Date().toISOString().split('T')[0];
+  const corteDate = new Date();
+  corteDate.setMonth(corteDate.getMonth() - 6);
+  const corte = corteDate.toISOString().split('T')[0];
+
+  const datas = Object.keys(historico).filter(d => d >= corte && d <= hojeStr).sort();
+
+  const resultado = {};
+  for (const progId of Object.keys(p.programs)) {
+    const serie = [];
+    for (const d of datas) {
+      const snap = historico[d] || {};
+      const entry = snap[partnerKey] || snap[decodeHistKey(partnerKey)];
+      const progV = entry ? (entry.programs || {})[progId] : null;
+      const pts = progV != null ? (typeof progV === 'object' ? progV.pts : progV) : null;
+      if (pts != null) serie.push({ data: d, pts });
+    }
+    const altas = [];
+    for (let i = 1; i < serie.length; i++) {
+      if (serie[i].pts > serie[i - 1].pts) altas.push(serie[i].data);
+    }
+    if (altas.length < 2) { resultado[progId] = null; continue; }
+
+    const datasAltas = altas.map(d => new Date(d + 'T00:00:00'));
+    const gaps = [];
+    for (let i = 1; i < datasAltas.length; i++) gaps.push((datasAltas[i] - datasAltas[i - 1]) / 86400000);
+    const mediaGap = Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length);
+    const ultimaAlta = datasAltas[datasAltas.length - 1];
+    const diasDesde = Math.round((new Date() - ultimaAlta) / 86400000);
+    const proximaEstimada = new Date(ultimaAlta.getTime() + mediaGap * 86400000);
+
+    resultado[progId] = {
+      frequenciaDias: mediaGap,
+      qtdAltas: altas.length,
+      ultimaAltaData: altas[altas.length - 1],
+      diasDesdeUltimaAlta: diasDesde,
+      proximaEstimadaData: proximaEstimada.toISOString().split('T')[0],
+    };
+  }
+  return resultado;
+}
+
+function formatarDataCurtaBR(iso) {
+  const m = (iso || '').match(/(\d{4})-(\d{2})-(\d{2})/);
+  return m ? `${m[3]}/${m[2]}` : (iso || '');
+}
+
+function renderPadraoAltasHtml(p) {
+  const padrao = calcularPadraoAltas(p);
+  const linhas = [];
+  for (const [progId, info] of Object.entries(padrao)) {
+    if (!info) continue;
+    const prog = PROGRAMS.find(x => x.id === progId);
+    const nome = prog ? prog.name : progId;
+    linhas.push(
+      `<div style="font-size:12px;color:var(--muted);padding:3px 0">` +
+      `<strong style="color:var(--text)">${nome}</strong>: costuma subir a cada ~${info.frequenciaDias} dias ` +
+      `(${info.qtdAltas} altas em 6 meses) — última em ${formatarDataCurtaBR(info.ultimaAltaData)}, ` +
+      `próxima estimada por volta de ${formatarDataCurtaBR(info.proximaEstimadaData)}</div>`
+    );
+  }
+  if (!linhas.length) return '';
+  return `<div style="margin-top:12px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px">` +
+    `<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);margin-bottom:5px">📊 Padrão de altas (últimos 6 meses)</div>` +
+    linhas.join('') +
+    `<div style="font-size:10px;color:var(--muted2);margin-top:6px">Estimativa baseada no intervalo médio entre altas — não é garantia.</div>` +
+    `</div>`;
+}
+
 async function openModal(name){
   const p=partners.find(x=>x.name===name);
   if(!p)return;
@@ -2554,6 +2628,7 @@ async function openModal(name){
 
   const cached=directUrlCache[name];
   document.getElementById('modal-rows').innerHTML=renderModalRows(p, cached||{});
+  document.getElementById('modal-padrao-altas').innerHTML=renderPadraoAltasHtml(p);
 
   document.getElementById('modal-overlay').classList.add('open');
 
@@ -2573,6 +2648,8 @@ async function openModal(name){
 
 function closeModal(){
   document.getElementById('modal-overlay').classList.remove('open');
+  const padraoDiv = document.getElementById('modal-padrao-altas');
+  if (padraoDiv) padraoDiv.innerHTML = '';
   if(histChart){histChart.destroy();histChart=null;}
   const histDiv=document.getElementById('modal-hist');
   const histBtn=document.getElementById('modal-hist-btn');
@@ -7075,6 +7152,7 @@ function mapaRenderAll() {
     <div class="modal-name" id="modal-name"></div>
     <div class="modal-cat" id="modal-cat"></div>
     <div class="modal-rows" id="modal-rows"></div>
+    <div id="modal-padrao-altas"></div>
     <div style="display:flex;gap:8px;margin-top:14px">
     <button class="modal-url" id="modal-hist-btn" onclick="toggleHistorico()" style="flex:1;margin-top:0">📈 Ver histórico</button>
     <button class="modal-url" onclick="toggleAlerta()" style="flex:1;margin-top:0;border-color:rgba(52,211,153,.4);color:#34d399">🔔 Criar alerta</button>
