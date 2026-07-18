@@ -2404,7 +2404,9 @@ function mediaHistoricaDiaria(partnerKey, progId){
 function isAboveAverage(p){
   const key=p.name.toLowerCase().trim();
   // Verifica programa a programa: se qualquer programa está acima da sua própria média histórica
+  // Inter (cashback %) é excluído — essa análise é só para ofertas de pontos
   for(const[pid,data] of Object.entries(p.programs)){
+    if(pid==='inter') continue;
     const media=mediaHistoricaDiaria(key, pid);
     if(media===null) continue;
     if(data.pts >= media*1.2) return true; // 20% acima da média diária do programa
@@ -2556,13 +2558,21 @@ function injetarProgramasCashback(){
       if(existing){
         // Adiciona o programa cashback no parceiro já existente
         existing.programs[prog.id] = { pts, dollar:false, url: dados.links?.[prog.id]||'' };
-        // Recalcula bestPts/bestProg considerando todos os programas agora
+        // Recalcula bestPts/bestProg considerando SÓ programas de pontos —
+        // cashback do Inter (%) nunca compete com pts/R$ pela "melhor opção"
         let bestE=0, bestP=null;
         for(const [pid2,pd2] of Object.entries(existing.programs)){
+          if(pid2==='inter') continue;
           const eq=(pd2.pts||0)*(EQUIV[pid2]||1);
           if(eq>bestE){bestE=eq;bestP=pid2;existing.bestPts=pd2.pts;}
         }
-        if(bestP) existing.bestProg=bestP;
+        if(bestP){
+          existing.bestProg=bestP;
+        } else if(existing.programs.inter){
+          // Só tem Inter, sem programa de pontos — nada pra comparar, mantém Inter
+          existing.bestProg='inter';
+          existing.bestPts=existing.programs.inter.pts;
+        }
       } else {
         // Cria novo parceiro só com o programa cashback
         partners.push({
@@ -2735,14 +2745,23 @@ function resolveLink(pid, links){
 }
 
 function renderModalRows(p, links={}){
-  // Calcula o melhor equiv real entre todos os programas presentes
-  const bestEquivReal = Math.max(...Object.entries(p.programs).map(([pid,d])=>d.pts*(EQUIV[pid]||1)));
+  // Calcula o melhor equiv real SÓ entre programas de pontos —
+  // cashback do Inter (%) nunca compete com pts/R$ pela "melhor opção"
+  const programasPontos = Object.entries(p.programs).filter(([pid])=>pid!=='inter');
+  const bestEquivReal = programasPontos.length
+    ? Math.max(...programasPontos.map(([pid,d])=>d.pts*(EQUIV[pid]||1)))
+    : -1;
   const padrao = calcularPadraoAltas(p);
 
-  return Object.entries(p.programs).sort((a,b)=>b[1].pts-a[1].pts).map(([pid,data])=>{
+  return Object.entries(p.programs).sort((a,b)=>{
+    // Inter sempre por último, depois de todos os parceiros de pontos
+    if(a[0]==='inter') return 1;
+    if(b[0]==='inter') return -1;
+    return b[1].pts-a[1].pts;
+  }).map(([pid,data])=>{
     const prog=PROGRAMS.find(x=>x.id===pid);
     const equiv=data.pts*(EQUIV[pid]||1);
-    const isBest=Math.abs(equiv-bestEquivReal)<0.01;
+    const isBest=pid!=='inter' && Math.abs(equiv-bestEquivReal)<0.01;
     const lbl=pid==='inter'?'%':(data.per>1)?`R$${data.per}`:data.dollar?'U$':'R$';
     const destUrl=resolveLink(pid,links);
     const linksLoaded=Object.keys(links).length>0;
