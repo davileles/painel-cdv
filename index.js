@@ -238,6 +238,67 @@ async function ghPutJson(filePath, jsonData, sha, message) {
 const OFERTAS_PENDENTES_PATH  = 'ofertas-pendentes.json';
 const OFERTAS_APROVADAS_PATH  = 'ofertas.json';
 const OFERTAS_REJEITADAS_PATH = 'ofertas-rejeitadas.json';
+const HISTORICO_TRANSFERENCIAS_PATH = 'historico-transferencias.json';
+
+// ── Histórico de transferências bonificadas ───────────────────────────────────
+function normalizarChaveHist(s) {
+  return (s || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/\s+/g, '_');
+}
+function chaveHistorico(origem, destino) {
+  return `${normalizarChaveHist(origem)}→${normalizarChaveHist(destino)}`;
+}
+function prazoParaIso(prazoStr) {
+  const m = (prazoStr || '').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (!m) return null;
+  return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+}
+
+// Atualiza historico-transferencias.json após aprovação de uma oferta categoria=transferencia.
+// Regra de dedup: mesma chave (origem→destino) + mesmo prazo = mesma campanha (reenvio/lembrete),
+// só anexa o ofertaId. Prazo diferente (ou ausente) = campanha nova = novo registro.
+// Best-effort: falhas aqui nunca devem quebrar o fluxo de aprovação da oferta.
+async function atualizarHistoricoTransferencia(item) {
+  if (!item || item.categoria !== 'transferencia') return;
+  if (!item.origem || !item.destino || item.bonusMax === undefined || item.bonusMax === null || item.bonusMax === '') return;
+
+  const chave = chaveHistorico(item.origem, item.destino);
+  const prazoIso = prazoParaIso(item.prazo);
+  const dataInicio = (item.publicadoEm ? item.publicadoEm.slice(0, 10) : new Date().toISOString().slice(0, 10));
+
+  const hist = await ghGetJson(HISTORICO_TRANSFERENCIAS_PATH, {
+    geradoEm: null,
+    descricao: 'Histórico de ofertas de transferência bonificada entre programas.',
+    regrasDedup: "Duas ofertas com a mesma chave origem→destino e o MESMO prazo de encerramento são consideradas a mesma campanha e não geram novo registro — apenas anexam o ofertaId ao registro existente.",
+    items: [],
+  });
+
+  const items = hist.data.items || [];
+  const existente = items.find((h) => h.chave === chave && prazoIso && h.prazo === prazoIso);
+
+  if (existente) {
+    if (!existente.ofertaIds.includes(item.id)) existente.ofertaIds.push(item.id);
+  } else {
+    items.unshift({
+      chave,
+      origem: item.origem,
+      destino: item.destino,
+      origemTipo: item.origem === 'Todos' ? 'todos' : 'especifica',
+      bonusMax: Number(item.bonusMax),
+      tipoBonus: 'percentual_direto',
+      dataInicio,
+      prazo: prazoIso || '',
+      ofertaIds: [item.id],
+      observacao: '',
+    });
+  }
+
+  await ghPutJson(
+    HISTORICO_TRANSFERENCIAS_PATH,
+    { geradoEm: new Date().toISOString(), descricao: hist.data.descricao, regrasDedup: hist.data.regrasDedup, items },
+    hist.sha,
+    `chore: atualiza historico de transferencias (${chave})`
+  );
+}
 const PASSAGENS_PATH          = 'passagens.json';
 const MAX_OFERTAS_APROVADAS   = 100;
 const MAX_DIAS_PASSAGENS      = 180;
@@ -291,6 +352,12 @@ app.post('/ofertas/aprovar', async (req, res) => {
       pend.sha,
       `chore: remove oferta aprovada "${item.titulo || id}" das pendentes`
     );
+
+    try {
+      await atualizarHistoricoTransferencia(item);
+    } catch (errHist) {
+      console.error('[Histórico transferências] Falha ao atualizar:', errHist.message);
+    }
 
     res.json({ ok: true });
   } catch (err) {
