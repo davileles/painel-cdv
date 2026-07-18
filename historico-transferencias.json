@@ -1,18 +1,20 @@
 {
   "geradoEm": "2026-07-18T00:00:00.000Z",
-  "descricao": "Histórico de ofertas de transferência bonificada entre programas, usado para comparar novas ofertas do Radar com o padrão histórico (bônus médio e frequência). Dois tipos de registro: origem específica→destino específica, ou origem 'Todos' (quando a campanha vale para todos/quase todos os bancos parceiros)→destino específica.",
+  "descricao": "Histórico de ofertas de transferência bonificada entre programas, usado para comparar novas ofertas do Radar com o padrão histórico (bônus médio e frequência). Dois tipos de registro: origem específica→destino específica, ou origem 'Todos' (quando a campanha vale para todos/quase todos os bancos parceiros)→destino específica. Nomes de origem/destino alinhados às listas fixas usadas no dropdown do gerador-cdv (2026-07-18).",
   "regrasDedup": "Duas ofertas com a mesma chave origem→destino e o MESMO prazo de encerramento são consideradas a mesma campanha (ex: reenvio/lembrete) e não geram novo registro — apenas anexam o ofertaId ao registro existente. Prazo diferente = campanha nova = novo registro.",
   "items": [
     {
-      "chave": "esfera→connectmiles",
+      "chave": "esfera→connect_miles",
       "origem": "Esfera",
-      "destino": "ConnectMiles",
+      "destino": "Connect Miles",
       "origemTipo": "especifica",
       "bonusMax": 55,
       "tipoBonus": "percentual_direto",
       "dataInicio": "2026-07-17",
       "prazo": "2026-07-20",
-      "ofertaIds": ["1ca8lfb"],
+      "ofertaIds": [
+        "1ca8lfb"
+      ],
       "observacao": ""
     },
     {
@@ -24,7 +26,9 @@
       "tipoBonus": "percentual_direto",
       "dataInicio": "2026-07-16",
       "prazo": "2026-07-17",
-      "ofertaIds": ["gi81h0"],
+      "ofertaIds": [
+        "gi81h0"
+      ],
       "observacao": "Exceto Porto Bank e BNB"
     },
     {
@@ -36,19 +40,24 @@
       "tipoBonus": "percentual_direto",
       "dataInicio": "2026-07-13",
       "prazo": "2026-07-15",
-      "ofertaIds": ["1phelr7", "x92jbd"],
+      "ofertaIds": [
+        "1phelr7",
+        "x92jbd"
+      ],
       "observacao": "Mesma campanha coletada 2x (reenvio); registros unificados"
     },
     {
-      "chave": "inter_loop→smiles",
-      "origem": "Inter Loop",
+      "chave": "inter→smiles",
+      "origem": "Inter",
       "destino": "Smiles",
       "origemTipo": "especifica",
       "bonusMax": 80,
       "tipoBonus": "percentual_direto",
       "dataInicio": "2026-07-15",
       "prazo": "2026-07-16",
-      "ofertaIds": ["cpt2ji"],
+      "ofertaIds": [
+        "cpt2ji"
+      ],
       "observacao": ""
     },
     {
@@ -60,7 +69,10 @@
       "tipoBonus": "pontos_de_volta",
       "dataInicio": "2026-07-14",
       "prazo": "2026-07-16",
-      "ofertaIds": ["1j7iz5b", "1p57hgf"],
+      "ofertaIds": [
+        "1j7iz5b",
+        "1p57hgf"
+      ],
       "observacao": "Mecânica de pontos de volta + bônus Reward, não % direto sobre total transferido. Mesma campanha coletada 2x (reenvio); registros unificados"
     },
     {
@@ -72,7 +84,9 @@
       "tipoBonus": "percentual_direto",
       "dataInicio": "2026-07-13",
       "prazo": "2026-07-14",
-      "ofertaIds": ["1i1kk7y"],
+      "ofertaIds": [
+        "1i1kk7y"
+      ],
       "observacao": ""
     },
     {
@@ -84,7 +98,9 @@
       "tipoBonus": "percentual_direto",
       "dataInicio": "2026-07-13",
       "prazo": "2026-07-16",
-      "ofertaIds": ["1413syv"],
+      "ofertaIds": [
+        "1413syv"
+      ],
       "observacao": "Bancos participantes; +1.000 milhas extras na primeira transferência (não contabilizado no bonusMax)"
     },
     {
@@ -96,7 +112,9 @@
       "tipoBonus": "percentual_direto",
       "dataInicio": "2026-07-11",
       "prazo": "2026-07-31",
-      "ofertaIds": ["di06c6"],
+      "ofertaIds": [
+        "di06c6"
+      ],
       "observacao": ""
     },
     {
@@ -108,7 +126,9 @@
       "tipoBonus": "percentual_direto",
       "dataInicio": "2026-07-10",
       "prazo": "2026-07-10",
-      "ofertaIds": ["inbrgc"],
+      "ofertaIds": [
+        "inbrgc"
+      ],
       "observacao": "Texto original citava Livelo/Esfera como parceiros; classificado como Todos por analogia a campanhas Smiles anteriores"
     }
   ]
