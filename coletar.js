@@ -780,9 +780,9 @@ async function main() {
   // 6. Salva snapshot no histórico (sobrescreve o dia se já existir)
   historico[hoje] = snapshot;
 
-  // Remove dias com mais de 180 dias (mantém ~6 meses)
+  // Remove dias com mais de 365 dias (mantém ~1 ano rolante)
   const corte = new Date();
-  corte.setDate(corte.getDate() - 180);
+  corte.setDate(corte.getDate() - 365);
   const corteStr = corte.toISOString().split('T')[0];
   for (const data of Object.keys(historico)) {
     if (data < corteStr) delete historico[data];
