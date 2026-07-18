@@ -2517,7 +2517,7 @@ function renderModalRows(p, links={}){
     const opacityStyle=loading?'0.6':'1';
     const info=padrao[pid];
     const padraoHtml=info
-      ? `<div style="font-size:9px;color:#f59e0b;margin-top:3px">📊 sobe a cada ~${info.frequenciaDias}d (${info.qtdAltas}x/6m) · próx. alta ~${formatarDataCurtaBR(info.proximaEstimadaData)}</div>`
+      ? `<div style="font-size:9px;color:#f59e0b;margin-top:3px">📊 Sobe a cada ~${info.frequenciaDias} dias. Possível próxima alta: ${formatarDataCurtaBR(info.proximaEstimadaData)}</div>`
       : '';
     return `<a class="modal-row ${isBest?'best':''} ${loading?'loading':''}" 
       ${linkAttr}
