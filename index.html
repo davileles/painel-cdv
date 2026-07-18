@@ -726,15 +726,15 @@
 <div class="controls">
   <div style="position:relative;flex:1;min-width:180px;max-width:340px" id="compras-search-wrap"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="search" placeholder="Buscar parceiro ou categoria…" oninput="render()" style="width:100%;padding-left:34px"></div>
   <div style="position:relative;flex:1;min-width:180px;max-width:340px;display:none" id="transf-search-wrap"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="transf-search" placeholder="Buscar destino…" oninput="renderTransferencias()" style="width:100%;padding-left:34px"></div>
+  <button id="comp-toggle-compras" class="comp-toggle-btn active" onclick="setComparadorView('compras')">🛍️ Compras</button>
+  <button id="comp-toggle-transferencias" class="comp-toggle-btn" onclick="setComparadorView('transferencias')">🔁 Transferências</button>
+  <button class="fbtn-fire" id="btn-acima-media" onclick="toggleAcimaMedia()">🔥 Acima da média</button>
+  <button class="fbtn-fire" id="btn-transf-ativas" onclick="toggleTransfSoAtivas()" style="display:none">🔥 Só ativas agora</button>
   <select class="srt" id="sort" onchange="render()">
     <option value="pts_desc">Maior pontuação</option>
     <option value="pts_asc">Menor pontuação</option>
     <option value="name">A → Z</option>
   </select>
-  <button id="comp-toggle-compras" class="comp-toggle-btn active" onclick="setComparadorView('compras')">🛍️ Compras</button>
-  <button id="comp-toggle-transferencias" class="comp-toggle-btn" onclick="setComparadorView('transferencias')">🔁 Transferências</button>
-  <button class="fbtn-fire" id="btn-acima-media" onclick="toggleAcimaMedia()">🔥 Acima da média</button>
-  <button class="fbtn-fire" id="btn-transf-ativas" onclick="toggleTransfSoAtivas()" style="display:none">🔥 Só ativas agora</button>
 </div>
 
 <div id="comparador-compras-view">
@@ -2342,8 +2342,9 @@ function abrirModalTransf(destinoEncoded){
   const destino = decodeURIComponent(destinoEncoded);
   const porDestino = agruparTransferencias();
   const origens = (porDestino[destino]||[]).sort((a,b)=>{
-    if (!!a.stats.ativa !== !!b.stats.ativa) return a.stats.ativa ? -1 : 1;
-    return b.stats.bonusMaximo - a.stats.bonusMaximo;
+    if (a.origem === 'Todos') return -1;
+    if (b.origem === 'Todos') return 1;
+    return a.origem.localeCompare(b.origem, 'pt-BR');
   });
 
   document.getElementById('transf-modal-name').textContent = destino;
