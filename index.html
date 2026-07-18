@@ -2500,6 +2500,7 @@ function resolveLink(pid, links){
 function renderModalRows(p, links={}){
   // Calcula o melhor equiv real entre todos os programas presentes
   const bestEquivReal = Math.max(...Object.entries(p.programs).map(([pid,d])=>d.pts*(EQUIV[pid]||1)));
+  const padrao = calcularPadraoAltas(p);
 
   return Object.entries(p.programs).sort((a,b)=>b[1].pts-a[1].pts).map(([pid,data])=>{
     const prog=PROGRAMS.find(x=>x.id===pid);
@@ -2514,6 +2515,10 @@ function renderModalRows(p, links={}){
     const linkAttr=loading?'href="#" onclick="return false;"':hasLink?`href="${destUrl}" target="_blank"`:'href="#" onclick="return false;"';
     const cursorStyle=loading?'not-allowed':hasLink?'pointer':'default';
     const opacityStyle=loading?'0.6':'1';
+    const info=padrao[pid];
+    const padraoHtml=info
+      ? `<div style="font-size:9px;color:#f59e0b;margin-top:3px">📊 sobe a cada ~${info.frequenciaDias}d (${info.qtdAltas}x/6m) · próx. alta ~${formatarDataCurtaBR(info.proximaEstimadaData)}</div>`
+      : '';
     return `<a class="modal-row ${isBest?'best':''} ${loading?'loading':''}" 
       ${linkAttr}
       style="text-decoration:none;color:inherit;cursor:${cursorStyle};opacity:${opacityStyle}">
@@ -2523,6 +2528,7 @@ function renderModalRows(p, links={}){
           <div class="modal-prog-name">${prog.name}</div>
           ${isBest?'<div class="best-badge">✓ Melhor opção</div>':''}
           <div style="font-size:10px;color:var(--muted);margin-top:2px">${loading?'⟳ carregando link…':hasLink?'↗ Ir para o parceiro':pid==='inter'?'↗ Acesse o app do Banco Inter':'— sem link disponível'}</div>
+          ${padraoHtml}
         </div>
       </div>
       <div style="text-align:right">
@@ -2586,28 +2592,6 @@ function formatarDataCurtaBR(iso) {
   return m ? `${m[3]}/${m[2]}` : (iso || '');
 }
 
-function renderPadraoAltasHtml(p) {
-  const padrao = calcularPadraoAltas(p);
-  const linhas = [];
-  for (const [progId, info] of Object.entries(padrao)) {
-    if (!info) continue;
-    const prog = PROGRAMS.find(x => x.id === progId);
-    const nome = prog ? prog.name : progId;
-    linhas.push(
-      `<div style="font-size:12px;color:var(--muted);padding:3px 0">` +
-      `<strong style="color:var(--text)">${nome}</strong>: costuma subir a cada ~${info.frequenciaDias} dias ` +
-      `(${info.qtdAltas} altas em 6 meses) — última em ${formatarDataCurtaBR(info.ultimaAltaData)}, ` +
-      `próxima estimada por volta de ${formatarDataCurtaBR(info.proximaEstimadaData)}</div>`
-    );
-  }
-  if (!linhas.length) return '';
-  return `<div style="margin-top:12px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px">` +
-    `<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);margin-bottom:5px">📊 Padrão de altas (últimos 6 meses)</div>` +
-    linhas.join('') +
-    `<div style="font-size:10px;color:var(--muted2);margin-top:6px">Estimativa baseada no intervalo médio entre altas — não é garantia.</div>` +
-    `</div>`;
-}
-
 async function openModal(name){
   const p=partners.find(x=>x.name===name);
   if(!p)return;
@@ -2628,7 +2612,6 @@ async function openModal(name){
 
   const cached=directUrlCache[name];
   document.getElementById('modal-rows').innerHTML=renderModalRows(p, cached||{});
-  document.getElementById('modal-padrao-altas').innerHTML=renderPadraoAltasHtml(p);
 
   document.getElementById('modal-overlay').classList.add('open');
 
@@ -2648,8 +2631,6 @@ async function openModal(name){
 
 function closeModal(){
   document.getElementById('modal-overlay').classList.remove('open');
-  const padraoDiv = document.getElementById('modal-padrao-altas');
-  if (padraoDiv) padraoDiv.innerHTML = '';
   if(histChart){histChart.destroy();histChart=null;}
   const histDiv=document.getElementById('modal-hist');
   const histBtn=document.getElementById('modal-hist-btn');
@@ -7152,7 +7133,6 @@ function mapaRenderAll() {
     <div class="modal-name" id="modal-name"></div>
     <div class="modal-cat" id="modal-cat"></div>
     <div class="modal-rows" id="modal-rows"></div>
-    <div id="modal-padrao-altas"></div>
     <div style="display:flex;gap:8px;margin-top:14px">
     <button class="modal-url" id="modal-hist-btn" onclick="toggleHistorico()" style="flex:1;margin-top:0">📈 Ver histórico</button>
     <button class="modal-url" onclick="toggleAlerta()" style="flex:1;margin-top:0;border-color:rgba(52,211,153,.4);color:#34d399">🔔 Criar alerta</button>
