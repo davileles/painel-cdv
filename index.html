@@ -2325,7 +2325,7 @@ function renderTransferencias(){
         <span class="pts-val">${d.bonusMaxGeral}%</span>
         <span class="pts-lbl">bônus máx.</span>
       </div>
-      <div class="card-foot">${d.origens.length} origem${d.origens.length===1?'':'s'} rastreada${d.origens.length===1?'':'s'}</div>
+      <div class="card-foot">${d.origens.length} ${d.origens.length===1?'origem':'origens'} rastreada${d.origens.length===1?'':'s'}</div>
     </div>`;
   }).join('');
 
@@ -2348,7 +2348,7 @@ function abrirModalTransf(destinoEncoded){
   });
 
   document.getElementById('transf-modal-name').textContent = destino;
-  document.getElementById('transf-modal-cat').textContent = `${origens.length} origem${origens.length===1?'':'s'} rastreada${origens.length===1?'':'s'}`;
+  document.getElementById('transf-modal-cat').textContent = `${origens.length} ${origens.length===1?'origem':'origens'} rastreada${origens.length===1?'':'s'}`;
 
   document.getElementById('transf-modal-rows').innerHTML = origens.map(o=>{
     const s = o.stats;
