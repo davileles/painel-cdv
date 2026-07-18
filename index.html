@@ -6284,6 +6284,8 @@ const MAPA_BRASIL = new Set(['São Paulo','Rio de Janeiro','Belo Horizonte','Cur
 
 let mapaItems = [];
 let _mapaCountsCache = null; // cache invalidado quando mapaItems muda
+let _mapaPathPolysCache = null; // subpolígonos parseados de cada path do mapa mundi (estático, calculado 1x)
+let _mapaPaisesComEmissaoCache = null; // Set de índices de path com emissão registrada (invalidado junto com _mapaCountsCache)
 let mapaWorld = [];
 let mapaVB = {x:0, y:40, w:1000};
 let mapaOrigem = null;
@@ -6299,6 +6301,92 @@ function mapaCanon(s) { const c = MAPA_COORDS[mapaNorm(s)]; return c ? c[0] : nu
 function mapaIsInternacional(orig, dest) { return !MAPA_BRASIL.has(orig) || !MAPA_BRASIL.has(dest); }
 function mapaIsEco(cabine) { return /econom/i.test(cabine||''); }
 function mapaIsExec(cabine) { return /execut|business/i.test(cabine||''); }
+
+// ── Detecção de países com emissão registrada (point-in-polygon) ──────
+// Os paths do mapa mundi (MAPA_WORLD_INLINE) não têm nome/ID de país associado,
+// então usamos ray-casting: projetamos a cidade (lat/lon) no mesmo sistema de
+// coordenadas do SVG e testamos em qual polígono de país o ponto cai.
+function mapaParseSubpolys(d) {
+  const subs = [];
+  let cur = [];
+  const re = /([MLZ])(?:(-?\d+)\s(-?\d+))?/g;
+  let m;
+  while ((m = re.exec(d))) {
+    const cmd = m[1];
+    if (cmd === 'Z') {
+      if (cur.length > 2) subs.push(cur);
+      cur = [];
+    } else {
+      if (cmd === 'M' && cur.length > 2) { subs.push(cur); cur = []; }
+      cur.push([parseFloat(m[2]), parseFloat(m[3])]);
+    }
+  }
+  if (cur.length > 2) subs.push(cur);
+  return subs;
+}
+function mapaPointInPoly(x, y, poly) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+    const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+function mapaDistPointSeg(px,py,ax,ay,bx,by) {
+  const dx = bx-ax, dy = by-ay;
+  const len2 = dx*dx+dy*dy;
+  let t = len2 ? ((px-ax)*dx+(py-ay)*dy)/len2 : 0;
+  t = Math.max(0, Math.min(1, t));
+  const cx = ax+t*dx, cy = ay+t*dy;
+  return Math.hypot(px-cx, py-cy);
+}
+// Cidades litorâneas podem cair no "mar" devido à simplificação do contorno do país;
+// nesse caso, usamos o país cujo contorno está mais próximo (dentro de uma tolerância).
+function mapaNearestPathIdx(x, y, polysArr, threshold) {
+  let best = -1, bestD = Infinity;
+  for (let i = 0; i < polysArr.length; i++) {
+    for (const poly of polysArr[i]) {
+      for (let j = 0; j < poly.length; j++) {
+        const a = poly[j], b = poly[(j+1) % poly.length];
+        const d = mapaDistPointSeg(x, y, a[0], a[1], b[0], b[1]);
+        if (d < bestD) { bestD = d; best = i; }
+      }
+    }
+  }
+  return bestD <= threshold ? best : -1;
+}
+function mapaGetPaisesComEmissao() {
+  if (_mapaPaisesComEmissaoCache) return _mapaPaisesComEmissaoCache;
+  if (!_mapaPathPolysCache || _mapaPathPolysCache.length !== mapaWorld.length) {
+    _mapaPathPolysCache = mapaWorld.map(d => mapaParseSubpolys(d));
+  }
+  const idxSet = new Set();
+  const {counts} = mapaGetCounts();
+  const cidadesComEmissao = Object.keys(counts).filter(c => counts[c] > 0);
+  if (!cidadesComEmissao.length) { _mapaPaisesComEmissaoCache = idxSet; return idxSet; }
+  for (const nome of cidadesComEmissao) {
+    const entry = Object.values(MAPA_COORDS).find(([n]) => n === nome);
+    if (!entry) continue;
+    const [, lat, lon] = entry;
+    const [x, y] = mapaProj(lat, lon);
+    let achou = false;
+    for (let i = 0; i < _mapaPathPolysCache.length; i++) {
+      if (idxSet.has(i)) continue;
+      const polys = _mapaPathPolysCache[i];
+      for (const poly of polys) {
+        if (mapaPointInPoly(x, y, poly)) { idxSet.add(i); achou = true; break; }
+      }
+      if (achou) break;
+    }
+    if (!achou) {
+      const idx = mapaNearestPathIdx(x, y, _mapaPathPolysCache, 20);
+      if (idx >= 0) idxSet.add(idx);
+    }
+  }
+  _mapaPaisesComEmissaoCache = idxSet;
+  return idxSet;
+}
 
 // ── DADOS ──────────────────────────────────────────────
 function mapaGetCounts() {
@@ -6373,7 +6461,7 @@ async function mapaInit() {
 
   // 3. Reutilizar passagensData se já carregado
   if (passagensData && passagensData.length > 0) {
-    mapaItems = mapaFiltrar180(passagensData); _mapaCountsCache = null;
+    mapaItems = mapaFiltrar180(passagensData); _mapaCountsCache = null; _mapaPaisesComEmissaoCache = null;
     mapaRenderAll();
     return;
   }
@@ -6385,7 +6473,7 @@ async function mapaInit() {
       if (r.ok) {
         const j = await r.json();
         passagensData = j.items || [];
-        mapaItems = mapaFiltrar180(passagensData); _mapaCountsCache = null;
+        mapaItems = mapaFiltrar180(passagensData); _mapaCountsCache = null; _mapaPaisesComEmissaoCache = null;
         passagensLoaded = true;
         mapaRenderAll();
       }
@@ -6601,12 +6689,15 @@ function mapaRenderSVG() {
   // Usar DocumentFragment para batch DOM (muito mais rápido)
   const frag = document.createDocumentFragment();
 
-  // Países (só se carregado)
-  for (const d of mapaWorld) {
+  // Países (só se carregado) — países com emissão registrada ficam em cor diferente
+  const paisesComEmissao = mapaGetPaisesComEmissao();
+  for (let pi = 0; pi < mapaWorld.length; pi++) {
+    const d = mapaWorld[pi];
+    const temEmissao = paisesComEmissao.has(pi);
     const path = document.createElementNS(NS,'path');
     path.setAttribute('d', d);
-    path.setAttribute('fill','#2d3f62');
-    path.setAttribute('stroke','#5a729e');
+    path.setAttribute('fill', temEmissao ? '#2f5545' : '#2d3f62');
+    path.setAttribute('stroke', temEmissao ? '#5fae7a' : '#5a729e');
     path.setAttribute('stroke-width',(0.8/k).toFixed(2));
     frag.appendChild(path);
   }
