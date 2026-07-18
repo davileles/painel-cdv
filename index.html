@@ -723,24 +723,21 @@
 
 <div id="tab-comparador" class="tab-panel" style="display:none">
 
-<div class="controls" style="margin-bottom:0">
-  <button id="comp-toggle-compras" class="comp-toggle-btn active" onclick="setComparadorView('compras')">🛍️ Compras</button>
-  <button id="comp-toggle-transferencias" class="comp-toggle-btn" onclick="setComparadorView('transferencias')">🔁 Transferências</button>
-  <div style="flex:1"></div>
-  <button class="fbtn-fire" id="btn-acima-media" onclick="toggleAcimaMedia()">🔥 Acima da média</button>
-  <button class="fbtn-fire" id="btn-transf-ativas" onclick="toggleTransfSoAtivas()" style="display:none">🔥 Só ativas agora</button>
-</div>
-
-<div id="comparador-compras-view">
 <div class="controls">
-  <div style="position:relative;flex:1;min-width:180px;max-width:340px"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="search" placeholder="Buscar parceiro ou categoria…" oninput="render()" style="width:100%;padding-left:34px"></div>
+  <div style="position:relative;flex:1;min-width:180px;max-width:340px" id="compras-search-wrap"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="search" placeholder="Buscar parceiro ou categoria…" oninput="render()" style="width:100%;padding-left:34px"></div>
+  <div style="position:relative;flex:1;min-width:180px;max-width:340px;display:none" id="transf-search-wrap"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="transf-search" placeholder="Buscar destino…" oninput="renderTransferencias()" style="width:100%;padding-left:34px"></div>
   <select class="srt" id="sort" onchange="render()">
     <option value="pts_desc">Maior pontuação</option>
     <option value="pts_asc">Menor pontuação</option>
     <option value="name">A → Z</option>
   </select>
+  <button id="comp-toggle-compras" class="comp-toggle-btn active" onclick="setComparadorView('compras')">🛍️ Compras</button>
+  <button id="comp-toggle-transferencias" class="comp-toggle-btn" onclick="setComparadorView('transferencias')">🔁 Transferências</button>
+  <button class="fbtn-fire" id="btn-acima-media" onclick="toggleAcimaMedia()">🔥 Acima da média</button>
+  <button class="fbtn-fire" id="btn-transf-ativas" onclick="toggleTransfSoAtivas()" style="display:none">🔥 Só ativas agora</button>
 </div>
 
+<div id="comparador-compras-view">
 <div class="prog-bar" id="prog-filters-bar"></div>
 <div class="cat-bar" id="cat-bar"></div>
 <div class="stats" id="stats"></div>
@@ -750,9 +747,6 @@
 </div>
 
 <div id="comparador-transferencias-view" style="display:none">
-<div class="controls">
-  <div style="position:relative;flex:1;min-width:180px;max-width:340px"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="transf-search" placeholder="Buscar destino…" oninput="renderTransferencias()" style="width:100%;padding-left:34px"></div>
-</div>
 <div class="stats" id="transf-stats"></div>
 <div class="grid" id="transf-grid">
   <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando transferências…</div></div>
@@ -2199,6 +2193,9 @@ function setComparadorView(view){
   const viewTransf = document.getElementById('comparador-transferencias-view');
   const acaoCompras = document.getElementById('btn-acima-media');
   const acaoTransf = document.getElementById('btn-transf-ativas');
+  const buscaCompras = document.getElementById('compras-search-wrap');
+  const buscaTransf = document.getElementById('transf-search-wrap');
+  const sortEl = document.getElementById('sort');
   const isCompras = view === 'compras';
   btnCompras.classList.toggle('active', isCompras);
   btnTransf.classList.toggle('active', !isCompras);
@@ -2206,6 +2203,9 @@ function setComparadorView(view){
   viewTransf.style.display = isCompras ? 'none' : '';
   acaoCompras.style.display = isCompras ? '' : 'none';
   acaoTransf.style.display = isCompras ? 'none' : '';
+  buscaCompras.style.display = isCompras ? '' : 'none';
+  buscaTransf.style.display = isCompras ? 'none' : '';
+  sortEl.style.display = isCompras ? '' : 'none';
   if(!isCompras){
     renderTransferencias();
     carregarHistoricoTransferencias();
@@ -2328,6 +2328,14 @@ function renderTransferencias(){
       <div class="card-foot">${d.origens.length} origem${d.origens.length===1?'':'s'} rastreada${d.origens.length===1?'':'s'}</div>
     </div>`;
   }).join('');
+
+  // Animação escalonada nos cards (mesmo padrão do grid de compras)
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('#transf-grid .card').forEach((el,i)=>{
+      el.style.animationDelay = (i * 55) + 'ms';
+      setTimeout(()=>el.classList.add('cdv-visible'), 10);
+    });
+  });
 }
 
 function abrirModalTransf(destinoEncoded){
