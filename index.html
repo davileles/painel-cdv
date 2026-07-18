@@ -2174,14 +2174,21 @@ function decodeHistKey(s){
 // ══ COMPARADOR DE TRANSFERÊNCIAS BONIFICADAS ══
 let historicoTransferencias = null;
 let filtroTransfSoAtivas = false;
+let historicoTransferenciasPromise = null;
 
-async function carregarHistoricoTransferencias(){
-  try{
-    const r = await fetch('historico-transferencias.json',{cache:'no-cache'});
-    if(!r.ok) return;
-    historicoTransferencias = await r.json();
-    console.log('[CDV] Histórico de transferências carregado:', (historicoTransferencias.items||[]).length, 'registros');
-  }catch(e){ console.log('[CDV] historico-transferencias.json não encontrado ainda'); }
+function carregarHistoricoTransferencias(){
+  if (!historicoTransferenciasPromise){
+    historicoTransferenciasPromise = fetch('historico-transferencias.json',{cache:'no-cache'})
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        historicoTransferencias = data;
+        console.log('[CDV] Histórico de transferências carregado:', (data && data.items || []).length, 'registros');
+        renderTransferencias();
+        return data;
+      })
+      .catch(e => { console.log('[CDV] historico-transferencias.json não encontrado ainda', e); return null; });
+  }
+  return historicoTransferenciasPromise;
 }
 
 function setComparadorView(view){
@@ -2194,7 +2201,10 @@ function setComparadorView(view){
   btnTransf.classList.toggle('active', !isCompras);
   viewCompras.style.display = isCompras ? '' : 'none';
   viewTransf.style.display = isCompras ? 'none' : '';
-  if(!isCompras) renderTransferencias();
+  if(!isCompras){
+    renderTransferencias();
+    carregarHistoricoTransferencias();
+  }
 }
 
 function toggleTransfSoAtivas(){
