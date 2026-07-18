@@ -1,0 +1,115 @@
+{
+  "geradoEm": "2026-07-18T00:00:00.000Z",
+  "descricao": "Histórico de ofertas de transferência bonificada entre programas, usado para comparar novas ofertas do Radar com o padrão histórico (bônus médio e frequência). Dois tipos de registro: origem específica→destino específica, ou origem 'Todos' (quando a campanha vale para todos/quase todos os bancos parceiros)→destino específica.",
+  "regrasDedup": "Duas ofertas com a mesma chave origem→destino e o MESMO prazo de encerramento são consideradas a mesma campanha (ex: reenvio/lembrete) e não geram novo registro — apenas anexam o ofertaId ao registro existente. Prazo diferente = campanha nova = novo registro.",
+  "items": [
+    {
+      "chave": "esfera→connectmiles",
+      "origem": "Esfera",
+      "destino": "ConnectMiles",
+      "origemTipo": "especifica",
+      "bonusMax": 55,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-07-17",
+      "prazo": "2026-07-20",
+      "ofertaIds": ["1ca8lfb"],
+      "observacao": ""
+    },
+    {
+      "chave": "todos→azul_fidelidade",
+      "origem": "Todos",
+      "destino": "Azul Fidelidade",
+      "origemTipo": "todos",
+      "bonusMax": 115,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-07-16",
+      "prazo": "2026-07-17",
+      "ofertaIds": ["gi81h0"],
+      "observacao": "Exceto Porto Bank e BNB"
+    },
+    {
+      "chave": "itau→azul_fidelidade",
+      "origem": "Itaú",
+      "destino": "Azul Fidelidade",
+      "origemTipo": "especifica",
+      "bonusMax": 115,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-07-13",
+      "prazo": "2026-07-15",
+      "ofertaIds": ["1phelr7", "x92jbd"],
+      "observacao": "Mesma campanha coletada 2x (reenvio); registros unificados"
+    },
+    {
+      "chave": "inter_loop→smiles",
+      "origem": "Inter Loop",
+      "destino": "Smiles",
+      "origemTipo": "especifica",
+      "bonusMax": 80,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-07-15",
+      "prazo": "2026-07-16",
+      "ofertaIds": ["cpt2ji"],
+      "observacao": ""
+    },
+    {
+      "chave": "esfera→all_accor",
+      "origem": "Esfera",
+      "destino": "ALL Accor",
+      "origemTipo": "especifica",
+      "bonusMax": 30,
+      "tipoBonus": "pontos_de_volta",
+      "dataInicio": "2026-07-14",
+      "prazo": "2026-07-16",
+      "ofertaIds": ["1j7iz5b", "1p57hgf"],
+      "observacao": "Mecânica de pontos de volta + bônus Reward, não % direto sobre total transferido. Mesma campanha coletada 2x (reenvio); registros unificados"
+    },
+    {
+      "chave": "sicredi→smiles",
+      "origem": "Sicredi",
+      "destino": "Smiles",
+      "origemTipo": "especifica",
+      "bonusMax": 70,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-07-13",
+      "prazo": "2026-07-14",
+      "ofertaIds": ["1i1kk7y"],
+      "observacao": ""
+    },
+    {
+      "chave": "todos→latam_pass",
+      "origem": "Todos",
+      "destino": "LATAM Pass",
+      "origemTipo": "todos",
+      "bonusMax": 20,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-07-13",
+      "prazo": "2026-07-16",
+      "ofertaIds": ["1413syv"],
+      "observacao": "Bancos participantes; +1.000 milhas extras na primeira transferência (não contabilizado no bonusMax)"
+    },
+    {
+      "chave": "livelo→hilton_honors",
+      "origem": "Livelo",
+      "destino": "Hilton Honors",
+      "origemTipo": "especifica",
+      "bonusMax": 50,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-07-11",
+      "prazo": "2026-07-31",
+      "ofertaIds": ["di06c6"],
+      "observacao": ""
+    },
+    {
+      "chave": "todos→smiles",
+      "origem": "Todos",
+      "destino": "Smiles",
+      "origemTipo": "todos",
+      "bonusMax": 70,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-07-10",
+      "prazo": "2026-07-10",
+      "ofertaIds": ["inbrgc"],
+      "observacao": "Texto original citava Livelo/Esfera como parceiros; classificado como Todos por analogia a campanhas Smiles anteriores"
+    }
+  ]
+}
