@@ -2924,7 +2924,7 @@ function renderHistChart(partnerName){
   canvas.style.display='block';
   emptyEl.style.display='none';
 
-  const ultimos = datas.slice(-180);
+  const ultimos = datas.slice(-60);
   const labels = ultimos.map(d => {
     const [,m,dia] = d.split('-');
     return `${dia}/${m}`;
