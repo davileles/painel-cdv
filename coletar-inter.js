@@ -25,6 +25,12 @@ const PARCEIROS_TIER1_INTER = new Set([
   'airbnb',
   'uber',
   'assaí',
+  'zift',
+  'zé delivery',
+  'madero',
+  '99 food',
+  '99 mobilidade',
+  'coco bambu',
 ]);
 
 // ── HTTP helper ───────────────────────────────────────────────────────────────
