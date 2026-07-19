@@ -1420,6 +1420,16 @@
     box.scrollTop = box.scrollHeight;
   }
 
+  function rotEscapeHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // Converte markdown simples (apenas **negrito**) em HTML, mantendo o resto como texto escapado
+  function rotFormatarTexto(texto){
+    var escapado = rotEscapeHtml(texto);
+    return escapado.replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>');
+  }
+
   function rotRenderMsg(role, texto){
     var box = document.getElementById('rot-chat-box');
     var wrap = document.createElement('div');
@@ -1430,7 +1440,11 @@
 
     var bubble = document.createElement('div');
     bubble.className = 'rot-msg ' + (role === 'user' ? 'rot-msg-user' : 'rot-msg-assistant');
-    bubble.textContent = texto;
+    if (role === 'assistant') {
+      bubble.innerHTML = rotFormatarTexto(texto);
+    } else {
+      bubble.textContent = texto;
+    }
     wrap.appendChild(bubble);
 
     if (role === 'assistant') {
