@@ -2673,6 +2673,7 @@ REGRAS CRÍTICAS:
 - Para cada atração, indique como chegar a partir do hotel ou atração anterior.
 - Sempre pontue e faça referência ao que o usuário já informou nas respostas anteriores antes de fazer a próxima pergunta (ex: "Perfeito, viagem romântica para Paris em outubro! Agora me conta...").
 - NÃO ofereça, mencione ou execute qualquer publicação, geração de HTML, PDF ou envio — sua única tarefa nesta conversa é planejar e redigir o roteiro em texto.
+- NUNCA use linhas separadoras como "---" ou qualquer marcação de linha horizontal (hr) entre seções, dias ou blocos. Para separar visualmente, use apenas uma linha em branco.
 
 FLUXO DE PERGUNTAS (uma por vez, espere a resposta antes de avançar):
 1. Destino da viagem (cidade, região, país)
@@ -2762,8 +2763,10 @@ FINALIZAÇÃO — quando terminar TODOS os dias:
       try {
         const parsed = JSON.parse(raw);
         if (parsed.error) { console.error('[ia/roteiro-chat] API error:', parsed.error); return res.json({ ok: false, erro: parsed.error.message }); }
-        const texto = (parsed.content && parsed.content[0] && parsed.content[0].text) || '';
+        let texto = (parsed.content && parsed.content[0] && parsed.content[0].text) || '';
         if (!texto) return res.json({ ok: false, erro: 'A IA não retornou texto.' });
+        // Remove linhas separadoras "---" (markdown hr), mantendo a linha em branco no lugar
+        texto = texto.replace(/^[ \t]*-{3,}[ \t]*$/gm, '');
         return res.json({ ok: true, texto });
       } catch (e) {
         console.error('[ia/roteiro-chat] parse error:', e.message, 'raw:', raw.slice(0, 300));
