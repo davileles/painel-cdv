@@ -1417,7 +1417,18 @@
 
   function rotScrollBottom(){
     var box = document.getElementById('rot-chat-box');
-    box.scrollTop = box.scrollHeight;
+    box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
+  }
+
+  // Rola o container só o suficiente para o TOPO do elemento ficar visível —
+  // evita que mensagens grandes (ex: 2 dias de roteiro) empurrem o início
+  // da mensagem para fora da tela.
+  function rotScrollParaTopoDoElemento(el){
+    var box = document.getElementById('rot-chat-box');
+    var boxRect = box.getBoundingClientRect();
+    var elRect = el.getBoundingClientRect();
+    var offset = elRect.top - boxRect.top;
+    box.scrollTo({ top: box.scrollTop + offset - 6, behavior: 'smooth' });
   }
 
   function rotEscapeHtml(s){
@@ -1465,7 +1476,11 @@
     }
 
     box.appendChild(wrap);
-    rotScrollBottom();
+    if (role === 'assistant') {
+      rotScrollParaTopoDoElemento(wrap);
+    } else {
+      rotScrollBottom();
+    }
   }
 
   function rotMostrarTyping(){
