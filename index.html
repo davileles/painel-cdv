@@ -1369,6 +1369,12 @@
   .rot-sub{font-size:12px;color:var(--muted);line-height:1.6}
   .rot-chat-box{flex:1;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
   .rot-msg{max-width:88%;font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word;border-radius:12px;padding:11px 14px}
+  .rot-table-wrap{white-space:normal;overflow-x:auto;margin:8px 0;border:1px solid var(--border);border-radius:8px;-webkit-overflow-scrolling:touch}
+  .rot-table{border-collapse:collapse;width:100%;min-width:340px;font-size:12px}
+  .rot-table th,.rot-table td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:normal;vertical-align:top}
+  .rot-table thead th{background:var(--bg);font-weight:800;color:var(--cdv-coral);font-size:11px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
+  .rot-table tbody tr:last-child td{border-bottom:none}
+  .rot-table tbody tr:nth-child(even){background:rgba(255,255,255,.02)}
   .rot-msg-assistant{align-self:flex-start;background:var(--bg);border:1px solid var(--border);color:var(--text)}
   .rot-msg-user{align-self:flex-end;background:var(--cdv-coral);color:#fff}
   .rot-msg-actions{display:flex;justify-content:flex-start;margin-top:-6px}
@@ -1435,10 +1441,56 @@
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  // Converte markdown simples (apenas **negrito**) em HTML, mantendo o resto como texto escapado
-  function rotFormatarTexto(texto){
+  // Converte **negrito** em <strong>, escapando o resto do texto
+  function rotFormatarInline(texto){
     var escapado = rotEscapeHtml(texto);
     return escapado.replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  function rotEhLinhaTabela(linha){
+    return /^\s*\|.*\|\s*$/.test(linha);
+  }
+  function rotCelulasDaLinha(linha){
+    var semBordas = linha.trim().replace(/^\|/, '').replace(/\|$/, '');
+    return semBordas.split('|').map(function(c){ return c.trim(); });
+  }
+  function rotEhLinhaSeparadora(linha){
+    if (!rotEhLinhaTabela(linha)) return false;
+    var celulas = rotCelulasDaLinha(linha);
+    return celulas.length > 0 && celulas.every(function(c){ return /^:?-+:?$/.test(c); });
+  }
+
+  // Converte markdown simples: tabelas viram <table>, **negrito** vira <strong>, resto é texto escapado
+  function rotFormatarTexto(texto){
+    var linhas = texto.split('\n');
+    var html = '';
+    var i = 0;
+    while (i < linhas.length) {
+      if (rotEhLinhaTabela(linhas[i]) && i + 1 < linhas.length && rotEhLinhaSeparadora(linhas[i + 1])) {
+        var cabecalho = rotCelulasDaLinha(linhas[i]);
+        var linhasCorpo = [];
+        var j = i + 2;
+        while (j < linhas.length && rotEhLinhaTabela(linhas[j])) {
+          linhasCorpo.push(rotCelulasDaLinha(linhas[j]));
+          j++;
+        }
+        html += '<div class="rot-table-wrap"><table class="rot-table"><thead><tr>';
+        cabecalho.forEach(function(c){ html += '<th>' + rotFormatarInline(c) + '</th>'; });
+        html += '</tr></thead><tbody>';
+        linhasCorpo.forEach(function(linha){
+          html += '<tr>';
+          linha.forEach(function(c){ html += '<td>' + rotFormatarInline(c) + '</td>'; });
+          html += '</tr>';
+        });
+        html += '</tbody></table></div>';
+        i = j;
+        continue;
+      }
+      html += rotFormatarInline(linhas[i]);
+      if (i < linhas.length - 1) html += '\n';
+      i++;
+    }
+    return html;
   }
 
   function rotRenderMsg(role, texto){
