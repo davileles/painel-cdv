@@ -2639,43 +2639,64 @@ Responda APENAS em JSON válido, sem markdown, sem texto fora do JSON:
   apiReq.end();
 });
 
-// ── IA: Gerador de Roteiros (apenas geração de texto — sem publicar HTML/PDF) ──
-// Body: { destino, duracao, viajantes, hospedagem, tipoViagem, jaVisitou, orcamento,
-//         preferencias, atracoesObrigatorias, restricoes, ritmo }
-app.post('/ia/gerar-roteiro', (req, res) => {
+// ── IA: Assistente de Roteiros (conversacional — sem publicar HTML/PDF) ──
+// Body: { messages: [{role:'user'|'assistant', content:'...'}, ...] }
+// O front envia o histórico completo a cada turno; o proxy injeta o system prompt
+// e repassa para a Anthropic, devolvendo apenas a próxima mensagem do assistente.
+app.post('/ia/roteiro-chat', (req, res) => {
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
   if (!ANTHROPIC_API_KEY) {
     return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY não configurada no servidor.' });
   }
 
-  const {
-    destino, duracao, viajantes, hospedagem, tipoViagem,
-    jaVisitou, orcamento, preferencias, atracoesObrigatorias,
-    restricoes, ritmo
-  } = req.body || {};
-
-  if (!destino || !duracao) {
-    return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: destino, duracao.' });
+  const { messages } = req.body || {};
+  if (!Array.isArray(messages) || !messages.length) {
+    return res.status(400).json({ ok: false, erro: 'Campo obrigatório: messages (array não vazio).' });
   }
 
-  const systemPrompt = `Você é o "Assistente de Roteiros" do Clube do Viajante. Sua missão é criar roteiros de viagem ultra detalhados, realistas e eficientes, adaptados ao perfil informado.
+  // Sanitiza: só role/content, role sempre user|assistant, alternância válida
+  const historico = messages
+    .filter(m => m && typeof m.content === 'string' && m.content.trim() && (m.role === 'user' || m.role === 'assistant'))
+    .map(m => ({ role: m.role, content: m.content.trim() }));
+  if (!historico.length || historico[historico.length - 1].role !== 'user') {
+    return res.status(400).json({ ok: false, erro: 'A última mensagem do histórico precisa ser do usuário.' });
+  }
 
-REGRAS GERAIS:
-- Seja caloroso e entusiasmado, com emojis com moderação.
-- Use linguagem clara, informal mas profissional (PT-BR).
-- Nunca invente informações específicas sobre locais ou horários com falsa certeza — quando não tiver certeza de um dado (preço exato, horário exato), sinalize com "aprox." ou "confirmar no local/site oficial".
+  const systemPrompt = `Você é um assistente de viagens conversacional chamado "Assistente de Roteiros", parte do Clube do Viajante. Sua missão é criar roteiros ultra detalhados, realistas e eficientes, adaptados ao estilo do usuário.
+
+REGRAS CRÍTICAS:
+- Faça SEMPRE uma pergunta por vez. Espere a resposta antes de prosseguir.
+- Seja caloroso, entusiasmado e use emojis com moderação.
+- Use linguagem clara, informal mas profissional (pt-BR).
+- Nunca invente informações sobre locais ou horários. Se não tiver certeza, avise e diga como confirmar.
 - Inclua sempre horários sugeridos, preços estimados e necessidade de reservas.
-- Para cada atração, indique como chegar a partir do hotel ou da atração anterior.
-- Você recebe TODAS as informações da viagem de uma vez (não faça perguntas ao usuário) e deve gerar o roteiro COMPLETO, todos os dias, em uma única resposta.
-- NÃO ofereça, mencione ou execute qualquer publicação, geração de HTML, PDF ou envio — sua única tarefa é redigir o texto do roteiro abaixo.
+- Para cada atração, indique como chegar a partir do hotel ou atração anterior.
+- Sempre pontue e faça referência ao que o usuário já informou nas respostas anteriores antes de fazer a próxima pergunta (ex: "Perfeito, viagem romântica para Paris em outubro! Agora me conta...").
+- NÃO ofereça, mencione ou execute qualquer publicação, geração de HTML, PDF ou envio — sua única tarefa nesta conversa é planejar e redigir o roteiro em texto.
 
-ANTES DOS DIAS, inclua um bloco breve:
-🌤️ **CLIMA E DICAS RÁPIDAS**
-[clima médio esperado na época informada + 2-3 dicas práticas: roupas, horários de pico, reservas antecipadas]
+FLUXO DE PERGUNTAS (uma por vez, espere a resposta antes de avançar):
+1. Destino da viagem (cidade, região, país)
+2. Datas ou duração da viagem + horários de chegada/partida se já tiver voo
+3. Com quem viajará (sozinho, casal, família com idades dos filhos, amigos)
+4. Hospedagem: já reservada (nome/localização) ou preferência (econômico/equilibrado/luxo, bairro preferido)
+5. Tipo de viagem (romântica, aventura, cultural, gastronômica, descanso, com filhos, etc.)
+6. Já visitou o destino? O que gostou/não gostou?
+7. Orçamento por dia por pessoa (ou: econômico/equilibrado/luxo)
+8. Preferências: experiências pagas, gratuitas ou mistas; prioridades (gastronomia, natureza, compras, história…)
+9. Atrações obrigatórias — ANTES de perguntar, sugira 7-10 atrações comuns do destino informado na pergunta 1
+10. Restrições especiais (mobilidade, alimentação, carrinho de bebê, acessibilidade, horários)
+11. Ritmo preferido (intenso / leve / meio-termo)
+
+Após a pergunta 11:
+- Elogie as escolhas e faça um RESUMO do que foi pedido
+- Informe clima/temperatura média na época + dicas rápidas (roupas, horários de pico, reservas antecipadas)
+- Diga: "Tenho tudo para montar o roteiro! Vou preparar os Dias 1 e 2 agora. Posso começar?"
+
+ENTREGA DO ROTEIRO — sempre em blocos de 2 dias. Ao final de cada bloco, pergunte se está OK e se quer ajustes antes de continuar.
 
 ESTRUTURA OBRIGATÓRIA PARA CADA DIA:
 
-📅 **DIA [N] – [DIA E MÊS, se souber] | [TÍTULO RESUMO DO DIA]**
+📅 **DIA [N] – [DIA E MÊS] | [TÍTULO RESUMO DO DIA]**
 
 📋 **RESUMO**
 [2-4 linhas com storytelling curto do dia]
@@ -2690,7 +2711,7 @@ ESTRUTURA OBRIGATÓRIA PARA CADA DIA:
 - [O que é e por que fazer — 2-3 linhas]
 - 💡 Dica: [dica prática sobre fila, reserva, melhor horário, tempo médio]
 
-(linha em branco entre cada atração)
+[linha em branco entre cada atração]
 
 🧭 **DESLOCAMENTOS**
 - [Atração A → Atração B]: [como ir, tempo estimado, custo]
@@ -2705,39 +2726,18 @@ ESTRUTURA OBRIGATÓRIA PARA CADA DIA:
 🔗 **LINKS ÚTEIS**
 - [Site oficial, Viator, GetYourGuide ou transporte público quando relevante]
 
-APÓS TODOS OS DIAS, inclua:
+Ao final de cada bloco de 2 dias pergunte: "Os dias ficaram bons? Quer ajustar algo ou posso ir para os próximos dias?"
 
-📊 **RESUMO DA VIAGEM**
-Tabela: Dia | Resumo (até 65 caracteres)
-
-💰 **RESUMO DE CUSTOS**
-Tabela: Dia | Motivo | Valor por pessoa em R$
-Linha final: Total estimado da viagem por pessoa.
-
-Gere o roteiro completo agora, com base nos dados fornecidos pelo usuário.`;
-
-  const userPrompt = `Monte o roteiro completo com estes dados:
-
-- Destino: ${destino}
-- Duração/datas: ${duracao}
-- Viajantes: ${viajantes || 'não informado'}
-- Hospedagem: ${hospedagem || 'não informado'}
-- Tipo de viagem: ${tipoViagem || 'não informado'}
-- Já visitou o destino antes: ${jaVisitou || 'não informado'}
-- Orçamento por dia por pessoa: ${orcamento || 'não informado'}
-- Preferências (experiências pagas/gratuitas, prioridades): ${preferencias || 'não informado'}
-- Atrações obrigatórias / interesses específicos: ${atracoesObrigatorias || 'nenhuma indicada — sugira as principais do destino'}
-- Restrições especiais (mobilidade, alimentação, crianças, acessibilidade): ${restricoes || 'nenhuma'}
-- Ritmo preferido: ${ritmo || 'meio-termo'}`;
-
-  const diasEstimados = Math.max(1, Math.min(14, parseInt((duracao || '').match(/\d+/) || [7], 10) || 7));
-  const maxTokens = Math.min(16000, 2200 + diasEstimados * 1300);
+FINALIZAÇÃO — quando terminar TODOS os dias:
+1. Apresente tabela de resumo: Dia | Data | Resumo (até 65 caracteres)
+2. Apresente tabela de custos: Dia | Data | Motivo | Valor por pessoa em R$
+3. Encerre agradecendo e desejando uma ótima viagem. NÃO ofereça publicar, gerar HTML/PDF ou enviar o roteiro — isso não faz parte desta conversa.`;
 
   const bodyPayload = JSON.stringify({
     model: 'claude-sonnet-4-6',
-    max_tokens: maxTokens,
+    max_tokens: 4096,
     system: systemPrompt,
-    messages: [{ role: 'user', content: userPrompt }]
+    messages: historico
   });
 
   const https = require('https');
@@ -2758,21 +2758,21 @@ Gere o roteiro completo agora, com base nos dados fornecidos pelo usuário.`;
     apiRes.on('data', (chunk) => { chunks.push(chunk); });
     apiRes.on('end', () => {
       const raw = Buffer.concat(chunks).toString('utf-8');
-      console.log('[ia/gerar-roteiro] status:', apiRes.statusCode, 'raw len:', raw.length);
+      console.log('[ia/roteiro-chat] status:', apiRes.statusCode, 'raw len:', raw.length);
       try {
         const parsed = JSON.parse(raw);
-        if (parsed.error) { console.error('[ia/gerar-roteiro] API error:', parsed.error); return res.json({ ok: false, erro: parsed.error.message }); }
+        if (parsed.error) { console.error('[ia/roteiro-chat] API error:', parsed.error); return res.json({ ok: false, erro: parsed.error.message }); }
         const texto = (parsed.content && parsed.content[0] && parsed.content[0].text) || '';
         if (!texto) return res.json({ ok: false, erro: 'A IA não retornou texto.' });
         return res.json({ ok: true, texto });
       } catch (e) {
-        console.error('[ia/gerar-roteiro] parse error:', e.message, 'raw:', raw.slice(0, 300));
+        console.error('[ia/roteiro-chat] parse error:', e.message, 'raw:', raw.slice(0, 300));
         return res.json({ ok: false, erro: 'Erro ao processar resposta da IA.' });
       }
     });
   });
-  apiReq.on('error', (e) => { console.error('[ia/gerar-roteiro] req error:', e.message); res.json({ ok: false, erro: e.message }); });
-  apiReq.setTimeout(170000, () => { apiReq.destroy(); res.json({ ok: false, erro: 'Timeout ao chamar API Anthropic. Tente reduzir a duração da viagem.' }); });
+  apiReq.on('error', (e) => { console.error('[ia/roteiro-chat] req error:', e.message); res.json({ ok: false, erro: e.message }); });
+  apiReq.setTimeout(170000, () => { apiReq.destroy(); res.json({ ok: false, erro: 'Timeout ao chamar API Anthropic.' }); });
   apiReq.write(bodyPayload);
   apiReq.end();
 });
