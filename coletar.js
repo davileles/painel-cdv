@@ -403,6 +403,47 @@ const PARCEIROS_TIER1 = new Set([
 
 
 
+// Calcula, para um parceiro+programa, a frequência média (em dias) com que a
+// pontuação costuma subir e estima a data da próxima alta — usando os últimos
+// 12 meses de historico.json. Mesmo critério usado no modal do Comparador
+// (painel-cdv/index.html → calcularPadraoAltas), pra manter os números consistentes
+// entre o painel e as mensagens do gerador de ofertas.
+function calcularFrequenciaAltas(historico, parceiroKey, progId, hoje) {
+  const corteDate = new Date();
+  corteDate.setMonth(corteDate.getMonth() - 12);
+  const corte = corteDate.toISOString().split('T')[0];
+  const datas = Object.keys(historico).filter(d => d >= corte && d <= hoje).sort();
+
+  const serie = [];
+  for (const d of datas) {
+    const snap = historico[d] || {};
+    const dadosParceiro = snap[parceiroKey] || {};
+    const prog = (dadosParceiro.programs || {})[progId];
+    const pts = prog != null ? (typeof prog === 'object' ? prog.pts : prog) : null;
+    if (pts != null) serie.push({ data: d, pts });
+  }
+
+  const altas = [];
+  for (let i = 1; i < serie.length; i++) {
+    if (serie[i].pts > serie[i - 1].pts) altas.push(serie[i].data);
+  }
+  if (altas.length < 2) return null;
+
+  const datasAltas = altas.map(d => new Date(d + 'T00:00:00'));
+  const gaps = [];
+  for (let i = 1; i < datasAltas.length; i++) gaps.push((datasAltas[i] - datasAltas[i - 1]) / 86400000);
+  const mediaGap = Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length);
+  const ultimaAlta = datasAltas[datasAltas.length - 1];
+  const proximaEstimada = new Date(ultimaAlta.getTime() + mediaGap * 86400000);
+
+  return {
+    frequenciaDias: mediaGap,
+    qtdAltas: altas.length,
+    ultimaAltaData: altas[altas.length - 1],
+    proximaEstimadaData: proximaEstimada.toISOString().split('T')[0],
+  };
+}
+
 // ── Gera ofertas pendentes para variações positivas de pontuação ──────────────
 async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
   // Compara sempre com o snapshot do dia ANTERIOR (não com coleta anterior do mesmo dia)
@@ -558,6 +599,10 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
         else if (v.ptsNow <= mediaPts6m * 0.8) classificacaoT1 = 'abaixo_padrao';
       }
 
+      // Padrão de altas (frequência média + próxima alta estimada) — mesmo
+      // cálculo do modal do Comparador, usando 12 meses de historico.json.
+      const padraoAltasT1 = calcularFrequenciaAltas(historico, parceiroKey, progId, hoje);
+
       const rawT1 = 'variacao-tier1-' + parceiroKey + '-' + progId + '-' + new Date().toISOString();
       let hashT1 = 0;
       for (let i = 0; i < rawT1.length; i++) hashT1 = (hashT1 * 31 + rawT1.charCodeAt(i)) >>> 0;
@@ -626,6 +671,8 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
           classificacao: classificacaoT1,
           moeda: moedaT1,
           dataDeteccao: new Date().toISOString().slice(0, 10),
+          frequenciaDias: padraoAltasT1 ? padraoAltasT1.frequenciaDias : null,
+          proximaEstimadaData: padraoAltasT1 ? padraoAltasT1.proximaEstimadaData : null,
         },
       };
 
