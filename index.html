@@ -656,6 +656,7 @@
   <button class="main-tab" data-tab="lounges" id="tab-btn-lounges">🛋️ Salas VIP</button>
   <button class="main-tab" data-tab="calculadoras" id="tab-btn-calculadoras">🧮 Calculadoras</button>
   <button class="main-tab" data-tab="reclamacoes" id="tab-btn-reclamacoes">⚖️ Reclamações</button>
+  <button class="main-tab" data-tab="roteiros" id="tab-btn-roteiros">🗺️ Roteiros</button>
 </div>
 
 <div id="tab-inicio" class="tab-panel" style="display:none">
@@ -1359,6 +1360,224 @@
 })();
 </script>
 </div><!-- /tab-reclamacoes -->
+
+<div id="tab-roteiros" class="tab-panel" style="display:none">
+<style>
+  .rot-wrap{max-width:760px;margin:0 auto;padding:24px 22px 60px}
+  .rot-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px}
+  .rot-title{font-size:13px;font-weight:800;color:var(--cdv-coral);text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .rot-field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+  .rot-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
+  .rot-input{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:13px;padding:10px 12px;outline:none;transition:border-color .15s;width:100%}
+  .rot-input:focus{border-color:var(--cdv-coral)}
+  .rot-textarea{resize:vertical;min-height:64px}
+  .rot-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .rot-btn{width:100%;padding:13px;background:var(--cdv-coral);color:#fff;border:none;border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:opacity .15s;letter-spacing:.3px}
+  .rot-btn:hover{opacity:.88}
+  .rot-btn:disabled{opacity:.5;cursor:not-allowed}
+  .rot-result{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word}
+  .rot-result-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .rot-copy-btn{flex:1;padding:10px;background:transparent;border:1px solid rgba(255,88,94,.4);color:var(--cdv-coral);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s}
+  .rot-copy-btn:hover{background:rgba(255,88,94,.08)}
+  .rot-step{display:none}.rot-step.active{display:block}
+  .rot-loader{text-align:center;padding:32px 0;color:var(--muted);font-size:13px}
+  .rot-loader-dot{animation:rotDot 1.2s infinite both}
+  .rot-loader-dot:nth-child(2){animation-delay:.2s}.rot-loader-dot:nth-child(3){animation-delay:.4s}
+  @keyframes rotDot{0%,80%,100%{opacity:.2}40%{opacity:1}}
+  .rot-section-divider{font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin:8px 0 14px;padding-top:14px;border-top:1px solid var(--border)}
+  .rot-fb{font-size:12px;font-weight:700;text-align:center;min-height:16px;margin-top:6px;color:var(--cdv-coral)}
+</style>
+
+<div class="rot-wrap">
+  <div class="rot-card">
+    <div class="rot-title">🗺️ Assistente de Roteiros</div>
+    <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:20px">Preencha os dados da viagem abaixo. A IA vai montar um roteiro dia a dia, com horários, custos estimados, restaurantes e dicas — pronto para copiar.</p>
+
+    <!-- STEP 1: FORMULÁRIO -->
+    <div id="rot-step-form" class="rot-step active">
+
+      <div class="rot-section-divider">✈️ Sobre a Viagem</div>
+
+      <div class="rot-row2">
+        <div class="rot-field">
+          <label class="rot-label">Destino</label>
+          <input class="rot-input" id="rot-destino" placeholder="Ex: Bariloche, Argentina"/>
+        </div>
+        <div class="rot-field">
+          <label class="rot-label">Duração / datas</label>
+          <input class="rot-input" id="rot-duracao" placeholder="Ex: 5 dias, 13 a 18/ago/26"/>
+        </div>
+      </div>
+
+      <div class="rot-field">
+        <label class="rot-label">Com quem vai viajar</label>
+        <input class="rot-input" id="rot-viajantes" placeholder="Ex: casal, família com 2 filhos (6 e 9 anos), amigos…"/>
+      </div>
+
+      <div class="rot-field">
+        <label class="rot-label">Hospedagem</label>
+        <input class="rot-input" id="rot-hospedagem" placeholder="Nome/localização se já reservada, ou preferência (econômico/equilibrado/luxo) e bairro"/>
+      </div>
+
+      <div class="rot-row2">
+        <div class="rot-field">
+          <label class="rot-label">Tipo de viagem</label>
+          <input class="rot-input" id="rot-tipo" placeholder="Ex: romântica, aventura, cultural, com filhos…"/>
+        </div>
+        <div class="rot-field">
+          <label class="rot-label">Já visitou o destino?</label>
+          <input class="rot-input" id="rot-ja-visitou" placeholder="Não / Sim — o que gostou e não gostou"/>
+        </div>
+      </div>
+
+      <div class="rot-section-divider">🎯 Preferências</div>
+
+      <div class="rot-row2">
+        <div class="rot-field">
+          <label class="rot-label">Orçamento por dia por pessoa</label>
+          <input class="rot-input" id="rot-orcamento" placeholder="Ex: R$ 300/dia, ou econômico/equilibrado/luxo"/>
+        </div>
+        <div class="rot-field">
+          <label class="rot-label">Ritmo preferido</label>
+          <select class="rot-input" id="rot-ritmo">
+            <option value="">Selecionar…</option>
+            <option value="leve">Leve</option>
+            <option value="meio-termo" selected>Meio-termo</option>
+            <option value="intenso">Intenso</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="rot-field">
+        <label class="rot-label">Prioridades e tipo de experiência</label>
+        <textarea class="rot-input rot-textarea" id="rot-preferencias" placeholder="Ex: prefiro experiências pagas com boa avaliação; prioridade em gastronomia e natureza"></textarea>
+      </div>
+
+      <div class="rot-field">
+        <label class="rot-label">Atrações obrigatórias</label>
+        <textarea class="rot-input rot-textarea" id="rot-atracoes" placeholder="Liste o que não pode faltar (opcional — se deixar em branco, a IA sugere as principais do destino)"></textarea>
+      </div>
+
+      <div class="rot-field">
+        <label class="rot-label">Restrições especiais</label>
+        <textarea class="rot-input rot-textarea" style="min-height:50px" id="rot-restricoes" placeholder="Ex: mobilidade reduzida, alimentação, carrinho de bebê, acessibilidade, horários…"></textarea>
+      </div>
+
+      <p id="rot-erro" class="rot-fb" style="color:#f87171"></p>
+      <button class="rot-btn" id="rot-gerar-btn" onclick="rotGerar()">🗺️ Gerar Roteiro</button>
+    </div>
+
+    <!-- STEP 2: LOADING -->
+    <div id="rot-step-loading" class="rot-step">
+      <div class="rot-loader">
+        <div style="font-size:28px;margin-bottom:12px">🗺️</div>
+        <div style="margin-bottom:10px;font-weight:700;color:var(--text)">Montando seu roteiro…</div>
+        <div style="display:flex;justify-content:center;gap:6px;margin-top:8px">
+          <span class="rot-loader-dot" style="font-size:22px">●</span>
+          <span class="rot-loader-dot" style="font-size:22px">●</span>
+          <span class="rot-loader-dot" style="font-size:22px">●</span>
+        </div>
+        <div style="font-size:11px;margin-top:16px;color:var(--muted)">Isso pode levar até 1-2 minutos para roteiros mais longos…</div>
+      </div>
+    </div>
+
+    <!-- STEP 3: RESULTADO -->
+    <div id="rot-step-resultado" class="rot-step">
+      <div class="rot-section-divider" style="border-top:none;padding-top:0;margin-top:0">📄 Roteiro Gerado</div>
+      <div id="rot-texto-resultado" class="rot-result"></div>
+      <div class="rot-result-actions">
+        <button class="rot-copy-btn" onclick="rotCopiar('rot-texto-resultado','rot-fb-texto')">📋 Copiar roteiro</button>
+      </div>
+      <p id="rot-fb-texto" class="rot-fb"></p>
+
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button class="rot-copy-btn" style="flex:0 0 auto;padding:10px 20px" onclick="rotNovo()">🔄 Novo Roteiro</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function rotMostrarStep(step){
+    ['rot-step-form','rot-step-loading','rot-step-resultado'].forEach(function(id){
+      document.getElementById(id).classList.remove('active');
+    });
+    document.getElementById(step).classList.add('active');
+  }
+
+  function rotCopiar(id, fbId){
+    var texto = document.getElementById(id).innerText || document.getElementById(id).textContent;
+    var fb = document.getElementById(fbId);
+    function done(){ fb.textContent = '✅ Copiado!'; setTimeout(function(){ fb.textContent=''; }, 3000); }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(texto).then(done).catch(function(){
+        var ta=document.createElement('textarea'); ta.value=texto; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done();
+      });
+    } else {
+      var ta=document.createElement('textarea'); ta.value=texto; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done();
+    }
+  }
+  window.rotCopiar = rotCopiar;
+
+  function rotNovo(){
+    rotMostrarStep('rot-step-form');
+    document.getElementById('rot-erro').textContent = '';
+  }
+  window.rotNovo = rotNovo;
+
+  async function rotGerar(){
+    var destino    = (document.getElementById('rot-destino').value||'').trim();
+    var duracao    = (document.getElementById('rot-duracao').value||'').trim();
+    var viajantes  = (document.getElementById('rot-viajantes').value||'').trim();
+    var hospedagem = (document.getElementById('rot-hospedagem').value||'').trim();
+    var tipoViagem = (document.getElementById('rot-tipo').value||'').trim();
+    var jaVisitou  = (document.getElementById('rot-ja-visitou').value||'').trim();
+    var orcamento  = (document.getElementById('rot-orcamento').value||'').trim();
+    var ritmo      = document.getElementById('rot-ritmo').value;
+    var preferencias = (document.getElementById('rot-preferencias').value||'').trim();
+    var atracoes   = (document.getElementById('rot-atracoes').value||'').trim();
+    var restricoes = (document.getElementById('rot-restricoes').value||'').trim();
+    var erroEl     = document.getElementById('rot-erro');
+    erroEl.textContent = '';
+
+    if(!destino){ erroEl.textContent = 'Informe o destino da viagem.'; return; }
+    if(!duracao){ erroEl.textContent = 'Informe a duração ou as datas da viagem.'; return; }
+
+    rotMostrarStep('rot-step-loading');
+
+    try {
+      var resp = await fetch('https://cdv-proxy-production.up.railway.app/ia/gerar-roteiro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          destino: destino,
+          duracao: duracao,
+          viajantes: viajantes,
+          hospedagem: hospedagem,
+          tipoViagem: tipoViagem,
+          jaVisitou: jaVisitou,
+          orcamento: orcamento,
+          preferencias: preferencias,
+          atracoesObrigatorias: atracoes,
+          restricoes: restricoes,
+          ritmo: ritmo
+        })
+      });
+      var dados = await resp.json();
+      if(!dados.ok) throw new Error(dados.erro || 'Erro desconhecido');
+
+      document.getElementById('rot-texto-resultado').textContent = dados.texto || '(sem resposta)';
+      rotMostrarStep('rot-step-resultado');
+    } catch(e) {
+      rotMostrarStep('rot-step-form');
+      document.getElementById('rot-erro').textContent = 'Erro ao gerar roteiro. Tente novamente.';
+    }
+  }
+  window.rotGerar = rotGerar;
+})();
+</script>
+</div><!-- /tab-roteiros -->
 
 <div id="tab-milhas" class="tab-panel" style="display:none">
 
@@ -3871,6 +4090,7 @@ function switchTab(tab){
   document.getElementById('tab-lounges').style.display      = tab==='lounges'      ?'block':'none';
   document.getElementById('tab-calculadoras').style.display = tab==='calculadoras' ?'block':'none';
   document.getElementById('tab-reclamacoes').style.display  = tab==='reclamacoes'  ?'block':'none';
+  document.getElementById('tab-roteiros').style.display     = tab==='roteiros'     ?'block':'none';
   window.scrollTo({top:0, behavior:'smooth'});
   if(tab==='inicio')       renderInicio();
   if(tab==='radar')        loadOfertas(false);
