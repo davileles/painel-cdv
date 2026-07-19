@@ -73,6 +73,44 @@ function hashId(str) {
   return 'inter_' + h.toString(36);
 }
 
+// Calcula, para um parceiro (programa "inter"), a frequência média (em dias)
+// com que o cashback costuma subir e estima a data da próxima alta — usando
+// os últimos 12 meses de historico.json. Mesmo critério do modal do Comparador
+// (painel-cdv/index.html → calcularPadraoAltas), pra manter os números
+// consistentes entre o painel e as mensagens do gerador de ofertas.
+function calcularFrequenciaAltas(historico, chave, hoje) {
+  const corteDate = new Date();
+  corteDate.setMonth(corteDate.getMonth() - 12);
+  const corte = corteDate.toISOString().split('T')[0];
+  const datas = Object.keys(historico).filter(d => d >= corte && d <= hoje).sort();
+
+  const serie = [];
+  for (const d of datas) {
+    const pts = historico[d]?.[chave]?.programs?.inter?.pts;
+    if (pts != null) serie.push({ data: d, pts });
+  }
+
+  const altas = [];
+  for (let i = 1; i < serie.length; i++) {
+    if (serie[i].pts > serie[i - 1].pts) altas.push(serie[i].data);
+  }
+  if (altas.length < 2) return null;
+
+  const datasAltas = altas.map(d => new Date(d + 'T00:00:00'));
+  const gaps = [];
+  for (let i = 1; i < datasAltas.length; i++) gaps.push((datasAltas[i] - datasAltas[i - 1]) / 86400000);
+  const mediaGap = Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length);
+  const ultimaAlta = datasAltas[datasAltas.length - 1];
+  const proximaEstimada = new Date(ultimaAlta.getTime() + mediaGap * 86400000);
+
+  return {
+    frequenciaDias: mediaGap,
+    qtdAltas: altas.length,
+    ultimaAltaData: altas[altas.length - 1],
+    proximaEstimadaData: proximaEstimada.toISOString().split('T')[0],
+  };
+}
+
 // ── Detectar variações e gerar ofertas pendentes ──────────────────────────────
 async function gerarOfertasVariacao(snapHoje, historico, hoje) {
   // Comparar com snapshot do dia ANTERIOR
@@ -193,6 +231,18 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
       ? Math.round(pts6m.reduce((a, b) => a + b, 0) / pts6m.length * 10) / 10
       : v.ptsAntes;
 
+    // Classificação vs. média histórica de 6 meses (mesmo critério de ±20%
+    // usado pelo isAboveAverage() do Comparador, pra manter consistência)
+    let classificacaoT1 = 'dentro_padrao';
+    if (mediaPts6m > 0) {
+      if (v.ptsAgora >= mediaPts6m * 1.2) classificacaoT1 = 'acima_padrao';
+      else if (v.ptsAgora <= mediaPts6m * 0.8) classificacaoT1 = 'abaixo_padrao';
+    }
+
+    // Padrão de altas (frequência média + próxima alta estimada) — mesmo
+    // cálculo do modal do Comparador, usando 12 meses de historico.json.
+    const padraoAltasT1 = calcularFrequenciaAltas(historico, v.chave, hoje);
+
     const tituloT1 = `${v.ptsAgora}% de cashback em ${v.nome} no Shopping Inter`;
 
     const resumoT1 = [
@@ -224,6 +274,22 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
       publicadoEm: new Date().toISOString(),
       tipoVariacao: true,
       tier1: true,
+      // Comparação com o histórico já pré-calculada aqui (fonte de verdade = historico.json),
+      // pra não precisar reanalisar nada na hora da aprovação — só exibir.
+      historicoComparacao: {
+        parceiro: v.nome,
+        programa: 'Inter',
+        pontuacaoAtual: v.ptsAgora,
+        pontuacaoAnterior: v.ptsAntes,
+        mediaHistorica6m: mediaPts6m,
+        maximoHistorico6m: maxPts6m,
+        amostras6m: pts6m.length,
+        classificacao: classificacaoT1,
+        moeda: '%',
+        dataDeteccao: hoje,
+        frequenciaDias: padraoAltasT1 ? padraoAltasT1.frequenciaDias : null,
+        proximaEstimadaData: padraoAltasT1 ? padraoAltasT1.proximaEstimadaData : null,
+      },
     });
 
     console.log(`[Inter Tier 1] Oferta individual: "${tituloT1}"`);
