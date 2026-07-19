@@ -2639,6 +2639,144 @@ Responda APENAS em JSON válido, sem markdown, sem texto fora do JSON:
   apiReq.end();
 });
 
+// ── IA: Gerador de Roteiros (apenas geração de texto — sem publicar HTML/PDF) ──
+// Body: { destino, duracao, viajantes, hospedagem, tipoViagem, jaVisitou, orcamento,
+//         preferencias, atracoesObrigatorias, restricoes, ritmo }
+app.post('/ia/gerar-roteiro', (req, res) => {
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+  if (!ANTHROPIC_API_KEY) {
+    return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY não configurada no servidor.' });
+  }
+
+  const {
+    destino, duracao, viajantes, hospedagem, tipoViagem,
+    jaVisitou, orcamento, preferencias, atracoesObrigatorias,
+    restricoes, ritmo
+  } = req.body || {};
+
+  if (!destino || !duracao) {
+    return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: destino, duracao.' });
+  }
+
+  const systemPrompt = `Você é o "Assistente de Roteiros" do Clube do Viajante. Sua missão é criar roteiros de viagem ultra detalhados, realistas e eficientes, adaptados ao perfil informado.
+
+REGRAS GERAIS:
+- Seja caloroso e entusiasmado, com emojis com moderação.
+- Use linguagem clara, informal mas profissional (PT-BR).
+- Nunca invente informações específicas sobre locais ou horários com falsa certeza — quando não tiver certeza de um dado (preço exato, horário exato), sinalize com "aprox." ou "confirmar no local/site oficial".
+- Inclua sempre horários sugeridos, preços estimados e necessidade de reservas.
+- Para cada atração, indique como chegar a partir do hotel ou da atração anterior.
+- Você recebe TODAS as informações da viagem de uma vez (não faça perguntas ao usuário) e deve gerar o roteiro COMPLETO, todos os dias, em uma única resposta.
+- NÃO ofereça, mencione ou execute qualquer publicação, geração de HTML, PDF ou envio — sua única tarefa é redigir o texto do roteiro abaixo.
+
+ANTES DOS DIAS, inclua um bloco breve:
+🌤️ **CLIMA E DICAS RÁPIDAS**
+[clima médio esperado na época informada + 2-3 dicas práticas: roupas, horários de pico, reservas antecipadas]
+
+ESTRUTURA OBRIGATÓRIA PARA CADA DIA:
+
+📅 **DIA [N] – [DIA E MÊS, se souber] | [TÍTULO RESUMO DO DIA]**
+
+📋 **RESUMO**
+[2-4 linhas com storytelling curto do dia]
+
+🔋 **NÍVEL DE ENERGIA:** [Leve / Moderado / Intenso]
+
+🏨 **SAÍDA DO HOTEL:** [HH:MM]
+
+🚶 **ITINERÁRIO**
+
+**[HH:MM – HH:MM] | [Nome da Atração]**
+- [O que é e por que fazer — 2-3 linhas]
+- 💡 Dica: [dica prática sobre fila, reserva, melhor horário, tempo médio]
+
+(linha em branco entre cada atração)
+
+🧭 **DESLOCAMENTOS**
+- [Atração A → Atração B]: [como ir, tempo estimado, custo]
+
+💰 **CUSTOS ESTIMADOS (por pessoa)**
+- [Item]: R$ [valor]
+- Total estimado do dia: R$ [valor]
+
+🍽️ **RESTAURANTES SUGERIDOS**
+1. **[Nome]** — [tipo] | [diferencial] | ~R$ [valor médio] por pessoa
+
+🔗 **LINKS ÚTEIS**
+- [Site oficial, Viator, GetYourGuide ou transporte público quando relevante]
+
+APÓS TODOS OS DIAS, inclua:
+
+📊 **RESUMO DA VIAGEM**
+Tabela: Dia | Resumo (até 65 caracteres)
+
+💰 **RESUMO DE CUSTOS**
+Tabela: Dia | Motivo | Valor por pessoa em R$
+Linha final: Total estimado da viagem por pessoa.
+
+Gere o roteiro completo agora, com base nos dados fornecidos pelo usuário.`;
+
+  const userPrompt = `Monte o roteiro completo com estes dados:
+
+- Destino: ${destino}
+- Duração/datas: ${duracao}
+- Viajantes: ${viajantes || 'não informado'}
+- Hospedagem: ${hospedagem || 'não informado'}
+- Tipo de viagem: ${tipoViagem || 'não informado'}
+- Já visitou o destino antes: ${jaVisitou || 'não informado'}
+- Orçamento por dia por pessoa: ${orcamento || 'não informado'}
+- Preferências (experiências pagas/gratuitas, prioridades): ${preferencias || 'não informado'}
+- Atrações obrigatórias / interesses específicos: ${atracoesObrigatorias || 'nenhuma indicada — sugira as principais do destino'}
+- Restrições especiais (mobilidade, alimentação, crianças, acessibilidade): ${restricoes || 'nenhuma'}
+- Ritmo preferido: ${ritmo || 'meio-termo'}`;
+
+  const diasEstimados = Math.max(1, Math.min(14, parseInt((duracao || '').match(/\d+/) || [7], 10) || 7));
+  const maxTokens = Math.min(16000, 2200 + diasEstimados * 1300);
+
+  const bodyPayload = JSON.stringify({
+    model: 'claude-sonnet-4-6',
+    max_tokens: maxTokens,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: userPrompt }]
+  });
+
+  const https = require('https');
+  const options = {
+    hostname: 'api.anthropic.com',
+    path: '/v1/messages',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(bodyPayload),
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01'
+    }
+  };
+
+  const chunks = [];
+  const apiReq = https.request(options, (apiRes) => {
+    apiRes.on('data', (chunk) => { chunks.push(chunk); });
+    apiRes.on('end', () => {
+      const raw = Buffer.concat(chunks).toString('utf-8');
+      console.log('[ia/gerar-roteiro] status:', apiRes.statusCode, 'raw len:', raw.length);
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed.error) { console.error('[ia/gerar-roteiro] API error:', parsed.error); return res.json({ ok: false, erro: parsed.error.message }); }
+        const texto = (parsed.content && parsed.content[0] && parsed.content[0].text) || '';
+        if (!texto) return res.json({ ok: false, erro: 'A IA não retornou texto.' });
+        return res.json({ ok: true, texto });
+      } catch (e) {
+        console.error('[ia/gerar-roteiro] parse error:', e.message, 'raw:', raw.slice(0, 300));
+        return res.json({ ok: false, erro: 'Erro ao processar resposta da IA.' });
+      }
+    });
+  });
+  apiReq.on('error', (e) => { console.error('[ia/gerar-roteiro] req error:', e.message); res.json({ ok: false, erro: e.message }); });
+  apiReq.setTimeout(170000, () => { apiReq.destroy(); res.json({ ok: false, erro: 'Timeout ao chamar API Anthropic. Tente reduzir a duração da viagem.' }); });
+  apiReq.write(bodyPayload);
+  apiReq.end();
+});
+
 // ══════════════════════════════════════════════════════════════════════════════
 
 app.listen(PORT, '0.0.0.0', () => {
