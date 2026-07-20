@@ -1396,6 +1396,23 @@
   .rot-restart-btn{font-size:11px;font-weight:700;color:var(--muted);background:transparent;border:none;cursor:pointer;letter-spacing:.3px}
   .rot-restart-btn:hover{color:var(--cdv-coral)}
   .rot-fb{font-size:12px;font-weight:700;text-align:center;min-height:16px;margin-top:6px;color:#f87171}
+  .rot-publish-row{display:none;justify-content:center;margin-top:16px}
+  .rot-publish-btn{padding:12px 22px;background:linear-gradient(90deg,var(--cdv-coral),#f97316);color:#fff;border:none;border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:opacity .15s}
+  .rot-publish-btn:hover{opacity:.88}
+  .rot-publish-btn:disabled{opacity:.5;cursor:not-allowed}
+  .rot-publish-result{margin-top:12px;text-align:center;font-size:12px;line-height:1.8}
+  .rot-publish-link{color:var(--cdv-coral);font-weight:700;word-break:break-all}
+  .rot-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;padding:20px}
+  .rot-modal-overlay.open{display:flex}
+  .rot-modal-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;max-width:420px;width:100%}
+  .rot-modal-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:14px}
+  .rot-modal-label{font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px}
+  .rot-modal-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:13px;padding:10px 12px;outline:none;margin-bottom:16px}
+  .rot-modal-input:focus{border-color:var(--cdv-coral)}
+  .rot-modal-actions{display:flex;gap:10px;justify-content:flex-end}
+  .rot-modal-cancel{background:transparent;border:1px solid var(--border);color:var(--muted);padding:9px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif}
+  .rot-modal-confirm{background:var(--cdv-coral);border:none;color:#fff;padding:9px 16px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif}
+  .rot-modal-confirm:disabled{opacity:.6;cursor:not-allowed}
 </style>
 
 <div class="rot-wrap">
@@ -1415,6 +1432,23 @@
   <div class="rot-restart-row">
     <button class="rot-restart-btn" onclick="rotReiniciar()">🔄 Recomeçar conversa</button>
   </div>
+
+  <div class="rot-publish-row" id="rot-publish-row">
+    <button class="rot-publish-btn" id="rot-publish-btn" onclick="rotAbrirPublicar()">🔗 Gerar link do roteiro</button>
+  </div>
+  <div class="rot-publish-result" id="rot-publish-result"></div>
+</div>
+
+<div class="rot-modal-overlay" id="rot-modal-overlay">
+  <div class="rot-modal-box">
+    <div class="rot-modal-title">🗺️ Publicar roteiro</div>
+    <label class="rot-modal-label" for="rot-modal-titulo">Nome do roteiro (aparece no link e no título da página)</label>
+    <input type="text" id="rot-modal-titulo" class="rot-modal-input" placeholder="Ex: Roteiro Paris — Família Silva"/>
+    <div class="rot-modal-actions">
+      <button class="rot-modal-cancel" onclick="rotFecharModal()">Cancelar</button>
+      <button class="rot-modal-confirm" id="rot-modal-confirm-btn" onclick="rotConfirmarPublicar()">Gerar link</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1422,6 +1456,8 @@
   var rotHistorico = [];
   var rotEnviando = false;
   var rotSaudacaoInicial = 'Oi! 🗺️ Vou te ajudar a montar um roteiro de viagem detalhado, dia a dia. Para começar: qual é o destino da viagem?';
+  var rotSlugAtual = null;
+  var rotTituloAtual = null;
 
   function rotScrollBottom(){
     var box = document.getElementById('rot-chat-box');
@@ -1558,6 +1594,11 @@
     document.getElementById('rot-erro').textContent = '';
     document.getElementById('rot-input').value = '';
     rotAjustarAlturaInput();
+    rotSlugAtual = null;
+    rotTituloAtual = null;
+    document.getElementById('rot-publish-row').style.display = 'none';
+    document.getElementById('rot-publish-result').innerHTML = '';
+    document.getElementById('rot-publish-btn').textContent = '🔗 Gerar link do roteiro';
   }
   window.rotReiniciar = function(){
     if (rotHistorico.length > 1 && !confirm('Isso vai apagar a conversa atual. Deseja recomeçar?')) return;
@@ -1600,6 +1641,7 @@
 
       rotHistorico.push({ role: 'assistant', content: dados.texto });
       rotRenderMsg('assistant', dados.texto);
+      rotChecarFinalizacao(dados.texto);
     } catch (e) {
       rotEsconderTyping();
       erroEl.textContent = 'Erro ao falar com o assistente. Tente enviar novamente.';
@@ -1610,6 +1652,129 @@
       input.focus();
     }
   }
+  // ── Publicação do roteiro em link público (davileles/roteiros via proxy) ──
+  function rotContarTabelas(texto){
+    var linhas = texto.split('\n');
+    var count = 0, i = 0;
+    while (i < linhas.length) {
+      if (rotEhLinhaTabela(linhas[i]) && i + 1 < linhas.length && rotEhLinhaSeparadora(linhas[i + 1])) {
+        count++;
+        i += 2;
+        while (i < linhas.length && rotEhLinhaTabela(linhas[i])) i++;
+      } else {
+        i++;
+      }
+    }
+    return count;
+  }
+
+  // Um bloco entra no roteiro publicado se contém um dia (📅 **DIA...) ou é a
+  // mensagem de finalização (tabela de resumo + tabela de custos) — assim o
+  // Q&A de onboarding (perguntas 1 a 11) fica de fora do link público.
+  function rotEhBlocoRoteiro(texto){
+    return /DIA\s*\[?\d/i.test(texto) || rotContarTabelas(texto) >= 2;
+  }
+
+  // Detecta a finalização (resumo + tabela de custos, conforme o system prompt
+  // do /ia/roteiro-chat) e revela o botão de publicar.
+  function rotChecarFinalizacao(texto){
+    if (rotContarTabelas(texto) >= 2) {
+      document.getElementById('rot-publish-row').style.display = 'flex';
+    }
+  }
+
+  function rotExtrairDestino(){
+    var primeira = rotHistorico.find(function(m){ return m.role === 'user'; });
+    return primeira ? primeira.content.split('\n')[0].slice(0, 60) : 'Minha Viagem';
+  }
+
+  function rotSlugify(texto){
+    return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 50) || 'roteiro';
+  }
+
+  window.rotAbrirPublicar = function(){
+    document.getElementById('rot-modal-titulo').value = rotTituloAtual || rotExtrairDestino();
+    document.getElementById('rot-modal-overlay').classList.add('open');
+    document.getElementById('rot-modal-titulo').focus();
+  };
+  window.rotFecharModal = function(){
+    document.getElementById('rot-modal-overlay').classList.remove('open');
+  };
+
+  function rotMontarHTML(titulo){
+    var corpo = '';
+    rotHistorico.forEach(function(m){
+      if (m.role !== 'assistant' || !rotEhBlocoRoteiro(m.content)) return;
+      corpo += '<div class="dia-bloco">' + rotFormatarTexto(m.content) + '</div>';
+    });
+    var tituloSeguro = titulo.replace(/</g, '').replace(/>/g, '');
+    var dataGeracao = new Date().toLocaleDateString('pt-BR');
+    return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/>'
+      + '<meta name="viewport" content="width=device-width,initial-scale=1.0"/>'
+      + '<title>' + tituloSeguro + ' · Clube do Viajante</title>'
+      + '<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>'
+      + '<style>'
+      + '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}'
+      + 'body{background:#1c2333;color:#eeeeee;font-family:"Montserrat",sans-serif;line-height:1.7;min-height:100vh}'
+      + '.wrap{max-width:760px;margin:0 auto;padding:40px 22px 80px}'
+      + 'header{display:flex;align-items:center;gap:12px;margin-bottom:8px}'
+      + '.brand-badge{width:44px;height:44px;background:rgba(255,88,94,.14);border:2px solid rgba(255,88,94,.35);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}'
+      + '.brand-name{font-size:17px;font-weight:900;color:#eeeeee}'
+      + '.brand-sub{font-size:11px;font-weight:700;color:#98a8cc;text-transform:uppercase;letter-spacing:1px}'
+      + 'h1{font-size:clamp(24px,5vw,34px);font-weight:900;margin:26px 0 6px;color:#eeeeee}'
+      + '.gerado-em{font-size:11px;color:#7688ad;margin-bottom:28px}'
+      + '.dia-bloco{background:#262e42;border:1px solid #323d58;border-radius:14px;padding:20px;margin-bottom:16px;white-space:pre-wrap;word-break:break-word;font-size:13.5px}'
+      + '.dia-bloco strong{color:#ff585e}'
+      + '.rot-table-wrap{white-space:normal;overflow-x:auto;margin:10px 0;border:1px solid #323d58;border-radius:8px;-webkit-overflow-scrolling:touch}'
+      + '.rot-table{border-collapse:collapse;width:100%;min-width:340px;font-size:12.5px}'
+      + '.rot-table th,.rot-table td{padding:9px 11px;text-align:left;border-bottom:1px solid #323d58;white-space:normal;vertical-align:top}'
+      + '.rot-table thead th{background:#1c2333;font-weight:800;color:#ff585e;font-size:11px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}'
+      + '.rot-table tbody tr:last-child td{border-bottom:none}'
+      + 'footer{margin-top:40px;padding-top:24px;border-top:1px solid #323d58;text-align:center;font-size:11px;color:#7688ad}'
+      + 'footer strong{color:#ff585e}'
+      + '@media(max-width:520px){.wrap{padding:28px 16px 60px}}'
+      + '</style></head><body><div class="wrap">'
+      + '<header><div class="brand-badge">✈️</div><div><div class="brand-name">Clube do Viajante</div><div class="brand-sub">Roteiro de Viagem</div></div></header>'
+      + '<h1>' + tituloSeguro + '</h1>'
+      + '<div class="gerado-em">Roteiro gerado com o Assistente de Roteiros em ' + dataGeracao + '</div>'
+      + corpo
+      + '<footer>Gerado pelo <strong>Clube do Viajante</strong> — clubedoviajante.com.br</footer>'
+      + '</div></body></html>';
+  }
+
+  window.rotConfirmarPublicar = async function(){
+    var tituloEl = document.getElementById('rot-modal-titulo');
+    var titulo = (tituloEl.value || '').trim() || 'Minha Viagem';
+    var btn = document.getElementById('rot-modal-confirm-btn');
+    btn.disabled = true;
+    btn.textContent = 'Publicando…';
+
+    rotTituloAtual = titulo;
+    var slug = rotSlugAtual || ('membro-' + rotSlugify(titulo) + '-' + Math.random().toString(36).slice(2, 7));
+    var html = rotMontarHTML(titulo);
+
+    try {
+      var resp = await fetch('https://cdv-proxy-production.up.railway.app/roteiros/publicar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: slug, html: html })
+      });
+      var dados = await resp.json();
+      if (!dados.ok) throw new Error(dados.erro || 'Erro ao publicar');
+      rotSlugAtual = slug;
+      window.rotFecharModal();
+      var resEl = document.getElementById('rot-publish-result');
+      resEl.innerHTML = '✅ Roteiro publicado! <a class="rot-publish-link" href="' + dados.url + '" target="_blank" rel="noopener">' + dados.url + '</a>';
+      document.getElementById('rot-publish-btn').textContent = '🔄 Atualizar link do roteiro';
+    } catch (e) {
+      alert('Erro ao publicar roteiro: ' + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Gerar link';
+    }
+  };
+
   window.rotEnviar = rotEnviar;
 
   document.addEventListener('DOMContentLoaded', function(){
