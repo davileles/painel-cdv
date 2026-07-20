@@ -408,11 +408,11 @@ const PARCEIROS_TIER1 = new Set([
 // 12 meses de historico.json. Mesmo critério usado no modal do Comparador
 // (painel-cdv/index.html → calcularPadraoAltas), pra manter os números consistentes
 // entre o painel e as mensagens do gerador de ofertas.
-function calcularFrequenciaAltas(historico, parceiroKey, progId, hoje) {
+function calcularFrequenciaAltas(historico, parceiroKey, progId, hoje, pontosHoje) {
   const corteDate = new Date();
   corteDate.setMonth(corteDate.getMonth() - 12);
   const corte = corteDate.toISOString().split('T')[0];
-  const datas = Object.keys(historico).filter(d => d >= corte && d <= hoje).sort();
+  const datas = Object.keys(historico).filter(d => d >= corte && d <= hoje && d !== hoje).sort();
 
   const serie = [];
   for (const d of datas) {
@@ -422,6 +422,10 @@ function calcularFrequenciaAltas(historico, parceiroKey, progId, hoje) {
     const pts = prog != null ? (typeof prog === 'object' ? prog.pts : prog) : null;
     if (pts != null) serie.push({ data: d, pts });
   }
+  // Inclui a leitura de hoje quando informada — historico[hoje] só é gravado
+  // depois que gerarOfertasVariacao termina, então sem isso a alta detectada
+  // agora ficava de fora do cálculo e a "próxima alta" saía defasada.
+  if (pontosHoje != null) serie.push({ data: hoje, pts: pontosHoje });
 
   const altas = [];
   for (let i = 1; i < serie.length; i++) {
@@ -601,7 +605,7 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
 
       // Padrão de altas (frequência média + próxima alta estimada) — mesmo
       // cálculo do modal do Comparador, usando 12 meses de historico.json.
-      const padraoAltasT1 = calcularFrequenciaAltas(historico, parceiroKey, progId, hoje);
+      const padraoAltasT1 = calcularFrequenciaAltas(historico, parceiroKey, progId, hoje, v.ptsNow);
 
       const rawT1 = 'variacao-tier1-' + parceiroKey + '-' + progId + '-' + new Date().toISOString();
       let hashT1 = 0;
