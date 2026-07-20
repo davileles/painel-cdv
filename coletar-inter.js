@@ -78,17 +78,21 @@ function hashId(str) {
 // os últimos 12 meses de historico.json. Mesmo critério do modal do Comparador
 // (painel-cdv/index.html → calcularPadraoAltas), pra manter os números
 // consistentes entre o painel e as mensagens do gerador de ofertas.
-function calcularFrequenciaAltas(historico, chave, hoje) {
+function calcularFrequenciaAltas(historico, chave, hoje, pontosHoje) {
   const corteDate = new Date();
   corteDate.setMonth(corteDate.getMonth() - 12);
   const corte = corteDate.toISOString().split('T')[0];
-  const datas = Object.keys(historico).filter(d => d >= corte && d <= hoje).sort();
+  const datas = Object.keys(historico).filter(d => d >= corte && d <= hoje && d !== hoje).sort();
 
   const serie = [];
   for (const d of datas) {
     const pts = historico[d]?.[chave]?.programs?.inter?.pts;
     if (pts != null) serie.push({ data: d, pts });
   }
+  // Inclui a leitura de hoje quando informada — historico[hoje] só é gravado
+  // depois que gerarOfertasVariacao termina, então sem isso a alta detectada
+  // agora ficava de fora do cálculo e a "próxima alta" saía defasada.
+  if (pontosHoje != null) serie.push({ data: hoje, pts: pontosHoje });
 
   const altas = [];
   for (let i = 1; i < serie.length; i++) {
@@ -241,7 +245,7 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
 
     // Padrão de altas (frequência média + próxima alta estimada) — mesmo
     // cálculo do modal do Comparador, usando 12 meses de historico.json.
-    const padraoAltasT1 = calcularFrequenciaAltas(historico, v.chave, hoje);
+    const padraoAltasT1 = calcularFrequenciaAltas(historico, v.chave, hoje, v.ptsAgora);
 
     const tituloT1 = `${v.ptsAgora}% de cashback em ${v.nome} no Shopping Inter`;
 
