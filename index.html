@@ -1444,6 +1444,9 @@
     <div class="rot-modal-title">🗺️ Publicar roteiro</div>
     <label class="rot-modal-label" for="rot-modal-titulo">Nome do roteiro (aparece no link e no título da página)</label>
     <input type="text" id="rot-modal-titulo" class="rot-modal-input" placeholder="Ex: Roteiro Paris — Família Silva"/>
+    <label class="rot-modal-label" for="rot-modal-imagem">Imagem de capa (URL) — opcional</label>
+    <input type="text" id="rot-modal-imagem" class="rot-modal-input" placeholder="Cole a URL de uma imagem ou deixe em branco"/>
+    <div id="rot-modal-imagem-status" style="font-size:11px;color:var(--muted);margin:-10px 0 14px;line-height:1.5"></div>
     <div class="rot-modal-actions">
       <button class="rot-modal-cancel" onclick="rotFecharModal()">Cancelar</button>
       <button class="rot-modal-confirm" id="rot-modal-confirm-btn" onclick="rotConfirmarPublicar()">Gerar link</button>
@@ -1458,6 +1461,7 @@
   var rotSaudacaoInicial = 'Oi! 🗺️ Vou te ajudar a montar um roteiro de viagem detalhado, dia a dia. Para começar: qual é o destino da viagem?';
   var rotSlugAtual = null;
   var rotTituloAtual = null;
+  var rotImagemAtual = null;
 
   function rotScrollBottom(){
     var box = document.getElementById('rot-chat-box');
@@ -1596,6 +1600,7 @@
     rotAjustarAlturaInput();
     rotSlugAtual = null;
     rotTituloAtual = null;
+    rotImagemAtual = null;
     document.getElementById('rot-publish-row').style.display = 'none';
     document.getElementById('rot-publish-result').innerHTML = '';
     document.getElementById('rot-publish-btn').textContent = '🔗 Gerar link do roteiro';
@@ -1688,12 +1693,51 @@
 
   window.rotAbrirPublicar = function(){
     document.getElementById('rot-modal-titulo').value = rotTituloAtual || rotExtrairDestino();
+    document.getElementById('rot-modal-imagem').value = rotImagemAtual || '';
+    document.getElementById('rot-modal-imagem-status').textContent = '';
     document.getElementById('rot-modal-overlay').classList.add('open');
     document.getElementById('rot-modal-titulo').focus();
+    rotBuscarImagemAuto();
   };
   window.rotFecharModal = function(){
     document.getElementById('rot-modal-overlay').classList.remove('open');
   };
+
+  // Busca automática de imagem de capa (sem serviço externo pago): usa a API
+  // pública da Wikipedia (imagem principal do artigo do destino). Se o membro
+  // já tiver colado uma URL própria, não sobrescreve.
+  async function rotBuscarImagemWikipedia(termo){
+    if (!termo) return '';
+    try {
+      var url = 'https://pt.wikipedia.org/w/api.php?action=query&titles=' + encodeURIComponent(termo)
+        + '&prop=pageimages&piprop=original&format=json&origin=*';
+      var resp = await fetch(url);
+      var dados = await resp.json();
+      var paginas = (dados && dados.query && dados.query.pages) || {};
+      var chave = Object.keys(paginas)[0];
+      var original = chave && paginas[chave] && paginas[chave].original;
+      return original ? original.source : '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  async function rotBuscarImagemAuto(){
+    var imgEl = document.getElementById('rot-modal-imagem');
+    var statusEl = document.getElementById('rot-modal-imagem-status');
+    if (imgEl.value.trim()) return; // já tem uma URL (própria ou de publicação anterior)
+    var termo = document.getElementById('rot-modal-titulo').value.trim();
+    if (!termo) return;
+    statusEl.textContent = '🔎 Buscando uma imagem sugerida para "' + termo + '"…';
+    var url = await rotBuscarImagemWikipedia(termo);
+    if (imgEl.value.trim()) { statusEl.textContent = ''; return; } // usuário digitou algo enquanto buscava
+    if (url) {
+      imgEl.value = url;
+      statusEl.textContent = '✅ Imagem sugerida automaticamente (Wikipedia) — pode trocar por outra URL se quiser.';
+    } else {
+      statusEl.textContent = 'Não encontrei uma imagem automática para esse destino — cole uma URL se quiser uma capa.';
+    }
+  }
 
   var ROTEIRO_TEMPLATE_URL = 'https://raw.githubusercontent.com/davileles/roteiros/main/template/index.html';
   var ROTEIRO_DATA_ANCHOR = '// ROTEIRO_DATA será injetado aqui pelo gerador:\n// const ROTEIRO_DATA = { ... };';
@@ -1701,7 +1745,7 @@
   // Usa o template real do repositório roteiros (o mesmo do Travel Concierge),
   // apenas trocando a marca para "Clube do Viajante" e injetando o ROTEIRO_DATA
   // extraído da conversa pela IA.
-  async function rotMontarHTML(titulo, slug){
+  async function rotMontarHTML(titulo, slug, imagemCapa){
     var respExtrair = await fetch('https://cdv-proxy-production.up.railway.app/ia/roteiro-extrair', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1712,6 +1756,7 @@
 
     var dados = extraido.dados || {};
     dados.titulo = titulo || dados.titulo || 'Minha Viagem';
+    dados.heroImage = imagemCapa || dados.heroImage || '';
     dados.marcaTexto = 'Clube do Viajante';
     dados.marcaHTML = 'Clube do <span>Viajante</span>';
     dados._slug = slug;
@@ -1731,15 +1776,17 @@
   window.rotConfirmarPublicar = async function(){
     var tituloEl = document.getElementById('rot-modal-titulo');
     var titulo = (tituloEl.value || '').trim() || 'Minha Viagem';
+    var imagemCapa = (document.getElementById('rot-modal-imagem').value || '').trim();
     var btn = document.getElementById('rot-modal-confirm-btn');
     btn.disabled = true;
     btn.textContent = 'Extraindo dados…';
 
     rotTituloAtual = titulo;
+    rotImagemAtual = imagemCapa;
     var slug = rotSlugAtual || ('membro-' + rotSlugify(titulo) + '-' + Math.random().toString(36).slice(2, 7));
 
     try {
-      var html = await rotMontarHTML(titulo, slug);
+      var html = await rotMontarHTML(titulo, slug, imagemCapa);
       btn.textContent = 'Publicando…';
 
       var resp = await fetch('https://cdv-proxy-production.up.railway.app/roteiros/publicar', {
