@@ -614,14 +614,19 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
       const tituloT1 = v.ptsNow + ' pontos por ' + moedaLabelT1 + ' entre ' + v.parceiro + ' e ' + progName;
 
       // Resumo: chamada + dados de pontuação logo abaixo
-      const resumoT1 = [
+      const linhasResumoT1 = [
         v.parceiro + ' aumentou sua pontuação de compra bonificada no ' + progName + '.',
         '',
         '* Pontuação anterior: ' + v.ptsBefore + ' pts/' + moedaT1,
         '* Pontuação atual: ' + v.ptsNow + ' pts/' + moedaT1 + ' (+' + v.delta + ')',
         '* Maior pontuação (últimos 6 meses): ' + maxPts6m + ' pts/' + moedaT1,
         '* Média (últimos 6 meses): ' + mediaPts6m + ' pts/' + moedaT1,
-      ].join('\n');
+      ];
+      if (padraoAltasT1 && padraoAltasT1.frequenciaDias && padraoAltasT1.proximaEstimadaData) {
+        const [, mmProxT1, ddProxT1] = padraoAltasT1.proximaEstimadaData.split('-');
+        linhasResumoT1.push('* Sobe a cada ~' + padraoAltasT1.frequenciaDias + ' dias. Possível próxima alta: ' + ddProxT1 + '/' + mmProxT1);
+      }
+      const resumoT1 = linhasResumoT1.join('\n');
 
       // Link direto: busca no historico consolidado (campo links salvo via /parceiros/resolver-links).
       // snapshotAtual é só o snapshot do dia e não carrega links — precisamos buscar no historico.
