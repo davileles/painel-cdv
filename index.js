@@ -1638,7 +1638,7 @@ app.post('/roteiros/publicar', async (req, res) => {
       throw new Error(putErr.message || `GitHub PUT falhou (${putRes.status})`);
     }
 
-    const url = `https://roteiros.clubedoviajante.com.br/${slug}/`;
+    const url = `https://davileles.github.io/roteiros/${slug}/`;
 
     // 3. Se viagemId fornecido, atualizar viagem no concierge com slugRoteiro + urlRoteiro
     if (viagemId) {
@@ -1679,7 +1679,7 @@ app.get('/roteiros/publicar', async (req, res) => {
       }
     });
     if (checkRes.ok) {
-      res.json({ ok: true, existe: true, url: `https://roteiros.clubedoviajante.com.br/${slug}/` });
+      res.json({ ok: true, existe: true, url: `https://davileles.github.io/roteiros/${slug}/` });
     } else {
       res.json({ ok: true, existe: false });
     }
@@ -2775,6 +2775,115 @@ FINALIZAÇÃO — quando terminar TODOS os dias:
     });
   });
   apiReq.on('error', (e) => { console.error('[ia/roteiro-chat] req error:', e.message); res.json({ ok: false, erro: e.message }); });
+  apiReq.setTimeout(170000, () => { apiReq.destroy(); res.json({ ok: false, erro: 'Timeout ao chamar API Anthropic.' }); });
+  apiReq.write(bodyPayload);
+  apiReq.end();
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── IA: Extrai ROTEIRO_DATA estruturado a partir da conversa do Assistente de Roteiros ──
+// Body: { messages: [{role,content}, ...] } — mesmo historico do /ia/roteiro-chat, ja finalizado
+// Devolve JSON pronto para ser injetado no template davileles/roteiros/template/index.html
+app.post('/ia/roteiro-extrair', (req, res) => {
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+  if (!ANTHROPIC_API_KEY) {
+    return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY nao configurada no servidor.' });
+  }
+
+  const { messages } = req.body || {};
+  if (!Array.isArray(messages) || !messages.length) {
+    return res.status(400).json({ ok: false, erro: 'Campo obrigatorio: messages (array nao vazio).' });
+  }
+
+  const historico = messages
+    .filter(m => m && typeof m.content === 'string' && m.content.trim() && (m.role === 'user' || m.role === 'assistant'))
+    .map(m => ({ role: m.role, content: m.content.trim() }));
+  if (!historico.length) {
+    return res.status(400).json({ ok: false, erro: 'Historico vazio.' });
+  }
+  // A extracao e sempre disparada por uma instrucao final do usuario
+  historico.push({ role: 'user', content: 'Extraia agora o ROTEIRO_DATA completo em JSON, seguindo exatamente as instrucoes do system prompt. Responda SOMENTE com o JSON, sem markdown.' });
+
+  const systemPrompt = `Voce e um extrator de dados estruturados. Vai receber a conversa completa entre o "Assistente de Roteiros" do Clube do Viajante e um usuario, na qual foi construido um roteiro de viagem dia a dia. Sua unica tarefa e ler essa conversa e devolver um objeto JSON valido — e SOMENTE o JSON, sem texto antes/depois, sem blocos de codigo markdown — com exatamente esta estrutura:
+
+{
+  "titulo": "string curta — nome do destino, ex: 'Rio de Janeiro'",
+  "subtitulo": "string curta — estilo/tema da viagem, ex: 'Praia, trilhas e vida noturna em familia'",
+  "eyebrow": "string — ex: 'Clube do Viajante · Rio de Janeiro, Brasil'",
+  "heroImage": "",
+  "pills": ["ate 4 badges curtos: datas, numero de pessoas, estilo da viagem"],
+  "visaoGeral": [ { "label": "string curta em maiusculas", "value": "string", "variant": "" } ],
+  "dias": [
+    {
+      "num": 1,
+      "data": "AAAA-MM-DD ou o texto da data como veio na conversa",
+      "titulo": "titulo curto do dia",
+      "resumo": "2-3 linhas resumindo o dia",
+      "energia": "Leve, Moderado ou Intenso",
+      "atividades": [ { "horario": "HH:MM–HH:MM", "nome": "nome da atracao", "descricao": "2-3 linhas", "dica": "dica pratica, se houver" } ],
+      "deslocamentos": ["Atracao A → Atracao B: como ir, tempo, custo"],
+      "custos": [ { "label": "item", "valor": "R$ valor" } ],
+      "custoTotal": "R$ valor total do dia"
+    }
+  ],
+  "footerNote": "string curta — ex: 'Rio de Janeiro, Brasil · Roteiro personalizado'"
+}
+
+REGRAS:
+- Use SOMENTE informacoes que realmente aparecem na conversa. Nunca invente atracoes, precos ou dicas que nao foram mencionadas.
+- "visaoGeral" deve ter entre 4 e 6 cards com os principais dados da viagem (destino, datas, viajantes, orcamento, ritmo, tipo de viagem).
+- Se algum campo opcional nao tiver informacao suficiente na conversa, retorne string vazia "" ou array vazio [], nunca invente.
+- "dias" deve conter TODOS os dias que apareceram na conversa, na ordem correta, numerados a partir de 1.
+- Responda apenas com o JSON puro, comecando em { e terminando em }.`;
+
+  const bodyPayload = JSON.stringify({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 8192,
+    system: systemPrompt,
+    messages: historico
+  });
+
+  const https = require('https');
+  const options = {
+    hostname: 'api.anthropic.com',
+    path: '/v1/messages',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(bodyPayload),
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01'
+    }
+  };
+
+  const chunks = [];
+  const apiReq = https.request(options, (apiRes) => {
+    apiRes.on('data', (chunk) => { chunks.push(chunk); });
+    apiRes.on('end', () => {
+      const raw = Buffer.concat(chunks).toString('utf-8');
+      console.log('[ia/roteiro-extrair] status:', apiRes.statusCode, 'raw len:', raw.length);
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed.error) { console.error('[ia/roteiro-extrair] API error:', parsed.error); return res.json({ ok: false, erro: parsed.error.message }); }
+        let texto = (parsed.content && parsed.content[0] && parsed.content[0].text) || '';
+        if (!texto) return res.json({ ok: false, erro: 'A IA nao retornou texto.' });
+        texto = texto.replace(/```json|```/g, '').trim();
+        let dados;
+        try {
+          dados = JSON.parse(texto);
+        } catch (e2) {
+          console.error('[ia/roteiro-extrair] JSON invalido:', e2.message, 'texto:', texto.slice(0, 300));
+          return res.json({ ok: false, erro: 'A IA nao retornou um JSON valido.' });
+        }
+        return res.json({ ok: true, dados });
+      } catch (e) {
+        console.error('[ia/roteiro-extrair] parse error:', e.message, 'raw:', raw.slice(0, 300));
+        return res.json({ ok: false, erro: 'Erro ao processar resposta da IA.' });
+      }
+    });
+  });
+  apiReq.on('error', (e) => { console.error('[ia/roteiro-extrair] req error:', e.message); res.json({ ok: false, erro: e.message }); });
   apiReq.setTimeout(170000, () => { apiReq.destroy(); res.json({ ok: false, erro: 'Timeout ao chamar API Anthropic.' }); });
   apiReq.write(bodyPayload);
   apiReq.end();
