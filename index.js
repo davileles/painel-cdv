@@ -1638,7 +1638,7 @@ app.post('/roteiros/publicar', async (req, res) => {
       throw new Error(putErr.message || `GitHub PUT falhou (${putRes.status})`);
     }
 
-    const url = `https://davileles.github.io/roteiros/${slug}/`;
+    const url = `https://roteiros.clubedoviajante.com.br/${slug}/`;
 
     // 3. Se viagemId fornecido, atualizar viagem no concierge com slugRoteiro + urlRoteiro
     if (viagemId) {
@@ -1679,7 +1679,7 @@ app.get('/roteiros/publicar', async (req, res) => {
       }
     });
     if (checkRes.ok) {
-      res.json({ ok: true, existe: true, url: `https://davileles.github.io/roteiros/${slug}/` });
+      res.json({ ok: true, existe: true, url: `https://roteiros.clubedoviajante.com.br/${slug}/` });
     } else {
       res.json({ ok: true, existe: false });
     }
