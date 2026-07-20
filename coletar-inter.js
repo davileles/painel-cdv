@@ -245,14 +245,19 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
 
     const tituloT1 = `${v.ptsAgora}% de cashback em ${v.nome} no Shopping Inter`;
 
-    const resumoT1 = [
+    const linhasResumoT1 = [
       `${v.nome} aumentou o cashback no Shopping Inter.`,
       '',
       `* Cashback anterior: ${v.ptsAntes}%`,
       `* Cashback atual: ${v.ptsAgora}% (+${v.delta}%)`,
       `* Maior cashback (últimos 6 meses): ${maxPts6m}%`,
       `* Média (últimos 6 meses): ${mediaPts6m}%`,
-    ].join('\n');
+    ];
+    if (padraoAltasT1 && padraoAltasT1.frequenciaDias && padraoAltasT1.proximaEstimadaData) {
+      const [, mmProxT1, ddProxT1] = padraoAltasT1.proximaEstimadaData.split('-');
+      linhasResumoT1.push(`* Sobe a cada ~${padraoAltasT1.frequenciaDias} dias. Possível próxima alta: ${ddProxT1}/${mmProxT1}`);
+    }
+    const resumoT1 = linhasResumoT1.join('\n');
 
     novasOfertas.push({
       id: hashId(`inter-t1-${v.chave}-${hoje}-${Date.now()}`),
