@@ -1,0 +1,26 @@
+name: Resumo Diário — Ofertas e Emissões (20h)
+
+on:
+  schedule:
+    - cron: '0 22 * * *'   # 22:00 UTC = 19:00 SP; entrega às 20h via agendarEm do Baileys
+  workflow_dispatch: {}     # permite rodar manualmente pela aba Actions
+
+permissions:
+  contents: read
+
+jobs:
+  resumo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Montar e agendar resumos do dia
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node resumo-diario.js
