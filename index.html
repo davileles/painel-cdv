@@ -4838,6 +4838,7 @@ function milhasUpdateSubcats(){
   if(isTransf){
     sel.innerHTML='<option value="transferencia">Transferência entre programas</option>';
     document.getElementById('ml-custo-wrap').style.display='none';
+    milhasToggleExtras(t);
     return;
   }
   // Garante que campo de taxa de transferência nunca aparece em crédito/débito
