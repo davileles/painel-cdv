@@ -1028,7 +1028,30 @@ app.post('/ia/extrair-reserva', (req, res) => {
     '   Para transfer/trem/onibus/ferry preencha: transferOrigem, transferDestino, transferData, transferHora, transferPax, transferOp, transferVeiculo, transferConf, transferValor. ' +
     '   Para locacao preencha: locadora, carroCat, retLocal, devLocal, retData, devData, carroConf, carroValor. ' +
     '7) Para passeio/atividade, use tipo=\"passeio\" e preencha passeio*. ' +
-    '8) Retorne SOMENTE o JSON, sem explicações.';
+    '8) DATAS: se o documento não informar o ano de alguma data, use o ano atual (' + new Date().getFullYear() + '). ' +
+    '   Toda data deve sair completa no formato YYYY-MM-DD — nunca retorne data sem ano. ' +
+    '9) Retorne SOMENTE o JSON, sem explicações.';
+
+  // Completa o ano atual em datas que a IA retornou sem ano (ex: "12/03", "03-12", "--03-12")
+  function normalizarAnoDatas(d) {
+    const anoAtual = new Date().getFullYear();
+    function fix(v) {
+      if (!v || typeof v !== 'string') return v;
+      const s = v.trim();
+      if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s;                    // já tem ano
+      let m = s.match(/^--(\d{2})-(\d{2})$/);                          // ISO sem ano: --MM-DD
+      if (m) return anoAtual + '-' + m[1] + '-' + m[2];
+      m = s.match(/^(\d{1,2})\/(\d{1,2})$/);                          // padrão BR: DD/MM
+      if (m) return anoAtual + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
+      m = s.match(/^(\d{2})-(\d{2})$/);                                // fragmento ISO: MM-DD
+      if (m) return anoAtual + '-' + m[1] + '-' + m[2];
+      return s;
+    }
+    if (Array.isArray(d.trechos)) d.trechos.forEach(t => { if (t) t.data = fix(t.data); });
+    ['checkin', 'checkout', 'transferData', 'retData', 'devData', 'passeioData', 'dataIda', 'dataVolta']
+      .forEach(k => { if (d[k]) d[k] = fix(d[k]); });
+    return d;
+  }
 
   // Processar trechos no servidor para derivar conexao, destino final, etc.
   function processarTrechos(d) {
@@ -1155,7 +1178,7 @@ app.post('/ia/extrair-reserva', (req, res) => {
         const textoClean = texto.replace(/```json|```/g, '').trim();
         try {
           const dadosRaw = JSON.parse(textoClean);
-          const dadosProcessados = processarTrechos(dadosRaw);
+          const dadosProcessados = processarTrechos(normalizarAnoDatas(dadosRaw));
           return res.json({ ok: true, texto: JSON.stringify(dadosProcessados) });
         } catch(e) {
           return res.json({ ok: true, texto: textoClean });
