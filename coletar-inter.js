@@ -25,11 +25,11 @@ const PARCEIROS_TIER1_INTER = new Set([
   'airbnb',
   'uber',
   'assaí',
-  'zift',
+  'zift - cartão multimarcas',
   'zé delivery',
   'madero',
-  '99 food',
-  '99 mobilidade',
+  'cupom 99 food',
+  'cupom 99 mobilidade',
   'coco bambu',
 ]);
 
