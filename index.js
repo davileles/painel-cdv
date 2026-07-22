@@ -1273,7 +1273,14 @@ async function putConciergeFile(filename, content, sha) {
     const req = https.request(options, (res) => {
       let raw = '';
       res.on('data', d => raw += d);
-      res.on('end', () => resolve(JSON.parse(raw)));
+      res.on('end', () => {
+        let parsed;
+        try { parsed = JSON.parse(raw); } catch(e) { return reject(new Error('Resposta inválida do GitHub')); }
+        if (res.statusCode >= 200 && res.statusCode < 300) return resolve(parsed);
+        const err = new Error(parsed.message || `GitHub PUT falhou (status ${res.statusCode})`);
+        err.status = res.statusCode;
+        reject(err);
+      });
     });
     req.on('error', reject);
     req.write(body);
@@ -1423,15 +1430,19 @@ app.get('/concierge/cfg', async (req, res) => {
 
 // POST /concierge/cfg
 app.post('/concierge/cfg', async (req, res) => {
-  try {
-    const { data } = req.body;
-    let sha = null;
-    try { ({ sha } = await getConciergeFile('cfg.json')); } catch(e) {}
-    await putConciergeFile('cfg.json', data, sha);
-    res.json({ ok: true });
-  } catch(e) {
-    console.error('[concierge/cfg POST]', e.message);
-    res.status(500).json({ ok: false, erro: e.message });
+  const { data } = req.body;
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    try {
+      let sha = null;
+      try { ({ sha } = await getConciergeFile('cfg.json')); } catch(e) {}
+      await putConciergeFile('cfg.json', data, sha);
+      return res.json({ ok: true });
+    } catch(e) {
+      // 409 = SHA desatualizado (outra escrita concorrente venceu a corrida) — busca SHA fresco e tenta de novo
+      if (e.status === 409 && tentativa < 2) continue;
+      console.error('[concierge/cfg POST]', e.message);
+      return res.status(500).json({ ok: false, erro: e.message });
+    }
   }
 });
 
@@ -2917,4 +2928,5 @@ REGRAS:
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
 });
+
 
