@@ -2107,12 +2107,12 @@
             <label class="milhas-label">Bandeira</label>
             <select id="cartao-bandeira" class="milhas-input">
               <option value="">Selecione…</option>
-              <option>Visa</option>
-              <option>Mastercard</option>
               <option>American Express</option>
+              <option>Diners</option>
               <option>Elo</option>
               <option>Hipercard</option>
-              <option>Diners</option>
+              <option>Mastercard</option>
+              <option>Visa</option>
               <option>Outro</option>
             </select>
           </div>
@@ -4383,21 +4383,21 @@ const MILHAS_PROGS = [
 
 const MILHAS_SUBCATS = {
   credito: [
-    {id:'cartao',     label:'Cartão de Crédito',              temCusto:false},
-    {id:'compra_pts', label:'Compra de Pontos',                temCusto:true},
     {id:'clube',      label:'Assinatura de Clube',             temCusto:true},
+    {id:'cartao',     label:'Cartão de Crédito',              temCusto:false},
     {id:'compra_bon', label:'Compra Bonificada',               temCusto:true},
-    {id:'trans_cpf_rec', label:'Transferência entre CPFs — Recebida', temCusto:false},
+    {id:'compra_pts', label:'Compra de Pontos',                temCusto:true},
     {id:'saldo_ini', label:'Saldo Inicial',                       temCusto:false},
+    {id:'trans_cpf_rec', label:'Transferência entre CPFs — Recebida', temCusto:false},
     {id:'outros_cred',label:'Outros Créditos',                 temCusto:false},
   ],
   debito: [
-    {id:'passagem',   label:'Resgate — Passagem Aérea',        temCusto:false},
+    {id:'expiracao',  label:'Expiração',                       temCusto:false},
     {id:'hospedagem', label:'Resgate — Hospedagem',            temCusto:false},
     {id:'locacao',    label:'Resgate — Locação de Carro',      temCusto:false},
+    {id:'passagem',   label:'Resgate — Passagem Aérea',        temCusto:false},
     {id:'produto',    label:'Resgate — Produto/Shopping',      temCusto:false},
     {id:'trans_cpf_env', label:'Transferência entre CPFs — Enviada', temCusto:false},
-    {id:'expiracao',  label:'Expiração',                       temCusto:false},
     {id:'outros_deb', label:'Outros Débitos',                  temCusto:false},
   ],
 };
