@@ -1301,15 +1301,19 @@ app.get('/concierge/reservas', async (req, res) => {
 
 // POST /concierge/reservas
 app.post('/concierge/reservas', async (req, res) => {
-  try {
-    const { data } = req.body;
-    if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
-    const { sha } = await getConciergeFile('reservas.json');
-    await putConciergeFile('reservas.json', data, sha);
-    res.json({ ok: true });
-  } catch(e) {
-    console.error('[concierge/reservas POST]', e.message);
-    res.status(500).json({ ok: false, erro: e.message });
+  const { data } = req.body;
+  if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    try {
+      const { sha } = await getConciergeFile('reservas.json');
+      await putConciergeFile('reservas.json', data, sha);
+      return res.json({ ok: true });
+    } catch(e) {
+      // 409 = SHA desatualizado (outra escrita concorrente venceu a corrida) — busca SHA fresco e tenta de novo
+      if (e.status === 409 && tentativa < 2) continue;
+      console.error('[concierge/reservas POST]', e.message);
+      return res.status(500).json({ ok: false, erro: e.message });
+    }
   }
 });
 
@@ -1326,15 +1330,19 @@ app.get('/concierge/viagens', async (req, res) => {
 
 // POST /concierge/viagens
 app.post('/concierge/viagens', async (req, res) => {
-  try {
-    const { data } = req.body;
-    if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
-    const { sha } = await getConciergeFile('viagens.json');
-    await putConciergeFile('viagens.json', data, sha);
-    res.json({ ok: true });
-  } catch(e) {
-    console.error('[concierge/viagens POST]', e.message);
-    res.status(500).json({ ok: false, erro: e.message });
+  const { data } = req.body;
+  if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    try {
+      const { sha } = await getConciergeFile('viagens.json');
+      await putConciergeFile('viagens.json', data, sha);
+      return res.json({ ok: true });
+    } catch(e) {
+      // 409 = SHA desatualizado (outra escrita concorrente venceu a corrida) — busca SHA fresco e tenta de novo
+      if (e.status === 409 && tentativa < 2) continue;
+      console.error('[concierge/viagens POST]', e.message);
+      return res.status(500).json({ ok: false, erro: e.message });
+    }
   }
 });
 
@@ -2928,5 +2936,6 @@ REGRAS:
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
 });
+
 
 
