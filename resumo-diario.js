@@ -22,7 +22,7 @@ const DRY_RUN = process.argv.includes('--dry-run');
 const OFERTAS_FILE = path.join(__dirname, 'ofertas.json');
 const PASSAGENS_FILE = path.join(__dirname, 'passagens.json');
 
-const RODAPE = 'Confira tudo com detalhes no Painel CDV: https://painel.clubedoviajante.com.br';
+const RODAPE = '`Confira tudo com detalhes no Painel CDV: https://painel.clubedoviajante.com.br`';
 
 // ── Datas (America/Sao_Paulo, UTC-3 fixo desde 2019) ─────────────────────────
 function hojeSP() {
