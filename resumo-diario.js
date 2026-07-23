@@ -131,7 +131,7 @@ REGRAS OBRIGATÓRIAS:
 🎫 *Clubes de assinatura*        → categoria "clube"
 💰 *Compra de pontos*            → categoria "compra"
 💳 *Cartões*                     → categoria "cartao"
-🛍️ *Compras bonificadas*        → categoria "compra_bonificada". Itens do tipo "N parceiros tiveram aumento de pontuação com X" NÃO viram bullets: condense TODOS numa única linha final "📈 N parceiros subiram na Livelo, M na Esfera..." somando por programa. Lojas individuais viram bullets "• Loja: X pts/R$ (Programa)" — no máximo 4 bullets, escolha os de maior pontuação; pode juntar 2 lojas na mesma linha separadas por " | ".
+🛍️ *Compras bonificadas*        → categoria "compra_bonificada". Itens do tipo "N parceiros tiveram aumento de pontuação com X" NÃO viram bullets individuais: condense TODOS num bullet final "• N parceiros subiram na Livelo, M na Esfera..." somando por programa. Lojas individuais viram bullets "• Loja: X pts/R$ (Programa)" — no máximo 4 bullets, escolha os de maior pontuação; pode juntar 2 lojas na mesma linha separadas por " | ".
 📰 *Outras*                      → categoria "geral" e demais
 
 - Cada bullet: 1 linha, terminando com "(até DD/MM)" quando houver prazo. Se o prazo for HOJE (${payload.hoje}), termine com "(⏰ último dia!)".
