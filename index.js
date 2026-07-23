@@ -259,6 +259,10 @@ function prazoParaIso(prazoStr) {
 // Best-effort: falhas aqui nunca devem quebrar o fluxo de aprovação da oferta.
 async function atualizarHistoricoTransferencia(item) {
   if (!item || item.categoria !== 'transferencia') return;
+  // Ofertas combo / derivadas (ex: "Esfera -> Azul -> ALL Accor") juntam pernas
+  // de campanhas distintas: registra-las duplicaria bonus ja gravados pelas
+  // ofertas individuais e colaria o % de uma perna no par da outra.
+  if (item.semHistorico) return;
   if (!item.origem || !item.destino || item.bonusMax === undefined || item.bonusMax === null || item.bonusMax === '') return;
 
   const chave = chaveHistorico(item.origem, item.destino);
