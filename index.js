@@ -7,6 +7,26 @@ const PORT = process.env.PORT || 3000;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO || 'davileles/cdv-compras-bonificadas';
 
+// ── Separação de dados sensíveis ─────────────────────────────────────────────
+// Arquivos com dados pessoais devem viver em repositório PRIVADO. O repo de
+// código (painel-cdv) precisa continuar público porque serve o GitHub Pages.
+// Enquanto GITHUB_REPO_DADOS não estiver definido no Railway, tudo continua
+// lendo/escrevendo em GITHUB_REPO — comportamento idêntico ao atual.
+const GITHUB_REPO_DADOS = process.env.GITHUB_REPO_DADOS || GITHUB_REPO;
+const ARQUIVOS_SENSIVEIS = new Set([
+  'membros.json',
+  'perfis.json',
+  'cartoes.json',
+  'assinaturas.json',
+  'alertas.json',
+  'passagens.json'
+]);
+// Aceita tanto 'membros.json' quanto a variante dev 'membros-dev.json'
+function repoDoArquivo(filePath) {
+  const base = String(filePath || '').replace(/-dev\.json$/, '.json');
+  return ARQUIVOS_SENSIVEIS.has(base) ? GITHUB_REPO_DADOS : GITHUB_REPO;
+}
+
 const ALLOWED = ['comparemania.com.br', 'passageirodeprimeira.com', 'marketplace-api.web.bancointer.com.br'];
 
 // ── Modo DEV ──────────────────────────────────────────────────────────────────
@@ -137,7 +157,7 @@ app.post('/alerta', async (req, res) => {
   }
 
   try {
-    const apiBase = `https://api.github.com/repos/${GITHUB_REPO}/contents/alertas.json`;
+    const apiBase = `https://api.github.com/repos/${repoDoArquivo('alertas.json')}/contents/alertas.json`;
     const headers = {
       'Authorization': `Bearer ${GITHUB_TOKEN}`,
       'Accept': 'application/vnd.github+json',
@@ -195,7 +215,7 @@ function ghHeaders(nocache = false) {
 }
 
 async function ghGetJson(filePath, fallback) {
-  const apiBase = `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`;
+  const apiBase = `https://api.github.com/repos/${repoDoArquivo(filePath)}/contents/${filePath}`;
   const res = await fetch(apiBase, { compress: false, headers: ghHeaders(true) });
   if (res.status === 404) return { data: fallback, sha: null };
   const data = await res.json();
@@ -224,7 +244,7 @@ async function ghGetJson(filePath, fallback) {
 }
 
 async function ghPutJson(filePath, jsonData, sha, message) {
-  const apiBase = `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`;
+  const apiBase = `https://api.github.com/repos/${repoDoArquivo(filePath)}/contents/${filePath}`;
   const body = {
     message,
     content: Buffer.from(JSON.stringify(jsonData, null, 2)).toString('base64'),
