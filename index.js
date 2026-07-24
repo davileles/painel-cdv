@@ -662,6 +662,74 @@ app.post('/membros/verificar-codigo', (req, res) => {
   res.json({ ok: true, acesso: true, nome: entrada.nome, email: emailNorm, produtos: entrada.produtos });
 });
 
+// ── ADMIN OTP: acesso restrito (TSP + Concierge) ─────────────────────────────
+// Allowlist fixa — independente de membros.json. Para liberar novos acessos,
+// basta adicionar o e-mail (minúsculo) no array abaixo.
+const ADMIN_EMAILS = ['davileles@gmail.com'];
+const adminOtpStore = new Map();
+
+const ADMIN_APPS = {
+  tsp:       { nome: 'Tudo Sobre Promos', cor: '#ffa500', from: 'Tudo Sobre Promos <noreply@clubedoviajante.com.br>' },
+  concierge: { nome: 'Travel Concierge',  cor: '#126eff', from: 'Travel Concierge <noreply@clubedoviajante.com.br>' }
+};
+
+app.post('/admin/enviar-codigo', async (req, res) => {
+  const body  = req.body || {};
+  const email = (body.email || '').toLowerCase().trim();
+  const app_  = ADMIN_APPS[body.app] || ADMIN_APPS.concierge;
+  if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
+  if (!ADMIN_EMAILS.includes(email)) return res.json({ ok: false, motivo: 'nao_autorizado' });
+
+  const codigo = gerarCodigo();
+  adminOtpStore.set(email, { codigo, expira: Date.now() + OTP_TTL });
+
+  if (!RESEND_API_KEY) {
+    console.log(`[ADMIN-OTP-DEV] ${email} → ${codigo}`);
+    return res.json({ ok: true, dev: true });
+  }
+  try {
+    const emailRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: app_.from,
+        to: [email],
+        subject: `Seu código de acesso: ${codigo}`,
+        html: `
+          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0a0c12;color:#fff;border-radius:12px">
+            <h2 style="color:${app_.cor};margin-bottom:8px">${app_.nome}</h2>
+            <p style="color:#aaa;margin-bottom:24px">Use o código abaixo para acessar o painel. Ele expira em <strong>10 minutos</strong>.</p>
+            <div style="background:#1a1d2e;border-radius:10px;padding:24px;text-align:center;letter-spacing:12px;font-size:32px;font-weight:900;color:${app_.cor};margin-bottom:24px">${codigo}</div>
+            <p style="color:#666;font-size:12px">Se você não solicitou este código, ignore este e-mail.</p>
+          </div>`
+      })
+    });
+    if (!emailRes.ok) {
+      console.error('[ADMIN-OTP-RESEND]', await emailRes.text());
+      return res.status(500).json({ ok: false, erro: 'Falha ao enviar e-mail' });
+    }
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+app.post('/admin/verificar-codigo', (req, res) => {
+  const body   = req.body || {};
+  const email  = (body.email || '').toLowerCase().trim();
+  const codigo = (body.codigo || '').trim();
+  if (!email || !codigo) return res.status(400).json({ ok: false, erro: 'E-mail e código obrigatórios' });
+  if (!ADMIN_EMAILS.includes(email)) return res.json({ ok: false, motivo: 'nao_autorizado' });
+
+  const entrada = adminOtpStore.get(email);
+  if (!entrada) return res.json({ ok: false, motivo: 'nao_encontrado' });
+  if (Date.now() > entrada.expira) { adminOtpStore.delete(email); return res.json({ ok: false, motivo: 'expirado' }); }
+  if (entrada.codigo !== codigo) return res.json({ ok: false, motivo: 'invalido' });
+
+  adminOtpStore.delete(email);
+  res.json({ ok: true, acesso: true, email });
+});
+
 // ── Membros: verificar acesso por e-mail ─────────────────────────────────────
 app.get('/membros/verificar', async (req, res) => {
   const email = (req.query.email || '').toLowerCase().trim();
