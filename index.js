@@ -200,16 +200,19 @@ async function ghGetJson(filePath, fallback) {
   if (res.status === 404) return { data: fallback, sha: null };
   const data = await res.json();
   if (!res.ok) return { data: fallback, sha: null };
-  // Arquivo >1MB: GitHub retorna encoding:'none' e content vazio — buscar via raw URL
+  // Arquivo >1MB: GitHub retorna encoding:'none' e content vazio.
+  // Buscar pela própria Contents API com Accept:raw (funciona em repo privado,
+  // ao contrário de raw.githubusercontent.com, que exige repo público).
   if (data.encoding === 'none' || !data.content) {
     const sha = data.sha || null;
     try {
-      const rawUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${filePath}`;
-      const rawRes = await fetch(rawUrl, { compress: false, headers: ghHeaders(true) });
+      const rawHeaders = { ...ghHeaders(true), 'Accept': 'application/vnd.github.raw' };
+      const rawRes = await fetch(apiBase, { compress: false, headers: rawHeaders });
       if (!rawRes.ok) return { data: fallback, sha };
-      const parsed = await rawRes.json();
+      const parsed = JSON.parse(await rawRes.text());
       return { data: parsed, sha };
     } catch (e) {
+      console.error(`[ghGetJson raw] ${filePath}:`, e.message);
       return { data: fallback, sha };
     }
   }
@@ -1300,11 +1303,16 @@ async function getConciergeFile(filename) {
             const content = JSON.parse(Buffer.from(meta.content.replace(/\n/g,''), 'base64').toString('utf-8'));
             return resolve({ content, sha: fileSha });
           }
-          // Arquivo grande (>1MB): usar raw API
+          // Arquivo grande (>1MB): Contents API com Accept:raw
+          // (não usa raw.githubusercontent.com, que quebra se o repo for privado)
           const optsRaw = {
-            hostname: 'raw.githubusercontent.com',
-            path: `/davileles/concierge/main/${filename}`,
-            headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'User-Agent': 'cdv-proxy' }
+            hostname: 'api.github.com',
+            path: `/repos/${CONCIERGE_REPO}/contents/${filename}`,
+            headers: {
+              'Authorization': `token ${GITHUB_TOKEN}`,
+              'User-Agent': 'cdv-proxy',
+              'Accept': 'application/vnd.github.raw'
+            }
           };
           https.get(optsRaw, (resRaw) => {
             let rawData = '';
@@ -1603,11 +1611,8 @@ const PARCEIROS_VIAGEM = new Set([
 app.get('/parceiros', async (req, res) => {
   try {
     const filtroViagem = req.query.viagem !== 'false'; // padrão: filtra por viagem
-    const apiBase = `https://api.github.com/repos/${GITHUB_REPO}/contents/historico.json`;
-    const headers = { 'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json' };
-    const getRes = await fetch(apiBase, { compress: false, headers });
-    const getData = await getRes.json();
-    const historico = JSON.parse(Buffer.from(getData.content, 'base64').toString('utf8'));
+    // ghGetJson já trata arquivos >1MB (Accept:raw) e autentica — historico.json cresce continuamente
+    const { data: historico } = await ghGetJson('historico.json', {});
     const dates = Object.keys(historico).sort();
     const last = historico[dates[dates.length - 1]] || {};
     let parceiros = Object.entries(last)
@@ -2611,10 +2616,11 @@ app.get('/concierge/arquivo/:reservaId', async (req, res) => {
     // Buscar conteúdo de cada arquivo em paralelo
     const resultados = await Promise.all(arquivosRepo.map(async (f) => {
       try {
-        // Preferir raw para evitar problema de encoding: none em arquivos grandes
+        // Contents API com Accept:raw — evita encoding:'none' em arquivos grandes
+        // e continua funcionando se o repositório for privado
         const rawRes = await fetch(
-          `https://raw.githubusercontent.com/${CONCIERGE_REPO}/main/${f.path}`,
-          { headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'User-Agent': 'cdv-proxy' } }
+          `https://api.github.com/repos/${CONCIERGE_REPO}/contents/${f.path}`,
+          { headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'User-Agent': 'cdv-proxy', 'Accept': 'application/vnd.github.raw' } }
         );
         if (!rawRes.ok) return null;
         const text = await rawRes.text();
