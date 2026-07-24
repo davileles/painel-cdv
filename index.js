@@ -13,14 +13,18 @@ const GITHUB_REPO = process.env.GITHUB_REPO || 'davileles/cdv-compras-bonificada
 // Enquanto GITHUB_REPO_DADOS não estiver definido no Railway, tudo continua
 // lendo/escrevendo em GITHUB_REPO — comportamento idêntico ao atual.
 const GITHUB_REPO_DADOS = process.env.GITHUB_REPO_DADOS || GITHUB_REPO;
+// FASE 1 — arquivos tocados APENAS pelo proxy. Migração sem efeito colateral.
 const ARQUIVOS_SENSIVEIS = new Set([
   'membros.json',
   'perfis.json',
   'cartoes.json',
-  'assinaturas.json',
-  'alertas.json',
-  'passagens.json'
+  'assinaturas.json'
 ]);
+// FASE 2 — pendente: 'alertas.json' (lido por coletar.js) e 'passagens.json'
+// (lido por resumo-diario.js) são acessados via checkout local pelas GitHub
+// Actions do painel-cdv. Só mover depois de ajustar esses workflows para
+// fazer checkout adicional do repositório de dados.
+
 // Aceita tanto 'membros.json' quanto a variante dev 'membros-dev.json'
 function repoDoArquivo(filePath) {
   const base = String(filePath || '').replace(/-dev\.json$/, '.json');
