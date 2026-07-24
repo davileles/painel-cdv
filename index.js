@@ -20,10 +20,15 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'cartoes.json',
   'assinaturas.json'
 ]);
-// FASE 2 — pendente: 'alertas.json' (lido por coletar.js) e 'passagens.json'
-// (lido por resumo-diario.js) são acessados via checkout local pelas GitHub
-// Actions do painel-cdv. Só mover depois de ajustar esses workflows para
-// fazer checkout adicional do repositório de dados.
+// NÃO migrar (verificado): 'passagens.json' é catálogo de ofertas
+// (cia/origem/destino/pontos) — sem dado pessoal. 'historico.json',
+// 'ofertas.json', 'milhas.json', 'lounges-db.json' idem.
+//
+// PENDENTE: 'alertas.json' contém e-mail de membro. Não migrado porque é lido
+// e reescrito por coletar.js via checkout local (git add no coletar-historico.yml).
+// Para migrar: trocar os fs.read/writeFileSync de alertas.json no coletar.js por
+// chamadas à Contents API do repo de dados, usando um secret com Contents:write,
+// e remover o arquivo do 'git add' do workflow.
 
 // Aceita tanto 'membros.json' quanto a variante dev 'membros-dev.json'
 function repoDoArquivo(filePath) {
