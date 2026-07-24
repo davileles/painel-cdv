@@ -205,7 +205,7 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
     categoria: 'compra_bonificada',
     loja: 'Shopping Inter',
     cupom: '',
-    link: 'https://shopping.inter.co/gift-card',
+    link: 'https://painel.clubedoviajante.com.br',
     importante: '',
     milheiro: '',
     tetoTransferencia: '',
