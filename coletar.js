@@ -19,10 +19,14 @@ const OFERTAS_FILE    = path.join(__dirname, 'ofertas.json');
 const RESEND_API_KEY  = process.env.RESEND_API_KEY || '';
 
 // ── Publicacao automatica das ofertas de variacao ────────────────────────────
-const BAILEYS_URL           = process.env.BAILEYS_URL || 'https://baileys-server-production-ebfe.up.railway.app';
+// O envio usa exatamente o mesmo caminho da aprovacao manual:
+//   POST /ofertas/enviar (proxy) → POST /radar/enviar (baileys-server)
+// A filaRadar do baileys-server ja espaca os envios em 3 minutos, com retry 3x
+// e espera de conexao do WhatsApp. Por isso NAO existe sleep aqui: o Action
+// enfileira tudo e encerra em segundos, enquanto o worker envia no ritmo certo.
+const CDV_PROXY             = process.env.CDV_PROXY || 'https://cdv-proxy-production.up.railway.app';
 const GRUPO_OFERTA          = 'cdv_ofertas';
 const MAX_OFERTAS_APROVADAS = 100;   // mesmo teto usado pelo proxy em /ofertas/aprovar
-const DELAY_ENTRE_ENVIOS_MS = 3000;  // espaco entre mensagens — evita rajada no WhatsApp
 // Kill switch sem redeploy: basta setar AUTO_PUBLICAR_VARIACOES=false no workflow
 // para tudo voltar a cair na aba "Aprovar Ofertas".
 const AUTO_PUBLICAR         = process.env.AUTO_PUBLICAR_VARIACOES !== 'false';
@@ -549,26 +553,23 @@ function montarMensagemRadar(o) {
   return msg;
 }
 
-function sleep(ms) {
-  return new Promise(function (r) { setTimeout(r, ms); });
-}
-
-// Envia a oferta no grupo de ofertas via Baileys. Nunca lanca: devolve
-// { ok: false, erro } para que a oferta caia na fila manual em vez de sumir.
-async function enviarOfertaWhatsApp(oferta) {
+// Enfileira a oferta na filaRadar do baileys-server (3 min entre mensagens).
+// Nunca lanca: devolve { ok: false, erro } para que a oferta caia na fila
+// manual em vez de sumir.
+async function enfileirarOfertaWhatsApp(oferta) {
   const mensagem = montarMensagemRadar(oferta);
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), 25000);
   try {
-    const res = await fetch(`${BAILEYS_URL}/enviar`, {
+    const res = await fetch(`${CDV_PROXY}/ofertas/enviar`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mensagem, grupo: GRUPO_OFERTA }),
+      body: JSON.stringify({ id: oferta.id, mensagem, grupo: GRUPO_OFERTA }),
       signal: ctrl.signal,
     });
     let d = {};
     try { d = await res.json(); } catch (e) { /* resposta nao-JSON */ }
-    if (res.ok && (d.ok || d.status === 'ok')) return { ok: true };
+    if (res.ok && d.ok) return { ok: true, posicao: d.posicao, minutos: d.minutos };
     return { ok: false, erro: d.erro || d.error || `status ${res.status}` };
   } catch (e) {
     return { ok: false, erro: e.message };
@@ -842,8 +843,8 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
   // aqui mesmo), então não passam pela aba "Aprovar Ofertas": a mensagem é
   // montada, enviada no grupo do WhatsApp e a oferta entra em ofertas.json —
   // que é o arquivo lido pela aba Radar de Ofertas do painel.
-  // Se o envio falhar (Baileys fora do ar, WhatsApp desconectado), a oferta cai
-  // em ofertas-pendentes.json e continua disponível para aprovação manual.
+  // Se o enfileiramento falhar (proxy ou Baileys fora do ar), a oferta cai em
+  // ofertas-pendentes.json e continua disponível para aprovação manual.
   const publicadas = [];
   const naoPublicadas = [];
 
@@ -851,20 +852,18 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
     console.log('[Variação] AUTO_PUBLICAR_VARIACOES=false — tudo segue para aprovação manual.');
     naoPublicadas.push(...novasOfertas);
   } else {
-    for (let i = 0; i < novasOfertas.length; i++) {
-      const oferta = novasOfertas[i];
-      if (i > 0) await sleep(DELAY_ENTRE_ENVIOS_MS);
-      const envio = await enviarOfertaWhatsApp(oferta);
+    for (const oferta of novasOfertas) {
+      const envio = await enfileirarOfertaWhatsApp(oferta);
       if (envio.ok) {
         publicadas.push({
           ...oferta,
           publicadaAutomaticamente: true,
-          enviadaEm: new Date().toISOString(),
+          enfileiradaEm: new Date().toISOString(),
         });
-        console.log(`[Variação] ✓ Enviada no grupo: "${oferta.titulo}"`);
+        console.log(`[Variação] ✓ Enfileirada: "${oferta.titulo}" (posição ${envio.posicao}, ~${envio.minutos} min)`);
       } else {
         naoPublicadas.push(oferta);
-        console.warn(`[Variação] ✗ Falha ao enviar "${oferta.titulo}": ${envio.erro} — vai para aprovação manual.`);
+        console.warn(`[Variação] ✗ Falha ao enfileirar "${oferta.titulo}": ${envio.erro} — vai para aprovação manual.`);
       }
     }
   }
