@@ -2,7 +2,7 @@ name: Resumo Diário — Ofertas e Emissões (20h)
 
 on:
   schedule:
-    - cron: '0 22 * * *'   # 22:00 UTC = 19:00 SP; entrega às 20h via agendarEm do Baileys
+    - cron: '0 22 * * 1-5'  # 22:00 UTC seg-sex = 19:00 SP seg-sex; sem envio aos sábados e domingos
   workflow_dispatch: {}     # permite rodar manualmente pela aba Actions
 
 permissions:
