@@ -1777,6 +1777,44 @@ async function verificarAlertasTransferencia(item) {
   }
 }
 
+// Procura algo JÁ ATIVO que atenda o alerta no momento em que ele é criado.
+// Sem isso, um alerta criado depois de a campanha entrar no ar só dispararia
+// na próxima coleta (compra bonificada) ou nunca (transferência, cujo gatilho
+// é a aprovação da oferta). Retorna os dados do disparo, ou null.
+async function checarOportunidadeAtual(al) {
+  if (alvoDoAlerta(al) === 'transferencia') {
+    const { data: ofertas } = await ghGetJson(OFERTAS_APROVADAS_PATH, { items: [] });
+    const hoje = new Date().toISOString().slice(0, 10);
+    const limite7d = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString().slice(0, 10);
+    const destinoAl = normalizarChaveHist(al.destino);
+    const origemAl  = normalizarChaveHist(al.origem);
+    for (const item of (ofertas.items || [])) {
+      if (item.categoria !== 'transferencia' || item.semHistorico) continue;
+      if (!item.destino || item.bonusMax === undefined || item.bonusMax === null || item.bonusMax === '') continue;
+      if (normalizarChaveHist(item.destino) !== destinoAl) continue;
+      const origemItem = normalizarChaveHist(item.origem);
+      const origemBate = !origemAl || origemAl === 'todos' || origemItem === 'todos' || origemAl === origemItem;
+      if (!origemBate) continue;
+      if (Number(item.bonusMax) < Number(al.bonusMin)) continue;
+      // Vigência: prazo ainda no futuro; sem prazo, aceita se publicada nos últimos 7 dias
+      const prazoIso = prazoParaIso(item.prazo);
+      const vigente = prazoIso ? prazoIso >= hoje : (item.publicadoEm || '').slice(0, 10) >= limite7d;
+      if (!vigente) continue;
+      return { origem: item.origem, destino: item.destino, bonus: Number(item.bonusMax), prazo: item.prazo || '', titulo: item.titulo || '' };
+    }
+    return null;
+  }
+  // Compra bonificada: último snapshot do histórico (mesma fonte usada pelo coletar.js)
+  const { data: historico } = await ghGetJson('historico.json', {});
+  const dias = Object.keys(historico).sort();
+  const snap = (historico[dias[dias.length - 1]] || {})[(al.parceiro || '').toLowerCase().trim()];
+  if (!snap || !snap.programs) return null;
+  const pd = snap.programs[al.programa];
+  const pts = (pd && typeof pd === 'object') ? pd.pts : pd;
+  if (!pts || Number(pts) < Number(al.minPts)) return null;
+  return { pts };
+}
+
 // POST /concierge/alerta — cria/atualiza alerta de oportunidade
 app.post('/concierge/alerta', async (req, res) => {
   const b = req.body || {};
@@ -1814,7 +1852,21 @@ app.post('/concierge/alerta', async (req, res) => {
       alertas.push(novo);
     }
     await putConciergeFile(ALERTAS_CONCIERGE_FILE, alertas, sha);
-    res.json({ ok: true, id });
+
+    // Já existe algo ativo que atende? Dispara na hora (e consome o alerta).
+    let disparadoAgora = false;
+    try {
+      const dados = await checarOportunidadeAtual(novo);
+      if (dados) {
+        const r = await dispararAlertaConcierge(id, dados);
+        disparadoAgora = !!r.ok;
+        if (!r.ok) console.error('[concierge/alerta] oportunidade ativa encontrada mas não enviada:', r.erro);
+      }
+    } catch(e) {
+      console.error('[concierge/alerta] checagem imediata falhou:', e.message);
+    }
+
+    res.json({ ok: true, id, disparadoAgora });
   } catch(e) {
     console.error('[concierge/alerta POST]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
