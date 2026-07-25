@@ -186,6 +186,11 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
 
   // ── Oferta agrupada (todos os parceiros) ────────────────────────────────────
   const count = variacoes.length;
+
+  // Se TODOS os parceiros que subiram forem Tier 1, cada um já gera mensagem
+  // exclusiva e detalhada — a mensagem agrupada seria pura duplicação.
+  const todosTier1 = variacoes.every(v => PARCEIROS_TIER1_INTER.has(v.chave));
+
   const linhas = variacoes
     .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))
     .map(v => `🏦 ${v.nome} — ${v.ptsAntes}% → ${v.ptsAgora}% (+${v.delta}%)`)
@@ -193,7 +198,7 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
 
   const tituloAgrupado = `${count} parceiro${count > 1 ? 's tiveram' : ' teve'} aumento de cashback no Shopping Inter`;
 
-  novasOfertas.push({
+  const ofertaAgrupada = {
     id: hashId(`inter-grupo-${hoje}-${Date.now()}`),
     titulo: tituloAgrupado,
     emoji: '🏦',
@@ -212,9 +217,14 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
     restricoes: [],
     publicadoEm: new Date().toISOString(),
     tipoVariacao: true,
-  });
+  };
 
-  console.log(`[Inter] Oferta agrupada: "${tituloAgrupado}"`);
+  if (todosTier1) {
+    console.log(`[Inter] Oferta agrupada suprimida — ${count} parceiro(s) com variação, todos Tier 1 (já têm mensagem exclusiva).`);
+  } else {
+    novasOfertas.push(ofertaAgrupada);
+    console.log(`[Inter] Oferta agrupada: "${tituloAgrupado}"`);
+  }
 
   // ── Ofertas individuais Tier 1 ───────────────────────────────────────────────
   for (const v of variacoes) {
