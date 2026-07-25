@@ -395,6 +395,14 @@ app.post('/ofertas/aprovar', async (req, res) => {
       console.error('[Histórico transferências] Falha ao atualizar:', errHist.message);
     }
 
+    // Alertas de oportunidade do concierge (alvo=transferencia).
+    // Best-effort: falha aqui nunca deve quebrar a aprovação da oferta.
+    try {
+      await verificarAlertasTransferencia(item);
+    } catch (errAl) {
+      console.error('[Alertas concierge] Falha ao verificar transferências:', errAl.message);
+    }
+
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
@@ -1658,76 +1666,192 @@ app.get('/parceiros', async (req, res) => {
   }
 });
 
-// POST /concierge/alerta — cria alerta de compra bonificada do concierge (disparo via WhatsApp)
+// ══════════════════════════════════════════════════════════════════
+//  ALERTAS DE OPORTUNIDADE DO CONCIERGE
+//  Vivem em davileles/concierge/alertas-concierge.json. Cada alerta está
+//  amarrado a uma atividade de viagem pelo campo `id` (a atividade guarda
+//  o mesmo valor em `alertaId`), e tem um alvo:
+//    • compra_bonificada → avaliado pelo coletar.js contra o snapshot
+//      Comparemania; o disparo chega aqui por POST /concierge/alerta/disparar
+//    • transferencia     → avaliado aqui mesmo, em POST /ofertas/aprovar
+//  O grupo de WhatsApp NÃO fica gravado no alerta: é lido de cfg.json
+//  (campo grupoAlertas) no momento do envio, para refletir sempre a
+//  configuração atual da aba Configuração do concierge.
+//  Alertas são consumidos (removidos) após o envio.
+// ══════════════════════════════════════════════════════════════════
+const ALERTAS_CONCIERGE_FILE = 'alertas-concierge.json';
+// BAILEYS_URL já declarado acima (bloco do radar)
+
+function alvoDoAlerta(al) {
+  return (al && al.alvo === 'transferencia') ? 'transferencia' : 'compra_bonificada';
+}
+
+async function lerAlertasConcierge() {
+  try {
+    const { content, sha } = await getConciergeFile(ALERTAS_CONCIERGE_FILE);
+    return { alertas: Array.isArray(content) ? content : [], sha };
+  } catch (e) {
+    return { alertas: [], sha: null };
+  }
+}
+
+function montarMsgAlertaConcierge(al, dados) {
+  const d = dados || {};
+  const linhas = ['🔔 *Oportunidade para uma demanda*', ''];
+  if (alvoDoAlerta(al) === 'transferencia') {
+    linhas.push(`🔄 *Transferência bonificada:* ${d.origem || al.origem || 'Qualquer origem'} → ${d.destino || al.destino || '—'}`);
+    linhas.push(`📊 *Bônus:* ${d.bonus}% (mínimo configurado: ${al.bonusMin}%)`);
+    if (d.prazo) linhas.push(`⏳ *Prazo:* ${d.prazo}`);
+    if (d.titulo) linhas.push(`📰 ${d.titulo}`);
+  } else {
+    linhas.push(`🛍️ *Compra bonificada:* ${al.parceiro} · ${al.programa}`);
+    linhas.push(`📊 *Pontuação atual:* ${d.pts} pts/R$ (mínimo configurado: ${al.minPts})`);
+  }
+  linhas.push('');
+  linhas.push(`🗓️ *Viagem:* ${al.viagemNome || '—'}`);
+  linhas.push(`📌 *Atividade:* ${al.atividadeTitulo || al.atividadeNome || '—'}`);
+  if (al.atividadeTitulo && al.atividadeNome) linhas.push(`🧾 *Tipo:* ${al.atividadeNome}`);
+  if (al.atividadeDescricao) linhas.push(`📝 *Detalhes:* ${al.atividadeDescricao}`);
+  linhas.push('');
+  linhas.push('💡 Essa oferta atende a uma necessidade do cliente — vale avaliar agora.');
+  return linhas.join('\n');
+}
+
+// Envia o alerta para o grupo fixo configurado e consome (remove) o alerta.
+async function dispararAlertaConcierge(alertaId, dados) {
+  const { alertas, sha } = await lerAlertasConcierge();
+  const al = alertas.find((a) => a.id === alertaId);
+  if (!al) return { ok: false, erro: 'Alerta não encontrado (pode já ter sido disparado)' };
+
+  let grupo = '';
+  try {
+    const { content: cfg } = await getConciergeFile('cfg.json');
+    grupo = (cfg && cfg.grupoAlertas) || '';
+  } catch (e) {}
+  if (!grupo) return { ok: false, erro: 'grupoAlertas não configurado (aba Configuração do concierge)' };
+
+  const rw = await fetch(`${BAILEYS_URL}/enviar`, {
+    compress: false,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ grupo, mensagem: montarMsgAlertaConcierge(al, dados) })
+  });
+  if (!rw.ok) throw new Error(`Baileys respondeu ${rw.status}`);
+
+  // Alerta consumido após o envio
+  await putConciergeFile(ALERTAS_CONCIERGE_FILE, alertas.filter((a) => a.id !== alertaId), sha);
+  console.log(`[concierge/alerta] disparado ${alertaId} → ${grupo}`);
+  return { ok: true, grupo };
+}
+
+// Avalia alertas de transferência quando uma oferta do Radar é aprovada.
+async function verificarAlertasTransferencia(item) {
+  if (!item || item.categoria !== 'transferencia') return;
+  if (!item.destino || item.bonusMax === undefined || item.bonusMax === null || item.bonusMax === '') return;
+
+  const { alertas } = await lerAlertasConcierge();
+  const destinoItem = normalizarChaveHist(item.destino);
+  const origemItem  = normalizarChaveHist(item.origem);
+  const bonus = Number(item.bonusMax);
+
+  const atingidos = alertas.filter((al) => {
+    if (alvoDoAlerta(al) !== 'transferencia') return false;
+    if (normalizarChaveHist(al.destino) !== destinoItem) return false;
+    const origemAl = normalizarChaveHist(al.origem);
+    // Alerta sem origem = qualquer origem. Oferta com origem "Todos" vale para todas.
+    const origemBate = !origemAl || origemAl === 'todos' || origemItem === 'todos' || origemAl === origemItem;
+    if (!origemBate) return false;
+    return bonus >= Number(al.bonusMin);
+  });
+
+  for (const al of atingidos) {
+    try {
+      const r = await dispararAlertaConcierge(al.id, {
+        origem: item.origem, destino: item.destino,
+        bonus, prazo: item.prazo || '', titulo: item.titulo || ''
+      });
+      if (!r.ok) console.error('[Alertas concierge] Não enviado:', al.id, r.erro);
+    } catch (e) {
+      console.error('[Alertas concierge] Erro ao disparar', al.id, e.message);
+    }
+  }
+}
+
+// POST /concierge/alerta — cria/atualiza alerta de oportunidade
 app.post('/concierge/alerta', async (req, res) => {
-  const { parceiro, programa, minPts, grupoWhatsApp, viagemId, viagemNome, atividadeNome, atividadeTitulo } = req.body || {};
-  if (!parceiro || !programa || !minPts || !grupoWhatsApp) {
-    return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: parceiro, programa, minPts, grupoWhatsApp' });
+  const b = req.body || {};
+  const alvo = b.alvo === 'transferencia' ? 'transferencia' : 'compra_bonificada';
+  if (alvo === 'transferencia') {
+    if (!b.destino || b.bonusMin === undefined || b.bonusMin === null || b.bonusMin === '') {
+      return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: destino, bonusMin' });
+    }
+  } else if (!b.parceiro || !b.programa || !b.minPts) {
+    return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: parceiro, programa, minPts' });
   }
   try {
-    const apiBase = `https://api.github.com/repos/davileles/concierge/contents/alertas-concierge.json`;
-    const headers = {
-      'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json'
-    };
-    let alertas = [], sha = null;
-    try {
-      const getRes = await fetch(apiBase, { compress: false, headers });
-      const getData = await getRes.json();
-      sha = getData.sha;
-      alertas = JSON.parse(Buffer.from(getData.content, 'base64').toString('utf8'));
-    } catch(e) {}
-
-    // Upsert: mesmo parceiro + programa + viagem
-    const idx = alertas.findIndex(a => a.parceiro === parceiro && a.programa === programa && a.viagemId === viagemId);
+    const { alertas, sha } = await lerAlertasConcierge();
+    const id = b.id || ('ALT-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
     const novo = {
-      tipo: 'concierge',
-      parceiro, programa, minPts: parseFloat(minPts),
-      grupoWhatsApp, viagemId, viagemNome,
-      atividadeNome, atividadeTitulo,
+      id,
+      alvo,
+      parceiro: b.parceiro || '',
+      programa: b.programa || '',
+      minPts: (b.minPts !== undefined && b.minPts !== '' && b.minPts !== null) ? parseFloat(b.minPts) : null,
+      origem: b.origem || '',
+      destino: b.destino || '',
+      bonusMin: (b.bonusMin !== undefined && b.bonusMin !== '' && b.bonusMin !== null) ? parseFloat(b.bonusMin) : null,
+      viagemId: b.viagemId || '',
+      viagemNome: b.viagemNome || '',
+      atividadeNome: b.atividadeNome || '',
+      atividadeTitulo: b.atividadeTitulo || '',
+      atividadeDescricao: b.atividadeDescricao || '',
       criadoEm: new Date().toISOString()
     };
-    if (idx >= 0) { alertas[idx] = { ...alertas[idx], ...novo, atualizadoEm: new Date().toISOString() }; }
-    else { alertas.push(novo); }
-
-    const body = { message: `chore: alerta concierge ${parceiro} (${programa} ≥ ${minPts})`, content: Buffer.from(JSON.stringify(alertas, null, 2)).toString('base64') };
-    if (sha) body.sha = sha;
-    await fetch(apiBase, { compress: false, method: 'PUT', headers, body: JSON.stringify(body) });
-    res.json({ ok: true });
+    const idx = alertas.findIndex((a) => a.id === id);
+    if (idx >= 0) {
+      alertas[idx] = { ...alertas[idx], ...novo, criadoEm: alertas[idx].criadoEm || novo.criadoEm, atualizadoEm: new Date().toISOString() };
+    } else {
+      alertas.push(novo);
+    }
+    await putConciergeFile(ALERTAS_CONCIERGE_FILE, alertas, sha);
+    res.json({ ok: true, id });
   } catch(e) {
     console.error('[concierge/alerta POST]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
 
-// GET /concierge/alertas — lista alertas de compra bonificada do concierge
+// GET /concierge/alertas — lista alertas de oportunidade do concierge
 app.get('/concierge/alertas', async (req, res) => {
+  const { alertas } = await lerAlertasConcierge();
+  res.json({ ok: true, data: alertas });
+});
+
+// DELETE /concierge/alerta — remove alerta por id
+app.delete('/concierge/alerta', async (req, res) => {
+  const { id, parceiro, programa, viagemId } = req.body || {};
   try {
-    const apiBase = `https://api.github.com/repos/davileles/concierge/contents/alertas-concierge.json`;
-    const headers = { 'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json' };
-    const getRes = await fetch(apiBase, { compress: false, headers });
-    const getData = await getRes.json();
-    const alertas = JSON.parse(Buffer.from(getData.content, 'base64').toString('utf8'));
-    res.json({ ok: true, data: alertas });
+    const { alertas, sha } = await lerAlertasConcierge();
+    const restantes = id
+      ? alertas.filter((a) => a.id !== id)
+      : alertas.filter((a) => !(a.parceiro === parceiro && a.programa === programa && a.viagemId === viagemId));
+    await putConciergeFile(ALERTAS_CONCIERGE_FILE, restantes, sha);
+    res.json({ ok: true });
   } catch(e) {
-    res.json({ ok: true, data: [] });
+    console.error('[concierge/alerta DELETE]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
   }
 });
 
-// DELETE /concierge/alerta — remove alerta específico
-app.delete('/concierge/alerta', async (req, res) => {
-  const { parceiro, programa, viagemId } = req.body || {};
+// POST /concierge/alerta/disparar — usado pelo coletar.js (alvo=compra_bonificada)
+app.post('/concierge/alerta/disparar', async (req, res) => {
+  const { id, pts } = req.body || {};
+  if (!id) return res.status(400).json({ ok: false, erro: 'Campo obrigatório: id' });
   try {
-    const apiBase = `https://api.github.com/repos/davileles/concierge/contents/alertas-concierge.json`;
-    const headers = { 'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' };
-    const getRes = await fetch(apiBase, { compress: false, headers });
-    const getData = await getRes.json();
-    let alertas = JSON.parse(Buffer.from(getData.content, 'base64').toString('utf8'));
-    alertas = alertas.filter(a => !(a.parceiro === parceiro && a.programa === programa && a.viagemId === viagemId));
-    await fetch(apiBase, { compress: false, method: 'PUT', headers, body: JSON.stringify({ message: `chore: remove alerta ${parceiro} (${programa})`, content: Buffer.from(JSON.stringify(alertas, null, 2)).toString('base64'), sha: getData.sha }) });
-    res.json({ ok: true });
+    const r = await dispararAlertaConcierge(id, { pts });
+    res.json(r);
   } catch(e) {
+    console.error('[concierge/alerta/disparar]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
