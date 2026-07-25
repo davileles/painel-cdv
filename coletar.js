@@ -531,6 +531,11 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
     const variacoes = variacoesPorProg[progId].sort((a, b) => a.parceiro.localeCompare(b.parceiro, 'pt-BR'));
     const count = variacoes.length;
 
+    // Se TODOS os parceiros que variaram neste programa forem Tier 1, cada um
+    // já gera uma mensagem exclusiva e detalhada — a mensagem agrupada seria
+    // pura duplicação e por isso não é criada.
+    const todosTier1 = variacoes.every(v => PARCEIROS_TIER1.has(v.parceiro.toLowerCase().trim()));
+
     // Gera descrição linha a linha
     const linhas = variacoes.map(v => {
       const moeda = v.dollar ? 'US$' : 'R$';
@@ -565,8 +570,12 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
       tipoVariacao: true,
     };
 
-    novasOfertas.push(oferta);
-    console.log(`[Variação] Oferta gerada: "${titulo}"`);
+    if (todosTier1) {
+      console.log(`[Variação] Oferta agrupada suprimida (${progName}) — ${count} parceiro(s) com variação, todos Tier 1 (já têm mensagem exclusiva).`);
+    } else {
+      novasOfertas.push(oferta);
+      console.log(`[Variação] Oferta gerada: "${titulo}"`);
+    }
 
 
     // -- Ofertas individuais para parceiros Tier 1 ----------------------------
