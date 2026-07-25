@@ -797,46 +797,46 @@ async function main() {
     const progData = snap.programs[alerta.programa];
     const pts = typeof progData === 'object' ? progData.pts : progData;
     if (pts && pts >= alerta.minPts) {
-      // Alerta tipo concierge → notifica via WhatsApp
-      if (alerta.tipo === 'concierge' && alerta.grupoWhatsApp) {
-        try {
-          const BAILEYS = process.env.BAILEYS_URL || 'https://baileys-server-production-ebfe.up.railway.app';
-          const msg = [
-            `🔔 *Alerta de Compra Bonificada*`,
-            ``,
-            `📍 *Parceiro:* ${alerta.parceiro}`,
-            `🏆 *Programa:* ${alerta.programa}`,
-            `📊 *Pontuação atual:* ${pts} pts/R$ (mínimo configurado: ${alerta.minPts})`,
-            ``,
-            `🗓️ *Viagem:* ${alerta.viagemNome || '—'}`,
-            `✅ *Atividade:* ${alerta.atividadeNome || '—'}`,
-            alerta.atividadeTitulo ? `   _${alerta.atividadeTitulo}_` : '',
-            ``,
-            `💡 Aproveite a bonificação para emitir a passagem!`
-          ].filter(l => l !== undefined).join('\n');
-
-          await fetch(`${BAILEYS}/enviar`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ grupo: alerta.grupoWhatsApp, mensagem: msg })
-          });
-          console.log(`[Concierge] Alerta WhatsApp enviado: ${alerta.parceiro} / ${alerta.programa} → ${alerta.grupoWhatsApp}`);
-        } catch (e) {
-          console.error('[Concierge] Erro ao enviar alerta WhatsApp:', e.message);
-          alertasRestantes.push(alerta);
-          continue;
-        }
-      } else {
-        await dispararAlerta(alerta, alerta.parceiro, pts);
-      }
+      // Alertas do painel de membros → e-mail via Resend
+      await dispararAlerta(alerta, alerta.parceiro, pts);
       // Não adiciona de volta — alerta consumido após envio
-      console.log(`[Histórico] Alerta removido após envio: ${alerta.email || alerta.grupoWhatsApp} / ${alerta.parceiro} / ${alerta.programa}`);
+      console.log(`[Histórico] Alerta removido após envio: ${alerta.email} / ${alerta.parceiro} / ${alerta.programa}`);
     } else {
       alertasRestantes.push(alerta);
     }
   }
   // Salva alertas restantes (sem os que já foram disparados)
   fs.writeFileSync(ALERTAS_FILE, JSON.stringify(alertasRestantes, null, 2));
+
+  // 4b. Alertas de oportunidade do concierge (alvo = compra_bonificada)
+  //     Vivem em davileles/concierge/alertas-concierge.json e são lidos via proxy.
+  //     O envio e o consumo do alerta ficam no proxy (POST /concierge/alerta/disparar),
+  //     que resolve o grupo de WhatsApp a partir do cfg.json do concierge (grupoAlertas).
+  //     Alertas de transferência bonificada NÃO são avaliados aqui — eles disparam
+  //     no proxy, no momento da aprovação da oferta do Radar.
+  try {
+    const PROXY = process.env.CDV_PROXY_URL || 'https://cdv-proxy-production.up.railway.app';
+    const rAl = await fetch(`${PROXY}/concierge/alertas`);
+    const dAl = await rAl.json();
+    const alertasConcierge = (dAl && dAl.data) || [];
+    for (const al of alertasConcierge) {
+      if ((al.alvo || 'compra_bonificada') !== 'compra_bonificada') continue;
+      const snapC = snapshot[(al.parceiro || '').toLowerCase().trim()];
+      if (!snapC) continue;
+      const pd = snapC.programs[al.programa];
+      const ptsC = typeof pd === 'object' ? pd.pts : pd;
+      if (!ptsC || ptsC < Number(al.minPts)) continue;
+      const rD = await fetch(`${PROXY}/concierge/alerta/disparar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: al.id, pts: ptsC })
+      });
+      const dD = await rD.json().catch(() => ({}));
+      console.log(`[Concierge] ${al.parceiro}/${al.programa} = ${ptsC} pts (min ${al.minPts}) → ${dD.ok ? 'enviado' : 'FALHOU: ' + (dD.erro || rD.status)}`);
+    }
+  } catch (e) {
+    console.error('[Concierge] Erro ao processar alertas do concierge:', e.message);
+  }
 
 
   // 5. Detecta variações positivas e gera ofertas pendentes por programa
