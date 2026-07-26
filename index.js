@@ -514,7 +514,10 @@ app.post('/ofertas/publicar', async (req, res) => {
 // Body: { origem, destino, cia, programa, pontos, cabine, datas_ida, datas_volta, fonte }
 // fonte: 'emissao' | 'alerta'
 app.post('/passagens/registrar', async (req, res) => {
-  const { origem, destino, cia, programa, pontos, cabine, datas_ida, datas_volta, fonte } = req.body || {};
+  // apenasConsulta: true → calcula e devolve hist180 SEM gravar em passagens.json.
+  // Usado pelo baileys-server para montar o rodapé de histórico da mensagem
+  // enquanto a emissão ainda está pendente de aprovação.
+  const { origem, destino, cia, programa, pontos, cabine, datas_ida, datas_volta, fonte, apenasConsulta } = req.body || {};
 
   if (!origem || !destino || !programa || !pontos) {
     return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: origem, destino, programa, pontos' });
@@ -571,6 +574,10 @@ app.post('/passagens/registrar', async (req, res) => {
       const mediaPts  = Math.round(pontosArr.reduce((a, b) => a + b, 0) / pontosArr.length);
       const isMin     = Number(pontos) <= minPts;
       hist180Stats = { minPts, mediaPts, count: hist180.length, isMin };
+    }
+
+    if (apenasConsulta) {
+      return res.json({ ok: true, id: null, apenasConsulta: true, hist180: hist180Stats });
     }
 
     // Adiciona nova passagem no início
