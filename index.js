@@ -1405,6 +1405,30 @@ async function putConciergeFile(filename, content, sha) {
   });
 }
 
+// Preserva as marcas de envio automático gravadas pelo lembrete-voo.js.
+// O painel do concierge salva sempre o array inteiro que tem em memória
+// (read-modify-write); se a Action gravou uma flag `enviado_*` depois que a
+// página carregou, esse save apagaria a flag e a mensagem seria reenviada na
+// execução seguinte. O arquivo remoto é sempre a fonte autoritativa dessas
+// chaves — o payload do front nunca vence.
+function preservarFlagsEnvio(remoto, novo) {
+  if (!Array.isArray(remoto) || !Array.isArray(novo)) return novo;
+  const porId = new Map();
+  for (const item of remoto) if (item && item.id) porId.set(item.id, item);
+  let preservadas = 0;
+  for (const item of novo) {
+    if (!item || !item.id) continue;
+    const antigo = porId.get(item.id);
+    if (!antigo) continue;
+    for (const k of Object.keys(antigo)) {
+      if (!k.startsWith('enviado_')) continue;
+      if (item[k] !== antigo[k]) { item[k] = antigo[k]; preservadas++; }
+    }
+  }
+  if (preservadas) console.log(`[concierge] ${preservadas} marca(s) de envio preservada(s)`);
+  return novo;
+}
+
 // GET /concierge/reservas
 app.get('/concierge/reservas', async (req, res) => {
   try {
@@ -1422,8 +1446,8 @@ app.post('/concierge/reservas', async (req, res) => {
   if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
   for (let tentativa = 0; tentativa < 3; tentativa++) {
     try {
-      const { sha } = await getConciergeFile('reservas.json');
-      await putConciergeFile('reservas.json', data, sha);
+      const { content: remoto, sha } = await getConciergeFile('reservas.json');
+      await putConciergeFile('reservas.json', preservarFlagsEnvio(remoto, data), sha);
       return res.json({ ok: true });
     } catch(e) {
       // 409 = SHA desatualizado (outra escrita concorrente venceu a corrida) — busca SHA fresco e tenta de novo
@@ -1451,8 +1475,8 @@ app.post('/concierge/viagens', async (req, res) => {
   if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
   for (let tentativa = 0; tentativa < 3; tentativa++) {
     try {
-      const { sha } = await getConciergeFile('viagens.json');
-      await putConciergeFile('viagens.json', data, sha);
+      const { content: remoto, sha } = await getConciergeFile('viagens.json');
+      await putConciergeFile('viagens.json', preservarFlagsEnvio(remoto, data), sha);
       return res.json({ ok: true });
     } catch(e) {
       // 409 = SHA desatualizado (outra escrita concorrente venceu a corrida) — busca SHA fresco e tenta de novo
@@ -1610,7 +1634,8 @@ app.get('/concierge/msgs-enviadas', async (req, res) => {
 app.post('/concierge/msgs-enviadas', async (req, res) => {
   try {
     const { data } = req.body;
-    if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
+    // Array = formato legado; objeto { "MOD-x|RES-y": timestamp } = ledger atual
+    if (!data || typeof data !== 'object') return res.status(400).json({ ok: false, erro: 'data deve ser um array ou objeto' });
     let sha = null;
     try { ({ sha } = await getConciergeFile('msgs-enviadas.json')); } catch(e) {}
     await putConciergeFile('msgs-enviadas.json', data, sha);
