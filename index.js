@@ -1715,7 +1715,25 @@ const ALERTAS_CONCIERGE_FILE = 'alertas-concierge.json';
 // BAILEYS_URL já declarado acima (bloco do radar)
 
 function alvoDoAlerta(al) {
-  return (al && al.alvo === 'transferencia') ? 'transferencia' : 'compra_bonificada';
+  const a = al && al.alvo;
+  if (a === 'transferencia') return 'transferencia';
+  if (a === 'lembrete') return 'lembrete';
+  return 'compra_bonificada';
+}
+
+function fmtDataBRAlerta(iso) {
+  if (!iso) return '';
+  const [y, m, d] = String(iso).split('-');
+  return (d && m && y) ? `${d}/${m}/${y}` : String(iso);
+}
+
+// Timestamp (ms) do disparo de um lembrete. Brasil nao tem mais horario de verao,
+// entao -03:00 fixo e seguro — mesmo criterio usado pelo lembrete-voo.js.
+function tsLembrete(al) {
+  if (!al || !al.dataLembrete) return null;
+  const hora = /^\d{2}:\d{2}$/.test(al.horaLembrete || '') ? al.horaLembrete : '09:00';
+  const t = new Date(`${al.dataLembrete}T${hora}:00-03:00`).getTime();
+  return isNaN(t) ? null : t;
 }
 
 async function lerAlertasConcierge() {
@@ -1729,23 +1747,41 @@ async function lerAlertasConcierge() {
 
 function montarMsgAlertaConcierge(al, dados) {
   const d = dados || {};
-  const linhas = ['🔔 *Oportunidade para uma demanda*', ''];
-  if (alvoDoAlerta(al) === 'transferencia') {
+  const alvo = alvoDoAlerta(al);
+  const linhas = [];
+
+  if (alvo === 'lembrete') {
+    linhas.push('⏰ *Lembrete agendado*', '');
+    linhas.push(`📌 ${al.textoLembrete || al.demandaTitulo || al.atividadeTitulo || 'Lembrete'}`);
+    if (al.dataLembrete) {
+      linhas.push(`🗓️ *Programado para:* ${fmtDataBRAlerta(al.dataLembrete)}${al.horaLembrete ? ' às ' + al.horaLembrete : ''}`);
+    }
+  } else if (alvo === 'transferencia') {
+    linhas.push('🔔 *Oportunidade para uma demanda*', '');
     linhas.push(`🔄 *Transferência bonificada:* ${d.origem || al.origem || 'Qualquer origem'} → ${d.destino || al.destino || '—'}`);
     linhas.push(`📊 *Bônus:* ${d.bonus}% (mínimo configurado: ${al.bonusMin}%)`);
     if (d.prazo) linhas.push(`⏳ *Prazo:* ${d.prazo}`);
     if (d.titulo) linhas.push(`📰 ${d.titulo}`);
   } else {
+    linhas.push('🔔 *Oportunidade para uma demanda*', '');
     linhas.push(`🛍️ *Compra bonificada:* ${al.parceiro} · ${al.programa}`);
     linhas.push(`📊 *Pontuação atual:* ${d.pts} pts/R$ (mínimo configurado: ${al.minPts})`);
   }
+
+  // Contexto do vinculo: demanda e/ou atividade de viagem (campos opcionais)
+  const ctx = [];
+  if (al.demandaNumero) ctx.push(`📋 *Demanda:* #${String(al.demandaNumero).padStart(3, '0')}${al.demandaTitulo ? ' — ' + al.demandaTitulo : ''}`);
+  if (al.clientes) ctx.push(`👤 *Cliente:* ${al.clientes}`);
+  if (al.viagemNome) ctx.push(`🗓️ *Viagem:* ${al.viagemNome}`);
+  if (al.atividadeTitulo || al.atividadeNome) ctx.push(`📌 *Atividade:* ${al.atividadeTitulo || al.atividadeNome}`);
+  if (al.atividadeTitulo && al.atividadeNome) ctx.push(`🧾 *Tipo:* ${al.atividadeNome}`);
+  if (al.atividadeDescricao) ctx.push(`📝 *Detalhes:* ${al.atividadeDescricao}`);
+  if (ctx.length) { linhas.push(''); ctx.forEach((l) => linhas.push(l)); }
+
   linhas.push('');
-  linhas.push(`🗓️ *Viagem:* ${al.viagemNome || '—'}`);
-  linhas.push(`📌 *Atividade:* ${al.atividadeTitulo || al.atividadeNome || '—'}`);
-  if (al.atividadeTitulo && al.atividadeNome) linhas.push(`🧾 *Tipo:* ${al.atividadeNome}`);
-  if (al.atividadeDescricao) linhas.push(`📝 *Detalhes:* ${al.atividadeDescricao}`);
-  linhas.push('');
-  linhas.push('💡 Essa oferta atende a uma necessidade do cliente — vale avaliar agora.');
+  linhas.push(alvo === 'lembrete'
+    ? '✅ Hora de executar essa tarefa.'
+    : '💡 Essa oferta atende a uma necessidade do cliente — vale avaliar agora.');
   return linhas.join('\n');
 }
 
@@ -1814,6 +1850,12 @@ async function verificarAlertasTransferencia(item) {
 // na próxima coleta (compra bonificada) ou nunca (transferência, cujo gatilho
 // é a aprovação da oferta). Retorna os dados do disparo, ou null.
 async function checarOportunidadeAtual(al) {
+  // Lembrete nao depende de oferta: so dispara na hora se a data ja passou
+  // (util para lembrete criado com data retroativa ou para hoje mais cedo).
+  if (alvoDoAlerta(al) === 'lembrete') {
+    const ts = tsLembrete(al);
+    return (ts !== null && ts <= Date.now()) ? { vencido: true } : null;
+  }
   if (alvoDoAlerta(al) === 'transferencia') {
     const { data: ofertas } = await ghGetJson(OFERTAS_APROVADAS_PATH, { items: [] });
     const hoje = new Date().toISOString().slice(0, 10);
@@ -1850,10 +1892,16 @@ async function checarOportunidadeAtual(al) {
 // POST /concierge/alerta — cria/atualiza alerta de oportunidade
 app.post('/concierge/alerta', async (req, res) => {
   const b = req.body || {};
-  const alvo = b.alvo === 'transferencia' ? 'transferencia' : 'compra_bonificada';
+  const alvo = b.alvo === 'transferencia' ? 'transferencia'
+             : b.alvo === 'lembrete'      ? 'lembrete'
+             : 'compra_bonificada';
   if (alvo === 'transferencia') {
     if (!b.destino || b.bonusMin === undefined || b.bonusMin === null || b.bonusMin === '') {
       return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: destino, bonusMin' });
+    }
+  } else if (alvo === 'lembrete') {
+    if (!b.dataLembrete || !/^\d{4}-\d{2}-\d{2}$/.test(String(b.dataLembrete)) || !String(b.textoLembrete || '').trim()) {
+      return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: dataLembrete (YYYY-MM-DD), textoLembrete' });
     }
   } else if (!b.parceiro || !b.programa || !b.minPts) {
     return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: parceiro, programa, minPts' });
@@ -1870,6 +1918,16 @@ app.post('/concierge/alerta', async (req, res) => {
       origem: b.origem || '',
       destino: b.destino || '',
       bonusMin: (b.bonusMin !== undefined && b.bonusMin !== '' && b.bonusMin !== null) ? parseFloat(b.bonusMin) : null,
+      dataLembrete: b.dataLembrete || '',
+      horaLembrete: /^\d{2}:\d{2}$/.test(b.horaLembrete || '') ? b.horaLembrete : (alvo === 'lembrete' ? '09:00' : ''),
+      textoLembrete: (b.textoLembrete || '').trim(),
+      // Vinculo: 'atividade' (modal da viagem) ou 'demanda' (modal de demandas).
+      // Demanda espelhada de atividade tem os dois conjuntos de campos preenchidos.
+      vinculo: b.vinculo || (b.demandaId ? 'demanda' : 'atividade'),
+      demandaId: b.demandaId || '',
+      demandaNumero: b.demandaNumero || '',
+      demandaTitulo: b.demandaTitulo || '',
+      clientes: b.clientes || '',
       viagemId: b.viagemId || '',
       viagemNome: b.viagemNome || '',
       atividadeNome: b.atividadeNome || '',
@@ -1926,6 +1984,62 @@ app.delete('/concierge/alerta', async (req, res) => {
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
+
+// ══════════════════════════════════════════════════════════════════
+//  LEMBRETES COM DATA MARCADA (alvo = 'lembrete')
+//  Nao dependem de oferta nenhuma: disparam quando a data/hora chega.
+//  Criterio e "venceu e ainda nao disparou" (nao e janela de tempo), entao
+//  atraso do worker so adia o envio — nunca perde um lembrete. O alerta e
+//  consumido no envio, o que ja serve de deduplicacao.
+//  O coletar.js ignora estes alertas: filtra alvo !== 'compra_bonificada'.
+// ══════════════════════════════════════════════════════════════════
+let _lembretesRodando = false;
+
+async function checarLembretes() {
+  if (_lembretesRodando) return { ok: true, pulado: 'execução anterior em andamento' };
+  _lembretesRodando = true;
+  const enviados = [], falhas = [];
+  try {
+    const { alertas } = await lerAlertasConcierge();
+    const agora = Date.now();
+    const vencidos = alertas.filter((al) => {
+      if (alvoDoAlerta(al) !== 'lembrete') return false;
+      const ts = tsLembrete(al);
+      return ts !== null && ts <= agora;
+    });
+    // Sequencial de proposito: dispararAlertaConcierge re-le o arquivo (SHA fresco)
+    // a cada chamada, entao paralelizar geraria 409 no PUT.
+    for (const al of vencidos) {
+      try {
+        const r = await dispararAlertaConcierge(al.id, {});
+        if (r.ok) enviados.push(al.id);
+        else falhas.push({ id: al.id, erro: r.erro });
+      } catch (e) {
+        falhas.push({ id: al.id, erro: e.message });
+      }
+    }
+    if (enviados.length || falhas.length) {
+      console.log(`[lembretes] enviados=${enviados.length} falhas=${falhas.length}`);
+    }
+    return { ok: true, enviados, falhas };
+  } catch (e) {
+    console.error('[lembretes] erro:', e.message);
+    return { ok: false, erro: e.message };
+  } finally {
+    _lembretesRodando = false;
+  }
+}
+
+// POST /concierge/lembretes/checar — disparo manual/backup (o worker roda sozinho)
+app.post('/concierge/lembretes/checar', async (req, res) => {
+  res.json(await checarLembretes());
+});
+
+// Worker interno: o proxy ja e always-on, entao nao depende do cron do GitHub
+// Actions (que ja apresentou gaps de ~4h). 10 min da pontualidade suficiente
+// para um lembrete com hora marcada.
+setInterval(() => { checarLembretes().catch(() => {}); }, 10 * 60 * 1000);
+setTimeout(() => { checarLembretes().catch(() => {}); }, 60 * 1000);
 
 // POST /concierge/alerta/disparar — usado pelo coletar.js (alvo=compra_bonificada)
 app.post('/concierge/alerta/disparar', async (req, res) => {
