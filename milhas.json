@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-07-25T09:30:14.725Z",
+  "atualizadoEm": "2026-07-26T01:26:41.436Z",
   "registros": [
     {
       "id": "1783549764743_qbqy",
@@ -1807,36 +1807,6 @@
       "valorDinheiro": 1600
     },
     {
-      "id": "1784760465164_deb",
-      "email": "erikacn1964@gmail.com",
-      "data": "2026-07-22",
-      "tipo": "debito",
-      "operacao": "transferencia",
-      "subcat": "transferido",
-      "programa": "livelo",
-      "qtde": 1000,
-      "custo": 0,
-      "obs": "Transf. Pontos+Dinheiro para Smiles (+80% bônus) — saldo: 1.000 pts + comprados: 99.000 pts | Cartão gol smiles",
-      "modalidade": "pontos_dinheiro"
-    },
-    {
-      "id": "1784760465164_cred",
-      "email": "erikacn1964@gmail.com",
-      "data": "2026-07-22",
-      "tipo": "credito",
-      "operacao": "transferencia",
-      "subcat": "trans_bon",
-      "programa": "smiles",
-      "qtde": 180000,
-      "custo": 2850,
-      "custoHerdadoFIFO": 0,
-      "custoCompradoNaTransf": 2850,
-      "milheiroHerdado": 0,
-      "modalidade": "pontos_dinheiro",
-      "ptsCompradosNaTransf": 99000,
-      "obs": "Recebido de Livelo (Pontos+Dinheiro) (+80% bônus) — total transferido: 100.000 pts | Cartão gol smiles"
-    },
-    {
       "id": "1783039963676_ass_2026-01",
       "email": "davileles@gmail.com",
       "data": "2026-01-10",
@@ -2843,6 +2813,48 @@
       "programa": "azul",
       "qtde": 60882,
       "custo": 0,
+      "obs": ""
+    },
+    {
+      "id": "1784760465164_deb",
+      "email": "erikacn1964@gmail.com",
+      "data": "2026-07-22",
+      "tipo": "debito",
+      "operacao": "transferencia",
+      "subcat": "transferido",
+      "programa": "livelo",
+      "qtde": 1000,
+      "custo": 0,
+      "obs": "Transf. Pontos+Dinheiro para Smiles (+80% bônus) — saldo: 1.000 pts + comprados: 99.000 pts | Cartão gol smiles",
+      "modalidade": "pontos_dinheiro"
+    },
+    {
+      "id": "1784760465164_cred",
+      "email": "erikacn1964@gmail.com",
+      "data": "2026-07-22",
+      "tipo": "credito",
+      "operacao": "transferencia",
+      "subcat": "trans_bon",
+      "programa": "smiles",
+      "qtde": 180000,
+      "custo": 2850,
+      "custoHerdadoFIFO": 0,
+      "custoCompradoNaTransf": 2850,
+      "milheiroHerdado": 0,
+      "modalidade": "pontos_dinheiro",
+      "ptsCompradosNaTransf": 99000,
+      "obs": "Recebido de Livelo (Pontos+Dinheiro) (+80% bônus) — total transferido: 100.000 pts | Cartão gol smiles"
+    },
+    {
+      "id": "1785029196266_m5tf",
+      "email": "erikacn1964@gmail.com",
+      "data": "2026-07-26",
+      "tipo": "credito",
+      "operacao": "credito",
+      "subcat": "clube",
+      "programa": "smiles",
+      "qtde": 21000,
+      "custo": 294,
       "obs": ""
     }
   ]
