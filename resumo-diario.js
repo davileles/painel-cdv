@@ -227,7 +227,12 @@ const isBR = (c) => CIDADES_BR.includes(norm(c));
 
 function montarResumoEmissoes() {
   const data = JSON.parse(fs.readFileSync(PASSAGENS_FILE, 'utf8'));
-  const all = (data.items || []).filter((p) => p.fonte !== 'alerta_rejeitado');
+  // Whitelist: só entram no resumo emissões efetivamente divulgadas no grupo.
+  // 'alerta_pendente'  → candidata pré-registrada, ainda sem aprovação
+  // 'alerta_rejeitado' → reprovada manualmente com "Rejeitar e Salvar"
+  // sem fonte          → registros legados (anteriores ao campo)
+  const FONTES_DIVULGADAS = new Set(['alerta', 'emissao']);
+  const all = (data.items || []).filter((p) => !p.fonte || FONTES_DIVULGADAS.has(p.fonte));
   const hoje = hojeSP();
 
   const doDia = all.filter((p) => p.enviadoEm && diaSP(p.enviadoEm) === hoje);
