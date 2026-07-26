@@ -3888,7 +3888,11 @@ function renderPassagens() {
   const sort = document.getElementById('pass-sort')?.value || 'recente';
 
   const corte3d = Date.now() - 3 * 24 * 60 * 60 * 1000;
+  // Aba Passagens mostra somente emissões aprovadas e divulgadas.
+  // (o Mapa de Emissões continua exibindo pendentes/rejeitadas)
+  const PASS_FONTES_OK = new Set(['alerta', 'emissao']);
   let items = passagensData.filter(p => {
+    if (p.fonte && !PASS_FONTES_OK.has(p.fonte)) return false;
     if (new Date(p.enviadoEm).getTime() < corte3d) return false;
     if (progFiltro && p.programa !== progFiltro) return false;
     if (q) {
