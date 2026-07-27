@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 46,
+    "total": 47,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -1787,6 +1787,157 @@
         "salas_vip": "https://www.c6bank.com.br/c6-graphene/",
         "beneficios_banco": "https://www.c6bank.com.br/c6-graphene/",
         "link_solicitacao": "https://www.c6bank.com.br/c6-graphene/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "c6-mastercard-black",
+      "nome": "C6 Mastercard Black",
+      "emissor": "C6 Bank",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "anuidade": 600,
+      "anuidade_parcelas": 50,
+      "isencao": {
+        "tipo": "gasto_ou_investimento",
+        "valor": "R$ 3.500/mês em gastos no crédito OU R$ 20.000 investidos em renda fixa do C6 Bank (CDB, LCI, LCA, LF, Compromissada, emitidos e contratados exclusivamente pelo C6 Bank)",
+        "regra": "Isenção de 100% nos 6 primeiros meses para novas contratações ou upgrades (exceto downgrade do C6 Carbon). Após esse período, isenção mantida mês a mês ao atingir R$ 3.500/mês na fatura (incluindo adicionais) ou saldo investido a partir de R$ 20.000 em renda fixa elegível do C6 Bank. O crédito da isenção por gastos ocorre na fatura seguinte ao atingimento."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Sujeito a análise de crédito interna do C6 Bank. Disponível como upgrade no app.",
+      "adicionais_gratis": 10,
+      "pontos": {
+        "nacional": 2,
+        "internacional": 2,
+        "unidade": "pts/USD",
+        "observacao": "Pontuação base de 2,0 pts/USD. Pode ser acelerada até 2,2 pts/USD para quem faz pagamentos elegíveis de no mínimo R$ 3.000/mês via C6 Bank, ou até 2,5 pts/USD para quem investe a partir de R$ 150.000 em renda fixa elegível do C6 Bank. Pontos não expiram. Programa C6 Átomos."
+      },
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "Até 1,2% ao converter pontos C6 Átomos em dinheiro na conta (consultar condições no app)"
+      },
+      "programa_proprio": "C6 Átomos",
+      "transfere_para": [
+        "LATAM Pass",
+        "TudoAzul",
+        "Smiles",
+        "Livelo",
+        "Passaporte Decolar",
+        "Miles&Go"
+      ],
+      "spread": null,
+      "iof": "4,38% sobre compras internacionais no cartão de crédito (alíquota federal padrão)",
+      "validade_pontos": "Não expiram",
+      "salas_vip": [
+        {
+          "programa": "Mastercard Black – Sala VIP Guarulhos (Terminal 3)",
+          "regra": "Acesso gratuito mediante soma de gastos igual ou superior a R$ 15.000 nos 3 meses anteriores ao mês de utilização. Caso não atinja o critério, acesso disponível mediante pagamento de R$ 200,00 por entrada."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "C6 Tag gratuita",
+          "descricao": "1 tag de pedágio e estacionamento gratuita. Basta ter feito ao menos uma compra no crédito no mês anterior."
+        },
+        {
+          "titulo": "Cartões adicionais grátis",
+          "descricao": "Até 10 cartões adicionais gratuitos, gerenciáveis no mesmo app."
+        },
+        {
+          "titulo": "C6 Conta Global – abertura sem custo",
+          "descricao": "Clientes C6 Mastercard Black têm isenção da taxa de abertura da C6 Conta Global (dólar e euro)."
+        },
+        {
+          "titulo": "CDB Limite Garantido",
+          "descricao": "Permite aumentar o limite do cartão em até R$ 200.000, com o valor investido continuando a render acima do CDI."
+        },
+        {
+          "titulo": "Concierge Mastercard Black 24h",
+          "descricao": "Serviço de concierge disponível 24h/7 dias para auxiliar em reservas, viagens e mais."
+        },
+        {
+          "titulo": "Seguro saúde internacional (MasterAssist Black)",
+          "descricao": "Cobertura médica e hospitalar durante viagens internacionais. Despesas médicas cobertas até o limite de US$ 150.000."
+        },
+        {
+          "titulo": "Proteção de bagagem",
+          "descricao": "Cobertura contra atraso, perda ou dano de bagagem durante viagens."
+        },
+        {
+          "titulo": "Seguro de automóvel alugado",
+          "descricao": "Cobertura contra danos por colisão, roubo ou incêndio acidental em veículos alugados no Brasil ou exterior."
+        },
+        {
+          "titulo": "Compra Protegida",
+          "descricao": "Proteção contra danos ou roubo nos primeiros 90 dias após a aquisição do produto."
+        },
+        {
+          "titulo": "Garantia Estendida Original",
+          "descricao": "Prolonga a garantia de fábrica dos produtos em até 12 meses adicionais."
+        },
+        {
+          "titulo": "Proteção contra roubo em caixas eletrônicos",
+          "descricao": "Reembolso do dinheiro roubado durante ou até 2 horas após saque em ATM. Cobertura de até US$ 1.000 por incidente e US$ 3.000 por ano."
+        },
+        {
+          "titulo": "Isenção de rolha",
+          "descricao": "Isenção de taxa de rolha em restaurantes parceiros Mastercard."
+        },
+        {
+          "titulo": "Priceless Cities",
+          "descricao": "Acesso a experiências e eventos exclusivos Mastercard ao redor do mundo."
+        },
+        {
+          "titulo": "Mastercard Surpreenda",
+          "descricao": "Programa de benefícios com ofertas e descontos exclusivos para portadores Mastercard."
+        },
+        {
+          "titulo": "Pague com Pontos (PWR)",
+          "descricao": "Permite pagar compras feitas no crédito com pontos C6 Átomos, sem precisar aguardar o fechamento da fatura."
+        }
+      ],
+      "link_solicitacao": "https://www.c6bank.com.br/cartao-black/",
+      "fontes": [
+        "https://www.c6bank.com.br/cartao-black/",
+        "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "https://www.c6bank.com.br/guia-cartao-black/",
+        "https://www.c6bank.com.br/blog/c6-mastercard-black",
+        "https://www.c6bank.com.br/blog/como-ter-um-c6-mastercard-black-sem-pagar-anuidade",
+        "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-mastercard-black",
+        "https://www.c6bank.com.br/blog/isencao-de-anuidade-cartoes-black-c6",
+        "https://www.c6bank.com.br/blog/melhores-cartoes-de-credito-2025",
+        "https://www.c6bank.com.br/blog/tipos-de-cartao",
+        "https://www.c6bank.com.br/programa-de-pontos-atomos/",
+        "https://www.c6bank.com.br/blog/cartao-black-beneficios",
+        "https://ajuda.c6bank.com.br/s/article/Quais-os-beneficios-Mastercard-do-cartao-C6-Black-e-C6-Carbon",
+        "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas",
+        "https://www.c6bank.com.br/blog/c6-bank-e-decolar-firmam-parceria-para-transferencia-de-pontos",
+        "https://www.c6bank.com.br/blog/o-que-e-iof"
+      ],
+      "campos_pendentes": [
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "Renda mínima não publicada em página oficial — o C6 Bank informa apenas que o cartão é sujeito a análise de crédito interna, sem divulgar valor de renda mínima exigida. Spread para compras internacionais com o cartão de crédito em reais não é publicado pelo C6 Bank em página de produto (o spread divulgado se refere exclusivamente à C6 Conta Global). O IOF de 4,38% informado é a alíquota legal federal sobre compras internacionais no crédito, não específica do emissor. A pontuação-base confirmada na página oficial do produto (c6bank.com.br/cartao-black/) é de 2,0 pts/USD, com aceleração possível até 2,5 pts/USD. Divergência menor encontrada entre blog (mencionava 'a partir de R$ 4 mil/mês' em guia-cartao-black) e a página oficial do produto e demais blogs oficiais mais recentes (R$ 3.500/mês): foi adotado o valor da página oficial do produto e do blog mais recente (2025). Benefícios Mastercard listados com base na página de ajuda oficial (ajuda.c6bank.com.br) e na página de benefícios do cartão black.",
+      "procedencia": {
+        "anuidade": "https://www.c6bank.com.br/cartao-black/",
+        "anuidade_parcelas": "https://www.c6bank.com.br/cartao-black/",
+        "isencao": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "adicionais_gratis": "https://www.c6bank.com.br/cartao-black/",
+        "pontos": "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-mastercard-black",
+        "cashback": "https://www.c6bank.com.br/cartao-black/",
+        "programa_proprio": "https://www.c6bank.com.br/programa-de-pontos-atomos/",
+        "transfere_para": "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas",
+        "iof": "https://www.c6bank.com.br/blog/o-que-e-iof",
+        "validade_pontos": "https://www.c6bank.com.br/programa-de-pontos-atomos/",
+        "salas_vip": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "beneficios_banco": "https://ajuda.c6bank.com.br/s/article/Quais-os-beneficios-Mastercard-do-cartao-C6-Black-e-C6-Carbon",
+        "link_solicitacao": "https://www.c6bank.com.br/cartao-black/",
+        "requisito_acesso": "https://www.c6bank.com.br/blog/c6-mastercard-black",
+        "categoria": "https://www.c6bank.com.br/guia-cartao-black/"
       },
       "vigencia_ate": null,
       "analise": null,
