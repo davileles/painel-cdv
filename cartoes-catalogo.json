@@ -1,0 +1,520 @@
+{
+  "_meta": {
+    "descricao": "Base de cartoes do Clube do Viajante. Curadoria propria a partir de fontes oficiais dos emissores e das bandeiras.",
+    "regra": "Nenhum campo e preenchido sem fonte oficial. Campo nao confirmado permanece null e entra em campos_pendentes. Campo que varia por natureza do produto usa variavel=true e nao conta como pendencia.",
+    "iof_compras_internacionais": {
+      "aliquota": 3.5,
+      "observacao": "Aliquota federal aplicada a todos os cartoes. O que varia por cartao e se o emissor absorve o custo (campo iof_isento).",
+      "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
+    },
+    "atualizado_em": "2026-07-27",
+    "total": 7
+  },
+  "cartoes": [
+    {
+      "slug": "c6-black",
+      "nome": "C6 Black",
+      "emissor": "C6 Bank",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "bandeira_ref": "mastercard-black",
+      "imagem": null,
+      "anuidade": 600,
+      "anuidade_parcelas": 12,
+      "anuidade_modelo": "anuidade",
+      "anuidade_observacao": "12 parcelas de R$ 50, com isencao nos 6 primeiros meses.",
+      "isencao": {
+        "tipo": "gasto",
+        "valor": 5000,
+        "regra": "Isencao total com gasto mensal a partir de R$ 5 mil na funcao credito."
+      },
+      "renda_minima": null,
+      "adicionais_gratis": 10,
+      "pontos": {
+        "nacional": 2,
+        "internacional": 2,
+        "unidade": "pts/USD",
+        "observacao": "Padrao 2, podendo chegar a 2,5 conforme investimentos e pagamentos de contas no banco."
+      },
+      "cashback": null,
+      "programa_proprio": "C6 Atomos",
+      "transfere_para": [
+        "Azul Fidelidade",
+        "LATAM Pass",
+        "Livelo",
+        "Smiles",
+        "TAP Miles&Go"
+      ],
+      "spread": null,
+      "iof_isento": false,
+      "salas_vip": [
+        {
+          "programa": "Sala VIP Mastercard Black (GRU)",
+          "regra": "Acesso gratuito"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "C6 Tag",
+          "descricao": "Uma tag de pedagio gratuita para quem usou o cartao ao menos uma vez no mes anterior."
+        }
+      ],
+      "link_solicitacao": "https://www.c6bank.com.br/",
+      "fontes": [
+        "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco"
+      ],
+      "campos_pendentes": [
+        "spread",
+        "iof",
+        "renda_minima"
+      ],
+      "verificado_em": "2026-07-27",
+      "iof": null
+    },
+    {
+      "slug": "c6-carbon",
+      "nome": "C6 Carbon",
+      "emissor": "C6 Bank",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "bandeira_ref": "mastercard-black",
+      "imagem": null,
+      "anuidade": 1176,
+      "anuidade_parcelas": 12,
+      "anuidade_modelo": "anuidade",
+      "anuidade_observacao": "12 parcelas de R$ 98, com isencao nos 3 primeiros meses.",
+      "isencao": {
+        "tipo": "gasto_ou_investimento",
+        "valor": 8000,
+        "regra": "Isencao nos 3 primeiros meses para quem solicita pela primeira vez. Depois, 100% com gasto mensal a partir de R$ 8.000 (somando adicionais) ou com R$ 50.000 investidos em CDBs do C6. A isencao por gastos e creditada na fatura seguinte ao atingimento."
+      },
+      "renda_minima": null,
+      "adicionais_gratis": 6,
+      "pontos": {
+        "nacional": 2.5,
+        "internacional": 2.5,
+        "unidade": "pts/USD",
+        "observacao": "Padrao 2,5. Sobe por faixa: 2,7 com R$ 250 mil a R$ 500 mil em renda fixa ou pagamentos elegiveis acima de R$ 4 mil/mes; 3,0 com R$ 500 mil a R$ 1 milhao; ate 3,5 a partir de R$ 1 milhao."
+      },
+      "cashback": null,
+      "programa_proprio": "C6 Atomos",
+      "transfere_para": [
+        "Azul Fidelidade",
+        "LATAM Pass",
+        "Livelo",
+        "Smiles",
+        "TAP Miles&Go"
+      ],
+      "spread": 5.25,
+      "iof_isento": false,
+      "salas_vip": [
+        {
+          "programa": "Mastercard Airport Experiences (LoungeKey)",
+          "regra": "Acesso a salas VIP em aeroportos. Quantidade de acessos gratuitos nao publicada."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Pontos Atomos que nao expiram",
+          "descricao": "Adesao gratuita e pontos sem prazo de validade."
+        },
+        {
+          "titulo": "Transferencia 1:1",
+          "descricao": "Pontos Atomos transferidos na paridade 1:1 para LATAM Pass, Smiles, Azul Fidelidade, TAP Miles&Go e Livelo."
+        },
+        {
+          "titulo": "Pague com Pontos (PWR)",
+          "descricao": "Uso dos pontos para abater compras ja lancadas na fatura, em parceria com a Mastercard."
+        },
+        {
+          "titulo": "C6 Tag",
+          "descricao": "Quatro tags de pedagio gratuitas para quem usou o cartao ao menos uma vez no mes anterior."
+        }
+      ],
+      "link_solicitacao": "https://www.c6bank.com.br/",
+      "fontes": [
+        "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
+        "https://www.c6bank.com.br/blog/c6-bank-vai-oferecer-pontos-atomos-adicionais-para-clientes-que-investem-a-partir-de-r-250-mil-no-banco",
+        "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-carbon-mastercard-black",
+        "https://ajuda.c6bank.com.br/s/article/Qual-a-taxa-para-compras-internacionais-com-o-cartao-C6-Bank"
+      ],
+      "campos_pendentes": [
+        "spread",
+        "iof",
+        "renda_minima",
+        "salas_vip.regra"
+      ],
+      "verificado_em": "2026-07-27",
+      "nota_curadoria": "Anuidade confirmada em R$ 1.176 na pagina oficial. Fontes secundarias ainda publicam R$ 1.020 e R$ 780, valores desatualizados."
+    },
+    {
+      "slug": "caixa-icone-visa",
+      "nome": "CAIXA Icone Visa",
+      "emissor": "CAIXA",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "bandeira_ref": "visa-infinite",
+      "imagem": null,
+      "anuidade": 1650,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "segmento_ou_gasto",
+        "valor": null,
+        "regra": "Cobrada somente apos o desbloqueio. Clientes Private tem isencao por um ano. Demais recebem cashback de 50% ou 100% da parcela mensal conforme faixa de gasto."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Comercializado por convite ou via gerente de relacionamento, sem exigencia de valor minimo de aplicacoes. Limite de credito minimo de R$ 100.000.",
+      "adicionais_gratis": 5,
+      "pontos": {
+        "nacional": 4,
+        "internacional": 6,
+        "unidade": "pts/USD",
+        "observacao": "Pontuacao base de 4 pontos nacionais, elevada a 5 em carater promocional ate 20/10/2026. Pontos nao expiram."
+      },
+      "cashback": null,
+      "programa_proprio": "Pontos CAIXA / Uau CAIXA",
+      "transfere_para": [
+        "Azul Fidelidade",
+        "Dotz",
+        "LATAM Pass",
+        "Smiles",
+        "TAP Miles&Go"
+      ],
+      "spread": null,
+      "iof": 0,
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion (Dragon Pass)",
+          "regra": "Acesso ilimitado para titular e adicionais, sem gasto minimo no cartao"
+        },
+        {
+          "programa": "LoungeKey",
+          "regra": "Acesso ilimitado para titular e adicionais, sem gasto minimo no cartao"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "IOF zero em compras internacionais",
+          "descricao": "Isencao de IOF sem limite de gastos, vigente ate janeiro de 2027."
+        },
+        {
+          "titulo": "Cashback da anuidade",
+          "descricao": "Devolucao de 50% ou 100% da parcela mensal da anuidade conforme o volume de gastos."
+        },
+        {
+          "titulo": "Pontuacao promocional",
+          "descricao": "5 pontos por dolar em compras nacionais ate 20/10/2026, acima da regra padrao de 4."
+        }
+      ],
+      "link_solicitacao": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+      "fontes": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/credito/vantagens/Paginas/default.aspx"
+      ],
+      "campos_pendentes": [
+        "isencao.faixas",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "IOF zero e pontuacao de 5 pontos nacionais sao temporarios. Campos com prazo devem ser revisados antes de 20/10/2026 e janeiro/2027.",
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "caixa-visa-infinite",
+      "nome": "CAIXA Visa Infinite",
+      "emissor": "CAIXA",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "bandeira_ref": "visa-infinite",
+      "imagem": null,
+      "anuidade": null,
+      "anuidade_parcelas": 12,
+      "anuidade_modelo": "anuidade",
+      "isencao": {
+        "tipo": "gasto",
+        "valor": null,
+        "regra": "Cashback de 50% ou 100% da parcela mensal da anuidade conforme faixa de gasto, condicionado ao pagamento da fatura ate o vencimento. Nao consideram-se parcelamento de fatura, saque, IOF, juros, multa, anuidade, demais tarifas e compras na funcao debito."
+      },
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": null,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Programa de Vantagens Uau CAIXA. Paridade nao publicada na pagina do produto."
+      },
+      "cashback": null,
+      "programa_proprio": "Uau CAIXA",
+      "transfere_para": [],
+      "spread": null,
+      "iof_isento": false,
+      "salas_vip": [
+        {
+          "programa": "Visa Infinite Fast Pass",
+          "regra": "Titular mais ate 5 acompanhantes, em GRU terminais 2 e 3 e no GIG piso 1"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Cashback da anuidade",
+          "descricao": "Devolucao na fatura de 50% ou 100% da parcela mensal da anuidade conforme o volume de gastos concentrados no cartao."
+        }
+      ],
+      "link_solicitacao": "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx",
+      "fontes": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx"
+      ],
+      "campos_pendentes": [
+        "anuidade",
+        "isencao.valor",
+        "pontos",
+        "renda_minima",
+        "adicionais_gratis",
+        "spread"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "caixa-visa-infinite-investidores",
+      "nome": "CAIXA Visa Infinite para Investidores",
+      "emissor": "CAIXA",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "bandeira_ref": "visa-infinite",
+      "imagem": null,
+      "anuidade": 1650,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "segmento_ou_gasto",
+        "valor": null,
+        "regra": "Cobrada somente apos o desbloqueio. Adicionais isentos. Clientes Private tem isencao permanente enquanto enquadrados no segmento. Demais clientes recebem cashback de 50% ou 100% da parcela mensal conforme faixa de gasto, com adesao automatica."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Exclusivo para pessoa fisica com mais de R$ 1 milhao investido na CAIXA. Limite de credito minimo de R$ 50.000.",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 4,
+        "internacional": 6,
+        "unidade": "pts/USD",
+        "observacao": "Pagina do produto informa 4 pontos nacionais. A pagina do Programa Pontos CAIXA informa 5 pontos nacionais em carater promocional ate 20/10/2026. Pontos nao expiram."
+      },
+      "cashback": null,
+      "programa_proprio": "Pontos CAIXA",
+      "transfere_para": [
+        "Azul Fidelidade",
+        "Dotz",
+        "LATAM Pass",
+        "Smiles",
+        "TAP Miles&Go"
+      ],
+      "spread": null,
+      "iof": null,
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion (Dragon Pass)",
+          "regra": "Acesso ilimitado para titular e adicionais"
+        },
+        {
+          "programa": "LoungeKey",
+          "regra": "Acesso ilimitado para titular e adicionais"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Cashback da anuidade",
+          "descricao": "Devolucao de 50% ou 100% da parcela mensal da anuidade conforme o volume de gastos. Participacao automatica para este cartao."
+        },
+        {
+          "titulo": "Isencao Private",
+          "descricao": "Clientes do segmento Private nao pagam anuidade enquanto permanecerem no segmento."
+        }
+      ],
+      "link_solicitacao": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
+      "fontes": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx"
+      ],
+      "campos_pendentes": [
+        "isencao.faixas",
+        "adicionais_gratis",
+        "spread",
+        "iof"
+      ],
+      "nota_curadoria": "Fontes secundarias ainda publicam anuidade de R$ 1.440, valor desatualizado. Oficial e R$ 1.650 (12x R$ 137,50).",
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "nubank-ultravioleta",
+      "nome": "Nubank Ultravioleta",
+      "emissor": "Nubank",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "bandeira_ref": "mastercard-black",
+      "imagem": null,
+      "anuidade": null,
+      "anuidade_parcelas": 12,
+      "anuidade_modelo": "mensalidade",
+      "anuidade_observacao": "Cobrada como mensalidade de R$ 89. Clientes anteriores a 20/08/2025 mantiveram R$ 49 por 12 meses.",
+      "isencao": {
+        "tipo": "mensalidade_variavel",
+        "valor": null,
+        "regra": "Cobranca e mensal, nao anual. O contrato preve que o valor da mensalidade e informado ao cliente no momento da contratacao, sem tabela publica. Gastos do cartao adicional somam para a isencao."
+      },
+      "renda_minima": null,
+      "renda_minima_observacao": "Sem regra de renda minima. Sujeito a analise de credito automatica no cadastro e mensalmente.",
+      "adicionais_gratis": 4,
+      "pontos": {
+        "nacional": 2.2,
+        "internacional": 2.2,
+        "unidade": "pts/USD",
+        "observacao": "A partir de 2,2 pontos por dolar. Compras no Nu Viagens acumulam 9 pontos por dolar."
+      },
+      "cashback": {
+        "nacional": 1.25,
+        "internacional": 1.25,
+        "observacao": "Contrato: R$ 0,0125 por R$ 1,00 gasto, calculo sempre em reais. Limite de resgate de R$ 7.500 por mes por modalidade (fatura, credito em conta, conversao em milhas). Nao gera cashback: saques, estornos, recarga de celular, tributos, juros, boletos, PIX, seguros e a propria mensalidade.",
+        "limite_resgate_mensal": 7500
+      },
+      "programa_proprio": "Pontos Nubank",
+      "transfere_para": [
+        "Azul Fidelidade",
+        "LATAM Pass",
+        "Smiles"
+      ],
+      "spread": 3.5,
+      "iof_isento": true,
+      "salas_vip": [
+        {
+          "programa": "Ultravioleta Lounge / Mastercard Black (GRU T3)",
+          "regra": "Acesso gratuito e ilimitado"
+        },
+        {
+          "programa": "Priority Pass",
+          "regra": "4 visitas gratuitas por periodo de 365 dias, em mais de 1.700 salas"
+        },
+        {
+          "programa": "LoungeKey",
+          "regra": "Acesso mediante pagamento de tarifa por uso, nao reembolsavel"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Modo LATAM Pass",
+          "descricao": "Acumula 2,2 milhas LATAM Pass por dolar gasto, com 10% de milhas bonus nos envios automaticos e 1 Ponto Qualificavel a cada 4 milhas acumuladas."
+        },
+        {
+          "titulo": "IOF zero em compras internacionais",
+          "descricao": "O emissor absorve o IOF de 3,5%. Spread de 3,5%."
+        },
+        {
+          "titulo": "Nu Viagens",
+          "descricao": "Passagens e hoteis pelo app em ate 6x sem juros, acumulando 9 pontos por dolar ou 5% de cashback."
+        },
+        {
+          "titulo": "eSIM internacional",
+          "descricao": "10 GB de internet gratuita por ano em viagens fora do Brasil."
+        },
+        {
+          "titulo": "Caixinha Ultravioleta",
+          "descricao": "Cashback creditado instantaneamente, sem esperar o fechamento da fatura."
+        },
+        {
+          "titulo": "Seguro Protecao de Transacoes Digitais (Chubb)",
+          "descricao": "Cobre transacoes digitais nao autorizadas em ate R$ 30 mil por ano, limitado a 2 eventos por ano por CPF. Processo SUSEP 15414.612004/2021-83."
+        }
+      ],
+      "link_solicitacao": "https://nubank.com.br/ultravioleta",
+      "fontes": [
+        "https://nubank.com.br/ultravioleta",
+        "https://nubank.com.br/ultravioleta/cartao-black",
+        "https://nubank.com.br/ultravioleta/cartao-black/pontos-cashback",
+        "https://nubank.com.br/ultravioleta/conta",
+        "https://international.nubank.com.br/pt-br/companhia/nubank-ultravioleta-apresenta-novos-beneficios-com-programa-de-pontos-e-parceria-com-companhias-aereas-ou-125-de-cashback/",
+        "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta"
+      ],
+      "campos_pendentes": [
+        "anuidade",
+        "renda_minima"
+      ],
+      "verificado_em": "2026-07-27",
+      "nota_curadoria": "Anuidade nao e publicada: por contrato o valor e definido na contratacao. Nao e lacuna de pesquisa, e caracteristica do produto."
+    },
+    {
+      "slug": "sicredi-visa-infinite",
+      "nome": "Sicredi Visa Infinite",
+      "emissor": "Sicredi",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "bandeira_ref": "visa-infinite",
+      "imagem": null,
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "anuidade_modelo": "variavel",
+      "anuidade_variavel": true,
+      "anuidade_observacao": "Definida por cada cooperativa. Nao ha valor unico. Consultar a cooperativa de origem.",
+      "isencao": {
+        "tipo": "variavel",
+        "valor": null,
+        "regra": "Anuidade e politica de isencao definidas por cada cooperativa, nao ha valor unico. Fontes secundarias divergem entre R$ 900-1.200 e R$ 1.200-1.500. Exibir como regra, nunca como numero."
+      },
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 3,
+        "internacional": 3,
+        "unidade": "pts/USD",
+        "observacao": "Pontos nao expiram. Valido apenas para compras na funcao credito e sujeito ao pagamento da fatura."
+      },
+      "cashback": null,
+      "programa_proprio": "Programa de Recompensas Sicredi",
+      "transfere_para": [
+        "Azul Fidelidade",
+        "LATAM Pass",
+        "Smiles"
+      ],
+      "spread": null,
+      "iof_isento": false,
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion (Dragon Pass)",
+          "regra": "Acessos ilimitados para o titular e acompanhantes"
+        },
+        {
+          "programa": "Visa Infinite Fast Pass",
+          "regra": "Embarque prioritario em Guarulhos e Galeao"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Pontos que nao expiram",
+          "descricao": "Sem prazo de validade para o saldo acumulado."
+        },
+        {
+          "titulo": "Shopping do Sicredi",
+          "descricao": "Resgate por passagens, produtos, cashback na fatura e experiencias. Minimo de 7.000 pontos."
+        },
+        {
+          "titulo": "Transferencia para programas aereos",
+          "descricao": "Resgate minimo de 10.000 pontos, ou multiplos de 10.000, para Smiles, Azul Fidelidade e LATAM Pass."
+        },
+        {
+          "titulo": "Ate 40 dias para pagar a fatura",
+          "descricao": "Prazo maximo entre a compra e o vencimento da fatura."
+        }
+      ],
+      "link_solicitacao": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
+      "fontes": [
+        "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/"
+      ],
+      "campos_pendentes": [
+        "renda_minima",
+        "adicionais_gratis",
+        "spread"
+      ],
+      "verificado_em": "2026-07-27",
+      "nota_curadoria": "Variacao por cooperativa e caracteristica do produto cooperativo, nao lacuna de pesquisa."
+    }
+  ]
+}
