@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 26,
+    "total": 27,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -1556,6 +1556,122 @@
       },
       "vigencia_ate": null,
       "analise": null,
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "itau-private-mastercard-the-one",
+      "nome": "Itaú Private Mastercard The One",
+      "emissor": "Itaú Unibanco (Banco Itaucard S.A.)",
+      "bandeira": "Mastercard",
+      "categoria": "Mastercard Black (metal, segmento Private Bank)",
+      "anuidade": 4000,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "investimento_minimo",
+        "valor": 5000000,
+        "regra": "Anuidade gratuita a partir de R$ 5 milhões investidos no Itaú Private Bank. Não há regra de isenção por gastos publicada na página do produto Private (diferente da versão Personnalité)."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Ser cliente Itaú Private Bank (mínimo de R$ 10 milhões investidos no Itaú, conforme itau.com.br/private-bank/seja-cliente). Solicitação via gerente de banking.",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 3,
+        "internacional": 3.5,
+        "unidade": "pts/USD",
+        "observacao": "Pontos não expiram. Fonte: página do produto via cloud.sfmc.itau.com.br (email oficial Itaú Personnalité). A página itau.com.br/private-bank/produtos-servicos/banking/cartao-itauprivate-theone não detalha a tabela de pontos diretamente — valor extraído do material oficial do mesmo produto."
+      },
+      "cashback": null,
+      "programa_proprio": null,
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Pontos não expiram enquanto o cartão estiver ativo.",
+      "salas_vip": [
+        {
+          "programa": "LoungeKey",
+          "regra": "Acesso gratuito e ilimitado para o titular e adicionais em mais de 1.100 salas VIP do programa LoungeKey ao redor do mundo. Portador possui 12 acessos gratuitos por ano para acompanhantes sem cartão."
+        },
+        {
+          "programa": "Sala VIP GRU (Aeroporto de Guarulhos)",
+          "regra": "Acesso gratuito e ilimitado em dois espaços exclusivos no Aeroporto de Guarulhos: Sala VIP Lounge e Lounge Mastercard Black."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "The Assistant Itaú",
+          "descricao": "Assistente pessoal exclusivo 24h/7d para reservas de hotéis, restaurantes, viagens e eventos. Disponível via WhatsApp (+44 741 836 9831), telefone 0800-047-5051 (Brasil) e +1 332-600-6843 (Exterior) e e-mail theassistantitau@tenconcierge.com."
+        },
+        {
+          "titulo": "Benefícios em hotéis e resorts",
+          "descricao": "Reservas via The Assistant com check-in e checkout diferenciados, upgrade de quarto, cortesias de boas-vindas e vouchers de crédito durante a estadia."
+        },
+        {
+          "titulo": "Restaurantes premiados",
+          "descricao": "Prioridade nas reservas, mesas privilegiadas, menu upgrade e experiências exclusivas via The Assistant."
+        },
+        {
+          "titulo": "Benefícios em vinhos (Mistral)",
+          "descricao": "Até 40% de desconto para compras nas lojas físicas ou online da Mistral com o cartão The One."
+        },
+        {
+          "titulo": "Fretamento aéreo",
+          "descricao": "Descontos em fretamentos, assento de cortesia e outros benefícios via The Assistant."
+        },
+        {
+          "titulo": "Benefícios em saúde",
+          "descricao": "Benefícios exclusivos de saúde para o titular e adicionais (detalhes disponíveis apenas no app Itaú)."
+        },
+        {
+          "titulo": "Valet no Aeroporto de Guarulhos",
+          "descricao": "Acesso gratuito ao serviço de valet no embarque dos terminais 2 e 3 do Aeroporto de Guarulhos (cliente paga apenas as diárias de estacionamento)."
+        },
+        {
+          "titulo": "Mastercard Black — benefícios da bandeira",
+          "descricao": "Seguro-viagem, proteção de compra, garantia estendida e demais benefícios Mastercard Black. Detalhes em mastercard.com.br."
+        },
+        {
+          "titulo": "Carteiras digitais",
+          "descricao": "Compatível com Apple Pay, Samsung Pay, Google Pay e PayPal."
+        },
+        {
+          "titulo": "Cartão de metal",
+          "descricao": "Cartão físico em metal com design premium exclusivo."
+        }
+      ],
+      "link_solicitacao": "https://www.itau.com.br/private-bank/produtos-servicos/banking/cartao-itauprivate-theone",
+      "fontes": [
+        "https://www.itau.com.br/private-bank/produtos-servicos/banking/cartao-itauprivate-theone",
+        "https://www.itau.com.br/personnalite/cartoes/theone",
+        "https://www.itau.com.br/private-bank/seja-cliente",
+        "https://cloud.sfmc.itau.com.br/itau_personnalite_m_the_one",
+        "https://www.itau.com.br/private-bank/beneficios"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "programa_proprio",
+        "renda_minima",
+        "spread",
+        "transfere_para"
+      ],
+      "nota_curadoria": "O cartão Itaú Private Mastercard The One é a versão do The One para clientes do segmento Private Bank (mín. R$ 10 mi investidos). Compartilha estrutura de anuidade e pontuação com o Personnalité The One, mas o requisito de acesso é exclusivamente via Itaú Private Bank. A tabela de pontuação (3 pts nacional / 3,5 pts internacional) foi confirmada em comunicação oficial do Itaú (cloud.sfmc.itau.com.br) e está em linha com a página do produto Personnalité The One. A página do produto Private não exibe a tabela de pontuação diretamente — recomenda-se verificação periódica. Campos de spread, IOF, adicionais gratuitos e parceiros de transferência não foram publicados em fonte oficial acessível, portanto listados como pendentes.",
+      "procedencia": {
+        "anuidade": "https://www.itau.com.br/private-bank/produtos-servicos/banking/cartao-itauprivate-theone",
+        "anuidade_parcelas": "https://www.itau.com.br/private-bank/produtos-servicos/banking/cartao-itauprivate-theone",
+        "isencao": "https://www.itau.com.br/private-bank/produtos-servicos/banking/cartao-itauprivate-theone",
+        "requisito_acesso": "https://www.itau.com.br/private-bank/seja-cliente",
+        "pontos": "https://cloud.sfmc.itau.com.br/itau_personnalite_m_the_one",
+        "validade_pontos": "https://cloud.sfmc.itau.com.br/itau_personnalite_m_the_one",
+        "salas_vip": "https://www.itau.com.br/private-bank/produtos-servicos/banking/cartao-itauprivate-theone",
+        "beneficios_banco": "https://www.itau.com.br/private-bank/produtos-servicos/banking/cartao-itauprivate-theone",
+        "link_solicitacao": "https://www.itau.com.br/private-bank/produtos-servicos/banking/cartao-itauprivate-theone"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "programa_proprio"
+      ],
       "verificado_em": "2026-07-27"
     },
     {
