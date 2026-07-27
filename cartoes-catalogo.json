@@ -15,127 +15,122 @@
     {
       "slug": "brb-visa-dux",
       "nome": "BRB Visa DUX",
-      "emissor": "BRB – Banco de Brasília",
+      "emissor": "BRB – Banco de Brasília (operado pela BRBCARD S.A.)",
       "bandeira": "Visa",
-      "categoria": "Ultra High / Premium",
+      "categoria": "Ultra High / Premium (segmento de alta renda, cartão metálico)",
       "anuidade": 1680,
       "anuidade_parcelas": 12,
       "isencao": null,
       "renda_minima": null,
-      "requisito_acesso": null,
-      "adicionais_gratis": false,
+      "requisito_acesso": "Voltado ao segmento de alta renda; sujeito a análise de crédito",
+      "adicionais_gratis": null,
       "pontos": {
         "nacional": 5,
         "internacional": 7,
         "unidade": "pts/USD",
-        "observacao": "Pontos não expiram. Acúmulo de 5 pts/USD em compras nacionais e 7 pts/USD em internacionais (valores vigentes a partir de fev/2023, conforme nota de imprensa BRB). No lançamento (2021) a taxa era 4 pts/USD nacional com promoção de 5 pts/USD nos primeiros 12 meses."
+        "observacao": "Pontos não expiram. Acúmulo de 5 pts/USD em compras nacionais e 7 pts/USD em compras internacionais (valores vigentes conforme comunicado de fev/2023). Acúmulo inicial de lançamento (2021) era de 4 pts/USD nacional e 5 pts/USD nos primeiros 12 meses — atualizado para 5 pts/USD nacional e 7 pts/USD internacional conforme fonte mais recente."
       },
       "cashback": {
         "nacional": null,
         "internacional": null,
-        "observacao": "Pontos podem ser convertidos em cashback na fatura"
+        "observacao": "Possível resgate de pontos como cashback na fatura"
       },
-      "programa_proprio": "Curtaí (BRBCard)",
+      "programa_proprio": "Programa de Relacionamento BRB / Curtaí",
       "transfere_para": [
         "LATAM Pass",
         "Smiles",
-        "InMais"
+        "InMais",
+        "TAP Miles&Go"
       ],
       "spread": null,
       "iof": null,
-      "validade_pontos": "Não expiram",
+      "validade_pontos": "Pontos não expiram",
       "salas_vip": [
         {
           "programa": "Priority Pass",
-          "regra": "Acesso ilimitado (conforme nota de imprensa BRB fev/2023; condições de gasto mínimo podem se aplicar — verificar regulamento atualizado)"
+          "regra": "Acesso incluído ao titular; regra de gasto mínimo aplicável conforme regulamento da Sala BRB VIP Club"
         },
         {
           "programa": "LoungeKey",
-          "regra": "Acesso ilimitado a milhares de salas no Brasil e no exterior"
+          "regra": "Acesso ilimitado a milhares de salas no Brasil e no exterior; regra de gasto mínimo aplicável"
         },
         {
           "programa": "Visa Airport Companion",
-          "regra": "A partir de 17/07/2026: 3 acessos anuais para média mensal mínima de R$ 5.000 nas últimas 3 faturas; acesso ilimitado (+3 acompanhantes) para média mensal mínima de R$ 10.000 nas últimas 3 faturas"
+          "regra": "Acesso via app Visa Airport Companion mediante QR Code; manutenção condicionada a gasto médio mensal (ex.: R$ 10.000/mês calculado nas últimas 3 faturas para BRB DUX)"
         },
         {
-          "programa": "Sala BRB VIP Club (Aeroporto de Brasília)",
-          "regra": "Acesso exclusivo com uso de sala VIP e estacionamento BRB no Aeroporto Internacional de Brasília; validade anual (ano civil), não acumulativa"
+          "programa": "Sala BRB VIP Club – Aeroporto Internacional de Brasília (JK)",
+          "regra": "Até 2 acessos por ano sem necessidade de bilhete de embarque; acessos com validade anual (1º/01 a 31/12), não acumulativos; gasto mínimo exigido conforme regulamento"
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Concierge DUX Exclusivo",
-          "descricao": "Serviço de concierge especializado: consultoria, envio de presentes, reserva de voos, locação de veículos de luxo, entrega de documentos, reserva em hotéis e eventos culturais"
+          "descricao": "Serviço 24h: consultoria, envio de presentes, reserva de voos, locação de veículo de luxo, entrega de documentos, reservas em hotéis, atividades culturais (teatro, ópera, ballet, concertos, museus)"
         },
         {
-          "titulo": "Cartão metálico com design exclusivo",
-          "descricao": "Material metálico com design inspirado em obra de Athos Bulcão, referência artística de Brasília"
+          "titulo": "Estacionamento Exclusivo BRB VIP Club",
+          "descricao": "Acesso ao estacionamento BRB no Aeroporto Internacional de Brasília Juscelino Kubitschek"
         },
         {
-          "titulo": "Benefícios Visa Infinite",
-          "descricao": "Proteção de Preço, Garantia Estendida Original, Proteção de Compras e demais benefícios da bandeira Visa"
-        },
-        {
-          "titulo": "Aplicativo exclusivo BRB DUX",
-          "descricao": "Gerenciamento totalmente digital pelo app BRB DUX, disponível na App Store e Google Play"
+          "titulo": "App exclusivo BRB DUX",
+          "descricao": "Gerenciamento totalmente digital pelo aplicativo BRB DUX (App Store e Google Play)"
         },
         {
           "titulo": "Vai de Visa e Curtaí",
-          "descricao": "Acesso aos programas Vai de Visa e Curtaí com descontos e condições especiais em parceiros selecionados"
+          "descricao": "Acesso a benefícios, descontos e condições especiais em parceiros selecionados via programas Vai de Visa e Curtaí"
         },
         {
-          "titulo": "Ofertas exclusivas em estabelecimentos parceiros",
-          "descricao": "Descontos e condições especiais em dezenas de estabelecimentos, incluindo fretamento de aeronaves e helicópteros, restaurantes renomados e parceiros BRB"
+          "titulo": "Benefícios Visa (proteções)",
+          "descricao": "Proteção de Preço, Garantia Estendida Original, Proteção de Compras e demais benefícios da bandeira Visa"
         },
         {
-          "titulo": "Estacionamento BRB VIP Club",
-          "descricao": "Vagas exclusivas BRB no Aeroporto Internacional de Brasília"
+          "titulo": "Pagamento por aproximação",
+          "descricao": "Tecnologia NFC (contactless) para pagamentos por aproximação"
         },
         {
-          "titulo": "Pagamento por aproximação (NFC)",
-          "descricao": "Tecnologia de pagamento por aproximação para maior segurança e comodidade"
+          "titulo": "Design metálico exclusivo",
+          "descricao": "Material metálico com design exclusivo baseado em obra de Athos Bulcão, referência artística de Brasília"
         }
       ],
       "link_solicitacao": "https://brbcard.com.br/dux",
       "fontes": [
-        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
         "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/",
         "https://novo.brb.com.br/imprensa/01-03-2021-brb-dux-visa-e-eleito-melhor-cartao-de-credito-de-2021/",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
         "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
-        "https://nbf.brb.com.br/visa-airport-companion/",
         "https://nbf.brb.com.br/wp-content/uploads/2025/02/REGULAMENTO-SALA-BRB-VIP-CLUB-NOVA-REGRA-GASTOS-VF-6.pdf",
-        "https://novo.brb.com.br/imprensa/banco-brb-e-casacor-anunciam-parceria-inedita/"
+        "https://nbf.brb.com.br/visa-airport-companion/",
+        "https://novo.brb.com.br/imprensa/brb-reafirma-compromisso-com-o-cliente-e-disponibiliza-novas-condicoes-de-transferencia-de-pontos-para-o-tap-milesgo/",
+        "https://novo.brb.com.br/imprensa/brb-alcanca-r-1-bilhao-em-transacoes-e-supera-1-milhao-de-cartoes-de-credito-ativos/"
       ],
       "campos_pendentes": [
+        "adicionais_gratis",
         "iof",
         "isencao",
         "renda_minima",
-        "requisito_acesso",
         "spread"
       ],
-      "nota_curadoria": "A taxa de pontuação (5 pts/USD nacional, 7 pts/USD internacional) foi extraída de nota de imprensa oficial BRB de fevereiro/2023 (novo.brb.com.br). O lançamento em 2021 previa 4 pts/USD com promoção de 5 pts/USD nos primeiros 12 meses (visa.com.br). Não foi possível confirmar se houve atualização posterior em 2024-2026, pois as páginas do produto em novo.brb.com.br e brbcard.com.br estão retornando 'Request Rejected'. A anuidade de R$ 1.680,00 (12x R$ 140,00) foi confirmada na Tabela de Tarifas PF 2024 (PDF oficial BRB, vigência a partir de 15/01/2024). As regras do Visa Airport Companion foram atualizadas — a partir de 17/07/2026 há nova estrutura de gasto mínimo (fonte: nbf.brb.com.br/visa-airport-companion). Renda mínima não publicada em fontes oficiais acessíveis. Recomenda-se revisitar brbcard.com.br/dux quando o acesso for restabelecido.",
+      "nota_curadoria": "A tabela de tarifas PF oficial (PDF de março/2024) confirma anuidade do BRB Visa DUX Titular em 12x R$ 140,00 (R$ 1.680,00/ano). Os adicionais correspondem a 50% da anuidade do titular, conforme mesma tabela. Os dados de pontuação (5 pts/USD nacional; 7 pts/USD internacional) foram obtidos no comunicado de imprensa de fev/2023 (novo.brb.com.br), que é a fonte oficial mais recente disponível; a página do produto brbcard.com.br/dux não foi indexada diretamente. Parceiro TAP Miles&Go adicionado com base em nota oficial de jul/2025. Livelo e Dotz mencionados em fontes de imprensa como parceiros do ecossistema BRB, mas não confirmados especificamente para o DUX em fonte oficial acessível — deixados fora de transfere_para por cautela. Regra de gasto mínimo para Sala BRB VIP Club consta no regulamento oficial (fev/2025) sem especificar valor exato para o DUX padrão (apenas exemplo com R$ 3.000 citado para outro produto).",
       "procedencia": {
         "anuidade": "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
         "anuidade_parcelas": "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
-        "adicionais_gratis": "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
         "pontos": "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/",
         "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
-        "transfere_para": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
         "cashback": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
-        "salas_vip": "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/",
-        "programa_proprio": "https://novo.brb.com.br/imprensa/banco-brb-e-casacor-anunciam-parceria-inedita/",
-        "categoria": "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/",
-        "nome": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
-        "emissor": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
-        "bandeira": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
+        "programa_proprio": "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/",
+        "transfere_para": "https://novo.brb.com.br/imprensa/brb-reafirma-compromisso-com-o-cliente-e-disponibiliza-novas-condicoes-de-transferencia-de-pontos-para-o-tap-milesgo/",
+        "salas_vip": "https://nbf.brb.com.br/wp-content/uploads/2025/02/REGULAMENTO-SALA-BRB-VIP-CLUB-NOVA-REGRA-GASTOS-VF-6.pdf",
+        "beneficios_banco": "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/",
         "link_solicitacao": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
-        "beneficios_banco": "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/"
+        "categoria": "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/",
+        "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html"
       },
-      "vigencia_ate": "2026-07-16",
+      "vigencia_ate": null,
       "analise": null,
       "campos_rejeitados": [
         "isencao",
-        "requisito_acesso"
+        "adicionais_gratis"
       ],
       "verificado_em": "2026-07-27"
     },
