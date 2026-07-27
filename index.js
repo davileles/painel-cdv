@@ -3647,9 +3647,14 @@ Use vigencia_ate (AAAA-MM-DD) quando algum beneficio for promocional com prazo.`
 
   const bodyPayload = JSON.stringify({
     model: 'claude-sonnet-4-6',
-    max_tokens: 8192,
+    max_tokens: 4096,
     system: systemPrompt,
-    tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+    tools: [{
+      type: 'web_search_20250305',
+      name: 'web_search',
+      max_uses: 6,
+      allowed_domains: CARTOES_DOMINIOS_OFICIAIS
+    }],
     messages: [{ role: 'user', content: `Pesquise e extraia a ficha tecnica do cartao: ${nome}` }]
   });
 
@@ -3695,7 +3700,10 @@ Use vigencia_ate (AAAA-MM-DD) quando algum beneficio for promocional com prazo.`
     });
   });
   apiReq.on('error', (e) => { console.error('[catalogo/extrair] req error:', e.message); res.json({ ok: false, erro: e.message }); });
-  apiReq.setTimeout(170000, () => { apiReq.destroy(); res.json({ ok: false, erro: 'Timeout ao chamar API Anthropic.' }); });
+  apiReq.setTimeout(100000, () => {
+    apiReq.destroy();
+    res.json({ ok: false, erro: 'Timeout na extracao (100s). Tente um cartao por vez.' });
+  });
   apiReq.write(bodyPayload);
   apiReq.end();
 });
