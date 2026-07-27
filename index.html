@@ -673,6 +673,7 @@
   <button class="main-tab" data-tab="calculadoras" id="tab-btn-calculadoras">🧮 Calculadoras</button>
   <button class="main-tab" data-tab="reclamacoes" id="tab-btn-reclamacoes">⚖️ Reclamações</button>
   <button class="main-tab" data-tab="roteiros" id="tab-btn-roteiros">🗺️ Roteiros</button>
+  <button class="main-tab" data-tab="cartoes" id="tab-btn-cartoes" style="display:none">💳 Cartões</button>
 </div>
 
 <div id="tab-inicio" class="tab-panel" style="display:none">
@@ -1840,6 +1841,266 @@
 })();
 </script>
 </div><!-- /tab-roteiros -->
+
+<div id="tab-cartoes" class="tab-panel" style="display:none">
+  <h2 style="margin:0 0 4px">💳 Comparador de Cartões</h2>
+  <p style="opacity:.7;margin:0 0 18px;font-size:14px">Base curada a partir de fontes oficiais dos emissores e das bandeiras.</p>
+
+  <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">
+    <button class="btn" id="ct-sub-comparar" onclick="ctSubTab('comparar')">Comparar</button>
+    <button class="btn" id="ct-sub-lista" onclick="ctSubTab('lista')">Todos os cartões</button>
+    <button class="btn" id="ct-sub-admin" onclick="ctSubTab('admin')" style="display:none">Admin</button>
+  </div>
+
+  <div id="ct-pane-comparar">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+      <select id="ct-sel-a" style="flex:1;min-width:220px" onchange="ctRenderComparacao()"></select>
+      <select id="ct-sel-b" style="flex:1;min-width:220px" onchange="ctRenderComparacao()"></select>
+    </div>
+    <div id="ct-comparacao"></div>
+  </div>
+
+  <div id="ct-pane-lista" style="display:none">
+    <input id="ct-busca" placeholder="Filtrar por nome ou emissor…" oninput="ctRenderLista()" style="width:100%;margin-bottom:14px">
+    <div id="ct-lista"></div>
+  </div>
+
+  <div id="ct-pane-admin" style="display:none">
+    <div style="border:1px solid var(--border,#2a3550);border-radius:12px;padding:16px;margin-bottom:18px">
+      <h3 style="margin:0 0 10px;font-size:15px">Extrair cartão por nome</h3>
+      <p style="opacity:.7;font-size:13px;margin:0 0 12px">
+        Digite um nome por linha. A busca é feita apenas em domínios oficiais dos emissores e bandeiras;
+        qualquer campo sem fonte oficial volta como pendente.
+      </p>
+      <textarea id="ct-fila" rows="5" placeholder="Itaú Personnalité Visa Infinite&#10;XP Visa Infinite&#10;C6 Graphene" style="width:100%"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap">
+        <button class="btn primary" onclick="ctExtrairFila()">Extrair</button>
+        <span id="ct-fila-status" style="font-size:13px;opacity:.75"></span>
+      </div>
+    </div>
+    <div id="ct-revisao"></div>
+  </div>
+</div><!-- /tab-cartoes -->
+
+<script>
+// ══════════════════════════════════════════════════════
+//  COMPARADOR DE CARTOES  (acesso restrito a DEV_EMAILS)
+// ══════════════════════════════════════════════════════
+var CT_CARTOES = [];
+var CT_PENDENTES_REVISAO = [];
+
+function ctSubTab(qual){
+  ['comparar','lista','admin'].forEach(function(k){
+    var pane = document.getElementById('ct-pane-'+k);
+    var btn  = document.getElementById('ct-sub-'+k);
+    if (pane) pane.style.display = (k===qual) ? 'block' : 'none';
+    if (btn) btn.classList.toggle('primary', k===qual);
+  });
+}
+
+function ctFmtMoeda(v){
+  if (v===null || v===undefined || v==='') return null;
+  return 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function ctValor(v){
+  if (v===null || v===undefined || v==='' || (Array.isArray(v) && !v.length)) {
+    return '<span style="opacity:.45">a confirmar</span>';
+  }
+  return v;
+}
+
+async function ctInit(){
+  if (typeof devAcesso === 'function' && devAcesso()) {
+    var b = document.getElementById('ct-sub-admin');
+    if (b) b.style.display = '';
+  }
+  try {
+    var r = await fetch(_BASE + '/cartoes');
+    var d = await r.json();
+    CT_CARTOES = (d.cartoes || []);
+  } catch(e){
+    console.warn('[cartoes] falha ao carregar', e);
+    CT_CARTOES = [];
+  }
+  ctPopularSelects();
+  ctRenderComparacao();
+  ctRenderLista();
+  ctSubTab('comparar');
+}
+
+function ctPopularSelects(){
+  var ordenados = CT_CARTOES.slice().sort(function(a,b){
+    return String(a.nome||'').localeCompare(String(b.nome||''), 'pt-BR');
+  });
+  ['ct-sel-a','ct-sel-b'].forEach(function(id, i){
+    var sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Selecione um cartão…</option>' +
+      ordenados.map(function(c){
+        return '<option value="'+c.slug+'">'+c.nome+'</option>';
+      }).join('');
+    if (ordenados[i]) sel.value = ordenados[i].slug;
+  });
+}
+
+function ctLinha(rot, a, b){
+  return '<tr>'+
+    '<td style="padding:9px 0;opacity:.7;font-size:13px">'+rot+'</td>'+
+    '<td style="padding:9px 0;text-align:center;font-size:13px">'+a+'</td>'+
+    '<td style="padding:9px 0;text-align:center;font-size:13px">'+b+'</td>'+
+  '</tr>';
+}
+
+function ctCampos(c){
+  if (!c) return {};
+  var anu = c.anuidade ? ctFmtMoeda(c.anuidade) +
+      (c.anuidade_parcelas ? ' <span style="opacity:.6">('+c.anuidade_parcelas+'x)</span>' : '') : null;
+  return {
+    pontosNac: c.pontos && c.pontos.nacional,
+    pontosInt: c.pontos && c.pontos.internacional,
+    cashback : c.cashback && c.cashback.nacional ? c.cashback.nacional + '%' : null,
+    anuidade : anu,
+    isencao  : c.isencao && c.isencao.regra,
+    spread   : (c.spread!==null && c.spread!==undefined) ? c.spread + '%' : null,
+    iof      : (c.iof!==null && c.iof!==undefined) ? c.iof + '%' : null,
+    adicionais: c.adicionais_gratis,
+    vip      : (c.salas_vip||[]).map(function(s){ return s.programa + (s.regra ? ' — '+s.regra : ''); }).join('<br>'),
+    transf   : (c.transfere_para||[]).slice().sort().join(', ')
+  };
+}
+
+function ctRenderComparacao(){
+  var box = document.getElementById('ct-comparacao');
+  if (!box) return;
+  var a = CT_CARTOES.find(function(c){ return c.slug === document.getElementById('ct-sel-a').value; });
+  var b = CT_CARTOES.find(function(c){ return c.slug === document.getElementById('ct-sel-b').value; });
+  if (!a || !b) { box.innerHTML = '<p style="opacity:.6">Selecione dois cartões para comparar.</p>'; return; }
+
+  var ca = ctCampos(a), cb = ctCampos(b);
+  var html =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">'+
+      [a,b].map(function(c){
+        return '<div style="border:1px solid var(--border,#2a3550);border-radius:12px;padding:14px">'+
+          '<div style="font-weight:600">'+c.nome+'</div>'+
+          '<div style="opacity:.65;font-size:13px;margin-top:2px">'+(c.emissor||'')+' · '+(c.bandeira||'')+' '+(c.categoria||'')+'</div>'+
+        '</div>';
+      }).join('')+
+    '</div>'+
+    '<table style="width:100%;border-collapse:collapse">'+
+      ctLinha('Pontos por dólar (nacional)', ctValor(ca.pontosNac), ctValor(cb.pontosNac))+
+      ctLinha('Pontos por dólar (internacional)', ctValor(ca.pontosInt), ctValor(cb.pontosInt))+
+      ctLinha('Cashback', ctValor(ca.cashback), ctValor(cb.cashback))+
+      ctLinha('Anuidade', ctValor(ca.anuidade), ctValor(cb.anuidade))+
+      ctLinha('Isenção', ctValor(ca.isencao), ctValor(cb.isencao))+
+      ctLinha('Spread', ctValor(ca.spread), ctValor(cb.spread))+
+      ctLinha('IOF', ctValor(ca.iof), ctValor(cb.iof))+
+      ctLinha('Adicionais grátis', ctValor(ca.adicionais), ctValor(cb.adicionais))+
+      ctLinha('Salas VIP', ctValor(ca.vip), ctValor(cb.vip))+
+      ctLinha('Transfere para', ctValor(ca.transf), ctValor(cb.transf))+
+    '</table>'+
+    '<p style="opacity:.55;font-size:12px;margin-top:14px">'+
+      'Campos marcados como “a confirmar” não constam nas fontes oficiais consultadas.'+
+    '</p>';
+  box.innerHTML = html;
+}
+
+function ctRenderLista(){
+  var box = document.getElementById('ct-lista');
+  if (!box) return;
+  var q = (document.getElementById('ct-busca').value || '').toLowerCase();
+  var itens = CT_CARTOES.filter(function(c){
+    return !q || String(c.nome||'').toLowerCase().indexOf(q)>=0
+              || String(c.emissor||'').toLowerCase().indexOf(q)>=0;
+  }).sort(function(a,b){ return String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR'); });
+
+  if (!itens.length) { box.innerHTML = '<p style="opacity:.6">Nenhum cartão encontrado.</p>'; return; }
+  box.innerHTML = itens.map(function(c){
+    var pend = (c.campos_pendentes||[]).length;
+    return '<div style="border:1px solid var(--border,#2a3550);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">'+
+      '<div><div style="font-weight:600">'+c.nome+'</div>'+
+      '<div style="opacity:.65;font-size:13px">'+(c.emissor||'')+' · '+(c.bandeira||'')+' '+(c.categoria||'')+'</div></div>'+
+      '<div style="text-align:right;font-size:13px">'+
+        '<div>'+(c.anuidade ? ctFmtMoeda(c.anuidade) : '<span style="opacity:.45">anuidade a confirmar</span>')+'</div>'+
+        '<div style="opacity:.6">'+(c.fontes||[]).length+' fonte(s)'+(pend ? ' · '+pend+' pendente(s)' : '')+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+async function ctExtrairFila(){
+  if (typeof devAcesso === 'function' && !devAcesso()) return;
+  var nomes = (document.getElementById('ct-fila').value || '')
+    .split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
+  if (!nomes.length) return;
+
+  var st = document.getElementById('ct-fila-status');
+  CT_PENDENTES_REVISAO = [];
+  document.getElementById('ct-revisao').innerHTML = '';
+
+  for (var i=0; i<nomes.length; i++){
+    st.textContent = 'Extraindo ' + (i+1) + '/' + nomes.length + ': ' + nomes[i] + '…';
+    try {
+      var r = await fetch(_BASE + '/cartoes/extrair', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ nome: nomes[i] })
+      });
+      var d = await r.json();
+      if (d.ok) CT_PENDENTES_REVISAO.push({ cartao: d.cartao, aviso: d.aviso });
+      else CT_PENDENTES_REVISAO.push({ erro: d.erro, nome: nomes[i] });
+    } catch(e){
+      CT_PENDENTES_REVISAO.push({ erro: e.message, nome: nomes[i] });
+    }
+    ctRenderRevisao();
+  }
+  st.textContent = 'Concluído. Revise abaixo antes de salvar.';
+}
+
+function ctRenderRevisao(){
+  var box = document.getElementById('ct-revisao');
+  if (!box) return;
+  box.innerHTML = CT_PENDENTES_REVISAO.map(function(item, i){
+    if (item.erro) {
+      return '<div style="border:1px solid #7f1d1d;border-radius:10px;padding:12px;margin-bottom:10px">'+
+        '<strong>'+item.nome+'</strong><div style="opacity:.75;font-size:13px">Erro: '+item.erro+'</div></div>';
+    }
+    var c = item.cartao;
+    var pend = (c.campos_pendentes||[]);
+    return '<div style="border:1px solid var(--border,#2a3550);border-radius:10px;padding:14px;margin-bottom:10px">'+
+      '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">'+
+        '<div><strong>'+(c.nome||'?')+'</strong>'+
+        '<div style="opacity:.65;font-size:13px">'+(c.emissor||'')+' · '+(c.fontes||[]).length+' fonte(s) oficial(is)'+'</div></div>'+
+        '<button class="btn primary" onclick="ctSalvar('+i+')">Salvar na base</button>'+
+      '</div>'+
+      (item.aviso ? '<div style="margin-top:8px;font-size:13px;color:#fbbf24">⚠️ '+item.aviso+'</div>' : '')+
+      (pend.length ? '<div style="margin-top:8px;font-size:13px;opacity:.7">Pendentes: '+pend.join(', ')+'</div>' : '')+
+      '<details style="margin-top:10px"><summary style="cursor:pointer;font-size:13px;opacity:.8">Ver JSON</summary>'+
+      '<pre style="white-space:pre-wrap;font-size:12px;opacity:.85;margin-top:8px">'+
+        JSON.stringify(c, null, 2).replace(/</g,'&lt;')+'</pre></details>'+
+    '</div>';
+  }).join('');
+}
+
+async function ctSalvar(i){
+  var item = CT_PENDENTES_REVISAO[i];
+  if (!item || !item.cartao) return;
+  try {
+    var r = await fetch(_BASE + '/cartoes', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ cartao: item.cartao })
+    });
+    var d = await r.json();
+    if (d.ok) {
+      alert('Salvo: ' + d.cartao.nome + (d.novo ? ' (novo)' : ' (atualizado)'));
+      await ctInit();
+      ctSubTab('admin');
+    } else {
+      alert('Erro ao salvar: ' + d.erro);
+    }
+  } catch(e){ alert('Erro ao salvar: ' + e.message); }
+}
+</script>
+
 
 <div id="tab-milhas" class="tab-panel" style="display:none">
 
@@ -4362,6 +4623,7 @@ function switchTab(tab){
   document.getElementById('tab-calculadoras').style.display = tab==='calculadoras' ?'block':'none';
   document.getElementById('tab-reclamacoes').style.display  = tab==='reclamacoes'  ?'block':'none';
   document.getElementById('tab-roteiros').style.display     = tab==='roteiros'     ?'block':'none';
+  document.getElementById('tab-cartoes').style.display      = tab==='cartoes'      ?'block':'none';
   window.scrollTo({top:0, behavior:'smooth'});
   if(tab==='inicio')       renderInicio();
   if(tab==='radar')        loadOfertas(false);
@@ -4370,6 +4632,7 @@ function switchTab(tab){
   if(tab==='milhas')       initMilhas();
   if(tab==='lounges')      lvCarregarAeroportos();
   if(tab==='calculadoras') calcAccorInit();
+  if(tab==='cartoes')      ctInit();
   try{localStorage.setItem('cdv_active_tab', tab);}catch(e){}
 }
 
@@ -6000,6 +6263,8 @@ function mostrarPainel(sessao) {
   if (tabMilhas) tabMilhas.style.display = '';
   // Calculadoras disponível para todos os assinantes
   // Aba Salas VIP — só para devs
+  // Aba Cartões — restrita a DEV_EMAILS
+  mostrarAba('tab-btn-cartoes');
   // Renderiza aba Início ao carregar (garante que nome apareça imediatamente)
   switchTab('inicio');
 }
