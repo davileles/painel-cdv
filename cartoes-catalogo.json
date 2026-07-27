@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 35,
+    "total": 36,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -1008,6 +1008,160 @@
         "pontos": "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-carbon-mastercard-black",
         "adicionais_gratis": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco"
       }
+    },
+    {
+      "slug": "c6-carbon-mastercard-black",
+      "nome": "C6 Carbon Mastercard Black",
+      "emissor": "Banco C6 S.A.",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "anuidade": 1176,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "multipla",
+        "valor": 98,
+        "regra": "Isenção nos 3 primeiros meses para novos clientes ou primeiro upgrade. Após isso, isenção 100% para: (1) gastos a partir de R$ 8.000/mês na fatura (titular + adicionais); (2) investimentos a partir de R$ 50.000 em renda fixa (CDB, LCI, LCA, LF, Compromissadas) emitidos e contratados pelo C6 Bank via app; (3) investimentos de R$ 1 milhão ou mais em quaisquer produtos no Brasil e/ou exterior via app C6 Bank."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Sujeito a análise de crédito interna pelo C6 Bank. O cartão aparece como opção de upgrade na aba Cartões do app quando disponível para o perfil do cliente. Não há renda mínima divulgada publicamente.",
+      "adicionais_gratis": 10,
+      "pontos": {
+        "nacional": 2.5,
+        "internacional": 2.5,
+        "unidade": "pts/USD",
+        "observacao": "Pontuação padrão de 2,5 pts/USD no crédito. Pode chegar a até 3,5 pts/USD conforme faixas de investimento ou pagamentos elegíveis via C6 Bank: 2,7 pts/USD para investimentos entre R$ 250 mil e R$ 500 mil em renda fixa C6 ou pagamentos elegíveis a partir de R$ 4 mil/mês; faixas superiores para investimentos entre R$ 500 mil e R$ 1 milhão; e 3,5 pts/USD para investimentos acima de R$ 1 milhão em qualquer produto ou acima de R$ 500 mil em renda fixa C6. Pontos não expiram. Programa: C6 Átomos."
+      },
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "Até 1,7% ao converter pontos C6 Átomos em dinheiro na conta (condições consultadas no app antes do resgate)."
+      },
+      "programa_proprio": "C6 Átomos",
+      "transfere_para": [
+        "Livelo",
+        "Smiles (Gol)",
+        "LATAM Pass",
+        "TudoAzul",
+        "TAP Miles&Go"
+      ],
+      "spread": null,
+      "iof": "6,38% sobre compras internacionais com cartão de crédito (alíquota padrão federal). Via C6 Conta Global o IOF é de 1,1% por transferência.",
+      "validade_pontos": "Não expiram",
+      "salas_vip": [
+        {
+          "programa": "DragonPass",
+          "regra": "4 acessos/ano gratuitos em mais de 1.200 salas ao redor do mundo, divididos entre titular, adicionais, acompanhantes e convidados. A partir do 5º acesso, cobrança de tarifa adicional."
+        },
+        {
+          "programa": "W Premium",
+          "regra": "Incluído nos 4 acessos/ano gratuitos. Acesso mediante apresentação do cartão físico na entrada."
+        },
+        {
+          "programa": "Espaço C6 Bank (Mastercard Black) – Terminal 3 Guarulhos",
+          "regra": "Acesso ilimitado para clientes com gasto acumulado de R$ 15.000 no crédito nos 3 meses anteriores ao mês de acesso. Válido para titular, adicionais e acompanhantes. Requer validação de US$ 1 (estornado) via app DragonPass. A partir do 5º acesso (sem critério de gasto atingido), tarifa de R$ 200/entrada."
+        },
+        {
+          "programa": "Lounge Key (Mastercard Black)",
+          "regra": "Acesso mediante cobrança de US$ 35/acesso feita na fatura pela Mastercard. Clientes C6 Carbon com mais de R$ 1 milhão investidos têm acesso ilimitado e gratuito para titular, adicionais e acompanhantes."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "C6 Tag (pedágio e estacionamento)",
+          "descricao": "Até 4 tags gratuitas para até 4 veículos, condicionado ao uso do cartão C6 Carbon na função crédito no mês anterior ao da cobrança da mensalidade."
+        },
+        {
+          "titulo": "Cartões adicionais gratuitos",
+          "descricao": "Até 10 cartões adicionais sem custo, com os mesmos benefícios do titular."
+        },
+        {
+          "titulo": "Seguro Viagem",
+          "descricao": "Cobertura para despesas médicas e extravio de bagagens em viagens internacionais."
+        },
+        {
+          "titulo": "Proteção de Compras e Garantia Estendida",
+          "descricao": "Proteção para itens adquiridos com o cartão durante viagens."
+        },
+        {
+          "titulo": "Concierge de Viagens",
+          "descricao": "Assistência na organização de roteiros, reservas em hotéis e restaurantes exclusivos (benefício Mastercard Black)."
+        },
+        {
+          "titulo": "Isenção de Rolha",
+          "descricao": "Sem taxa de rolha em mais de 200 restaurantes parceiros (benefício Mastercard Black / Priceless Cities)."
+        },
+        {
+          "titulo": "Cobertura de Aluguel de Automóvel",
+          "descricao": "Proteção contra danos por colisão, roubo ou incêndio acidental em veículos alugados com o cartão."
+        },
+        {
+          "titulo": "Cheque Especial Beneficiado",
+          "descricao": "Até 10 dias sem cobrança de juros no cheque especial por mês, após ativação no app (sujeito a elegibilidade)."
+        },
+        {
+          "titulo": "Isenção de taxa de abertura da C6 Conta Global",
+          "descricao": "Clientes C6 Carbon não pagam tarifa de abertura da Conta Global (conta em dólar e euro)."
+        },
+        {
+          "titulo": "C6+Benefícios",
+          "descricao": "Descontos exclusivos em grandes marcas parceiras."
+        },
+        {
+          "titulo": "Acesso ilimitado a salas VIP (clientes investidores)",
+          "descricao": "Clientes com R$ 1 milhão ou mais investidos no C6 Bank têm acesso ilimitado e gratuito às salas VIP dos programas DragonPass, Lounge Key e W Premium para titular, adicionais e acompanhantes."
+        },
+        {
+          "titulo": "Mastercard Surpreenda / Priceless Cities",
+          "descricao": "Acesso a descontos em restaurantes em diferentes localidades e outros benefícios da plataforma Mastercard."
+        },
+        {
+          "titulo": "Carteiras digitais",
+          "descricao": "Compatível com Apple Pay, Google Pay e Samsung Wallet."
+        }
+      ],
+      "link_solicitacao": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+      "fontes": [
+        "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "https://www.c6bank.com.br/cartao-de-credito/",
+        "https://www.c6bank.com.br/blog/isencao-de-anuidade-cartoes-black-c6",
+        "https://www.c6bank.com.br/blog/como-funciona-o-c6-carbon",
+        "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-carbon-mastercard-black",
+        "https://www.c6bank.com.br/blog/beneficios-exclusivos-para-investimentos-acima-de-1-milhao",
+        "https://www.c6bank.com.br/blog/c6-carbon-como-conseguir",
+        "https://www.c6bank.com.br/programa-de-pontos-atomos/",
+        "https://www.c6bank.com.br/guia-cartao-black/",
+        "https://www.c6bank.com.br/blog/como-pagar-menos-spread-de-cambio",
+        "https://www.c6bank.com.br/blog/c6-bank-lanca-carbon",
+        "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas"
+      ],
+      "campos_pendentes": [
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "Renda mínima não é divulgada publicamente pelo C6 Bank — acesso ao C6 Carbon é por convite/análise interna via app. O spread do cartão de crédito internacional padrão (câmbio turismo) não é publicado explicitamente na página do produto; o valor de IOF de 6,38% é alíquota federal padrão para cartões de crédito no exterior, confirmada em fonte oficial C6. A pontuação padrão é 2,5 pts/USD, escalando até 3,5 pts/USD conforme critérios de investimento ou pagamentos. Cashback de até 1,7% é obtido pela conversão de pontos Átomos — não é cashback direto na fatura. Parceiros de transferência de pontos confirmados: Livelo, Smiles, LATAM Pass, TudoAzul e TAP Miles&Go. Anuidade total anual: 12 x R$ 98 = R$ 1.176,00.",
+      "procedencia": {
+        "nome": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "emissor": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "bandeira": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "categoria": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "anuidade": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "anuidade_parcelas": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "isencao": "https://www.c6bank.com.br/blog/isencao-de-anuidade-cartoes-black-c6",
+        "adicionais_gratis": "https://www.c6bank.com.br/blog/como-funciona-o-c6-carbon",
+        "pontos": "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-carbon-mastercard-black",
+        "cashback": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "programa_proprio": "https://www.c6bank.com.br/programa-de-pontos-atomos/",
+        "transfere_para": "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas",
+        "iof": "https://www.c6bank.com.br/blog/c6-bank-lanca-carbon",
+        "validade_pontos": "https://www.c6bank.com.br/programa-de-pontos-atomos/",
+        "salas_vip": "https://www.c6bank.com.br/blog/c6-carbon-como-conseguir",
+        "beneficios_banco": "https://www.c6bank.com.br/blog/beneficios-exclusivos-para-investimentos-acima-de-1-milhao",
+        "link_solicitacao": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "requisito_acesso": "https://www.c6bank.com.br/guia-cartao-black/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "verificado_em": "2026-07-27"
     },
     {
       "slug": "c6-graphene",
