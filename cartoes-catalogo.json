@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 31,
+    "total": 32,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -2492,6 +2492,111 @@
       },
       "vigencia_ate": null,
       "analise": null,
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "sicoob-mastercard-black-zenith",
+      "nome": "Sicoob Mastercard Black Zenith",
+      "emissor": "Sicoob",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "anuidade": 1320,
+      "anuidade_parcelas": null,
+      "isencao": {
+        "tipo": "gasto_mensal",
+        "valor": null,
+        "regra": "Programa Comprou Zerou: possibilidade de zerar a cobrança mensal conforme o volume de gastos no crédito. Valor exato de gatilho para isenção total não publicado em fonte oficial para o Zenith especificamente."
+      },
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 4,
+        "internacional": 4,
+        "unidade": "pts/USD",
+        "observacao": "4 pontos Coopera por dólar gasto (compras nacionais convertidas pelo dólar PTAX do dia, sem spread adicional). Pontos acumulados no programa Coopera."
+      },
+      "cashback": null,
+      "programa_proprio": "Coopera (shopcoopera.com.br) — programa de fidelidade e marketplace gratuito do Sicoob. Permite resgatar pontos por produtos, passagens, hospedagem, crédito na fatura, aporte no Sicoob Previ e aporte na Cota Capital. Suporta transferência de pontos para outros programas de recompensa.",
+      "transfere_para": [],
+      "spread": "Sem cobrança adicional de spread — compras internacionais convertidas pelo dólar PTAX do dia da compra.",
+      "iof": null,
+      "validade_pontos": "24 meses a partir da data de aquisição (lançamento no extrato)",
+      "salas_vip": [
+        {
+          "programa": "LoungeKey",
+          "regra": "Acesso ilimitado às salas VIP LoungeKey para o titular, com direito a 2 convidados gratuitos por visita. Acessos adicionais além das cotas gratuitas custam USD 35 por acesso, cobrados na fatura. Adicionais têm os mesmos benefícios do titular. Acesso via App Mastercard Airport Experiences. É necessário apresentar cartão físico + bilhete de viagem."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Concierge 24h Mastercard",
+          "descricao": "Assistente pessoal disponível 24 horas para organizar viagens, comprar ingressos e fazer reservas em restaurantes."
+        },
+        {
+          "titulo": "Seguro contra inconveniências de viagem",
+          "descricao": "Cobertura para imprevistos durante viagens, conforme condições do benefício Mastercard Black."
+        },
+        {
+          "titulo": "Isenção de rolha e experiências Priceless",
+          "descricao": "Isenção de taxa de rolha em restaurantes participantes e acesso a experiências exclusivas Mastercard Priceless."
+        },
+        {
+          "titulo": "Cartão Digital e Carteiras Digitais",
+          "descricao": "Compatível com Apple Pay, Google Pay e Samsung Pay. Disponibiliza Cartão Virtual para compras online únicas ou recorrentes."
+        },
+        {
+          "titulo": "Desbloqueio Rápido",
+          "descricao": "Desbloqueio do cartão pelo App Sicoob antes mesmo do recebimento do cartão físico, permitindo compras virtuais imediatas."
+        },
+        {
+          "titulo": "Programa Coopera",
+          "descricao": "Acesso ao programa de fidelidade e marketplace gratuito com mais de 250 mil produtos. Pontos podem ser trocados por passagens, hotéis, eletrônicos, crédito na fatura, aporte no Sicoob Previ e Cota Capital."
+        },
+        {
+          "titulo": "Comprou Zerou",
+          "descricao": "Programa de isenção de anuidade proporcional ao volume de compras mensais no crédito."
+        }
+      ],
+      "link_solicitacao": "https://www.sicoob.com.br/web/sicoob/mastercard-zenith",
+      "fontes": [
+        "https://www.sicoob.com.br/web/sicoob/mastercard-zenith",
+        "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d",
+        "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/282563279",
+        "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
+        "https://www.sicoob.com.br/web/sicoob/coopera",
+        "https://www.sicoob.com.br/zenith/desbloqueio"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao.valor",
+        "renda_minima",
+        "requisito_acesso",
+        "transfere_para"
+      ],
+      "nota_curadoria": "Anuidade de R$ 1.320,00 extraída da tabela de tarifas oficial com vigência a partir de 01/12/2025 (PDF Sicoob). A pontuação de 4 pts/USD e o acesso ilimitado ao LoungeKey com 2 convidados gratuitos são confirmados por múltiplas páginas oficiais Sicoob. O spread zero em compras internacionais (dólar PTAX sem cobrança adicional) consta na página de notícias oficial. Renda mínima, número exato de adicionais gratuitos, IOF e lista nominal de parceiros de transferência de pontos não foram localizados em fonte oficial durante a pesquisa. A anuidade pode variar por cooperativa conforme declarado no próprio site do Sicoob. O parcelamento em 12x é inferido do padrão do programa Comprou Zerou descrito para o portfólio Sicoob, mas não confirmado individualmente para o Zenith em documento oficial — incluído como pendente de validação.",
+      "procedencia": {
+        "anuidade": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d",
+        "bandeira": "https://www.sicoob.com.br/web/sicoob/mastercard-zenith",
+        "pontos": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/282563279",
+        "salas_vip": "https://www.sicoob.com.br/web/sicoob/mastercard-zenith",
+        "validade_pontos": "https://www.sicoob.com.br/web/sicoob/coopera",
+        "programa_proprio": "https://www.sicoob.com.br/web/sicoob/coopera",
+        "isencao": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
+        "spread": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
+        "beneficios_banco": "https://www.sicoob.com.br/web/sicoob/mastercard-zenith",
+        "link_solicitacao": "https://www.sicoob.com.br/web/sicoob/mastercard-zenith"
+      },
+      "vigencia_ate": "2025-11-30",
+      "analise": null,
+      "campos_rejeitados": [
+        "anuidade_parcelas",
+        "transfere_para",
+        "requisito_acesso"
+      ],
       "verificado_em": "2026-07-27"
     },
     {
