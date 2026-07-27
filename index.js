@@ -3617,6 +3617,7 @@ app.post('/catalogo-cartoes/extrair', (req, res) => {
   const nome = (req.body && req.body.nome || '').trim();
   if (!nome) return res.status(400).json({ ok: false, erro: 'Campo obrigatorio: nome' });
 
+  try {
   const systemPrompt = `Voce e um curador de dados de cartoes de credito brasileiros. Recebe o NOME de um cartao e deve pesquisar na web para preencher uma ficha tecnica.
 
 REGRA ABSOLUTA DE PROCEDENCIA:
@@ -3706,9 +3707,21 @@ Use vigencia_ate (AAAA-MM-DD) quando algum beneficio for promocional com prazo.`
   });
   apiReq.write(bodyPayload);
   apiReq.end();
+  } catch (e) {
+    console.error('[catalogo/extrair] excecao:', (e && e.stack) || e);
+    res.status(500).json({ ok: false, erro: 'Falha no extrator: ' + ((e && e.message) || String(e)) });
+  }
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
+
+// Qualquer excecao nao tratada vira JSON, nunca a pagina HTML do Express.
+// Sem isso o front recebe '<' e a causa real se perde.
+app.use((err, req, res, next) => {
+  console.error('[erro nao tratado]', req.method, req.path, (err && err.stack) || err);
+  if (res.headersSent) return next(err);
+  res.status(500).json({ ok: false, erro: (err && err.message) || 'Erro interno', rota: req.path });
+});
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
