@@ -3488,6 +3488,20 @@ function catalogoMesmoCartao(a, b) {
   return ta.size === tb.size && [...ta].every(w => tb.has(w));
 }
 
+// Deriva o catalogo de bandeira a partir de bandeira/categoria/nome, que a IA
+// escreve em texto livre ("Black / World Elite", "Ultra Premium / Metal").
+// World Elite = nome internacional do Mastercard Black no Brasil, mesmo tier.
+// World Legend, Infinite Privilege e Centurion sao tiers superiores com
+// beneficios proprios: ficam sem ref ate existir catalogo especifico.
+function catalogoBandeiraRef(c) {
+  const t = [c.bandeira, c.categoria, c.nome].join(' ')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  if (/legend|privilege|centurion/.test(t)) return null;
+  if (t.includes('mastercard') && /black|world elite/.test(t)) return 'mastercard-black';
+  if (t.includes('visa') && t.includes('infinite')) return 'visa-infinite';
+  return null;
+}
+
 function cartoesSlugify(s) {
   return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -3558,6 +3572,7 @@ function cartoesSanitizar(cartao) {
     CATALOGO_CAMPOS.some(k => p === k || p.indexOf(k + '.') === 0)
   ).sort();
   if (rejeitados.length) c.campos_rejeitados = rejeitados;
+  if (!c.bandeira_ref) c.bandeira_ref = catalogoBandeiraRef(c);
   c.verificado_em = c.verificado_em || new Date().toISOString().slice(0, 10);
   return c;
 }
@@ -3592,9 +3607,10 @@ app.get('/catalogo-cartoes/:slug', async (req, res) => {
 
     // Resolve os beneficios herdados da bandeira
     let beneficiosBandeira = [];
-    if (cartao.bandeira_ref) {
+    const ref = cartao.bandeira_ref || catalogoBandeiraRef(cartao);
+    if (ref) {
       const { data: bd } = await ghGetJson(BANDEIRAS_PATH, { bandeiras: [] });
-      const b = (bd.bandeiras || []).find(x => x.ref === cartao.bandeira_ref);
+      const b = (bd.bandeiras || []).find(x => x.ref === ref);
       if (b) beneficiosBandeira = b.beneficios || [];
     }
     res.json({ ok: true, cartao: { ...cartao, beneficios_bandeira: beneficiosBandeira } });
