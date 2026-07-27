@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 41,
+    "total": 42,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -133,6 +133,137 @@
       "vigencia_ate": null,
       "analise": null,
       "campos_rejeitados": [
+        "requisito_acesso"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "azul-visa-infinite",
+      "nome": "Azul Itaucard Visa Infinite",
+      "emissor": "Itaú Unibanco",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": 1260,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "gasto_mensal",
+        "valor": 20000,
+        "regra": "Isenção total da parcela mensal (R$ 105,00) ao gastar R$ 20.000,00 ou mais por fatura (titular + adicionais). Desconto de 50% ao gastar a partir de R$ 10.000,00 por fatura. Gastos abaixo de R$ 10.000,00 resultam em cobrança integral de R$ 105,00/mês."
+      },
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": 5,
+      "pontos": {
+        "nacional": 3,
+        "internacional": 3.5,
+        "unidade": "pts/USD",
+        "observacao": "Pontos creditados diretamente no programa de fidelidade da Azul (TudoAzul), sem validade (não expiram) e sem quantidade mínima para bonificação. Membros do Clube TudoAzul têm acúmulo promocional de 4,5 pts/USD em compras nacionais e 5,25 pts/USD em internacionais."
+      },
+      "cashback": null,
+      "programa_proprio": "TudoAzul (Azul Linhas Aéreas)",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Não expiram",
+      "salas_vip": [
+        {
+          "programa": "LoungeKey",
+          "regra": "2 acessos gratuitos por ano em salas LoungeKey distribuídas pelo mundo"
+        },
+        {
+          "programa": "Espaço Azul",
+          "regra": "Acesso ilimitado ao Espaço Azul (salas VIP Azul nos aeroportos de Congonhas/SP e Viracopos/Campinas)"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Nível Diamante TudoAzul",
+          "descricao": "Acesso automático ao nível Diamante no Programa de Fidelidade da Azul, com vantagens como check-in e embarque prioritário em voos Azul e benefícios na parceira United Airlines."
+        },
+        {
+          "titulo": "Bagagens gratuitas",
+          "descricao": "3 bagagens gratuitas de até 23kg em voos no Brasil, EUA e Europa; 2 bagagens gratuitas de até 23kg em voos na América do Sul."
+        },
+        {
+          "titulo": "10% de desconto Azul",
+          "descricao": "Desconto de 10% em passagens Azul, Clube Azul, compra de pontos e pacotes da Azul Viagens. Parcelamento em até 12x sem juros em passagens Azul e pacotes Azul Viagens."
+        },
+        {
+          "titulo": "Acompanhante grátis (Companion Pass)",
+          "descricao": "Ao acumular 50.000 pontos no cartão em 12 meses, ganhe 4 trechos para um acompanhante (2 trechos nacionais + 2 trechos livres nacionais ou internacionais). Benefício válido 1 vez a cada 12 meses por CPF titular."
+        },
+        {
+          "titulo": "Upgrade de cabine",
+          "descricao": "Ao acumular 100.000 pontos no cartão em 12 meses, ganhe 2 vouchers de upgrade de cabine (classe executiva Azul Business). Benefício válido 1 vez a cada 12 meses por CPF titular."
+        },
+        {
+          "titulo": "Bônus de boas-vindas",
+          "descricao": "40.000 pontos bônus ao manter gastos de R$ 20.000,00 por fatura durante as 3 primeiras faturas (para cartões aprovados a partir de 01/04/2026, com ativação em até 60 dias). Válido somente para titular, no 1º ano, não se aplica a renovações."
+        },
+        {
+          "titulo": "Diárias Unidas",
+          "descricao": "2 diárias gratuitas por ano no aluguel de carros na Unidas (categoria Sedan Médio Automático, mediante disponibilidade, exige contratação mínima de 3 diárias para 1 grátis ou 7 diárias para 2 grátis)."
+        },
+        {
+          "titulo": "Azul Cargo",
+          "descricao": "10% de desconto nos serviços de logística da Azul Cargo para transporte de encomendas e cargas para todo o Brasil."
+        },
+        {
+          "titulo": "Antecipação de voo",
+          "descricao": "Antecipação gratuita de voos Azul em até 6 horas antes do horário original, sujeito a disponibilidade."
+        },
+        {
+          "titulo": "Visa Concierge",
+          "descricao": "Acesso ao serviço Visa Concierge, administrado pela Ten Serviços de Concierge do Brasil Ltda."
+        },
+        {
+          "titulo": "Visa Luxury Hotel Collection",
+          "descricao": "Acesso ao programa Visa Luxury Hotel Collection com benefícios exclusivos em hotéis selecionados."
+        },
+        {
+          "titulo": "Seguros de viagem",
+          "descricao": "Coberturas para emergências médicas internacionais, cancelamento de viagem, atraso de bagagem, perda de conexão aérea, atraso de embarque e proteção de preço."
+        },
+        {
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Acesso a fila de segurança diferenciada nos terminais 2 e 3 do Aeroporto de Guarulhos (GRU) e nos embarques internacional e doméstico do RIOgaleão (GIG)."
+        }
+      ],
+      "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/g/azul-visa-infinite/",
+      "fontes": [
+        "https://www.itau.com.br/cartoes/escolha/g/azul-visa-infinite/",
+        "https://www.itau.com.br/cartoes/beneficios/programa-fidelidade-azul",
+        "https://www.itau.com.br/cartoes/escolha/formulario/tudoazul-itaucard-20-internacional-visa.html",
+        "https://www.itau.com.br/cartoes/escolha/formulario/azul-itaucard-visa-infinite.html",
+        "https://www.itau.com.br/media/dam/m/7a27c611cf1fb00d/original/cartoes-tabela-geral.pdf",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
+        "https://visa-infinite.com/br/beneficios/sala-vip-loungekey-em-aeroportos_1105"
+      ],
+      "campos_pendentes": [
+        "cashback",
+        "iof",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "nota_curadoria": "Emissor é o Itaú Unibanco em co-branded com a Azul Linhas Aéreas. A anuidade é cobrada mensalmente (R$ 105,00/mês = R$ 1.260,00/ano), com isenção total para gastos >= R$ 20.000/fatura e 50% de desconto para gastos entre R$ 10.000 e R$ 19.999/fatura. Os pontos vão direto ao programa TudoAzul (não há transferência para outras companhias). A renda mínima não foi publicada na página oficial do produto — o campo 'renda_minima: R$ 5.000' encontrado refere-se ao Itaucard Visa Infinite genérico, não ao co-branded Azul; mantido como null por ausência de fonte oficial específica. O IOF de compras internacionais é legal (4,38% em 2025) mas não divulgado explicitamente na página do produto. A tabela de tarifas PDF consultada lista o produto mas não foi possível extrair os valores numéricos do PDF via busca. Dados de pontuação para Clube TudoAzul (4,5/5,25 pts/USD) foram extraídos da nota de imprensa visa.com.br e podem ter caráter promocional — verificar vigência. Benefício de bônus de boas-vindas (40k pontos) tem vigência condicionada a aprovação a partir de 01/04/2026.",
+      "procedencia": {
+        "anuidade": "https://www.itau.com.br/cartoes/escolha/g/azul-visa-infinite/",
+        "anuidade_parcelas": "https://www.itau.com.br/cartoes/escolha/g/azul-visa-infinite/",
+        "isencao": "https://www.itau.com.br/cartoes/escolha/g/azul-visa-infinite/",
+        "adicionais_gratis": "https://www.itau.com.br/cartoes/escolha/g/azul-visa-infinite/",
+        "pontos": "https://www.itau.com.br/cartoes/escolha/g/azul-visa-infinite/",
+        "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
+        "programa_proprio": "https://www.itau.com.br/cartoes/beneficios/programa-fidelidade-azul",
+        "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
+        "beneficios_banco": "https://www.itau.com.br/cartoes/escolha/g/azul-visa-infinite/",
+        "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/g/azul-visa-infinite/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "transfere_para",
         "requisito_acesso"
       ],
       "verificado_em": "2026-07-27"
