@@ -1995,6 +1995,9 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
       <textarea id="ct-fila" rows="5" placeholder="Itaú Personnalité Visa Infinite&#10;XP Visa Infinite&#10;C6 Graphene" style="width:100%"></textarea>
       <div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap">
         <button class="ct-btn on" onclick="ctExtrairFila()">Extrair</button>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer">
+          <input type="checkbox" id="ct-autosalvar" style="width:auto;margin:0"> Salvar automaticamente
+        </label>
         <span id="ct-fila-status" style="font-size:13px;opacity:.75"></span>
       </div>
     </div>
@@ -2335,6 +2338,8 @@ async function ctExtrairFila(){
   if (!nomes.length) return;
 
   var st = document.getElementById('ct-fila-status');
+  var chk = document.getElementById('ct-autosalvar');
+  var auto = !!(chk && chk.checked);
   CT_PENDENTES_REVISAO = [];
   document.getElementById('ct-revisao').innerHTML = '';
 
@@ -2346,14 +2351,26 @@ async function ctExtrairFila(){
         body: JSON.stringify({ nome: nomes[i] })
       });
       var d = await ctJson(r);
-      if (d.ok) CT_PENDENTES_REVISAO.push({ cartao: d.cartao, aviso: d.aviso });
-      else CT_PENDENTES_REVISAO.push({ erro: d.erro, nome: nomes[i] });
+      if (d.ok) {
+        if (auto) {
+          var g = await ctGravar(d.cartao);
+          CT_PENDENTES_REVISAO.push(g.ok
+            ? { cartao: d.cartao, aviso: d.aviso, salvo: true,
+                resumo: (g.novo ? 'salvo' : 'atualizado') + ' · base com ' + g.total }
+            : { cartao: d.cartao, aviso: d.aviso, erroSalvar: g.msg });
+        } else {
+          CT_PENDENTES_REVISAO.push({ cartao: d.cartao, aviso: d.aviso });
+        }
+      } else CT_PENDENTES_REVISAO.push({ erro: d.erro, nome: nomes[i] });
     } catch(e){
       CT_PENDENTES_REVISAO.push({ erro: e.message, nome: nomes[i] });
     }
     ctRenderRevisao();
   }
-  st.textContent = 'Concluído. Revise abaixo antes de salvar.';
+  var okd = CT_PENDENTES_REVISAO.filter(function(x){ return x.salvo; }).length;
+  var bad = CT_PENDENTES_REVISAO.filter(function(x){ return x.erro || x.erroSalvar; }).length;
+  st.textContent = auto ? ('Concluído. ' + okd + ' salvo(s), ' + bad + ' com falha.')
+                        : 'Concluído. Revise abaixo antes de salvar.';
 }
 
 var CT_FICHA = [
@@ -2424,10 +2441,13 @@ function ctRenderRevisao(){
             (c.fontes||[]).length+' fonte(s) · '+nPend+' a apurar'+(nRej ? ' · '+nRej+' rejeitado(s)' : '')+
           '</div></div>'+
         '<div style="display:flex;gap:6px">'+
-          '<button class="ct-btn on" onclick="ctSalvar('+i+')">Salvar</button>'+
+          (item.salvo
+            ? '<span class="ct-tag" style="color:#34d399;border-color:rgba(52,211,153,.45)">'+(item.resumo||'salvo')+'</span>'
+            : '<button class="ct-btn on" onclick="ctSalvar('+i+')">Salvar</button>')+
           '<button class="ct-btn" onclick="ctDescartarExtracao('+i+')">Descartar</button>'+
         '</div>'+
       '</div>'+
+      (item.erroSalvar ? '<div style="font-size:12px;color:#f87171;margin-bottom:10px">Falha ao salvar: '+item.erroSalvar+'</div>' : '')+
       (item.aviso ? '<div style="font-size:12px;color:#fbbf24;margin-bottom:10px">⚠️ '+item.aviso+'</div>' : '')+
       ctFichaHtml(c)+
       '<details style="margin-top:12px"><summary style="cursor:pointer;font-size:11px;color:var(--muted)">JSON bruto</summary>'+
@@ -2440,6 +2460,23 @@ function ctRenderRevisao(){
 function ctDescartarExtracao(i){
   CT_PENDENTES_REVISAO.splice(i, 1);
   ctRenderRevisao();
+}
+
+// Grava um cartao. Usada pelo botao e pelo modo automatico.
+async function ctGravar(cartao){
+  try {
+    var r = await fetch(_BASE + '/catalogo-cartoes', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ cartao: cartao })
+    });
+    var d = await ctJson(r);
+    if (!d.ok) return { ok:false, msg: d.erro };
+    if (Array.isArray(d.cartoes)) {
+      CT_CARTOES = d.cartoes; CT_DETALHE = {};
+      ctPopularSelects(); ctRenderLista();
+    }
+    return { ok:true, novo: d.novo, total: d.total };
+  } catch(e){ return { ok:false, msg: e.message }; }
 }
 
 async function ctSalvar(i){
