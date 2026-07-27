@@ -499,7 +499,7 @@
       "nome": "BRB Visa DUX",
       "emissor": "BRB – Banco de Brasília (operado pela BRBCARD S.A.)",
       "bandeira": "Visa",
-      "categoria": "Ultra High / Premium (segmento de alta renda, cartão metálico)",
+      "categoria": "Infinite",
       "anuidade": 1680,
       "anuidade_parcelas": 12,
       "isencao": null,
@@ -593,7 +593,7 @@
         "renda_minima",
         "spread"
       ],
-      "nota_curadoria": "A tabela de tarifas PF oficial (PDF de março/2024) confirma anuidade do BRB Visa DUX Titular em 12x R$ 140,00 (R$ 1.680,00/ano). Os adicionais correspondem a 50% da anuidade do titular, conforme mesma tabela. Os dados de pontuação (5 pts/USD nacional; 7 pts/USD internacional) foram obtidos no comunicado de imprensa de fev/2023 (novo.brb.com.br), que é a fonte oficial mais recente disponível; a página do produto brbcard.com.br/dux não foi indexada diretamente. Parceiro TAP Miles&Go adicionado com base em nota oficial de jul/2025. Livelo e Dotz mencionados em fontes de imprensa como parceiros do ecossistema BRB, mas não confirmados especificamente para o DUX em fonte oficial acessível — deixados fora de transfere_para por cautela. Regra de gasto mínimo para Sala BRB VIP Club consta no regulamento oficial (fev/2025) sem especificar valor exato para o DUX padrão (apenas exemplo com R$ 3.000 citado para outro produto).",
+      "nota_curadoria": "A tabela de tarifas PF oficial (PDF de março/2024) confirma anuidade do BRB Visa DUX Titular em 12x R$ 140,00 (R$ 1.680,00/ano). Os adicionais correspondem a 50% da anuidade do titular, conforme mesma tabela. Os dados de pontuação (5 pts/USD nacional; 7 pts/USD internacional) foram obtidos no comunicado de imprensa de fev/2023 (novo.brb.com.br), que é a fonte oficial mais recente disponível; a página do produto brbcard.com.br/dux não foi indexada diretamente. Parceiro TAP Miles&Go adicionado com base em nota oficial de jul/2025. Livelo e Dotz mencionados em fontes de imprensa como parceiros do ecossistema BRB, mas não confirmados especificamente para o DUX em fonte oficial acessível — deixados fora de transfere_para por cautela. Regra de gasto mínimo para Sala BRB VIP Club consta no regulamento oficial (fev/2025) sem especificar valor exato para o DUX padrão (apenas exemplo com R$ 3.000 citado para outro produto). Tier confirmado manualmente como Visa Infinite; o extrator nao havia declarado a categoria.",
       "procedencia": {
         "anuidade": "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
         "anuidade_parcelas": "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
@@ -614,7 +614,8 @@
         "isencao",
         "adicionais_gratis"
       ],
-      "verificado_em": "2026-07-27"
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "brb-visa-infinite",
@@ -967,7 +968,8 @@
       "campos_rejeitados": [
         "anuidade_parcelas"
       ],
-      "verificado_em": "2026-07-27"
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "mastercard-world-legend"
     },
     {
       "slug": "btg-mastercard-black-ultrablue",
@@ -2068,7 +2070,8 @@
       },
       "vigencia_ate": null,
       "analise": null,
-      "verificado_em": "2026-07-27"
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "mastercard-world-legend"
     },
     {
       "slug": "caixa-icone-visa",
@@ -2795,7 +2798,8 @@
         "isencao",
         "pontos"
       ],
-      "verificado_em": "2026-07-27"
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "mastercard-world-legend"
     },
     {
       "slug": "itau-personnalite-mastercard-the-one",
@@ -3247,7 +3251,8 @@
       },
       "vigencia_ate": null,
       "analise": null,
-      "verificado_em": "2026-07-27"
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "mastercard-world-legend"
     },
     {
       "slug": "itau-visa-infinite-privilege",
@@ -3333,7 +3338,8 @@
         "isencao",
         "pontos"
       ],
-      "verificado_em": "2026-07-27"
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "visa-infinite-privilege"
     },
     {
       "slug": "latam-pass-itau-mastercard-black",
@@ -4807,7 +4813,7 @@
       "nome": "Unicred Visa Privilege",
       "emissor": null,
       "bandeira": "Visa",
-      "categoria": null,
+      "categoria": "Infinite",
       "anuidade": null,
       "anuidade_parcelas": null,
       "isencao": null,
@@ -4846,7 +4852,7 @@
         "transfere_para",
         "validade_pontos"
       ],
-      "nota_curadoria": "PRODUTO NÃO LOCALIZADO EM FONTE OFICIAL. Após varredura completa nos domínios oficiais autorizados (visa.com.br e unicred.com.br), o produto 'Unicred Visa Privilege' não foi encontrado em nenhuma página de produto, tabela de tarifas, press release ou regulamento publicado pela Unicred ou pela Visa do Brasil. O portfólio Unicred Visa documentado oficialmente compreende as variantes Classic, Gold, Platinum, Infinite ('Ímpar Unicred Visa Infinite') e Visa Signature Business (PJ). O termo 'Privilege' existe como categoria de bandeira da Visa ('Visa Infinite Privilege'), lançada em maio/2025, mas sem emissão Unicred confirmada em fonte oficial até 27/07/2026. Possíveis causas: (1) nome comercial incorreto ou aproximado — o produto pode ser o 'Ímpar Unicred Visa Infinite'; (2) produto de cooperativa regional Unicred sem página pública nacional; (3) produto ainda não anunciado oficialmente. Recomenda-se verificar diretamente com a cooperativa Unicred da região do portador ou consultar o App Cartão Unicred Visa.",
+      "nota_curadoria": "PRODUTO NÃO LOCALIZADO EM FONTE OFICIAL. Após varredura completa nos domínios oficiais autorizados (visa.com.br e unicred.com.br), o produto 'Unicred Visa Privilege' não foi encontrado em nenhuma página de produto, tabela de tarifas, press release ou regulamento publicado pela Unicred ou pela Visa do Brasil. O portfólio Unicred Visa documentado oficialmente compreende as variantes Classic, Gold, Platinum, Infinite ('Ímpar Unicred Visa Infinite') e Visa Signature Business (PJ). O termo 'Privilege' existe como categoria de bandeira da Visa ('Visa Infinite Privilege'), lançada em maio/2025, mas sem emissão Unicred confirmada em fonte oficial até 27/07/2026. Possíveis causas: (1) nome comercial incorreto ou aproximado — o produto pode ser o 'Ímpar Unicred Visa Infinite'; (2) produto de cooperativa regional Unicred sem página pública nacional; (3) produto ainda não anunciado oficialmente. Recomenda-se verificar diretamente com a cooperativa Unicred da região do portador ou consultar o App Cartão Unicred Visa. Tier confirmado manualmente como Visa Infinite; o extrator nao havia declarado a categoria.",
       "procedencia": {},
       "vigencia_ate": null,
       "analise": null,
@@ -4854,7 +4860,8 @@
         "isencao",
         "pontos"
       ],
-      "verificado_em": "2026-07-27"
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "xp-visa-infinite",
@@ -4977,7 +4984,7 @@
       "nome": "XP Visa Legacy",
       "emissor": "Banco XP S.A.",
       "bandeira": "Visa",
-      "categoria": "Super Premium / Ultra High",
+      "categoria": "Infinite",
       "anuidade": null,
       "anuidade_parcelas": null,
       "isencao": {
@@ -5059,7 +5066,7 @@
         "renda_minima",
         "spread"
       ],
-      "nota_curadoria": "A tabela de tarifas oficial (xpi.com.br/documentos/tarifas_20_01_22/) não expõe o valor nominal da anuidade do Legacy em texto rastreável — remete ao App XP e aos canais do Banco Central. Os valores de pontos (3,0 pts/USD nacional e 3,5 pts/USD internacional) e Investback (até 1,5% nacional e 1,7% internacional) são os níveis máximos publicados no FAQ oficial e são escalonados conforme volume de gasto na fatura, com critérios exatos disponíveis apenas dentro do App XP. O único parceiro de transferência de pontos confirmado em fonte oficial é a Livelo. O domínio conteudos.xpi.com.br (portal de conteúdo editorial da própria XP) foi descartado como fonte primária por não ser página de produto/contrato; os valores de pontos e Investback foram confirmados cruzando com o FAQ oficial (xpi.com.br/documentos/faq-pagina-de-cartoes/).",
+      "nota_curadoria": "A tabela de tarifas oficial (xpi.com.br/documentos/tarifas_20_01_22/) não expõe o valor nominal da anuidade do Legacy em texto rastreável — remete ao App XP e aos canais do Banco Central. Os valores de pontos (3,0 pts/USD nacional e 3,5 pts/USD internacional) e Investback (até 1,5% nacional e 1,7% internacional) são os níveis máximos publicados no FAQ oficial e são escalonados conforme volume de gasto na fatura, com critérios exatos disponíveis apenas dentro do App XP. O único parceiro de transferência de pontos confirmado em fonte oficial é a Livelo. O domínio conteudos.xpi.com.br (portal de conteúdo editorial da própria XP) foi descartado como fonte primária por não ser página de produto/contrato; os valores de pontos e Investback foram confirmados cruzando com o FAQ oficial (xpi.com.br/documentos/faq-pagina-de-cartoes/). Tier confirmado manualmente como Visa Infinite; o extrator nao havia declarado a categoria.",
       "procedencia": {
         "nome": "https://www.xpi.com.br/produtos/cartao-xp-legacy/",
         "bandeira": "https://www.xpi.com.br/documentos/termos-e-condicoes-cartao-de-credito/",
@@ -5078,7 +5085,8 @@
       },
       "vigencia_ate": null,
       "analise": null,
-      "verificado_em": "2026-07-27"
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "unicred-impar-visa-infinite",
