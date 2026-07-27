@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 33,
+    "total": 34,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -2312,6 +2312,105 @@
       "campos_rejeitados": [
         "isencao"
       ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "porto-bank-visa-infinite",
+      "nome": "Porto Bank Visa Infinite",
+      "emissor": "Porto Bank",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": 648,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "desconto_por_gastos",
+        "valor": null,
+        "regra": "O valor da anuidade pode diminuir conforme o gasto mensal; possibilidade de até 100% de desconto concentrando compras no cartão"
+      },
+      "renda_minima": 10000,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": null,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Programa PortoPlus: acumule até 2 pontos para cada dólar gasto (valor máximo; regra de aceleração e divisão nacional/internacional não confirmada em fonte oficial disponível)"
+      },
+      "cashback": null,
+      "programa_proprio": "PortoPlus",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion",
+          "regra": "50% de desconto para o titular e um acompanhante (regra específica de acessos gratuitos não confirmada em fonte oficial disponível)"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Tag de pedágio",
+          "descricao": "Tag de pedágio grátis e sem mensalidade"
+        },
+        {
+          "titulo": "Vai de Visa",
+          "descricao": "Plataforma de ofertas, promoções e benefícios exclusivos da bandeira Visa"
+        },
+        {
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Acesso exclusivo Visa para embarque nos terminais 2 e 3 do Aeroporto de Guarulhos e no RIOgaleão"
+        },
+        {
+          "titulo": "Sala VIP Exclusiva Visa Infinite",
+          "descricao": "Sala VIP exclusiva para clientes Visa Infinite no embarque internacional do Terminal 3 do Aeroporto de Guarulhos"
+        },
+        {
+          "titulo": "Seguro Proteção de Compra",
+          "descricao": "Proteção contra roubo, furto ou danos acidentais nas compras realizadas com o cartão"
+        },
+        {
+          "titulo": "Garantia Estendida",
+          "descricao": "Garantia estendida de até 12 meses para defeitos ou reparos de produtos adquiridos com o cartão"
+        },
+        {
+          "titulo": "Concierge Visa 24h",
+          "descricao": "Assistente Visa disponível 24h para ajudar a confirmar voos, fazer reservas e mais"
+        }
+      ],
+      "link_solicitacao": "https://www.visa.com.br/pague-com-visa/solicite-seu-cartao.html",
+      "fontes": [
+        "https://www.visa.com.br/pague-com-visa/solicite-seu-cartao.html",
+        "https://www.visa.com.br/pague-com-visa/cartoes/cartoes-de-credito/detalhes-visa-infinite.html",
+        "https://www.visa.com.br/pague-com-visa/cartoes/beneficios.html"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao.valor",
+        "pontos.internacional",
+        "pontos.nacional",
+        "pontos.validade",
+        "requisito_acesso",
+        "salas_vip.acessos_gratuitos_por_ano",
+        "spread",
+        "transfere_para",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "A página de produto do Porto Bank Visa Infinite no domínio oficial porto.io ou portobank.com.br não foi indexada nos resultados de busca disponíveis. Os dados de anuidade (12x R$ 54,00 = R$ 648/ano), renda mínima (R$ 10.000), pontos PortoPlus (até 2 pts/USD) e sala VIP (50% desconto) foram extraídos exclusivamente da página oficial visa.com.br. Os campos de taxa de aceleração nacional vs. internacional de pontos, número de acessos gratuitos a salas VIP, adicionais, spread cambial e validade dos pontos requerem consulta direta à tabela de tarifas e ao regulamento do PortoPlus no site oficial da Porto Bank.",
+      "procedencia": {
+        "anuidade": "https://www.visa.com.br/pague-com-visa/solicite-seu-cartao.html",
+        "anuidade_parcelas": "https://www.visa.com.br/pague-com-visa/solicite-seu-cartao.html",
+        "renda_minima": "https://www.visa.com.br/pague-com-visa/solicite-seu-cartao.html",
+        "pontos": "https://www.visa.com.br/pague-com-visa/solicite-seu-cartao.html",
+        "salas_vip": "https://www.visa.com.br/pague-com-visa/solicite-seu-cartao.html",
+        "isencao": "https://www.visa.com.br/pague-com-visa/solicite-seu-cartao.html",
+        "programa_proprio": "https://www.visa.com.br/pague-com-visa/solicite-seu-cartao.html",
+        "beneficios_banco": "https://www.visa.com.br/pague-com-visa/cartoes/beneficios.html"
+      },
+      "vigencia_ate": null,
+      "analise": null,
       "verificado_em": "2026-07-27"
     },
     {
