@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 8,
+    "total": 9,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -522,6 +522,112 @@
         "transfere_para": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
         "requisito_acesso": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx"
       }
+    },
+    {
+      "slug": "inter-win",
+      "nome": "Cartão Inter Win (Mastercard Black)",
+      "emissor": "Banco Inter S.A.",
+      "bandeira": "Mastercard",
+      "categoria": "Black / Wealth Management (segmento Win)",
+      "anuidade": 0,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": "Ser cliente do segmento Inter Win (Inter Wealth Management), disponível para investidores com a partir de R$ 1.000.000,00 investidos no Inter.",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": "1 ponto a cada R$ 2,00 gastos no crédito",
+        "internacional": null,
+        "unidade": "pts/R$2,00",
+        "observacao": "Programa Inter Loop. Para clientes Win, a pontuação ocorre bastando comprar no cartão e pagar a fatura em dia (não exige débito automático, ao contrário dos cartões inferiores). Cada ponto Loop = 1 ponto no programa de fidelidade parceiro (proporção 1:1)."
+      },
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "Sim — os pontos Loop podem ser resgatados como cashback direto na conta corrente ou como desconto na fatura do cartão."
+      },
+      "programa_proprio": "Inter Loop",
+      "transfere_para": [
+        "TudoAzul (Azul Linhas Aéreas) — 1:1, mínimo 5.000 pontos",
+        "Smiles (GOL Linhas Aéreas) — 1:1, mínimo 10.000 pontos (exclusivo clientes Prime e Win)"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Pontos não expiram enquanto o cartão de crédito for utilizado com recorrência (manter conta ativa). Se ficar mais de 6 meses sem usar o cartão, a contagem recomeça.",
+      "salas_vip": [
+        {
+          "programa": "Priority Pass / Salas VIP próprias do Inter",
+          "regra": "Acesso gratuito e ilimitado para o titular. Acompanhante com cartão adicional Win também tem acesso gratuito e ilimitado (sem necessidade de presença do titular). Acesso mediante QR Code gerado no Super App + documento com foto + cartão de embarque, até 4h antes do voo. Salas próprias Inter em Guarulhos, Confins e Curitiba; rede Priority Pass com ~1.500 aeroportos no mundo."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Atendimento exclusivo por Banker dedicado",
+          "descricao": "Cada cliente Win conta com um profissional certificado (Banker/Advisor) dedicado exclusivamente ao seu relacionamento, acessível pela Área Exclusiva do Super App, WhatsApp (31) 3003-8477 e telefone (31) 3003-4070."
+        },
+        {
+          "titulo": "Concierge Mastercard",
+          "descricao": "Serviço de concierge disponível como benefício da bandeira Mastercard Black."
+        },
+        {
+          "titulo": "Seguro Viagem",
+          "descricao": "Cobertura de seguro de viagem inclusa no cartão Win."
+        },
+        {
+          "titulo": "Compra Protegida",
+          "descricao": "Benefício de proteção de compras incluso no cartão Win."
+        },
+        {
+          "titulo": "Wealth Planning",
+          "descricao": "Diagnóstico patrimonial exclusivo, plano estratégico de objetivos, monitoramento de oportunidades e visão completa do patrimônio com foco em otimização fiscal e planejamento sucessório."
+        },
+        {
+          "titulo": "Soluções de investimento exclusivas",
+          "descricao": "Acesso a Carteiras Administradas, Fundos de Investimento exclusivos, produtos offshore, câmbio, Research e soluções de crédito diferenciadas."
+        }
+      ],
+      "link_solicitacao": "https://inter.co/pra-voce/relacionamento/inter-win/",
+      "fontes": [
+        "https://inter.co/pra-voce/relacionamento/inter-win/",
+        "https://ajuda.inter.co/sobre-o-inter/quais-as-vantagens-de-ser-cliente-win",
+        "https://ajuda.bancointer.com.br/pt-BR/articles/4583093-quais-as-vantagens-de-ser-cliente-win",
+        "https://inter.co/pra-voce/cartoes/programa-de-pontos/",
+        "https://inter.co/sala-vip/",
+        "https://ajuda.inter.co/cartao/quais-sao-as-regras-de-acesso-a-sala-vip",
+        "https://ajuda.inter.co/cartao/como-usar-a-sala-vip-nos-aeroportos-com-o-cartao-black-mastercard-do-inter",
+        "https://blog.inter.co/melhor-cartao-para-milhas/",
+        "https://blog.inter.co/pontos-loop-para-a-smiles/"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade_parcelas",
+        "iof",
+        "isencao",
+        "pontos.internacional",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "O Inter Win não é um cartão avulso: é o cartão fornecido exclusivamente a clientes do segmento Inter Win (Wealth Management), condicionado a patrimônio investido de R$ 1 milhão no Inter. Todas as páginas de produto não exibem tabela de tarifas própria para o cartão Win (referenciando sempre o segmento), por isso campos como spread cambial, IOF diferenciado, cobertura detalhada do seguro viagem e quantidade máxima de adicionais gratuitos permanecem pendentes de fonte oficial específica. O cartão opera na categoria Mastercard Black. A pontuação de 1 pt/R$2 foi confirmada em duas fontes oficiais distintas (ajuda.inter.co e blog.inter.co/melhor-cartao-para-milhas). Fontes de blog do Inter foram utilizadas apenas para dados também confirmados nas páginas de ajuda oficiais.",
+      "procedencia": {
+        "anuidade": "https://ajuda.inter.co/sobre-o-inter/quais-as-vantagens-de-ser-cliente-win",
+        "requisito_acesso": "https://ajuda.inter.co/sobre-o-inter/quais-as-vantagens-de-ser-cliente-win",
+        "pontos": "https://ajuda.inter.co/sobre-o-inter/quais-as-vantagens-de-ser-cliente-win",
+        "validade_pontos": "https://inter.co/pra-voce/relacionamento/inter-win/",
+        "salas_vip": "https://inter.co/sala-vip/",
+        "transfere_para": "https://inter.co/pra-voce/cartoes/programa-de-pontos/",
+        "programa_proprio": "https://inter.co/pra-voce/cartoes/programa-de-pontos/",
+        "beneficios_banco": "https://ajuda.inter.co/sobre-o-inter/quais-as-vantagens-de-ser-cliente-win",
+        "cashback": "https://inter.co/pra-voce/cartoes/programa-de-pontos/",
+        "bandeira": "https://ajuda.inter.co/sobre-o-inter/quais-as-vantagens-de-ser-cliente-win",
+        "categoria": "https://ajuda.inter.co/cartao/como-usar-a-sala-vip-nos-aeroportos-com-o-cartao-black-mastercard-do-inter"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao",
+        "adicionais_gratis"
+      ],
+      "verificado_em": "2026-07-27"
     },
     {
       "slug": "nubank-ultravioleta",
