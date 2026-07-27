@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 49,
+    "total": 50,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -2498,6 +2498,61 @@
       "campos_rejeitados": [
         "isencao",
         "adicionais_gratis"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "genial-mastercard-black",
+      "nome": "Genial Mastercard Black",
+      "emissor": "Genial Investimentos",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": null,
+      "cashback": null,
+      "programa_proprio": null,
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [],
+      "beneficios_banco": [],
+      "link_solicitacao": null,
+      "fontes": [],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "isencao.regra",
+        "isencao.tipo",
+        "isencao.valor",
+        "pontos",
+        "pontos.internacional",
+        "pontos.nacional",
+        "pontos.observacao",
+        "programa_proprio",
+        "renda_minima",
+        "requisito_acesso",
+        "salas_vip",
+        "spread",
+        "transfere_para",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "Após quatro rodadas de pesquisa web, nenhuma página oficial do domínio genialinvestimentos.com.br foi encontrada descrevendo o produto 'Genial Mastercard Black'. Os resultados retornaram apenas páginas de outros emissores (BB, C6 Bank, Itaú, Caixa, Santander, BTG) e um PDF da Genial sobre regras de operações da B3, sem qualquer dado de cartão de crédito. A política de procedência exige exclusivamente fontes do emissor oficial; por isso, todos os campos específicos do produto permanecem nulos. Recomenda-se acessar diretamente https://www.genialinvestimentos.com.br e verificar se o produto está disponível na área de produtos/conta digital, ou consultar a tabela de tarifas no domínio oficial para confirmar a existência e os dados do cartão.",
+      "procedencia": {},
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao",
+        "pontos"
       ],
       "verificado_em": "2026-07-27"
     },
