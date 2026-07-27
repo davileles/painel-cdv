@@ -16,6 +16,9 @@ DOMINIOS_OFICIAIS = {
     'bb.com.br','bradesco.com.br','brb.com.br','btgpactual.com','c6bank.com.br',
     'caixa.gov.br','bancointer.com.br','inter.co','itau.com.br','nubank.com.br',
     'santander.com.br','sicredi.com.br','sicoob.com.br','xpi.com.br',
+    'banco.bradesco','assets.bradesco','safra.com.br','banrisul.com.br',
+    'genial.com.vc','genialinvestimentos.com.br','unicred.com.br',
+    'portobank.com.br','porto.com.br','banestes.com.br',
     'elo.com.br','mastercard.com','mastercard.com.br','visa.com.br',
     'visa-infinite.com','americanexpress.com',
 }
