@@ -1494,6 +1494,40 @@ app.post('/concierge/viagens', async (req, res) => {
   }
 });
 
+// ── Demandas avulsas (sem viagem vinculada) ─────────────────────────
+// Demandas espelhadas de atividades de viagem continuam vivendo em viagens.json.
+// Aqui ficam apenas as que não têm viagemId — ex.: alerta de assinatura bonificada
+// que atende vários clientes de uma vez.
+
+// GET /concierge/demandas
+app.get('/concierge/demandas', async (req, res) => {
+  try {
+    const { content } = await getConciergeFile('demandas.json');
+    res.json({ ok: true, data: Array.isArray(content) ? content : [] });
+  } catch(e) {
+    console.error('[concierge/demandas GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// POST /concierge/demandas
+app.post('/concierge/demandas', async (req, res) => {
+  const { data } = req.body;
+  if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    try {
+      const { sha } = await getConciergeFile('demandas.json');
+      await putConciergeFile('demandas.json', data, sha);
+      return res.json({ ok: true });
+    } catch(e) {
+      // 409 = SHA desatualizado (escrita concorrente venceu a corrida) — refaz com SHA fresco
+      if (e.status === 409 && tentativa < 2) continue;
+      console.error('[concierge/demandas POST]', e.message);
+      return res.status(500).json({ ok: false, erro: e.message });
+    }
+  }
+});
+
 // GET /concierge/portal?email=x — dados do cliente para o portal de acompanhamento
 app.get('/concierge/portal', async (req, res) => {
   const email = (req.query.email || '').toLowerCase().trim();
