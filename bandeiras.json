@@ -1,7 +1,8 @@
 {
   "_meta": {
     "descricao": "Catalogo de beneficios por categoria de bandeira. Cartoes referenciam via campo bandeira_ref.",
-    "atualizado_em": "2026-07-27"
+    "atualizado_em": "2026-07-27",
+    "nota_links": "Link so e preenchido quando ha pagina oficial da bandeira. Beneficios operados por terceiros (Priceless, Surpreenda, Mastercard Travel Rewards) ficam sem link ate haver URL em dominio oficial."
   },
   "bandeiras": [
     {
@@ -14,77 +15,92 @@
         {
           "grupo": "Viagem",
           "titulo": "Sala VIP Guarulhos",
-          "descricao": "Acesso a sala VIP Mastercard Black no embarque internacional do Aeroporto de Guarulhos, com estacoes de trabalho e espaco gourmet."
+          "descricao": "Acesso a sala VIP Mastercard Black no embarque internacional do Aeroporto de Guarulhos, com estacoes de trabalho e espaco gourmet.",
+          "link": "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/black-credit-card/sala-vip-guarulhos.html"
         },
         {
           "grupo": "Viagem",
           "titulo": "Mastercard Airport Experiences",
-          "descricao": "Programa fornecido pela LoungeKey que da acesso a salas VIP em aeroportos. A politica de acesso (gratuito ou pago) e definida pelo banco emissor."
+          "descricao": "Programa fornecido pela LoungeKey que da acesso a salas VIP em aeroportos. A politica de acesso (gratuito ou pago) e definida pelo banco emissor.",
+          "link": "https://airport.mastercard.com/pt"
         },
         {
           "grupo": "Viagem",
           "titulo": "Mastercard Travel Rewards",
-          "descricao": "Cashbacks e descontos automaticos em estabelecimentos no exterior."
+          "descricao": "Cashbacks e descontos automaticos em estabelecimentos no exterior.",
+          "link": null
         },
         {
           "grupo": "Viagem",
           "titulo": "Cashback Booking.com",
-          "descricao": "6% de cashback em reservas de hospedagem pela Booking.com."
+          "descricao": "6% de cashback em reservas de hospedagem pela Booking.com.",
+          "link": "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/black-credit-card/booking.html"
         },
         {
           "grupo": "Viagem",
           "titulo": "Assistencia Global de Emergencia",
-          "descricao": "Central de assistencia ao portador 24h por dia, 365 dias por ano, em qualquer idioma. Telefone 0800-891-3294."
+          "descricao": "Central de assistencia ao portador 24h por dia, 365 dias por ano, em qualquer idioma. Telefone 0800-891-3294.",
+          "link": "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/black-credit-card/assistente-global-emergencias.html"
         },
         {
           "grupo": "Servicos",
           "titulo": "Concierge Mastercard Black",
-          "descricao": "Assistente pessoal 24h por telefone (0800-725-2025) para reservas, planejamento de viagens, entretenimento, pesquisa e entrega de presentes."
+          "descricao": "Assistente pessoal 24h por telefone (0800-725-2025) para reservas, planejamento de viagens, entretenimento, pesquisa e entrega de presentes.",
+          "link": "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/black-credit-card/concierge.html"
         },
         {
           "grupo": "Seguros",
           "titulo": "MasterAssist Black",
-          "descricao": "Assistencia medica em viagem que inclui as coberturas do MasterAssist Plus, mais remocao medica de emergencia para o pais de origem e pagamento de despesas hospitalares."
+          "descricao": "Assistencia medica em viagem que inclui as coberturas do MasterAssist Plus, mais remocao medica de emergencia para o pais de origem e pagamento de despesas hospitalares.",
+          "link": "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/black-credit-card/masterassist-plus.html"
         },
         {
           "grupo": "Seguros",
           "titulo": "MasterSeguro de Automoveis (MasterRental)",
-          "descricao": "Cobre danos a veiculo alugado por colisao, roubo, incendio acidental e vandalismo."
+          "descricao": "Cobre danos a veiculo alugado por colisao, roubo, incendio acidental e vandalismo.",
+          "link": "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/black-credit-card/masterseguro-automoveis.html"
         },
         {
           "grupo": "Seguros",
           "titulo": "Inconveniencia de Viagem",
-          "descricao": "Cobertura primaria para atrasos ou cancelamentos de viagem antes do inicio, alem da responsabilidade da companhia aerea."
+          "descricao": "Cobertura primaria para atrasos ou cancelamentos de viagem antes do inicio, alem da responsabilidade da companhia aerea.",
+          "link": "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/black-credit-card/inconveniencias-viagem.html"
         },
         {
           "grupo": "Seguros",
           "titulo": "Protecao de Bagagem",
-          "descricao": "Cobertura contra atraso ou perda de bagagem despachada em viagens."
+          "descricao": "Cobertura contra atraso ou perda de bagagem despachada em viagens.",
+          "link": "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/black-credit-card/protecao-bagagem.html"
         },
         {
           "grupo": "Compras",
           "titulo": "Compra Protegida",
-          "descricao": "Reembolso por roubo e danos acidentais em itens cobertos comprados com o cartao."
+          "descricao": "Reembolso por roubo e danos acidentais em itens cobertos comprados com o cartao.",
+          "link": "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/black-credit-card/seguro-compra-protegida.html"
         },
         {
           "grupo": "Compras",
           "titulo": "Garantia Estendida Original",
-          "descricao": "Duplica a garantia original do fabricante ou loja por ate 1 ano adicional, com limite maximo de 3 anos de cobertura total."
+          "descricao": "Duplica a garantia original do fabricante ou loja por ate 1 ano adicional, com limite maximo de 3 anos de cobertura total.",
+          "link": "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/black-credit-card/garantia-estendida-original.html"
         },
         {
           "grupo": "Lifestyle",
           "titulo": "Mastercard Surpreenda",
-          "descricao": "Programa de acumulo de pontos por transacao trocaveis por ofertas do tipo compre 1 leve 2 em parceiros."
+          "descricao": "Programa de acumulo de pontos por transacao trocaveis por ofertas do tipo compre 1 leve 2 em parceiros.",
+          "link": null
         },
         {
           "grupo": "Lifestyle",
           "titulo": "Isencao de Rolha",
-          "descricao": "Isencao da taxa de rolha em restaurantes participantes."
+          "descricao": "Isencao da taxa de rolha em restaurantes participantes.",
+          "link": null
         },
         {
           "grupo": "Lifestyle",
           "titulo": "Priceless",
-          "descricao": "Acesso a experiencias e eventos exclusivos em cidades do mundo todo via priceless.com."
+          "descricao": "Acesso a experiencias e eventos exclusivos em cidades do mundo todo via priceless.com.",
+          "link": null
         }
       ]
     },
@@ -98,57 +114,68 @@
         {
           "grupo": "Viagem",
           "titulo": "Visa Airport Companion",
-          "descricao": "Aplicativo que da acesso a mais de 1.300 salas VIP em aeroportos, em mais de 140 paises, via rede Dragon Pass. A quantidade de acessos gratuitos e definida pelo banco emissor."
+          "descricao": "Aplicativo que da acesso a mais de 1.300 salas VIP em aeroportos, em mais de 140 paises, via rede Dragon Pass. A quantidade de acessos gratuitos e definida pelo banco emissor.",
+          "link": "https://www.visa.com.br/pague-com-visa/cartoes/cartoes-de-credito/detalhes-visa-infinite.html"
         },
         {
           "grupo": "Viagem",
           "titulo": "Visa Infinite Lounge Guarulhos",
-          "descricao": "Sala VIP exclusiva para clientes Visa Infinite no Terminal 3 do Aeroporto Internacional de Guarulhos."
+          "descricao": "Sala VIP exclusiva para clientes Visa Infinite no Terminal 3 do Aeroporto Internacional de Guarulhos.",
+          "link": "https://www.visa.com.br/pague-com-visa/cartoes/cartoes-de-credito/detalhes-visa-infinite.html"
         },
         {
           "grupo": "Viagem",
           "titulo": "Visa Infinite Fast Pass",
-          "descricao": "Acesso prioritario ao embarque nos terminais 2 e 3 de Guarulhos e nos embarques nacional e internacional do RIOgaleao."
+          "descricao": "Acesso prioritario ao embarque nos terminais 2 e 3 de Guarulhos e nos embarques nacional e internacional do RIOgaleao.",
+          "link": "https://www.visa.com.br/pague-com-visa/cartoes/cartoes-de-credito/detalhes-visa-infinite.html"
         },
         {
           "grupo": "Servicos",
           "titulo": "Concierge Visa",
-          "descricao": "Assistente disponivel 24h para confirmacao de voos, envio de presentes e reservas. Contato 0800 772 7811 ou (11) 4949 3401."
+          "descricao": "Assistente disponivel 24h para confirmacao de voos, envio de presentes e reservas. Contato 0800 772 7811 ou (11) 4949 3401.",
+          "link": "https://www.visa.com.br/pague-com-visa/cartoes/beneficios.html"
         },
         {
           "grupo": "Seguros",
           "titulo": "Seguro Viagem",
-          "descricao": "Coberturas de emergencia medica internacional, atraso e cancelamento de viagem. Exige emissao previa do bilhete de seguro e pagamento da viagem com o cartao. Processo SUSEP 15414.900762/2015-16."
+          "descricao": "Coberturas de emergencia medica internacional, atraso e cancelamento de viagem. Exige emissao previa do bilhete de seguro e pagamento da viagem com o cartao. Processo SUSEP 15414.900762/2015-16.",
+          "link": "https://www.visa.com.br/pague-com-visa/cartoes/beneficios.html"
         },
         {
           "grupo": "Seguros",
           "titulo": "Seguro para Veiculo de Locadora",
-          "descricao": "Cobertura para veiculos alugados pagos com o cartao. Processo SUSEP 15414.900240/2017-78."
+          "descricao": "Cobertura para veiculos alugados pagos com o cartao. Processo SUSEP 15414.900240/2017-78.",
+          "link": "https://www.visa.com.br/pague-com-visa/cartoes/beneficios.html"
         },
         {
           "grupo": "Compras",
           "titulo": "Protecao de Compras",
-          "descricao": "Cobertura contra roubo ou danos em produtos adquiridos com o cartao."
+          "descricao": "Cobertura contra roubo ou danos em produtos adquiridos com o cartao.",
+          "link": "https://www.visa.com.br/pague-com-visa/cartoes/beneficios.html"
         },
         {
           "grupo": "Compras",
           "titulo": "Garantia Estendida Original",
-          "descricao": "Ate 12 meses adicionais de garantia para produtos comprados com o cartao. Processo SUSEP 15414.900511/2014-42."
+          "descricao": "Ate 12 meses adicionais de garantia para produtos comprados com o cartao. Processo SUSEP 15414.900511/2014-42.",
+          "link": "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/black-credit-card/garantia-estendida-original.html"
         },
         {
           "grupo": "Compras",
           "titulo": "Protecao de Preco",
-          "descricao": "Reembolso da diferenca caso o produto comprado seja encontrado por preco menor dentro do prazo previsto."
+          "descricao": "Reembolso da diferenca caso o produto comprado seja encontrado por preco menor dentro do prazo previsto.",
+          "link": "https://www.visa.com.br/pague-com-visa/cartoes/beneficios.html"
         },
         {
           "grupo": "Compras",
           "titulo": "Roubo em Caixa Eletronico",
-          "descricao": "Cobertura para valores sacados em caixa eletronico em caso de roubo."
+          "descricao": "Cobertura para valores sacados em caixa eletronico em caso de roubo.",
+          "link": "https://www.visa.com.br/pague-com-visa/cartoes/beneficios.html"
         },
         {
           "grupo": "Lifestyle",
           "titulo": "Vai de Visa",
-          "descricao": "Plataforma de descontos e ofertas em parceiros de gastronomia, compras, entretenimento e viagem."
+          "descricao": "Plataforma de descontos e ofertas em parceiros de gastronomia, compras, entretenimento e viagem.",
+          "link": "https://www.visa.com.br/vaidevisa"
         }
       ]
     }
