@@ -3496,7 +3496,10 @@ function catalogoMesmoCartao(a, b) {
 function catalogoBandeiraRef(c) {
   const t = [c.bandeira, c.categoria, c.nome].join(' ')
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  if (/legend|privilege|centurion/.test(t)) return null;
+  // Tiers com catalogo proprio tem precedencia sobre Black/Infinite.
+  if (t.includes('centurion') || t.includes('diners')) return null;
+  if (t.includes('legend')) return t.includes('mastercard') ? 'mastercard-world-legend' : null;
+  if (t.includes('privilege') && t.includes('visa') && t.includes('infinite')) return 'visa-infinite-privilege';
   if (t.includes('mastercard') && /black|world elite/.test(t)) return 'mastercard-black';
   if (t.includes('visa') && t.includes('infinite')) return 'visa-infinite';
   return null;
@@ -3572,6 +3575,7 @@ function cartoesSanitizar(cartao) {
     CATALOGO_CAMPOS.some(k => p === k || p.indexOf(k + '.') === 0)
   ).sort();
   if (rejeitados.length) c.campos_rejeitados = rejeitados;
+  // Ref explicito prevalece: houve caso de nome com 'Privilege' num cartao Infinite.
   if (!c.bandeira_ref) c.bandeira_ref = catalogoBandeiraRef(c);
   c.verificado_em = c.verificado_em || new Date().toISOString().slice(0, 10);
   return c;
