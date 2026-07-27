@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 20,
+    "total": 21,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -443,6 +443,139 @@
         "salas_vip": "https://banking.btgpactual.com/ajuda/modulodebeneficios/modulodeviagem",
         "beneficios_banco": "https://conteudo.btgpactual.com/cartao-ultrablue",
         "link_solicitacao": "https://banking.btgpactual.com/cartao-de-credito/cartao-ultrablue"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "anuidade_parcelas"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "btg-mastercard-black-ultrablue",
+      "nome": "BTG Pactual Ultrablue",
+      "emissor": "Banco BTG Pactual S.A.",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "anuidade": 4800,
+      "anuidade_parcelas": null,
+      "isencao": {
+        "tipo": "investimentos_ou_gastos",
+        "valor": 400000,
+        "regra": "Isenção total para clientes com investimentos acima de R$ 400 mil no BTG Pactual. Para quem não atingir esse patamar, mensalidade de R$ 400/mês com desconto progressivo: a cada R$ 1 mil em gastos no crédito ou R$ 10 mil em investimentos, desconto de R$ 10 na mensalidade. Para isenção completa por gastos, é necessário gastar acima de R$ 40 mil por fatura (R$ 10 mil por R$ 100 de desconto)."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Ser cliente BTG Pactual com ao menos R$ 1 milhão investido e aprovação na análise de crédito.",
+      "adicionais_gratis": 7,
+      "pontos": {
+        "nacional": 3,
+        "internacional": 3.5,
+        "unidade": "pts/USD",
+        "observacao": "Acúmulo de 3 pontos por dólar em compras nacionais e até 3,5 pontos por dólar em compras internacionais. Programa de pontos já incluso na mensalidade do cartão. Transferência de pontos para parceiros na proporção 1:1."
+      },
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "1,5% em compras nacionais e 1,7% em compras internacionais (alternativa ao programa de pontos)."
+      },
+      "programa_proprio": "Pontos BTG (incluso na mensalidade; transferência 1:1 para parceiros)",
+      "transfere_para": [
+        "Livelo",
+        "Smiles",
+        "Esfera"
+      ],
+      "spread": null,
+      "iof": "0% em compras internacionais no crédito (Campanha IOF Zero, por tempo indeterminado, podendo cessar a qualquer momento sem aviso prévio)",
+      "validade_pontos": "Não expiram enquanto o cartão estiver ativo e a conta em dia.",
+      "salas_vip": [
+        {
+          "programa": "LoungeKey",
+          "regra": "Acesso ilimitado para o titular a mais de 1.000 salas VIP LoungeKey ao redor do mundo sem custo. Acesso ilimitado para o titular e até 12 acessos para acompanhantes (conforme comparativo oficial nov/2024)."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Cartão de metal",
+          "descricao": "Cartão produzido em metal com design refinado e limite flexível (dinâmico, ajustado conforme perfil e relacionamento com o banco)."
+        },
+        {
+          "titulo": "Concierge dedicado via WhatsApp",
+          "descricao": "Assistente pessoal 24/7 acionável pelo WhatsApp para planejamento de viagens, reservas em restaurantes, compra de ingressos, eventos e outros serviços."
+        },
+        {
+          "titulo": "Seguro Conta e Cartão",
+          "descricao": "Cobertura exclusiva contra perdas e roubos com reembolso de até R$ 45.000,00, incluindo proteção em viagens, sem custo adicional."
+        },
+        {
+          "titulo": "Terminal BTG",
+          "descricao": "20% de desconto no Terminal BTG Pactual com prioridade de compra."
+        },
+        {
+          "titulo": "Cashback em tags de pedágio e estacionamento",
+          "descricao": "10% de cashback em tags de pedágio e estacionamento (Sem Parar, ConectCar e Veloe), limitado a R$ 50 por mês."
+        },
+        {
+          "titulo": "Viagens de helicóptero com Revo",
+          "descricao": "Acesso a condições exclusivas em viagens de helicóptero com a Revo."
+        },
+        {
+          "titulo": "Carteiras digitais",
+          "descricao": "Compatível com Apple Pay, Google Pay, Samsung Pay e Garmin Pay."
+        },
+        {
+          "titulo": "IOF Zero em compras internacionais",
+          "descricao": "Isenção de IOF (3,5% de economia) em todas as compras internacionais no crédito, sem limite de valor ou número de transações. Campanha por tempo indeterminado."
+        },
+        {
+          "titulo": "Seguro viagem e proteção de compra Mastercard",
+          "descricao": "Benefícios de seguro viagem e proteção de compra fornecidos pela bandeira Mastercard."
+        },
+        {
+          "titulo": "Benefícios Mastercard Surpreenda e Mastercard Travel Rewards",
+          "descricao": "Descontos e cashback em estabelecimentos parceiros no exterior com o Mastercard Travel Rewards, além de benefícios do Mastercard Surpreenda."
+        },
+        {
+          "titulo": "Módulos de benefícios adicionais",
+          "descricao": "Todos os módulos de benefícios (Entretenimento, Viagem, Transacional, Segurança extra e Investimentos) incluídos em pacote único. Módulo Entretenimento é gratuito para todos. Clientes Advisors e Wealth Management têm isenção de mensalidade em todos os módulos."
+        },
+        {
+          "titulo": "Parcelamento de compras internacionais",
+          "descricao": "Possibilidade de parcelar compras internacionais à vista na fatura em até 24 vezes (com cobrança de IOF no parcelamento)."
+        }
+      ],
+      "link_solicitacao": "https://banking.btgpactual.com/cartao-de-credito/cartao-ultrablue",
+      "fontes": [
+        "https://conteudo.btgpactual.com/cartao-ultrablue",
+        "https://banking.btgpactual.com/cartao-de-credito/cartao-ultrablue",
+        "https://banking.btgpactual.com/assets/files/comparativo-cartoes-btg-pactual.pdf",
+        "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf",
+        "https://banking.btgpactual.com/ajuda/programadefidelidade/btgpontos",
+        "https://banking.btgpactual.com/assets/files/termos-e-condicoes-programa-de-pontos.pdf",
+        "https://conteudo.btgpactual.com/iof-zero",
+        "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
+        "https://content.btgpactual.com/blog/conta-e-cartao/cartao-de-credito-btg",
+        "https://content.btgpactual.com/blog/conta-e-cartao/programa-de-fidelidade"
+      ],
+      "campos_pendentes": [
+        "anuidade_parcelas",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "O cartão é denominado oficialmente 'BTG Pactual Ultrablue' (bandeira Mastercard Black). A mensalidade de R$ 400/mês equivale a anuidade de R$ 4.800/ano. A isenção total ocorre com investimentos acima de R$ 400 mil, mas o requisito de acesso ao produto é ter R$ 1 milhão investido no BTG Pactual. O número de 7 adicionais gratuitos foi extraído da página oficial de IOF Zero (conteudo.btgpactual.com/iof-zero), porém não foi confirmado especificamente para o Ultrablue na tabela de tarifas — constar em campos_pendentes. O spread cambial não foi publicado explicitamente em fonte oficial consultada. A campanha IOF Zero é por tempo indeterminado mas pode cessar sem aviso prévio. Parceiros de transferência de pontos identificados nas fontes oficiais: Livelo, Smiles e Esfera (razão 1:1). A tabela de tarifas consultada é de agosto de 2026.",
+      "procedencia": {
+        "anuidade": "https://conteudo.btgpactual.com/cartao-ultrablue",
+        "isencao": "https://conteudo.btgpactual.com/cartao-ultrablue",
+        "requisito_acesso": "https://conteudo.btgpactual.com/cartao-ultrablue",
+        "pontos": "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
+        "cashback": "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
+        "validade_pontos": "https://banking.btgpactual.com/ajuda/programadefidelidade/btgpontos",
+        "transfere_para": "https://content.btgpactual.com/blog/conta-e-cartao/programa-de-fidelidade",
+        "salas_vip": "https://conteudo.btgpactual.com/cartao-ultrablue",
+        "iof": "https://conteudo.btgpactual.com/iof-zero",
+        "programa_proprio": "https://banking.btgpactual.com/ajuda/programadefidelidade/btgpontos",
+        "bandeira": "https://banking.btgpactual.com/assets/files/regulamento-campanha-ultrablue.pdf",
+        "adicionais_gratis": "https://conteudo.btgpactual.com/iof-zero",
+        "beneficios_banco": "https://banking.btgpactual.com/assets/files/comparativo-cartoes-btg-pactual.pdf"
       },
       "vigencia_ate": null,
       "analise": null,
