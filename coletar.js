@@ -899,7 +899,9 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 async function main() {
-  const hoje = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+  // Data no fuso de Brasília — usar UTC fazia a run das 00:0x UTC (21h BRT do dia
+  // anterior) gravar a leitura da noite anterior sob a chave do dia seguinte.
+  const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }); // "YYYY-MM-DD"
   console.log(`[Histórico] Iniciando coleta para ${hoje}`);
 
   // 1. Carrega histórico existente
