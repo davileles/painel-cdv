@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 34,
+    "total": 35,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -473,6 +473,124 @@
         "isencao",
         "adicionais_gratis"
       ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "btg-mastercard-black-tap",
+      "nome": "BTG Mastercard Black TAP",
+      "emissor": "BTG Pactual",
+      "bandeira": "Mastercard Black",
+      "categoria": "Black",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": {
+        "tipo": "mensalidade_progressiva",
+        "valor": null,
+        "regra": "Desconto progressivo: a cada R$ 1.000 gastos no crédito ou R$ 10.000 investidos no BTG Pactual, desconto de R$ 10 na mensalidade total (cartão + programa de fidelidade + módulos). Isenção total para clientes Advisors e Wealth Management. Primeiros 3 meses isentos de mensalidade e benefícios."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Investimento a partir de R$ 5.000 nos produtos recomendados do BTG Pactual (limite lastreado); ou ter conta no BTG Pactual com crédito aprovado.",
+      "adicionais_gratis": 7,
+      "pontos": {
+        "nacional": 2.5,
+        "internacional": 3.5,
+        "unidade": "milhas TAP Miles&Go/USD",
+        "observacao": "4 milhas/USD em compras no FlyTAP. Welcome Bonus de 45.000 milhas TAP Miles&Go após adesão. Milhas não expiram com o cartão ativo."
+      },
+      "cashback": null,
+      "programa_proprio": "TAP Miles&Go",
+      "transfere_para": [
+        "TAP Miles&Go"
+      ],
+      "spread": null,
+      "iof": "Zero em compras internacionais (crédito e débito). Campanha válida por tempo indeterminado.",
+      "validade_pontos": "Não expiram enquanto o cartão estiver ativo",
+      "salas_vip": [
+        {
+          "programa": "LoungeKey",
+          "regra": "4 acessos gratuitos por ano em mais de 1.000 salas VIP em aeroportos ao redor do mundo. Benefício contratável como módulo (acréscimo na mensalidade)."
+        },
+        {
+          "programa": "Lounge TAP (Terminal 3 de Guarulhos)",
+          "regra": "3 acessos gratuitos ao Lounge TAP incluídos no cartão."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Fast Track",
+          "descricao": "3 fast tracks por ano para embarque prioritário em aeroportos TAP."
+        },
+        {
+          "titulo": "Bagagem Extra TAP",
+          "descricao": "2 malas extras gratuitas por ano em voos TAP."
+        },
+        {
+          "titulo": "IOF Zero Internacional",
+          "descricao": "Isenção de IOF em compras internacionais no crédito e no débito, por tempo indeterminado."
+        },
+        {
+          "titulo": "Mastercard Travel Rewards",
+          "descricao": "Cashback em estabelecimentos parceiros no exterior via Mastercard Travel Rewards."
+        },
+        {
+          "titulo": "Seguro Viagem e Proteção de Compra Mastercard",
+          "descricao": "Cobertura completa com a bandeira Mastercard Black, incluindo seguro viagem e proteção de compra."
+        },
+        {
+          "titulo": "Carteiras Digitais",
+          "descricao": "Compatível com Apple Pay, Google Pay, Samsung Pay e Garmin Pay."
+        },
+        {
+          "titulo": "Adicionais Gratuitos",
+          "descricao": "Até 7 cartões adicionais gratuitos, inclusive para amigos e menores a partir de 12 anos, com os mesmos benefícios do titular."
+        },
+        {
+          "titulo": "Limite por Investimentos (Invest Flex)",
+          "descricao": "Opção de limite de crédito lastreado em investimentos, sem custo adicional de contratação. Disponível para investidores a partir de R$ 5.000 em produtos recomendados."
+        },
+        {
+          "titulo": "Arena BTG",
+          "descricao": "10% de desconto no aluguel de quadras e aulas de Beach Tennis ou Tênis na Arena BTG."
+        },
+        {
+          "titulo": "Mastercard Surpreenda",
+          "descricao": "Acesso a benefícios e descontos do programa Mastercard Surpreenda."
+        }
+      ],
+      "link_solicitacao": "https://banking.btgpactual.com/solicite-seu-cartao/tap",
+      "fontes": [
+        "https://banking.btgpactual.com/cartao-de-credito/cartao-tap-black",
+        "https://banking.btgpactual.com/solicite-seu-cartao/tap",
+        "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
+        "https://conteudo.btgpactual.com/cartao-tap-lastreado",
+        "https://conteudo.btgpactual.com/cartao-black-lastreado/",
+        "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf",
+        "https://banking.btgpactual.com/cartao-de-credito/cartao-black/?amp=&amp=&amp=&amp="
+      ],
+      "campos_pendentes": [
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "O cartão TAP BTG Pactual Black opera com modelo de mensalidade modular (cartão base + programa de fidelidade TAP Miles&Go + módulos opcionais). O valor exato da mensalidade específica para o TAP Black não foi retornado de forma direta nas páginas públicas rastreadas — a tabela de tarifas em PDF (banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf) apresentou o modelo de desconto progressivo mas sem discriminar o valor fixo do TAP Black. O cartão Black padrão custa R$ 50/mês com cashback na fatura (exemplificado na página oficial), mas o TAP Black pode diferir; esse campo foi marcado como pendente. Os 3 primeiros meses de isenção mencionados em conteudo.btgpactual.com/cartao-black-lastreado/ referem-se ao produto geral; outra página do Black (conteudo.btgpactual.com/cartao-black-lastreado/) cita 6 meses — divergência foi observada; mantido o menor valor (3 meses) indicado para o TAP. IOF zero é tratado como campanha por tempo indeterminado, sujeita a regulamento.",
+      "procedencia": {
+        "pontos": "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
+        "transfere_para": "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
+        "validade_pontos": "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
+        "iof": "https://banking.btgpactual.com/solicite-seu-cartao/tap",
+        "adicionais_gratis": "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
+        "salas_vip": "https://banking.btgpactual.com/solicite-seu-cartao/tap",
+        "isencao": "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf",
+        "requisito_acesso": "https://conteudo.btgpactual.com/cartao-tap-lastreado",
+        "beneficios_banco": "https://conteudo.btgpactual.com/cartao-tap-lastreado",
+        "link_solicitacao": "https://banking.btgpactual.com/solicite-seu-cartao/tap",
+        "programa_proprio": "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
+        "bandeira": "https://conteudo.btgpactual.com/cartao-tap-lastreado"
+      },
+      "vigencia_ate": null,
+      "analise": null,
       "verificado_em": "2026-07-27"
     },
     {
