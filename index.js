@@ -3448,6 +3448,44 @@ function cartoesProcDoCampo(proc, campo) {
   return chave ? proc[chave] : null;
 }
 
+// Dois registros sao o mesmo cartao se o emissor bate e um conjunto de nome
+// esta contido no outro, ignorando bandeira e palavras de ruido.
+function catalogoTokens(nome) {
+  // 'black'/'platinum'/'gold' NAO sao ruido: distinguem tiers do mesmo emissor.
+  // Tokens de 2 letras entram, senao 'C6', 'BB' e 'XP' somem do nome.
+  const RUIDO = new Set(['cartao','card','mastercard','visa','elo','amex','american','express',
+                         'de','do','da','the']);
+  return new Set(String(nome || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ')
+    .filter(w => w.length >= 2 && !RUIDO.has(w)));
+}
+
+const CATALOGO_TIERS = new Set(['black','platinum','gold']);
+
+function catalogoNucleo(nome) {
+  return new Set([...catalogoTokens(nome)].filter(w => !CATALOGO_TIERS.has(w)));
+}
+function catalogoTier(nome) {
+  return new Set([...catalogoTokens(nome)].filter(w => CATALOGO_TIERS.has(w)));
+}
+
+// Mesmo cartao = mesmo emissor + mesmo nucleo de nome + tiers compativeis.
+// O tier e comparado a parte porque as vezes so um dos nomes o traz
+// ("C6 Carbon" e "C6 Carbon Mastercard Black" sao o mesmo produto),
+// mas quando ambos declaram tier ele precisa bater ("C6 Black" != "C6 Platinum").
+function catalogoMesmoCartao(a, b) {
+  const ea = catalogoTokens(a.emissor), eb = catalogoTokens(b.emissor);
+  if (ea.size && eb.size && ![...ea].some(w => eb.has(w))) return false;
+
+  const na = catalogoNucleo(a.nome), nb = catalogoNucleo(b.nome);
+  if (!na.size || !nb.size) return false;
+  if (na.size !== nb.size || ![...na].every(w => nb.has(w))) return false;
+
+  const ta = catalogoTier(a.nome), tb = catalogoTier(b.nome);
+  if (!ta.size || !tb.size) return true;
+  return ta.size === tb.size && [...ta].every(w => tb.has(w));
+}
+
 function cartoesSlugify(s) {
   return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -3575,7 +3613,11 @@ app.post('/catalogo-cartoes', async (req, res) => {
     // SHA sempre fresco, imediatamente antes do PUT
     const { data, sha } = await ghGetJson(CATALOGO_PATH, { _meta: {}, cartoes: [] });
     const lista = data.cartoes || [];
-    const idx = lista.findIndex(c => c.slug === cartao.slug);
+    // Casar tambem por nome normalizado: o mesmo produto escrito de dois jeitos
+    // ("C6 Carbon" e "C6 Carbon Mastercard Black") gerava slugs diferentes e duplicava.
+    let idx = lista.findIndex(c => c.slug === cartao.slug);
+    if (idx < 0) idx = lista.findIndex(c => catalogoMesmoCartao(c, cartao));
+    if (idx >= 0) cartao.slug = lista[idx].slug;
     if (idx >= 0) lista[idx] = { ...lista[idx], ...cartao };
     else lista.push(cartao);
 
