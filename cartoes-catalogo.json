@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 13,
+    "total": 14,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -136,6 +136,132 @@
       "campos_rejeitados": [
         "isencao",
         "requisito_acesso"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "btg-mastercard-world-legend-ultrablue",
+      "nome": "BTG Ultrablue World Legend",
+      "emissor": "Banco BTG Pactual S.A.",
+      "bandeira": "Mastercard World Legend",
+      "categoria": "Ultra Premium / Altíssima Renda",
+      "anuidade": 400,
+      "anuidade_parcelas": null,
+      "isencao": {
+        "tipo": "gastos_mensais",
+        "valor": 40000,
+        "regra": "Isenção total para gastos mensais ≥ R$ 40.000. Para gastos menores: a cada R$ 1.000 em compras, o cliente recebe R$ 10 de desconto na mensalidade (desconto progressivo). A isenção é exclusivamente por gastos no cartão — não há isenção por investimentos nesta modalidade."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Investimentos de ao menos R$ 1.000.000,00 (um milhão de reais) mantidos no BTG Pactual. Solicitação via app BTG Banking.",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 3,
+        "internacional": 3.5,
+        "unidade": "pts/USD",
+        "observacao": "Programa 'Pontos BTG' já incluso na mensalidade do cartão Ultrablue. Alternativa: Cashback BTG de 1,5% em compras nacionais e 1,7% em compras internacionais. Transferência automática para parceiro selecionado na proporção 1:1."
+      },
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "1,5% nacional / 1,7% internacional (opcional — substitui pontos)"
+      },
+      "programa_proprio": "Pontos BTG",
+      "transfere_para": [
+        "Livelo",
+        "Smiles",
+        "TudoAzul",
+        "Latam Pass",
+        "Esfera"
+      ],
+      "spread": null,
+      "iof": "IOF Zero em compras internacionais (por tempo indeterminado)",
+      "validade_pontos": "Não expiram enquanto o cartão Ultrablue estiver ativo e a conta em dia.",
+      "salas_vip": [
+        {
+          "programa": "LoungeKey",
+          "regra": "Acesso ilimitado a mais de 1.000 salas VIP ao redor do mundo sem custo para o titular. O valor da visita é creditado/isentado na fatura do cartão."
+        },
+        {
+          "programa": "Terminal BTG Pactual (GRU – Terminal 3)",
+          "regra": "Acesso prioritário com 20% de desconto no Terminal exclusivo BTG no Aeroporto de Guarulhos. Reserva com mínimo de 72h de antecedência obrigatória."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Concierge dedicado 24/7 via WhatsApp",
+          "descricao": "Assistente pessoal para planejamento de viagens, reservas em restaurantes, compra de ingressos, eventos e passeios com curadoria exclusiva."
+        },
+        {
+          "titulo": "Seguro Conta e Cartão",
+          "descricao": "Proteção do patrimônio contra perdas e roubos, com cobertura especial para viagens, sem custo adicional."
+        },
+        {
+          "titulo": "Limite dinâmico (Unlimited)",
+          "descricao": "Limite flexível ajustado conforme perfil e relacionamento com o banco, sem teto fixo declarado."
+        },
+        {
+          "titulo": "IOF Zero em compras internacionais",
+          "descricao": "Isenção de IOF por tempo indeterminado em transações no exterior."
+        },
+        {
+          "titulo": "10% de cashback em tags de pedágio/estacionamento",
+          "descricao": "Cashback de 10% em Sem Parar, ConectCar e Veloe, limitado a R$ 50 por mês."
+        },
+        {
+          "titulo": "Parcela internacional em até 24x",
+          "descricao": "Compras internacionais à vista podem ser parceladas na fatura em até 24 vezes."
+        },
+        {
+          "titulo": "Segurança avançada no app",
+          "descricao": "Modo lugar seguro, ocultar contas, gerenciador de dispositivos, bloqueio ágil do cartão pelo Portal Web."
+        },
+        {
+          "titulo": "Helicóptero com Revo",
+          "descricao": "Acesso a condições exclusivas em viagens de helicóptero com a parceira Revo."
+        }
+      ],
+      "link_solicitacao": "https://banking.btgpactual.com/cartao-de-credito/cartao-ultrablue",
+      "fontes": [
+        "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf",
+        "https://conteudo.btgpactual.com/cartao-ultrablue",
+        "https://banking.btgpactual.com/cartao-de-credito/cartao-ultrablue",
+        "https://banking.btgpactual.com/ajuda/programadefidelidade/btgpontos",
+        "https://banking.btgpactual.com/assets/files/termos-e-condicoes-sala-vip-lounge-key.pdf",
+        "https://banking.btgpactual.com/assets/files/termos-e-condicoes-programa-de-pontos.pdf",
+        "https://banking.btgpactual.com/ajuda/modulodebeneficios/modulodeviagem",
+        "https://banking.btgpactual.com/assets/files/comparativo-cartoes-btg-pactual.pdf",
+        "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
+        "https://content.btgpactual.com/blog/conta-e-cartao/como-resgatar-pontos-do-cartao-de-credito-em-investimentos",
+        "https://www.mastercard.com/news/latin-america/pt-br/noticias/comunicados-de-imprensa/pr-pt/2025/outubro/world-legend-mastercard-chega-ao-brasil-para-redefinir-o-segmento-de-altissima-renda/",
+        "https://content.btgpactual.com/blog/investimentos/pontos-por-investimentos-como-participar-da-campanha-btg-pactual"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade_parcelas",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "O BTG Pactual lançou o Ultrablue World Legend em outubro/2025 como upgrade da bandeira do Ultrablue original (Mastercard Black) para Mastercard World Legend — a categoria mais alta da bandeira, lançada no Brasil em 20/out/2025 com 7 emissores. A tabela de tarifas oficial (agosto/2026) já registra a mensalidade de R$ 400 com isenção por gastos ≥ R$ 40.000/mês (regra específica do World Legend, diferente do Ultrablue original que tinha isenção por investimentos ≥ R$ 400 mil). Os campos de pontuação (3 pts nacional / 3,5 pts internacional) são referentes ao Ultrablue em geral; a página de produto do World Legend (banking.btgpactual.com/cartao-de-credito/cartao-ultrablue) não retornou conteúdo renderizado nas consultas, podendo haver benefícios adicionais exclusivos da bandeira World Legend não capturados. Recomenda-se validação direta na página do produto e no guia de benefícios Mastercard World Legend (mastercard.com.br).",
+      "procedencia": {
+        "anuidade": "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf",
+        "isencao": "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf",
+        "requisito_acesso": "https://conteudo.btgpactual.com/cartao-ultrablue",
+        "pontos": "https://content.btgpactual.com/blog/conta-e-cartao/como-resgatar-pontos-do-cartao-de-credito-em-investimentos",
+        "cashback": "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
+        "programa_proprio": "https://banking.btgpactual.com/ajuda/programadefidelidade/btgpontos",
+        "transfere_para": "https://content.btgpactual.com/blog/investimentos/pontos-por-investimentos-como-participar-da-campanha-btg-pactual",
+        "validade_pontos": "https://banking.btgpactual.com/ajuda/programadefidelidade/btgpontos",
+        "salas_vip": "https://conteudo.btgpactual.com/cartao-ultrablue",
+        "iof": "https://banking.btgpactual.com/ajuda/modulodebeneficios/modulodeviagem",
+        "bandeira": "https://www.mastercard.com/news/latin-america/pt-br/noticias/comunicados-de-imprensa/pr-pt/2025/outubro/world-legend-mastercard-chega-ao-brasil-para-redefinir-o-segmento-de-altissima-renda/",
+        "link_solicitacao": "https://banking.btgpactual.com/cartao-de-credito/cartao-ultrablue",
+        "beneficios_banco": "https://conteudo.btgpactual.com/cartao-ultrablue"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "anuidade_parcelas"
       ],
       "verificado_em": "2026-07-27"
     },
