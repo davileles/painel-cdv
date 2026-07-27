@@ -2062,53 +2062,120 @@ function ctCampos(c){
   if (!c) return {};
   var anu = c.anuidade ? ctFmtMoeda(c.anuidade) +
       (c.anuidade_parcelas ? ' <span style="opacity:.6">('+c.anuidade_parcelas+'x)</span>' : '') : null;
+  var pts = c.pontos || {};
   return {
-    pontosNac: c.pontos && c.pontos.nacional,
-    pontosInt: c.pontos && c.pontos.internacional,
-    cashback : c.cashback && c.cashback.nacional ? c.cashback.nacional + '%' : null,
-    anuidade : anu,
-    isencao  : c.isencao && c.isencao.regra,
-    spread   : (c.spread!==null && c.spread!==undefined) ? c.spread + '%' : null,
-    iof      : (c.iof!==null && c.iof!==undefined) ? c.iof + '%' : null,
+    pontosNac : pts.nacional     != null ? pts.nacional     + ' pts/US$' : null,
+    pontosInt : pts.internacional!= null ? pts.internacional+ ' pts/US$' : null,
+    cashback  : c.cashback && c.cashback.nacional != null ? c.cashback.nacional + '%' : null,
+    anuidade  : anu,
+    isencao   : c.isencao && c.isencao.regra,
+    renda     : c.renda_minima != null ? ctFmtMoeda(c.renda_minima) : (c.requisito_acesso || null),
     adicionais: c.adicionais_gratis,
-    vip      : (c.salas_vip||[]).map(function(s){ return s.programa + (s.regra ? ' — '+s.regra : ''); }).join('<br>'),
-    transf   : (c.transfere_para||[]).slice().sort().join(', ')
+    spread    : c.spread != null ? c.spread + '%' : null,
+    iof       : c.iof != null ? c.iof + '%' : null,
+    vip       : (c.salas_vip||[]).map(function(s){
+                  return '<div style="margin:2px 0">'+s.programa+(s.regra ? '<br><span style="opacity:.65">'+s.regra+'</span>' : '')+'</div>';
+                }).join('') || null,
+    programa  : c.programa_proprio,
+    transf    : (c.transfere_para||[]).slice().sort().join(', ') || null,
+    validade  : c.validade_pontos
   };
 }
 
-function ctRenderComparacao(){
+// Cache das fichas completas (traz beneficios da bandeira resolvidos)
+var CT_DETALHE = {};
+async function ctDetalhe(slug){
+  if (CT_DETALHE[slug]) return CT_DETALHE[slug];
+  try {
+    var r = await fetch(_BASE + '/catalogo-cartoes/' + encodeURIComponent(slug));
+    var d = await r.json();
+    if (d.ok) { CT_DETALHE[slug] = d.cartao; return d.cartao; }
+  } catch(e){}
+  return CT_CARTOES.find(function(c){ return c.slug === slug; }) || null;
+}
+
+function ctListaBeneficios(itens, titulo){
+  if (!itens || !itens.length) return '';
+  return '<div class="ct-box"><div style="font-weight:700;font-size:13px;margin-bottom:10px">'+titulo+'</div>'+
+    itens.map(function(b){
+      var nome = b.link
+        ? '<a href="'+b.link+'" target="_blank" rel="noopener" style="color:var(--cdv-coral);text-decoration:none">'+b.titulo+' ↗</a>'
+        : b.titulo;
+      return '<div style="margin-bottom:9px">'+
+        '<div style="font-size:12.5px;font-weight:600">'+nome+'</div>'+
+        (b.descricao ? '<div style="font-size:12px;color:var(--muted);margin-top:2px">'+b.descricao+'</div>' : '')+
+      '</div>';
+    }).join('')+'</div>';
+}
+
+function ctAnalise(c){
+  var a = c && c.analise;
+  if (!a || (!(a.vantagens||[]).length && !(a.desvantagens||[]).length)) {
+    return '<div class="ct-box"><div style="font-size:12px;color:var(--muted)">Análise ainda não gerada para '+c.nome+'.</div></div>';
+  }
+  function bloco(tit, itens, cor, sinal){
+    if (!itens || !itens.length) return '';
+    return '<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:'+cor+';margin-bottom:6px">'+tit+'</div>'+
+      itens.map(function(t){ return '<div style="font-size:12.5px;margin:3px 0;display:flex;gap:7px"><span style="color:'+cor+'">'+sinal+'</span><span>'+t+'</span></div>'; }).join('')+'</div>';
+  }
+  return '<div class="ct-box">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">'+
+      '<div style="font-weight:700;font-size:13px">'+c.nome+'</div>'+
+      '<span style="font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:2px 8px">Análise CDV · editorial</span>'+
+    '</div>'+
+    bloco('Vantagens', a.vantagens, '#34d399', '▲')+
+    bloco('Pontos de atenção', a.desvantagens, '#fbbf24', '▼')+
+    '<div style="font-size:11px;color:var(--muted);margin-top:6px">Opinião derivada dos dados apurados, não informação do emissor.</div>'+
+  '</div>';
+}
+
+async function ctRenderComparacao(){
   var box = document.getElementById('ct-comparacao');
   if (!box) return;
-  var a = CT_CARTOES.find(function(c){ return c.slug === document.getElementById('ct-sel-a').value; });
-  var b = CT_CARTOES.find(function(c){ return c.slug === document.getElementById('ct-sel-b').value; });
-  if (!a || !b) { box.innerHTML = '<p style="opacity:.6">Selecione dois cartões para comparar.</p>'; return; }
+  var sa = document.getElementById('ct-sel-a').value, sb = document.getElementById('ct-sel-b').value;
+  if (!sa || !sb) { box.innerHTML = '<p style="color:var(--muted)">Selecione dois cartões para comparar.</p>'; return; }
+  box.innerHTML = '<p style="color:var(--muted);font-size:12px">Carregando…</p>';
+
+  var res = await Promise.all([ctDetalhe(sa), ctDetalhe(sb)]);
+  var a = res[0], b = res[1];
+  if (!a || !b) { box.innerHTML = '<p style="color:var(--muted)">Não foi possível carregar os cartões.</p>'; return; }
 
   var ca = ctCampos(a), cb = ctCampos(b);
-  var html =
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">'+
+  var LINHAS = [
+    ['Anuidade','anuidade'], ['Isenção de anuidade','isencao'],
+    ['Pontuação (nacional)','pontosNac'], ['Pontuação (internacional)','pontosInt'],
+    ['Cashback','cashback'], ['Validade dos pontos','validade'],
+    ['Programa de fidelidade','programa'], ['Transfere para','transf'],
+    ['Renda / requisito','renda'], ['Adicionais grátis','adicionais'],
+    ['Spread','spread'], ['IOF','iof'], ['Salas VIP','vip']
+  ];
+
+  box.innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">'+
       [a,b].map(function(c){
-        return '<div class="ct-box">'+
-          '<div style="font-weight:600">'+c.nome+'</div>'+
-          '<div style="opacity:.65;font-size:13px;margin-top:2px">'+(c.emissor||'')+' · '+(c.bandeira||'')+' '+(c.categoria||'')+'</div>'+
-        '</div>';
+        return '<div class="ct-box" style="margin-bottom:0"><div style="font-weight:700">'+c.nome+'</div>'+
+          '<div style="color:var(--muted);font-size:12px;margin-top:2px">'+(c.emissor||'')+' · '+(c.bandeira||'')+' '+(c.categoria||'')+'</div></div>';
       }).join('')+
     '</div>'+
-    '<table style="width:100%;border-collapse:collapse">'+
-      ctLinha('Pontos por dólar (nacional)', ctValor(ca.pontosNac), ctValor(cb.pontosNac))+
-      ctLinha('Pontos por dólar (internacional)', ctValor(ca.pontosInt), ctValor(cb.pontosInt))+
-      ctLinha('Cashback', ctValor(ca.cashback), ctValor(cb.cashback))+
-      ctLinha('Anuidade', ctValor(ca.anuidade), ctValor(cb.anuidade))+
-      ctLinha('Isenção', ctValor(ca.isencao), ctValor(cb.isencao))+
-      ctLinha('Spread', ctValor(ca.spread), ctValor(cb.spread))+
-      ctLinha('IOF', ctValor(ca.iof), ctValor(cb.iof))+
-      ctLinha('Adicionais grátis', ctValor(ca.adicionais), ctValor(cb.adicionais))+
-      ctLinha('Salas VIP', ctValor(ca.vip), ctValor(cb.vip))+
-      ctLinha('Transfere para', ctValor(ca.transf), ctValor(cb.transf))+
-    '</table>'+
-    '<p style="opacity:.55;font-size:12px;margin-top:14px">'+
-      'Campos marcados como “a confirmar” não constam nas fontes oficiais consultadas.'+
-    '</p>';
-  box.innerHTML = html;
+    '<table>'+ LINHAS.map(function(l){
+        return ctLinha(l[0], ctValor(ca[l[1]]), ctValor(cb[l[1]]));
+      }).join('') +'</table>'+
+    '<p class="ct-hint" style="margin-top:12px">“A confirmar” significa que o dado não consta das fontes oficiais consultadas — nunca que o benefício não existe.</p>'+
+
+    '<h3 style="font-size:14px;margin:26px 0 10px">Análise</h3>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+ ctAnalise(a) + ctAnalise(b) +'</div>'+
+
+    '<h3 style="font-size:14px;margin:26px 0 10px">Benefícios do banco</h3>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+
+      (ctListaBeneficios(a.beneficios_banco, a.nome) || '<div class="ct-box"><span class="ct-na">sem registro</span></div>')+
+      (ctListaBeneficios(b.beneficios_banco, b.nome) || '<div class="ct-box"><span class="ct-na">sem registro</span></div>')+
+    '</div>'+
+
+    '<h3 style="font-size:14px;margin:26px 0 10px">Benefícios da bandeira</h3>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+
+      (ctListaBeneficios(a.beneficios_bandeira, (a.bandeira||'')+' '+(a.categoria||'')) || '<div class="ct-box"><span class="ct-na">sem registro</span></div>')+
+      (ctListaBeneficios(b.beneficios_bandeira, (b.bandeira||'')+' '+(b.categoria||'')) || '<div class="ct-box"><span class="ct-na">sem registro</span></div>')+
+    '</div>';
 }
 
 function ctRenderLista(){
