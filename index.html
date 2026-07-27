@@ -728,6 +728,23 @@
   }
 }
 </style>
+
+<style>
+/* Offsets de sticky: antes eram header(70) + barra de abas(50).
+   Com a sidebar, sobra apenas o header. No mobile soma-se a barra "Menu". */
+:root{--stick-top:70px}
+@media(max-width:900px){:root{--stick-top:113px}}
+
+.controls{top:var(--stick-top)}
+.passagens-controls,.radar-search-wrap{top:var(--stick-top)}
+#milhas-controls-bar{top:var(--stick-top)}
+body{scroll-padding-top:calc(var(--stick-top) + 24px)}
+
+/* Respiro do conteudo em relacao a sidebar e ao header */
+#shell-main{padding-left:2px}
+#tab-cartoes{padding:22px 26px 40px;max-width:1180px;margin:0 auto}
+@media(max-width:900px){#tab-cartoes{padding:18px 16px 32px}}
+</style>
 <button class="side-toggle" id="side-toggle" onclick="toggleSidebar()" aria-label="Abrir menu">☰ Menu</button>
 <div id="side-backdrop" onclick="toggleSidebar(false)"></div>
 <div id="shell">
@@ -2254,7 +2271,7 @@ async function ctSalvar(i){
   </div>
 
   <!-- CONTROLS BAR -->
-  <div id="milhas-controls-bar" style="background:var(--bg);position:sticky;top:120px;z-index:89;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div id="milhas-controls-bar" style="background:var(--bg);position:sticky;top:var(--stick-top);z-index:89;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
     <!-- Linha 1: botões de navegação + filtros à direita na mesma linha -->
     <div style="padding:10px 22px;display:flex;gap:8px;align-items:center;flex-wrap:nowrap;overflow-x:auto">
       <button class="milhas-view-btn active" data-view="registros" onclick="milhasSetView('registros')" style="background:rgba(255,88,94,.12);border:1px solid var(--cdv-coral);color:var(--cdv-coral);padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">📋 Registros</button>
