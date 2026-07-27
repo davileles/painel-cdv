@@ -3406,31 +3406,47 @@ function cartoesSlugify(s) {
     .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-// Remove valores cuja procedencia nao e oficial e recalcula campos_pendentes.
+// Exige procedencia POR CAMPO. Um valor so sobrevive se procedencia[campo]
+// apontar para um dominio oficial. Sem isso o campo e zerado e vira pendente.
+// Motivo: valores sem origem declarada ja entraram na base mais de uma vez.
+const CATALOGO_CAMPOS = ['anuidade','anuidade_parcelas','isencao','renda_minima',
+  'adicionais_gratis','pontos','cashback','spread','iof','salas_vip',
+  'transfere_para','requisito_acesso'];
+
+function catalogoVazio(v){
+  return v === null || v === undefined || v === '' ||
+         (Array.isArray(v) && !v.length) ||
+         (typeof v === 'object' && !Array.isArray(v) && !Object.keys(v).length);
+}
+
 function cartoesSanitizar(cartao) {
   const c = { ...(cartao || {}) };
-  const fontes = Array.isArray(c.fontes) ? c.fontes.filter(cartoesFonteOficial) : [];
-  const descartadas = (Array.isArray(c.fontes) ? c.fontes : []).filter(u => !cartoesFonteOficial(u));
-  c.fontes = fontes;
-
-  const CAMPOS = ['anuidade', 'isencao', 'renda_minima', 'adicionais_gratis',
-                  'pontos', 'cashback', 'spread', 'iof', 'salas_vip'];
+  const proc = c.procedencia && typeof c.procedencia === 'object' ? { ...c.procedencia } : {};
   const pendentes = new Set(Array.isArray(c.campos_pendentes) ? c.campos_pendentes : []);
+  const rejeitados = [];
 
-  // Sem nenhuma fonte oficial, nada e aproveitado.
-  if (!fontes.length) {
-    CAMPOS.forEach(k => { c[k] = null; pendentes.add(k); });
-  } else {
-    CAMPOS.forEach(k => {
-      const v = c[k];
-      const vazio = v === null || v === undefined || v === '' ||
-                    (Array.isArray(v) && !v.length);
-      if (vazio) { c[k] = Array.isArray(v) ? [] : null; pendentes.add(k); }
-      else pendentes.delete(k);
-    });
-  }
+  c.fontes = (Array.isArray(c.fontes) ? c.fontes : []).filter(cartoesFonteOficial);
+
+  CATALOGO_CAMPOS.forEach(campo => {
+    const temValor = !catalogoVazio(c[campo]);
+    const fonteOk  = !!proc[campo] && cartoesFonteOficial(proc[campo]);
+    if (temValor && !fonteOk) {
+      rejeitados.push(campo);
+      c[campo] = Array.isArray(c[campo]) ? [] : null;
+      delete proc[campo];
+      pendentes.add(campo);
+    } else if (temValor && fonteOk) {
+      pendentes.delete(campo);
+      if (c.fontes.indexOf(proc[campo]) < 0) c.fontes.push(proc[campo]);
+    } else {
+      pendentes.add(campo);
+      delete proc[campo];
+    }
+  });
+
+  c.procedencia = proc;
   c.campos_pendentes = Array.from(pendentes).sort();
-  if (descartadas.length) c.fontes_descartadas = descartadas;
+  if (rejeitados.length) c.campos_rejeitados = rejeitados;
   c.verificado_em = c.verificado_em || new Date().toISOString().slice(0, 10);
   return c;
 }
@@ -3536,7 +3552,7 @@ app.post('/catalogo-cartoes/extrair', (req, res) => {
 REGRA ABSOLUTA DE PROCEDENCIA:
 Use EXCLUSIVAMENTE paginas do proprio banco emissor ou da bandeira (dominios oficiais: caixa.gov.br, bb.com.br, itau.com.br, bradesco.com.br, santander.com.br, nubank.com.br, c6bank.com.br, bancointer.com.br, xpi.com.br, btgpactual.com, sicredi.com.br, sicoob.com.br, brb.com.br, visa.com.br, mastercard.com.br, elo.com.br, americanexpress.com).
 NUNCA use blogs, portais de comparacao, agregadores, sites de noticias ou canais de milhas. Eles frequentemente publicam valores desatualizados.
-Se um dado nao aparecer em fonte oficial, deixe o campo como null e liste o nome do campo em campos_pendentes. NUNCA infira, estime ou complete por conhecimento previo. Campo vazio e melhor que campo errado.
+Para CADA campo preenchido voce DEVE informar em "procedencia" a URL oficial exata de onde leu aquele valor. Campo sem procedencia sera descartado pelo servidor.\nSe um dado nao aparecer em fonte oficial, deixe o campo como null e liste o nome do campo em campos_pendentes. NUNCA infira, estime ou complete por conhecimento previo. Campo vazio e melhor que campo errado.
 Priorize, quando existirem: pagina do produto, tabela de tarifas e contrato/regulamento do programa de pontos.
 
 Responda SOMENTE com JSON valido, sem markdown, nesta estrutura:
@@ -3553,7 +3569,7 @@ Responda SOMENTE com JSON valido, sem markdown, nesta estrutura:
   "salas_vip": [ { "programa": "", "regra": "" } ],
   "beneficios_banco": [ { "titulo": "", "descricao": "" } ],
   "link_solicitacao": "", "fontes": ["URLs oficiais efetivamente consultadas"],
-  "campos_pendentes": [], "nota_curadoria": "",
+  "campos_pendentes": [], "nota_curadoria": "",\n  "procedencia": { "campo": "URL oficial exata de onde ESTE campo foi lido" },
   "vigencia_ate": null
 }
 
@@ -3598,8 +3614,8 @@ Use vigencia_ate (AAAA-MM-DD) quando algum beneficio for promocional com prazo.`
         res.json({
           ok: true,
           cartao,
-          aviso: cartao.fontes_descartadas
-            ? 'Fontes nao oficiais foram descartadas; os campos afetados voltaram como pendentes.'
+          aviso: cartao.campos_rejeitados
+            ? ('Campos sem procedencia oficial foram descartados: ' + cartao.campos_rejeitados.join(', '))
             : null
         });
       } catch (e) {
