@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 22,
+    "total": 23,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -1799,6 +1799,125 @@
         "isencao": "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta"
       },
       "iof": 0
+    },
+    {
+      "slug": "santander-mastercard-unlimited",
+      "nome": "Santander Mastercard Unlimited",
+      "emissor": "Banco Santander (Brasil) S.A.",
+      "bandeira": "Mastercard",
+      "categoria": "Mastercard Black (Infinite)",
+      "anuidade": 2199.96,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "gasto_mensal_ou_investimento",
+        "valor": "R$ 30.000 por fatura ou R$ 5.000.000 investidos no Santander ou Toro",
+        "regra": "Mantendo a partir de R$ 5 milhões investidos no Santander ou na Toro, ou R$ 30 mil em compras por fatura, o cliente fica isento da parcela mensal de anuidade. Clientes Private Banking estão isentos do gasto mínimo."
+      },
+      "renda_minima": 30000,
+      "requisito_acesso": "Clientes Private Santander ou renda a partir de R$ 30.000 mensais",
+      "adicionais_gratis": 7,
+      "pontos": {
+        "nacional": null,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Clientes Select ganham até 3,6 pontos por dólar, podendo potencializar para até 5,4 pontos por dólar com o Santander Rewards. Pontos acumulados no programa Esfera. Valores exatos por perfil não detalhados na página oficial do produto."
+      },
+      "cashback": null,
+      "programa_proprio": "Esfera (esfera.com.vc)",
+      "transfere_para": [
+        "Azul Fidelidade",
+        "Smiles (GOL)",
+        "LATAM Pass",
+        "Iberia Plus",
+        "ConnectMiles",
+        "ALL – Accor Live Limitless"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "LoungeKey (Mastercard Airport Experience)",
+          "regra": "Acesso gratuito e ilimitado para titular + 1 acompanhante via programa LoungeKey. A partir de janeiro de 2026, exige cumprimento de critérios de elegibilidade (gasto mínimo nas últimas faturas). Clientes Private Banking estão isentos do gasto mínimo."
+        },
+        {
+          "programa": "Mastercard Black Airport Lounge – GRU Terminal 3",
+          "regra": "Acesso gratuito e ilimitado à sala Mastercard Black no Aeroporto de Guarulhos (GRU), Terminal 3, para voos internacionais."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Cartões adicionais sem anuidade",
+          "descricao": "Até 7 cartões adicionais sem anuidade por bandeira. Todos os gastos ficam concentrados na fatura do titular, com limite individual por adicional."
+        },
+        {
+          "titulo": "Dupla Oferta (Visa + Mastercard)",
+          "descricao": "O Unlimited pode ser obtido nas bandeiras Mastercard e Visa simultaneamente. Para cálculo de isenção de anuidade, são considerados os gastos do cartão Mastercard."
+        },
+        {
+          "titulo": "Santander Rewards",
+          "descricao": "Programa de aceleração de pontos: quanto maior o nível de relacionamento com o banco, maior o acúmulo de pontos no cartão. Clientes Select podem potencializar para até 5,4 pts/USD."
+        },
+        {
+          "titulo": "Programa Esfera – crédito em fatura",
+          "descricao": "Os pontos Esfera podem ser resgatados como crédito direto na fatura, além de produtos, viagens, experiências e vales-compra."
+        },
+        {
+          "titulo": "Seguro de viagem (Mastercard)",
+          "descricao": "Seguro de emergência médica internacional, cobertura por cancelamento/atraso de voo e perda/atraso de bagagem. Exige compra da passagem com o cartão e emissão do bilhete no site da bandeira. Válido por 12 meses a partir da emissão."
+        },
+        {
+          "titulo": "Garantia estendida",
+          "descricao": "Estende os termos da garantia do fornecedor ou loja por até um ano, para produtos comprados integralmente com o cartão."
+        },
+        {
+          "titulo": "Proteção em caixas eletrônicos",
+          "descricao": "Em caso de roubo ou assalto durante ou até 2 horas após uso de caixa eletrônico, a Mastercard reembolsa o dinheiro roubado."
+        },
+        {
+          "titulo": "Concierge de viagens",
+          "descricao": "Auxílio em roteiros, seleção dos melhores hotéis com benefícios exclusivos como upgrade de categoria, check-in antecipado e café da manhã para dois."
+        },
+        {
+          "titulo": "Troca de pontos pela anuidade",
+          "descricao": "É possível trocar pontos Esfera pelo valor total da anuidade, como alternativa à isenção por gasto ou investimento."
+        }
+      ],
+      "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+      "fontes": [
+        "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "https://www.santander.com.br/cartoes-santander/pessoa-fisica/unlimited-black",
+        "https://www.santander.com.br/banco/conta-corrente/select",
+        "https://www.santander.com.br/banco/private-banking",
+        "https://www.santander.com.br/cartoes-santander/acesso-salas-vip",
+        "https://www.santander.com.br/blog/esfera/aplicativo-esfera",
+        "https://www.santander.com.br/blog/esfera/salas-vip-em-aeroportos"
+      ],
+      "campos_pendentes": [
+        "cashback",
+        "iof",
+        "pontos.internacional",
+        "pontos.nacional",
+        "spread",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "O Santander Unlimited Mastercard é o cartão topo de linha do banco para clientes Private e Select de alta renda. A página oficial atual (jul/2025) exibe anuidade de 12x R$ 183,33 (R$ 2.199,96/ano), com isenção total via gasto de R$ 30k/fatura ou R$ 5MM investidos. A versão antiga '/cc-unlimited-black' ainda indexada pelo Google exibe 12x R$ 107,50 — valor possivelmente referente a uma versão anterior ou oferta Select; foi descartada em favor da URL canônica do produto. Os valores exatos de pontuação por perfil (base vs. Rewards vs. Private) não estão discriminados na página do produto; apenas a faixa Select (até 3,6–5,4 pts/USD) é mencionada no cabeçalho da página. A página de Private Banking informa 'até 4 pontos por dólar', mas sem discriminar nacional/internacional — ambos os campos foram mantidos como pendentes até confirmação em regulamento oficial.",
+      "procedencia": {
+        "anuidade": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "anuidade_parcelas": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "isencao": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "renda_minima": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "requisito_acesso": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "adicionais_gratis": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "pontos": "https://www.santander.com.br/cartoes-santander/pessoa-fisica/unlimited-black",
+        "programa_proprio": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "transfere_para": "https://www.santander.com.br/blog/esfera/aplicativo-esfera",
+        "salas_vip": "https://www.santander.com.br/cartoes-santander/acesso-salas-vip",
+        "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/unlimited"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "verificado_em": "2026-07-27"
     },
     {
       "slug": "sicredi-visa-infinite",
