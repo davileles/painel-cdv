@@ -3761,7 +3761,13 @@ Use vigencia_ate (AAAA-MM-DD) quando algum beneficio for promocional com prazo.`
     apiRes.on('end', () => {
       try {
         const parsed = JSON.parse(buf);
-        if (parsed.error) return responder({ ok: false, erro: parsed.error.message });
+        if (parsed.error) {
+          const tipo = parsed.error.type || '';
+          const limite = apiRes.statusCode === 429 || tipo === 'rate_limit_error' ||
+                         tipo === 'overloaded_error';
+          return responder({ ok: false, erro: parsed.error.message, tipo: tipo,
+                             limite: limite, http: apiRes.statusCode }, limite ? 429 : 200);
+        }
         const raw = (parsed.content || [])
           .filter(b => b.type === 'text').map(b => b.text).join('\n')
           .replace(/```json|```/g, '').trim();
