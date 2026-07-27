@@ -662,19 +662,106 @@
   </div>
 </header>
 
+<style>
+/* ══════════════════════════════════════════════════
+   NAVEGACAO LATERAL — substitui a barra horizontal.
+   Mantem .main-tabs/.main-tab para nao quebrar switchTab
+   nem a delegacao de clique em #main-tabs.
+══════════════════════════════════════════════════ */
+#shell{display:flex;align-items:flex-start}
+#shell-main{flex:1;min-width:0}
+
+.main-tabs{
+  display:flex;flex-direction:column;gap:2px;
+  width:226px;flex-shrink:0;
+  padding:12px 10px 24px;
+  background:var(--surface);
+  border-bottom:none;border-right:1px solid var(--border);
+  position:sticky;top:70px;
+  height:calc(100vh - 70px);
+  overflow-y:auto;overflow-x:hidden;
+  scrollbar-width:thin;z-index:90;
+}
+.main-tabs::-webkit-scrollbar{width:6px}
+.main-tabs::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+.main-tab{
+  display:flex;align-items:center;gap:9px;
+  width:100%;text-align:left;justify-content:flex-start;
+  padding:9px 12px;font-size:12.5px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;
+}
+.main-tab.active{border-left:3px solid var(--cdv-coral);padding-left:9px}
+
+.side-group{
+  font-size:9.5px;font-weight:800;letter-spacing:.8px;
+  text-transform:uppercase;color:var(--muted);opacity:.6;
+  padding:15px 12px 5px;
+}
+.side-group:first-child{padding-top:4px}
+
+.side-toggle{display:none}
+#side-backdrop{display:none}
+
+@media(max-width:900px){
+  #shell{display:block}
+  .side-toggle{
+    display:flex;align-items:center;gap:7px;
+    position:sticky;top:70px;z-index:95;width:100%;
+    background:var(--surface);border:none;
+    border-bottom:1px solid var(--border);
+    color:var(--text);font-family:'Montserrat',sans-serif;
+    font-size:12.5px;font-weight:700;padding:11px 16px;cursor:pointer;
+  }
+  .main-tabs{
+    position:fixed;top:0;left:0;
+    width:252px;height:100vh;
+    padding-top:18px;
+    transform:translateX(-100%);
+    transition:transform .22s ease;
+    z-index:200;border-right:1px solid var(--border);
+  }
+  .main-tabs.open{transform:none}
+  #side-backdrop.open{
+    display:block;position:fixed;inset:0;
+    background:rgba(0,0,0,.5);z-index:199;
+  }
+}
+</style>
+
+<style>
+/* Offsets de sticky: antes eram header(70) + barra de abas(50).
+   Com a sidebar sobra apenas o header; no mobile soma-se a barra "Menu". */
+:root{--stick-top:70px}
+@media(max-width:900px){:root{--stick-top:113px}}
+.controls{top:var(--stick-top)}
+.passagens-controls,.radar-search-wrap{top:var(--stick-top)}
+#milhas-controls-bar{top:var(--stick-top)}
+body{scroll-padding-top:calc(var(--stick-top) + 24px)}
+#tab-cartoes{padding:22px 26px 40px;max-width:1180px;margin:0 auto}
+@media(max-width:900px){#tab-cartoes{padding:18px 16px 32px}}
+</style>
+<button class="side-toggle" id="side-toggle" onclick="toggleSidebar()" aria-label="Abrir menu">☰ Menu</button>
+<div id="side-backdrop" onclick="toggleSidebar(false)"></div>
+<div id="shell">
 <div class="main-tabs" id="main-tabs">
+  <div class="side-group">Painel</div>
   <button class="main-tab" data-tab="inicio" id="tab-btn-inicio">🏠 Início</button>
+  <div class="side-group">Ofertas e dados</div>
   <button class="main-tab active" data-tab="comparador">🏆 Comparador</button>
   <button class="main-tab" data-tab="radar">📡 Radar de Ofertas</button>
   <button class="main-tab" data-tab="passagens">✈️ Passagens</button>
   <button class="main-tab" data-tab="mapa" id="tab-btn-mapa">🗺️ Mapa de Emissões</button>
+  <div class="side-group">Minhas milhas</div>
   <button class="main-tab" data-tab="milhas">📋 Gestão de Milhas</button>
+  <div class="side-group">Ferramentas</div>
   <button class="main-tab" data-tab="lounges" id="tab-btn-lounges">🛋️ Salas VIP</button>
   <button class="main-tab" data-tab="calculadoras" id="tab-btn-calculadoras">🧮 Calculadoras</button>
   <button class="main-tab" data-tab="reclamacoes" id="tab-btn-reclamacoes">⚖️ Reclamações</button>
   <button class="main-tab" data-tab="roteiros" id="tab-btn-roteiros">🗺️ Roteiros</button>
   <button class="main-tab" data-tab="cartoes" id="tab-btn-cartoes" style="display:none">💳 Cartões</button>
 </div>
+<div id="shell-main">
 
 <div id="tab-inicio" class="tab-panel" style="display:none">
   <div style="max-width:1180px;margin:0 auto;padding:22px 24px 40px">
@@ -2180,7 +2267,7 @@ async function ctSalvar(i){
   </div>
 
   <!-- CONTROLS BAR -->
-  <div id="milhas-controls-bar" style="background:var(--bg);position:sticky;top:120px;z-index:89;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div id="milhas-controls-bar" style="background:var(--bg);position:sticky;top:var(--stick-top);z-index:89;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
     <!-- Linha 1: botões de navegação + filtros à direita na mesma linha -->
     <div style="padding:10px 22px;display:flex;gap:8px;align-items:center;flex-wrap:nowrap;overflow-x:auto">
       <button class="milhas-view-btn active" data-view="registros" onclick="milhasSetView('registros')" style="background:rgba(255,88,94,.12);border:1px solid var(--cdv-coral);color:var(--cdv-coral);padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0">📋 Registros</button>
@@ -4644,6 +4731,17 @@ function mostrarAba(id) {
   if (el) el.style.display = '';
 }
 
+// ── Sidebar: drawer no mobile ────────────────────────────────────────────────
+function toggleSidebar(forcar){
+  var nav = document.getElementById('main-tabs');
+  var bd  = document.getElementById('side-backdrop');
+  if (!nav) return;
+  var abrir = (forcar === undefined) ? !nav.classList.contains('open') : !!forcar;
+  nav.classList.toggle('open', abrir);
+  if (bd) bd.classList.toggle('open', abrir);
+  document.body.style.overflow = abrir ? 'hidden' : '';
+}
+
 function switchTab(tab){
   document.querySelectorAll('.main-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   document.getElementById('tab-inicio').style.display       = tab==='inicio'       ?'block':'none';
@@ -4666,6 +4764,7 @@ function switchTab(tab){
   if(tab==='lounges')      lvCarregarAeroportos();
   if(tab==='calculadoras') calcAccorInit();
   if(tab==='cartoes')      ctInit();
+  if (window.matchMedia('(max-width:900px)').matches) toggleSidebar(false);
   try{localStorage.setItem('cdv_active_tab', tab);}catch(e){}
 }
 
@@ -8152,6 +8251,8 @@ function mapaRenderAll() {
 // === /SALAS VIP ===
 
 </script>
+</div><!-- /shell-main -->
+</div><!-- /shell -->
 </div><!-- /app-content -->
 
 <!-- Modal Sala VIP — fora do app-content para não interferir com login -->
