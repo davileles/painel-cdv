@@ -2146,7 +2146,7 @@ async function ctInit(){
     if (b) b.style.display = '';
   }
   try {
-    var r = await fetch(_BASE + '/catalogo-cartoes');
+    var r = await fetch(_BASE + '/catalogo-cartoes?t=' + Date.now(), { cache: 'no-store' });
     var d = await ctJson(r);
     CT_CARTOES = (d.cartoes || []);
   } catch(e){
@@ -2452,9 +2452,20 @@ async function ctSalvar(i){
     });
     var d = await ctJson(r);
     if (d.ok) {
-      alert('Salvo: ' + d.cartao.nome + (d.novo ? ' (novo)' : ' (atualizado)'));
-      await ctInit();
-      ctSubTab('admin');
+      if (Array.isArray(d.cartoes)) {
+        CT_CARTOES = d.cartoes;          // lista autoritativa vinda do POST
+        CT_DETALHE = {};
+        ctPopularSelects(); ctRenderLista(); ctRenderAnalises();
+      } else {
+        await ctInit();
+      }
+      CT_PENDENTES_REVISAO = CT_PENDENTES_REVISAO.filter(function(x){
+        return !(x.cartao && x.cartao.slug === payload.slug);
+      });
+      ctRenderRevisao();
+      ctSubTab('lista');
+      alert('Salvo: ' + d.cartao.nome + (d.novo ? ' (novo)' : ' (atualizado)') +
+            '\nTotal na base: ' + d.total);
     } else {
       alert('Erro ao salvar: ' + d.erro);
     }
