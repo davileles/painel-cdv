@@ -3195,7 +3195,7 @@ async function ctSalvar(i){
       <input id="map-busca" type="text" placeholder="🔍 Buscar cidade..." oninput="mapaBusca(this.value)" autocomplete="off"
         style="background:var(--card);border:1px solid var(--border-ctrl);border-radius:10px;padding:6px 12px 6px 10px;font-size:11.5px;font-family:'Montserrat',sans-serif;color:var(--text);width:180px;outline:none"
         onfocus="this.style.borderColor='#ff585e'" onblur="this.style.borderColor='var(--border-ctrl)'">
-      <div id="map-busca-dropdown" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#1a2035;border:1px solid var(--border-ctrl);border-radius:10px;z-index:200;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
+      <div id="map-busca-dropdown" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);color:var(--text);border:1px solid var(--border-ctrl);border-radius:10px;z-index:200;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.25)"></div>
     </div>
     <button onclick="mapaLimpar()" style="background:transparent;border:1px solid var(--border-ctrl);color:var(--muted);padding:6px 12px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif" onmouseover="this.style.borderColor='#ff585e';this.style.color='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)';this.style.color='var(--muted)'">✕ Limpar</button>
   </div>
@@ -8241,7 +8241,7 @@ function mapaBusca(q) {
     const isDest = c === mapaDestino;
     const badge = isOrig ? ' <span style="font-size:9px;color:#ff585e">origem</span>' : isDest ? ' <span style="font-size:9px;color:#fbbf24">destino</span>' : '';
     return `<div onclick="mapaBuscaSelecionar('${c.replace(/'/g,"\'")}');return false"
-      style="padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;border-bottom:1px solid var(--border-ctrl);display:flex;align-items:center;justify-content:space-between"
+      style="padding:8px 12px;font-size:12px;font-weight:700;color:var(--text);cursor:pointer;border-bottom:1px solid var(--border-ctrl);display:flex;align-items:center;justify-content:space-between"
       onmouseover="this.style.background='rgba(255,88,94,.12)'" onmouseout="this.style.background=''"
     >📍 ${c}${badge}</div>`;
   }).join('');
