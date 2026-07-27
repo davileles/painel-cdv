@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 44,
+    "total": 45,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -3902,6 +3902,129 @@
         "validade_pontos": "https://www.santander.com.br/blog/esfera/validade-dos-pontos-esfera",
         "salas_vip": "https://www.santander.com.br/cartoes-santander/acesso-salas-vip",
         "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/unlimited"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "sicoob-mastercard-black-merit",
+      "nome": "Sicoob Mastercard Black Merit",
+      "emissor": "Sicoob (Sistema de Cooperativas de Crédito do Brasil)",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "anuidade": 1320,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "gasto",
+        "valor": null,
+        "regra": "Programa 'Comprou, Zerou': gastos realizados pelo titular e adicionais são convertidos em descontos na anuidade, a partir do segundo ano de emissão. Valor exato do gatilho não publicado em fonte oficial consultada."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Ser cooperado de uma cooperativa filiada ao Sicoob. Cartão solicitado diretamente na cooperativa.",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 2.5,
+        "internacional": 2.5,
+        "unidade": "pts/USD",
+        "observacao": "Acúmulo de pontos via programa Coopera. Pontos resgatáveis por produtos, crédito na fatura, milhas aéreas das principais companhias, pacotes de viagens e aportes no Sicoob Previ. Tabela PDF mais antiga registrava 2,2 pts/USD; notícia oficial de 2025 atualiza para 2,5 pts/USD."
+      },
+      "cashback": null,
+      "programa_proprio": "Coopera (programa de fidelidade e marketplace gratuito do Sicoob)",
+      "transfere_para": [
+        "Milhas aéreas das principais companhias aéreas (companhias específicas não listadas em fonte oficial consultada)"
+      ],
+      "spread": 0,
+      "iof": 3.5,
+      "validade_pontos": 24,
+      "salas_vip": [
+        {
+          "programa": "LoungeKey",
+          "regra": "12 acessos gratuitos por ano para titulares e seus convidados. Acesso cobrado após franquia: U$ 35 por pessoa/visita debitado na fatura."
+        },
+        {
+          "programa": "Mastercard Salas VIP (via App Mastercard Airport)",
+          "regra": "Acesso ilimitado, independente da companhia aérea ou tipo de bilhete, em mais de 1.400 salas VIP em mais de 400 aeroportos ao redor do mundo."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Programa Coopera",
+          "descricao": "Programa de fidelidade e marketplace gratuito. Acumule pontos trocáveis por produtos, crédito na fatura, milhas aéreas, pacotes de viagens e aportes no Sicoob Previ."
+        },
+        {
+          "titulo": "Garantia Estendida",
+          "descricao": "Dobra os termos da garantia original do fabricante ou da marca para até um ano completo."
+        },
+        {
+          "titulo": "Proteção de Compras",
+          "descricao": "Compras realizadas com o cartão são protegidas em caso de perda decorrente de roubo ou dano acidental."
+        },
+        {
+          "titulo": "Seguro para Locação de Veículos",
+          "descricao": "Cobertura para danos como colisão, roubo e incêndio acidental ao alugar um carro com o cartão, sem necessidade de contratar seguros extras."
+        },
+        {
+          "titulo": "Seguro de Emergências Médicas em Viagem",
+          "descricao": "Assistência médica em viagens, incluindo despesas médicas e transporte médico de emergência."
+        },
+        {
+          "titulo": "Mastercard Concierge",
+          "descricao": "Assistente pessoal 24h por dia para planejar viagens, procurar ingressos para shows e eventos e indicar restaurantes."
+        },
+        {
+          "titulo": "Mastercard Global Service",
+          "descricao": "Assistência telefônica gratuita 24h em todo o mundo para comunicar perda/roubo, solicitar substituição emergencial e localizar caixas eletrônicos. Brasil: 0800 725 2025. Exterior: 1 636 722 8881."
+        },
+        {
+          "titulo": "Sorteio Coopera",
+          "descricao": "Concorra a sorteios de R$ 5.000 todo mês via programa Coopera."
+        },
+        {
+          "titulo": "Pagamento por aproximação e carteiras digitais",
+          "descricao": "Suporte a Apple Pay, Google Pay, Samsung Wallet e pagamentos via WhatsApp."
+        },
+        {
+          "titulo": "Cartão virtual",
+          "descricao": "Geração de cartão virtual de uso único ou recorrente pelo App Sicoobcard ou App Sicoob."
+        },
+        {
+          "titulo": "Sem spread internacional",
+          "descricao": "Conversão de compras internacionais usando o dólar PTAX do dia, mais IOF (3,5%), sem taxas adicionais de spread."
+        }
+      ],
+      "link_solicitacao": "https://www.sicoob.com.br/web/sicoob/pesquisa-cooperativa",
+      "fontes": [
+        "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf",
+        "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
+        "https://www.sicoob.com.br/documents/1948589/203636812/Tarifas+Cart%C3%A3o+de+Cr%C3%A9dito+por+anuidade.pdf/51734e6f-70b2-3314-ab76-7537a1fd7dcc?t=1719403877410",
+        "https://www.sicoob.com.br/documents/37087630/37302699/Cartoes+de+Credito+Diferenciados+PF+por+Valor+Anuidade.pdf/9dd0f9de-d1c5-0d93-e2c0-70af51d042b0?t=1631885857192&download=true",
+        "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
+        "https://www.sicoob.com.br/web/sicoobagrorural/mastercard-black-pf"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "isencao.valor",
+        "renda_minima"
+      ],
+      "nota_curadoria": "A anuidade de R$ 1.320,00 consta na tabela de tarifas com vigência 01/12/2025 (PDF oficial). A pontuação de 2,5 pts/USD foi atualizada conforme notícia oficial sicoob.com.br sobre o lançamento do Zenith (2025), que anuncia explicitamente o ajuste do Black Merit para 2,5 pts/USD — substituindo o valor de 2,2 pts/USD presente em PDFs mais antigos. O acesso LoungeKey de 12 visitas gratuitas/ano também foi confirmado na mesma notícia oficial. O spread zero e IOF 3,5% foram confirmados via notícia oficial com referência ao Decreto Federal nº 12.466/2025. Renda mínima e número de adicionais gratuitos não foram encontrados em nenhuma página ou tabela oficial consultada.",
+      "procedencia": {
+        "anuidade": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
+        "anuidade_parcelas": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
+        "isencao": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
+        "pontos": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
+        "validade_pontos": "https://www.sicoob.com.br/documents/1948589/203636812/Tarifas+Cart%C3%A3o+de+Cr%C3%A9dito+por+anuidade.pdf/51734e6f-70b2-3314-ab76-7537a1fd7dcc?t=1719403877410",
+        "spread": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
+        "iof": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
+        "salas_vip": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
+        "programa_proprio": "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf",
+        "transfere_para": "https://www.sicoob.com.br/web/sicoobagrorural/mastercard-black-pf",
+        "requisito_acesso": "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf",
+        "link_solicitacao": "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf",
+        "bandeira": "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf",
+        "emissor": "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf",
+        "nome": "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf"
       },
       "vigencia_ate": null,
       "analise": null,
