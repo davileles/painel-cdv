@@ -2187,7 +2187,8 @@ function ctCampos(c){
   return {
     pontosNac : pts.nacional     != null ? pts.nacional     + ' pts/US$' : null,
     pontosInt : pts.internacional!= null ? pts.internacional+ ' pts/US$' : null,
-    cashback  : c.cashback && c.cashback.nacional != null ? c.cashback.nacional + '%' : null,
+    cashback  : c.cashback ? (c.cashback.nacional != null ? c.cashback.nacional + '%'
+                              : (c.cashback.observacao || null)) : null,
     anuidade  : anu,
     isencao   : c.isencao && c.isencao.regra,
     renda     : c.renda_minima != null ? ctFmtMoeda(c.renda_minima) : (c.requisito_acesso || null),
