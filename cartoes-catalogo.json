@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 52,
+    "total": 53,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -4408,6 +4408,111 @@
       "campos_rejeitados": [
         "isencao",
         "pontos"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "santander-smiles-visa-infinite",
+      "nome": "Santander GOL Smiles Visa Infinite",
+      "emissor": "Banco Santander (Brasil) S.A.",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": 1495.92,
+      "anuidade_parcelas": 12,
+      "isencao": null,
+      "renda_minima": 20000,
+      "requisito_acesso": "Para não correntistas: renda mínima de R$ 20.000. Para correntistas Santander: renda mínima de R$ 12.500 ou ser cliente Select/Private",
+      "adicionais_gratis": "Até 5 cartões adicionais sem anuidade no 1º ano; com 50% de redução na anuidade nos anos seguintes",
+      "pontos": {
+        "nacional": 3,
+        "internacional": 3,
+        "unidade": "milhas/USD",
+        "observacao": "3 milhas por dólar gasto em compras gerais (vigente a partir de 23/01/2023). Clientes Clube Smiles e/ou Diamante acumulam 5,5 milhas/USD em compras gerais ou 6,5 milhas/USD em compras no site GOL. Clientes Smiles padrão: 4 milhas/USD em compras no site GOL."
+      },
+      "cashback": null,
+      "programa_proprio": "Smiles (GOL)",
+      "transfere_para": [
+        "Smiles"
+      ],
+      "spread": null,
+      "iof": "3,38% sobre o valor da compra internacional (alíquota federal padrão)",
+      "validade_pontos": "Milhas GOL Smiles acumuladas pelo Infinite não expiram",
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion",
+          "regra": "1 acesso gratuito por ano às salas VIP Visa Airport Companion"
+        },
+        {
+          "programa": "GOL Premium Lounge",
+          "regra": "Acesso gratuito ao GOL Premium Lounge conforme benefícios da bandeira Visa Infinite"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Milhas de boas-vindas",
+          "descricao": "15.000 milhas na aquisição para clientes Smiles; 20.000 milhas para clientes Clube Smiles e/ou Diamante. Milhas creditadas proporcionalmente a cada parcela da anuidade paga."
+        },
+        {
+          "titulo": "Milhas de renovação",
+          "descricao": "5.000 milhas extras a cada novo ciclo de anuidade (renovação anual), conforme regulamento do programa."
+        },
+        {
+          "titulo": "Bagagem despachada gratuita",
+          "descricao": "Despacho gratuito da 1ª bagagem em voos GOL."
+        },
+        {
+          "titulo": "Check-in e embarque preferenciais GOL",
+          "descricao": "Check-in preferencial e embarque preferencial em voos da GOL."
+        },
+        {
+          "titulo": "Transferência automática de milhas",
+          "descricao": "Milhas transferidas automaticamente para o Programa Smiles. Se o titular não tiver cadastro, a Smiles abre conta automaticamente."
+        },
+        {
+          "titulo": "Benefícios Visa Infinite",
+          "descricao": "Seguros de viagem, assistência 24h, consulta médica online, fila de embarque prioritária, descontos em restaurantes e mais."
+        },
+        {
+          "titulo": "Descontos Esfera",
+          "descricao": "Descontos de até 50% em parceiros Esfera com uso do cartão."
+        }
+      ],
+      "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/smiles-infinite",
+      "fontes": [
+        "https://www.santander.com.br/cartao-credito-santander/smiles-infinite",
+        "https://www.santander.com.br/cartoes-santander/pessoa-fisica/smiles-infinite",
+        "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "https://contaselect.santander.com.br/cartao-gol-smiles-infinite-black-wtl",
+        "https://cms.santander.com.br/sites/WPS/documentos/novo-arq-smiles/24-01-02_192743_novo-reg-smiles.pdf",
+        "https://www.santander.com.br/cartoes-santander/acesso-salas-vip",
+        "https://www.santander.com.br/document/gsb/cartoes_santander.pdf"
+      ],
+      "campos_pendentes": [
+        "cashback",
+        "isencao",
+        "isencao.valor_exato_por_gasto_documentado_na_pagina_produto",
+        "spread"
+      ],
+      "nota_curadoria": "Anuidade de 12x R$ 124,66 = R$ 1.495,92/ano confirmada na página oficial do hotsite Santander Smiles e regulamento. Renda mínima confirmada no hotsite oficial. Taxa de acúmulo de 3 milhas/USD vigente a partir de 23/01/2023 conforme regulamento PDF oficial (jan/2024). Milhas de bônus de aquisição (15.000 ou 20.000) e renovação (5.000) extraídas do regulamento PDF oficial. Isenção de anuidade por gasto mínimo de R$ 7.000/fatura mencionada apenas em blog.santander.com.br — campo marcado como pendente de confirmação na tabela de tarifas oficial. IOF de 3,38% é alíquota federal padrão para compras internacionais no cartão de crédito, não específica deste produto. Spread cambial não divulgado em fonte oficial para este cartão específico.",
+      "procedencia": {
+        "anuidade": "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "anuidade_parcelas": "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "renda_minima": "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "requisito_acesso": "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "adicionais_gratis": "https://www.santander.com.br/cartao-credito-santander/smiles-infinite",
+        "pontos": "https://cms.santander.com.br/sites/WPS/documentos/novo-arq-smiles/24-01-02_192743_novo-reg-smiles.pdf",
+        "validade_pontos": "https://www.santander.com.br/cartao-credito-santander/smiles-infinite",
+        "salas_vip": "https://www.santander.com.br/cartao-credito-santander/smiles-infinite",
+        "programa_proprio": "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "transfere_para": "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "iof": "https://www.santander.com.br/document/gsb/cartoes_santander.pdf",
+        "beneficios_banco": "https://contaselect.santander.com.br/cartao-gol-smiles-infinite-black-wtl",
+        "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/smiles-infinite"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao"
       ],
       "verificado_em": "2026-07-27"
     },
