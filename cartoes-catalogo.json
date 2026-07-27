@@ -1496,10 +1496,10 @@
     },
     {
       "slug": "bradesco-visa-principal",
-      "nome": "Bradesco Visa Principal",
-      "emissor": null,
-      "bandeira": null,
-      "categoria": null,
+      "nome": "Bradesco Principal Visa Infinite",
+      "emissor": "Bradesco",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
       "anuidade": null,
       "anuidade_parcelas": null,
       "isencao": null,
@@ -1508,20 +1508,46 @@
       "adicionais_gratis": null,
       "pontos": null,
       "cashback": null,
-      "programa_proprio": null,
+      "programa_proprio": "Livelo",
       "transfere_para": [],
       "spread": null,
       "iof": null,
       "validade_pontos": null,
-      "salas_vip": [],
-      "beneficios_banco": [],
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion",
+          "regra": "Mais de 1.000 salas VIP no mundo. Quantidade de acessos gratuitos nao publicada na pagina do produto."
+        },
+        {
+          "programa": "Visa Infinite Fast Pass",
+          "regra": "Acesso prioritario ao embarque"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Pontos Livelo",
+          "descricao": "Acumulo de pontos trocaveis por viagens, cashback ou produtos."
+        },
+        {
+          "titulo": "Salas VIP",
+          "descricao": "Conforto em mais de 1.000 salas VIP ao redor do mundo."
+        },
+        {
+          "titulo": "Descontos em restaurantes",
+          "descricao": "Ate 15% de desconto na conta, mesa VIP e sobremesa em restaurantes premiados."
+        },
+        {
+          "titulo": "Concierge de viagens",
+          "descricao": "Recomendacoes diarias de especialistas em viagens e experiencias."
+        },
+        {
+          "titulo": "Ofertas de marcas",
+          "descricao": "Condicoes diferenciadas em marcas selecionadas pelo app Bradesco."
+        }
+      ],
       "link_solicitacao": null,
       "fontes": [
-        "https://www.bradesco.com.br",
-        "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
-        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "https://bdn.bradesco.com.br/html/prime/produtos-servicos/cartoes/conheca-os-cartoes/bradesco-visa-gold.shtm",
-        "https://promocoes.visa.com.br/site/bradesco/bradesco-marvel-resgate/bradesco/regulamento/resgate"
+        "https://banco.bradesco/html/principal/cartoes.html"
       ],
       "campos_pendentes": [
         "adicionais_gratis",
@@ -1540,20 +1566,23 @@
         "programa_proprio",
         "renda_minima",
         "requisito_acesso",
-        "salas_vip",
         "spread",
         "transfere_para",
         "validade_pontos"
       ],
-      "nota_curadoria": "PRODUTO NÃO IDENTIFICADO NAS FONTES OFICIAIS. O nome 'Bradesco Visa Principal' não corresponde a nenhum produto listado no portfólio oficial de cartões Bradesco (bradesco.com.br). O termo 'principal' aparece apenas como designação genérica nos regulamentos de promoções para diferenciar o cartão de 1ª titularidade do cartão adicional (ex: 'Cartão Principal é o Cartão Elegível contratado diretamente pelo titular'). O portfólio Visa do Bradesco listado em fontes oficiais inclui: Visa Aeternum, Visa Infinite, Visa Signature, Visa Platinum e Visa Gold. Recomenda-se verificar: (1) se o nome correto é outro (ex: 'Bradesco Visa Classic', 'Bradesco Visa Gold'); (2) se trata-se de um cartão regional, co-branded ou descontinuado não indexado publicamente; (3) consultar diretamente a Tabela Geral de Tarifas do Bradesco via Internet Banking.",
-      "procedencia": {},
+      "nota_curadoria": "A pagina oficial do segmento Principal descreve beneficios mas NAO publica anuidade, pontuacao por dolar nem regra de isencao. Valores que circulam (2,5 pts/USD nacional, 3 no exterior, isencao com R$ 15 mil de gasto ou R$ 300 mil investidos) vem apenas de fontes secundarias e por isso nao foram adotados.",
+      "procedencia": {
+        "programa_proprio": "https://banco.bradesco/html/principal/cartoes.html",
+        "salas_vip": "https://banco.bradesco/html/principal/cartoes.html"
+      },
       "vigencia_ate": null,
       "analise": null,
       "campos_rejeitados": [
         "isencao",
         "pontos"
       ],
-      "verificado_em": "2026-07-27"
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "c6-black",
@@ -3849,8 +3878,8 @@
       "slug": "safra-iridium-visa-infinite",
       "nome": "Safra Iridium Visa Infinite",
       "emissor": "Banco Safra",
-      "bandeira": "Visa Infinite",
-      "categoria": null,
+      "bandeira": "Visa",
+      "categoria": "Infinite",
       "anuidade": null,
       "anuidade_parcelas": null,
       "isencao": null,
@@ -3859,15 +3888,30 @@
       "adicionais_gratis": null,
       "pontos": null,
       "cashback": null,
-      "programa_proprio": null,
+      "programa_proprio": "Safra Rewards",
       "transfere_para": [],
       "spread": null,
       "iof": null,
-      "validade_pontos": null,
+      "validade_pontos": "Nao expiram",
       "salas_vip": [],
-      "beneficios_banco": [],
+      "beneficios_banco": [
+        {
+          "titulo": "Safra Rewards",
+          "descricao": "Programa de pontos do banco, acessivel pelo app Safra."
+        },
+        {
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Acesso prioritario ao embarque em Guarulhos e RIOgaleao."
+        },
+        {
+          "titulo": "Visa Concierge 24h",
+          "descricao": "Suporte para planejamento e durante as viagens."
+        }
+      ],
       "link_solicitacao": null,
-      "fontes": [],
+      "fontes": [
+        "https://www.safra.com.br/cartoes/"
+      ],
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade",
@@ -3890,15 +3934,19 @@
         "transfere_para",
         "validade_pontos"
       ],
-      "nota_curadoria": "Foram realizadas quatro buscas distintas visando exclusivamente o domínio safra.com.br e fontes oficiais da bandeira Visa (visa.com.br). Nenhuma página do Banco Safra retornou informações sobre o produto 'Safra Iridium Visa Infinite'. O único indício de relacionamento do Banco Safra com a Visa Infinite foi uma referência indireta a um lounge chamado 'Espaço Banco Safra' no Terminal 3 de Guarulhos listado no site da American Express (americanexpress.com), o que indica que o produto pode existir mas seu portfólio não está indexado publicamente ou está restrito a clientes logados. Recomenda-se: (1) acessar manualmente safra.com.br/cartoes ou portal do cliente Safra; (2) consultar a tabela de tarifas de cartões do Banco Safra disponível no Bacen ou no próprio site do banco; (3) verificar o regulamento do programa de fidelidade Safra. Nenhum campo foi preenchido com dados de terceiros ou estimativas para preservar a integridade da ficha.",
-      "procedencia": {},
+      "nota_curadoria": "Cartao recente. A pagina de cartoes do Safra confirma que nos Visa Infinite os pontos nao expiram, mas nao traz ficha do Iridium. A anuidade de R$ 4.200 aparece na tabela de tarifas do banco segundo terceiros; nao foi possivel abrir o documento oficial para confirmar. Pontuacao e regra de salas VIP nao publicadas.",
+      "procedencia": {
+        "programa_proprio": "https://www.safra.com.br/cartoes/",
+        "validade_pontos": "https://www.safra.com.br/cartoes/"
+      },
       "vigencia_ate": null,
       "analise": null,
       "campos_rejeitados": [
         "isencao",
         "pontos"
       ],
-      "verificado_em": "2026-07-27"
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "santander-smiles-visa-infinite",
