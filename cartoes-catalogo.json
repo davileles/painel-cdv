@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 30,
+    "total": 31,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -2492,6 +2492,117 @@
       },
       "vigencia_ate": null,
       "analise": null,
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "sicoob-visa-infinite-zenith",
+      "nome": "Sicoob Visa Infinite Zenith",
+      "emissor": "Sicoob",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": {
+        "tipo": "comprou-zerou",
+        "valor": null,
+        "regra": "Programa 'Comprou, Zerou': descontos de 50% a 100% na anuidade conforme uso do cartão. Para Visa Infinite: 50% de desconto com consumo mensal de R$ 10.000 e 100% de desconto com consumo mensal de R$ 15.000."
+      },
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 4,
+        "internacional": 4,
+        "unidade": "pts/USD",
+        "observacao": "4 pontos por dólar gasto (nacional e internacional). Pontos acumulados no programa Coopera. Validade: 24 meses a partir da data de lançamento no extrato."
+      },
+      "cashback": null,
+      "programa_proprio": "Coopera",
+      "transfere_para": [
+        "Outros programas de recompensa (parceiros do Coopera — parceiros específicos não listados em fonte oficial consultada)"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "24 meses a partir da data de aquisição",
+      "salas_vip": [
+        {
+          "programa": "LoungeKey (via Visa Airport Companion)",
+          "regra": "Acesso ilimitado com direito a 2 convidados gratuitos por visita. Acesso excedente: USD 32 por visita para cartões Visa, cobrado na fatura. Necessário apresentar cartão físico + bilhete de viagem."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Visa Concierge",
+          "descricao": "Assistente pessoal disponível 24 horas."
+        },
+        {
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Embarque mais rápido para o titular e até 5 acompanhantes nos aeroportos de Guarulhos (GRU) e RIOGaleão. Acesso via app Visa Airport Companion."
+        },
+        {
+          "titulo": "Visa Luxury Hotel Collection",
+          "descricao": "Seleção de hotéis de luxo com condições especiais de reserva."
+        },
+        {
+          "titulo": "Programa Coopera",
+          "descricao": "Programa de fidelidade e marketplace gratuito. Pontos resgatáveis por viagens, cinema, produtos diversos, crédito na fatura, aporte em Previdência Sicoob e Cota Capital."
+        },
+        {
+          "titulo": "Carteiras digitais",
+          "descricao": "Compatível com Apple Pay, Google Pay e Samsung Pay."
+        },
+        {
+          "titulo": "Cartão virtual",
+          "descricao": "Geração de cartão virtual de uso único ou recorrente pelos apps Sicoob ou Sicoobcard."
+        },
+        {
+          "titulo": "Seguros e proteções Visa Infinite",
+          "descricao": "Proteção de compra, perda e roubo; seguros de atraso de bagagem e voo; cobertura por cancelamento de viagem; bagagem extraviada/roubada; perda de conexão. Mediante contratação conforme aplicável."
+        },
+        {
+          "titulo": "Programa Vai de Visa",
+          "descricao": "Promoções e descontos exclusivos para portadores Visa Premium."
+        }
+      ],
+      "link_solicitacao": "https://www.sicoob.com.br/pesquisa-cooperativa",
+      "fontes": [
+        "https://www.sicoob.com.br/web/sicoob/visa-zenith",
+        "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/282563279",
+        "https://www.sicoob.com.br/web/sicoobcentralscrs/noticias/-/asset_publisher/xAioIawpOI5S/content/id/279728567",
+        "https://www.sicoob.com.br/documents/2204538/138978214/Tabela+de+Tarifas+nov-2025.pdf/9b3d5594-06cf-9814-0a93-193e5584f598?t=1763141556627",
+        "https://www.sicoob.com.br/documents/56793504/105115028/sicoob_credfaz_tabela_de_tarifas_pf.pdf",
+        "https://www.sicoob.com.br/web/sicoob/coopera",
+        "https://www.sicoob.com.br/web/sicoob/imprensa/-/asset_publisher/rd7ZCcBmhQIS/content/id/154956454",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-sicoob.html"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "renda_minima",
+        "requisito_acesso",
+        "spread"
+      ],
+      "nota_curadoria": "A anuidade anual do Visa Infinite Zenith não foi localizada explicitamente em nenhuma tabela oficial consultada — a tabela nov-2025 (sicoob.com.br) registra apenas a linha 'Visa Infinite Zenith - Adicional' com valor R$ 895,00, que aparenta referir-se ao cartão adicional, não ao titular. O valor da anuidade do titular deve ser confirmado na tabela de tarifas da cooperativa singular. O programa 'Comprou, Zerou' e as faixas de isenção (R$ 10.000/R$ 15.000 mensais para 50%/100%) foram localizados em tabela de cooperativa afiliada (sicoob_credfaz), podendo variar por cooperativa. Os parceiros específicos para transferência de pontos do Coopera não foram listados nas fontes oficiais acessadas. Renda mínima não publicada em fonte oficial — acesso é restrito a cooperados e definido pela cooperativa singular.",
+      "procedencia": {
+        "pontos": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/282563279",
+        "salas_vip": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
+        "validade_pontos": "https://www.sicoob.com.br/web/sicoob/coopera",
+        "programa_proprio": "https://www.sicoob.com.br/web/sicoob/coopera",
+        "transfere_para": "https://www.sicoob.com.br/web/sicoob/coopera",
+        "beneficios_banco": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
+        "isencao": "https://www.sicoob.com.br/documents/56793504/105115028/sicoob_credfaz_tabela_de_tarifas_pf.pdf",
+        "link_solicitacao": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
+        "bandeira": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/282563279",
+        "categoria": "https://www.sicoob.com.br/web/sicoob/visa-zenith"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "requisito_acesso"
+      ],
       "verificado_em": "2026-07-27"
     },
     {
