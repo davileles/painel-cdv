@@ -3468,6 +3468,11 @@ function catalogoVazio(v){
 
 function cartoesSanitizar(cartao) {
   const c = { ...(cartao || {}) };
+  // A IA ora devolve cashback como objeto, ora como frase. Normaliza para objeto
+  // para a tela nao exibir "a confirmar" quando existe informacao textual.
+  if (typeof c.cashback === 'string' && c.cashback.trim()) {
+    c.cashback = { nacional: null, internacional: null, observacao: c.cashback.trim() };
+  }
   const proc = c.procedencia && typeof c.procedencia === 'object' ? { ...c.procedencia } : {};
   const pendentes = new Set(Array.isArray(c.campos_pendentes) ? c.campos_pendentes : []);
   const rejeitados = [];
@@ -3507,7 +3512,11 @@ function cartoesSanitizar(cartao) {
       desvantagens: (Array.isArray(c.analise.desvantagens) ? c.analise.desvantagens : []).map(String).slice(0, 8)
     };
   } else { c.analise = null; }
-  c.campos_pendentes = Array.from(pendentes).sort();
+  // Descarta pendencias inventadas (ex: 'transfere_para_dotz_ratio'):
+  // so vale nome de campo real, ou subcampo dele.
+  c.campos_pendentes = Array.from(pendentes).filter(p =>
+    CATALOGO_CAMPOS.some(k => p === k || p.indexOf(k + '.') === 0)
+  ).sort();
   if (rejeitados.length) c.campos_rejeitados = rejeitados;
   c.verificado_em = c.verificado_em || new Date().toISOString().slice(0, 10);
   return c;
