@@ -1842,14 +1842,33 @@
 </script>
 </div><!-- /tab-roteiros -->
 
+<style>
+#tab-cartoes .ct-sub{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+#tab-cartoes .ct-btn{background:var(--card);border:1px solid var(--border);color:var(--text);
+  padding:8px 14px;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:12px;
+  font-weight:600;cursor:pointer;transition:border-color .15s,background .15s;outline:none}
+#tab-cartoes .ct-btn:hover{border-color:var(--cdv-coral)}
+#tab-cartoes .ct-btn.on{background:var(--cdv-coral);border-color:var(--cdv-coral);color:#fff}
+#tab-cartoes select,#tab-cartoes input,#tab-cartoes textarea{background:var(--card);
+  border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;
+  font-size:12px;font-family:'Montserrat',sans-serif;outline:none}
+#tab-cartoes select{cursor:pointer}
+#tab-cartoes .ct-box{background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:16px;margin-bottom:12px}
+#tab-cartoes table{width:100%;border-collapse:collapse}
+#tab-cartoes td{padding:9px 0;font-size:12px;border-bottom:1px solid var(--border)}
+#tab-cartoes .ct-rot{color:var(--muted);text-transform:uppercase;font-size:10px;letter-spacing:.5px}
+#tab-cartoes .ct-na{color:var(--muted);opacity:.6}
+#tab-cartoes .ct-hint{color:var(--muted);font-size:11px}
+</style>
 <div id="tab-cartoes" class="tab-panel" style="display:none">
   <h2 style="margin:0 0 4px">💳 Comparador de Cartões</h2>
   <p style="opacity:.7;margin:0 0 18px;font-size:14px">Base curada a partir de fontes oficiais dos emissores e das bandeiras.</p>
 
-  <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">
-    <button class="btn" id="ct-sub-comparar" onclick="ctSubTab('comparar')">Comparar</button>
-    <button class="btn" id="ct-sub-lista" onclick="ctSubTab('lista')">Todos os cartões</button>
-    <button class="btn" id="ct-sub-admin" onclick="ctSubTab('admin')" style="display:none">Admin</button>
+  <div class="ct-sub">
+    <button class="ct-btn" id="ct-sub-comparar" onclick="ctSubTab('comparar')">Comparar</button>
+    <button class="ct-btn" id="ct-sub-lista" onclick="ctSubTab('lista')">Todos os cartões</button>
+    <button class="ct-btn" id="ct-sub-admin" onclick="ctSubTab('admin')" style="display:none">Admin</button>
   </div>
 
   <div id="ct-pane-comparar">
@@ -1866,7 +1885,7 @@
   </div>
 
   <div id="ct-pane-admin" style="display:none">
-    <div style="border:1px solid var(--border,#2a3550);border-radius:12px;padding:16px;margin-bottom:18px">
+    <div class="ct-box">
       <h3 style="margin:0 0 10px;font-size:15px">Extrair cartão por nome</h3>
       <p style="opacity:.7;font-size:13px;margin:0 0 12px">
         Digite um nome por linha. A busca é feita apenas em domínios oficiais dos emissores e bandeiras;
@@ -1874,7 +1893,7 @@
       </p>
       <textarea id="ct-fila" rows="5" placeholder="Itaú Personnalité Visa Infinite&#10;XP Visa Infinite&#10;C6 Graphene" style="width:100%"></textarea>
       <div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap">
-        <button class="btn primary" onclick="ctExtrairFila()">Extrair</button>
+        <button class="ct-btn on" onclick="ctExtrairFila()">Extrair</button>
         <span id="ct-fila-status" style="font-size:13px;opacity:.75"></span>
       </div>
     </div>
@@ -1894,7 +1913,7 @@ function ctSubTab(qual){
     var pane = document.getElementById('ct-pane-'+k);
     var btn  = document.getElementById('ct-sub-'+k);
     if (pane) pane.style.display = (k===qual) ? 'block' : 'none';
-    if (btn) btn.classList.toggle('primary', k===qual);
+    if (btn) btn.classList.toggle('on', k===qual);
   });
 }
 
@@ -1905,7 +1924,7 @@ function ctFmtMoeda(v){
 
 function ctValor(v){
   if (v===null || v===undefined || v==='' || (Array.isArray(v) && !v.length)) {
-    return '<span style="opacity:.45">a confirmar</span>';
+    return '<span class="ct-na">a confirmar</span>';
   }
   return v;
 }
@@ -1916,7 +1935,7 @@ async function ctInit(){
     if (b) b.style.display = '';
   }
   try {
-    var r = await fetch(_BASE + '/cartoes');
+    var r = await fetch(_BASE + '/catalogo-cartoes');
     var d = await r.json();
     CT_CARTOES = (d.cartoes || []);
   } catch(e){
@@ -1946,9 +1965,9 @@ function ctPopularSelects(){
 
 function ctLinha(rot, a, b){
   return '<tr>'+
-    '<td style="padding:9px 0;opacity:.7;font-size:13px">'+rot+'</td>'+
-    '<td style="padding:9px 0;text-align:center;font-size:13px">'+a+'</td>'+
-    '<td style="padding:9px 0;text-align:center;font-size:13px">'+b+'</td>'+
+    '<td class="ct-rot">'+rot+'</td>'+
+    '<td style="text-align:center">'+a+'</td>'+
+    '<td style="text-align:center">'+b+'</td>'+
   '</tr>';
 }
 
@@ -1981,7 +2000,7 @@ function ctRenderComparacao(){
   var html =
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">'+
       [a,b].map(function(c){
-        return '<div style="border:1px solid var(--border,#2a3550);border-radius:12px;padding:14px">'+
+        return '<div class="ct-box">'+
           '<div style="font-weight:600">'+c.nome+'</div>'+
           '<div style="opacity:.65;font-size:13px;margin-top:2px">'+(c.emissor||'')+' · '+(c.bandeira||'')+' '+(c.categoria||'')+'</div>'+
         '</div>';
@@ -2017,11 +2036,11 @@ function ctRenderLista(){
   if (!itens.length) { box.innerHTML = '<p style="opacity:.6">Nenhum cartão encontrado.</p>'; return; }
   box.innerHTML = itens.map(function(c){
     var pend = (c.campos_pendentes||[]).length;
-    return '<div style="border:1px solid var(--border,#2a3550);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">'+
+    return '<div class="ct-box" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">'+
       '<div><div style="font-weight:600">'+c.nome+'</div>'+
       '<div style="opacity:.65;font-size:13px">'+(c.emissor||'')+' · '+(c.bandeira||'')+' '+(c.categoria||'')+'</div></div>'+
       '<div style="text-align:right;font-size:13px">'+
-        '<div>'+(c.anuidade ? ctFmtMoeda(c.anuidade) : '<span style="opacity:.45">anuidade a confirmar</span>')+'</div>'+
+        '<div>'+(c.anuidade ? ctFmtMoeda(c.anuidade) : '<span class="ct-na">anuidade a confirmar</span>')+'</div>'+
         '<div style="opacity:.6">'+(c.fontes||[]).length+' fonte(s)'+(pend ? ' · '+pend+' pendente(s)' : '')+'</div>'+
       '</div>'+
     '</div>';
@@ -2041,7 +2060,7 @@ async function ctExtrairFila(){
   for (var i=0; i<nomes.length; i++){
     st.textContent = 'Extraindo ' + (i+1) + '/' + nomes.length + ': ' + nomes[i] + '…';
     try {
-      var r = await fetch(_BASE + '/cartoes/extrair', {
+      var r = await fetch(_BASE + '/catalogo-cartoes/extrair', {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ nome: nomes[i] })
       });
@@ -2061,16 +2080,16 @@ function ctRenderRevisao(){
   if (!box) return;
   box.innerHTML = CT_PENDENTES_REVISAO.map(function(item, i){
     if (item.erro) {
-      return '<div style="border:1px solid #7f1d1d;border-radius:10px;padding:12px;margin-bottom:10px">'+
+      return '<div class="ct-box" style="border-color:#7f1d1d">'+
         '<strong>'+item.nome+'</strong><div style="opacity:.75;font-size:13px">Erro: '+item.erro+'</div></div>';
     }
     var c = item.cartao;
     var pend = (c.campos_pendentes||[]);
-    return '<div style="border:1px solid var(--border,#2a3550);border-radius:10px;padding:14px;margin-bottom:10px">'+
+    return '<div class="ct-box">'+
       '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">'+
         '<div><strong>'+(c.nome||'?')+'</strong>'+
         '<div style="opacity:.65;font-size:13px">'+(c.emissor||'')+' · '+(c.fontes||[]).length+' fonte(s) oficial(is)'+'</div></div>'+
-        '<button class="btn primary" onclick="ctSalvar('+i+')">Salvar na base</button>'+
+        '<button class="ct-btn on" onclick="ctSalvar('+i+')">Salvar na base</button>'+
       '</div>'+
       (item.aviso ? '<div style="margin-top:8px;font-size:13px;color:#fbbf24">⚠️ '+item.aviso+'</div>' : '')+
       (pend.length ? '<div style="margin-top:8px;font-size:13px;opacity:.7">Pendentes: '+pend.join(', ')+'</div>' : '')+
@@ -2085,7 +2104,7 @@ async function ctSalvar(i){
   var item = CT_PENDENTES_REVISAO[i];
   if (!item || !item.cartao) return;
   try {
-    var r = await fetch(_BASE + '/cartoes', {
+    var r = await fetch(_BASE + '/catalogo-cartoes', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ cartao: item.cartao })
     });
