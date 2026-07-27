@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 7,
+    "total": 8,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -153,6 +153,157 @@
         "pontos": "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-carbon-mastercard-black",
         "adicionais_gratis": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco"
       }
+    },
+    {
+      "slug": "c6-graphene",
+      "nome": "C6 Graphene World Legend Mastercard",
+      "emissor": "C6 Bank",
+      "bandeira": "Mastercard",
+      "categoria": "World Legend",
+      "anuidade": 3960,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "investimento",
+        "valor": 5000000,
+        "regra": "Isenção de 100% da anuidade para clientes com R$ 5.000.000,00 (cinco milhões) investidos no C6 Bank"
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Exclusivo para clientes convidados com R$ 5.000.000,00 (cinco milhões) ou mais investidos no C6 Bank (sujeito a análise)",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 5,
+        "internacional": 8,
+        "unidade": "pts/USD",
+        "observacao": "Pontos C6 Átomos. Página do produto indica 'até 8 pts/US$1'. Blog World Legend confirma 5 pts nacionais e 8 pts internacionais. Página de ajuda e post de lançamento indicam 4 pts (dados mais antigos). A página oficial do produto (c6bank.com.br/c6-graphene/) e homepage indicam 'até 8 pts/US$1'. Usar os valores mais recentes da página oficial do produto."
+      },
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "Conversão de pontos C6 Átomos em cashback disponível via app; taxa de conversão não divulgada em valor fixo na fonte oficial"
+      },
+      "programa_proprio": "C6 Átomos",
+      "transfere_para": [
+        "LATAM Pass",
+        "Smiles (GOL)",
+        "TudoAzul",
+        "Livelo",
+        "TAP Miles&Go"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Pontos não expiram",
+      "salas_vip": [
+        {
+          "programa": "LoungeKey / DragonPass",
+          "regra": "Acesso ilimitado para titular, adicionais e acompanhantes a mais de mil salas VIP ao redor do mundo"
+        },
+        {
+          "programa": "W Premium Group",
+          "regra": "Acesso ilimitado para titular, adicionais e acompanhantes"
+        },
+        {
+          "programa": "Dining Club Taste of Priceless (Mastercard)",
+          "regra": "Acesso ilimitado; sala localizada no Terminal 3 do Aeroporto Internacional de Guarulhos, com menu assinado pelo chef Alex Atala"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Atendimento Graphene Partner 24/7",
+          "descricao": "Atendimento exclusivo 24 horas por dia, 7 dias por semana, por um Graphene Partner dedicado"
+        },
+        {
+          "titulo": "Concierge Exclusivo",
+          "descricao": "Serviço de concierge especializado disponível 24h, com apoio em reservas, grandes eventos, viagens e experiências personalizadas"
+        },
+        {
+          "titulo": "Limite Livre de Crédito",
+          "descricao": "Limite sem valor fixo, com ajuste dinâmico conforme a necessidade de cada cliente (sujeito a análise)"
+        },
+        {
+          "titulo": "Anytime Check-in e Check-out em Hotéis",
+          "descricao": "Benefício de chegar e sair de diversas hospedagens ao redor do mundo no horário desejado; café da manhã incluso, early check-in, late check-out e spa em mais de 250 hotéis de alto padrão"
+        },
+        {
+          "titulo": "Seguro Viagem MasterAssist",
+          "descricao": "Seguro viagem em passagens compradas com o C6 Graphene, com despesas médicas cobertas até USD 1.000.000 por ano"
+        },
+        {
+          "titulo": "Seguro para Automóvel Alugado",
+          "descricao": "Cobertura contra danos físicos elegíveis para automóveis alugados no Brasil ou exterior"
+        },
+        {
+          "titulo": "Art Advisory – Nara Roesler",
+          "descricao": "Serviço exclusivo de curadoria para artes em parceria com a galeria Nara Roesler; visitas guiadas, convites VIP e acompanhamento especializado"
+        },
+        {
+          "titulo": "Gastronomia – Michelin Program",
+          "descricao": "Acesso a restaurantes renomados via Michelin Program; reservas prioritárias com valet gratuito; isenção de taxa de rolha na primeira garrafa em mais de 200 restaurantes parceiros; prato principal na compra de outro em curadoria especial"
+        },
+        {
+          "titulo": "Ingressos Antecipados e Pré-venda",
+          "descricao": "Prioridade e acesso a pré-venda de shows, teatros e eventos disputados via Graphene Partner; convites exclusivos para feiras nacionais e internacionais"
+        },
+        {
+          "titulo": "Cheque Especial C6 Graphene",
+          "descricao": "10 dias sem juros por mês para clientes que autorizarem análises e ajustes automáticos do produto no app (crédito sujeito a análise)"
+        },
+        {
+          "titulo": "C6 Global Invest",
+          "descricao": "Dolarização de carteira: acesso a renda fixa e renda variável em dólar (Nasdaq, NYSE e mais); mais de 400 produtos de investimento em parceria com J.P. Morgan Asset Management; taxa zero para transferências de/para C6 Conta Global"
+        },
+        {
+          "titulo": "Cartão de Metal",
+          "descricao": "Cartão feito em aço inoxidável, com design sofisticado e minimalista"
+        },
+        {
+          "titulo": "Nível VIP no C6 Experience",
+          "descricao": "Acesso ao nível VIP do programa de relacionamento C6 Experience"
+        },
+        {
+          "titulo": "Assessor de Investimentos CFP",
+          "descricao": "Assessor de investimentos com certificação de planejador financeiro (CFP) dedicado, com recomendação de alocação ideal, gestão de patrimônio e planejamento sucessório"
+        }
+      ],
+      "link_solicitacao": "https://www.c6bank.com.br/c6-graphene/",
+      "fontes": [
+        "https://www.c6bank.com.br/c6-graphene/",
+        "https://ajuda.c6bank.com.br/s/article/O-que-%C3%A9-o-Cart%C3%A3o-C6-Graphene",
+        "https://www.c6bank.com.br/cartao-de-credito/",
+        "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "https://www.c6bank.com.br/blog/world-legend",
+        "https://www.c6bank.com.br/blog/c6-bank-cria-segmento-para-atender-publico-de-mais-alta-renda",
+        "https://www.c6bank.com.br/blog/cartao-c6-graphene-entenda-como-funciona",
+        "https://www.c6bank.com.br/blog/c6-carbon-ou-c6-graphene",
+        "https://www.c6bank.com.br/programa-de-pontos-atomos/"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "iof",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "Atenção à pontuação: há divergência entre fontes oficiais do próprio C6 Bank. A página de ajuda (ajuda.c6bank.com.br) e o post de lançamento original (jul/2024) indicam 4 pts/US$; o blog World Legend (dez/2025) e o blog c6-carbon-ou-c6-graphene (abr/2026) indicam 5 pts nacionais e 8 pts internacionais; a página oficial do produto (c6bank.com.br/c6-graphene/) e a homepage indicam 'até 8 pts/US$1'. Os valores de 5 pts nacional e 8 pts internacional das publicações mais recentes (2025-2026) e da página do produto foram adotados como vigentes. Recomenda-se validação direta com o banco. IOF padrão de 6,38% incide sobre compras internacionais em cartão de crédito conforme legislação federal, mas valor específico não foi declarado na página do produto. Spread também não está declarado na página do produto C6 Graphene. Cartão é por convite (invite-only): o acesso exige R$ 5 milhões investidos, não há renda mínima divulgada publicamente.",
+      "procedencia": {
+        "nome": "https://www.c6bank.com.br/c6-graphene/",
+        "emissor": "https://www.c6bank.com.br/c6-graphene/",
+        "bandeira": "https://www.c6bank.com.br/c6-graphene/",
+        "categoria": "https://www.c6bank.com.br/blog/world-legend",
+        "anuidade": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "anuidade_parcelas": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "isencao": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "requisito_acesso": "https://www.c6bank.com.br/cartao-de-credito/",
+        "pontos": "https://www.c6bank.com.br/blog/world-legend",
+        "cashback": "https://www.c6bank.com.br/programa-de-pontos-atomos/",
+        "programa_proprio": "https://www.c6bank.com.br/programa-de-pontos-atomos/",
+        "transfere_para": "https://www.c6bank.com.br/programa-de-pontos-atomos/",
+        "validade_pontos": "https://www.c6bank.com.br/blog/c6-bank-cria-segmento-para-atender-publico-de-mais-alta-renda",
+        "salas_vip": "https://www.c6bank.com.br/c6-graphene/",
+        "beneficios_banco": "https://www.c6bank.com.br/c6-graphene/",
+        "link_solicitacao": "https://www.c6bank.com.br/c6-graphene/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "verificado_em": "2026-07-27"
     },
     {
       "slug": "caixa-icone-visa",
