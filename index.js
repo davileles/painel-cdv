@@ -3366,6 +3366,12 @@ REGRAS:
 //  Arquivos: cartoes.json (produtos) e bandeiras.json (catalogo por categoria).
 // ══════════════════════════════════════════════════════════════════════════════
 
+// ATENCAO: 'cartoes.json' JA EXISTE e e o cadastro de cartoes DOS MEMBROS,
+// listado em ARQUIVOS_SENSIVEIS (roteado para o repo privado de dados).
+// O catalogo publico do comparador usa nome e rotas proprios para nao colidir.
+const CATALOGO_PATH  = 'cartoes-catalogo.json';
+const BANDEIRAS_PATH = 'bandeiras.json';
+
 // Dominios aceitos como fonte oficial. Qualquer campo cuja fonte nao pertenca
 // a esta lista e descartado pelo extrator e volta como null em campos_pendentes.
 const CARTOES_DOMINIOS_OFICIAIS = [
@@ -3429,21 +3435,21 @@ function cartoesSanitizar(cartao) {
   return c;
 }
 
-app.get('/cartoes', async (req, res) => {
+app.get('/catalogo-cartoes', async (req, res) => {
   try {
-    const { data } = await ghGetJson('cartoes.json', { cartoes: [] });
+    const { data } = await ghGetJson(CATALOGO_PATH, { cartoes: [] });
     const lista = (data.cartoes || []).slice().sort((a, b) =>
       String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'));
     res.json({ ok: true, total: lista.length, cartoes: lista, meta: data._meta || {} });
   } catch (e) {
-    console.error('[cartoes GET]', e.message);
+    console.error('[catalogo GET]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
 
 app.get('/bandeiras', async (req, res) => {
   try {
-    const { data } = await ghGetJson('bandeiras.json', { bandeiras: [] });
+    const { data } = await ghGetJson(BANDEIRAS_PATH, { bandeiras: [] });
     res.json({ ok: true, bandeiras: data.bandeiras || [] });
   } catch (e) {
     console.error('[bandeiras GET]', e.message);
@@ -3451,27 +3457,27 @@ app.get('/bandeiras', async (req, res) => {
   }
 });
 
-app.get('/cartoes/:slug', async (req, res) => {
+app.get('/catalogo-cartoes/:slug', async (req, res) => {
   try {
-    const { data } = await ghGetJson('cartoes.json', { cartoes: [] });
+    const { data } = await ghGetJson(CATALOGO_PATH, { cartoes: [] });
     const cartao = (data.cartoes || []).find(c => c.slug === req.params.slug);
     if (!cartao) return res.status(404).json({ ok: false, erro: 'Cartao nao encontrado.' });
 
     // Resolve os beneficios herdados da bandeira
     let beneficiosBandeira = [];
     if (cartao.bandeira_ref) {
-      const { data: bd } = await ghGetJson('bandeiras.json', { bandeiras: [] });
+      const { data: bd } = await ghGetJson(BANDEIRAS_PATH, { bandeiras: [] });
       const b = (bd.bandeiras || []).find(x => x.ref === cartao.bandeira_ref);
       if (b) beneficiosBandeira = b.beneficios || [];
     }
     res.json({ ok: true, cartao: { ...cartao, beneficios_bandeira: beneficiosBandeira } });
   } catch (e) {
-    console.error('[cartoes GET slug]', e.message);
+    console.error('[catalogo GET slug]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
 
-app.post('/cartoes', async (req, res) => {
+app.post('/catalogo-cartoes', async (req, res) => {
   try {
     const entrada = req.body && req.body.cartao;
     if (!entrada || !entrada.nome) {
@@ -3480,7 +3486,7 @@ app.post('/cartoes', async (req, res) => {
     const cartao = cartoesSanitizar({ ...entrada, slug: entrada.slug || cartoesSlugify(entrada.nome) });
 
     // SHA sempre fresco, imediatamente antes do PUT
-    const { data, sha } = await ghGetJson('cartoes.json', { _meta: {}, cartoes: [] });
+    const { data, sha } = await ghGetJson(CATALOGO_PATH, { _meta: {}, cartoes: [] });
     const lista = data.cartoes || [];
     const idx = lista.findIndex(c => c.slug === cartao.slug);
     if (idx >= 0) lista[idx] = { ...lista[idx], ...cartao };
@@ -3490,17 +3496,17 @@ app.post('/cartoes', async (req, res) => {
     data.cartoes = lista;
     data._meta = { ...(data._meta || {}), total: lista.length, atualizado_em: new Date().toISOString().slice(0, 10) };
 
-    await ghPutJson('cartoes.json', data, sha, `cartoes: ${idx >= 0 ? 'atualiza' : 'adiciona'} ${cartao.slug}`);
+    await ghPutJson(CATALOGO_PATH, data, sha, `catalogo: ${idx >= 0 ? 'atualiza' : 'adiciona'} ${cartao.slug}`);
     res.json({ ok: true, cartao, novo: idx < 0, total: lista.length });
   } catch (e) {
-    console.error('[cartoes POST]', e.message);
+    console.error('[catalogo POST]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
 
-app.delete('/cartoes/:slug', async (req, res) => {
+app.delete('/catalogo-cartoes/:slug', async (req, res) => {
   try {
-    const { data, sha } = await ghGetJson('cartoes.json', { _meta: {}, cartoes: [] });
+    const { data, sha } = await ghGetJson(CATALOGO_PATH, { _meta: {}, cartoes: [] });
     const lista = data.cartoes || [];
     const restante = lista.filter(c => c.slug !== req.params.slug);
     if (restante.length === lista.length) {
@@ -3508,16 +3514,16 @@ app.delete('/cartoes/:slug', async (req, res) => {
     }
     data.cartoes = restante;
     data._meta = { ...(data._meta || {}), total: restante.length, atualizado_em: new Date().toISOString().slice(0, 10) };
-    await ghPutJson('cartoes.json', data, sha, `cartoes: remove ${req.params.slug}`);
+    await ghPutJson(CATALOGO_PATH, data, sha, `catalogo: remove ${req.params.slug}`);
     res.json({ ok: true, total: restante.length });
   } catch (e) {
-    console.error('[cartoes DELETE]', e.message);
+    console.error('[catalogo DELETE]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
 
 // ── Extrator: recebe apenas o NOME do cartao e busca o dado na fonte oficial ──
-app.post('/cartoes/extrair', (req, res) => {
+app.post('/catalogo-cartoes/extrair', (req, res) => {
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
   if (!ANTHROPIC_API_KEY) {
     return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY nao configurada no servidor.' });
@@ -3597,12 +3603,12 @@ Use vigencia_ate (AAAA-MM-DD) quando algum beneficio for promocional com prazo.`
             : null
         });
       } catch (e) {
-        console.error('[cartoes/extrair] parse error:', e.message, 'raw:', buf.slice(0, 300));
+        console.error('[catalogo/extrair] parse error:', e.message, 'raw:', buf.slice(0, 300));
         res.json({ ok: false, erro: 'Erro ao processar resposta da IA.' });
       }
     });
   });
-  apiReq.on('error', (e) => { console.error('[cartoes/extrair] req error:', e.message); res.json({ ok: false, erro: e.message }); });
+  apiReq.on('error', (e) => { console.error('[catalogo/extrair] req error:', e.message); res.json({ ok: false, erro: e.message }); });
   apiReq.setTimeout(170000, () => { apiReq.destroy(); res.json({ ok: false, erro: 'Timeout ao chamar API Anthropic.' }); });
   apiReq.write(bodyPayload);
   apiReq.end();
