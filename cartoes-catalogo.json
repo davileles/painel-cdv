@@ -2933,67 +2933,133 @@
         "nacional": 3,
         "internacional": 3,
         "unidade": "pts/USD",
-        "observacao": "Pontos nao expiram. Valido apenas para compras na funcao credito e sujeito ao pagamento da fatura."
+        "observacao": "Pontos não expiram. Pontuação disponível apenas para compras na função crédito, sujeita ao pagamento da fatura. Resgate mínimo: 10.000 pts para transferência aos parceiros Smiles, Azul e Latam; 7.000 pts no Shopping Sicredi."
       },
-      "cashback": null,
-      "programa_proprio": "Programa de Recompensas Sicredi",
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "Pontos podem ser resgatados como cashback na fatura pelo Shopping do Sicredi. Campanha promocional de cashback de 100% do IOF (3,5%) em compras internacionais, limitado a R$450 por CPF/CNPJ (campanha promocional – verificar vigência)."
+      },
+      "programa_proprio": "Programa de Recompensas Sicredi (Shopping Sicredi – shopping.sicredi.com.br)",
       "transfere_para": [
-        "Azul Fidelidade",
-        "LATAM Pass",
-        "Smiles"
+        "Smiles",
+        "TudoAzul (Azul)",
+        "LATAM Pass"
       ],
       "spread": null,
       "iof_isento": false,
       "salas_vip": [
         {
-          "programa": "Visa Airport Companion (Dragon Pass)",
-          "regra": "Acessos ilimitados para o titular e acompanhantes"
+          "programa": "Visa Airport Companion",
+          "regra": "Acesso ilimitado para titular e acompanhantes em mais de 1.200 salas VIP em aeroportos no Brasil e no mundo. Necessário habilitar uso do cartão no exterior no app Sicredi (Cartões > Permissões e uso), mesmo para acessos no Brasil."
         },
         {
-          "programa": "Visa Infinite Fast Pass",
-          "regra": "Embarque prioritario em Guarulhos e Galeao"
+          "programa": "Lounge Key",
+          "regra": "Acesso ilimitado a mais de 1.000 salas VIP em aeroportos no Brasil e no mundo, além de ofertas exclusivas em alimentação e compras."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Pontos que nao expiram",
-          "descricao": "Sem prazo de validade para o saldo acumulado."
+          "titulo": "Programa de Recompensas Sicredi",
+          "descricao": "Acumule 3 pontos a cada dólar gasto. Pontos não expiram. Troque por passagens, produtos, cashback na fatura, viagens via Decolar ou milhas (Smiles, TudoAzul, LATAM Pass) no Shopping Sicredi."
         },
         {
-          "titulo": "Shopping do Sicredi",
-          "descricao": "Resgate por passagens, produtos, cashback na fatura e experiencias. Minimo de 7.000 pontos."
+          "titulo": "Sala VIP – Acesso Ilimitado",
+          "descricao": "Acesso ilimitado para titular e acompanhantes em lounges de aeroportos ao redor do mundo via Visa Airport Companion e Lounge Key."
         },
         {
-          "titulo": "Transferencia para programas aereos",
-          "descricao": "Resgate minimo de 10.000 pontos, ou multiplos de 10.000, para Smiles, Azul Fidelidade e LATAM Pass."
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Embarque ágil nos Terminais 2 e 3 do Aeroporto de Guarulhos e no Piso 1 do Aeroporto RIOgaleão com acesso diferenciado ao Raio X via app Visa Airport Companion. Benefício sem custo adicional."
         },
         {
-          "titulo": "Ate 40 dias para pagar a fatura",
-          "descricao": "Prazo maximo entre a compra e o vencimento da fatura."
+          "titulo": "Concierge 24h",
+          "descricao": "Assistência 24 horas para reservas de hotéis, restaurantes, eventos, locação de veículo e passeios, com acesso a ofertas exclusivas. Contato: 0800 772 7811 / (11) 4949-3401."
+        },
+        {
+          "titulo": "Seguro de Emergência Médica Internacional",
+          "descricao": "Cobertura para titular e acompanhantes cujas passagens forem pagas integralmente com o cartão, mediante emissão de bilhete prévio."
+        },
+        {
+          "titulo": "Seguro para Veículo de Locadora",
+          "descricao": "Proteção do veículo contra colisão, roubo, vandalismo e acidentes totais ou parciais quando a locação for paga integralmente com o cartão."
+        },
+        {
+          "titulo": "Proteção de Compras",
+          "descricao": "Reembolso para produtos elegíveis danificados, roubados ou furtados nos primeiros 180 dias após a compra, conforme regras do benefício."
+        },
+        {
+          "titulo": "Garantia Estendida",
+          "descricao": "Extensão da garantia original do fabricante em até 12 meses para itens elegíveis adquiridos com o cartão."
+        },
+        {
+          "titulo": "Seguro de Bagagem e Assistência de Embarque",
+          "descricao": "Cobertura para perda, roubo e atraso de bagagem, além de assistência em casos de atraso de embarque, conexões perdidas e cancelamento de viagem, quando passagens forem pagas com o cartão."
+        },
+        {
+          "titulo": "Visa Médico Online",
+          "descricao": "Consulta virtual com médicos certificados, 24 horas por dia, disponível em qualquer lugar do mundo."
+        },
+        {
+          "titulo": "Vai de Visa",
+          "descricao": "Plataforma de ofertas, descontos e vantagens exclusivas em parceiros nacionais e internacionais (beleza, eletrônicos, pets e mais)."
+        },
+        {
+          "titulo": "Cartão Virtual",
+          "descricao": "Cartão virtual para compras online e recorrentes com segurança adicional, gerenciado pelo app Sicredi."
+        },
+        {
+          "titulo": "Carteiras Digitais",
+          "descricao": "Compatível com as principais carteiras digitais para pagamento por aproximação via smartphone ou smartwatch."
+        },
+        {
+          "titulo": "Pagamento por Aproximação (Contactless)",
+          "descricao": "Compras rápidas e seguras com tecnologia contactless."
+        },
+        {
+          "titulo": "Flexibilidade de Fatura",
+          "descricao": "Até 40 dias para pagar a fatura, conforme a data de compra."
         }
       ],
       "link_solicitacao": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
       "fontes": [
-        "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/"
+        "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
+        "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-visa-infinite/",
+        "https://www.sicredi.com.br/site/cartoes/portfolio-visa/",
+        "https://www.sicredi.com.br/coop/altosdaserra/cartao-visa-infinite/",
+        "https://www.sicredi.com.br/site/cartoes/visa-iof/",
+        "https://promocoes.visa.com.br/site/sicredi/sicredi-iof-2026/",
+        "https://www.sicredi.com.br/coop/centrosulmsba/noticias/produtos/cashback-de-iof-para-associados-com-cartoes-visa-infinite-e-visa-empresarial/"
       ],
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade",
         "anuidade_parcelas",
-        "cashback",
-        "iof",
         "isencao",
         "renda_minima",
-        "requisito_acesso",
         "spread"
       ],
       "verificado_em": "2026-07-27",
-      "nota_curadoria": "Anuidade e isencao sao definidas por cada cooperativa e nao constam do site institucional. Fontes secundarias divergem (R$ 900-1.200 e R$ 1.200-1.500), por isso nenhum valor foi adotado.",
+      "nota_curadoria": "A anuidade, valor de parcelas, condições de isenção, renda mínima, quantidade de adicionais gratuitos e spread cambial NÃO foram encontrados nas páginas oficiais do produto no sicredi.com.br. O Sicredi é uma cooperativa de crédito com cooperativas regionais autônomas — as tarifas podem variar por cooperativa e constam em tabelas de tarifas individuais de cada coop, não publicadas de forma centralizada na página do produto. O campo 'iof' descreve a alíquota federal padrão (3,5%) e uma campanha promocional de cashback do IOF com vigência encerrada em 18/03/2026 (segundo fonte coop/centrosulmsba); a campanha 2026 em promocoes.visa.com.br pode ter vigência diferente — verificar T&C atualizados. O requisito de ser 'associado Sicredi' é explícito nas fontes oficiais.",
       "procedencia": {
         "pontos": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
-        "salas_vip": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
-        "transfere_para": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/"
-      }
+        "validade_pontos": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
+        "transfere_para": "https://www.sicredi.com.br/site/cartoes/portfolio-visa/",
+        "salas_vip": "https://www.sicredi.com.br/coop/altosdaserra/cartao-visa-infinite/",
+        "iof": "https://www.sicredi.com.br/coop/centrosulmsba/noticias/produtos/cashback-de-iof-para-associados-com-cartoes-visa-infinite-e-visa-empresarial/",
+        "cashback": "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-visa-infinite/",
+        "programa_proprio": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
+        "requisito_acesso": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
+        "beneficios_banco": "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-visa-infinite/",
+        "link_solicitacao": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/"
+      },
+      "requisito_acesso": "Ser associado Sicredi. Aprovação sujeita a análise de crédito.",
+      "iof": "3,5% (alíquota federal padrão). Campanha promocional de cashback de 100% do IOF para compras internacionais no crédito (verificar vigência em promocoes.visa.com.br/site/sicredi/sicredi-iof-2026).",
+      "validade_pontos": "Pontos não expiram.",
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao"
+      ]
     },
     {
       "slug": "bradesco-amex-the-centurion",
