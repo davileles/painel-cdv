@@ -1947,7 +1947,16 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 #tab-cartoes .ct-col-rot{width:230px}
 #tab-cartoes .ct-tabela td{text-align:left;vertical-align:top;padding:10px 14px 10px 0;
   word-break:break-word;overflow-wrap:anywhere}
-#tab-cartoes .ct-cabecalho{display:grid;grid-template-columns:230px 1fr 1fr;gap:0;margin-bottom:16px}
+#tab-cartoes .ct-cabecalho{display:grid;grid-template-columns:230px 1fr 1fr;gap:0;margin-bottom:16px;position:relative}
+#tab-cartoes .ct-seletor{width:100%;font-weight:700;font-size:15px;padding:0;border:none;
+  background:transparent;color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none}
+#tab-cartoes .ct-seletor:hover{color:var(--cdv-coral)}
+#tab-cartoes .ct-versus{position:absolute;top:50%;left:calc(230px + (100% - 230px)/2);
+  transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;
+  background:var(--bg);border:1px solid var(--border);color:var(--cdv-coral);
+  font-size:20px;font-weight:700;line-height:1;
+  display:flex;align-items:center;justify-content:center;z-index:2;pointer-events:none}
+@media(max-width:760px){#tab-cartoes .ct-versus{left:calc(120px + (100% - 120px)/2);width:30px;height:30px;font-size:16px}}
 #tab-cartoes .ct-cabecalho > .ct-box{margin-right:14px}
 @media(max-width:760px){
   #tab-cartoes .ct-col-rot{width:120px}
@@ -1973,10 +1982,6 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   </div>
 
   <div id="ct-pane-comparar">
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
-      <select id="ct-sel-a" style="flex:1;min-width:220px" onchange="ctRenderComparacao()"></select>
-      <select id="ct-sel-b" style="flex:1;min-width:220px" onchange="ctRenderComparacao()"></select>
-    </div>
     <div id="ct-comparacao"></div>
   </div>
 
@@ -2022,6 +2027,8 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 //  COMPARADOR DE CARTOES  (acesso restrito a DEV_EMAILS)
 // ══════════════════════════════════════════════════════
 var CT_CARTOES = [];
+var CT_SEL_A = '';
+var CT_SEL_B = '';
 var CT_PENDENTES_REVISAO = [];
 
 // Le a resposta com seguranca: se vier HTML (timeout de borda, 404, 502),
@@ -2166,19 +2173,31 @@ async function ctInit(){
   ctSubTab('comparar');
 }
 
-function ctPopularSelects(){
-  var ordenados = CT_CARTOES.slice().sort(function(a,b){
+function ctOrdenados(){
+  return CT_CARTOES.slice().sort(function(a,b){
     return String(a.nome||'').localeCompare(String(b.nome||''), 'pt-BR');
   });
-  ['ct-sel-a','ct-sel-b'].forEach(function(id, i){
-    var sel = document.getElementById(id);
-    if (!sel) return;
-    sel.innerHTML = '<option value="">Selecione um cartão…</option>' +
-      ordenados.map(function(c){
-        return '<option value="'+c.slug+'">'+c.nome+'</option>';
-      }).join('');
-    if (ordenados[i]) sel.value = ordenados[i].slug;
-  });
+}
+
+// Mantem a selecao valida quando a base muda; nao guarda estado no DOM porque
+// o cabecalho e redesenhado a cada troca.
+function ctPopularSelects(){
+  var ord = ctOrdenados();
+  var slugs = ord.map(function(c){ return c.slug; });
+  if (slugs.indexOf(CT_SEL_A) < 0) CT_SEL_A = slugs[0] || '';
+  if (slugs.indexOf(CT_SEL_B) < 0 || CT_SEL_B === CT_SEL_A) CT_SEL_B = slugs[1] || slugs[0] || '';
+}
+
+function ctSeletorHtml(lado, atual){
+  return '<select class="ct-seletor" onchange="ctTrocar(\''+lado+'\', this.value)">' +
+    ctOrdenados().map(function(c){
+      return '<option value="'+c.slug+'"'+(c.slug===atual?' selected':'')+'>'+c.nome+'</option>';
+    }).join('') + '</select>';
+}
+
+function ctTrocar(lado, slug){
+  if (lado === 'a') CT_SEL_A = slug; else CT_SEL_B = slug;
+  ctRenderComparacao();
 }
 
 function ctLinha(rot, a, b, icone){
@@ -2264,7 +2283,7 @@ function ctAnalise(c){
 async function ctRenderComparacao(){
   var box = document.getElementById('ct-comparacao');
   if (!box) return;
-  var sa = document.getElementById('ct-sel-a').value, sb = document.getElementById('ct-sel-b').value;
+  var sa = CT_SEL_A, sb = CT_SEL_B;
   if (!sa || !sb) { box.innerHTML = '<p style="color:var(--muted)">Selecione dois cartões para comparar.</p>'; return; }
   box.innerHTML = '<p style="color:var(--muted);font-size:12px">Carregando…</p>';
 
@@ -2286,10 +2305,11 @@ async function ctRenderComparacao(){
   box.innerHTML =
     '<div class="ct-cabecalho">'+
       '<div></div>'+
-      [a,b].map(function(c){
-        return '<div class="ct-box" style="margin-bottom:0"><div style="font-weight:700">'+c.nome+'</div>'+
-          '<div style="color:var(--muted);font-size:12px;margin-top:2px">'+(c.emissor||'')+' · '+(c.bandeira||'')+' '+(c.categoria||'')+'</div></div>';
-      }).join('')+
+      '<div class="ct-box" style="margin-bottom:0">'+ ctSeletorHtml('a', a.slug) +
+        '<div style="color:var(--muted);font-size:12px;margin-top:2px">'+(a.emissor||'')+' · '+(a.bandeira||'')+' '+(a.categoria||'')+'</div></div>'+
+      '<div class="ct-box" style="margin-bottom:0">'+ ctSeletorHtml('b', b.slug) +
+        '<div style="color:var(--muted);font-size:12px;margin-top:2px">'+(b.emissor||'')+' · '+(b.bandeira||'')+' '+(b.categoria||'')+'</div></div>'+
+      '<div class="ct-versus">×</div>'+
     '</div>'+
     '<table class="ct-tabela">'+
       '<colgroup><col class="ct-col-rot"><col><col></colgroup>'+
