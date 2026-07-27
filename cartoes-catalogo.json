@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 24,
+    "total": 25,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -2016,6 +2016,116 @@
         "pontos": "https://www.santander.com.br/cartoes-santander/pessoa-fisica/unlimited-black",
         "programa_proprio": "https://www.santander.com.br/cartao-credito-santander/unlimited",
         "transfere_para": "https://www.santander.com.br/blog/esfera/aplicativo-esfera",
+        "salas_vip": "https://www.santander.com.br/cartoes-santander/acesso-salas-vip",
+        "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/unlimited"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "santander-visa-unlimited",
+      "nome": "Santander Visa Unlimited",
+      "emissor": "Santander",
+      "bandeira": "Visa Infinite",
+      "categoria": "Black / Infinite",
+      "anuidade": 2199.96,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "gasto_mensal_ou_investimento",
+        "valor": "R$ 30.000 por fatura ou R$ 5.000.000 investidos no Santander ou Toro",
+        "regra": "100% de isenção na parcela mensal cumprindo um dos critérios. Se houver dupla oferta Visa + Mastercard, os gastos são considerados no Mastercard."
+      },
+      "renda_minima": 30000,
+      "requisito_acesso": "Clientes Private Santander ou renda mínima mensal de R$ 30.000",
+      "adicionais_gratis": 7,
+      "pontos": {
+        "nacional": 3,
+        "internacional": 3.6,
+        "unidade": "pts/USD",
+        "observacao": "Clientes Select. Com Santander Rewards, aceleração de até 4,5 pts/USD nacional e 5,4 pts/USD internacional. Pontos não expiram."
+      },
+      "cashback": null,
+      "programa_proprio": "Esfera",
+      "transfere_para": [
+        "Azul Fidelidade",
+        "Smiles",
+        "LATAM Pass",
+        "Iberia Plus"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Não expiram",
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion (DragonPass)",
+          "regra": "Acesso ilimitado para o titular via programa Visa Airport Companion. A partir de janeiro de 2026, a gratuidade do acesso está condicionada ao cumprimento de critério de gasto mínimo (soma das últimas 3 faturas). Acesso de acompanhantes (até 8/ano) consumido da oferta original do cartão."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Programa Esfera",
+          "descricao": "Acúmulo de pontos Esfera que não expiram; resgate em produtos, viagens, cashback em fatura e transferência para programas de milhas parceiros."
+        },
+        {
+          "titulo": "Santander Rewards",
+          "descricao": "Programa de aceleração de pontos: quanto maior o relacionamento com o banco, maior a pontuação no cartão (até +50% nos pontos)."
+        },
+        {
+          "titulo": "Cartões adicionais",
+          "descricao": "Até 7 cartões adicionais sem anuidade por bandeira. Gastos dos adicionais concentrados na fatura do titular, com limite individual configurável."
+        },
+        {
+          "titulo": "Seguros de viagem Visa Infinite",
+          "descricao": "Cobertura de emergências médicas e odontológicas em viagens internacionais, remoção médica, cobertura por atraso/perda de bagagem e cancelamento de viagem (passagens devem ser compradas com o cartão)."
+        },
+        {
+          "titulo": "Proteção de compras Visa",
+          "descricao": "Garantia estendida, proteção contra roubo ou danos acidentais em 180 dias da compra, e proteção de preço em 30 dias."
+        },
+        {
+          "titulo": "Visa Infinite Hotels",
+          "descricao": "Acesso a coleção com mais de 900 hotéis ao redor do mundo com benefícios exclusivos."
+        },
+        {
+          "titulo": "Assistência de viagem 24h",
+          "descricao": "Serviços gratuitos de assistência de viagem disponíveis 24h/7d via Central de Atendimento Visa."
+        },
+        {
+          "titulo": "Valet e estacionamento Visa",
+          "descricao": "Valet cortesia nos melhores shoppings, restaurantes e aeroportos; estacionamento cortesia em aeroportos selecionados."
+        },
+        {
+          "titulo": "Shopping Esfera",
+          "descricao": "Cashback e descontos em parceiros do Shopping Esfera com o cartão."
+        }
+      ],
+      "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+      "fontes": [
+        "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "https://www.santander.com.br/banco/conta-corrente/select",
+        "https://www.santander.com.br/cartoes-santander/acesso-salas-vip",
+        "https://www.santander.com.br/blog/esfera/validade-dos-pontos-esfera",
+        "https://www.santander.com.br/blog/esfera/aplicativo-esfera",
+        "https://www.santander.com.br/cartao-credito-santander/viagens"
+      ],
+      "campos_pendentes": [
+        "cashback",
+        "iof",
+        "spread"
+      ],
+      "nota_curadoria": "Existem duas URLs do Santander para o Unlimited: a página de produto atual (santander.com.br/cartao-credito-santander/unlimited) com anuidade 12x R$ 183,33, isenção a R$ 30.000/fatura e renda mínima R$ 30.000; e uma página de aquisição mais antiga (santander.com.br/cc-unlimited-black) com anuidade 12x R$ 107,50 e isenção a R$ 20.000/fatura. Os dados desta ficha priorizam a página de produto atual, que é a URL canônica e mais recente. O Unlimited é ofertado em dupla bandeira (Visa + Mastercard); esta ficha cobre especificamente a versão Visa Infinite. A partir de jan/2026, o acesso gratuito às salas VIP passou a exigir critério de gasto mínimo nas últimas 3 faturas, conforme regulamentação vigente. Os pontos do Santander Unlimited não expiram, confirmado por fonte oficial do blog Santander.",
+      "procedencia": {
+        "anuidade": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "anuidade_parcelas": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "isencao": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "renda_minima": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "requisito_acesso": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "adicionais_gratis": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "pontos": "https://www.santander.com.br/banco/conta-corrente/select",
+        "programa_proprio": "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "transfere_para": "https://www.santander.com.br/blog/esfera/aplicativo-esfera",
+        "validade_pontos": "https://www.santander.com.br/blog/esfera/validade-dos-pontos-esfera",
         "salas_vip": "https://www.santander.com.br/cartoes-santander/acesso-salas-vip",
         "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/unlimited"
       },
