@@ -2011,6 +2011,8 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
       </p>
       <div id="ct-analises"></div>
     </div>
+    <div id="ct-retomar" class="ct-box" style="display:none;font-size:12px"></div>
+    <div id="ct-falhas" class="ct-box" style="display:none"></div>
     <div id="ct-revisao"></div>
   </div>
 </div><!-- /tab-cartoes -->
@@ -2160,6 +2162,7 @@ async function ctInit(){
   ctRenderComparacao();
   ctRenderLista();
   ctRenderAnalises();
+  ctVerificarRetomada();
   ctSubTab('comparar');
 }
 
@@ -2331,46 +2334,126 @@ function ctRenderLista(){
   }).join('');
 }
 
+async function ctExtrairUm(nome){
+  var r = await fetch(_BASE + '/catalogo-cartoes/extrair', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ nome: nome })
+  });
+  return await ctJson(r);
+}
+
+function ctEspera(ms){ return new Promise(function(res){ setTimeout(res, ms); }); }
+
+// Mantem a maquina acordada durante a fila longa. Se o navegador nao suportar,
+// segue normalmente — e so uma proteção extra.
+async function ctManterAcordado(){
+  try {
+    if (navigator.wakeLock && !CT_WAKELOCK) CT_WAKELOCK = await navigator.wakeLock.request('screen');
+  } catch(e){}
+}
+function ctLiberarAcordado(){
+  try { if (CT_WAKELOCK) { CT_WAKELOCK.release(); CT_WAKELOCK = null; } } catch(e){}
+}
+var CT_WAKELOCK = null;
+
+var CT_FILA_KEY = 'cdv_fila_cartoes';
+
+function ctSalvarProgresso(nomes, idx, auto){
+  try { localStorage.setItem(CT_FILA_KEY, JSON.stringify({ nomes: nomes, idx: idx, auto: auto, em: Date.now() })); } catch(e){}
+}
+function ctLimparProgresso(){ try { localStorage.removeItem(CT_FILA_KEY); } catch(e){} }
+
+function ctVerificarRetomada(){
+  var raw = null;
+  try { raw = localStorage.getItem(CT_FILA_KEY); } catch(e){}
+  if (!raw) return;
+  try {
+    var p = JSON.parse(raw);
+    if (!p || !p.nomes || p.idx >= p.nomes.length) { ctLimparProgresso(); return; }
+    var box = document.getElementById('ct-retomar');
+    if (!box) return;
+    box.style.display = '';
+    box.innerHTML = 'Fila interrompida em ' + p.idx + '/' + p.nomes.length + '. ' +
+      '<button class="ct-btn on" style="margin-left:8px" onclick="ctRetomarFila()">Retomar</button>' +
+      '<button class="ct-btn" style="margin-left:6px" onclick="ctLimparProgresso();document.getElementById(\'ct-retomar\').style.display=\'none\'">Descartar</button>';
+  } catch(e){}
+}
+
+async function ctRetomarFila(){
+  var p = JSON.parse(localStorage.getItem(CT_FILA_KEY));
+  document.getElementById('ct-retomar').style.display = 'none';
+  if (document.getElementById('ct-autosalvar')) document.getElementById('ct-autosalvar').checked = !!p.auto;
+  await ctRodarFila(p.nomes, p.idx, !!p.auto);
+}
+
 async function ctExtrairFila(){
   if (typeof devAcesso === 'function' && !devAcesso()) return;
   var nomes = (document.getElementById('ct-fila').value || '')
     .split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
   if (!nomes.length) return;
-
-  var st = document.getElementById('ct-fila-status');
   var chk = document.getElementById('ct-autosalvar');
-  var auto = !!(chk && chk.checked);
   CT_PENDENTES_REVISAO = [];
   document.getElementById('ct-revisao').innerHTML = '';
+  await ctRodarFila(nomes, 0, !!(chk && chk.checked));
+}
 
-  for (var i=0; i<nomes.length; i++){
-    st.textContent = 'Extraindo ' + (i+1) + '/' + nomes.length + ': ' + nomes[i] + '…';
-    try {
-      var r = await fetch(_BASE + '/catalogo-cartoes/extrair', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ nome: nomes[i] })
-      });
-      var d = await ctJson(r);
-      if (d.ok) {
-        if (auto) {
-          var g = await ctGravar(d.cartao);
-          CT_PENDENTES_REVISAO.push(g.ok
-            ? { cartao: d.cartao, aviso: d.aviso, salvo: true,
-                resumo: (g.novo ? 'salvo' : 'atualizado') + ' · base com ' + g.total }
-            : { cartao: d.cartao, aviso: d.aviso, erroSalvar: g.msg });
-        } else {
-          CT_PENDENTES_REVISAO.push({ cartao: d.cartao, aviso: d.aviso });
-        }
-      } else CT_PENDENTES_REVISAO.push({ erro: d.erro, nome: nomes[i] });
-    } catch(e){
-      CT_PENDENTES_REVISAO.push({ erro: e.message, nome: nomes[i] });
+async function ctRodarFila(nomes, inicio, auto){
+  var st = document.getElementById('ct-fila-status');
+  await ctManterAcordado();
+
+  for (var i = inicio; i < nomes.length; i++){
+    var nome = nomes[i];
+    var d = null, ultimoErro = '';
+
+    // Duas tentativas: falha de rede e timeout costumam ser transitorios.
+    for (var tent = 1; tent <= 2; tent++){
+      st.textContent = 'Extraindo ' + (i+1) + '/' + nomes.length + ': ' + nome +
+                       (tent > 1 ? ' (2ª tentativa)…' : '…');
+      try {
+        d = await ctExtrairUm(nome);
+        if (d && d.ok) break;
+        ultimoErro = (d && d.erro) || 'resposta invalida';
+      } catch(e){ ultimoErro = e.message; d = null; }
+      if (tent === 1) await ctEspera(3000);
     }
+
+    if (d && d.ok) {
+      if (auto) {
+        var g = await ctGravar(d.cartao);
+        CT_PENDENTES_REVISAO.push(g.ok
+          ? { cartao: d.cartao, aviso: d.aviso, salvo: true,
+              resumo: (g.novo ? 'salvo' : 'atualizado') + ' · base com ' + g.total }
+          : { cartao: d.cartao, aviso: d.aviso, erroSalvar: g.msg });
+      } else {
+        CT_PENDENTES_REVISAO.push({ cartao: d.cartao, aviso: d.aviso });
+      }
+    } else {
+      CT_PENDENTES_REVISAO.push({ erro: ultimoErro, nome: nome });
+    }
+
+    ctSalvarProgresso(nomes, i + 1, auto);
     ctRenderRevisao();
   }
+
+  ctLimparProgresso();
+  ctLiberarAcordado();
+
   var okd = CT_PENDENTES_REVISAO.filter(function(x){ return x.salvo; }).length;
-  var bad = CT_PENDENTES_REVISAO.filter(function(x){ return x.erro || x.erroSalvar; }).length;
-  st.textContent = auto ? ('Concluído. ' + okd + ' salvo(s), ' + bad + ' com falha.')
-                        : 'Concluído. Revise abaixo antes de salvar.';
+  var falhas = CT_PENDENTES_REVISAO.filter(function(x){ return x.erro || x.erroSalvar; });
+  st.innerHTML = auto
+    ? ('<strong>Concluído.</strong> ' + okd + ' salvo(s) de ' + nomes.length + '.' +
+       (falhas.length ? ' <span style="color:#f87171">' + falhas.length + ' com falha.</span>' : ''))
+    : 'Concluído. Revise abaixo antes de salvar.';
+
+  if (falhas.length) {
+    var lista = falhas.map(function(f){ return (f.nome || (f.cartao && f.cartao.nome) || '?'); });
+    var box = document.getElementById('ct-falhas');
+    if (box) {
+      box.style.display = '';
+      box.innerHTML = '<div class="ct-rot" style="margin-bottom:6px">Falharam — cole de volta para tentar de novo</div>' +
+        '<textarea rows="' + Math.min(lista.length + 1, 8) + '" style="width:100%">' + lista.join('\n') + '</textarea>';
+    }
+  }
 }
 
 var CT_FICHA = [
