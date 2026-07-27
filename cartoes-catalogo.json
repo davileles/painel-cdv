@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 17,
+    "total": 18,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -1065,6 +1065,99 @@
       "campos_rejeitados": [
         "isencao",
         "adicionais_gratis"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "itau-personnalite-mastercard-legend",
+      "nome": "Itaú Personnalité Mastercard Legend",
+      "emissor": "Itaú Unibanco S.A.",
+      "bandeira": "Mastercard",
+      "categoria": "World Elite Legend",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": "Disponível exclusivamente para clientes selecionados do Itaú Personnalité (altíssima renda); acesso por convite/gerente de relacionamento.",
+      "adicionais_gratis": null,
+      "pontos": null,
+      "cashback": null,
+      "programa_proprio": "iupp (Itaú)",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "LoungeKey / Mastercard Airport Experiences",
+          "regra": "Regra específica para a versão Personnalité Legend não confirmada em página oficial de produto; versão Private inclui acesso ilimitado conforme comunicado oficial."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "MasterAssist Seguro Viagem",
+          "descricao": "Seguro-viagem MasterAssist com cobertura de até US$ 1 milhão (confirmado na versão Private World Legend)."
+        },
+        {
+          "titulo": "MasterRental",
+          "descricao": "Proteção de responsabilidade civil para aluguel de veículos, cobrindo danos materiais e corporais a terceiros em caso de acidentes."
+        },
+        {
+          "titulo": "Welcome Kit com impacto social",
+          "descricao": "Valor do kit direcionado como doação a instituição social (confirmado na versão Private World Legend)."
+        },
+        {
+          "titulo": "Benefícios em hotéis parceiros",
+          "descricao": "Estabelecimentos parceiros (ex.: Pousada Maravilha em Fernando de Noronha-PE, Hotéis VIK no Uruguai e Chile) oferecem café da manhã gratuito, welcome drink e serviços de spa."
+        },
+        {
+          "titulo": "Minhas Vantagens Personnalité",
+          "descricao": "Programa de relacionamento com 5 níveis que oferece isenção de tarifas, redução de taxas e experiências exclusivas conforme o engajamento do cliente com o banco."
+        }
+      ],
+      "link_solicitacao": "https://www.itau.com.br/personnalite/cartoes",
+      "fontes": [
+        "https://www.itau.com.br/personnalite/cartoes",
+        "https://www.itau.com.br/media/dam/m/4bfc86db141c01be/original/11-05-2026-itau-private-world-legend-mastercard-comeca-a-ser-disponibilizado-para-os-clientes.pdf",
+        "https://www.itau.com.br/media/dam/m/a91191a69542df8/original/20-10-2025-itau-unibanco-tera-o-cartao-world-legend-mastercard-em-seu-portfolio.pdf",
+        "https://www.itau.com.br/imprensa"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "isencao.regra",
+        "isencao.tipo",
+        "isencao.valor",
+        "pontos",
+        "pontos.internacional",
+        "pontos.nacional",
+        "pontos.observacao",
+        "renda_minima",
+        "salas_vip.regra_personnalite",
+        "spread",
+        "transfere_para",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "O produto 'Itaú Personnalité Mastercard Legend' corresponde ao cartão 'Itaú World Legend Mastercard' no tier Personnalité, lançado a partir de 2026 para clientes selecionados de altíssima renda do Itaú Personnalité e Itaú Private Bank (conforme comunicados oficiais de out/2025 e mai/2026). Até a data desta curadoria (2026-07-27), o Itaú não publicou uma página de produto dedicada e pública para a versão Personnalité do World Legend no site itau.com.br. Os únicos dados financeiros oficiais disponíveis referem-se à versão Private (anuidade R$ 4.800,00 em 12x R$ 400,00, com isenção para gastos mensais superiores a R$ 40.000,00). Os campos de pontuação, renda mínima, adicionais e condições específicas da versão Personnalité foram marcados como pendentes por ausência de fonte oficial pública. Recomenda-se contato com o gerente Personnalité ou aguardar publicação da landing page oficial do produto.",
+      "procedencia": {
+        "emissor": "https://www.itau.com.br/media/dam/m/4bfc86db141c01be/original/11-05-2026-itau-private-world-legend-mastercard-comeca-a-ser-disponibilizado-para-os-clientes.pdf",
+        "bandeira": "https://www.itau.com.br/media/dam/m/a91191a69542df8/original/20-10-2025-itau-unibanco-tera-o-cartao-world-legend-mastercard-em-seu-portfolio.pdf",
+        "categoria": "https://www.itau.com.br/media/dam/m/a91191a69542df8/original/20-10-2025-itau-unibanco-tera-o-cartao-world-legend-mastercard-em-seu-portfolio.pdf",
+        "requisito_acesso": "https://www.itau.com.br/media/dam/m/a91191a69542df8/original/20-10-2025-itau-unibanco-tera-o-cartao-world-legend-mastercard-em-seu-portfolio.pdf",
+        "salas_vip": "https://www.itau.com.br/media/dam/m/4bfc86db141c01be/original/11-05-2026-itau-private-world-legend-mastercard-comeca-a-ser-disponibilizado-para-os-clientes.pdf",
+        "beneficios_banco": "https://www.itau.com.br/media/dam/m/4bfc86db141c01be/original/11-05-2026-itau-private-world-legend-mastercard-comeca-a-ser-disponibilizado-para-os-clientes.pdf",
+        "programa_proprio": "https://www.itau.com.br/personnalite/cartoes",
+        "link_solicitacao": "https://www.itau.com.br/personnalite/cartoes"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao",
+        "pontos"
       ],
       "verificado_em": "2026-07-27"
     },
