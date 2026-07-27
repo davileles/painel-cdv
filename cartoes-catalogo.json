@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 27,
+    "total": 28,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -1459,6 +1459,135 @@
       "campos_rejeitados": [
         "isencao",
         "pontos"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "itau-personnalite-mastercard-the-one",
+      "nome": "Itaú Personnalité Mastercard The One",
+      "emissor": "Banco Itaucard S.A. (Itaú Personnalité)",
+      "bandeira": "Mastercard Black",
+      "categoria": "Ultra Premium / Metal",
+      "anuidade": 4000,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "investimento_ou_gasto_ou_programa",
+        "valor": "R$ 5.000.000 investidos no Personnalité; OU R$ 60.000 em compras por fatura; OU nível 5 no Minhas Vantagens",
+        "regra": "Isenção total com R$5 mi investidos, R$60k/fatura ou nível 5 no Minhas Vantagens. Redução de 50% com gastos entre R$30.000 e R$59.999 por fatura. Primeiros 90 dias com anuidade gratuita após desbloqueio."
+      },
+      "renda_minima": 15000,
+      "requisito_acesso": "Exclusivo para clientes Itaú Personnalité (renda mínima R$15.000 ou investimentos a partir de R$250.000). Solicitação via gerente ou app Personnalité, sujeito a análise de crédito.",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 3,
+        "internacional": 3.5,
+        "unidade": "pts/USD",
+        "observacao": "Pontos não expiram. Programa próprio Itaú (Pontos e Cashback Itaú). Resgate via app Itaú Personnalité por passagens aéreas, produtos, diárias em hotéis, cashback e transferência para programas de milhas parceiros."
+      },
+      "cashback": null,
+      "programa_proprio": "Programa de Pontos e Cashback Itaú",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Não expiram",
+      "salas_vip": [
+        {
+          "programa": "LoungeKey (Mastercard)",
+          "regra": "Acesso gratuito e ilimitado para titular e adicionais em mais de 1.100 salas VIP ao redor do mundo. Inclui 12 acessos gratuitos anuais para acompanhantes sem cartão (ex: filhos menores de idade)."
+        },
+        {
+          "programa": "Sala VIP Lounge e Lounge Mastercard Black – Aeroporto de Guarulhos (GRU)",
+          "regra": "Acesso gratuito e ilimitado para titular e adicionais nos dois espaços exclusivos do Aeroporto de Guarulhos (Terminais 2 e 3). Acesso permitido 4 horas antes do embarque."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "The Assistant",
+          "descricao": "Assistente pessoal exclusivo disponível 24h por dia, 7 dias por semana, via WhatsApp (+44 741 836 9831), telefone (0800-047-5051 Brasil / +1 332-600-6843 Exterior) e e-mail. Realiza reservas em hotéis, restaurantes, eventos e viagens com condições exclusivas."
+        },
+        {
+          "titulo": "Cartão físico em metal",
+          "descricao": "Primeiro cartão Itaú Personnalité fabricado em metal, com design premium e exclusivo."
+        },
+        {
+          "titulo": "Minhas Vantagens – Nível 5",
+          "descricao": "Programa de relacionamento com 5 níveis. No nível 5, o cliente obtém anuidade gratuita no The One, entre outros benefícios exclusivos."
+        },
+        {
+          "titulo": "Benefícios Mastercard Black",
+          "descricao": "Acesso a todos os benefícios da categoria Mastercard Black: Mastercard Black Concierge, MasterSeguro, Mastercard Surpreenda, Priceless.com, entre outros."
+        },
+        {
+          "titulo": "Carteiras digitais",
+          "descricao": "Compatível com Apple Pay, Samsung Pay, Google Pay e PayPal."
+        },
+        {
+          "titulo": "Cartão virtual",
+          "descricao": "Geração de cartão virtual temporário (expira em 48h ou após uso) ou recorrente para compras online e assinaturas, via app Itaú Personnalité."
+        },
+        {
+          "titulo": "Tag Itaú sem mensalidade",
+          "descricao": "Tag para uso em pedágios e estacionamentos sem cobrança de mensalidade."
+        },
+        {
+          "titulo": "Valet no Aeroporto de Guarulhos",
+          "descricao": "Serviço de valet gratuito no embarque dos terminais 2 e 3 de Guarulhos (GRU). Cliente paga apenas as diárias do estacionamento."
+        },
+        {
+          "titulo": "iPhone pra Sempre",
+          "descricao": "Programa para compra de iPhone diretamente pelo app Personnalité, no crédito e sem juros."
+        },
+        {
+          "titulo": "Benefícios de saúde",
+          "descricao": "Clientes The One (titular e adicionais) possuem benefícios exclusivos de saúde, incluindo acesso a testes genéticos/ancestralidade e reservas no Spa Kurotel com condições exclusivas."
+        },
+        {
+          "titulo": "Benefícios em hotéis e restaurantes via The Assistant",
+          "descricao": "Reservas via The Assistant garantem upgrade de quarto, check-in/check-out diferenciados, cortesias de boas-vindas em hotéis e resorts, além de mesas privilegiadas e menus exclusivos em restaurantes premiados."
+        },
+        {
+          "titulo": "Fretamentos aéreos",
+          "descricao": "Reservas pelo The Assistant oferecem descontos em fretamentos, assento de cortesia e mais."
+        }
+      ],
+      "link_solicitacao": "https://www.itau.com.br/personnalite/cartoes/theone",
+      "fontes": [
+        "https://www.itau.com.br/personnalite/cartoes/theone",
+        "https://www.itau.com.br/personnalite/cartoes",
+        "https://www.itau.com.br/personnalite",
+        "https://www.itau.com.br/personnalite/app-personnalite",
+        "https://www.itau.com.br/personnalite/minhas-vantagens",
+        "https://cloud.sfmc.itau.com.br/itau_personnalite_m_the_one",
+        "https://www.itau.com.br/content/dam/itau/varejo/pontos-e-cashback/pdf/regulamento-pontos-e-cashback-itau.pdf",
+        "https://www.itau.com.br/pontos-e-cashback"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "spread",
+        "transfere_para"
+      ],
+      "nota_curadoria": "Cartão ultra premium em metal, topo de linha do segmento Personnalité. Anuidade de R$4.000/ano (12x R$333,34), com isenção total a partir de R$5 milhões investidos, R$60k em compras/fatura ou nível 5 no Minhas Vantagens, e redução de 50% para gastos entre R$30k e R$59.999/fatura. A renda mínima de R$15.000 é o requisito de acesso ao segmento Personnalité (fonte: itau.com.br/personnalite/app-personnalite), não foi localizado requisito específico publicado para o The One além da condição de correntista Personnalité. Os parceiros exatos de transferência de pontos (companhias aéreas) não foram detalhados na página oficial do produto — apenas mencionado que é possível transferir para programas de milhas via app; consultar regulamento completo em itau.com.br/content/dam/itau/varejo/pontos-e-cashback/pdf/regulamento-pontos-e-cashback-itau.pdf. Número de adicionais gratuitos específico para o The One não foi encontrado na página oficial do produto (a página de cartões Personnalité menciona até 6 adicionais gratuitos para os cartões Mastercard Black, mas não confirma expressamente para o The One). IOF e spread cambial seguem regulação do Banco Central (não publicados especificamente na página do produto).",
+      "procedencia": {
+        "anuidade": "https://www.itau.com.br/personnalite/cartoes/theone",
+        "anuidade_parcelas": "https://www.itau.com.br/personnalite/cartoes/theone",
+        "isencao": "https://www.itau.com.br/personnalite/cartoes/theone",
+        "pontos": "https://cloud.sfmc.itau.com.br/itau_personnalite_m_the_one",
+        "validade_pontos": "https://www.itau.com.br/personnalite/cartoes",
+        "salas_vip": "https://www.itau.com.br/personnalite/cartoes/theone",
+        "renda_minima": "https://www.itau.com.br/personnalite/app-personnalite",
+        "requisito_acesso": "https://www.itau.com.br/personnalite/cartoes/theone",
+        "programa_proprio": "https://www.itau.com.br/content/dam/itau/varejo/pontos-e-cashback/pdf/regulamento-pontos-e-cashback-itau.pdf",
+        "bandeira": "https://www.itau.com.br/personnalite/cartoes/theone",
+        "categoria": "https://www.itau.com.br/personnalite/cartoes/theone",
+        "beneficios_banco": "https://www.itau.com.br/personnalite/cartoes/theone",
+        "link_solicitacao": "https://www.itau.com.br/personnalite/cartoes/theone"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "transfere_para"
       ],
       "verificado_em": "2026-07-27"
     },
