@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 38,
+    "total": 39,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -2719,6 +2719,179 @@
         "isencao": "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta"
       },
       "iof": 0
+    },
+    {
+      "slug": "nubank-mastercard-ultravioleta",
+      "nome": "Nubank Ultravioleta",
+      "emissor": "Nu Pagamentos S.A. (Nubank)",
+      "bandeira": "Mastercard Black",
+      "categoria": "Premium / Alta Renda",
+      "anuidade": 1068,
+      "anuidade_parcelas": null,
+      "isencao": {
+        "tipo": "gasto_mensal_ou_saldo_investido",
+        "valor": "R$ 8.000 em gastos/mês no crédito OU R$ 50.000 guardados/investidos no Nubank",
+        "regra": "Mensalidade de R$ 89/mês zerada para clientes que gastam acima de R$ 8 mil/mês no cartão de crédito ou que possuem R$ 50 mil guardados ou investidos no Nubank"
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Análise de crédito automática, realizada no momento do cadastro de novos clientes e mensalmente para clientes existentes. Não há renda mínima declarada.",
+      "adicionais_gratis": 1,
+      "pontos": {
+        "nacional": 2.2,
+        "internacional": 2.2,
+        "unidade": "pts/USD",
+        "observacao": "Mínimo de 2,2 pontos por dólar gasto em todas as compras no crédito (nacional e internacional). Via Nu Viagens: 9 pontos/USD em passagens aéreas e hotéis. Modo alternativo: Modo LATAM Pass acumula 2,2 milhas LATAM Pass por dólar + 10% de bônus nos envios automáticos."
+      },
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "1,25% em todas as compras no crédito; 5% em passagens aéreas e hotéis via Nu Viagens"
+      },
+      "programa_proprio": "Programa de Pontos Nubank Ultravioleta (pontos e cashback no mesmo saldo, escolha no momento do resgate)",
+      "transfere_para": [
+        "LATAM Pass",
+        "Azul Fidelidade",
+        "Smiles (Gol)"
+      ],
+      "spread": 3.5,
+      "iof": "IOF devolvido na fatura em até 7 dias corridos (efetivamente IOF zero para o cliente)",
+      "validade_pontos": "Não expira",
+      "salas_vip": [
+        {
+          "programa": "Priority Pass",
+          "regra": "4 visitas gratuitas por ano às mais de 1.700 salas VIP da rede Priority Pass em mais de 145 países. Gestão feita pelo app do Nubank."
+        },
+        {
+          "programa": "Nubank Ultravioleta Lounge (Guarulhos)",
+          "regra": "Acesso ilimitado e gratuito ao Ultravioleta Lounge no Terminal 3 do Aeroporto Internacional de Guarulhos, exclusivo para embarques internacionais, mediante geração de Ultravioleta Pass pelo app."
+        },
+        {
+          "programa": "Mastercard Lounge Key",
+          "regra": "Acesso disponível mediante pagamento de tarifa por uso (não incluído gratuitamente)."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "IOF Zero Internacional",
+          "descricao": "IOF devolvido na fatura em até 7 dias em todas as compras internacionais no cartão de crédito."
+        },
+        {
+          "titulo": "Nu Viagens",
+          "descricao": "9 pontos/USD ou 5% de cashback em passagens aéreas e hotéis reservados pelo app. Inclui Seguro Viagem Ultravioleta para destinos internacionais e proteção contra variação de preços."
+        },
+        {
+          "titulo": "Cartão Adicional Gratuito",
+          "descricao": "1 cartão adicional Mastercard Black sem custo, com pontos e cashback revertidos ao titular."
+        },
+        {
+          "titulo": "NuTag (2 tags grátis)",
+          "descricao": "Duas tags de pedágio e estacionamento gratuitas, sem mensalidade, com cobranças lançadas diretamente na fatura do cartão."
+        },
+        {
+          "titulo": "eSIM de Viagem",
+          "descricao": "10 GB de internet gratuita em mais de 150 países via chip virtual (eSIM), ativado pelo app. Pacote renovado automaticamente a cada 365 dias."
+        },
+        {
+          "titulo": "Caixinha Turbo",
+          "descricao": "Rendimento de 120% do CDI em investimentos de até R$ 10 mil na Caixinha Ultravioleta."
+        },
+        {
+          "titulo": "Conta Global",
+          "descricao": "Spread zero e conversão instantânea em mais de 40 moedas via cartão de débito global (parceria Wise Platform)."
+        },
+        {
+          "titulo": "Saques gratuitos no exterior",
+          "descricao": "Dois saques gratuitos por mês em moeda estrangeira fora do Brasil em mais de 2.000 países e territórios."
+        },
+        {
+          "titulo": "Atendimento Exclusivo 24h",
+          "descricao": "Suporte dedicado 24 horas por dia, com fila prioritária e resolução de ponta a ponta pelo mesmo agente."
+        },
+        {
+          "titulo": "Assistente Pessoal 24h (Mastercard Black)",
+          "descricao": "Concierge disponível 24 horas para auxílio em viagens, eventos e experiências exclusivas."
+        },
+        {
+          "titulo": "MasterSeguro Automóvel",
+          "descricao": "Seguro de colisão, roubo ou incêndio acidental para automóveis alugados com o cartão Black Ultravioleta."
+        },
+        {
+          "titulo": "Proteção de Transações Digitais (Chubb)",
+          "descricao": "Seguro cobre transações digitais não autorizadas até R$ 30 mil/ano (máx. 2 eventos/CPF), inclusive até 24h após roubo ou furto."
+        },
+        {
+          "titulo": "Proteção de Compras (Mastercard Black)",
+          "descricao": "Proteção contra danos acidentais, roubo ou furto qualificado em produtos adquiridos com o cartão."
+        },
+        {
+          "titulo": "Mastercard Priceless",
+          "descricao": "Acesso a experiências exclusivas pelo mundo: jantares especiais, shows, tours privados e mais."
+        },
+        {
+          "titulo": "MASP – Desconto 50%",
+          "descricao": "50% de desconto em ingressos e na loja do MASP (Museu de Arte de São Paulo) de quarta a domingo."
+        },
+        {
+          "titulo": "Inter Miami F.C.",
+          "descricao": "Desconto automático de 10% em ingressos e produtos oficiais do Inter Miami F.C."
+        },
+        {
+          "titulo": "HBO Max",
+          "descricao": "Assinatura da HBO Max com valor exclusivo para clientes Ultravioleta."
+        },
+        {
+          "titulo": "Espaço Família",
+          "descricao": "Compartilhamento de benefícios Ultravioleta com familiares, cartão adicional e visualização de movimentações financeiras de dependentes."
+        },
+        {
+          "titulo": "Saques Gratuitos Ilimitados (rede Banco24h)",
+          "descricao": "Saques ilimitados e gratuitos na rede Banco24h no Brasil."
+        },
+        {
+          "titulo": "Central de Proteção",
+          "descricao": "Área no app com camadas de segurança e gerenciamento de proteções financeiras."
+        }
+      ],
+      "link_solicitacao": "https://nubank.com.br/ultravioleta",
+      "fontes": [
+        "https://nubank.com.br/ultravioleta",
+        "https://nubank.com.br/ultravioleta/cartao-black",
+        "https://nubank.com.br/ultravioleta/cartao-black/pontos-cashback",
+        "https://nubank.com.br/ultravioleta/beneficios",
+        "https://nubank.com.br/ultravioleta/conta",
+        "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta",
+        "https://international.nubank.com.br/pt-br/companhia/nubank-ultravioleta-apresenta-novos-beneficios-com-programa-de-pontos-e-parceria-com-companhias-aereas-ou-125-de-cashback/"
+      ],
+      "campos_pendentes": [
+        "anuidade_parcelas",
+        "renda_minima"
+      ],
+      "nota_curadoria": "Dados extraídos exclusivamente de páginas oficiais do Nubank (nubank.com.br e international.nubank.com.br). O modelo de benefícios foi reformulado em agosto/2025: o cashback que crescia a 200% do CDI foi descontinuado em 30/09/2025 e substituído pelo programa de pontos transferíveis + 1,25% de cashback fixo. A mensalidade também foi atualizada de R$49 para R$89 para novos clientes a partir de agosto/2025 (clientes antigos mantiveram R$49 e isenção com R$5k por 12 meses de transição). Os valores vigentes de mensalidade (R$89) e isenção (R$8k gastos ou R$50k investidos) são os atuais para novos clientes, confirmados nas páginas do produto.",
+      "procedencia": {
+        "nome": "https://nubank.com.br/ultravioleta/cartao-black",
+        "emissor": "https://nubank.com.br/ultravioleta",
+        "bandeira": "https://nubank.com.br/ultravioleta/cartao-black",
+        "categoria": "https://nubank.com.br/ultravioleta",
+        "anuidade": "https://nubank.com.br/ultravioleta/cartao-black",
+        "isencao": "https://nubank.com.br/ultravioleta/cartao-black",
+        "requisito_acesso": "https://nubank.com.br/ultravioleta",
+        "adicionais_gratis": "https://nubank.com.br/ultravioleta/cartao-black",
+        "pontos": "https://nubank.com.br/ultravioleta/cartao-black/pontos-cashback",
+        "cashback": "https://nubank.com.br/ultravioleta/cartao-black/pontos-cashback",
+        "programa_proprio": "https://international.nubank.com.br/pt-br/companhia/nubank-ultravioleta-apresenta-novos-beneficios-com-programa-de-pontos-e-parceria-com-companhias-aereas-ou-125-de-cashback/",
+        "transfere_para": "https://nubank.com.br/ultravioleta/cartao-black/pontos-cashback",
+        "spread": "https://nubank.com.br/ultravioleta/cartao-black",
+        "iof": "https://nubank.com.br/ultravioleta/cartao-black",
+        "validade_pontos": "https://nubank.com.br/ultravioleta",
+        "salas_vip": "https://nubank.com.br/ultravioleta/cartao-black",
+        "link_solicitacao": "https://nubank.com.br/ultravioleta"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "anuidade_parcelas"
+      ],
+      "verificado_em": "2026-07-27"
     },
     {
       "slug": "bb-visa-infinite-altus-private",
