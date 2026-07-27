@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 9,
+    "total": 10,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -819,6 +819,113 @@
         "salas_vip": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
         "transfere_para": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/"
       }
+    },
+    {
+      "slug": "xp-visa-infinite",
+      "nome": "XP Visa Infinite",
+      "emissor": "Banco XP S.A.",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": 0,
+      "anuidade_parcelas": null,
+      "isencao": {
+        "tipo": "isento",
+        "valor": null,
+        "regra": "Sem anuidade para o cartão XP Visa Infinite (limite de crédito variável). Cartões adicionais também isentos conforme FAQ oficial."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Conta Investimento XP e Conta Digital XP ativas; aprovação de crédito a critério exclusivo do Banco XP. Elegibilidade ao Infinite (limite variável) sujeita a análise interna.",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 1,
+        "internacional": 1,
+        "unidade": "pts/USD",
+        "observacao": "Acúmulo padrão de 1 pt/USD (equivalente a 1% Investback). Com gasto mensal ≥ R$7.500: 2,5 pts/USD (ou 1,2% Investback). Com portabilidade de salário ativa: 3 pts/USD (ou 1,5% Investback). Pontos XP resgatáveis via parceria com Livelo (passagens, hospedagens, aluguel de veículos, pacotes). O cliente escolhe entre Pontos XP ou Investback no App XP; padrão é Investback."
+      },
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "Investback: 1% padrão sobre compras elegíveis na função crédito, nacionais e internacionais. Sobe para 1,2% com fatura ≥ R$7.500/mês e para 1,5% com portabilidade de salário para XP. Valor aplicado automaticamente em fundo de renda fixa gerido pela XP (mínimo de R$50 para aplicação). Gastos abaixo de R$1.500/mês não geram Investback."
+      },
+      "programa_proprio": "Pontos XP (alternativo ao Investback, escolha feita no App XP)",
+      "transfere_para": [
+        "Livelo"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion (Dragon Pass)",
+          "regra": "4 acessos gratuitos por ano para o titular do Cartão XP Infinite. Acompanhantes descontam do saldo anual. Acesso via QR Code gerado exclusivamente no app Visa Airport Companion. Mais de 1.200 salas em 140 países. Acesso condicional ao atingimento de gasto mínimo mensal (conforme App XP)."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Investback",
+          "descricao": "Retorno de 1% a 1,5% do valor gasto em compras elegíveis, aplicado automaticamente em fundo de renda fixa XP. Percentual varia conforme volume de gastos e portabilidade de salário."
+        },
+        {
+          "titulo": "Pontos XP / Livelo",
+          "descricao": "Opção alternativa ao Investback. Pontos trocáveis por passagens aéreas, hospedagens, aluguel de veículos ou pacotes de viagem via parceria com a Livelo."
+        },
+        {
+          "titulo": "Visa Fast Pass",
+          "descricao": "Fila prioritária para segurança e imigração em aeroportos participantes, gratuito para portadores da bandeira Visa Infinite."
+        },
+        {
+          "titulo": "Seguro de Emergência Médica Internacional",
+          "descricao": "Seguro de emergência médica para uso no exterior incluso no cartão."
+        },
+        {
+          "titulo": "Seguro para Locação de Veículo",
+          "descricao": "Cobertura de seguro em locações de veículos."
+        },
+        {
+          "titulo": "Visa Concierge",
+          "descricao": "Serviço de concierge por chat ou telefone para dicas de presentes, restaurantes e roteiros de viagens."
+        },
+        {
+          "titulo": "Proteção de Compra e Garantia Estendida Original",
+          "descricao": "Benefícios Visa Infinite: Proteção de Compra e Garantia Estendida Original."
+        },
+        {
+          "titulo": "Cartão 100% mobile",
+          "descricao": "Gestão completa pelo App XP; aceito nas principais carteiras digitais (Apple Pay, Google Pay etc.)."
+        }
+      ],
+      "link_solicitacao": "https://www.xpi.com.br/produtos/cartao-de-credito/",
+      "fontes": [
+        "https://www.xpi.com.br/produtos/cartao-de-credito/",
+        "https://www.xpi.com.br/documentos/faq-pagina-de-cartoes/",
+        "https://www.xpi.com.br/documentos/regulamento-de-beneficios/",
+        "https://web.xpi.com.br/xp/documentos/termos-e-condicoes-cartao-de-credito/",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-de-credito-xp-visa-infinite.html"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade_parcelas",
+        "iof",
+        "renda_minima",
+        "spread",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "O cartão XP Visa Infinite (limite variável) é isento de anuidade conforme declarado em fonte oficial (visa.com.br e xpi.com.br). O programa de benefícios permite escolher entre Investback (padrão) ou Pontos XP via App. Pontos XP são transferíveis para a Livelo (passagens, hospedagens, pacotes). Salas VIP via Visa Airport Companion/Dragon Pass com 4 acessos/ano. Renda mínima e spread cambial não foram localizados em página oficial do produto — dependem de análise interna de crédito e custódia. Regulamento de benefícios com versão V2.2026.1.23 (janeiro/2026); contrato de cartão versão V8.2025.9.02 (setembro/2025).",
+      "procedencia": {
+        "anuidade": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-de-credito-xp-visa-infinite.html",
+        "cashback": "https://www.xpi.com.br/documentos/faq-pagina-de-cartoes/",
+        "pontos": "https://www.xpi.com.br/documentos/faq-pagina-de-cartoes/",
+        "programa_proprio": "https://www.xpi.com.br/documentos/regulamento-de-beneficios/",
+        "transfere_para": "https://www.xpi.com.br/documentos/faq-pagina-de-cartoes/",
+        "salas_vip": "https://www.xpi.com.br/documentos/faq-pagina-de-cartoes/",
+        "beneficios_banco": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-de-credito-xp-visa-infinite.html",
+        "isencao": "https://www.xpi.com.br/produtos/cartao-de-credito/",
+        "requisito_acesso": "https://web.xpi.com.br/xp/documentos/termos-e-condicoes-cartao-de-credito/",
+        "link_solicitacao": "https://www.xpi.com.br/produtos/cartao-de-credito/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "verificado_em": "2026-07-27"
     }
   ]
 }
