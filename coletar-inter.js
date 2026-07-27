@@ -329,7 +329,8 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 async function main() {
-  const hoje = new Date().toISOString().split('T')[0];
+  // Data no fuso de Brasília — precisa casar com a chave usada em coletar.js
+  const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
   console.log(`[Inter] Iniciando coleta para ${hoje}`);
 
   // 1. Carrega historico.json
