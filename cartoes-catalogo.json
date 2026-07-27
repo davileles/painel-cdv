@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 29,
+    "total": 30,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -2828,6 +2828,114 @@
         "isencao",
         "requisito_acesso"
       ]
+    },
+    {
+      "slug": "xp-visa-legacy",
+      "nome": "XP Visa Legacy",
+      "emissor": "Banco XP S.A.",
+      "bandeira": "Visa",
+      "categoria": "Super Premium / Ultra High",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": {
+        "tipo": "patrimônio_ou_gasto",
+        "valor": null,
+        "regra": "Isenção permanente para clientes com investimentos acima de R$ 3.000.000 na XP ou fatura mensal igual ou superior a R$ 40.000. Isenção por 50% para fatura mensal igual ou superior a R$ 20.000. Isenção promocional de 12 meses para novos portadores que atendam ao patrimônio mínimo de R$ 1.000.000 em campanha específica."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Patrimônio líquido mínimo de R$ 1.000.000 investido na Conta Investimento XP, cumprimento de critérios de elegibilidade de crédito e compliance. Acesso por upgrade a partir do Cartão XP Visa Infinite.",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 3,
+        "internacional": 3.5,
+        "unidade": "pts/USD",
+        "observacao": "A taxa de conversão é variável e escalonada conforme o volume de gastos na fatura, informada no App XP. Atingindo R$ 40.000 em pagamentos válidos no mês, o cliente acumula 3,5 pts/USD (nível máximo). Acúmulo apenas em compras elegíveis na função crédito. Pontos não expiram enquanto não transferidos a parceiros."
+      },
+      "cashback": {
+        "tipo": "Investback",
+        "nacional": 1.5,
+        "internacional": 1.7,
+        "unidade": "%",
+        "observacao": "Percentual variável e escalonado conforme volume de gastos na fatura. Nível máximo (1,7% internacional / fatura >= R$ 40 mil) informado no App XP. O cliente escolhe entre Investback OU Pontos XP — os dois programas são mutuamente exclusivos. O Investback é creditado como aporte em fundo de investimento da XP Corretora."
+      },
+      "programa_proprio": "Pontos XP",
+      "transfere_para": [
+        "Livelo"
+      ],
+      "spread": null,
+      "iof": "Alíquota vigente conforme legislação federal, incidente sobre transações internacionais",
+      "validade_pontos": "Não expiram no programa XP enquanto o cartão estiver ativo. Após transferência para parceiro (ex. Livelo), valem as regras do parceiro.",
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion (Dragon Pass)",
+          "regra": "Acesso ilimitado ao titular, sem exigência de gasto mínimo, desde que mantenha elegibilidade do cartão e não possua inadimplências. Até 12 convidados totais por ano sem custo adicional. Acesso a mais de 1.200 salas VIP em aeroportos de 140 países. Ativação via app Visa Airport Companion."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Concierge Pessoal 24/7",
+          "descricao": "Assistente pessoal dedicado disponível 24h/7d por telefone para reservas de voos, hotéis, restaurantes, ingressos, organização de experiências exclusivas e demais solicitações."
+        },
+        {
+          "titulo": "Seguro Viagem",
+          "descricao": "Cobertura que abrange assistência médica, proteção para bagagem e cancelamento de viagem."
+        },
+        {
+          "titulo": "Proteção de Compras e Garantia Estendida",
+          "descricao": "Seguros de proteção para compras e garantia estendida de produtos adquiridos com o cartão."
+        },
+        {
+          "titulo": "Fast Pass — Visa Airport Companion",
+          "descricao": "Fila prioritária de segurança e imigração em aeroportos participantes, gratuito para portadores Visa Infinite/Legacy via app Visa Airport Companion."
+        },
+        {
+          "titulo": "Carteiras Digitais",
+          "descricao": "Compatível com Apple Pay, Google Pay e Samsung Pay. Ativação e desativação pelo App XP."
+        },
+        {
+          "titulo": "Limite de Crédito Variável",
+          "descricao": "Limite ajustado automaticamente por reavaliações periódicas da XP, sem valor fixo pré-estabelecido. Pode ser solicitado ajuste pelo App XP, sujeito a análise de crédito."
+        }
+      ],
+      "link_solicitacao": "https://www.xpi.com.br/produtos/cartao-xp-legacy/",
+      "fontes": [
+        "https://www.xpi.com.br/produtos/cartao-xp-legacy/",
+        "https://www.xpi.com.br/documentos/faq-pagina-de-cartoes/",
+        "https://www.xpi.com.br/documentos/regulamento-de-beneficios/",
+        "https://www.xpi.com.br/documentos/termos-e-condicoes-cartao-de-credito/",
+        "https://www.xpi.com.br/documentos/tarifas_20_01_22/",
+        "https://pages.xpi.com.br/content/dam/Revenue/XP/Banco/Cartao/Campanha/Regulamento%20-%20Campanha%20Capta%C3%A7%C3%A3o%20Legacy_Set%201.pdf",
+        "https://pages.xpi.com.br/content/dam/Revenue/XP/Segmentos/B2B/Campanhas/2026/03_Mar%C3%A7o/CampanhaCAP/Campanha%20STVM%20Pontos%20XP%20Investback_Mar26_v2.pdf",
+        "https://atendimento.xpi.com.br/categoria/cartao-legacy"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "isencao.valor",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "A tabela de tarifas oficial (xpi.com.br/documentos/tarifas_20_01_22/) não expõe o valor nominal da anuidade do Legacy em texto rastreável — remete ao App XP e aos canais do Banco Central. Os valores de pontos (3,0 pts/USD nacional e 3,5 pts/USD internacional) e Investback (até 1,5% nacional e 1,7% internacional) são os níveis máximos publicados no FAQ oficial e são escalonados conforme volume de gasto na fatura, com critérios exatos disponíveis apenas dentro do App XP. O único parceiro de transferência de pontos confirmado em fonte oficial é a Livelo. O domínio conteudos.xpi.com.br (portal de conteúdo editorial da própria XP) foi descartado como fonte primária por não ser página de produto/contrato; os valores de pontos e Investback foram confirmados cruzando com o FAQ oficial (xpi.com.br/documentos/faq-pagina-de-cartoes/).",
+      "procedencia": {
+        "nome": "https://www.xpi.com.br/produtos/cartao-xp-legacy/",
+        "bandeira": "https://www.xpi.com.br/documentos/termos-e-condicoes-cartao-de-credito/",
+        "categoria": "https://www.xpi.com.br/documentos/faq-pagina-de-cartoes/",
+        "requisito_acesso": "https://pages.xpi.com.br/content/dam/Revenue/XP/Banco/Cartao/Campanha/Regulamento%20-%20Campanha%20Capta%C3%A7%C3%A3o%20Legacy_Set%201.pdf",
+        "isencao": "https://www.xpi.com.br/documentos/faq-pagina-de-cartoes/",
+        "pontos": "https://www.xpi.com.br/documentos/faq-pagina-de-cartoes/",
+        "cashback": "https://www.xpi.com.br/documentos/faq-pagina-de-cartoes/",
+        "programa_proprio": "https://www.xpi.com.br/documentos/regulamento-de-beneficios/",
+        "transfere_para": "https://www.xpi.com.br/documentos/faq-pagina-de-cartoes/",
+        "iof": "https://www.xpi.com.br/documentos/termos-e-condicoes-cartao-de-credito/",
+        "validade_pontos": "https://www.xpi.com.br/documentos/regulamento-de-beneficios/",
+        "salas_vip": "https://www.xpi.com.br/documentos/faq-pagina-de-cartoes/",
+        "beneficios_banco": "https://www.xpi.com.br/documentos/faq-pagina-de-cartoes/",
+        "link_solicitacao": "https://www.xpi.com.br/produtos/cartao-xp-legacy/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "verificado_em": "2026-07-27"
     }
   ]
 }
