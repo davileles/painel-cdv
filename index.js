@@ -3410,7 +3410,9 @@ const BANDEIRAS_PATH = 'bandeiras.json';
 // a esta lista e descartado pelo extrator e volta como null em campos_pendentes.
 const CARTOES_DOMINIOS_OFICIAIS = [
   'bb.com.br', 'bancobrasil.com.br',
-  'bradesco.com.br', 'bradescoprime.com.br',
+  'bradesco.com.br', 'bradescoprime.com.br', 'banco.bradesco', 'assets.bradesco',
+  'safra.com.br', 'banrisul.com.br', 'genial.com.vc', 'genialinvestimentos.com.br',
+  'unicred.com.br', 'portobank.com.br', 'porto.com.br', 'banestes.com.br',
   'brb.com.br',
   'btgpactual.com', 'banking.btgpactual.com',
   'c6bank.com.br',
