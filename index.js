@@ -3642,6 +3642,14 @@ Responda SOMENTE com JSON: {"vantagens":["..."],"desvantagens":["..."]}`;
     model: 'claude-sonnet-4-6', max_tokens: 2048, system: systemPrompt,
     messages: [{ role: 'user', content: JSON.stringify(cartao) }]
   });
+  // Uma resposta so. apiReq.destroy() dispara 'error', que antes tentava
+  // responder de novo e derrubava o processo com ERR_HTTP_HEADERS_SENT.
+  let respondido = false;
+  const responder = (payload, status) => {
+    if (respondido || res.headersSent) return;
+    respondido = true;
+    res.status(status || 200).json(payload);
+  };
   const https = require('https');
   const options = { hostname: 'api.anthropic.com', path: '/v1/messages', method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(bodyPayload),
@@ -3653,20 +3661,23 @@ Responda SOMENTE com JSON: {"vantagens":["..."],"desvantagens":["..."]}`;
     apiRes.on('end', () => {
       try {
         const parsed = JSON.parse(buf);
-        if (parsed.error) return res.json({ ok: false, erro: parsed.error.message });
+        if (parsed.error) return responder({ ok: false, erro: parsed.error.message });
         const raw = (parsed.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n')
                       .replace(/```json|```/g, '').trim();
         const m = raw.match(/\{[\s\S]*\}/);
-        if (!m) return res.json({ ok: false, erro: 'IA nao retornou JSON.' });
+        if (!m) return responder({ ok: false, erro: 'IA nao retornou JSON.' });
         const a = JSON.parse(m[0]);
-        res.json({ ok: true, analise: { origem: 'editorial',
+        responder({ ok: true, analise: { origem: 'editorial',
           gerada_em: new Date().toISOString().slice(0, 10),
           vantagens: a.vantagens || [], desvantagens: a.desvantagens || [] } });
-      } catch (e) { res.json({ ok: false, erro: 'Erro ao processar resposta da IA.' }); }
+      } catch (e) { responder({ ok: false, erro: 'Erro ao processar resposta da IA.' }); }
     });
   });
-  apiReq.on('error', e => res.json({ ok: false, erro: e.message }));
-  apiReq.setTimeout(120000, () => { apiReq.destroy(); res.json({ ok: false, erro: 'Timeout.' }); });
+  apiReq.on('error', e => responder({ ok: false, erro: 'Falha de rede: ' + e.message }, 502));
+  apiReq.setTimeout(150000, () => {
+    responder({ ok: false, erro: 'Timeout na analise (150s).' });
+    apiReq.destroy();
+  });
   apiReq.write(bodyPayload); apiReq.end();
 });
 
@@ -3721,6 +3732,14 @@ Use vigencia_ate (AAAA-MM-DD) quando algum beneficio for promocional com prazo.`
     messages: [{ role: 'user', content: `Pesquise e extraia a ficha tecnica do cartao: ${nome}` }]
   });
 
+  // Uma resposta so. apiReq.destroy() dispara 'error', que antes tentava
+  // responder de novo e derrubava o processo com ERR_HTTP_HEADERS_SENT.
+  let respondido = false;
+  const responder = (payload, status) => {
+    if (respondido || res.headersSent) return;
+    respondido = true;
+    res.status(status || 200).json(payload);
+  };
   const https = require('https');
   const options = {
     hostname: 'api.anthropic.com',
@@ -3740,17 +3759,17 @@ Use vigencia_ate (AAAA-MM-DD) quando algum beneficio for promocional com prazo.`
     apiRes.on('end', () => {
       try {
         const parsed = JSON.parse(buf);
-        if (parsed.error) return res.json({ ok: false, erro: parsed.error.message });
+        if (parsed.error) return responder({ ok: false, erro: parsed.error.message });
         const raw = (parsed.content || [])
           .filter(b => b.type === 'text').map(b => b.text).join('\n')
           .replace(/```json|```/g, '').trim();
         const m = raw.match(/\{[\s\S]*\}/);
-        if (!m) return res.json({ ok: false, erro: 'IA nao retornou JSON.' });
+        if (!m) return responder({ ok: false, erro: 'IA nao retornou JSON.' });
 
         const bruto = JSON.parse(m[0]);
         bruto.slug = bruto.slug || cartoesSlugify(bruto.nome || nome);
         const cartao = cartoesSanitizar(bruto);
-        res.json({
+        responder({
           ok: true,
           cartao,
           aviso: cartao.campos_rejeitados
@@ -3759,20 +3778,20 @@ Use vigencia_ate (AAAA-MM-DD) quando algum beneficio for promocional com prazo.`
         });
       } catch (e) {
         console.error('[catalogo/extrair] parse error:', e.message, 'raw:', buf.slice(0, 300));
-        res.json({ ok: false, erro: 'Erro ao processar resposta da IA.' });
+        responder({ ok: false, erro: 'Erro ao processar resposta da IA.' });
       }
     });
   });
-  apiReq.on('error', (e) => { console.error('[catalogo/extrair] req error:', e.message); res.json({ ok: false, erro: e.message }); });
-  apiReq.setTimeout(100000, () => {
+  apiReq.on('error', (e) => { console.error('[catalogo/extrair] req error:', e.message); responder({ ok: false, erro: 'Falha de rede: ' + e.message }, 502); });
+  apiReq.setTimeout(170000, () => {
+    responder({ ok: false, erro: 'Timeout na extracao (170s). Tente este cartao sozinho.' });
     apiReq.destroy();
-    res.json({ ok: false, erro: 'Timeout na extracao (100s). Tente um cartao por vez.' });
   });
   apiReq.write(bodyPayload);
   apiReq.end();
   } catch (e) {
     console.error('[catalogo/extrair] excecao:', (e && e.stack) || e);
-    res.status(500).json({ ok: false, erro: 'Falha no extrator: ' + ((e && e.message) || String(e)) });
+    responder({ ok: false, erro: 'Falha no extrator: ' + ((e && e.message) || String(e)) });
   }
 });
 
@@ -3784,6 +3803,13 @@ app.use((err, req, res, next) => {
   console.error('[erro nao tratado]', req.method, req.path, (err && err.stack) || err);
   if (res.headersSent) return next(err);
   res.status(500).json({ ok: false, erro: (err && err.message) || 'Erro interno', rota: req.path });
+});
+
+process.on('uncaughtException', (e) => {
+  console.error('[uncaughtException] processo seguiu vivo:', (e && e.stack) || e);
+});
+process.on('unhandledRejection', (e) => {
+  console.error('[unhandledRejection]', (e && e.stack) || e);
 });
 
 app.listen(PORT, '0.0.0.0', () => {
