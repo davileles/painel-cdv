@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 23,
+    "total": 24,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -1799,6 +1799,110 @@
         "isencao": "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta"
       },
       "iof": 0
+    },
+    {
+      "slug": "bb-visa-infinite-altus-private",
+      "nome": "Ourocard Visa Altus",
+      "emissor": "Banco do Brasil",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": 1800,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": "Exclusivo para clientes do segmento Private do Banco do Brasil, mediante adesão",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 4,
+        "internacional": 4,
+        "unidade": "pts/USD",
+        "observacao": "4 pontos a cada dólar em compras. Pontos não expiram (sem validade definida)."
+      },
+      "cashback": null,
+      "programa_proprio": "Benefícios BB",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Não expiram",
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion (VAC)",
+          "regra": "Acesso ilimitado para titular e acompanhantes. Acesso via QR Code pelo aplicativo VAC."
+        },
+        {
+          "programa": "Lounge Key",
+          "regra": "Acessos gratuitos e ilimitados. Benefício exclusivo do cartão Ourocard Visa Altus."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Pontos sem expiração",
+          "descricao": "Os pontos acumulados pelos portadores do Altus nunca expiram."
+        },
+        {
+          "titulo": "Concierge",
+          "descricao": "Serviço de concierge exclusivo para portadores do cartão."
+        },
+        {
+          "titulo": "Seguro de Garantia Estendida",
+          "descricao": "Cobertura de garantia estendida para produtos adquiridos com o cartão."
+        },
+        {
+          "titulo": "Coberturas extras para viagens",
+          "descricao": "Seguros e proteções adicionais para viagens nacionais e internacionais, incluindo atraso de bagagem, perda de conexão e outros."
+        },
+        {
+          "titulo": "Tecnologia de pagamento por aproximação",
+          "descricao": "Cartão de metal encapsulado com pagamento por aproximação (NFC)."
+        },
+        {
+          "titulo": "Desbloqueio por QR Code",
+          "descricao": "Desbloqueio do cartão via câmera do celular apontada ao QR Code no momento do recebimento."
+        },
+        {
+          "titulo": "Segunda via emergencial",
+          "descricao": "Fornecimento de segunda via do cartão Altus (tarifa de R$ 350,00) e segunda via emergencial (tarifa de R$ 450,00)."
+        }
+      ],
+      "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/altus/",
+      "fontes": [
+        "https://www.bb.com.br/site/private/cartoes/altus/",
+        "https://www.bb.com.br/site/private/altus/beneficios-altus/",
+        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "https://www.bb.com.br/docs/pub/trf/tarifasPFAnt.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/pbb/pagina-inicial/private/solucoes-e-servicos/cartoes",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos.nacional_separado_do_internacional",
+        "renda_minima",
+        "spread",
+        "transfere_para"
+      ],
+      "nota_curadoria": "O cartão é denominado oficialmente 'Ourocard Visa Altus' (também referenciado como 'BB Visa Altus' ou 'BB Visa Infinite Altus Private'). É produto exclusivo do segmento Private do Banco do Brasil. A anuidade de R$ 1.800,00 consta da tabela oficial de tarifas PF (tarifasPF.pdf, versão Maio/2026) com início de vigência em 13/07/2026, e também na versão anterior (tarifasPFAnt.pdf, Set/2025), confirmando o valor. A pontuação de 4 pts/USD é extraída do comunicado oficial da Visa e do portal BB. A validade indeterminada dos pontos é confirmada por fontes oficiais Visa e BB. O acesso às salas VAC com prazo 'até 31/12/2024' consta da tabela CartoesBandeira.pdf (versão de 2023); como essa data já passou, o status atual do benefício VAC com acompanhantes pode ter sido alterado — campo pendente de atualização via fonte oficial vigente. O programa de transferência de pontos (parceiros como Latam Pass, Smiles, Livelo) não foi confirmado especificamente para o Altus em fonte oficial; os dados de transferência disponíveis referem-se ao programa Empresas. Cartão de metal encapsulado, exclusivo para convite/adesão no segmento Private.",
+      "procedencia": {
+        "anuidade": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "requisito_acesso": "https://www.bb.com.br/site/private/cartoes/altus/",
+        "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
+        "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
+        "salas_vip": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "beneficios_banco": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
+        "programa_proprio": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/altus/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao"
+      ],
+      "verificado_em": "2026-07-27"
     },
     {
       "slug": "santander-mastercard-unlimited",
