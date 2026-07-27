@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 50,
+    "total": 51,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -3613,6 +3613,117 @@
       "campos_rejeitados": [
         "isencao",
         "pontos"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "latam-pass-itau-mastercard-black",
+      "nome": "LATAM Pass Itaú Mastercard Black",
+      "emissor": "Itaú Unibanco",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "anuidade": 1260,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "gasto_mensal",
+        "valor": 20000,
+        "regra": "Mensalidade grátis ao gastar R$ 20.000,00 por fatura. Gasto entre R$ 10.000,00 e R$ 19.999,99 concede 50% de desconto. Abaixo de R$ 10.000,00 a mensalidade de R$ 105,00 é cobrada integralmente."
+      },
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 2.5,
+        "internacional": 3.5,
+        "unidade": "milhas/USD",
+        "observacao": "Milhas creditadas diretamente na conta LATAM Pass. Participantes do Clube LATAM Pass acumulam 50% de milhas extras por dólar gasto (campanha válida de 01/02/2026 a 31/07/2026). Junte até 9.000 pontos qualificáveis por ano (2 pontos qualificáveis a cada 10 milhas acumuladas)."
+      },
+      "cashback": null,
+      "programa_proprio": "LATAM Pass (administrado pela LATAM Airlines / PRISMAH Fidelidade Ltda.)",
+      "transfere_para": [
+        "LATAM Pass"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Milhas não expiram enquanto o cartão estiver em uso. Após 12 meses sem uso ou com cancelamento do cartão, as milhas passam a ter validade de 24 meses.",
+      "salas_vip": [
+        {
+          "programa": "Salas VIP LATAM",
+          "regra": "Acesso ilimitado ao voar pela LATAM Airlines (titular e acompanhante)."
+        },
+        {
+          "programa": "Sala VIP Mastercard Black – Guarulhos",
+          "regra": "Acesso ilimitado à sala Mastercard Black no Aeroporto de Guarulhos."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Upgrade de Cabine LATAM",
+          "descricao": "6 trechos de cortesia para upgrade de cabine na América do Sul e 2 trechos fora da América do Sul por ano."
+        },
+        {
+          "titulo": "Check-in e embarque preferencial",
+          "descricao": "Check-in e embarque preferencial em voos domésticos no Brasil e internacionais da LATAM para o titular e um acompanhante, no Grupo 3."
+        },
+        {
+          "titulo": "Parcelamento de passagens LATAM",
+          "descricao": "Parcelamento em até 10x sem juros de passagens aéreas LATAM Airlines."
+        },
+        {
+          "titulo": "Benefícios no Clube LATAM Pass",
+          "descricao": "Benefícios exclusivos no Clube LATAM Pass: 10% de desconto em resgates no Shopping LATAM Pass e 30% de desconto na compra de pontos LATAM Pass."
+        },
+        {
+          "titulo": "Milhas bônus na contratação",
+          "descricao": "Ganhe 40 mil milhas bônus ao atingir gasto de R$ 20.000,00 por fatura durante as 3 primeiras faturas (válido para cartões aprovados após 15/07/2025, apenas para o titular no 1º ano, não vale para renovações, upgrades ou downgrades)."
+        },
+        {
+          "titulo": "Mastercard Surpreenda",
+          "descricao": "Acúmulo de pontos Mastercard Surpreenda para troca por descontos e ofertas em parceiros."
+        },
+        {
+          "titulo": "MasterAssist Black",
+          "descricao": "Seguro viagem internacional com cobertura de despesas médicas de até USD 175.000, válido para viagens de até 60 dias consecutivos (exceto no Brasil), ao pagar a passagem com o cartão."
+        },
+        {
+          "titulo": "Mastercard Global Service",
+          "descricao": "Atendimento 24h para perda/roubo, substituição emergencial de cartão e adiantamento de dinheiro em qualquer país. Tel: 0800-891-3294."
+        }
+      ],
+      "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/formulario/latam-pass-itaucard-mastercard-black.html",
+      "fontes": [
+        "https://www.itau.com.br/cartoes/escolha/g/latam-pass-mastercard-black/",
+        "https://www.itau.com.br/cartoes/escolha/formulario/latam-pass-itaucard-mastercard-black.html",
+        "https://www.itau.com.br/cartoes/beneficios/programa-pontos-latam-pass-itaucard",
+        "https://www.itau.com.br/media/dam/m/4474d6764777bb8b/original/pontos_milhas_latam_03_2025.pdf",
+        "https://www.itau.com.br/media/dam/m/25dc6670a45fec09/original/Regulamento-Latam-Pass.pdf",
+        "https://www.mastercard.com.br/pt-br/consumidores/encontre-seu-cartao/cartoes-credito/mastercard-black.html"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "renda_minima",
+        "requisito_acesso",
+        "spread"
+      ],
+      "nota_curadoria": "Cartão cobranded emitido pelo Itaú Unibanco com bandeira Mastercard Black e programa de milhas LATAM Pass. A anuidade é cobrada mensalmente (R$ 105,00/mês = R$ 1.260,00/ano), com isenção total via gasto de R$ 20.000,00/fatura. As milhas acumulam diretamente na conta LATAM Pass sem mínimo para transferência. A pontuação de 2,5 mil/USD nacional e 3,5 mil/USD internacional é a tarifa-base; o bônus de 50% para membros do Clube LATAM Pass é promocional (válido até 31/07/2026). Renda mínima e quantidade de adicionais gratuitos não constavam explicitamente nas páginas oficiais consultadas em 27/07/2026.",
+      "procedencia": {
+        "anuidade": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-mastercard-black/",
+        "anuidade_parcelas": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-mastercard-black/",
+        "isencao": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-mastercard-black/",
+        "pontos": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-mastercard-black/",
+        "validade_pontos": "https://www.itau.com.br/media/dam/m/4474d6764777bb8b/original/pontos_milhas_latam_03_2025.pdf",
+        "salas_vip": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-mastercard-black/",
+        "beneficios_banco": "https://www.itau.com.br/cartoes/escolha/formulario/latam-pass-itaucard-mastercard-black.html",
+        "programa_proprio": "https://www.itau.com.br/media/dam/m/25dc6670a45fec09/original/Regulamento-Latam-Pass.pdf",
+        "transfere_para": "https://www.itau.com.br/cartoes/beneficios/programa-pontos-latam-pass-itaucard",
+        "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/formulario/latam-pass-itaucard-mastercard-black.html"
+      },
+      "vigencia_ate": "2026-07-31",
+      "analise": null,
+      "campos_rejeitados": [
+        "requisito_acesso"
       ],
       "verificado_em": "2026-07-27"
     },
