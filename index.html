@@ -2459,8 +2459,9 @@ async function ctSalvar(i){
       } else {
         await ctInit();
       }
+      var salvo = (d.cartao && d.cartao.slug) || item.cartao.slug;
       CT_PENDENTES_REVISAO = CT_PENDENTES_REVISAO.filter(function(x){
-        return !(x.cartao && x.cartao.slug === payload.slug);
+        return !(x.cartao && x.cartao.slug === salvo);
       });
       ctRenderRevisao();
       ctSubTab('lista');
