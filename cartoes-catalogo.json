@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 45,
+    "total": 46,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -352,6 +352,98 @@
       "analise": null,
       "campos_rejeitados": [
         "programa_proprio"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "bb-smiles-visa-infinite",
+      "nome": "BB Smiles Visa Infinite",
+      "emissor": "Banco do Brasil",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": 1188,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": "Correntista ou não-correntista do Banco do Brasil, sujeito a análise de crédito",
+      "adicionais_gratis": null,
+      "pontos": null,
+      "cashback": null,
+      "programa_proprio": "Smiles (GOL)",
+      "transfere_para": [
+        "Smiles"
+      ],
+      "spread": null,
+      "iof": "Alíquota vigente na data da transação, conforme legislação",
+      "validade_pontos": "Conforme categoria do participante no Programa Smiles, nos termos do regulamento do Programa",
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion (VAC)",
+          "regra": "4 acessos gratuitos por ano, custeados pelo BB. Acesso somente via QR Code pelo aplicativo VAC. Baixar app em visa.com.br/pt_br/visa-ofertas-e-promocoes/visa-airport-companion/140997"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Milhas extras na aquisição e renovação",
+          "descricao": "Bônus de milhas Smiles ao adquirir e ao renovar a anuidade do cartão, conforme regulamento específico da modalidade."
+        },
+        {
+          "titulo": "Pontuação Smiles em compras",
+          "descricao": "Todas as compras elegíveis geram pontos convertidos automaticamente em Milhas Smiles, creditadas após pagamento da fatura."
+        },
+        {
+          "titulo": "Benefícios GOL Smiles",
+          "descricao": "Acesso a benefícios exclusivos da parceria GOL/Smiles, incluindo acesso a salas VIP GOL em aeroportos participantes conforme regulamento."
+        },
+        {
+          "titulo": "Uso internacional habilitado",
+          "descricao": "Cartão habilitado para uso no exterior, com habilitação via Internet Banking ou app BB."
+        },
+        {
+          "titulo": "Cartão adicional",
+          "descricao": "Anuidade do cartão adicional equivale a 50% do valor da anuidade do titular."
+        }
+      ],
+      "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+      "fontes": [
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "https://www.bb.com.br/site/contratos-e-tabelas-cartoes/",
+        "https://www.bb.com.br/docs/portal/dimep/RegulamentoSmiles.pdf"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade_parcelas",
+        "cashback",
+        "isencao",
+        "pontos",
+        "pontos.internacional",
+        "pontos.nacional",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "A Tabela de Benefícios e Recompensas (CartoesBandeira.pdf, vigência 31/01/2025) confirma anuidade de R$ 1.188,00 para o Smiles Infinite Visa e 4 acessos VAC gratuitos por ano. O fator de conversão de milhas por dólar gasto não está discriminado por categoria nas tabelas públicas — requer consulta ao regulamento específico da modalidade disponível em bb.com.br (menu Produtos e Serviços > Cartões > Contratos e tabelas). A página de produto do cartão (smiles-visa) não carrega conteúdo HTML indexável com valores detalhados. Renda mínima e regras de isenção por gasto não constam nas fontes oficiais rastreadas. O benefício de salas VIP GOL (aeroportos de Guarulhos e Galeão) citado em nota de imprensa da Visa (visa.com.br) é anterior e pode estar desatualizado; mantido apenas o benefício VAC confirmado na tabela oficial do BB. Nota: o contrato antigo (contratosmiles.pdf, 2010) menciona modalidades Platinum, Gold e International — versão atual inclui Infinite, conforme tabela de 2025.",
+      "procedencia": {
+        "anuidade": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "bandeira": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "categoria": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "emissor": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
+        "programa_proprio": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
+        "transfere_para": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
+        "salas_vip": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "validade_pontos": "https://www.bb.com.br/docs/portal/dimep/RegulamentoSmiles.pdf",
+        "iof": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
+        "requisito_acesso": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
+        "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao",
+        "pontos"
       ],
       "verificado_em": "2026-07-27"
     },
