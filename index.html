@@ -1984,6 +1984,16 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
         <span id="ct-fila-status" style="font-size:13px;opacity:.75"></span>
       </div>
     </div>
+    <div class="ct-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+        <div style="font-weight:700;font-size:13px">Análise editorial</div>
+        <button class="ct-btn" onclick="ctGerarTodas()">Gerar as que faltam</button>
+      </div>
+      <p class="ct-hint" style="margin:0 0 12px">
+        Vantagens e desvantagens derivadas apenas dos dados já apurados. Não consulta a web e não altera nenhum campo factual.
+      </p>
+      <div id="ct-analises"></div>
+    </div>
     <div id="ct-revisao"></div>
   </div>
 </div><!-- /tab-cartoes -->
@@ -1994,6 +2004,92 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 // ══════════════════════════════════════════════════════
 var CT_CARTOES = [];
 var CT_PENDENTES_REVISAO = [];
+var CT_ANALISE_TMP = {};
+
+function ctRenderAnalises(){
+  var box = document.getElementById('ct-analises');
+  if (!box) return;
+  box.innerHTML = CT_CARTOES.slice().sort(function(a,b){
+    return String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR');
+  }).map(function(c){
+    var salva = c.analise && ((c.analise.vantagens||[]).length || (c.analise.desvantagens||[]).length);
+    var tmp = CT_ANALISE_TMP[c.slug];
+    var status = tmp ? '<span style="color:#fbbf24">gerada, não salva</span>'
+               : salva ? '<span style="color:#34d399">salva em '+(c.analise.gerada_em||'—')+'</span>'
+               : '<span class="ct-na">sem análise</span>';
+    var previa = '';
+    if (tmp) {
+      previa = '<div style="margin-top:10px;font-size:12px">'+
+        (tmp.vantagens||[]).map(function(t){return '<div style="margin:2px 0"><span style="color:#34d399">▲</span> '+t+'</div>';}).join('')+
+        (tmp.desvantagens||[]).map(function(t){return '<div style="margin:2px 0"><span style="color:#fbbf24">▼</span> '+t+'</div>';}).join('')+
+        '<button class="ct-btn on" style="margin-top:10px" onclick="ctSalvarAnalise(\'' + c.slug + '\')">Salvar análise</button>'+
+        '<button class="ct-btn" style="margin-top:10px;margin-left:6px" onclick="ctDescartarAnalise(\'' + c.slug + '\')">Descartar</button>'+
+      '</div>';
+    }
+    return '<div style="border-top:1px solid var(--border);padding:11px 0">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">'+
+        '<div><div style="font-weight:600;font-size:12.5px">'+c.nome+'</div>'+
+        '<div style="font-size:11px;color:var(--muted)">'+status+'</div></div>'+
+        '<button class="ct-btn" onclick="ctGerarAnalise(\'' + c.slug + '\')">'+(salva?'Regerar':'Gerar')+'</button>'+
+      '</div>'+ previa +'</div>';
+  }).join('');
+}
+
+async function ctGerarAnalise(slug, silencioso){
+  if (typeof devAcesso === 'function' && !devAcesso()) return false;
+  var st = document.getElementById('ct-fila-status');
+  if (st && !silencioso) st.textContent = 'Gerando análise…';
+  try {
+    var r = await fetch(_BASE + '/catalogo-cartoes/analisar', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ slug: slug })
+    });
+    var d = await r.json();
+    if (d.ok) { CT_ANALISE_TMP[slug] = d.analise; ctRenderAnalises(); if (st && !silencioso) st.textContent = ''; return true; }
+    if (st) st.textContent = 'Erro: ' + d.erro;
+  } catch(e){ if (st) st.textContent = 'Erro: ' + e.message; }
+  return false;
+}
+
+async function ctGerarTodas(){
+  var st = document.getElementById('ct-analises');
+  var faltam = CT_CARTOES.filter(function(c){
+    return !(c.analise && ((c.analise.vantagens||[]).length || (c.analise.desvantagens||[]).length));
+  });
+  var s = document.getElementById('ct-fila-status');
+  for (var i=0; i<faltam.length; i++){
+    if (s) s.textContent = 'Analisando ' + (i+1) + '/' + faltam.length + ': ' + faltam[i].nome + '…';
+    await ctGerarAnalise(faltam[i].slug, true);
+  }
+  if (s) s.textContent = faltam.length ? 'Concluído. Revise e salve cada uma.' : 'Todos os cartões já têm análise.';
+}
+
+function ctDescartarAnalise(slug){ delete CT_ANALISE_TMP[slug]; ctRenderAnalises(); }
+
+async function ctSalvarAnalise(slug){
+  var cartao = CT_CARTOES.find(function(c){ return c.slug === slug; });
+  var analise = CT_ANALISE_TMP[slug];
+  if (!cartao || !analise) return;
+  var payload = JSON.parse(JSON.stringify(cartao));
+  payload.analise = analise;
+  try {
+    var r = await fetch(_BASE + '/catalogo-cartoes', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ cartao: payload })
+    });
+    var d = await r.json();
+    if (d.ok) {
+      if (d.cartao && d.cartao.campos_rejeitados && d.cartao.campos_rejeitados.length) {
+        alert('Atenção: o servidor rejeitou campos sem procedência ao salvar: ' + d.cartao.campos_rejeitados.join(', '));
+      }
+      delete CT_ANALISE_TMP[slug];
+      delete CT_DETALHE[slug];
+      await ctInit();
+      ctSubTab('admin');
+    } else alert('Erro ao salvar: ' + d.erro);
+  } catch(e){ alert('Erro ao salvar: ' + e.message); }
+}
+
 
 function ctSubTab(qual){
   ['comparar','lista','admin'].forEach(function(k){
@@ -2032,6 +2128,7 @@ async function ctInit(){
   ctPopularSelects();
   ctRenderComparacao();
   ctRenderLista();
+  ctRenderAnalises();
   ctSubTab('comparar');
 }
 
