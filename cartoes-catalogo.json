@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 51,
+    "total": 52,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -1068,6 +1068,98 @@
       "campos_rejeitados": [
         "isencao",
         "adicionais_gratis"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "brb-visa-infinite",
+      "nome": "BRB Visa Infinite",
+      "emissor": "BRB / BRBCARD",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": 996,
+      "anuidade_parcelas": 12,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": null,
+      "cashback": null,
+      "programa_proprio": "Curtaí (curtai.com.br)",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "Sala BRB VIP Club – Aeroporto de Brasília (BSB)",
+          "regra": "Acesso condicionado a gasto mínimo de R$ 3.000,00 no cartão Visa Infinite no período apurado. Gastos de cartões diferentes são considerados separadamente."
+        },
+        {
+          "programa": "Visa Airport Companion",
+          "regra": "Benefício padrão da bandeira Visa Infinite; número de acessos gratuitos específicos do BRB Visa Infinite não confirmado em fonte oficial."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Programa Curtaí",
+          "descricao": "Acesso ao marketplace de parceiros do programa de relacionamento BRBCARD, com descontos e benefícios em parceiros selecionados, acessível pelo app BRBCARD ou em curtai.com.br."
+        },
+        {
+          "titulo": "Vai de Visa",
+          "descricao": "Plataforma de ofertas, promoções e benefícios exclusivos da bandeira Visa."
+        },
+        {
+          "titulo": "Visa Concierge / Visa Digital Concierge",
+          "descricao": "Serviço gratuito para o portador, administrado pela Ten Serviços de Concierge do Brasil Ltda. O portador arca com os custos dos produtos e serviços de terceiros solicitados."
+        },
+        {
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Acesso exclusivo a fila de segurança diferenciada nos terminais 2 e 3 do Aeroporto de Guarulhos (GRU) e no RIOgaleão (GIG)."
+        },
+        {
+          "titulo": "Proteção de Compras / Garantia Estendida Original",
+          "descricao": "Benefícios padrão da bandeira Visa Infinite: proteção contra roubo, furto ou danos acidentais e extensão da garantia de fábrica em até 12 meses."
+        }
+      ],
+      "link_solicitacao": "https://www.brbcard.com.br",
+      "fontes": [
+        "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
+        "https://nbf.brb.com.br/wp-content/uploads/2025/02/REGULAMENTO-SALA-BRB-VIP-CLUB-NOVA-REGRA-GASTOS-VF-6.pdf",
+        "https://www.visa.com.br/pague-com-visa/cartoes/cartoes-de-credito/detalhes-visa-infinite.html",
+        "https://www.visa.com.br/pague-com-visa/cartoes/beneficios.html",
+        "https://novo.brb.com.br/para-voce/abra-sua-conta/",
+        "https://novo.brb.com.br/imprensa/brb-lanca-cartao-connect/"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "isencao.regra_completa",
+        "isencao.valor",
+        "pontos",
+        "pontos.internacional",
+        "pontos.nacional",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "A página principal do BRB (novo.brb.com.br/cartoes/) e os PDFs de tabela de tarifas de 2025 retornaram erro 403 (acesso bloqueado por WAF) durante a pesquisa. O valor de anuidade de R$ 996,00 (12x R$ 83,00) foi extraído da Tabela de Tarifas PF 2024 (PDF oficial BRB). A página de produto específica do BRB Visa Infinite em brbcard.com.br não foi acessível diretamente pelos mecanismos de busca. Campos como renda mínima, taxa de pontos, isenção detalhada e transferência para parceiros de milhas exigem consulta direta ao portal brbcard.com.br ou à tabela de tarifas 2025 atualizada. Atenção: o BRB DUX Visa (produto distinto e superior ao Visa Infinite padrão) possui taxa de 5 pts/USD nacional e 7 pts/USD internacional — esses valores NÃO foram atribuídos ao BRB Visa Infinite por ausência de confirmação específica.",
+      "procedencia": {
+        "anuidade": "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
+        "anuidade_parcelas": "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
+        "salas_vip": "https://nbf.brb.com.br/wp-content/uploads/2025/02/REGULAMENTO-SALA-BRB-VIP-CLUB-NOVA-REGRA-GASTOS-VF-6.pdf",
+        "programa_proprio": "https://novo.brb.com.br/para-voce/abra-sua-conta/",
+        "beneficios_banco": "https://www.visa.com.br/pague-com-visa/cartoes/beneficios.html"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao",
+        "pontos"
       ],
       "verificado_em": "2026-07-27"
     },
