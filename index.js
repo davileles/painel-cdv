@@ -3615,6 +3615,7 @@ Responda SOMENTE com JSON: {"vantagens":["..."],"desvantagens":["..."]}`;
     model: 'claude-sonnet-4-6', max_tokens: 2048, system: systemPrompt,
     messages: [{ role: 'user', content: JSON.stringify(cartao) }]
   });
+  const https = require('https');
   const options = { hostname: 'api.anthropic.com', path: '/v1/messages', method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(bodyPayload),
                'x-api-key': ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' } };
@@ -3693,6 +3694,7 @@ Use vigencia_ate (AAAA-MM-DD) quando algum beneficio for promocional com prazo.`
     messages: [{ role: 'user', content: `Pesquise e extraia a ficha tecnica do cartao: ${nome}` }]
   });
 
+  const https = require('https');
   const options = {
     hostname: 'api.anthropic.com',
     path: '/v1/messages',
