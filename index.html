@@ -1943,6 +1943,16 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 #tab-cartoes .ct-box{background:var(--surface);border:1px solid var(--border);
   border-radius:14px;padding:16px;margin-bottom:12px}
 #tab-cartoes table{width:100%;border-collapse:collapse}
+#tab-cartoes .ct-tabela{table-layout:fixed}
+#tab-cartoes .ct-col-rot{width:230px}
+#tab-cartoes .ct-tabela td{text-align:left;vertical-align:top;padding:10px 14px 10px 0;
+  word-break:break-word;overflow-wrap:anywhere}
+#tab-cartoes .ct-cabecalho{display:grid;grid-template-columns:230px 1fr 1fr;gap:0;margin-bottom:16px}
+#tab-cartoes .ct-cabecalho > .ct-box{margin-right:14px}
+@media(max-width:760px){
+  #tab-cartoes .ct-col-rot{width:120px}
+  #tab-cartoes .ct-cabecalho{grid-template-columns:120px 1fr 1fr}
+}
 #tab-cartoes td{padding:9px 0;font-size:12px;border-bottom:1px solid var(--border)}
 #tab-cartoes .ct-rot{color:var(--muted);text-transform:uppercase;font-size:10px;letter-spacing:.5px}
 #tab-cartoes .ct-na{color:var(--muted);opacity:.6}
@@ -2147,11 +2157,11 @@ function ctPopularSelects(){
   });
 }
 
-function ctLinha(rot, a, b){
+function ctLinha(rot, a, b, icone){
   return '<tr>'+
-    '<td class="ct-rot">'+rot+'</td>'+
-    '<td style="text-align:center">'+a+'</td>'+
-    '<td style="text-align:center">'+b+'</td>'+
+    '<td class="ct-rot"><span style="margin-right:7px;opacity:.85">'+(icone||'')+'</span>'+rot+'</td>'+
+    '<td>'+a+'</td>'+
+    '<td>'+b+'</td>'+
   '</tr>';
 }
 
@@ -2239,28 +2249,29 @@ async function ctRenderComparacao(){
 
   var ca = ctCampos(a), cb = ctCampos(b);
   var LINHAS = [
-    ['Anuidade','anuidade'], ['Isenção de anuidade','isencao'],
-    ['Pontuação (nacional)','pontosNac'], ['Pontuação (internacional)','pontosInt'],
-    ['Cashback','cashback'], ['Validade dos pontos','validade'],
-    ['Programa de fidelidade','programa'], ['Transfere para','transf'],
-    ['Renda / requisito','renda'], ['Adicionais grátis','adicionais'],
-    ['Spread','spread'], ['IOF','iof'], ['Salas VIP','vip']
+    ['Anuidade','anuidade','💰'],            ['Isenção de anuidade','isencao','🆓'],
+    ['Pontuação (nacional)','pontosNac','🇧🇷'], ['Pontuação (internacional)','pontosInt','🌎'],
+    ['Cashback','cashback','💵'],            ['Validade dos pontos','validade','⏳'],
+    ['Programa de fidelidade','programa','🎯'], ['Transfere para','transf','🔁'],
+    ['Renda / requisito','renda','📊'],      ['Adicionais grátis','adicionais','👥'],
+    ['Spread','spread','💱'],                ['IOF','iof','🏛️'],
+    ['Salas VIP','vip','🛋️']
   ];
 
   box.innerHTML =
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">'+
+    '<div class="ct-cabecalho">'+
+      '<div></div>'+
       [a,b].map(function(c){
         return '<div class="ct-box" style="margin-bottom:0"><div style="font-weight:700">'+c.nome+'</div>'+
           '<div style="color:var(--muted);font-size:12px;margin-top:2px">'+(c.emissor||'')+' · '+(c.bandeira||'')+' '+(c.categoria||'')+'</div></div>';
       }).join('')+
     '</div>'+
-    '<table>'+ LINHAS.map(function(l){
-        return ctLinha(l[0], ctValor(ca[l[1]]), ctValor(cb[l[1]]));
+    '<table class="ct-tabela">'+
+      '<colgroup><col class="ct-col-rot"><col><col></colgroup>'+
+      LINHAS.map(function(l){
+        return ctLinha(l[0], ctValor(ca[l[1]]), ctValor(cb[l[1]]), l[2]);
       }).join('') +'</table>'+
     '<p class="ct-hint" style="margin-top:12px">“A confirmar” significa que o dado não consta das fontes oficiais consultadas — nunca que o benefício não existe.</p>'+
-
-    '<h3 style="font-size:14px;margin:26px 0 10px">Análise</h3>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+ ctAnalise(a) + ctAnalise(b) +'</div>'+
 
     '<h3 style="font-size:14px;margin:26px 0 10px">Benefícios do banco</h3>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+
