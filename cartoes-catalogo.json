@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 32,
+    "total": 33,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -96,6 +96,110 @@
       "analise": null,
       "campos_rejeitados": [
         "programa_proprio"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "bradesco-elo-diners-club",
+      "nome": "Bradesco Prime Elo Diners Club",
+      "emissor": "Banco Bradesco S.A.",
+      "bandeira": "Elo / Diners Club International",
+      "categoria": "Premium / High-end",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": {
+        "tipo": "percentual",
+        "valor": "até 100%",
+        "regra": "Clientes Bradesco Prime podem obter até 100% de isenção na anuidade do cartão de crédito, conforme critérios do segmento Prime"
+      },
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": null,
+      "cashback": null,
+      "programa_proprio": "Livelo (via parceria Bradesco Cartões + Livelo)",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "Bradesco Cartões Lounge",
+          "regra": "Acesso ilimitado às Salas VIP Bradesco Cartões Lounge em aeroportos do Brasil (Guarulhos T2, Congonhas, Curitiba, Santos Dumont), mediante apresentação do cartão Elo Diners Club"
+        },
+        {
+          "programa": "Centurion Lounge (American Express)",
+          "regra": "Acesso ilimitado às Salas Centurion Lounge pelo mundo, mediante apresentação do cartão Corporativo Elo Diners Club"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Programa de Pontos Livelo",
+          "descricao": "Compras geram pontos Livelo trocáveis por viagens, produtos, experiências, cashback e uso direto em maquininha de cartão"
+        },
+        {
+          "titulo": "Salas VIP em aeroportos",
+          "descricao": "Acesso ilimitado às Salas VIP Bradesco Cartões Lounge no Brasil e às Salas Centurion Lounge no mundo"
+        },
+        {
+          "titulo": "Isenção de anuidade Prime",
+          "descricao": "Clientes Bradesco Prime podem obter até 100% de isenção na tarifa da conta e na anuidade do cartão de crédito"
+        },
+        {
+          "titulo": "Crédito Rotativo e Parcelamento",
+          "descricao": "Possibilidade de pagamento parcelado e crédito rotativo na fatura mensal, com encargos conforme tabela vigente"
+        },
+        {
+          "titulo": "Saques de Emergência",
+          "descricao": "Saques emergenciais nas unidades BDN – Bradesco Dia e Noite, mediante senha, com encargos discriminados na fatura"
+        },
+        {
+          "titulo": "Seguro Superprotegido Premiável (Opcional)",
+          "descricao": "Seguro opcional oferecido com o cartão, mediante pagamento de tarifa mensal"
+        },
+        {
+          "titulo": "Atendimento 24h",
+          "descricao": "Central de Atendimento disponível 24 horas, inclusive sábados, domingos e feriados, para dúvidas, cancelamentos e reposição de cartão em caso de perda ou roubo"
+        }
+      ],
+      "link_solicitacao": "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
+      "fontes": [
+        "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
+        "https://adc.bradesco.com.br/html/corporate/solucoes-integradas/cartoes/beneficios/salavip.shtm",
+        "https://adc.bradesco.com.br/html/prime/index.shtm",
+        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "https://bdn.bradesco.com.br/assets/pessoajuridica/pdf/solucoes-integradas/cartoes/conheca-os-cartoes/elo/Guias_Beneficios_Elo_Grafite.pdf"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "pontos",
+        "pontos.internacional",
+        "pontos.nacional",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "A página de produto específica do Bradesco Prime Elo Diners Club (adc.bradesco.com.br/html/prime/produtos-servicos/cartoes/conheca-os-cartoes/bradesco-elo-nanquim.shtm e similares) retornou erro 404 ou redirecionamento sem conteúdo durante a consulta em 27/07/2026. O cartão é listado nominalmente no menu Prime em bradesco.com.br. Os dados de salas VIP foram confirmados na página oficial de benefícios corporativos. Anuidade, pontos e renda mínima devem ser obtidos diretamente na Tabela Geral de Tarifas Bradesco ou consultando gerente Prime, pois não estavam expostos em nenhuma página pública acessível nas buscas realizadas.",
+      "procedencia": {
+        "nome": "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
+        "bandeira": "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
+        "salas_vip": "https://adc.bradesco.com.br/html/corporate/solucoes-integradas/cartoes/beneficios/salavip.shtm",
+        "isencao": "https://adc.bradesco.com.br/html/prime/index.shtm",
+        "programa_proprio": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "beneficios_banco": "https://adc.bradesco.com.br/html/corporate/solucoes-integradas/cartoes/beneficios/salavip.shtm"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "pontos",
+        "transfere_para",
+        "requisito_acesso"
       ],
       "verificado_em": "2026-07-27"
     },
