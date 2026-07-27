@@ -1948,15 +1948,29 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 #tab-cartoes .ct-tabela td{text-align:left;vertical-align:top;padding:10px 14px 10px 0;
   word-break:break-word;overflow-wrap:anywhere}
 #tab-cartoes .ct-cabecalho{display:grid;grid-template-columns:230px 1fr 1fr;gap:0;margin-bottom:16px;position:relative}
-#tab-cartoes .ct-seletor{width:100%;font-weight:700;font-size:15px;padding:0;border:none;
-  background:transparent;color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none}
-#tab-cartoes .ct-seletor:hover{color:var(--cdv-coral)}
-#tab-cartoes .ct-versus{position:absolute;top:50%;left:calc(230px + (100% - 230px)/2);
+#tab-cartoes .ct-seletor-wrap{display:flex;align-items:center;gap:8px;
+  border-bottom:1px dashed var(--border);padding-bottom:3px}
+#tab-cartoes .ct-seletor-wrap:hover{border-bottom-color:var(--cdv-coral)}
+#tab-cartoes .ct-seletor{flex:1;min-width:0;font-weight:700;font-size:15px;padding:0;border:none;
+  background:transparent;color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none;
+  font-family:'Montserrat',sans-serif;text-overflow:ellipsis}
+#tab-cartoes .ct-seletor-wrap:hover .ct-seletor,
+#tab-cartoes .ct-seletor-wrap:hover .ct-seta{color:var(--cdv-coral)}
+#tab-cartoes .ct-seta{color:var(--muted);font-size:13px;line-height:1;flex-shrink:0}
+#tab-cartoes .ct-selecione{align-self:end;padding:0 14px 14px 0;color:var(--muted);
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+/* folga de 46px entre os blocos para o X caber sem sobrepor */
+#tab-cartoes .ct-cabecalho > .ct-box:nth-child(2){margin-right:46px}
+#tab-cartoes .ct-versus{position:absolute;top:50%;left:calc(230px + (100% - 230px)/2 - 23px);
   transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;
   background:var(--bg);border:1px solid var(--border);color:var(--cdv-coral);
   font-size:20px;font-weight:700;line-height:1;
   display:flex;align-items:center;justify-content:center;z-index:2;pointer-events:none}
-@media(max-width:760px){#tab-cartoes .ct-versus{left:calc(120px + (100% - 120px)/2);width:30px;height:30px;font-size:16px}}
+@media(max-width:760px){
+  #tab-cartoes .ct-versus{left:calc(120px + (100% - 120px)/2 - 18px);width:30px;height:30px;font-size:16px}
+  #tab-cartoes .ct-cabecalho > .ct-box:nth-child(2){margin-right:36px}
+  #tab-cartoes .ct-selecione{font-size:9px}
+}
 #tab-cartoes .ct-cabecalho > .ct-box{margin-right:14px}
 @media(max-width:760px){
   #tab-cartoes .ct-col-rot{width:120px}
@@ -2189,10 +2203,12 @@ function ctPopularSelects(){
 }
 
 function ctSeletorHtml(lado, atual){
-  return '<select class="ct-seletor" onchange="ctTrocar(\''+lado+'\', this.value)">' +
-    ctOrdenados().map(function(c){
-      return '<option value="'+c.slug+'"'+(c.slug===atual?' selected':'')+'>'+c.nome+'</option>';
-    }).join('') + '</select>';
+  return '<div class="ct-seletor-wrap" title="Clique para trocar de cartão">'+
+    '<select class="ct-seletor" onchange="ctTrocar(\''+lado+'\', this.value)">' +
+      ctOrdenados().map(function(c){
+        return '<option value="'+c.slug+'"'+(c.slug===atual?' selected':'')+'>'+c.nome+'</option>';
+      }).join('') +
+    '</select><span class="ct-seta" aria-hidden="true">▾</span></div>';
 }
 
 function ctTrocar(lado, slug){
@@ -2304,7 +2320,7 @@ async function ctRenderComparacao(){
 
   box.innerHTML =
     '<div class="ct-cabecalho">'+
-      '<div></div>'+
+      '<div class="ct-selecione">Selecione os cartões ▾</div>'+
       '<div class="ct-box" style="margin-bottom:0">'+ ctSeletorHtml('a', a.slug) +
         '<div style="color:var(--muted);font-size:12px;margin-top:2px">'+(a.emissor||'')+' · '+(a.bandeira||'')+' '+(a.categoria||'')+'</div></div>'+
       '<div class="ct-box" style="margin-bottom:0">'+ ctSeletorHtml('b', b.slug) +
