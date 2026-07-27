@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 42,
+    "total": 43,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -353,6 +353,136 @@
       "campos_rejeitados": [
         "programa_proprio"
       ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "bb-visa-infinite-altus-liv",
+      "nome": "BB Visa Infinite Altus Liv",
+      "emissor": "Banco do Brasil",
+      "bandeira": "Visa Infinite",
+      "categoria": "Premium / Private",
+      "anuidade": 3600,
+      "anuidade_parcelas": null,
+      "isencao": {
+        "tipo": "devolucao_parcial_ou_total",
+        "valor": null,
+        "regra": "Possibilidade de devolução de 50% ou 100% da anuidade conforme volume de gastos mensais ou investimentos"
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Clientes do segmento Estilo do Banco do Brasil (convite/seleção)",
+      "adicionais_gratis": 7,
+      "pontos": {
+        "nacional": null,
+        "internacional": 4,
+        "unidade": "pts/USD",
+        "observacao": "Até 4 pontos por dólar no Programa Livelo. Pontos não expiram. A taxa nacional não está discriminada separadamente em fonte oficial consultada."
+      },
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "Possível via resgate de pontos Livelo como dinheiro de volta na conta"
+      },
+      "programa_proprio": "Livelo (Benefícios BB)",
+      "transfere_para": [
+        "TudoAzul (Azul)",
+        "Smiles (Gol)",
+        "Latam Pass (Latam)",
+        "Miles&Go (TAP)",
+        "Dotz"
+      ],
+      "spread": null,
+      "iof": "0% em compras internacionais",
+      "validade_pontos": "Não expiram",
+      "salas_vip": [
+        {
+          "programa": "LoungeKey",
+          "regra": "Acesso gratuito e ilimitado exclusivo para portadores do cartão Ourocard Visa Altus"
+        },
+        {
+          "programa": "Visa Airport Companion (VAC)",
+          "regra": "Acesso ilimitado para titular e acompanhantes; acesso via QR Code pelo aplicativo VAC"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Cartão em metal",
+          "descricao": "Produzido em metal encapsulado com design moderno e inovador"
+        },
+        {
+          "titulo": "Pedágio e estacionamento automático",
+          "descricao": "Pedágios liberados automaticamente em 100% das rodovias com cobrança no Brasil; estacionamentos com entrada automática, sem tickets ou filas"
+        },
+        {
+          "titulo": "Pagamento por aproximação e carteiras digitais",
+          "descricao": "Tecnologia NFC; compatível com Apple Pay, Google Pay e Samsung Pay"
+        },
+        {
+          "titulo": "Acompanhantes em salas VIP",
+          "descricao": "Possibilidade de levar até 12 acompanhantes gratuitos por ano nas salas VIP"
+        },
+        {
+          "titulo": "Seguros de viagem",
+          "descricao": "Proteção para bagagem, cancelamento de viagem e assistência médica em viagens"
+        },
+        {
+          "titulo": "Seguro de garantia estendida",
+          "descricao": "Dobra a garantia de compras realizadas com o cartão"
+        },
+        {
+          "titulo": "Concierge",
+          "descricao": "Serviço de concierge dedicado 24 horas"
+        },
+        {
+          "titulo": "Desbloqueio por QR Code",
+          "descricao": "Desbloqueio do cartão apontando a câmera do celular para o QR Code; também disponível via app, internet banking ou telefone"
+        },
+        {
+          "titulo": "Conversão de pontos em investimentos",
+          "descricao": "Possibilidade de converter pontos Livelo em investimentos pelo app BB"
+        },
+        {
+          "titulo": "Benefícios em restaurantes e experiências culturais",
+          "descricao": "Acesso a benefícios em restaurantes selecionados e pré-vendas/experiências exclusivas em shows, teatro e exposições"
+        }
+      ],
+      "link_solicitacao": "https://www.bb.com.br/site/estilo/cartoes/altus-liv/",
+      "fontes": [
+        "https://www.bb.com.br/site/estilo/cartoes/altus-liv/",
+        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "https://www.bb.com.br/pbb/pagina-inicial/solucoes-digitais/como-fazer/transferir",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
+        "https://blog.bb.com.br/cartoes-premium-viver-no-proprio-ritmo-tambem-e-uma-forma-de-luxo/"
+      ],
+      "campos_pendentes": [
+        "anuidade_parcelas",
+        "isencao.valor",
+        "pontos.nacional",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "O BB Visa Infinite Altus Liv é o cartão topo de linha do segmento Estilo/Private do Banco do Brasil, lançado em parceria com a Visa. A anuidade de R$ 3.600,00 foi confirmada na tabela oficial de tarifas PF do BB (versão Maio/2026). O IOF zero em compras internacionais e os pontos que não expiram foram confirmados em fontes oficiais BB e Visa. A acumulação de até 4 pts/USD é confirmada tanto pelo blog.bb.com.br quanto pela visa.com.br. A regra de isenção (devolução de 50% ou 100%) não detalha valores mínimos de gasto/investimento nas fontes públicas consultadas — o detalhe completo exige acesso autenticado ao portal Estilo. O requisito exato de acesso (renda mínima ou patrimônio) não foi publicado em fonte oficial pública.",
+      "procedencia": {
+        "anuidade": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "adicionais_gratis": "https://blog.bb.com.br/cartoes-premium-viver-no-proprio-ritmo-tambem-e-uma-forma-de-luxo/",
+        "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
+        "isencao": "https://blog.bb.com.br/cartoes-premium-viver-no-proprio-ritmo-tambem-e-uma-forma-de-luxo/",
+        "iof": "https://blog.bb.com.br/cartoes-premium-viver-no-proprio-ritmo-tambem-e-uma-forma-de-luxo/",
+        "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
+        "salas_vip": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "transfere_para": "https://www.bb.com.br/pbb/pagina-inicial/solucoes-digitais/como-fazer/transferir,-comprar-e-consultar-saldo-de-pontos-pelo-aplicativo",
+        "programa_proprio": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "requisito_acesso": "https://www.bb.com.br/site/estilo/cartoes/altus-liv/",
+        "cashback": "https://blog.bb.com.br/cartoes-premium-viver-no-proprio-ritmo-tambem-e-uma-forma-de-luxo/",
+        "nome": "https://www.bb.com.br/site/estilo/cartoes/altus-liv/",
+        "bandeira": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
+        "emissor": "https://www.bb.com.br/site/estilo/cartoes/altus-liv/",
+        "categoria": "https://www.bb.com.br/site/estilo/cartoes/altus-liv/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
       "verificado_em": "2026-07-27"
     },
     {
