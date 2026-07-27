@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 43,
+    "total": 44,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -2244,6 +2244,104 @@
       "campos_rejeitados": [
         "isencao",
         "pontos"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "unicred-visa-infinite",
+      "nome": "Ímpar Unicred Visa Infinite",
+      "emissor": "Unicred do Brasil (Confederação Nacional das Cooperativas Centrais Unicred Ltda)",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": "Ser cooperado Unicred. Pessoas físicas e jurídicas podem se associar desde que preencham os requisitos de associação de cada cooperativa.",
+      "adicionais_gratis": 3,
+      "pontos": null,
+      "cashback": null,
+      "programa_proprio": "Único – Programa de Recompensas Unicred",
+      "transfere_para": [],
+      "spread": 0,
+      "iof": null,
+      "validade_pontos": "60 meses",
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion",
+          "regra": "Acesso ilimitado a mais de 1.250 salas VIP em aeroportos ao redor do mundo para titulares, adicionais e convidados. Acesso via app Visa Airport Companion."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Isenção de spread em compras internacionais",
+          "descricao": "Compras internacionais convertidas pelo dólar PTAX do dia da compra, sem acréscimo de taxas de custos operacionais (spread zero)."
+        },
+        {
+          "titulo": "Até 3 cartões adicionais gratuitos",
+          "descricao": "Possibilidade de emissão de até três cartões adicionais sem custo."
+        },
+        {
+          "titulo": "Design metalizado",
+          "descricao": "Cartão com design metalizado exclusivo para o segmento Ímpar."
+        },
+        {
+          "titulo": "Visa Concierge",
+          "descricao": "Serviço exclusivo de concierge Visa Infinite para reservas, roteiros de viagem e outros serviços sob demanda."
+        },
+        {
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Acesso exclusivo a fila diferenciada de embarque nos Terminais 2 e 3 do Aeroporto de Guarulhos e no RIOgaleão."
+        },
+        {
+          "titulo": "Seguro Garantia Estendida Original",
+          "descricao": "Cobertura adicional à garantia de fábrica de produtos elegíveis comprados com o cartão."
+        },
+        {
+          "titulo": "Coberturas extras para viagens",
+          "descricao": "Seguros e assistências para viagens nacionais e internacionais (cancelamento, atraso de bagagem, emergência médica, entre outros benefícios da categoria Visa Infinite)."
+        },
+        {
+          "titulo": "Programa Único – resgate flexível",
+          "descricao": "Pontos podem ser transferidos para programas de milhagens, trocados por produtos de marcas de luxo, usados como crédito em fatura ou aportados na previdência privada Precaver da Unicred."
+        }
+      ],
+      "link_solicitacao": "https://www.unicred.com.br/associe-se",
+      "fontes": [
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html"
+      ],
+      "campos_pendentes": [
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "pontos.internacional",
+        "pontos.nacional",
+        "renda_minima",
+        "transfere_para"
+      ],
+      "nota_curadoria": "Nenhuma página do domínio unicred.com.br foi retornada nas buscas com detalhes tarifários (anuidade, renda mínima, pts/USD). As fontes oficiais disponíveis são dois press releases no domínio visa.com.br, que confirmam: (1) versão mais recente denominada 'Ímpar Unicred Visa Infinite' com design metalizado; (2) validade de pontos até 60 meses; (3) até 3 adicionais gratuitos; (4) spread zero em internacionais; (5) salas VIP ilimitadas via Visa Airport Companion. Campos financeiros críticos permanecem pendentes por ausência de fonte oficial com os valores. O campo 'transfere_para' menciona genericamente 'programas de milhagens' sem nominar as aéreas parceiras em fonte oficial do produto; os press releases apontam para um catálogo de luxo e o programa Precaver. Recomenda-se consultar diretamente a tabela de tarifas e o regulamento do Programa Único em unicred.com.br para completar os campos pendentes.",
+      "procedencia": {
+        "nome": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "bandeira": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "categoria": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "adicionais_gratis": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "spread": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
+        "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
+        "programa_proprio": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
+        "beneficios_banco": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao",
+        "pontos",
+        "transfere_para"
       ],
       "verificado_em": "2026-07-27"
     },
