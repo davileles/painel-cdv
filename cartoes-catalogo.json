@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 16,
+    "total": 17,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -96,6 +96,95 @@
       "analise": null,
       "campos_rejeitados": [
         "programa_proprio"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "bradesco-visa-aeternum",
+      "nome": "Bradesco Visa Aeternum",
+      "emissor": "Banco Bradesco S.A.",
+      "bandeira": "Visa",
+      "categoria": "Visa Infinite (tier Aeternum)",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 4,
+        "internacional": 4,
+        "unidade": "pts/USD",
+        "observacao": "4 pontos Livelo a cada dólar gasto em compras nacionais e internacionais"
+      },
+      "cashback": null,
+      "programa_proprio": "Livelo (via Bradesco Cartões)",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "LoungeKey",
+          "regra": "Acesso gratuito e ilimitado para o portador; 12 acessos gratuitos por ano para convidados. Acesso a mais de 1.200 salas VIP ao redor do mundo."
+        },
+        {
+          "programa": "Visa Infinite Lounge (Guarulhos T3)",
+          "regra": "Acesso à sala VIP exclusiva da Visa no embarque do Terminal 3 do Aeroporto Internacional de Guarulhos."
+        },
+        {
+          "programa": "Visa Infinite Fast Pass (Guarulhos T2/T3)",
+          "regra": "Fila de segurança diferenciada nos Terminais 2 e 3 do Aeroporto Internacional de Guarulhos."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Programa de Pontos Livelo",
+          "descricao": "Acumule 4 pontos Livelo a cada dólar gasto em compras nacionais e internacionais. Ative a conta Livelo em livelo.com.br/cadastro ou pelo App."
+        },
+        {
+          "titulo": "LoungeKey – Salas VIP",
+          "descricao": "Acesso gratuito e ilimitado ao portador titular; 12 acessos gratuitos por ano para convidados em mais de 1.200 salas VIP no mundo."
+        },
+        {
+          "titulo": "Visa Infinite Lounge Guarulhos",
+          "descricao": "Acesso à sala VIP exclusiva da Visa no Terminal 3 do Aeroporto Internacional de Guarulhos."
+        },
+        {
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Fila de segurança diferenciada nos Terminais 2 e 3 do Aeroporto Internacional de Guarulhos."
+        }
+      ],
+      "link_solicitacao": null,
+      "fontes": [
+        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "https://institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "O Bradesco Visa Aeternum é um cartão de acesso restrito (convite/segmento Private/Exclusive), sem página pública de produto identificada nos domínios oficiais rastreados. Os dados de pontuação e salas VIP foram extraídos da página oficial de benefícios de cartões Bradesco. Anuidade, renda mínima, isenção e demais condições comerciais não constam em nenhuma página pública oficial acessível — devem ser confirmados diretamente com o gerente Bradesco ou via tabela geral de tarifas atualizada em institucional.bradesco.com.br. A tabela de tarifas agrupa o Aeternum com Infinite e Black OK, mas os valores numéricos da anuidade não estavam acessíveis na versão rastreada.",
+      "procedencia": {
+        "pontos": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "salas_vip": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "categoria": "https://institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html",
+        "programa_proprio": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao",
+        "transfere_para"
       ],
       "verificado_em": "2026-07-27"
     },
