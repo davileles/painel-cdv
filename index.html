@@ -2405,16 +2405,24 @@ async function ctRodarFila(nomes, inicio, auto){
     var nome = nomes[i];
     var d = null, ultimoErro = '';
 
-    // Duas tentativas: falha de rede e timeout costumam ser transitorios.
-    for (var tent = 1; tent <= 2; tent++){
+    // Ate 4 tentativas com espera crescente. Limite de taxa da API so passa
+    // com pausa longa; 3 segundos nao resolvem nada.
+    var ESPERAS = [8000, 30000, 90000];
+    for (var tent = 1; tent <= 4; tent++){
       st.textContent = 'Extraindo ' + (i+1) + '/' + nomes.length + ': ' + nome +
-                       (tent > 1 ? ' (2ª tentativa)…' : '…');
+                       (tent > 1 ? ' (tentativa ' + tent + ')…' : '…');
       try {
         d = await ctExtrairUm(nome);
         if (d && d.ok) break;
         ultimoErro = (d && d.erro) || 'resposta invalida';
       } catch(e){ ultimoErro = e.message; d = null; }
-      if (tent === 1) await ctEspera(3000);
+      if (tent < 4) {
+        var pausa = ESPERAS[tent - 1];
+        var limite = /rate|limit|overload|429|too many/i.test(ultimoErro || '');
+        if (limite) pausa = Math.max(pausa, 60000);
+        st.textContent = 'Aguardando ' + Math.round(pausa/1000) + 's antes de repetir ' + nome + '…';
+        await ctEspera(pausa);
+      }
     }
 
     if (d && d.ok) {
@@ -2433,6 +2441,7 @@ async function ctRodarFila(nomes, inicio, auto){
 
     ctSalvarProgresso(nomes, i + 1, auto);
     ctRenderRevisao();
+    if (i + 1 < nomes.length) await ctEspera(4000);
   }
 
   ctLimparProgresso();
