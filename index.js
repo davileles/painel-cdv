@@ -3361,6 +3361,254 @@ REGRAS:
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
+//  COMPARADOR DE CARTOES
+//  Base curada a partir de fontes oficiais dos emissores e das bandeiras.
+//  Arquivos: cartoes.json (produtos) e bandeiras.json (catalogo por categoria).
+// ══════════════════════════════════════════════════════════════════════════════
+
+// Dominios aceitos como fonte oficial. Qualquer campo cuja fonte nao pertenca
+// a esta lista e descartado pelo extrator e volta como null em campos_pendentes.
+const CARTOES_DOMINIOS_OFICIAIS = [
+  'bb.com.br', 'bancobrasil.com.br',
+  'bradesco.com.br', 'bradescoprime.com.br',
+  'brb.com.br',
+  'btgpactual.com', 'banking.btgpactual.com',
+  'c6bank.com.br',
+  'caixa.gov.br',
+  'bancointer.com.br', 'inter.co',
+  'itau.com.br', 'itaupersonnalite.com.br',
+  'nubank.com.br',
+  'santander.com.br',
+  'sicredi.com.br',
+  'sicoob.com.br',
+  'xpi.com.br', 'xpinvestimentos.com.br',
+  'elo.com.br',
+  'mastercard.com', 'mastercard.com.br',
+  'visa.com.br', 'visa-infinite.com',
+  'americanexpress.com'
+];
+
+function cartoesFonteOficial(url) {
+  try {
+    const host = new URL(String(url)).hostname.toLowerCase().replace(/^www\./, '');
+    return CARTOES_DOMINIOS_OFICIAIS.some(d => host === d || host.endsWith('.' + d));
+  } catch (e) { return false; }
+}
+
+function cartoesSlugify(s) {
+  return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+// Remove valores cuja procedencia nao e oficial e recalcula campos_pendentes.
+function cartoesSanitizar(cartao) {
+  const c = { ...(cartao || {}) };
+  const fontes = Array.isArray(c.fontes) ? c.fontes.filter(cartoesFonteOficial) : [];
+  const descartadas = (Array.isArray(c.fontes) ? c.fontes : []).filter(u => !cartoesFonteOficial(u));
+  c.fontes = fontes;
+
+  const CAMPOS = ['anuidade', 'isencao', 'renda_minima', 'adicionais_gratis',
+                  'pontos', 'cashback', 'spread', 'iof', 'salas_vip'];
+  const pendentes = new Set(Array.isArray(c.campos_pendentes) ? c.campos_pendentes : []);
+
+  // Sem nenhuma fonte oficial, nada e aproveitado.
+  if (!fontes.length) {
+    CAMPOS.forEach(k => { c[k] = null; pendentes.add(k); });
+  } else {
+    CAMPOS.forEach(k => {
+      const v = c[k];
+      const vazio = v === null || v === undefined || v === '' ||
+                    (Array.isArray(v) && !v.length);
+      if (vazio) { c[k] = Array.isArray(v) ? [] : null; pendentes.add(k); }
+      else pendentes.delete(k);
+    });
+  }
+  c.campos_pendentes = Array.from(pendentes).sort();
+  if (descartadas.length) c.fontes_descartadas = descartadas;
+  c.verificado_em = c.verificado_em || new Date().toISOString().slice(0, 10);
+  return c;
+}
+
+app.get('/cartoes', async (req, res) => {
+  try {
+    const { data } = await ghGetJson('cartoes.json', { cartoes: [] });
+    const lista = (data.cartoes || []).slice().sort((a, b) =>
+      String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'));
+    res.json({ ok: true, total: lista.length, cartoes: lista, meta: data._meta || {} });
+  } catch (e) {
+    console.error('[cartoes GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+app.get('/bandeiras', async (req, res) => {
+  try {
+    const { data } = await ghGetJson('bandeiras.json', { bandeiras: [] });
+    res.json({ ok: true, bandeiras: data.bandeiras || [] });
+  } catch (e) {
+    console.error('[bandeiras GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+app.get('/cartoes/:slug', async (req, res) => {
+  try {
+    const { data } = await ghGetJson('cartoes.json', { cartoes: [] });
+    const cartao = (data.cartoes || []).find(c => c.slug === req.params.slug);
+    if (!cartao) return res.status(404).json({ ok: false, erro: 'Cartao nao encontrado.' });
+
+    // Resolve os beneficios herdados da bandeira
+    let beneficiosBandeira = [];
+    if (cartao.bandeira_ref) {
+      const { data: bd } = await ghGetJson('bandeiras.json', { bandeiras: [] });
+      const b = (bd.bandeiras || []).find(x => x.ref === cartao.bandeira_ref);
+      if (b) beneficiosBandeira = b.beneficios || [];
+    }
+    res.json({ ok: true, cartao: { ...cartao, beneficios_bandeira: beneficiosBandeira } });
+  } catch (e) {
+    console.error('[cartoes GET slug]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+app.post('/cartoes', async (req, res) => {
+  try {
+    const entrada = req.body && req.body.cartao;
+    if (!entrada || !entrada.nome) {
+      return res.status(400).json({ ok: false, erro: 'Campo obrigatorio: cartao.nome' });
+    }
+    const cartao = cartoesSanitizar({ ...entrada, slug: entrada.slug || cartoesSlugify(entrada.nome) });
+
+    // SHA sempre fresco, imediatamente antes do PUT
+    const { data, sha } = await ghGetJson('cartoes.json', { _meta: {}, cartoes: [] });
+    const lista = data.cartoes || [];
+    const idx = lista.findIndex(c => c.slug === cartao.slug);
+    if (idx >= 0) lista[idx] = { ...lista[idx], ...cartao };
+    else lista.push(cartao);
+
+    lista.sort((a, b) => String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'));
+    data.cartoes = lista;
+    data._meta = { ...(data._meta || {}), total: lista.length, atualizado_em: new Date().toISOString().slice(0, 10) };
+
+    await ghPutJson('cartoes.json', data, sha, `cartoes: ${idx >= 0 ? 'atualiza' : 'adiciona'} ${cartao.slug}`);
+    res.json({ ok: true, cartao, novo: idx < 0, total: lista.length });
+  } catch (e) {
+    console.error('[cartoes POST]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+app.delete('/cartoes/:slug', async (req, res) => {
+  try {
+    const { data, sha } = await ghGetJson('cartoes.json', { _meta: {}, cartoes: [] });
+    const lista = data.cartoes || [];
+    const restante = lista.filter(c => c.slug !== req.params.slug);
+    if (restante.length === lista.length) {
+      return res.status(404).json({ ok: false, erro: 'Cartao nao encontrado.' });
+    }
+    data.cartoes = restante;
+    data._meta = { ...(data._meta || {}), total: restante.length, atualizado_em: new Date().toISOString().slice(0, 10) };
+    await ghPutJson('cartoes.json', data, sha, `cartoes: remove ${req.params.slug}`);
+    res.json({ ok: true, total: restante.length });
+  } catch (e) {
+    console.error('[cartoes DELETE]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// ── Extrator: recebe apenas o NOME do cartao e busca o dado na fonte oficial ──
+app.post('/cartoes/extrair', (req, res) => {
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+  if (!ANTHROPIC_API_KEY) {
+    return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY nao configurada no servidor.' });
+  }
+  const nome = (req.body && req.body.nome || '').trim();
+  if (!nome) return res.status(400).json({ ok: false, erro: 'Campo obrigatorio: nome' });
+
+  const systemPrompt = `Voce e um curador de dados de cartoes de credito brasileiros. Recebe o NOME de um cartao e deve pesquisar na web para preencher uma ficha tecnica.
+
+REGRA ABSOLUTA DE PROCEDENCIA:
+Use EXCLUSIVAMENTE paginas do proprio banco emissor ou da bandeira (dominios oficiais: caixa.gov.br, bb.com.br, itau.com.br, bradesco.com.br, santander.com.br, nubank.com.br, c6bank.com.br, bancointer.com.br, xpi.com.br, btgpactual.com, sicredi.com.br, sicoob.com.br, brb.com.br, visa.com.br, mastercard.com.br, elo.com.br, americanexpress.com).
+NUNCA use blogs, portais de comparacao, agregadores, sites de noticias ou canais de milhas. Eles frequentemente publicam valores desatualizados.
+Se um dado nao aparecer em fonte oficial, deixe o campo como null e liste o nome do campo em campos_pendentes. NUNCA infira, estime ou complete por conhecimento previo. Campo vazio e melhor que campo errado.
+Priorize, quando existirem: pagina do produto, tabela de tarifas e contrato/regulamento do programa de pontos.
+
+Responda SOMENTE com JSON valido, sem markdown, nesta estrutura:
+{
+  "slug": "kebab-case",
+  "nome": "", "emissor": "", "bandeira": "", "categoria": "",
+  "anuidade": null, "anuidade_parcelas": null,
+  "isencao": { "tipo": null, "valor": null, "regra": null },
+  "renda_minima": null, "requisito_acesso": null, "adicionais_gratis": null,
+  "pontos": { "nacional": null, "internacional": null, "unidade": "pts/USD", "observacao": null },
+  "cashback": null,
+  "programa_proprio": null, "transfere_para": [],
+  "spread": null, "iof": null,
+  "salas_vip": [ { "programa": "", "regra": "" } ],
+  "beneficios_banco": [ { "titulo": "", "descricao": "" } ],
+  "link_solicitacao": "", "fontes": ["URLs oficiais efetivamente consultadas"],
+  "campos_pendentes": [], "nota_curadoria": "",
+  "vigencia_ate": null
+}
+
+Use vigencia_ate (AAAA-MM-DD) quando algum beneficio for promocional com prazo.`;
+
+  const bodyPayload = JSON.stringify({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 8192,
+    system: systemPrompt,
+    tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+    messages: [{ role: 'user', content: `Pesquise e extraia a ficha tecnica do cartao: ${nome}` }]
+  });
+
+  const options = {
+    hostname: 'api.anthropic.com',
+    path: '/v1/messages',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(bodyPayload),
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01'
+    }
+  };
+
+  const apiReq = https.request(options, (apiRes) => {
+    let buf = '';
+    apiRes.on('data', d => buf += d);
+    apiRes.on('end', () => {
+      try {
+        const parsed = JSON.parse(buf);
+        if (parsed.error) return res.json({ ok: false, erro: parsed.error.message });
+        const raw = (parsed.content || [])
+          .filter(b => b.type === 'text').map(b => b.text).join('\n')
+          .replace(/```json|```/g, '').trim();
+        const m = raw.match(/\{[\s\S]*\}/);
+        if (!m) return res.json({ ok: false, erro: 'IA nao retornou JSON.' });
+
+        const bruto = JSON.parse(m[0]);
+        bruto.slug = bruto.slug || cartoesSlugify(bruto.nome || nome);
+        const cartao = cartoesSanitizar(bruto);
+        res.json({
+          ok: true,
+          cartao,
+          aviso: cartao.fontes_descartadas
+            ? 'Fontes nao oficiais foram descartadas; os campos afetados voltaram como pendentes.'
+            : null
+        });
+      } catch (e) {
+        console.error('[cartoes/extrair] parse error:', e.message, 'raw:', buf.slice(0, 300));
+        res.json({ ok: false, erro: 'Erro ao processar resposta da IA.' });
+      }
+    });
+  });
+  apiReq.on('error', (e) => { console.error('[cartoes/extrair] req error:', e.message); res.json({ ok: false, erro: e.message }); });
+  apiReq.setTimeout(170000, () => { apiReq.destroy(); res.json({ ok: false, erro: 'Timeout ao chamar API Anthropic.' }); });
+  apiReq.write(bodyPayload);
+  apiReq.end();
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
