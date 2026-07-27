@@ -8,10 +8,97 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 15,
+    "total": 16,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
+    {
+      "slug": "banescard-visa-infinite-absoluto",
+      "nome": "Banescard Visa Absoluto",
+      "emissor": "Banestes – Banco do Estado do Espírito Santo",
+      "bandeira": "Visa Infinite",
+      "categoria": "Alta Renda / Private",
+      "anuidade": 1800,
+      "anuidade_parcelas": null,
+      "isencao": {
+        "tipo": "gasto_mensal_e_investimento",
+        "valor": null,
+        "regra": "Isenção de 50% para gastos mensais acima de R$ 12.500; isenção de 100% para gastos mensais a partir de R$ 25.000. Isenção total para clientes com R$ 5 milhões ou mais em investimentos no Banestes."
+      },
+      "renda_minima": 30000,
+      "requisito_acesso": "Mediante convite; exige no mínimo R$ 1 milhão em investimentos no Banestes e renda mínima de R$ 30.000.",
+      "adicionais_gratis": 5,
+      "pontos": {
+        "nacional": 4.2,
+        "internacional": 5,
+        "unidade": "pts/USD",
+        "observacao": "Pontos com validade vitalícia (não expiram). Programa próprio Banescard — parceiros de transferência não informados em fonte oficial."
+      },
+      "cashback": null,
+      "programa_proprio": null,
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Vitalícia (não expiram)",
+      "salas_vip": [
+        {
+          "programa": "LoungeKey",
+          "regra": "Acesso ilimitado para o titular, com permissão para até 12 convidados."
+        },
+        {
+          "programa": "Dragon Pass / Visa Airport Companion",
+          "regra": "Acesso ilimitado para o titular, com permissão para até 12 convidados."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Welcome Kit com porta-cartão Montblanc",
+          "descricao": "Os 200 primeiros clientes do cartão recebem um porta-cartão da marca Montblanc junto ao welcome kit."
+        },
+        {
+          "titulo": "Apple Pay e Cartão Virtual",
+          "descricao": "Implantação de Apple Pay e cartão virtual para compras online prevista para o primeiro trimestre de 2026."
+        },
+        {
+          "titulo": "Concierge Visa Infinite",
+          "descricao": "Acesso ao serviço de concierge da bandeira Visa Infinite."
+        }
+      ],
+      "link_solicitacao": null,
+      "fontes": [
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html"
+      ],
+      "campos_pendentes": [
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "programa_proprio",
+        "spread",
+        "transfere_para"
+      ],
+      "nota_curadoria": "O cartão foi anunciado publicamente em dezembro de 2025, com lançamento oficial em janeiro de 2026. Em julho de 2026, não foram localizadas páginas de produto, tabela de tarifas ou regulamento de pontos no domínio banestes.com.br. Todos os dados extraídos provêm exclusivamente do press release publicado no domínio oficial visa.com.br. Os campos 'anuidade_parcelas', 'transfere_para', 'spread', 'iof' e 'link_solicitacao' permanecem nulos por ausência de fonte oficial verificável. O campo 'adicionais_gratis' (5 cartões) e 'salas_vip' (12 convidados) também têm como única fonte o press release Visa. Recomenda-se reverificação quando a página do produto for publicada no site do Banestes.",
+      "procedencia": {
+        "nome": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "emissor": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "bandeira": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "categoria": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "anuidade": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "isencao": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "renda_minima": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "adicionais_gratis": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "beneficios_banco": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "programa_proprio"
+      ],
+      "verificado_em": "2026-07-27"
+    },
     {
       "slug": "brb-visa-dux",
       "nome": "BRB Visa DUX",
