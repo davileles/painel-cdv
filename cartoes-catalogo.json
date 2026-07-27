@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 48,
+    "total": 49,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -678,6 +678,124 @@
         "pontos",
         "transfere_para",
         "requisito_acesso"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "bradesco-smiles-visa-infinite",
+      "nome": "Bradesco Smiles Visa Infinite",
+      "emissor": "Banco Bradesco S.A.",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": null,
+        "internacional": null,
+        "unidade": "milhas/USD",
+        "observacao": "A cada dólar pago em fatura ou equivalente em real, o titular ganha milhas transferidas automaticamente para a Conta Smiles em até 5 dias úteis após confirmação do pagamento. Faturas de adicionais pontuam na mesma conta do titular. Clientes Clube Smiles acumulam quantidade diferenciada."
+      },
+      "cashback": null,
+      "programa_proprio": false,
+      "transfere_para": [
+        "Smiles (GOL)"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Conforme categoria do cliente no Programa Smiles. Milhas do cartão Infinite não expiram (verificar regulamento Smiles vigente).",
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion",
+          "regra": "2 acessos gratuitos a centenas de Salas VIP ao redor do mundo. Disponível via app Visa Airport Companion (App Store / Play Store)."
+        },
+        {
+          "programa": "Visa Infinite Lounge – GRU T3",
+          "regra": "Acesso à sala VIP exclusiva Visa Infinite no Terminal 3 do Aeroporto Internacional de Guarulhos, aberta 24h. Acesso limitado ao titular + até 3 acompanhantes, por no máximo 3 horas por visitante."
+        },
+        {
+          "programa": "GOL Premium Lounge",
+          "regra": "Acesso gratuito às salas Gol Premium Lounge nos Aeroportos de Guarulhos (embarque nacional e internacional) e do Galeão (embarque internacional)."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Acesso a fila de segurança diferenciada nos Terminais 2 e 3 de Guarulhos e nos embarques doméstico e internacional do RIOgaleão. Disponível todos os dias das 03h às 23h (horário de Brasília). O titular pode levar até 5 acompanhantes."
+        },
+        {
+          "titulo": "Primeiro despache de bagagem gratuito GOL",
+          "descricao": "Primeiro despacho de bagagem sem custo em voos GOL."
+        },
+        {
+          "titulo": "Prioridade no embarque e check-in GOL",
+          "descricao": "Embarque preferencial e check-in prioritário em voos da GOL."
+        },
+        {
+          "titulo": "Milha extra em passagens GOL",
+          "descricao": "1 milha extra a cada 1 US$ gasto na compra de passagens GOL com o cartão."
+        },
+        {
+          "titulo": "Parcelamento em voos GOL",
+          "descricao": "Parcelamento em até 12x sem juros na compra de passagens GOL."
+        },
+        {
+          "titulo": "Seguro Proteção de Compra",
+          "descricao": "Cobertura contra roubo, furto e danos acidentais de produtos adquiridos com o cartão, dentro de 180 dias. Seguros fornecidos pela AIG Seguros do Brasil S.A."
+        },
+        {
+          "titulo": "Proteção de Preço e Garantia Estendida",
+          "descricao": "Benefícios Visa para cartões Gold, Platinum e Infinite. Consultar termos em visa.com.br."
+        },
+        {
+          "titulo": "Tecnologia Quick Read",
+          "descricao": "Todas as informações do cartão são impressas na face do plástico, facilitando compras online."
+        },
+        {
+          "titulo": "Transferência automática de milhas",
+          "descricao": "As milhas acumuladas são transferidas automaticamente para a Conta Smiles em até 5 dias úteis após confirmação do pagamento da fatura, proporcional ao valor pago."
+        }
+      ],
+      "link_solicitacao": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+      "fontes": [
+        "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/smiles-lanca-novos-cartoes-de-credito-com-marca-visa-em-parceria-com-banco-do-brasil-bradesco-e-santander.html",
+        "https://www.visa.com.br/sobre-a-visa/vac.html",
+        "http://200-155-86-38.bradesco.com.br/assets/classic/pdf/produtos-servicos/cartoes/guia-beneficios/card-bradesco-smile-visa-infinite.PDF",
+        "https://express.bradesco.com.br/naocorrentista/cartoes/smiles-visa-gold/"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos.internacional",
+        "pontos.nacional",
+        "renda_minima",
+        "requisito_acesso",
+        "spread"
+      ],
+      "nota_curadoria": "A página principal do produto (imprensa.bradesco.com.br/smiles/index.shtm) confirma benefícios de viagem, transferência de milhas e salas VIP, mas NÃO exibe valores de anuidade, taxa de acúmulo de milhas (milhas/USD) específica para a variante Infinite, renda mínima nem condições de isenção para o Bradesco Smiles Visa Infinite — apenas para o GOL Smiles Visa Infinite. O PDF oficial do guia de benefícios (200-155-86-38.bradesco.com.br) existe mas não foi acessível por crawler. A tabela de tarifas em institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html não retornou dados estruturados. Recomenda-se acesso direto às páginas de produto em bradesco.com.br/cartoes ou à tabela de tarifas oficial para completar os campos pendentes. Nota: o produto pode ter passado a se chamar 'Bradesco GOL Smiles Visa Infinite' na comunicação atual do banco.",
+      "procedencia": {
+        "bandeira": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "categoria": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/smiles-lanca-novos-cartoes-de-credito-com-marca-visa-em-parceria-com-banco-do-brasil-bradesco-e-santander.html",
+        "programa_proprio": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "transfere_para": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "pontos": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "salas_vip": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "validade_pontos": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "beneficios_banco": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "link_solicitacao": "https://imprensa.bradesco.com.br/smiles/index.shtm"
+      },
+      "vigencia_ate": "2025-08-31",
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao"
       ],
       "verificado_em": "2026-07-27"
     },
