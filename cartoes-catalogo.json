@@ -1,14 +1,15 @@
 {
   "_meta": {
     "descricao": "Base de cartoes do Clube do Viajante. Curadoria propria a partir de fontes oficiais dos emissores e das bandeiras.",
-    "regra": "Nenhum campo e preenchido sem fonte oficial. Campo nao confirmado permanece null e entra em campos_pendentes. Campo que varia por natureza do produto usa variavel=true e nao conta como pendencia.",
+    "regra": "Campo factual so tem valor se houver URL oficial declarada em procedencia[campo]. Validado por valida_catalogo.py.",
     "iof_compras_internacionais": {
       "aliquota": 3.5,
       "observacao": "Aliquota federal aplicada a todos os cartoes. O que varia por cartao e se o emissor absorve o custo (campo iof_isento).",
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 7
+    "total": 7,
+    "validado_em": "2026-07-27"
   },
   "cartoes": [
     {
@@ -38,13 +39,7 @@
       },
       "cashback": null,
       "programa_proprio": "C6 Atomos",
-      "transfere_para": [
-        "Azul Fidelidade",
-        "LATAM Pass",
-        "Livelo",
-        "Smiles",
-        "TAP Miles&Go"
-      ],
+      "transfere_para": [],
       "spread": null,
       "iof_isento": false,
       "salas_vip": [
@@ -64,12 +59,23 @@
         "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco"
       ],
       "campos_pendentes": [
-        "spread",
+        "cashback",
         "iof",
-        "renda_minima"
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
       ],
       "verificado_em": "2026-07-27",
-      "iof": null
+      "iof": null,
+      "procedencia": {
+        "anuidade": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
+        "anuidade_parcelas": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
+        "isencao": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
+        "pontos": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
+        "adicionais_gratis": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
+        "salas_vip": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco"
+      }
     },
     {
       "slug": "c6-carbon",
@@ -98,21 +104,10 @@
       },
       "cashback": null,
       "programa_proprio": "C6 Atomos",
-      "transfere_para": [
-        "Azul Fidelidade",
-        "LATAM Pass",
-        "Livelo",
-        "Smiles",
-        "TAP Miles&Go"
-      ],
-      "spread": 5.25,
+      "transfere_para": [],
+      "spread": null,
       "iof_isento": false,
-      "salas_vip": [
-        {
-          "programa": "Mastercard Airport Experiences (LoungeKey)",
-          "regra": "Acesso a salas VIP em aeroportos. Quantidade de acessos gratuitos nao publicada."
-        }
-      ],
+      "salas_vip": [],
       "beneficios_banco": [
         {
           "titulo": "Pontos Atomos que nao expiram",
@@ -140,13 +135,24 @@
         "https://ajuda.c6bank.com.br/s/article/Qual-a-taxa-para-compras-internacionais-com-o-cartao-C6-Bank"
       ],
       "campos_pendentes": [
-        "spread",
+        "cashback",
         "iof",
         "renda_minima",
-        "salas_vip.regra"
+        "requisito_acesso",
+        "salas_vip",
+        "salas_vip.regra",
+        "spread",
+        "transfere_para"
       ],
       "verificado_em": "2026-07-27",
-      "nota_curadoria": "Anuidade confirmada em R$ 1.176 na pagina oficial. Fontes secundarias ainda publicam R$ 1.020 e R$ 780, valores desatualizados."
+      "nota_curadoria": "Anuidade confirmada em R$ 1.176 na pagina oficial. Fontes secundarias ainda publicam R$ 1.020 e R$ 780, valores desatualizados.",
+      "procedencia": {
+        "anuidade": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "anuidade_parcelas": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "isencao": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "pontos": "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-carbon-mastercard-black",
+        "adicionais_gratis": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco"
+      }
     },
     {
       "slug": "caixa-icone-visa",
@@ -174,13 +180,7 @@
       },
       "cashback": null,
       "programa_proprio": "Pontos CAIXA / Uau CAIXA",
-      "transfere_para": [
-        "Azul Fidelidade",
-        "Dotz",
-        "LATAM Pass",
-        "Smiles",
-        "TAP Miles&Go"
-      ],
+      "transfere_para": [],
       "spread": null,
       "iof": 0,
       "salas_vip": [
@@ -214,12 +214,24 @@
         "https://www.caixa.gov.br/voce/cartoes/credito/vantagens/Paginas/default.aspx"
       ],
       "campos_pendentes": [
+        "cashback",
         "isencao.faixas",
         "renda_minima",
-        "spread"
+        "spread",
+        "transfere_para"
       ],
       "nota_curadoria": "IOF zero e pontuacao de 5 pontos nacionais sao temporarios. Campos com prazo devem ser revisados antes de 20/10/2026 e janeiro/2027.",
-      "verificado_em": "2026-07-27"
+      "verificado_em": "2026-07-27",
+      "procedencia": {
+        "anuidade": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+        "anuidade_parcelas": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+        "isencao": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+        "adicionais_gratis": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+        "pontos": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+        "salas_vip": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+        "iof": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+        "requisito_acesso": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx"
+      }
     },
     {
       "slug": "caixa-visa-infinite",
@@ -230,7 +242,7 @@
       "bandeira_ref": "visa-infinite",
       "imagem": null,
       "anuidade": null,
-      "anuidade_parcelas": 12,
+      "anuidade_parcelas": null,
       "anuidade_modelo": "anuidade",
       "isencao": {
         "tipo": "gasto",
@@ -239,12 +251,7 @@
       },
       "renda_minima": null,
       "adicionais_gratis": null,
-      "pontos": {
-        "nacional": null,
-        "internacional": null,
-        "unidade": "pts/USD",
-        "observacao": "Programa de Vantagens Uau CAIXA. Paridade nao publicada na pagina do produto."
-      },
+      "pontos": null,
       "cashback": null,
       "programa_proprio": "Uau CAIXA",
       "transfere_para": [],
@@ -267,14 +274,23 @@
         "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx"
       ],
       "campos_pendentes": [
+        "adicionais_gratis",
         "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
         "isencao.valor",
         "pontos",
         "renda_minima",
-        "adicionais_gratis",
-        "spread"
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
       ],
-      "verificado_em": "2026-07-27"
+      "verificado_em": "2026-07-27",
+      "procedencia": {
+        "isencao": "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx",
+        "salas_vip": "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx"
+      }
     },
     {
       "slug": "caixa-visa-infinite-investidores",
@@ -337,13 +353,24 @@
         "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx"
       ],
       "campos_pendentes": [
-        "isencao.faixas",
         "adicionais_gratis",
-        "spread",
-        "iof"
+        "cashback",
+        "iof",
+        "isencao.faixas",
+        "renda_minima",
+        "spread"
       ],
       "nota_curadoria": "Fontes secundarias ainda publicam anuidade de R$ 1.440, valor desatualizado. Oficial e R$ 1.650 (12x R$ 137,50).",
-      "verificado_em": "2026-07-27"
+      "verificado_em": "2026-07-27",
+      "procedencia": {
+        "anuidade": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
+        "anuidade_parcelas": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
+        "isencao": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
+        "pontos": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
+        "salas_vip": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
+        "transfere_para": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
+        "requisito_acesso": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx"
+      }
     },
     {
       "slug": "nubank-ultravioleta",
@@ -354,7 +381,7 @@
       "bandeira_ref": "mastercard-black",
       "imagem": null,
       "anuidade": null,
-      "anuidade_parcelas": 12,
+      "anuidade_parcelas": null,
       "anuidade_modelo": "mensalidade",
       "anuidade_observacao": "Cobrada como mensalidade de R$ 89. Clientes anteriores a 20/08/2025 mantiveram R$ 49 por 12 meses.",
       "isencao": {
@@ -364,7 +391,7 @@
       },
       "renda_minima": null,
       "renda_minima_observacao": "Sem regra de renda minima. Sujeito a analise de credito automatica no cadastro e mensalmente.",
-      "adicionais_gratis": 4,
+      "adicionais_gratis": null,
       "pontos": {
         "nacional": 2.2,
         "internacional": 2.2,
@@ -435,11 +462,24 @@
         "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta"
       ],
       "campos_pendentes": [
+        "adicionais_gratis",
         "anuidade",
-        "renda_minima"
+        "anuidade_parcelas",
+        "renda_minima",
+        "requisito_acesso"
       ],
       "verificado_em": "2026-07-27",
-      "nota_curadoria": "Anuidade nao e publicada: por contrato o valor e definido na contratacao. Nao e lacuna de pesquisa, e caracteristica do produto."
+      "nota_curadoria": "Anuidade nao e publicada: por contrato o valor e definido na contratacao. Nao e lacuna de pesquisa, e caracteristica do produto.",
+      "procedencia": {
+        "pontos": "https://nubank.com.br/ultravioleta/cartao-black",
+        "cashback": "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta",
+        "spread": "https://nubank.com.br/ultravioleta/cartao-black",
+        "iof": "https://nubank.com.br/ultravioleta/cartao-black",
+        "salas_vip": "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta",
+        "transfere_para": "https://nubank.com.br/ultravioleta/cartao-black",
+        "isencao": "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta"
+      },
+      "iof": 0
     },
     {
       "slug": "sicredi-visa-infinite",
@@ -454,11 +494,7 @@
       "anuidade_modelo": "variavel",
       "anuidade_variavel": true,
       "anuidade_observacao": "Definida por cada cooperativa. Nao ha valor unico. Consultar a cooperativa de origem.",
-      "isencao": {
-        "tipo": "variavel",
-        "valor": null,
-        "regra": "Anuidade e politica de isencao definidas por cada cooperativa, nao ha valor unico. Fontes secundarias divergem entre R$ 900-1.200 e R$ 1.200-1.500. Exibir como regra, nunca como numero."
-      },
+      "isencao": null,
       "renda_minima": null,
       "adicionais_gratis": null,
       "pontos": {
@@ -509,12 +545,23 @@
         "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/"
       ],
       "campos_pendentes": [
-        "renda_minima",
         "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "renda_minima",
+        "requisito_acesso",
         "spread"
       ],
       "verificado_em": "2026-07-27",
-      "nota_curadoria": "Variacao por cooperativa e caracteristica do produto cooperativo, nao lacuna de pesquisa."
+      "nota_curadoria": "Anuidade e isencao sao definidas por cada cooperativa e nao constam do site institucional. Fontes secundarias divergem (R$ 900-1.200 e R$ 1.200-1.500), por isso nenhum valor foi adotado.",
+      "procedencia": {
+        "pontos": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
+        "salas_vip": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
+        "transfere_para": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/"
+      }
     }
   ]
 }
