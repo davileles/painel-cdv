@@ -3411,7 +3411,7 @@ function cartoesSlugify(s) {
 // Motivo: valores sem origem declarada ja entraram na base mais de uma vez.
 const CATALOGO_CAMPOS = ['anuidade','anuidade_parcelas','isencao','renda_minima',
   'adicionais_gratis','pontos','cashback','spread','iof','salas_vip',
-  'transfere_para','requisito_acesso'];
+  'transfere_para','requisito_acesso','validade_pontos','programa_proprio'];
 
 function catalogoVazio(v){
   return v === null || v === undefined || v === '' ||
@@ -3445,6 +3445,16 @@ function cartoesSanitizar(cartao) {
   });
 
   c.procedencia = proc;
+  // Analise e OPINIAO derivada dos fatos, nao dado do emissor. Nao exige
+  // procedencia, mas fica marcada para nunca ser confundida com fato apurado.
+  if (c.analise && typeof c.analise === 'object') {
+    c.analise = {
+      origem: 'editorial',
+      gerada_em: c.analise.gerada_em || new Date().toISOString().slice(0, 10),
+      vantagens: (Array.isArray(c.analise.vantagens) ? c.analise.vantagens : []).map(String).slice(0, 8),
+      desvantagens: (Array.isArray(c.analise.desvantagens) ? c.analise.desvantagens : []).map(String).slice(0, 8)
+    };
+  } else { c.analise = null; }
   c.campos_pendentes = Array.from(pendentes).sort();
   if (rejeitados.length) c.campos_rejeitados = rejeitados;
   c.verificado_em = c.verificado_em || new Date().toISOString().slice(0, 10);
@@ -3538,6 +3548,66 @@ app.delete('/catalogo-cartoes/:slug', async (req, res) => {
   }
 });
 
+
+// ── Analise editorial: vantagens e desvantagens derivadas dos fatos apurados ──
+// Nao consulta a web. Opina apenas sobre o que ja esta na base, para nao
+// introduzir informacao sem procedencia por via indireta.
+app.post('/catalogo-cartoes/analisar', async (req, res) => {
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+  if (!ANTHROPIC_API_KEY) return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY nao configurada.' });
+  const slug = (req.body && req.body.slug || '').trim();
+  if (!slug) return res.status(400).json({ ok: false, erro: 'Campo obrigatorio: slug' });
+
+  let cartao;
+  try {
+    const { data } = await ghGetJson(CATALOGO_PATH, { cartoes: [] });
+    cartao = (data.cartoes || []).find(c => c.slug === slug);
+  } catch (e) { return res.status(500).json({ ok: false, erro: e.message }); }
+  if (!cartao) return res.status(404).json({ ok: false, erro: 'Cartao nao encontrado.' });
+
+  const systemPrompt = `Voce analisa cartoes de credito para viajantes brasileiros que acumulam milhas.
+Recebe a ficha tecnica JA VERIFICADA de um cartao e deve apontar vantagens e desvantagens.
+
+REGRAS:
+- Baseie-se EXCLUSIVAMENTE nos dados do JSON recebido. Nao use conhecimento externo nem invente numeros.
+- Campos null significam "nao apurado". NUNCA trate null como zero, gratuito ou inexistente.
+- Se a ausencia de um dado for relevante para a decisao, isso pode virar uma desvantagem, mas descrita como falta de transparencia, nao como valor ruim.
+- Cada item deve ser uma frase curta e concreta, citando o numero quando houver.
+- 3 a 5 vantagens e 2 a 4 desvantagens. Nao force: se nao houver base, devolva menos itens.
+
+Responda SOMENTE com JSON: {"vantagens":["..."],"desvantagens":["..."]}`;
+
+  const bodyPayload = JSON.stringify({
+    model: 'claude-sonnet-4-6', max_tokens: 2048, system: systemPrompt,
+    messages: [{ role: 'user', content: JSON.stringify(cartao) }]
+  });
+  const options = { hostname: 'api.anthropic.com', path: '/v1/messages', method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(bodyPayload),
+               'x-api-key': ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' } };
+
+  const apiReq = https.request(options, (apiRes) => {
+    let buf = '';
+    apiRes.on('data', d => buf += d);
+    apiRes.on('end', () => {
+      try {
+        const parsed = JSON.parse(buf);
+        if (parsed.error) return res.json({ ok: false, erro: parsed.error.message });
+        const raw = (parsed.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n')
+                      .replace(/```json|```/g, '').trim();
+        const m = raw.match(/\{[\s\S]*\}/);
+        if (!m) return res.json({ ok: false, erro: 'IA nao retornou JSON.' });
+        const a = JSON.parse(m[0]);
+        res.json({ ok: true, analise: { origem: 'editorial',
+          gerada_em: new Date().toISOString().slice(0, 10),
+          vantagens: a.vantagens || [], desvantagens: a.desvantagens || [] } });
+      } catch (e) { res.json({ ok: false, erro: 'Erro ao processar resposta da IA.' }); }
+    });
+  });
+  apiReq.on('error', e => res.json({ ok: false, erro: e.message }));
+  apiReq.setTimeout(120000, () => { apiReq.destroy(); res.json({ ok: false, erro: 'Timeout.' }); });
+  apiReq.write(bodyPayload); apiReq.end();
+});
+
 // ── Extrator: recebe apenas o NOME do cartao e busca o dado na fonte oficial ──
 app.post('/catalogo-cartoes/extrair', (req, res) => {
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
@@ -3565,7 +3635,7 @@ Responda SOMENTE com JSON valido, sem markdown, nesta estrutura:
   "pontos": { "nacional": null, "internacional": null, "unidade": "pts/USD", "observacao": null },
   "cashback": null,
   "programa_proprio": null, "transfere_para": [],
-  "spread": null, "iof": null,
+  "spread": null, "iof": null, "validade_pontos": null,
   "salas_vip": [ { "programa": "", "regra": "" } ],
   "beneficios_banco": [ { "titulo": "", "descricao": "" } ],
   "link_solicitacao": "", "fontes": ["URLs oficiais efetivamente consultadas"],
