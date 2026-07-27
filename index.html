@@ -2014,6 +2014,20 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 // ══════════════════════════════════════════════════════
 var CT_CARTOES = [];
 var CT_PENDENTES_REVISAO = [];
+
+// Le a resposta com seguranca: se vier HTML (timeout de borda, 404, 502),
+// devolve o status real em vez de estourar "Unexpected token '<'".
+async function ctJson(resp){
+  var texto = await resp.text();
+  try { return JSON.parse(texto); }
+  catch(e){
+    var amostra = texto.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().slice(0,120);
+    return { ok:false, erro:'HTTP ' + resp.status + ' — resposta nao-JSON do servidor'
+             + (amostra ? ' ("' + amostra + '")' : '')
+             + '. Se for timeout, extraia um cartao por vez.' };
+  }
+}
+
 var CT_ANALISE_TMP = {};
 
 function ctRenderAnalises(){
@@ -2054,7 +2068,7 @@ async function ctGerarAnalise(slug, silencioso){
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ slug: slug })
     });
-    var d = await r.json();
+    var d = await ctJson(r);
     if (d.ok) { CT_ANALISE_TMP[slug] = d.analise; ctRenderAnalises(); if (st && !silencioso) st.textContent = ''; return true; }
     if (st) st.textContent = 'Erro: ' + d.erro;
   } catch(e){ if (st) st.textContent = 'Erro: ' + e.message; }
@@ -2087,7 +2101,7 @@ async function ctSalvarAnalise(slug){
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ cartao: payload })
     });
-    var d = await r.json();
+    var d = await ctJson(r);
     if (d.ok) {
       if (d.cartao && d.cartao.campos_rejeitados && d.cartao.campos_rejeitados.length) {
         alert('Atenção: o servidor rejeitou campos sem procedência ao salvar: ' + d.cartao.campos_rejeitados.join(', '));
@@ -2129,7 +2143,7 @@ async function ctInit(){
   }
   try {
     var r = await fetch(_BASE + '/catalogo-cartoes');
-    var d = await r.json();
+    var d = await ctJson(r);
     CT_CARTOES = (d.cartoes || []);
   } catch(e){
     console.warn('[cartoes] falha ao carregar', e);
@@ -2195,7 +2209,7 @@ async function ctDetalhe(slug){
   if (CT_DETALHE[slug]) return CT_DETALHE[slug];
   try {
     var r = await fetch(_BASE + '/catalogo-cartoes/' + encodeURIComponent(slug));
-    var d = await r.json();
+    var d = await ctJson(r);
     if (d.ok) { CT_DETALHE[slug] = d.cartao; return d.cartao; }
   } catch(e){}
   return CT_CARTOES.find(function(c){ return c.slug === slug; }) || null;
@@ -2326,7 +2340,7 @@ async function ctExtrairFila(){
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ nome: nomes[i] })
       });
-      var d = await r.json();
+      var d = await ctJson(r);
       if (d.ok) CT_PENDENTES_REVISAO.push({ cartao: d.cartao, aviso: d.aviso });
       else CT_PENDENTES_REVISAO.push({ erro: d.erro, nome: nomes[i] });
     } catch(e){
@@ -2370,7 +2384,7 @@ async function ctSalvar(i){
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ cartao: item.cartao })
     });
-    var d = await r.json();
+    var d = await ctJson(r);
     if (d.ok) {
       alert('Salvo: ' + d.cartao.nome + (d.novo ? ' (novo)' : ' (atualizado)'));
       await ctInit();
