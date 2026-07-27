@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 37,
+    "total": 38,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -1867,6 +1867,119 @@
       "campos_rejeitados": [
         "isencao",
         "pontos"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "inter-mastercard-win",
+      "nome": "Inter Mastercard Win",
+      "emissor": "Banco Inter",
+      "bandeira": "Mastercard",
+      "categoria": "Private / Alta Renda",
+      "anuidade": 0,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": "Carteira de investimentos a partir de R$ 1.000.000 mantida no Inter (novos aportes ou portabilidade de outros bancos e corretoras)",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": "1 ponto a cada R$ 2,00 gastos no cartão de crédito",
+        "internacional": null,
+        "unidade": "pts/R$2",
+        "observacao": "Programa Inter Loop. Clientes Win não precisam ter débito automático ativo para acumular pontos. Pontos não expiram enquanto o cartão for usado com recorrência; expiram após 6 meses sem gerar novos pontos."
+      },
+      "cashback": null,
+      "programa_proprio": "Inter Loop",
+      "transfere_para": [
+        "TudoAzul (Azul Linhas Aéreas) — proporção 1:1, mínimo 5.000 pontos",
+        "Smiles (GOL) — proporção 1:1, mínimo 10.000 pontos (exclusivo clientes Prime e Win)"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Não expiram com uso recorrente do cartão; expiram após 6 meses sem geração de novos pontos",
+      "salas_vip": [
+        {
+          "programa": "Priority Pass",
+          "regra": "Acesso ilimitado e gratuito a mais de 1.500 salas VIP em aeroportos do mundo mediante apresentação do cartão Win, QR Code, documento com foto e cartão de embarque"
+        },
+        {
+          "programa": "Inter VIP Lounge",
+          "regra": "Acesso ilimitado e gratuito às salas VIP Inter Lounge nos aeroportos de Guarulhos (Terminal 2 – SP), Afonso Pena (Curitiba) e Confins (BH)"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Atendimento exclusivo do Banker/Advisor",
+          "descricao": "Profissional certificado dedicado, com acesso via Super App, telefone (31) 3003-4070, chat e WhatsApp (31) 3003-8477"
+        },
+        {
+          "titulo": "Wealth Planning",
+          "descricao": "Diagnóstico patrimonial exclusivo, planejamento estratégico, monitoramento de oportunidades e planejamento sucessório/fiscal"
+        },
+        {
+          "titulo": "Concierge Mastercard",
+          "descricao": "Serviço de concierge 24h da bandeira Mastercard"
+        },
+        {
+          "titulo": "Seguros Viagem",
+          "descricao": "Cobertura de seguro viagem inclusa no cartão"
+        },
+        {
+          "titulo": "Compra Protegida",
+          "descricao": "Benefício de proteção de compras da bandeira Mastercard"
+        },
+        {
+          "titulo": "Saques ilimitados gratuitos",
+          "descricao": "Clientes Win possuem saques gratuitos e ilimitados nas redes credenciadas"
+        },
+        {
+          "titulo": "Soluções de investimento exclusivas",
+          "descricao": "Acesso a Carteiras Administradas, Fundos exclusivos, offshore, câmbio, Research e crédito diferenciado"
+        },
+        {
+          "titulo": "Transferência de pontos para Smiles",
+          "descricao": "Exclusivo para clientes Prime e Win: troca de pontos Loop por milhas Smiles (GOL) na proporção 1:1, mínimo 10.000 pontos"
+        }
+      ],
+      "link_solicitacao": "https://inter.co/pra-voce/relacionamento/inter-win/",
+      "fontes": [
+        "https://inter.co/pra-voce/relacionamento/inter-win/",
+        "https://win.bancointer.com.br/",
+        "https://ajuda.bancointer.com.br/pt-BR/articles/4583093-quais-as-vantagens-de-ser-cliente-win",
+        "https://inter.co/pra-voce/cartoes/programa-de-pontos/",
+        "https://blog.inter.co/cliente-inter-win/",
+        "https://blog.inter.co/inter-loop-programa-de-pontos/",
+        "https://blog.inter.co/sala-vip",
+        "https://blog.inter.co/pontos-loop-para-a-smiles/",
+        "https://ajuda.bancointer.com.br/pt-BR/articles/1963915-o-inter-cobra-alguma-anuidade-no-cartao-de-credito",
+        "https://ajuda.bancointer.com.br/pt-BR/articles/1963873-o-inter-cobra-tarifas-dos-clientes-da-conta-digital"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos.internacional",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "O Inter Win é um segmento de relacionamento private/alta renda, não um cartão de crédito avulso comercializado. O acesso é condicionado a patrimônio investido mínimo de R$ 1 milhão no Inter. O cartão Mastercard Win é emitido automaticamente ao cliente enquadrado nesse segmento. O campo 'cashback' foi deixado como null pois a fonte mais recente (Inter Loop, 2023) substituiu o cashback direto por um sistema de pontos resgatáveis; a referência ao percentual 1,25% de cashback Win consta apenas em post de blog de 2021 (fonte blog.bancointer.com.br/cashback-cartao-de-credito), considerada potencialmente desatualizada. Renda mínima não é critério divulgado publicamente em fontes oficiais — o requisito é patrimônio investido. IOF segue regra padrão Bacen (0,38% fixo + 0,0082% a.d. nacional; 0,38% + 0,0082% a.d. internacional); não há tarifa diferenciada publicada pelo banco para o Win especificamente.",
+      "procedencia": {
+        "anuidade": "https://ajuda.bancointer.com.br/pt-BR/articles/4583093-quais-as-vantagens-de-ser-cliente-win",
+        "requisito_acesso": "https://inter.co/pra-voce/relacionamento/inter-win/",
+        "pontos": "https://ajuda.bancointer.com.br/pt-BR/articles/4583093-quais-as-vantagens-de-ser-cliente-win",
+        "validade_pontos": "https://blog.inter.co/inter-loop-programa-de-pontos/",
+        "programa_proprio": "https://inter.co/pra-voce/cartoes/programa-de-pontos/",
+        "transfere_para": "https://inter.co/pra-voce/cartoes/programa-de-pontos/",
+        "salas_vip": "https://blog.inter.co/sala-vip",
+        "beneficios_banco": "https://ajuda.bancointer.com.br/pt-BR/articles/4583093-quais-as-vantagens-de-ser-cliente-win",
+        "link_solicitacao": "https://inter.co/pra-voce/relacionamento/inter-win/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao"
       ],
       "verificado_em": "2026-07-27"
     },
