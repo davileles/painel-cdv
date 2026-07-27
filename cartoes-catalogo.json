@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 47,
+    "total": 48,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -2699,6 +2699,120 @@
       "campos_rejeitados": [
         "isencao"
       ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "itau-personnalite-latam-pass-visa-infinite",
+      "nome": "Itaú Personnalité LATAM Pass Visa Infinite",
+      "emissor": "Itaú Unibanco",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": 1200,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "gasto_mensal_ou_investimentos",
+        "valor": "R$20.000/mês (100% isenção) | R$10.000/mês (50% desconto) | R$3.000.000 em investimentos (100% isenção)",
+        "regra": "Após 90 dias do desbloqueio do cartão, manter volume mensal de gastos de R$20.000 por fatura garante isenção total da parcela mensal (R$100). Gastos de R$10.000/mês garantem 50% de desconto. Clientes com volume de investimentos no Itaú a partir de R$3.000.000 têm anuidade gratuita enquanto os investimentos forem mantidos."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Exclusivo para clientes Itaú Personnalité (correntistas). Para não correntistas, é necessário abrir conta Personnalité em agência.",
+      "adicionais_gratis": 6,
+      "pontos": {
+        "nacional": 2.5,
+        "internacional": 3.5,
+        "unidade": "milhas LATAM Pass/USD",
+        "observacao": "Participantes do Clube LATAM Pass acumulam 50% de milhas extras por dólar gasto (campanha válida de 01/02/2026 a 31/07/2026). Acumula até 9.000 pontos qualificáveis por ano (2 qualificáveis a cada 10 milhas acumuladas)."
+      },
+      "cashback": null,
+      "programa_proprio": "LATAM Pass",
+      "transfere_para": [
+        "LATAM Pass"
+      ],
+      "spread": null,
+      "iof": "4,38% (compras internacionais — alíquota legal vigente para pessoa física)",
+      "validade_pontos": "Milhas não expiram enquanto o cartão for utilizado. Em caso de inatividade por 12 meses consecutivos ou cancelamento do cartão, as milhas passam a ter validade de 24 meses.",
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion (DragonPass)",
+          "regra": "2 acessos gratuitos por ano por cartão (titular e adicional)"
+        },
+        {
+          "programa": "Salas VIP LATAM Airlines",
+          "regra": "Acesso gratuito e ilimitado em São Paulo, Miami, Santiago, Bogotá e Buenos Aires, válido para titular e um acompanhante, ao voar pela LATAM Airlines"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Check-in e embarque preferencial LATAM",
+          "descricao": "Check-in e embarque preferencial em voos domésticos no Brasil e internacionais da LATAM, para titular e um acompanhante, no Grupo 3"
+        },
+        {
+          "titulo": "Upgrade de cabine",
+          "descricao": "6 cupons de upgrade de cabine por ano válidos para uso dentro de 1 ano (6 na América do Sul e 2 fora da América do Sul)"
+        },
+        {
+          "titulo": "Parcelamento de passagens LATAM",
+          "descricao": "Parcelamento em até 10x sem juros na compra de passagens LATAM Airlines"
+        },
+        {
+          "titulo": "Desconto Shopping LATAM Pass",
+          "descricao": "10% de desconto em resgates no Shopping LATAM Pass e 30% de desconto na compra de pontos LATAM Pass"
+        },
+        {
+          "titulo": "Bônus de boas-vindas",
+          "descricao": "40.000 milhas bônus ao atingir o gasto de R$20.000 por fatura nas 3 primeiras faturas (válido somente para titular no 1º ano, para cartões aprovados após 15/07/2025)"
+        },
+        {
+          "titulo": "Tag Itaú",
+          "descricao": "Tag Itaú gratuita para pedágios e estacionamentos (sem mensalidade)"
+        },
+        {
+          "titulo": "Concierge Visa",
+          "descricao": "Assistente pessoal 24 horas por dia para organização de viagens e reservas de restaurantes, shows e eventos"
+        },
+        {
+          "titulo": "Seguros de viagem",
+          "descricao": "Assistência médica internacional, seguro para veículos de locadora, proteção contra cancelamento e atraso de viagem, proteção de compras e garantia estendida"
+        },
+        {
+          "titulo": "Clube LATAM Pass",
+          "descricao": "Benefícios exclusivos no Clube LATAM Pass, incluindo 50% de pontos extras por dólar gasto (campanha 01/02/2026–31/07/2026)"
+        }
+      ],
+      "link_solicitacao": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
+      "fontes": [
+        "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
+        "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
+        "https://www.itau.com.br/content/dam/itau/personalite/cartoes/pdf/condicoes-de-isencao-de-anuidade-cartoes-personnalite-vigente-abr-2021.pdf",
+        "https://www.itau.com.br/personnalite/cartoes",
+        "https://www.itau.com.br/personnalite/experiencia/viagem",
+        "https://www.itau.com.br/media/dam/m/7f5665cb71688008/original/Itau-Personnalite-inova-com-valet-proprio-e-sala-VIP-exclusiva-no-aeroporto-internacional-de-Guarulhos-SP.pdf",
+        "https://www.itau.com.br/relacoes-com-investidores/show.aspx?idMateria=qC6HXYpic7W1I5yPNnuA9Q%3D%3D&linguagem=pt",
+        "https://blog.itau.com.br/artigos/taxa-de-cambio"
+      ],
+      "campos_pendentes": [
+        "cashback",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "O cartão é ofertado em dois contextos distintos: (1) versão Personnalité, exclusiva para correntistas Personnalité, com regras de isenção por gastos de R$20k/mês ou investimentos de R$3M; (2) versão varejo (itau.com.br/cartoes), com mensalidade de R$105/mês e isenção por gastos de R$20k/fatura. A ficha foi preenchida com base na versão Personnalité, que é a solicitada. Renda mínima não é divulgada publicamente pelo banco — acesso é condicional à qualificação como cliente Personnalité. Spread cambial não está publicado em página do produto; o IOF de 4,38% para compras internacionais é alíquota legal informada em blog oficial do Itaú. O bônus do Clube LATAM Pass (50% extras) tem vigência promocional até 31/07/2026.",
+      "procedencia": {
+        "anuidade": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
+        "anuidade_parcelas": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
+        "isencao": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
+        "adicionais_gratis": "https://www.itau.com.br/personnalite/cartoes",
+        "pontos": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
+        "validade_pontos": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
+        "salas_vip": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
+        "beneficios_banco": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
+        "programa_proprio": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
+        "transfere_para": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
+        "iof": "https://blog.itau.com.br/artigos/taxa-de-cambio",
+        "requisito_acesso": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
+        "link_solicitacao": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite"
+      },
+      "vigencia_ate": "2026-07-31",
+      "analise": null,
       "verificado_em": "2026-07-27"
     },
     {
