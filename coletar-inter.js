@@ -3,15 +3,20 @@
 // 1. Acessa a API pública do Shopping Inter via proxy Railway (evita bloqueio ASN)
 // 2. Extrai cashbackValue (%) de cada Gift Card
 // 3. Salva/atualiza historico.json com snapshot do dia no programa "inter"
-// 4. Detecta aumentos de cashback e gera ofertas pendentes:
+// 4. Detecta aumentos de cashback e gera ofertas:
 //    - 1 oferta agrupada por programa (todos os parceiros que subiram)
 //    - 1 oferta individual para cada parceiro Tier 1 que subiu
+//    Todas sao publicadas automaticamente no grupo (mesma regra do coletar.js),
+//    caindo em ofertas-pendentes.json apenas se o enfileiramento falhar.
 
 const fs   = require('fs');
 const path = require('path');
 
+const { publicarOfertas, MAX_OFERTAS_APROVADAS } = require('./mensagem-radar');
+
 const HISTORICO_FILE   = path.join(__dirname, 'historico.json');
 const PENDENTES_FILE   = path.join(__dirname, 'ofertas-pendentes.json');
+const OFERTAS_FILE     = path.join(__dirname, 'ofertas.json');
 const NOTIF_FILE       = path.join(__dirname, 'variacoes-notificadas.json');
 
 const PROXY_URL = process.env.CDV_PROXY_URL || 'https://cdv-proxy-production.up.railway.app';
@@ -318,13 +323,39 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
   notifAtual[hoje] = notifHoje;
   fs.writeFileSync(NOTIF_FILE, JSON.stringify(notifAtual, null, 2));
 
-  // Adiciona novas ofertas no início das pendentes
-  fs.writeFileSync(PENDENTES_FILE, JSON.stringify({
-    geradoEm: new Date().toISOString(),
-    items: [...novasOfertas, ...itensPendentes],
-  }, null, 2));
+  // ── Publicação automática ───────────────────────────────────────────────────
+  // Mesma regra do coletar.js: variação de cashback vem de dado próprio e
+  // determinístico (historico.json), então vai direto para o grupo. Só cai na
+  // aba "Aprovar Ofertas" se o enfileiramento falhar.
+  const { publicadas, naoPublicadas } = await publicarOfertas(novasOfertas, 'Inter');
 
-  console.log(`[Inter] ${novasOfertas.length} oferta(s) adicionada(s) às pendentes.`);
+  // Publicadas entram direto em ofertas.json (fonte da aba Radar do painel)
+  if (publicadas.length > 0) {
+    let aprovadas = { geradoEm: null, items: [] };
+    if (fs.existsSync(OFERTAS_FILE)) {
+      try { aprovadas = JSON.parse(fs.readFileSync(OFERTAS_FILE, 'utf8')); } catch (e) {}
+    }
+    const itensAprovados = Array.isArray(aprovadas.items) ? aprovadas.items : [];
+    const idsPublicados = new Set(publicadas.map(o => o.id));
+    const itensRadar = [
+      ...publicadas,
+      ...itensAprovados.filter(o => !idsPublicados.has(o.id)),
+    ].slice(0, MAX_OFERTAS_APROVADAS);
+
+    fs.writeFileSync(OFERTAS_FILE, JSON.stringify(
+      { geradoEm: new Date().toISOString(), items: itensRadar }, null, 2
+    ));
+    console.log(`[Inter] ${publicadas.length} oferta(s) publicada(s) no Radar (ofertas.json: ${itensRadar.length} itens).`);
+  }
+
+  // O que não foi enviado continua na fila de aprovação manual
+  if (naoPublicadas.length > 0) {
+    fs.writeFileSync(PENDENTES_FILE, JSON.stringify({
+      geradoEm: new Date().toISOString(),
+      items: [...naoPublicadas, ...itensPendentes],
+    }, null, 2));
+    console.log(`[Inter] ${naoPublicadas.length} oferta(s) adicionada(s) às pendentes.`);
+  }
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
