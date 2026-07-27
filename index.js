@@ -3428,11 +3428,24 @@ const CARTOES_DOMINIOS_OFICIAIS = [
   'americanexpress.com'
 ];
 
+// A IA costuma anexar a citacao apos a URL ("...pdf - item 1.1.1").
+// Valida-se e guarda-se apenas a parte navegavel.
+function cartoesUrlLimpa(v) {
+  return String(v || '').trim().split(/[\s,;]/)[0];
+}
+
 function cartoesFonteOficial(url) {
   try {
-    const host = new URL(String(url)).hostname.toLowerCase().replace(/^www\./, '');
+    const host = new URL(cartoesUrlLimpa(url)).hostname.toLowerCase().replace(/^www\./, '');
     return CARTOES_DOMINIOS_OFICIAIS.some(d => host === d || host.endsWith('.' + d));
   } catch (e) { return false; }
+}
+
+// Aceita procedencia declarada por subcampo: 'pontos.nacional' vale para 'pontos'.
+function cartoesProcDoCampo(proc, campo) {
+  if (proc[campo]) return proc[campo];
+  const chave = Object.keys(proc).find(k => k.indexOf(campo + '.') === 0);
+  return chave ? proc[chave] : null;
 }
 
 function cartoesSlugify(s) {
@@ -3459,11 +3472,15 @@ function cartoesSanitizar(cartao) {
   const pendentes = new Set(Array.isArray(c.campos_pendentes) ? c.campos_pendentes : []);
   const rejeitados = [];
 
-  c.fontes = (Array.isArray(c.fontes) ? c.fontes : []).filter(cartoesFonteOficial);
+  c.fontes = Array.from(new Set(
+    (Array.isArray(c.fontes) ? c.fontes : [])
+      .filter(cartoesFonteOficial).map(cartoesUrlLimpa)
+  ));
 
   CATALOGO_CAMPOS.forEach(campo => {
     const temValor = !catalogoVazio(c[campo]);
-    const fonteOk  = !!proc[campo] && cartoesFonteOficial(proc[campo]);
+    const fonteBruta = cartoesProcDoCampo(proc, campo);
+    const fonteOk  = !!fonteBruta && cartoesFonteOficial(fonteBruta);
     if (temValor && !fonteOk) {
       rejeitados.push(campo);
       c[campo] = Array.isArray(c[campo]) ? [] : null;
@@ -3471,7 +3488,8 @@ function cartoesSanitizar(cartao) {
       pendentes.add(campo);
     } else if (temValor && fonteOk) {
       pendentes.delete(campo);
-      if (c.fontes.indexOf(proc[campo]) < 0) c.fontes.push(proc[campo]);
+      const limpa = cartoesUrlLimpa(fonteBruta);
+      if (c.fontes.indexOf(limpa) < 0) c.fontes.push(limpa);
     } else {
       pendentes.add(campo);
       delete proc[campo];
@@ -3658,7 +3676,7 @@ app.post('/catalogo-cartoes/extrair', (req, res) => {
 REGRA ABSOLUTA DE PROCEDENCIA:
 Use EXCLUSIVAMENTE paginas do proprio banco emissor ou da bandeira (dominios oficiais: caixa.gov.br, bb.com.br, itau.com.br, bradesco.com.br, santander.com.br, nubank.com.br, c6bank.com.br, bancointer.com.br, xpi.com.br, btgpactual.com, sicredi.com.br, sicoob.com.br, brb.com.br, visa.com.br, mastercard.com.br, elo.com.br, americanexpress.com).
 NUNCA use blogs, portais de comparacao, agregadores, sites de noticias ou canais de milhas. Eles frequentemente publicam valores desatualizados.
-Para CADA campo preenchido voce DEVE informar em "procedencia" a URL oficial exata de onde leu aquele valor. Campo sem procedencia sera descartado pelo servidor.\nSe um dado nao aparecer em fonte oficial, deixe o campo como null e liste o nome do campo em campos_pendentes. NUNCA infira, estime ou complete por conhecimento previo. Campo vazio e melhor que campo errado.
+Para CADA campo preenchido voce DEVE informar em "procedencia" a URL oficial de onde leu o valor. Use como chave o NOME EXATO do campo (ex: "pontos", "salas_vip"), nunca subcampos como "pontos.nacional". O valor deve ser SO a URL, sem citacao ou comentario anexado. Campo sem procedencia sera descartado pelo servidor.\nSe um dado nao aparecer em fonte oficial, deixe o campo como null e liste o nome do campo em campos_pendentes. NUNCA infira, estime ou complete por conhecimento previo. Campo vazio e melhor que campo errado.
 Priorize, quando existirem: pagina do produto, tabela de tarifas e contrato/regulamento do programa de pontos.
 
 Responda SOMENTE com JSON valido, sem markdown, nesta estrutura:
@@ -3675,7 +3693,7 @@ Responda SOMENTE com JSON valido, sem markdown, nesta estrutura:
   "salas_vip": [ { "programa": "", "regra": "" } ],
   "beneficios_banco": [ { "titulo": "", "descricao": "" } ],
   "link_solicitacao": "", "fontes": ["URLs oficiais efetivamente consultadas"],
-  "campos_pendentes": [], "nota_curadoria": "",\n  "procedencia": { "campo": "URL oficial exata de onde ESTE campo foi lido" },
+  "campos_pendentes": [], "nota_curadoria": "",\n  "procedencia": { "nome_exato_do_campo": "URL oficial pura, sem citacao anexada" },
   "vigencia_ate": null
 }
 
