@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 39,
+    "total": 40,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -1656,6 +1656,122 @@
         "transfere_para": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
         "requisito_acesso": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx"
       }
+    },
+    {
+      "slug": "caixa-elo-diners",
+      "nome": "Cartão CAIXA Elo Diners Club",
+      "emissor": "Caixa Econômica Federal",
+      "bandeira": "Elo / Diners Club International",
+      "categoria": "Premium",
+      "anuidade": 1100.04,
+      "anuidade_parcelas": 91.67,
+      "isencao": {
+        "tipo": "cashback",
+        "valor": "50% ou 100% da parcela mensal de anuidade",
+        "regra": "100% de cashback da parcela mensal para gastos mensais a partir de R$ 10.000,00; 50% para gastos mensais a partir de R$ 5.000,00. Cashback creditado na fatura seguinte. Exige pagamento da fatura (entre mínimo e total) até o vencimento. Adicionais: isenção de anuidade."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Limite mínimo de crédito de R$ 25.000,00. Idade mínima 18 anos (ou 16 anos emancipados/assistidos com renda própria). Disponível para clientes e não clientes CAIXA via agências, Internet Banking ou App CAIXA.",
+      "adicionais_gratis": true,
+      "pontos": {
+        "nacional": 2.5,
+        "internacional": 3.5,
+        "unidade": "pts/USD",
+        "observacao": "DIVERGÊNCIA ENTRE FONTES OFICIAIS: Página do produto (elodiners) e Regulamento do Programa Pontos PDF v021 (set/2025) indicam 2,5 pts/USD nacional e 3,5 pts/USD internacional. Página de Programa de Pontos e Simulador indicam 3 pts/USD nacional e 4 pts/USD internacional. Campo marcado em campos_pendentes para verificação. Pontos não expiram. Programa: Programa Pontos CAIXA / Uau CAIXA."
+      },
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "Cashback de anuidade: 100% da parcela mensal para gastos ≥ R$ 10.000,00/mês; 50% para gastos ≥ R$ 5.000,00/mês. Não é cashback direto sobre compras."
+      },
+      "programa_proprio": "Programa Pontos CAIXA (integrado ao Programa de Vantagens Uau CAIXA)",
+      "transfere_para": [
+        "Latam Pass",
+        "Smiles (Gol)",
+        "TudoAzul (Azul Fidelidade)",
+        "Dotz"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Não expiram",
+      "salas_vip": [
+        {
+          "programa": "Priority Pass",
+          "regra": "4 acessos gratuitos anuais por cartão elegível via aplicativo Priority Pass, podendo ser divididos entre titular e acompanhantes."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Programa Pontos CAIXA / Uau CAIXA",
+          "descricao": "Acúmulo automático de pontos a cada compra. Pontos transferidos para o Programa de Vantagens Uau CAIXA; resgatáveis por viagens, produtos e experiências."
+        },
+        {
+          "titulo": "Cashback de Anuidade",
+          "descricao": "Devolução de 100% ou 50% da parcela mensal da anuidade na fatura, conforme faixas de gastos mensais (R$ 10.000 ou R$ 5.000). Cartões contratados a partir de 01/02/2023 participam automaticamente."
+        },
+        {
+          "titulo": "Isenção de anuidade para adicionais",
+          "descricao": "Cartões adicionais sem cobrança de anuidade, para adicionais vinculados à proposta do titular aprovada a partir de 02/09/2020."
+        },
+        {
+          "titulo": "Benefícios Elo FLEX (9 fixos + 4 flex)",
+          "descricao": "O cartão conta com 13 benefícios no total: 9 fixos e 4 flexíveis, trocáveis na Plataforma Elo FLEX nas categorias Auto, Casa, Pet, Compras, entre outras."
+        },
+        {
+          "titulo": "Design exclusivo",
+          "descricao": "Design único nas cores off white ou preto, à escolha do cliente."
+        },
+        {
+          "titulo": "Taxas de juros diferenciadas",
+          "descricao": "Taxas de juros diferenciadas para portadores do cartão."
+        },
+        {
+          "titulo": "Parcelamento de fatura",
+          "descricao": "Possibilidade de parcelar o saldo devedor da fatura."
+        },
+        {
+          "titulo": "Bloqueio e controle via App Cartões CAIXA",
+          "descricao": "Bloqueio temporário do cartão físico ou de compras online a qualquer momento pelo App Cartões CAIXA. Titulares podem também bloquear adicionais."
+        }
+      ],
+      "link_solicitacao": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+      "fontes": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/credito/vantagens/Paginas/default.aspx",
+        "https://www.caixa.gov.br/Downloads/cartoes-caixa-pessoa-fisica-regulamentos/Programa_Pontos_Cartoes_CAIXA.pdf",
+        "https://www.caixa.gov.br/Downloads/tabelas-tarifas-pessoa-fisica-pessoa-juridica/tabela-beneficios-e-servicos-vinculados-ao-cartao-diferenciado.pdf",
+        "https://www.caixa.gov.br/voce/cartoes/credito/simulador-cartoes/Paginas/default.aspx",
+        "https://caixanoticias.caixa.gov.br/Paginas/Not%C3%ADcias/2025/01-JANEIRO/CAIXA-disponibiliza-pontos-extras-para-clientes-de-cartao-de-credito-em-seu-164-aniversario.aspx"
+      ],
+      "campos_pendentes": [
+        "iof",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "Há divergência material em dois campos críticos nas próprias fontes oficiais da CAIXA: (1) PONTUAÇÃO: a página do produto (elodiners) e o Regulamento do Programa Pontos PDF v021 (set/2025) informam 2,5 pts/USD nacional e 3,5 pts/USD internacional; já a página de Programa de Pontos (caixa.gov.br/voce/cartoes/programa-pontos) e o Simulador de Cartões informam 3 pts/USD nacional e 4 pts/USD internacional. A página de vantagens também cita 3/4. Suspeita-se que a página do produto e o PDF estejam desatualizados. (2) ANUIDADE: a página do produto cita 12x R$ 91,67 (= R$ 1.100,04/ano); o simulador cita 12x R$ 120,00 (= R$ 1.440,00/ano); a Tabela de Benefícios e Serviços Vinculados ao Cartão Diferenciado (PDF vigente a partir de 30/12/2025) cita R$ 1.650,00/ano. Recomenda-se consultar agência CAIXA ou Central de Atendimento (4004 0104 / 0800 104 0104) para confirmação dos valores vigentes. Os adicionais são gratuitos para propostas aprovadas a partir de 02/09/2020. O cashback de anuidade é automático para contratos a partir de 01/02/2023.",
+      "procedencia": {
+        "nome": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "emissor": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "bandeira": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "categoria": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "anuidade": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "anuidade_parcelas": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "isencao": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "requisito_acesso": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "adicionais_gratis": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "pontos": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "cashback": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "programa_proprio": "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
+        "transfere_para": "https://caixanoticias.caixa.gov.br/Paginas/Not%C3%ADcias/2025/01-JANEIRO/CAIXA-disponibiliza-pontos-extras-para-clientes-de-cartao-de-credito-em-seu-164-aniversario.aspx",
+        "validade_pontos": "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
+        "salas_vip": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "beneficios_banco": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "link_solicitacao": "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "verificado_em": "2026-07-27"
     },
     {
       "slug": "inter-win",
