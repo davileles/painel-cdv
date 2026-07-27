@@ -3584,7 +3584,9 @@ app.post('/catalogo-cartoes', async (req, res) => {
     data._meta = { ...(data._meta || {}), total: lista.length, atualizado_em: new Date().toISOString().slice(0, 10) };
 
     await ghPutJson(CATALOGO_PATH, data, sha, `catalogo: ${idx >= 0 ? 'atualiza' : 'adiciona'} ${cartao.slug}`);
-    res.json({ ok: true, cartao, novo: idx < 0, total: lista.length });
+    // Devolve a lista ja atualizada: ler de volta do GitHub logo apos o PUT
+    // pode retornar conteudo em cache e a tela ficaria sem o cartao recem-salvo.
+    res.json({ ok: true, cartao, novo: idx < 0, total: lista.length, cartoes: lista });
   } catch (e) {
     console.error('[catalogo POST]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
