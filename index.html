@@ -1957,6 +1957,10 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 #tab-cartoes .ct-rot{color:var(--muted);text-transform:uppercase;font-size:10px;letter-spacing:.5px}
 #tab-cartoes .ct-na{color:var(--muted);opacity:.6}
 #tab-cartoes .ct-hint{color:var(--muted);font-size:11px}
+#tab-cartoes .ct-tag{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;
+  color:var(--muted);border:1px solid var(--border);border-radius:5px;padding:1px 6px;margin-left:6px}
+#tab-cartoes .ct-tag-rej{color:#f87171;border-color:rgba(248,113,113,.45)}
+
 </style>
 <div id="tab-cartoes" class="tab-panel" style="display:none">
   <h2 style="margin:0 0 4px">💳 Comparador de Cartões</h2>
@@ -2352,29 +2356,90 @@ async function ctExtrairFila(){
   st.textContent = 'Concluído. Revise abaixo antes de salvar.';
 }
 
+var CT_FICHA = [
+  ['💰','Anuidade','anuidade'], ['🆓','Isenção','isencao'],
+  ['🇧🇷','Pontos (nacional)','pontosNac'], ['🌎','Pontos (internacional)','pontosInt'],
+  ['💵','Cashback','cashback'], ['⏳','Validade dos pontos','validade'],
+  ['🎯','Programa','programa'], ['🔁','Transfere para','transf'],
+  ['📊','Renda / requisito','renda'], ['👥','Adicionais grátis','adicionais'],
+  ['💱','Spread','spread'], ['🏛️','IOF','iof'], ['🛋️','Salas VIP','vip']
+];
+
+function ctFichaHtml(c){
+  var v = ctCampos(c);
+  var rej = c.campos_rejeitados || [];
+  var pend = c.campos_pendentes || [];
+  var mapa = { anuidade:'anuidade', isencao:'isencao', pontosNac:'pontos', pontosInt:'pontos',
+    cashback:'cashback', validade:'validade_pontos', programa:'programa_proprio',
+    transf:'transfere_para', renda:'renda_minima', adicionais:'adicionais_gratis',
+    spread:'spread', iof:'iof', vip:'salas_vip' };
+
+  var linhas = CT_FICHA.map(function(f){
+    var campo = mapa[f[2]];
+    var val = v[f[2]];
+    var marca = '';
+    if (rej.indexOf(campo) >= 0) marca = '<span class="ct-tag ct-tag-rej">rejeitado</span>';
+    else if (val == null && pend.indexOf(campo) >= 0) marca = '<span class="ct-tag">a apurar</span>';
+    return '<tr>'+
+      '<td class="ct-rot" style="width:200px"><span style="margin-right:7px">'+f[0]+'</span>'+f[1]+'</td>'+
+      '<td>'+ (val == null ? '<span class="ct-na">—</span>' : val) + ' ' + marca +'</td>'+
+    '</tr>';
+  }).join('');
+
+  var ben = (c.beneficios_banco||[]).map(function(b){
+    return '<li style="margin:3px 0"><strong style="font-weight:600">'+b.titulo+'</strong>'+
+      (b.descricao ? ' — <span style="color:var(--muted)">'+b.descricao+'</span>' : '')+'</li>';
+  }).join('');
+
+  var fontes = (c.fontes||[]).map(function(u){
+    var curto = u.replace(/^https?:\/\//,'').slice(0,70);
+    return '<div style="margin:2px 0"><a href="'+u+'" target="_blank" rel="noopener" style="color:var(--cdv-coral);text-decoration:none;font-size:11.5px">'+curto+' ↗</a></div>';
+  }).join('');
+
+  return '<table style="width:100%;table-layout:fixed">'+linhas+'</table>'+
+    (ben ? '<div style="margin-top:12px"><div class="ct-rot" style="margin-bottom:5px">Benefícios do banco</div>'+
+           '<ul style="margin:0;padding-left:18px;font-size:12px">'+ben+'</ul></div>' : '')+
+    (c.nota_curadoria ? '<div style="margin-top:12px"><div class="ct-rot" style="margin-bottom:4px">Nota de curadoria</div>'+
+           '<div style="font-size:12px;color:var(--muted)">'+c.nota_curadoria+'</div></div>' : '')+
+    (fontes ? '<div style="margin-top:12px"><div class="ct-rot" style="margin-bottom:4px">Fontes oficiais ('+(c.fontes||[]).length+')</div>'+fontes+'</div>' : '');
+}
+
 function ctRenderRevisao(){
   var box = document.getElementById('ct-revisao');
   if (!box) return;
   box.innerHTML = CT_PENDENTES_REVISAO.map(function(item, i){
     if (item.erro) {
       return '<div class="ct-box" style="border-color:#7f1d1d">'+
-        '<strong>'+item.nome+'</strong><div style="opacity:.75;font-size:13px">Erro: '+item.erro+'</div></div>';
+        '<strong>'+item.nome+'</strong>'+
+        '<div style="font-size:12px;color:var(--muted);margin-top:3px">'+item.erro+'</div></div>';
     }
     var c = item.cartao;
-    var pend = (c.campos_pendentes||[]);
+    var nPend = (c.campos_pendentes||[]).length;
+    var nRej  = (c.campos_rejeitados||[]).length;
     return '<div class="ct-box">'+
-      '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">'+
-        '<div><strong>'+(c.nome||'?')+'</strong>'+
-        '<div style="opacity:.65;font-size:13px">'+(c.emissor||'')+' · '+(c.fontes||[]).length+' fonte(s) oficial(is)'+'</div></div>'+
-        '<button class="ct-btn on" onclick="ctSalvar('+i+')">Salvar na base</button>'+
+      '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start;margin-bottom:12px">'+
+        '<div><div style="font-weight:700;font-size:14px">'+(c.nome||'?')+'</div>'+
+          '<div style="font-size:12px;color:var(--muted);margin-top:2px">'+(c.emissor||'')+' · '+(c.bandeira||'')+' '+(c.categoria||'')+'</div>'+
+          '<div style="font-size:11px;color:var(--muted);margin-top:5px">'+
+            (c.fontes||[]).length+' fonte(s) · '+nPend+' a apurar'+(nRej ? ' · '+nRej+' rejeitado(s)' : '')+
+          '</div></div>'+
+        '<div style="display:flex;gap:6px">'+
+          '<button class="ct-btn on" onclick="ctSalvar('+i+')">Salvar</button>'+
+          '<button class="ct-btn" onclick="ctDescartarExtracao('+i+')">Descartar</button>'+
+        '</div>'+
       '</div>'+
-      (item.aviso ? '<div style="margin-top:8px;font-size:13px;color:#fbbf24">⚠️ '+item.aviso+'</div>' : '')+
-      (pend.length ? '<div style="margin-top:8px;font-size:13px;opacity:.7">Pendentes: '+pend.join(', ')+'</div>' : '')+
-      '<details style="margin-top:10px"><summary style="cursor:pointer;font-size:13px;opacity:.8">Ver JSON</summary>'+
-      '<pre style="white-space:pre-wrap;font-size:12px;opacity:.85;margin-top:8px">'+
+      (item.aviso ? '<div style="font-size:12px;color:#fbbf24;margin-bottom:10px">⚠️ '+item.aviso+'</div>' : '')+
+      ctFichaHtml(c)+
+      '<details style="margin-top:12px"><summary style="cursor:pointer;font-size:11px;color:var(--muted)">JSON bruto</summary>'+
+      '<pre style="white-space:pre-wrap;font-size:11px;color:var(--muted);margin-top:6px">'+
         JSON.stringify(c, null, 2).replace(/</g,'&lt;')+'</pre></details>'+
     '</div>';
   }).join('');
+}
+
+function ctDescartarExtracao(i){
+  CT_PENDENTES_REVISAO.splice(i, 1);
+  ctRenderRevisao();
 }
 
 async function ctSalvar(i){
