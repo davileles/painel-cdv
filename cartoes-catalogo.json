@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
-    "total": 25,
+    "total": 26,
     "validado_em": "2026-07-27"
   },
   "cartoes": [
@@ -185,6 +185,67 @@
       "campos_rejeitados": [
         "isencao",
         "transfere_para"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "bradesco-visa-principal",
+      "nome": "Bradesco Visa Principal",
+      "emissor": null,
+      "bandeira": null,
+      "categoria": null,
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": null,
+      "cashback": null,
+      "programa_proprio": null,
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [],
+      "beneficios_banco": [],
+      "link_solicitacao": null,
+      "fontes": [
+        "https://www.bradesco.com.br",
+        "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
+        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "https://bdn.bradesco.com.br/html/prime/produtos-servicos/cartoes/conheca-os-cartoes/bradesco-visa-gold.shtm",
+        "https://promocoes.visa.com.br/site/bradesco/bradesco-marvel-resgate/bradesco/regulamento/resgate"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "isencao.regra",
+        "isencao.tipo",
+        "isencao.valor",
+        "pontos",
+        "pontos.internacional",
+        "pontos.nacional",
+        "pontos.observacao",
+        "programa_proprio",
+        "renda_minima",
+        "requisito_acesso",
+        "salas_vip",
+        "spread",
+        "transfere_para",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "PRODUTO NÃO IDENTIFICADO NAS FONTES OFICIAIS. O nome 'Bradesco Visa Principal' não corresponde a nenhum produto listado no portfólio oficial de cartões Bradesco (bradesco.com.br). O termo 'principal' aparece apenas como designação genérica nos regulamentos de promoções para diferenciar o cartão de 1ª titularidade do cartão adicional (ex: 'Cartão Principal é o Cartão Elegível contratado diretamente pelo titular'). O portfólio Visa do Bradesco listado em fontes oficiais inclui: Visa Aeternum, Visa Infinite, Visa Signature, Visa Platinum e Visa Gold. Recomenda-se verificar: (1) se o nome correto é outro (ex: 'Bradesco Visa Classic', 'Bradesco Visa Gold'); (2) se trata-se de um cartão regional, co-branded ou descontinuado não indexado publicamente; (3) consultar diretamente a Tabela Geral de Tarifas do Bradesco via Internet Banking.",
+      "procedencia": {},
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao",
+        "pontos"
       ],
       "verificado_em": "2026-07-27"
     },
