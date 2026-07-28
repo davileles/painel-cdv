@@ -1116,19 +1116,21 @@ app.post('/assinaturas/salvar', async (req, res) => {
 // ── IA: Extrair dados de reserva via Anthropic ──────────────────
 app.post('/ia/extrair-reserva', (req, res) => {
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-  const { mediaType, base64, isPdf, tipoCampos } = req.body;
-  console.log('[ia/extrair-reserva] recebido. isPdf:', isPdf, 'mediaType:', mediaType, 'base64 len:', (base64||'').length);
+  const { mediaType, base64, isPdf, isHtml, texto, tipoCampos } = req.body;
+  console.log('[ia/extrair-reserva] recebido. isPdf:', isPdf, 'isHtml:', !!isHtml, 'mediaType:', mediaType,
+              'base64 len:', (base64||'').length, 'texto len:', (texto||'').length);
 
   if (!ANTHROPIC_API_KEY) {
     return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY não configurada no servidor.' });
   }
-  if (!base64 || !mediaType) {
-    return res.status(400).json({ ok: false, erro: 'Parâmetros base64 e mediaType são obrigatórios.' });
+  const textoDoc = (typeof texto === 'string' ? texto : '').trim();
+  if (!textoDoc && (!base64 || !mediaType)) {
+    return res.status(400).json({ ok: false, erro: 'Informe base64 + mediaType (imagem/PDF) ou texto (HTML).' });
   }
 
   const prompt =
     'Você é um assistente de extração de dados de documentos de viagem. ' +
-    'Analise este documento (' + (isPdf ? 'PDF' : 'imagem') + ') de ' + (tipoCampos || 'reserva de viagem') + '. ' +
+    'Analise este documento (' + (textoDoc ? 'texto extraído de um arquivo HTML' : (isPdf ? 'PDF' : 'imagem')) + ') de ' + (tipoCampos || 'reserva de viagem') + '. ' +
     'Extraia os dados REAIS do documento e retorne SOMENTE um JSON válido (sem markdown). ' +
     'Use exatamente esta estrutura JSON (substitua pelos valores reais): ' +
     '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","cabine":"cabine exata","cia":"companhia aerea"}],"pnr":"","pax":0,"programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","subtipo":"transfer","transferOrigem":"","transferDestino":"","transferData":"","transferHora":"","transferPax":"","transferOp":"","transferVeiculo":"","transferConf":"","transferValor":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","obs":""} ' +
@@ -1262,9 +1264,11 @@ app.post('/ia/extrair-reserva', (req, res) => {
     return d;
   }
 
-  const contentBlock = isPdf
-    ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } }
-    : { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } };
+  const contentBlock = textoDoc
+    ? { type: 'text', text: 'CONTEÚDO DO DOCUMENTO (texto extraído de arquivo HTML):\n"""\n' + textoDoc.slice(0, 60000) + '\n"""' }
+    : isPdf
+      ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } }
+      : { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } };
 
   const bodyPayload = JSON.stringify({
     model: 'claude-sonnet-4-6',
