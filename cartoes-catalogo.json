@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-28",
-    "total": 60,
+    "total": 61,
     "validado_em": "2026-07-27",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização."
@@ -5659,6 +5659,132 @@
       "analise": null,
       "verificado_em": "2026-07-27",
       "bandeira_ref": "mastercard-black"
+    },
+    {
+      "slug": "santander-visa-unique-pontos",
+      "nome": "Santander Visa Unique Pontos",
+      "emissor": "Banco Santander Brasil",
+      "bandeira": "Visa",
+      "categoria": "Visa Infinite",
+      "anuidade": 1155,
+      "anuidade_parcelas": 96.25,
+      "isencao": {
+        "tipo": "criterios_multiplos",
+        "valor": "100% de desconto na parcela mensal",
+        "regra": "Cumprir 2 dos 3 critérios: (1) ser correntista com pacote de serviços ativo (exceto Essencial e Free); (2) gastar a partir de R$ 8.000 por fatura; (3) manter a partir de R$ 50.000 investidos no Santander (Poupança, Previdência, CDB, LCA, LCI, LF, LIG e Fundos)"
+      },
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": 5,
+      "pontos": {
+        "nacional": 2.2,
+        "internacional": 3,
+        "unidade": "pts/USD",
+        "observacao": "Nacional pode ser potencializado para até 3,3 pts/USD e internacional para até 4,5 pts/USD com o programa Santander Rewards (até +50% conforme nível de relacionamento — Nível 4: +50%, Nível 3: +30%, Nível 2: +15%)"
+      },
+      "cashback": null,
+      "programa_proprio": "Esfera (esfera.com.vc) — pontos não expiram; resgate em produtos, viagens, experiências, crédito em fatura e transferência para milhas",
+      "transfere_para": [
+        "Azul Fidelidade",
+        "Smiles (GOL)",
+        "LATAM Pass",
+        "Iberia Plus"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Não expiram",
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion",
+          "regra": "2 acessos gratuitos por ano a mais de 1.200 salas VIP; acesso pode ser compartilhado com acompanhante; a partir do 3º acesso, cobra-se a taxa vigente da sala. A partir de jan/2026, exige gasto médio de R$ 1.000 nos últimos 3 fechamentos de fatura para manter a gratuidade."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Santander Rewards",
+          "descricao": "Programa de relacionamento gratuito que potencializa em até 50% os pontos do cartão conforme nível de engajamento financeiro (uso do cartão, Pix, investimentos, portabilidade de salário, débito automático etc.)."
+        },
+        {
+          "titulo": "Tag Santander Sem Parar",
+          "descricao": "Mensalidade ZERO no plano 'Em Todo Lugar Santander' para 1 Tag por CPF, desde que o cartão esteja ativo e sem bloqueio."
+        },
+        {
+          "titulo": "AutoCompara — Seguro Auto",
+          "descricao": "18% de desconto no prêmio do seguro veicular + 5.000 pontos bônus na Esfera ao usar cupom DESCONTOUNIQUE."
+        },
+        {
+          "titulo": "Seguro de Viagem Visa",
+          "descricao": "Cobertura de emergência médica internacional e assistência ao viajante, condicionada à compra da passagem com o cartão. Solicitar bilhete no site da Visa antes da viagem."
+        },
+        {
+          "titulo": "Proteção de Compras",
+          "descricao": "Proteção contra danos e roubo por até 90 dias nas compras realizadas com o cartão."
+        },
+        {
+          "titulo": "Garantia Estendida",
+          "descricao": "Extensão da garantia do fornecedor por até 1 ano para produtos comprados integralmente com o cartão."
+        },
+        {
+          "titulo": "Seguro para Aluguel de Carro",
+          "descricao": "Cobertura por danos causados por colisão, roubo e/ou incêndio acidental em locações pagas com o cartão."
+        },
+        {
+          "titulo": "Cartão Online",
+          "descricao": "Número virtual gerado antes do cartão físico chegar, sem custo adicional."
+        },
+        {
+          "titulo": "Parcelamento de fatura",
+          "descricao": "Possibilidade de parcelar a fatura em até 24 vezes."
+        },
+        {
+          "titulo": "Vai de Visa / Benefícios Visa Infinite",
+          "descricao": "Acesso a mais de 2.000 experiências exclusivas no Brasil e no mundo (gastronômicas, turísticas, esportivas etc.) e descontos em estabelecimentos parceiros."
+        }
+      ],
+      "link_solicitacao": "https://www.santander.com.br/banco/unique-black",
+      "fontes": [
+        "https://www.santander.com.br/banco/unique-black",
+        "https://www.santander.com.br/banco/beneficios-visa",
+        "https://www.santander.com.br/upgrade-cartao-unique",
+        "https://www.santander.com.br/blog/cartao-santander-salas-vip-aeroporto",
+        "https://www.santander.com.br/blog/esfera/salas-vip-em-aeroportos",
+        "https://www.santander.com.br/banco/rewards",
+        "https://www.santander.com.br/blog/santander-rewards",
+        "https://www.santander.com.br/blog/programa-esfera",
+        "https://www.santander.com.br/blog/esfera/aplicativo-esfera",
+        "https://www.santander.com.br/cartao-credito-santander",
+        "https://www.santander.com.br/banco/conta-corrente/select",
+        "https://www.santander.com.br/blog/dia-dos-namorados"
+      ],
+      "campos_pendentes": [
+        "cashback",
+        "iof",
+        "renda_minima",
+        "requisito_acesso",
+        "spread"
+      ],
+      "nota_curadoria": "A página oficial https://www.santander.com.br/banco/unique-black centraliza as informações do Unique (Visa e Mastercard) sem distinção explícita de renda mínima para a versão Visa Pontos — o campo fica pendente de confirmação na tabela de tarifas ou contrato. O spread cambial e o IOF de 6,38% são padrão de mercado, mas não foram explicitados em fonte oficial consultada nesta pesquisa. A partir de jan/2026 o acesso às salas VIP passou a exigir gasto médio mínimo de R$1.000 nos 3 últimos fechamentos de fatura. Os pontos base são 2,2 pts/USD (nacional) e 3 pts/USD (internacional), conforme página oficial do produto; a página de upgrade cita '2 pts/USD' de forma genérica — prevalece o valor mais detalhado da página do produto.",
+      "procedencia": {
+        "anuidade": "https://www.santander.com.br/banco/unique-black",
+        "anuidade_parcelas": "https://www.santander.com.br/banco/unique-black",
+        "isencao": "https://www.santander.com.br/banco/unique-black",
+        "adicionais_gratis": "https://www.santander.com.br/upgrade-cartao-unique",
+        "pontos": "https://www.santander.com.br/banco/unique-black",
+        "validade_pontos": "https://www.santander.com.br/blog/dia-dos-namorados",
+        "programa_proprio": "https://www.santander.com.br/blog/programa-esfera",
+        "transfere_para": "https://www.santander.com.br/blog/esfera/aplicativo-esfera",
+        "salas_vip": "https://www.santander.com.br/banco/beneficios-visa",
+        "bandeira": "https://www.santander.com.br/banco/unique-black",
+        "categoria": "https://www.santander.com.br/banco/unique-black",
+        "link_solicitacao": "https://www.santander.com.br/banco/unique-black"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "requisito_acesso"
+      ],
+      "bandeira_ref": "visa-infinite",
+      "verificado_em": "2026-07-28"
     },
     {
       "slug": "sicoob-mastercard-black-merit",
