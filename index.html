@@ -2021,7 +2021,8 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
         <span id="ct-fila-status" style="font-size:13px;opacity:.75"></span>
       </div>
     </div>
-    <div class="ct-box">
+    <!-- Análise editorial — OCULTA até decisão de lançar. Para reativar: remover o style display:none. -->
+    <div class="ct-box" id="ct-box-analises" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
         <div style="font-weight:700;font-size:13px">Análise editorial</div>
         <button class="ct-btn" onclick="ctGerarTodas()">Gerar as que faltam</button>
