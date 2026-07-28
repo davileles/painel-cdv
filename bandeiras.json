@@ -2,7 +2,7 @@
   "_meta": {
     "descricao": "Catalogo de beneficios por categoria de bandeira. Cartoes referenciam via campo bandeira_ref.",
     "atualizado_em": "2026-07-28",
-    "nota_links": "Link so e preenchido quando ha pagina oficial da bandeira. Beneficios operados por terceiros (Priceless, Surpreenda, Mastercard Travel Rewards) ficam sem link ate haver URL em dominio oficial."
+    "nota_links": "Link so e preenchido quando ha destino oficial do beneficio. Beneficios operados por terceiros (Priceless, Surpreenda) apontam para o site do proprio operador, nao para dominio da bandeira."
   },
   "bandeiras": [
     {
@@ -88,7 +88,7 @@
           "grupo": "Lifestyle",
           "titulo": "Mastercard Surpreenda",
           "descricao": "Programa de acumulo de pontos por transacao trocaveis por ofertas do tipo compre 1 leve 2 em parceiros.",
-          "link": null
+          "link": "https://surpreenda.naotempreco.com.br/cadastro/VRJ6DNP"
         },
         {
           "grupo": "Lifestyle",
@@ -100,7 +100,7 @@
           "grupo": "Lifestyle",
           "titulo": "Priceless",
           "descricao": "Acesso a experiencias e eventos exclusivos em cidades do mundo todo via priceless.com.",
-          "link": null
+          "link": "https://www.priceless.com/"
         }
       ]
     },
