@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-28",
-    "total": 48,
+    "total": 49,
     "validado_em": "2026-07-27",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização."
@@ -2074,6 +2074,113 @@
       "analise": null,
       "verificado_em": "2026-07-27",
       "bandeira_ref": "mastercard-world-legend"
+    },
+    {
+      "slug": "caixa-elo-nanquim",
+      "nome": "CAIXA Elo Nanquim",
+      "emissor": "CAIXA",
+      "bandeira": "Elo",
+      "categoria": "Nanquim (topo de linha Elo CAIXA, equivalente a Infinite/Black)",
+      "anuidade": 828,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "cashback_anuidade",
+        "valor": "100% para gastos mensais >= R$ 8.000 | 50% para gastos mensais >= R$ 4.000",
+        "regra": "Cashback creditado na fatura mediante pagamento (entre o mínimo e o total) até a data de vencimento. Compras crédito à vista e parceladas, nacionais e internacionais, do titular e adicionais, contabilizadas pelo valor da parcela lançada. Excluídos: parcelamento de fatura, saque, IOF, juros, multa, anuidade e demais tarifas. Cartões contratados antes de 03/04/2023 devem solicitar adesão via Central de Atendimento."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Limite mínimo de crédito de R$ 15.000,00. Idade mínima 18 anos (ou 16 anos emancipado/assistido com renda própria). Sujeito a análise de risco de crédito pela CAIXA.",
+      "adicionais_gratis": true,
+      "pontos": {
+        "nacional": 2.3,
+        "internacional": 3.2,
+        "unidade": "pts/USD",
+        "observacao": "Pontos calculados com base na cotação do dólar do dia da compra. Pontos fracionados: frações de 0,01–0,49 arredondadas para zero; frações de 0,50–0,99 arredondadas para 1 ponto. Pontos acumulados via Programa Pontos CAIXA (em migração para Programa de Vantagens Uau CAIXA)."
+      },
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "Cashback restrito à anuidade (ver campo isencao). Não há cashback genérico sobre compras."
+      },
+      "programa_proprio": "Programa Pontos CAIXA (em transição para Programa de Vantagens Uau CAIXA)",
+      "transfere_para": [
+        "Latam Pass",
+        "Smiles (Gol)",
+        "TudoAzul (Azul Fidelidade)",
+        "Dotz"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "36 meses",
+      "salas_vip": [
+        {
+          "programa": "Priority Pass",
+          "regra": "2 acessos gratuitos anuais por cartão elegível (BIN iniciado em 651658 ou 651659 — padrão internacional). Acessos podem ser divididos entre titular e acompanhantes, via aplicativo Priority Pass."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Plataforma Elo Flex — 11 benefícios configuráveis",
+          "descricao": "O Nanquim conta com 11 benefícios disponíveis na plataforma Elo Flex, dos quais até 5 podem ser ativos simultaneamente. O titular pode trocar os benefícios a qualquer momento entre as categorias Auto, Casa, Pet, Compras, entre outras."
+        },
+        {
+          "titulo": "Seguros de viagem",
+          "descricao": "O cartão oferece uma série de seguros para tranquilidade nas viagens (coberturas específicas não detalhadas na página do produto; consultar condições completas na bandeira Elo)."
+        },
+        {
+          "titulo": "Saques no exterior",
+          "descricao": "Disponível para cartões Elo Nanquim nas redes Pulse (caixas eletrônicos). Para compras internacionais presenciais, procurar pelas marcas Discover ou Diners Club International."
+        },
+        {
+          "titulo": "Parcelamento em até 24x",
+          "descricao": "Compras podem ser parceladas sem juros (nos estabelecimentos credenciados) ou com juros em até 24 meses."
+        },
+        {
+          "titulo": "Isenção de anuidade para adicionais",
+          "descricao": "Todos os cartões adicionais vinculados à proposta do titular são isentos de anuidade (para propostas aprovadas a partir de 02/09/2020)."
+        },
+        {
+          "titulo": "App Cartões CAIXA",
+          "descricao": "Gerenciamento completo do cartão: consulta de fatura, bloqueio temporário, cancelamento, controle de gastos e resgate de pontos."
+        }
+      ],
+      "link_solicitacao": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+      "fontes": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/credito/simulador-cartoes/Paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/credito/vantagens/Paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/perguntas-frequentes/Paginas/default.aspx",
+        "https://www.caixa.gov.br/Downloads/tabelas-tarifas-pessoa-fisica-pessoa-juridica/tabela-beneficios-e-servicos-vinculados-ao-cartao-diferenciado.pdf",
+        "https://www.caixa.gov.br/Downloads/cartoes-caixa-pessoa-fisica-regulamentos/Regulamento_Programa_Pontos_CAIXA.pdf",
+        "https://www.caixa.gov.br/Downloads/cartoes-caixa-pessoa-fisica-regulamentos/Programa_Pontos_Cartoes_CAIXA.pdf",
+        "https://www.caixa.gov.br/Downloads/cartoes-caixa-promocoes/Regulamento-Mes-do-Cliente-2024-Carteiras-Digitais.pdf",
+        "https://caixanoticias.caixa.gov.br/Paginas/Notícias/2025/01-JANEIRO/CAIXA-disponibiliza-pontos-extras-para-clientes-de-cartao-de-credito-em-seu-164-aniversario.aspx"
+      ],
+      "campos_pendentes": [
+        "iof",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "Anuidade oficial confirmada em R$ 828,00 (12x R$ 69,00) pelas páginas do produto, simulador e programa de pontos da CAIXA. A tabela de tarifas PDF (tabela-beneficios-e-servicos-vinculados-ao-cartao-diferenciado.pdf) apresenta valor de R$ 921,00 para o CAIXA Elo Nanquim — divergência pode indicar atualização não sincronizada no PDF ou encargos adicionais (ex: tarifa de emissão). Recomenda-se confirmação junto à agência CAIXA. Os parceiros de transferência (Latam Pass, Smiles, TudoAzul, Dotz) foram confirmados via CAIXA Notícias oficial, mas a taxa de conversão (ratio pts CAIXA : milhas/pontos parceiro) não foi encontrada em fonte oficial e consta como campo pendente. O Programa Pontos CAIXA está em processo de migração para o Programa de Vantagens Uau CAIXA (uaucaixa.com.br), conforme regulamento v021 de setembro de 2025.",
+      "procedencia": {
+        "anuidade": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "anuidade_parcelas": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "isencao": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "requisito_acesso": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "adicionais_gratis": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "pontos": "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
+        "validade_pontos": "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
+        "salas_vip": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "transfere_para": "https://caixanoticias.caixa.gov.br/Paginas/Notícias/2025/01-JANEIRO/CAIXA-disponibiliza-pontos-extras-para-clientes-de-cartao-de-credito-em-seu-164-aniversario.aspx",
+        "programa_proprio": "https://www.caixa.gov.br/Downloads/cartoes-caixa-pessoa-fisica-regulamentos/Programa_Pontos_Cartoes_CAIXA.pdf",
+        "cashback": "https://www.caixa.gov.br/Downloads/cartoes-caixa-promocoes/Regulamento-Mes-do-Cliente-2024-Carteiras-Digitais.pdf",
+        "beneficios_banco": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "bandeira_ref": "elo-flex",
+      "verificado_em": "2026-07-28"
     },
     {
       "slug": "caixa-icone-visa",
