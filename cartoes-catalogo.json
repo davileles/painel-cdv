@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-28",
-    "total": 57,
+    "total": 58,
     "validado_em": "2026-07-27",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização."
@@ -4293,6 +4293,108 @@
       "iof": 0,
       "requisito_acesso": "Análise de crédito automática, realizada no momento do cadastro de novos clientes e mensalmente para clientes existentes. Não há renda mínima declarada.",
       "validade_pontos": "Não expira"
+    },
+    {
+      "slug": "bb-ourocard-visa-infinite",
+      "nome": "Ourocard Visa Infinite",
+      "emissor": "Banco do Brasil",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": 996,
+      "anuidade_parcelas": 12,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 2,
+        "internacional": 2,
+        "unidade": "pts/USD",
+        "observacao": "Cada 1 dólar ou equivalente em reais pagos na fatura geram 2 pontos no programa Ponto pra Você / Benefícios BB (modalidade Pontos). Dado extraído de livreto de 2021; taxa atual deve ser confirmada no regulamento vigente do Benefícios BB."
+      },
+      "cashback": null,
+      "programa_proprio": "Benefícios BB (modalidades: Pontos, Cashback ou Investimento – cliente escolhe uma)",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion (VAC)",
+          "regra": "4 acessos gratuitos por ano, custeados pelo BB, para titular e adicionais. Acesso via QR Code pelo aplicativo VAC (iOS e Android). Mais de 1.000 salas VIP em aeroportos ao redor do mundo."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Seguro Viagem",
+          "descricao": "Cobertura para emergências médicas, perda de conexão aérea, atraso de bagagem e outras situações. Requer emissão do Bilhete de Seguro no site da Visa e compra das passagens com o cartão."
+        },
+        {
+          "titulo": "Visa Luxury Hotel Collection",
+          "descricao": "Benefícios exclusivos em hotéis de luxo ao redor do mundo: upgrades de quarto, café da manhã gratuito, check-in antecipado, check-out tardio e créditos para utilizar no hotel."
+        },
+        {
+          "titulo": "Garantia Estendida",
+          "descricao": "Dobra a garantia original do fabricante por até 12 meses adicionais em produtos comprados com o cartão."
+        },
+        {
+          "titulo": "Proteção de Compras",
+          "descricao": "Proteção contra roubo ou danos acidentais no prazo de 180 dias a contar da data da compra."
+        },
+        {
+          "titulo": "Proteção de Preço",
+          "descricao": "Proteção quando o mesmo item for encontrado por preço menor dentro de 30 dias da data da compra."
+        },
+        {
+          "titulo": "Programa Benefícios BB",
+          "descricao": "Programa de relacionamento com opção de acumular Pontos, Cashback ou Investimento sobre as compras no crédito."
+        },
+        {
+          "titulo": "Cartão adicional com 50% de anuidade",
+          "descricao": "Anuidade do cartão adicional corresponde a 50% do valor da anuidade do titular."
+        }
+      ],
+      "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+      "fontes": [
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/livreto220210.pdf"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos.internacional_atual",
+        "pontos.nacional_atual",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "A anuidade de R$ 996,00 em 12x consta na Tabela de Benefícios e Recompensas (CartoesBandeira.pdf e CartoesAnuidade.pdf) e é confirmada na Tabela de Tarifas PF vigente a partir de 29/06/2026 (tarifasPF.pdf). O valor de 2 pts/USD é extraído do livreto manual de 2021 (livreto220210.pdf) e pode estar desatualizado; a taxa atual do programa Benefícios BB deve ser verificada no regulamento vigente. Renda mínima, isenção de anuidade por gasto, spread cambial, IOF e parceiros de transferência não foram localizados em nenhuma página oficial pública rastreável. A página do produto (ourocard-visa-infinite/) retornou conteúdo mínimo sem dados técnicos detalhados. Campos pendentes devem ser obtidos via contrato/regulamento do Benefícios BB ou Central de Atendimento BB.",
+      "procedencia": {
+        "anuidade": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "anuidade_parcelas": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "bandeira": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "categoria": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "salas_vip": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "pontos": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/livreto220210.pdf",
+        "programa_proprio": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "beneficios_banco": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao",
+        "requisito_acesso"
+      ],
+      "bandeira_ref": "visa-infinite",
+      "verificado_em": "2026-07-28"
     },
     {
       "slug": "porto-bank-mastercard-black",
