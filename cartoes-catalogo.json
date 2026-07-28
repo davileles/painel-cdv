@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-28",
-    "total": 53,
+    "total": 54,
     "validado_em": "2026-07-27",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização."
@@ -4870,6 +4870,108 @@
       ],
       "verificado_em": "2026-07-27",
       "bandeira_ref": "visa-infinite"
+    },
+    {
+      "slug": "santander-gol-smiles-visa-platinum",
+      "nome": "Santander GOL Smiles Visa Platinum",
+      "emissor": "Santander",
+      "bandeira": "Visa Platinum",
+      "categoria": "Platinum",
+      "anuidade": 726,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "nenhuma",
+        "valor": null,
+        "regra": "O cartão GOL Smiles Santander não é elegível ao programa geral de isenção por gastos/pacote do Santander, conforme nota oficial na página de cartões."
+      },
+      "renda_minima": "R$ 7.000 (não correntista) ou R$ 4.000 (correntista) ou ser cliente Van Gogh/Select/Private",
+      "requisito_acesso": null,
+      "adicionais_gratis": "Até 5 adicionais sem anuidade no 1º ano; 50% de redução na anuidade nos anos seguintes",
+      "pontos": {
+        "nacional": 2.3,
+        "internacional": 2.3,
+        "unidade": "milhas/USD",
+        "observacao": "2,3 milhas por USD em compras gerais (vigente a partir de 23/01/2023); 3,3 milhas por USD em compras no site da GOL. Clientes Clube Smiles e/ou Diamante acumulam 3,5 milhas/USD (ou 4,5 milhas/USD no site GOL). Milhas bônus na aquisição: 10.000 (clientes Smiles) ou 15.000 (Clube Smiles/Diamante). Bônus de renovação: 10.000 milhas extras (Clube/Diamante: 3.000 extras adicionais). Conversão de BRL para USD feita pela cotação do dólar no fechamento da fatura."
+      },
+      "cashback": null,
+      "programa_proprio": "GOL Smiles (Programa de Fidelidade Smiles — operado pela Smiles Fidelidade S.A.)",
+      "transfere_para": [],
+      "spread": null,
+      "iof": "5,38% sobre compras internacionais",
+      "validade_pontos": "Varia por categoria Smiles: 3 anos (Smiles/Prata), 4 anos (Ouro), 10 anos (Diamante). Milhas bônus de aquisição/renovação: 6 meses a partir do crédito.",
+      "salas_vip": [
+        {
+          "programa": "GOL Premium Lounges",
+          "regra": "Acesso para titular + 1 acompanhante mediante apresentação do cartão Platinum ativo na recepção da sala VIP e cartão de embarque de qualquer companhia parceira da GOL Smiles. Não é acesso ilimitado — verificar quantidade de acessos na página oficial atualizada."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Primeira Bagagem Gratuita GOL",
+          "descricao": "Benefício pessoal e intransferível ao titular. Apresentar o cartão Platinum ativo no balcão de check-in da GOL. Válido apenas para voos GOL."
+        },
+        {
+          "titulo": "Check-in e Embarque Preferencial GOL",
+          "descricao": "Check-in preferencial e embarque preferencial em voos da GOL para o titular."
+        },
+        {
+          "titulo": "Milhas bônus na aquisição",
+          "descricao": "10.000 milhas para clientes Smiles; 15.000 milhas para clientes Clube Smiles e/ou Diamante, creditadas proporcionalmente ao pagamento das parcelas da anuidade."
+        },
+        {
+          "titulo": "Seguros de viagem Visa Platinum",
+          "descricao": "Atraso e extravio de bagagem, atraso ou cancelamento de voo, proteção 24 horas. Benefícios concedidos pela Visa do Brasil, sujeitos ao pagamento da passagem com o cartão."
+        },
+        {
+          "titulo": "Descontos Esfera",
+          "descricao": "Descontos de até 50% em parceiros do Shopping Esfera (plataforma Santander)."
+        },
+        {
+          "titulo": "Parcelamento GOL",
+          "descricao": "Parcelamento de compras no site da GOL em até 12 vezes sem juros."
+        }
+      ],
+      "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/smiles-platinum",
+      "fontes": [
+        "https://www.santander.com.br/cartao-credito-santander/smiles-platinum",
+        "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "https://www.santander.com.br/cartaosmiles",
+        "https://cms.santander.com.br/sites/WPS/documentos/arq-regulamento-decolar-jan23/23-01-20_194401_regulamento-programa-de-fidelidade-cartao-smiles-230123.pdf",
+        "https://www.santander.com.br/cartao-credito-santander",
+        "https://www.santander.com.br/blog/tarifas-cartao-credito",
+        "https://www.santander.com.br/cartoes-santander/acesso-salas-vip"
+      ],
+      "campos_pendentes": [
+        "cashback",
+        "isencao.valor",
+        "requisito_acesso",
+        "salas_vip.quantidade_acessos_anuais_platinum",
+        "spread",
+        "transfere_para"
+      ],
+      "nota_curadoria": "Anuidade calculada como 12 × R$ 60,50 = R$ 726,00/ano, conforme tabela oficial no hotsite santander.com.br/cartaosmiles. O cartão GOL Smiles Santander NÃO é elegível ao programa geral de isenção de anuidade por gastos do Santander (nota explícita na página de cartões). A validade de milhas e o número de acessos às salas VIP GOL Premium Lounges para o Platinum não estão discriminados numericamente na página do produto — recomenda-se verificar o regulamento vigente. O regulamento do programa de recompensas é datado de 23/01/2023; verificar se há versão mais recente. IOF de 5,38% é o padrão legal brasileiro para compras internacionais (cartão internacional), não específico do produto. Spread não divulgado em fonte oficial consultada.",
+      "procedencia": {
+        "anuidade": "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "anuidade_parcelas": "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "renda_minima": "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "pontos": "https://cms.santander.com.br/sites/WPS/documentos/arq-regulamento-decolar-jan23/23-01-20_194401_regulamento-programa-de-fidelidade-cartao-smiles-230123.pdf",
+        "adicionais_gratis": "https://www.santander.com.br/cartao-credito-santander/smiles-platinum",
+        "validade_pontos": "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "salas_vip": "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "iof": "https://www.santander.com.br/blog/tarifas-cartao-credito",
+        "isencao": "https://www.santander.com.br/cartao-credito-santander",
+        "programa_proprio": "https://cms.santander.com.br/sites/WPS/documentos/arq-regulamento-decolar-jan23/23-01-20_194401_regulamento-programa-de-fidelidade-cartao-smiles-230123.pdf",
+        "beneficios_banco": "https://www.santander.com.br/cartao-credito-santander/smiles-platinum",
+        "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/smiles-platinum"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "transfere_para",
+        "requisito_acesso"
+      ],
+      "bandeira_ref": null,
+      "verificado_em": "2026-07-28"
     },
     {
       "slug": "santander-mastercard-unlimited",
