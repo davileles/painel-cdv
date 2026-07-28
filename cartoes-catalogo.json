@@ -8,12 +8,138 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-28",
-    "total": 49,
+    "total": 50,
     "validado_em": "2026-07-27",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização."
   },
   "cartoes": [
+    {
+      "slug": "azul-itau-mastercard-skyline",
+      "nome": "Azul Itaú Mastercard Skyline",
+      "emissor": "Itaú",
+      "bandeira": "Mastercard",
+      "categoria": "Black / World Elite",
+      "anuidade": 1260,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "gasto_mensal",
+        "valor": 20000,
+        "regra": "Mensalidade grátis ao gastar R$ 20.000,00 por fatura; 50% de desconto com gastos entre R$ 10.000,00 e R$ 19.999,99; mensalidade integral (R$ 105,00/mês) para gastos inferiores a R$ 10.000,00"
+      },
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": 5,
+      "pontos": {
+        "nacional": 3,
+        "internacional": 3.5,
+        "unidade": "pts/USD",
+        "observacao": "Pontos creditados diretamente no Programa de Fidelidade Azul, sem quantidade mínima para bonificação. Validade indeterminada desde que o cartão seja usado ao menos 1x a cada 12 meses. Com Acelerador de Pontos Itaú é possível dobrar a pontuação."
+      },
+      "cashback": null,
+      "programa_proprio": "Azul Fidelidade (TudoAzul) — nível Diamante automático",
+      "transfere_para": [
+        "Azul Fidelidade (TudoAzul)"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Indeterminada (condicional: uso mínimo de 1x a cada 12 meses)",
+      "salas_vip": [
+        {
+          "programa": "LoungeKey",
+          "regra": "2 acessos gratuitos por ano (titular e adicional) em todas as salas VIP da rede LoungeKey"
+        },
+        {
+          "programa": "Mastercard Black — Sala VIP Guarulhos (GRU)",
+          "regra": "Acesso ilimitado à sala VIP Mastercard Black no Aeroporto de Guarulhos"
+        },
+        {
+          "programa": "Lounge Azul — Viracopos (VCP)",
+          "regra": "Acesso à sala VIP Lounge Azul no embarque internacional de Viracopos, válido para titular e adicional"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Nível Diamante no Programa Azul Fidelidade",
+          "descricao": "Conquista automática do nível Diamante no programa de fidelidade da Azul, com vantagens exclusivas desde o embarque."
+        },
+        {
+          "titulo": "Check-in e embarque prioritário",
+          "descricao": "Check-in e embarque prioritário em voos da Azul, além de acesso ilimitado ao Espaço Azul."
+        },
+        {
+          "titulo": "Bagagem gratuita",
+          "descricao": "3 bagagens grátis (até 23kg) em voos domésticos e internacionais (EUA/Europa); 2 bagagens grátis (até 23kg) em voos para a América do Sul."
+        },
+        {
+          "titulo": "10% de desconto Azul",
+          "descricao": "10% de desconto em passagens Azul, Clube Azul, compra de pontos e pacotes Azul Viagens, além de parcelamento em até 12x sem juros em passagens e pacotes Azul Viagens."
+        },
+        {
+          "titulo": "Companion Pass (Acompanhante grátis)",
+          "descricao": "4 trechos de cortesia para acompanhante a cada 12 meses ao acumular 50 mil pontos no cartão (2 nacionais + 2 livres, podendo ser nacionais ou internacionais). Válido apenas para voos operados pela Azul, classe econômica."
+        },
+        {
+          "titulo": "Upgrade de Cabine",
+          "descricao": "2 vouchers de upgrade de cabine a cada 12 meses ao acumular 100 mil pontos no cartão."
+        },
+        {
+          "titulo": "Pontos bônus de boas-vindas",
+          "descricao": "40.000 pontos bônus ao manter gasto de R$ 20.000,00 por fatura nas 3 primeiras faturas, com ativação do cartão em até 60 dias após aprovação. Válido apenas para titular no 1º ano de contratação."
+        },
+        {
+          "titulo": "Diárias gratuitas na Unidas",
+          "descricao": "2 diárias gratuitas por ano na Unidas (mínimo de 3 diárias contratadas para 1 grátis; mínimo de 7 diárias para 2 grátis). Reserva com 7 dias úteis de antecedência via e-mail."
+        },
+        {
+          "titulo": "Desconto Azul Cargo",
+          "descricao": "10% de desconto nos serviços de logística do Azul Cargo para transporte de encomendas e cargas no Brasil."
+        },
+        {
+          "titulo": "Parcelamento de passagens",
+          "descricao": "Parcelamento em até 12x sem juros em passagens Azul e pacotes Azul Viagens."
+        }
+      ],
+      "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+      "fontes": [
+        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html?l=&cpg_s=azl_prc",
+        "https://www.itau.com.br/cartoes/beneficios/programa-fidelidade-azul",
+        "https://www.itau.com.br/media/dam/m/7a27c611cf1fb00d/original/cartoes-tabela-geral.pdf",
+        "https://www.itau.com.br/cartoes/escolha/formulario/tudoazul-itaucard-20-internacional-visa.html"
+      ],
+      "campos_pendentes": [
+        "cashback",
+        "iof",
+        "renda_minima",
+        "requisito_acesso",
+        "spread"
+      ],
+      "nota_curadoria": "Renda mínima, spread cambial e IOF não foram localizados explicitamente na página do produto nem na tabela de tarifas disponível via busca. A tabela geral de tarifas (PDF itau.com.br) lista o produto mas não retornou valores tabulados nos resultados de busca — recomenda-se consulta direta ao PDF https://www.itau.com.br/media/dam/m/7a27c611cf1fb00d/original/cartoes-tabela-geral.pdf para preencher esses campos. A categoria 'Black / World Elite' é inferida pelo nível de benefícios (LoungeKey, Mastercard Black GRU, nível Diamante Azul), mas não foi confirmada textualmente como 'World Elite' pela fonte oficial. O IOF segue a alíquota legal padrão de 3,38% para compras internacionais, mas por ser valor regulatório e não específico do produto, foi deixado como pendente conforme regra de curadoria.",
+      "procedencia": {
+        "nome": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "emissor": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "bandeira": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "anuidade": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "anuidade_parcelas": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "isencao": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "adicionais_gratis": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "pontos": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "programa_proprio": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "transfere_para": "https://www.itau.com.br/cartoes/beneficios/programa-fidelidade-azul",
+        "validade_pontos": "https://www.itau.com.br/cartoes/escolha/formulario/tudoazul-itaucard-20-internacional-visa.html",
+        "salas_vip": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "beneficios_banco": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "requisito_acesso"
+      ],
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "mastercard-black"
+    },
     {
       "slug": "azul-visa-infinite",
       "nome": "Azul Itaucard Visa Infinite",
@@ -147,130 +273,92 @@
       "bandeira_ref": "visa-infinite"
     },
     {
-      "slug": "azul-itau-mastercard-skyline",
-      "nome": "Azul Itaú Mastercard Skyline",
-      "emissor": "Itaú",
-      "bandeira": "Mastercard",
-      "categoria": "Black / World Elite",
-      "anuidade": 1260,
-      "anuidade_parcelas": 12,
+      "slug": "banescard-visa-infinite-absoluto",
+      "nome": "Banescard Visa Absoluto",
+      "emissor": "Banestes",
+      "bandeira": "Visa Infinite",
+      "categoria": "Alta Renda / Private",
+      "anuidade": 1800,
+      "anuidade_parcelas": null,
       "isencao": {
-        "tipo": "gasto_mensal",
-        "valor": 20000,
-        "regra": "Mensalidade grátis ao gastar R$ 20.000,00 por fatura; 50% de desconto com gastos entre R$ 10.000,00 e R$ 19.999,99; mensalidade integral (R$ 105,00/mês) para gastos inferiores a R$ 10.000,00"
+        "tipo": "gasto_mensal_e_investimento",
+        "valor": null,
+        "regra": "Isenção de 50% para gastos mensais acima de R$ 12.500; isenção de 100% para gastos mensais a partir de R$ 25.000. Isenção total para clientes com R$ 5 milhões ou mais em investimentos no Banestes."
       },
-      "renda_minima": null,
-      "requisito_acesso": null,
+      "renda_minima": 30000,
+      "requisito_acesso": "Mediante convite; exige no mínimo R$ 1 milhão em investimentos no Banestes e renda mínima de R$ 30.000.",
       "adicionais_gratis": 5,
       "pontos": {
-        "nacional": 3,
-        "internacional": 3.5,
+        "nacional": 4.2,
+        "internacional": 5,
         "unidade": "pts/USD",
-        "observacao": "Pontos creditados diretamente no Programa de Fidelidade Azul, sem quantidade mínima para bonificação. Validade indeterminada desde que o cartão seja usado ao menos 1x a cada 12 meses. Com Acelerador de Pontos Itaú é possível dobrar a pontuação."
+        "observacao": "Pontos com validade vitalícia (não expiram). Programa próprio Banescard — parceiros de transferência não informados em fonte oficial."
       },
       "cashback": null,
-      "programa_proprio": "Azul Fidelidade (TudoAzul) — nível Diamante automático",
-      "transfere_para": [
-        "Azul Fidelidade (TudoAzul)"
-      ],
+      "programa_proprio": null,
+      "transfere_para": [],
       "spread": null,
       "iof": null,
-      "validade_pontos": "Indeterminada (condicional: uso mínimo de 1x a cada 12 meses)",
+      "validade_pontos": "Vitalícia (não expiram)",
       "salas_vip": [
         {
           "programa": "LoungeKey",
-          "regra": "2 acessos gratuitos por ano (titular e adicional) em todas as salas VIP da rede LoungeKey"
+          "regra": "Acesso ilimitado para o titular, com permissão para até 12 convidados."
         },
         {
-          "programa": "Mastercard Black — Sala VIP Guarulhos (GRU)",
-          "regra": "Acesso ilimitado à sala VIP Mastercard Black no Aeroporto de Guarulhos"
-        },
-        {
-          "programa": "Lounge Azul — Viracopos (VCP)",
-          "regra": "Acesso à sala VIP Lounge Azul no embarque internacional de Viracopos, válido para titular e adicional"
+          "programa": "Dragon Pass / Visa Airport Companion",
+          "regra": "Acesso ilimitado para o titular, com permissão para até 12 convidados."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Nível Diamante no Programa Azul Fidelidade",
-          "descricao": "Conquista automática do nível Diamante no programa de fidelidade da Azul, com vantagens exclusivas desde o embarque."
+          "titulo": "Welcome Kit com porta-cartão Montblanc",
+          "descricao": "Os 200 primeiros clientes do cartão recebem um porta-cartão da marca Montblanc junto ao welcome kit."
         },
         {
-          "titulo": "Check-in e embarque prioritário",
-          "descricao": "Check-in e embarque prioritário em voos da Azul, além de acesso ilimitado ao Espaço Azul."
+          "titulo": "Apple Pay e Cartão Virtual",
+          "descricao": "Implantação de Apple Pay e cartão virtual para compras online prevista para o primeiro trimestre de 2026."
         },
         {
-          "titulo": "Bagagem gratuita",
-          "descricao": "3 bagagens grátis (até 23kg) em voos domésticos e internacionais (EUA/Europa); 2 bagagens grátis (até 23kg) em voos para a América do Sul."
-        },
-        {
-          "titulo": "10% de desconto Azul",
-          "descricao": "10% de desconto em passagens Azul, Clube Azul, compra de pontos e pacotes Azul Viagens, além de parcelamento em até 12x sem juros em passagens e pacotes Azul Viagens."
-        },
-        {
-          "titulo": "Companion Pass (Acompanhante grátis)",
-          "descricao": "4 trechos de cortesia para acompanhante a cada 12 meses ao acumular 50 mil pontos no cartão (2 nacionais + 2 livres, podendo ser nacionais ou internacionais). Válido apenas para voos operados pela Azul, classe econômica."
-        },
-        {
-          "titulo": "Upgrade de Cabine",
-          "descricao": "2 vouchers de upgrade de cabine a cada 12 meses ao acumular 100 mil pontos no cartão."
-        },
-        {
-          "titulo": "Pontos bônus de boas-vindas",
-          "descricao": "40.000 pontos bônus ao manter gasto de R$ 20.000,00 por fatura nas 3 primeiras faturas, com ativação do cartão em até 60 dias após aprovação. Válido apenas para titular no 1º ano de contratação."
-        },
-        {
-          "titulo": "Diárias gratuitas na Unidas",
-          "descricao": "2 diárias gratuitas por ano na Unidas (mínimo de 3 diárias contratadas para 1 grátis; mínimo de 7 diárias para 2 grátis). Reserva com 7 dias úteis de antecedência via e-mail."
-        },
-        {
-          "titulo": "Desconto Azul Cargo",
-          "descricao": "10% de desconto nos serviços de logística do Azul Cargo para transporte de encomendas e cargas no Brasil."
-        },
-        {
-          "titulo": "Parcelamento de passagens",
-          "descricao": "Parcelamento em até 12x sem juros em passagens Azul e pacotes Azul Viagens."
+          "titulo": "Concierge Visa Infinite",
+          "descricao": "Acesso ao serviço de concierge da bandeira Visa Infinite."
         }
       ],
-      "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+      "link_solicitacao": null,
       "fontes": [
-        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html?l=&cpg_s=azl_prc",
-        "https://www.itau.com.br/cartoes/beneficios/programa-fidelidade-azul",
-        "https://www.itau.com.br/media/dam/m/7a27c611cf1fb00d/original/cartoes-tabela-geral.pdf",
-        "https://www.itau.com.br/cartoes/escolha/formulario/tudoazul-itaucard-20-internacional-visa.html"
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html"
       ],
       "campos_pendentes": [
+        "anuidade_parcelas",
         "cashback",
         "iof",
-        "renda_minima",
-        "requisito_acesso",
-        "spread"
+        "programa_proprio",
+        "spread",
+        "transfere_para"
       ],
-      "nota_curadoria": "Renda mínima, spread cambial e IOF não foram localizados explicitamente na página do produto nem na tabela de tarifas disponível via busca. A tabela geral de tarifas (PDF itau.com.br) lista o produto mas não retornou valores tabulados nos resultados de busca — recomenda-se consulta direta ao PDF https://www.itau.com.br/media/dam/m/7a27c611cf1fb00d/original/cartoes-tabela-geral.pdf para preencher esses campos. A categoria 'Black / World Elite' é inferida pelo nível de benefícios (LoungeKey, Mastercard Black GRU, nível Diamante Azul), mas não foi confirmada textualmente como 'World Elite' pela fonte oficial. O IOF segue a alíquota legal padrão de 3,38% para compras internacionais, mas por ser valor regulatório e não específico do produto, foi deixado como pendente conforme regra de curadoria.",
+      "nota_curadoria": "O cartão foi anunciado publicamente em dezembro de 2025, com lançamento oficial em janeiro de 2026. Em julho de 2026, não foram localizadas páginas de produto, tabela de tarifas ou regulamento de pontos no domínio banestes.com.br. Todos os dados extraídos provêm exclusivamente do press release publicado no domínio oficial visa.com.br. Os campos 'anuidade_parcelas', 'transfere_para', 'spread', 'iof' e 'link_solicitacao' permanecem nulos por ausência de fonte oficial verificável. O campo 'adicionais_gratis' (5 cartões) e 'salas_vip' (12 convidados) também têm como única fonte o press release Visa. Recomenda-se reverificação quando a página do produto for publicada no site do Banestes.",
       "procedencia": {
-        "nome": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "emissor": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "bandeira": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "anuidade": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "anuidade_parcelas": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "isencao": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "adicionais_gratis": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "pontos": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "programa_proprio": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "transfere_para": "https://www.itau.com.br/cartoes/beneficios/programa-fidelidade-azul",
-        "validade_pontos": "https://www.itau.com.br/cartoes/escolha/formulario/tudoazul-itaucard-20-internacional-visa.html",
-        "salas_vip": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "beneficios_banco": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html"
+        "nome": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "emissor": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "bandeira": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "categoria": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "anuidade": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "isencao": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "renda_minima": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "adicionais_gratis": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
+        "beneficios_banco": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html"
       },
       "vigencia_ate": null,
       "analise": null,
       "campos_rejeitados": [
-        "requisito_acesso"
+        "programa_proprio"
       ],
       "verificado_em": "2026-07-27",
-      "bandeira_ref": "mastercard-black"
+      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "bb-smiles-visa-infinite",
@@ -597,6 +685,409 @@
       "analise": null,
       "campos_rejeitados": [
         "isencao"
+      ],
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "visa-infinite"
+    },
+    {
+      "slug": "bradesco-elo-diners-club",
+      "nome": "Bradesco Prime Elo Diners Club",
+      "emissor": "Bradesco",
+      "bandeira": "Elo / Diners Club International",
+      "categoria": "Premium / High-end",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": {
+        "tipo": "percentual",
+        "valor": "até 100%",
+        "regra": "Clientes Bradesco Prime podem obter até 100% de isenção na anuidade do cartão de crédito, conforme critérios do segmento Prime"
+      },
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": null,
+      "cashback": null,
+      "programa_proprio": "Livelo (via parceria Bradesco Cartões + Livelo)",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "Bradesco Cartões Lounge",
+          "regra": "Acesso ilimitado às Salas VIP Bradesco Cartões Lounge em aeroportos do Brasil (Guarulhos T2, Congonhas, Curitiba, Santos Dumont), mediante apresentação do cartão Elo Diners Club"
+        },
+        {
+          "programa": "Centurion Lounge (American Express)",
+          "regra": "Acesso ilimitado às Salas Centurion Lounge pelo mundo, mediante apresentação do cartão Corporativo Elo Diners Club"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Programa de Pontos Livelo",
+          "descricao": "Compras geram pontos Livelo trocáveis por viagens, produtos, experiências, cashback e uso direto em maquininha de cartão"
+        },
+        {
+          "titulo": "Salas VIP em aeroportos",
+          "descricao": "Acesso ilimitado às Salas VIP Bradesco Cartões Lounge no Brasil e às Salas Centurion Lounge no mundo"
+        },
+        {
+          "titulo": "Isenção de anuidade Prime",
+          "descricao": "Clientes Bradesco Prime podem obter até 100% de isenção na tarifa da conta e na anuidade do cartão de crédito"
+        },
+        {
+          "titulo": "Crédito Rotativo e Parcelamento",
+          "descricao": "Possibilidade de pagamento parcelado e crédito rotativo na fatura mensal, com encargos conforme tabela vigente"
+        },
+        {
+          "titulo": "Saques de Emergência",
+          "descricao": "Saques emergenciais nas unidades BDN – Bradesco Dia e Noite, mediante senha, com encargos discriminados na fatura"
+        },
+        {
+          "titulo": "Seguro Superprotegido Premiável (Opcional)",
+          "descricao": "Seguro opcional oferecido com o cartão, mediante pagamento de tarifa mensal"
+        },
+        {
+          "titulo": "Atendimento 24h",
+          "descricao": "Central de Atendimento disponível 24 horas, inclusive sábados, domingos e feriados, para dúvidas, cancelamentos e reposição de cartão em caso de perda ou roubo"
+        }
+      ],
+      "link_solicitacao": "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
+      "fontes": [
+        "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
+        "https://adc.bradesco.com.br/html/corporate/solucoes-integradas/cartoes/beneficios/salavip.shtm",
+        "https://adc.bradesco.com.br/html/prime/index.shtm",
+        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "https://bdn.bradesco.com.br/assets/pessoajuridica/pdf/solucoes-integradas/cartoes/conheca-os-cartoes/elo/Guias_Beneficios_Elo_Grafite.pdf"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "pontos",
+        "pontos.internacional",
+        "pontos.nacional",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "A página de produto específica do Bradesco Prime Elo Diners Club (adc.bradesco.com.br/html/prime/produtos-servicos/cartoes/conheca-os-cartoes/bradesco-elo-nanquim.shtm e similares) retornou erro 404 ou redirecionamento sem conteúdo durante a consulta em 27/07/2026. O cartão é listado nominalmente no menu Prime em bradesco.com.br. Os dados de salas VIP foram confirmados na página oficial de benefícios corporativos. Anuidade, pontos e renda mínima devem ser obtidos diretamente na Tabela Geral de Tarifas Bradesco ou consultando gerente Prime, pois não estavam expostos em nenhuma página pública acessível nas buscas realizadas.",
+      "procedencia": {
+        "nome": "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
+        "bandeira": "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
+        "salas_vip": "https://adc.bradesco.com.br/html/corporate/solucoes-integradas/cartoes/beneficios/salavip.shtm",
+        "isencao": "https://adc.bradesco.com.br/html/prime/index.shtm",
+        "programa_proprio": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "beneficios_banco": "https://adc.bradesco.com.br/html/corporate/solucoes-integradas/cartoes/beneficios/salavip.shtm"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "pontos",
+        "transfere_para",
+        "requisito_acesso"
+      ],
+      "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "bradesco-visa-principal",
+      "nome": "Bradesco Principal Visa Infinite",
+      "emissor": "Bradesco",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": null,
+      "cashback": null,
+      "programa_proprio": "Livelo",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion",
+          "regra": "Mais de 1.000 salas VIP no mundo. Quantidade de acessos gratuitos nao publicada na pagina do produto."
+        },
+        {
+          "programa": "Visa Infinite Fast Pass",
+          "regra": "Acesso prioritario ao embarque"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Pontos Livelo",
+          "descricao": "Acumulo de pontos trocaveis por viagens, cashback ou produtos."
+        },
+        {
+          "titulo": "Salas VIP",
+          "descricao": "Conforto em mais de 1.000 salas VIP ao redor do mundo."
+        },
+        {
+          "titulo": "Descontos em restaurantes",
+          "descricao": "Ate 15% de desconto na conta, mesa VIP e sobremesa em restaurantes premiados."
+        },
+        {
+          "titulo": "Concierge de viagens",
+          "descricao": "Recomendacoes diarias de especialistas em viagens e experiencias."
+        },
+        {
+          "titulo": "Ofertas de marcas",
+          "descricao": "Condicoes diferenciadas em marcas selecionadas pelo app Bradesco."
+        }
+      ],
+      "link_solicitacao": null,
+      "fontes": [
+        "https://banco.bradesco/html/principal/cartoes.html"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "isencao.regra",
+        "isencao.tipo",
+        "isencao.valor",
+        "pontos",
+        "pontos.internacional",
+        "pontos.nacional",
+        "pontos.observacao",
+        "programa_proprio",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "A pagina oficial do segmento Principal descreve beneficios mas NAO publica anuidade, pontuacao por dolar nem regra de isencao. Valores que circulam (2,5 pts/USD nacional, 3 no exterior, isencao com R$ 15 mil de gasto ou R$ 300 mil investidos) vem apenas de fontes secundarias e por isso nao foram adotados.",
+      "procedencia": {
+        "programa_proprio": "https://banco.bradesco/html/principal/cartoes.html",
+        "salas_vip": "https://banco.bradesco/html/principal/cartoes.html"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao",
+        "pontos"
+      ],
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "visa-infinite"
+    },
+    {
+      "slug": "bradesco-smiles-visa-infinite",
+      "nome": "Bradesco Smiles Visa Infinite",
+      "emissor": "Bradesco",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": null,
+        "internacional": null,
+        "unidade": "milhas/USD",
+        "observacao": "A cada dólar pago em fatura ou equivalente em real, o titular ganha milhas transferidas automaticamente para a Conta Smiles em até 5 dias úteis após confirmação do pagamento. Faturas de adicionais pontuam na mesma conta do titular. Clientes Clube Smiles acumulam quantidade diferenciada."
+      },
+      "cashback": null,
+      "programa_proprio": false,
+      "transfere_para": [
+        "Smiles (GOL)"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Conforme categoria do cliente no Programa Smiles. Milhas do cartão Infinite não expiram (verificar regulamento Smiles vigente).",
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion",
+          "regra": "2 acessos gratuitos a centenas de Salas VIP ao redor do mundo. Disponível via app Visa Airport Companion (App Store / Play Store)."
+        },
+        {
+          "programa": "Visa Infinite Lounge – GRU T3",
+          "regra": "Acesso à sala VIP exclusiva Visa Infinite no Terminal 3 do Aeroporto Internacional de Guarulhos, aberta 24h. Acesso limitado ao titular + até 3 acompanhantes, por no máximo 3 horas por visitante."
+        },
+        {
+          "programa": "GOL Premium Lounge",
+          "regra": "Acesso gratuito às salas Gol Premium Lounge nos Aeroportos de Guarulhos (embarque nacional e internacional) e do Galeão (embarque internacional)."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Acesso a fila de segurança diferenciada nos Terminais 2 e 3 de Guarulhos e nos embarques doméstico e internacional do RIOgaleão. Disponível todos os dias das 03h às 23h (horário de Brasília). O titular pode levar até 5 acompanhantes."
+        },
+        {
+          "titulo": "Primeiro despache de bagagem gratuito GOL",
+          "descricao": "Primeiro despacho de bagagem sem custo em voos GOL."
+        },
+        {
+          "titulo": "Prioridade no embarque e check-in GOL",
+          "descricao": "Embarque preferencial e check-in prioritário em voos da GOL."
+        },
+        {
+          "titulo": "Milha extra em passagens GOL",
+          "descricao": "1 milha extra a cada 1 US$ gasto na compra de passagens GOL com o cartão."
+        },
+        {
+          "titulo": "Parcelamento em voos GOL",
+          "descricao": "Parcelamento em até 12x sem juros na compra de passagens GOL."
+        },
+        {
+          "titulo": "Seguro Proteção de Compra",
+          "descricao": "Cobertura contra roubo, furto e danos acidentais de produtos adquiridos com o cartão, dentro de 180 dias. Seguros fornecidos pela AIG Seguros do Brasil S.A."
+        },
+        {
+          "titulo": "Proteção de Preço e Garantia Estendida",
+          "descricao": "Benefícios Visa para cartões Gold, Platinum e Infinite. Consultar termos em visa.com.br."
+        },
+        {
+          "titulo": "Tecnologia Quick Read",
+          "descricao": "Todas as informações do cartão são impressas na face do plástico, facilitando compras online."
+        },
+        {
+          "titulo": "Transferência automática de milhas",
+          "descricao": "As milhas acumuladas são transferidas automaticamente para a Conta Smiles em até 5 dias úteis após confirmação do pagamento da fatura, proporcional ao valor pago."
+        }
+      ],
+      "link_solicitacao": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+      "fontes": [
+        "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/smiles-lanca-novos-cartoes-de-credito-com-marca-visa-em-parceria-com-banco-do-brasil-bradesco-e-santander.html",
+        "https://www.visa.com.br/sobre-a-visa/vac.html",
+        "http://200-155-86-38.bradesco.com.br/assets/classic/pdf/produtos-servicos/cartoes/guia-beneficios/card-bradesco-smile-visa-infinite.PDF",
+        "https://express.bradesco.com.br/naocorrentista/cartoes/smiles-visa-gold/"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos.internacional",
+        "pontos.nacional",
+        "renda_minima",
+        "requisito_acesso",
+        "spread"
+      ],
+      "nota_curadoria": "A página principal do produto (imprensa.bradesco.com.br/smiles/index.shtm) confirma benefícios de viagem, transferência de milhas e salas VIP, mas NÃO exibe valores de anuidade, taxa de acúmulo de milhas (milhas/USD) específica para a variante Infinite, renda mínima nem condições de isenção para o Bradesco Smiles Visa Infinite — apenas para o GOL Smiles Visa Infinite. O PDF oficial do guia de benefícios (200-155-86-38.bradesco.com.br) existe mas não foi acessível por crawler. A tabela de tarifas em institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html não retornou dados estruturados. Recomenda-se acesso direto às páginas de produto em bradesco.com.br/cartoes ou à tabela de tarifas oficial para completar os campos pendentes. Nota: o produto pode ter passado a se chamar 'Bradesco GOL Smiles Visa Infinite' na comunicação atual do banco.",
+      "procedencia": {
+        "bandeira": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "categoria": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/smiles-lanca-novos-cartoes-de-credito-com-marca-visa-em-parceria-com-banco-do-brasil-bradesco-e-santander.html",
+        "programa_proprio": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "transfere_para": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "pontos": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "salas_vip": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "validade_pontos": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "beneficios_banco": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "link_solicitacao": "https://imprensa.bradesco.com.br/smiles/index.shtm"
+      },
+      "vigencia_ate": "2025-08-31",
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao"
+      ],
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "visa-infinite"
+    },
+    {
+      "slug": "bradesco-visa-aeternum",
+      "nome": "Bradesco Visa Aeternum",
+      "emissor": "Bradesco",
+      "bandeira": "Visa",
+      "categoria": "Visa Infinite (tier Aeternum)",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 4,
+        "internacional": 4,
+        "unidade": "pts/USD",
+        "observacao": "4 pontos Livelo a cada dólar gasto em compras nacionais e internacionais"
+      },
+      "cashback": null,
+      "programa_proprio": "Livelo (via Bradesco Cartões)",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "LoungeKey",
+          "regra": "Acesso gratuito e ilimitado para o portador; 12 acessos gratuitos por ano para convidados. Acesso a mais de 1.200 salas VIP ao redor do mundo."
+        },
+        {
+          "programa": "Visa Infinite Lounge (Guarulhos T3)",
+          "regra": "Acesso à sala VIP exclusiva da Visa no embarque do Terminal 3 do Aeroporto Internacional de Guarulhos."
+        },
+        {
+          "programa": "Visa Infinite Fast Pass (Guarulhos T2/T3)",
+          "regra": "Fila de segurança diferenciada nos Terminais 2 e 3 do Aeroporto Internacional de Guarulhos."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Programa de Pontos Livelo",
+          "descricao": "Acumule 4 pontos Livelo a cada dólar gasto em compras nacionais e internacionais. Ative a conta Livelo em livelo.com.br/cadastro ou pelo App."
+        },
+        {
+          "titulo": "LoungeKey – Salas VIP",
+          "descricao": "Acesso gratuito e ilimitado ao portador titular; 12 acessos gratuitos por ano para convidados em mais de 1.200 salas VIP no mundo."
+        },
+        {
+          "titulo": "Visa Infinite Lounge Guarulhos",
+          "descricao": "Acesso à sala VIP exclusiva da Visa no Terminal 3 do Aeroporto Internacional de Guarulhos."
+        },
+        {
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Fila de segurança diferenciada nos Terminais 2 e 3 do Aeroporto Internacional de Guarulhos."
+        }
+      ],
+      "link_solicitacao": null,
+      "fontes": [
+        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "https://institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "O Bradesco Visa Aeternum é um cartão de acesso restrito (convite/segmento Private/Exclusive), sem página pública de produto identificada nos domínios oficiais rastreados. Os dados de pontuação e salas VIP foram extraídos da página oficial de benefícios de cartões Bradesco. Anuidade, renda mínima, isenção e demais condições comerciais não constam em nenhuma página pública oficial acessível — devem ser confirmados diretamente com o gerente Bradesco ou via tabela geral de tarifas atualizada em institucional.bradesco.com.br. A tabela de tarifas agrupa o Aeternum com Infinite e Black OK, mas os valores numéricos da anuidade não estavam acessíveis na versão rastreada.",
+      "procedencia": {
+        "pontos": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "salas_vip": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "categoria": "https://institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html",
+        "programa_proprio": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao",
+        "transfere_para"
       ],
       "verificado_em": "2026-07-27",
       "bandeira_ref": "visa-infinite"
@@ -1211,497 +1702,6 @@
       ],
       "verificado_em": "2026-07-27",
       "bandeira_ref": "mastercard-black"
-    },
-    {
-      "slug": "banescard-visa-infinite-absoluto",
-      "nome": "Banescard Visa Absoluto",
-      "emissor": "Banestes",
-      "bandeira": "Visa Infinite",
-      "categoria": "Alta Renda / Private",
-      "anuidade": 1800,
-      "anuidade_parcelas": null,
-      "isencao": {
-        "tipo": "gasto_mensal_e_investimento",
-        "valor": null,
-        "regra": "Isenção de 50% para gastos mensais acima de R$ 12.500; isenção de 100% para gastos mensais a partir de R$ 25.000. Isenção total para clientes com R$ 5 milhões ou mais em investimentos no Banestes."
-      },
-      "renda_minima": 30000,
-      "requisito_acesso": "Mediante convite; exige no mínimo R$ 1 milhão em investimentos no Banestes e renda mínima de R$ 30.000.",
-      "adicionais_gratis": 5,
-      "pontos": {
-        "nacional": 4.2,
-        "internacional": 5,
-        "unidade": "pts/USD",
-        "observacao": "Pontos com validade vitalícia (não expiram). Programa próprio Banescard — parceiros de transferência não informados em fonte oficial."
-      },
-      "cashback": null,
-      "programa_proprio": null,
-      "transfere_para": [],
-      "spread": null,
-      "iof": null,
-      "validade_pontos": "Vitalícia (não expiram)",
-      "salas_vip": [
-        {
-          "programa": "LoungeKey",
-          "regra": "Acesso ilimitado para o titular, com permissão para até 12 convidados."
-        },
-        {
-          "programa": "Dragon Pass / Visa Airport Companion",
-          "regra": "Acesso ilimitado para o titular, com permissão para até 12 convidados."
-        }
-      ],
-      "beneficios_banco": [
-        {
-          "titulo": "Welcome Kit com porta-cartão Montblanc",
-          "descricao": "Os 200 primeiros clientes do cartão recebem um porta-cartão da marca Montblanc junto ao welcome kit."
-        },
-        {
-          "titulo": "Apple Pay e Cartão Virtual",
-          "descricao": "Implantação de Apple Pay e cartão virtual para compras online prevista para o primeiro trimestre de 2026."
-        },
-        {
-          "titulo": "Concierge Visa Infinite",
-          "descricao": "Acesso ao serviço de concierge da bandeira Visa Infinite."
-        }
-      ],
-      "link_solicitacao": null,
-      "fontes": [
-        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html"
-      ],
-      "campos_pendentes": [
-        "anuidade_parcelas",
-        "cashback",
-        "iof",
-        "programa_proprio",
-        "spread",
-        "transfere_para"
-      ],
-      "nota_curadoria": "O cartão foi anunciado publicamente em dezembro de 2025, com lançamento oficial em janeiro de 2026. Em julho de 2026, não foram localizadas páginas de produto, tabela de tarifas ou regulamento de pontos no domínio banestes.com.br. Todos os dados extraídos provêm exclusivamente do press release publicado no domínio oficial visa.com.br. Os campos 'anuidade_parcelas', 'transfere_para', 'spread', 'iof' e 'link_solicitacao' permanecem nulos por ausência de fonte oficial verificável. O campo 'adicionais_gratis' (5 cartões) e 'salas_vip' (12 convidados) também têm como única fonte o press release Visa. Recomenda-se reverificação quando a página do produto for publicada no site do Banestes.",
-      "procedencia": {
-        "nome": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
-        "emissor": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
-        "bandeira": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
-        "categoria": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
-        "anuidade": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
-        "isencao": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
-        "renda_minima": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
-        "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
-        "adicionais_gratis": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
-        "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
-        "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
-        "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html",
-        "beneficios_banco": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html"
-      },
-      "vigencia_ate": null,
-      "analise": null,
-      "campos_rejeitados": [
-        "programa_proprio"
-      ],
-      "verificado_em": "2026-07-27",
-      "bandeira_ref": "visa-infinite"
-    },
-    {
-      "slug": "bradesco-elo-diners-club",
-      "nome": "Bradesco Prime Elo Diners Club",
-      "emissor": "Bradesco",
-      "bandeira": "Elo / Diners Club International",
-      "categoria": "Premium / High-end",
-      "anuidade": null,
-      "anuidade_parcelas": null,
-      "isencao": {
-        "tipo": "percentual",
-        "valor": "até 100%",
-        "regra": "Clientes Bradesco Prime podem obter até 100% de isenção na anuidade do cartão de crédito, conforme critérios do segmento Prime"
-      },
-      "renda_minima": null,
-      "requisito_acesso": null,
-      "adicionais_gratis": null,
-      "pontos": null,
-      "cashback": null,
-      "programa_proprio": "Livelo (via parceria Bradesco Cartões + Livelo)",
-      "transfere_para": [],
-      "spread": null,
-      "iof": null,
-      "validade_pontos": null,
-      "salas_vip": [
-        {
-          "programa": "Bradesco Cartões Lounge",
-          "regra": "Acesso ilimitado às Salas VIP Bradesco Cartões Lounge em aeroportos do Brasil (Guarulhos T2, Congonhas, Curitiba, Santos Dumont), mediante apresentação do cartão Elo Diners Club"
-        },
-        {
-          "programa": "Centurion Lounge (American Express)",
-          "regra": "Acesso ilimitado às Salas Centurion Lounge pelo mundo, mediante apresentação do cartão Corporativo Elo Diners Club"
-        }
-      ],
-      "beneficios_banco": [
-        {
-          "titulo": "Programa de Pontos Livelo",
-          "descricao": "Compras geram pontos Livelo trocáveis por viagens, produtos, experiências, cashback e uso direto em maquininha de cartão"
-        },
-        {
-          "titulo": "Salas VIP em aeroportos",
-          "descricao": "Acesso ilimitado às Salas VIP Bradesco Cartões Lounge no Brasil e às Salas Centurion Lounge no mundo"
-        },
-        {
-          "titulo": "Isenção de anuidade Prime",
-          "descricao": "Clientes Bradesco Prime podem obter até 100% de isenção na tarifa da conta e na anuidade do cartão de crédito"
-        },
-        {
-          "titulo": "Crédito Rotativo e Parcelamento",
-          "descricao": "Possibilidade de pagamento parcelado e crédito rotativo na fatura mensal, com encargos conforme tabela vigente"
-        },
-        {
-          "titulo": "Saques de Emergência",
-          "descricao": "Saques emergenciais nas unidades BDN – Bradesco Dia e Noite, mediante senha, com encargos discriminados na fatura"
-        },
-        {
-          "titulo": "Seguro Superprotegido Premiável (Opcional)",
-          "descricao": "Seguro opcional oferecido com o cartão, mediante pagamento de tarifa mensal"
-        },
-        {
-          "titulo": "Atendimento 24h",
-          "descricao": "Central de Atendimento disponível 24 horas, inclusive sábados, domingos e feriados, para dúvidas, cancelamentos e reposição de cartão em caso de perda ou roubo"
-        }
-      ],
-      "link_solicitacao": "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
-      "fontes": [
-        "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
-        "https://adc.bradesco.com.br/html/corporate/solucoes-integradas/cartoes/beneficios/salavip.shtm",
-        "https://adc.bradesco.com.br/html/prime/index.shtm",
-        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "https://bdn.bradesco.com.br/assets/pessoajuridica/pdf/solucoes-integradas/cartoes/conheca-os-cartoes/elo/Guias_Beneficios_Elo_Grafite.pdf"
-      ],
-      "campos_pendentes": [
-        "adicionais_gratis",
-        "anuidade",
-        "anuidade_parcelas",
-        "cashback",
-        "iof",
-        "pontos",
-        "pontos.internacional",
-        "pontos.nacional",
-        "renda_minima",
-        "requisito_acesso",
-        "spread",
-        "transfere_para",
-        "validade_pontos"
-      ],
-      "nota_curadoria": "A página de produto específica do Bradesco Prime Elo Diners Club (adc.bradesco.com.br/html/prime/produtos-servicos/cartoes/conheca-os-cartoes/bradesco-elo-nanquim.shtm e similares) retornou erro 404 ou redirecionamento sem conteúdo durante a consulta em 27/07/2026. O cartão é listado nominalmente no menu Prime em bradesco.com.br. Os dados de salas VIP foram confirmados na página oficial de benefícios corporativos. Anuidade, pontos e renda mínima devem ser obtidos diretamente na Tabela Geral de Tarifas Bradesco ou consultando gerente Prime, pois não estavam expostos em nenhuma página pública acessível nas buscas realizadas.",
-      "procedencia": {
-        "nome": "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
-        "bandeira": "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
-        "salas_vip": "https://adc.bradesco.com.br/html/corporate/solucoes-integradas/cartoes/beneficios/salavip.shtm",
-        "isencao": "https://adc.bradesco.com.br/html/prime/index.shtm",
-        "programa_proprio": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "beneficios_banco": "https://adc.bradesco.com.br/html/corporate/solucoes-integradas/cartoes/beneficios/salavip.shtm"
-      },
-      "vigencia_ate": null,
-      "analise": null,
-      "campos_rejeitados": [
-        "pontos",
-        "transfere_para",
-        "requisito_acesso"
-      ],
-      "verificado_em": "2026-07-27"
-    },
-    {
-      "slug": "bradesco-visa-principal",
-      "nome": "Bradesco Principal Visa Infinite",
-      "emissor": "Bradesco",
-      "bandeira": "Visa",
-      "categoria": "Infinite",
-      "anuidade": null,
-      "anuidade_parcelas": null,
-      "isencao": null,
-      "renda_minima": null,
-      "requisito_acesso": null,
-      "adicionais_gratis": null,
-      "pontos": null,
-      "cashback": null,
-      "programa_proprio": "Livelo",
-      "transfere_para": [],
-      "spread": null,
-      "iof": null,
-      "validade_pontos": null,
-      "salas_vip": [
-        {
-          "programa": "Visa Airport Companion",
-          "regra": "Mais de 1.000 salas VIP no mundo. Quantidade de acessos gratuitos nao publicada na pagina do produto."
-        },
-        {
-          "programa": "Visa Infinite Fast Pass",
-          "regra": "Acesso prioritario ao embarque"
-        }
-      ],
-      "beneficios_banco": [
-        {
-          "titulo": "Pontos Livelo",
-          "descricao": "Acumulo de pontos trocaveis por viagens, cashback ou produtos."
-        },
-        {
-          "titulo": "Salas VIP",
-          "descricao": "Conforto em mais de 1.000 salas VIP ao redor do mundo."
-        },
-        {
-          "titulo": "Descontos em restaurantes",
-          "descricao": "Ate 15% de desconto na conta, mesa VIP e sobremesa em restaurantes premiados."
-        },
-        {
-          "titulo": "Concierge de viagens",
-          "descricao": "Recomendacoes diarias de especialistas em viagens e experiencias."
-        },
-        {
-          "titulo": "Ofertas de marcas",
-          "descricao": "Condicoes diferenciadas em marcas selecionadas pelo app Bradesco."
-        }
-      ],
-      "link_solicitacao": null,
-      "fontes": [
-        "https://banco.bradesco/html/principal/cartoes.html"
-      ],
-      "campos_pendentes": [
-        "adicionais_gratis",
-        "anuidade",
-        "anuidade_parcelas",
-        "cashback",
-        "iof",
-        "isencao",
-        "isencao.regra",
-        "isencao.tipo",
-        "isencao.valor",
-        "pontos",
-        "pontos.internacional",
-        "pontos.nacional",
-        "pontos.observacao",
-        "programa_proprio",
-        "renda_minima",
-        "requisito_acesso",
-        "spread",
-        "transfere_para",
-        "validade_pontos"
-      ],
-      "nota_curadoria": "A pagina oficial do segmento Principal descreve beneficios mas NAO publica anuidade, pontuacao por dolar nem regra de isencao. Valores que circulam (2,5 pts/USD nacional, 3 no exterior, isencao com R$ 15 mil de gasto ou R$ 300 mil investidos) vem apenas de fontes secundarias e por isso nao foram adotados.",
-      "procedencia": {
-        "programa_proprio": "https://banco.bradesco/html/principal/cartoes.html",
-        "salas_vip": "https://banco.bradesco/html/principal/cartoes.html"
-      },
-      "vigencia_ate": null,
-      "analise": null,
-      "campos_rejeitados": [
-        "isencao",
-        "pontos"
-      ],
-      "verificado_em": "2026-07-27",
-      "bandeira_ref": "visa-infinite"
-    },
-    {
-      "slug": "bradesco-smiles-visa-infinite",
-      "nome": "Bradesco Smiles Visa Infinite",
-      "emissor": "Bradesco",
-      "bandeira": "Visa",
-      "categoria": "Infinite",
-      "anuidade": null,
-      "anuidade_parcelas": null,
-      "isencao": null,
-      "renda_minima": null,
-      "requisito_acesso": null,
-      "adicionais_gratis": null,
-      "pontos": {
-        "nacional": null,
-        "internacional": null,
-        "unidade": "milhas/USD",
-        "observacao": "A cada dólar pago em fatura ou equivalente em real, o titular ganha milhas transferidas automaticamente para a Conta Smiles em até 5 dias úteis após confirmação do pagamento. Faturas de adicionais pontuam na mesma conta do titular. Clientes Clube Smiles acumulam quantidade diferenciada."
-      },
-      "cashback": null,
-      "programa_proprio": false,
-      "transfere_para": [
-        "Smiles (GOL)"
-      ],
-      "spread": null,
-      "iof": null,
-      "validade_pontos": "Conforme categoria do cliente no Programa Smiles. Milhas do cartão Infinite não expiram (verificar regulamento Smiles vigente).",
-      "salas_vip": [
-        {
-          "programa": "Visa Airport Companion",
-          "regra": "2 acessos gratuitos a centenas de Salas VIP ao redor do mundo. Disponível via app Visa Airport Companion (App Store / Play Store)."
-        },
-        {
-          "programa": "Visa Infinite Lounge – GRU T3",
-          "regra": "Acesso à sala VIP exclusiva Visa Infinite no Terminal 3 do Aeroporto Internacional de Guarulhos, aberta 24h. Acesso limitado ao titular + até 3 acompanhantes, por no máximo 3 horas por visitante."
-        },
-        {
-          "programa": "GOL Premium Lounge",
-          "regra": "Acesso gratuito às salas Gol Premium Lounge nos Aeroportos de Guarulhos (embarque nacional e internacional) e do Galeão (embarque internacional)."
-        }
-      ],
-      "beneficios_banco": [
-        {
-          "titulo": "Visa Infinite Fast Pass",
-          "descricao": "Acesso a fila de segurança diferenciada nos Terminais 2 e 3 de Guarulhos e nos embarques doméstico e internacional do RIOgaleão. Disponível todos os dias das 03h às 23h (horário de Brasília). O titular pode levar até 5 acompanhantes."
-        },
-        {
-          "titulo": "Primeiro despache de bagagem gratuito GOL",
-          "descricao": "Primeiro despacho de bagagem sem custo em voos GOL."
-        },
-        {
-          "titulo": "Prioridade no embarque e check-in GOL",
-          "descricao": "Embarque preferencial e check-in prioritário em voos da GOL."
-        },
-        {
-          "titulo": "Milha extra em passagens GOL",
-          "descricao": "1 milha extra a cada 1 US$ gasto na compra de passagens GOL com o cartão."
-        },
-        {
-          "titulo": "Parcelamento em voos GOL",
-          "descricao": "Parcelamento em até 12x sem juros na compra de passagens GOL."
-        },
-        {
-          "titulo": "Seguro Proteção de Compra",
-          "descricao": "Cobertura contra roubo, furto e danos acidentais de produtos adquiridos com o cartão, dentro de 180 dias. Seguros fornecidos pela AIG Seguros do Brasil S.A."
-        },
-        {
-          "titulo": "Proteção de Preço e Garantia Estendida",
-          "descricao": "Benefícios Visa para cartões Gold, Platinum e Infinite. Consultar termos em visa.com.br."
-        },
-        {
-          "titulo": "Tecnologia Quick Read",
-          "descricao": "Todas as informações do cartão são impressas na face do plástico, facilitando compras online."
-        },
-        {
-          "titulo": "Transferência automática de milhas",
-          "descricao": "As milhas acumuladas são transferidas automaticamente para a Conta Smiles em até 5 dias úteis após confirmação do pagamento da fatura, proporcional ao valor pago."
-        }
-      ],
-      "link_solicitacao": "https://imprensa.bradesco.com.br/smiles/index.shtm",
-      "fontes": [
-        "https://imprensa.bradesco.com.br/smiles/index.shtm",
-        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/smiles-lanca-novos-cartoes-de-credito-com-marca-visa-em-parceria-com-banco-do-brasil-bradesco-e-santander.html",
-        "https://www.visa.com.br/sobre-a-visa/vac.html",
-        "http://200-155-86-38.bradesco.com.br/assets/classic/pdf/produtos-servicos/cartoes/guia-beneficios/card-bradesco-smile-visa-infinite.PDF",
-        "https://express.bradesco.com.br/naocorrentista/cartoes/smiles-visa-gold/"
-      ],
-      "campos_pendentes": [
-        "adicionais_gratis",
-        "anuidade",
-        "anuidade_parcelas",
-        "cashback",
-        "iof",
-        "isencao",
-        "pontos.internacional",
-        "pontos.nacional",
-        "renda_minima",
-        "requisito_acesso",
-        "spread"
-      ],
-      "nota_curadoria": "A página principal do produto (imprensa.bradesco.com.br/smiles/index.shtm) confirma benefícios de viagem, transferência de milhas e salas VIP, mas NÃO exibe valores de anuidade, taxa de acúmulo de milhas (milhas/USD) específica para a variante Infinite, renda mínima nem condições de isenção para o Bradesco Smiles Visa Infinite — apenas para o GOL Smiles Visa Infinite. O PDF oficial do guia de benefícios (200-155-86-38.bradesco.com.br) existe mas não foi acessível por crawler. A tabela de tarifas em institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html não retornou dados estruturados. Recomenda-se acesso direto às páginas de produto em bradesco.com.br/cartoes ou à tabela de tarifas oficial para completar os campos pendentes. Nota: o produto pode ter passado a se chamar 'Bradesco GOL Smiles Visa Infinite' na comunicação atual do banco.",
-      "procedencia": {
-        "bandeira": "https://imprensa.bradesco.com.br/smiles/index.shtm",
-        "categoria": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/smiles-lanca-novos-cartoes-de-credito-com-marca-visa-em-parceria-com-banco-do-brasil-bradesco-e-santander.html",
-        "programa_proprio": "https://imprensa.bradesco.com.br/smiles/index.shtm",
-        "transfere_para": "https://imprensa.bradesco.com.br/smiles/index.shtm",
-        "pontos": "https://imprensa.bradesco.com.br/smiles/index.shtm",
-        "salas_vip": "https://imprensa.bradesco.com.br/smiles/index.shtm",
-        "validade_pontos": "https://imprensa.bradesco.com.br/smiles/index.shtm",
-        "beneficios_banco": "https://imprensa.bradesco.com.br/smiles/index.shtm",
-        "link_solicitacao": "https://imprensa.bradesco.com.br/smiles/index.shtm"
-      },
-      "vigencia_ate": "2025-08-31",
-      "analise": null,
-      "campos_rejeitados": [
-        "isencao"
-      ],
-      "verificado_em": "2026-07-27",
-      "bandeira_ref": "visa-infinite"
-    },
-    {
-      "slug": "bradesco-visa-aeternum",
-      "nome": "Bradesco Visa Aeternum",
-      "emissor": "Bradesco",
-      "bandeira": "Visa",
-      "categoria": "Visa Infinite (tier Aeternum)",
-      "anuidade": null,
-      "anuidade_parcelas": null,
-      "isencao": null,
-      "renda_minima": null,
-      "requisito_acesso": null,
-      "adicionais_gratis": null,
-      "pontos": {
-        "nacional": 4,
-        "internacional": 4,
-        "unidade": "pts/USD",
-        "observacao": "4 pontos Livelo a cada dólar gasto em compras nacionais e internacionais"
-      },
-      "cashback": null,
-      "programa_proprio": "Livelo (via Bradesco Cartões)",
-      "transfere_para": [],
-      "spread": null,
-      "iof": null,
-      "validade_pontos": null,
-      "salas_vip": [
-        {
-          "programa": "LoungeKey",
-          "regra": "Acesso gratuito e ilimitado para o portador; 12 acessos gratuitos por ano para convidados. Acesso a mais de 1.200 salas VIP ao redor do mundo."
-        },
-        {
-          "programa": "Visa Infinite Lounge (Guarulhos T3)",
-          "regra": "Acesso à sala VIP exclusiva da Visa no embarque do Terminal 3 do Aeroporto Internacional de Guarulhos."
-        },
-        {
-          "programa": "Visa Infinite Fast Pass (Guarulhos T2/T3)",
-          "regra": "Fila de segurança diferenciada nos Terminais 2 e 3 do Aeroporto Internacional de Guarulhos."
-        }
-      ],
-      "beneficios_banco": [
-        {
-          "titulo": "Programa de Pontos Livelo",
-          "descricao": "Acumule 4 pontos Livelo a cada dólar gasto em compras nacionais e internacionais. Ative a conta Livelo em livelo.com.br/cadastro ou pelo App."
-        },
-        {
-          "titulo": "LoungeKey – Salas VIP",
-          "descricao": "Acesso gratuito e ilimitado ao portador titular; 12 acessos gratuitos por ano para convidados em mais de 1.200 salas VIP no mundo."
-        },
-        {
-          "titulo": "Visa Infinite Lounge Guarulhos",
-          "descricao": "Acesso à sala VIP exclusiva da Visa no Terminal 3 do Aeroporto Internacional de Guarulhos."
-        },
-        {
-          "titulo": "Visa Infinite Fast Pass",
-          "descricao": "Fila de segurança diferenciada nos Terminais 2 e 3 do Aeroporto Internacional de Guarulhos."
-        }
-      ],
-      "link_solicitacao": null,
-      "fontes": [
-        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "https://institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html"
-      ],
-      "campos_pendentes": [
-        "adicionais_gratis",
-        "anuidade",
-        "anuidade_parcelas",
-        "cashback",
-        "iof",
-        "isencao",
-        "renda_minima",
-        "requisito_acesso",
-        "spread",
-        "transfere_para",
-        "validade_pontos"
-      ],
-      "nota_curadoria": "O Bradesco Visa Aeternum é um cartão de acesso restrito (convite/segmento Private/Exclusive), sem página pública de produto identificada nos domínios oficiais rastreados. Os dados de pontuação e salas VIP foram extraídos da página oficial de benefícios de cartões Bradesco. Anuidade, renda mínima, isenção e demais condições comerciais não constam em nenhuma página pública oficial acessível — devem ser confirmados diretamente com o gerente Bradesco ou via tabela geral de tarifas atualizada em institucional.bradesco.com.br. A tabela de tarifas agrupa o Aeternum com Infinite e Black OK, mas os valores numéricos da anuidade não estavam acessíveis na versão rastreada.",
-      "procedencia": {
-        "pontos": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "salas_vip": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "categoria": "https://institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html",
-        "programa_proprio": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
-      },
-      "vigencia_ate": null,
-      "analise": null,
-      "campos_rejeitados": [
-        "isencao",
-        "transfere_para"
-      ],
-      "verificado_em": "2026-07-27",
-      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "c6-black",
@@ -2511,7 +2511,7 @@
       "emissor": "CAIXA",
       "bandeira": "Elo / Diners Club International",
       "categoria": "Premium",
-      "anuidade": 1440.0,
+      "anuidade": 1440,
       "anuidade_parcelas": 12,
       "isencao": {
         "tipo": "cashback",
@@ -2805,6 +2805,138 @@
       ],
       "verificado_em": "2026-07-27",
       "bandeira_ref": "mastercard-black"
+    },
+    {
+      "slug": "unicred-impar-visa-infinite",
+      "nome": "Ímpar Unicred Visa Infinite",
+      "emissor": "Unicred",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": "Ser cooperado Unicred (pessoa física). Para se associar: unicred.com.br/associe-se",
+      "adicionais_gratis": 3,
+      "pontos": null,
+      "cashback": null,
+      "programa_proprio": "ÚNICO – Programa de Recompensas Unicred",
+      "transfere_para": [
+        "Programas de milhagens (parceiros não especificados em fonte oficial consultada)"
+      ],
+      "spread": 0,
+      "iof": null,
+      "validade_pontos": "60 meses",
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion",
+          "regra": "Acesso ilimitado a mais de 1.250 salas VIP em aeroportos ao redor do mundo, via app Visa Airport Companion."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Isenção de spread em compras internacionais",
+          "descricao": "Compras internacionais convertidas pelo dólar PTAX do dia da compra, sem acréscimo de taxas de custos operacionais (spread zero)."
+        },
+        {
+          "titulo": "Até 3 cartões adicionais gratuitos",
+          "descricao": "Possibilidade de emissão de até três cartões adicionais sem custo."
+        },
+        {
+          "titulo": "Design metalizado",
+          "descricao": "Cartão com design metalizado exclusivo para o segmento Ímpar."
+        },
+        {
+          "titulo": "Visa Concierge",
+          "descricao": "Serviço exclusivo de concierge Visa Infinite para reservas, roteiros de viagem e outros serviços sob demanda."
+        },
+        {
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Acesso a fila exclusiva de segurança nos aeroportos de Guarulhos (terminais 2 e 3) e RIOgaleão."
+        },
+        {
+          "titulo": "Seguro Garantia Estendida Original",
+          "descricao": "Cobertura adicional à garantia de fábrica de produtos elegíveis comprados com o cartão."
+        },
+        {
+          "titulo": "Coberturas extras para viagens",
+          "descricao": "Seguros e assistências para viagens nacionais e internacionais (cancelamento, atraso de bagagem, emergência médica, entre outros benefícios da categoria Visa Infinite)."
+        },
+        {
+          "titulo": "Programa Único – resgate flexível",
+          "descricao": "Pontos podem ser transferidos para programas de milhagens, trocados por produtos de marcas de luxo, usados como crédito em fatura ou aportados na previdência privada Precaver da Unicred."
+        },
+        {
+          "titulo": "Design Metalizado",
+          "descricao": "Cartão físico com design metalizado."
+        },
+        {
+          "titulo": "Cartões Adicionais Gratuitos",
+          "descricao": "Emissão de até 3 cartões adicionais sem custo."
+        },
+        {
+          "titulo": "Isenção de Spread Internacional",
+          "descricao": "Isenção de spread em compras internacionais."
+        },
+        {
+          "titulo": "Vai de Visa",
+          "descricao": "Plataforma de ofertas, promoções e benefícios exclusivos Visa."
+        },
+        {
+          "titulo": "Precaver",
+          "descricao": "Opção de conversão de pontos em aportes na previdência privada da Unicred (Precaver)."
+        },
+        {
+          "titulo": "App Cartão Unicred Visa",
+          "descricao": "Gestão completa do cartão pelo app: desbloqueio, bloqueio, senha, cartão virtual, faturas, resgate de pontos, aviso de viagem e contestação de transações."
+        },
+        {
+          "titulo": "Coberturas de Viagem Visa Infinite",
+          "descricao": "Seguros e coberturas extras para viagem (seguro de viagem, garantia estendida, seguro de veículo de locadora, entre outros benefícios padrão da categoria Infinite)."
+        }
+      ],
+      "link_solicitacao": "https://www.unicred.com.br/associe-se",
+      "fontes": [
+        "https://vaidevisa.visa.com.br/site/regulamento/unicred-vai-de-visa",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html"
+      ],
+      "campos_pendentes": [
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "isencao.regra",
+        "isencao.tipo",
+        "isencao.valor",
+        "pontos",
+        "pontos.internacional",
+        "pontos.nacional",
+        "renda_minima"
+      ],
+      "nota_curadoria": "A página oficial do produto no domínio unicred.com.br não foi localizada nas buscas realizadas — o site da Unicred parece não indexar publicamente a página de produto do Ímpar Visa Infinite com tarifas detalhadas. Os dados confirmados provêm exclusivamente de dois press releases oficiais publicados em visa.com.br. Campos críticos como anuidade, taxa de pontuação (pts/USD) e renda mínima precisam ser coletados diretamente na tabela de tarifas ou regulamento do Programa ÚNICO disponível no portal unicred.com.br ou no app Cartão Unicred Visa. O campo 'spread: 0' foi extraído de declaração explícita da fonte oficial Visa ('isenção de spread em compras internacionais'). A validade de pontos de 60 meses também está confirmada por fonte oficial Visa.",
+      "procedencia": {
+        "nome": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "emissor": "https://vaidevisa.visa.com.br/site/regulamento/unicred-vai-de-visa",
+        "bandeira": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "categoria": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
+        "adicionais_gratis": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "spread": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "programa_proprio": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
+        "transfere_para": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao",
+        "pontos"
+      ],
+      "verificado_em": "2026-07-27",
+      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "itau-personnalite-latam-pass-visa-infinite",
@@ -3666,6 +3798,124 @@
       ],
       "verificado_em": "2026-07-27",
       "bandeira_ref": "mastercard-black"
+    },
+    {
+      "slug": "latam-pass-itau-visa-infinite",
+      "nome": "LATAM Pass Itaú Visa Infinite",
+      "emissor": "Itaú",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": 1260,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "gasto_mensal",
+        "valor": 20000,
+        "regra": "100% de desconto na mensalidade (R$ 105,00) nos meses em que atingir R$ 20.000,00 em compras por fatura. 50% de desconto (R$ 52,50) nos meses com gastos entre R$ 10.000,00 e R$ 19.999,99. Mensalidade integral de R$ 105,00 em gastos inferiores a R$ 10.000,00."
+      },
+      "renda_minima": 10000,
+      "requisito_acesso": null,
+      "adicionais_gratis": 6,
+      "pontos": {
+        "nacional": 2.5,
+        "internacional": 3.5,
+        "unidade": "milhas/USD",
+        "observacao": "Participantes do Clube LATAM Pass acumulam 50% de milhas extras (campanha válida até 31/08/2026). A cada 10 milhas acumuladas, 2 pontos qualificáveis são concedidos para categorias Elite, com teto de 9.000 pts qualificáveis/ano."
+      },
+      "cashback": null,
+      "programa_proprio": "LATAM Pass",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Milhas não expiram enquanto o cartão for utilizado. Caso fique sem uso por 12 meses consecutivos ou seja cancelado, as milhas passam a ter validade de 24 meses.",
+      "salas_vip": [
+        {
+          "programa": "LATAM VIP Lounge",
+          "regra": "Acesso gratuito e ilimitado para titular e 1 acompanhante nas salas VIP LATAM em São Paulo (GRU), Miami, Santiago, Bogotá e Buenos Aires, ao voar pela LATAM Airlines."
+        },
+        {
+          "programa": "Visa Airport Companion (DragonPass)",
+          "regra": "2 acessos gratuitos por cartão (titular + adicional) por ano às salas VIP do programa Visa Airport Companion."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Check-in e embarque preferencial LATAM",
+          "descricao": "Check-in e embarque preferencial (Grupo 3) em voos domésticos e internacionais da LATAM para o titular e um acompanhante."
+        },
+        {
+          "titulo": "Upgrade de cabine",
+          "descricao": "6 trechos de cortesia para upgrade de cabine na América do Sul e 2 trechos fora da América do Sul por ano, válidos por 12 meses. Não cumulativos com trechos de categoria Elite (prevalece o melhor benefício)."
+        },
+        {
+          "titulo": "Parcelamento LATAM",
+          "descricao": "Parcelamento de passagens aéreas LATAM Airlines em até 10x sem juros."
+        },
+        {
+          "titulo": "Desconto na compra de milhas",
+          "descricao": "30% de desconto na compra de pontos/milhas LATAM Pass (exclusivo para titular)."
+        },
+        {
+          "titulo": "Desconto no Shopping LATAM Pass",
+          "descricao": "10% de desconto em resgates no Shopping LATAM Pass."
+        },
+        {
+          "titulo": "Pontos qualificáveis Elite",
+          "descricao": "A cada 10 milhas acumuladas no cartão, 2 pontos qualificáveis são concedidos para subida de categoria Elite LATAM, com teto de 9.000 pontos qualificáveis por ano."
+        },
+        {
+          "titulo": "Milhas bônus na aquisição",
+          "descricao": "40.000 milhas bônus ao atingir R$ 20.000,00 por fatura nas 3 primeiras faturas (válido somente no 1º ano, não vale em renovações)."
+        },
+        {
+          "titulo": "Cartão adicional gratuito",
+          "descricao": "Até 6 cartões adicionais gratuitos; os gastos dos adicionais compõem o volume para isenção de anuidade."
+        },
+        {
+          "titulo": "Assistente pessoal Visa Infinite",
+          "descricao": "Assistente pessoal 24 horas para organização de viagens, reservas de restaurantes, shows e eventos (via Personnalité)."
+        },
+        {
+          "titulo": "Carteiras digitais",
+          "descricao": "Compatível com Apple Pay, Samsung Pay e Google Pay."
+        }
+      ],
+      "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
+      "fontes": [
+        "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
+        "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
+        "https://latampass.latam.com/pt_br/latampass-itau",
+        "https://latampass.latam.com/pt_br/latampass-itau/beneficios-visa",
+        "https://latampass.latam.com/pt_br/latampass-itau/comparativo-de-cartoes",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/latam-pass-itau-visa-infinite.html",
+        "https://www.itau.com.br/cartoes/beneficios/programa-pontos-latam-pass-itaucard"
+      ],
+      "campos_pendentes": [
+        "cashback",
+        "iof",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "nota_curadoria": "Existem duas versões do produto: (1) LATAM Pass Itaú Visa Infinite para o mercado geral (itau.com.br/cartoes/escolha) e (2) versão Personnalité (itau.com.br/personnalite), com mesma estrutura tarifária mas acesso restrito a clientes Personnalité (renda/investimentos a partir de R$ 3 milhões para isenção via investimentos). A ficha cobre a versão de mercado geral. A campanha de 50% de milhas extras com Clube LATAM Pass tem vigência declarada até 31/08/2026. Valor mensal da anuidade sem isenção: R$ 105,00 × 12 = R$ 1.260,00/ano. Fonte visa.com.br é press release de 2021; valores de pontuação base foram confirmados nas páginas de produto mais recentes do itau.com.br e latampass.latam.com.",
+      "procedencia": {
+        "anuidade": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
+        "anuidade_parcelas": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
+        "isencao": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
+        "renda_minima": "https://latampass.latam.com/pt_br/latampass-itau/comparativo-de-cartoes",
+        "adicionais_gratis": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
+        "pontos": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
+        "validade_pontos": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
+        "salas_vip": "https://latampass.latam.com/pt_br/latampass-itau/beneficios-visa",
+        "programa_proprio": "https://www.itau.com.br/cartoes/beneficios/programa-pontos-latam-pass-itaucard",
+        "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/"
+      },
+      "vigencia_ate": "2026-08-31",
+      "analise": null,
+      "campos_rejeitados": [
+        "requisito_acesso"
+      ],
+      "bandeira_ref": "visa-infinite",
+      "verificado_em": "2026-07-28"
     },
     {
       "slug": "nubank-ultravioleta",
@@ -5287,138 +5537,6 @@
       },
       "vigencia_ate": null,
       "analise": null,
-      "verificado_em": "2026-07-27",
-      "bandeira_ref": "visa-infinite"
-    },
-    {
-      "slug": "unicred-impar-visa-infinite",
-      "nome": "Ímpar Unicred Visa Infinite",
-      "emissor": "Unicred",
-      "bandeira": "Visa",
-      "categoria": "Infinite",
-      "anuidade": null,
-      "anuidade_parcelas": null,
-      "isencao": null,
-      "renda_minima": null,
-      "requisito_acesso": "Ser cooperado Unicred (pessoa física). Para se associar: unicred.com.br/associe-se",
-      "adicionais_gratis": 3,
-      "pontos": null,
-      "cashback": null,
-      "programa_proprio": "ÚNICO – Programa de Recompensas Unicred",
-      "transfere_para": [
-        "Programas de milhagens (parceiros não especificados em fonte oficial consultada)"
-      ],
-      "spread": 0,
-      "iof": null,
-      "validade_pontos": "60 meses",
-      "salas_vip": [
-        {
-          "programa": "Visa Airport Companion",
-          "regra": "Acesso ilimitado a mais de 1.250 salas VIP em aeroportos ao redor do mundo, via app Visa Airport Companion."
-        }
-      ],
-      "beneficios_banco": [
-        {
-          "titulo": "Isenção de spread em compras internacionais",
-          "descricao": "Compras internacionais convertidas pelo dólar PTAX do dia da compra, sem acréscimo de taxas de custos operacionais (spread zero)."
-        },
-        {
-          "titulo": "Até 3 cartões adicionais gratuitos",
-          "descricao": "Possibilidade de emissão de até três cartões adicionais sem custo."
-        },
-        {
-          "titulo": "Design metalizado",
-          "descricao": "Cartão com design metalizado exclusivo para o segmento Ímpar."
-        },
-        {
-          "titulo": "Visa Concierge",
-          "descricao": "Serviço exclusivo de concierge Visa Infinite para reservas, roteiros de viagem e outros serviços sob demanda."
-        },
-        {
-          "titulo": "Visa Infinite Fast Pass",
-          "descricao": "Acesso a fila exclusiva de segurança nos aeroportos de Guarulhos (terminais 2 e 3) e RIOgaleão."
-        },
-        {
-          "titulo": "Seguro Garantia Estendida Original",
-          "descricao": "Cobertura adicional à garantia de fábrica de produtos elegíveis comprados com o cartão."
-        },
-        {
-          "titulo": "Coberturas extras para viagens",
-          "descricao": "Seguros e assistências para viagens nacionais e internacionais (cancelamento, atraso de bagagem, emergência médica, entre outros benefícios da categoria Visa Infinite)."
-        },
-        {
-          "titulo": "Programa Único – resgate flexível",
-          "descricao": "Pontos podem ser transferidos para programas de milhagens, trocados por produtos de marcas de luxo, usados como crédito em fatura ou aportados na previdência privada Precaver da Unicred."
-        },
-        {
-          "titulo": "Design Metalizado",
-          "descricao": "Cartão físico com design metalizado."
-        },
-        {
-          "titulo": "Cartões Adicionais Gratuitos",
-          "descricao": "Emissão de até 3 cartões adicionais sem custo."
-        },
-        {
-          "titulo": "Isenção de Spread Internacional",
-          "descricao": "Isenção de spread em compras internacionais."
-        },
-        {
-          "titulo": "Vai de Visa",
-          "descricao": "Plataforma de ofertas, promoções e benefícios exclusivos Visa."
-        },
-        {
-          "titulo": "Precaver",
-          "descricao": "Opção de conversão de pontos em aportes na previdência privada da Unicred (Precaver)."
-        },
-        {
-          "titulo": "App Cartão Unicred Visa",
-          "descricao": "Gestão completa do cartão pelo app: desbloqueio, bloqueio, senha, cartão virtual, faturas, resgate de pontos, aviso de viagem e contestação de transações."
-        },
-        {
-          "titulo": "Coberturas de Viagem Visa Infinite",
-          "descricao": "Seguros e coberturas extras para viagem (seguro de viagem, garantia estendida, seguro de veículo de locadora, entre outros benefícios padrão da categoria Infinite)."
-        }
-      ],
-      "link_solicitacao": "https://www.unicred.com.br/associe-se",
-      "fontes": [
-        "https://vaidevisa.visa.com.br/site/regulamento/unicred-vai-de-visa",
-        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
-        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html"
-      ],
-      "campos_pendentes": [
-        "anuidade",
-        "anuidade_parcelas",
-        "cashback",
-        "iof",
-        "isencao",
-        "isencao.regra",
-        "isencao.tipo",
-        "isencao.valor",
-        "pontos",
-        "pontos.internacional",
-        "pontos.nacional",
-        "renda_minima"
-      ],
-      "nota_curadoria": "A página oficial do produto no domínio unicred.com.br não foi localizada nas buscas realizadas — o site da Unicred parece não indexar publicamente a página de produto do Ímpar Visa Infinite com tarifas detalhadas. Os dados confirmados provêm exclusivamente de dois press releases oficiais publicados em visa.com.br. Campos críticos como anuidade, taxa de pontuação (pts/USD) e renda mínima precisam ser coletados diretamente na tabela de tarifas ou regulamento do Programa ÚNICO disponível no portal unicred.com.br ou no app Cartão Unicred Visa. O campo 'spread: 0' foi extraído de declaração explícita da fonte oficial Visa ('isenção de spread em compras internacionais'). A validade de pontos de 60 meses também está confirmada por fonte oficial Visa.",
-      "procedencia": {
-        "nome": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
-        "emissor": "https://vaidevisa.visa.com.br/site/regulamento/unicred-vai-de-visa",
-        "bandeira": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
-        "categoria": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
-        "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
-        "adicionais_gratis": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
-        "spread": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
-        "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
-        "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
-        "programa_proprio": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
-        "transfere_para": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html"
-      },
-      "vigencia_ate": null,
-      "analise": null,
-      "campos_rejeitados": [
-        "isencao",
-        "pontos"
-      ],
       "verificado_em": "2026-07-27",
       "bandeira_ref": "visa-infinite"
     }
