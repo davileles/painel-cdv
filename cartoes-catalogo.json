@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-28",
-    "total": 62,
+    "total": 63,
     "validado_em": "2026-07-27",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização."
@@ -6265,6 +6265,146 @@
       ],
       "verificado_em": "2026-07-27",
       "bandeira_ref": "visa-infinite"
+    },
+    {
+      "slug": "sicredi-mastercard-black",
+      "nome": "Sicredi Mastercard Black",
+      "emissor": "Sicredi",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": "Ser associado de uma cooperativa Sicredi (exige abertura de conta cooperativa)",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": "2,0 pts/USD (fatura até R$ 10 mil); 2,3 pts/USD (fatura de R$ 10 mil a R$ 20 mil); 2,5 pts/USD (fatura acima de R$ 20 mil) — sistema de reciprocidade vigente desde set/2025",
+        "internacional": "2,0 pts/USD (fatura até R$ 10 mil); 2,3 pts/USD (fatura de R$ 10 mil a R$ 20 mil); 2,5 pts/USD (fatura acima de R$ 20 mil) — mesma tabela, não há distinção por moeda na fonte oficial",
+        "unidade": "pts/USD",
+        "observacao": "Pontuação aplicada automaticamente, sem adesão. Crédito em até 5 dias úteis após pagamento da fatura. Apenas compras no crédito e anuidade contam. Pontos padrão e bônus por reciprocidade exibidos separadamente."
+      },
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "Sim — pontos podem ser convertidos em cashback na fatura via Shopping do Sicredi. Também disponível Mastercard Travel Rewards (cashback automático em parceiros no exterior)."
+      },
+      "programa_proprio": "Programa de Recompensas Sicredi — pontos resgatáveis por produtos no Shopping do Sicredi (mínimo 7.000 pts), cashback na fatura ou transferência para parceiros de milhas (mínimo 10.000 pts, múltiplos de 10.000).",
+      "transfere_para": [
+        "Smiles (GOL)",
+        "TudoAzul (Azul Linhas Aéreas)",
+        "LATAM Pass"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "2 anos",
+      "salas_vip": [
+        {
+          "programa": "LoungeKey (Mastercard Airport Experiences)",
+          "regra": "12 acessos gratuitos por ano por portador (titular e adicional têm cotas separadas de 12 acessos cada), incluindo acompanhantes. Os acompanhantes consomem da cota do portador. A partir do 13º acesso, cobrança automática na fatura. Acesso em mais de 100 países. Necessário habilitar uso do cartão no exterior no app Sicredi mesmo para acessos no Brasil."
+        },
+        {
+          "programa": "Sala VIP Mastercard Black — Terminal 3, Aeroporto de Guarulhos (GRU)",
+          "regra": "Acesso ilimitado e gratuito para o portador. Dependentes de até 12 anos entram gratuitamente. Acompanhantes adultos podem ser levados (até 3 por visita) com custo de R$ 200,00 por pessoa, lançado na fatura do titular. Sala exclusiva para portadores do Sicredi Mastercard Black. Não consome os 12 acessos LoungeKey."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Concierge 24h",
+          "descricao": "Assistência pessoal disponível 24h para reservas em restaurantes, shows, compras, planejamento de viagens, pesquisa e entrega de presentes. Disponível no Brasil e no exterior. Tel: 0800-725-2025 (Brasil) / +1-636-722-8881 (exterior)."
+        },
+        {
+          "titulo": "Seguro-viagem internacional",
+          "descricao": "Cobertura para titular e dependentes em viagens de até 60 dias consecutivos a partir da 1ª data de embarque, incluindo despesas médicas, traslado médico e hospedagem. Requer emissão de bilhete em aig.com/mastercard."
+        },
+        {
+          "titulo": "Garantia Estendida Original",
+          "descricao": "Extensão de até 12 meses da garantia original do fabricante para produtos comprados com o cartão. Requer emissão de bilhete de seguro anual em aig.com/mastercard."
+        },
+        {
+          "titulo": "Proteção de Compra",
+          "descricao": "Reembolso por roubo, furto qualificado ou danos físicos nos primeiros 90 dias após a compra com o cartão."
+        },
+        {
+          "titulo": "Seguro Bagagem",
+          "descricao": "Cobertura para extravio, roubo ou atraso de bagagem, com reembolso de despesas emergenciais."
+        },
+        {
+          "titulo": "Seguro de Emergência Médica para Schengen",
+          "descricao": "Ao usar o cartão na compra de passagens aéreas para países do Tratado de Schengen, o titular recebe cobertura de seguro de emergência médica."
+        },
+        {
+          "titulo": "Prazo estendido de pagamento",
+          "descricao": "Até 40 dias para pagamento da fatura."
+        },
+        {
+          "titulo": "Mastercard Surpreenda",
+          "descricao": "Programa da bandeira Mastercard. A cada compra de qualquer valor, o portador ganha 1 ponto. Ofertas 'compre 1, leve 2' em parceiros. Cadastro em surpreenda.naotempreco.com.br."
+        },
+        {
+          "titulo": "Mastercard Priceless Cities",
+          "descricao": "Experiências exclusivas em gastronomia, entretenimento e viagem em cidades ao redor do mundo. Consulte priceless.com."
+        },
+        {
+          "titulo": "Mastercard Travel Rewards",
+          "descricao": "Cashback automático em compras realizadas em estabelecimentos parceiros no exterior, sem necessidade de cadastro prévio."
+        },
+        {
+          "titulo": "Meet & Greet / Airport Concierge",
+          "descricao": "Agente pessoal para acompanhamento no aeroporto em chegadas, partidas e conexões. Processo acelerado em segurança e imigração nos aeroportos participantes. Disponível 24h em mais de 450 destinos. Reservas via Concierge."
+        },
+        {
+          "titulo": "Carteiras Digitais",
+          "descricao": "Compatível com Apple Pay, Google Pay e Samsung Pay."
+        },
+        {
+          "titulo": "Cartão Virtual",
+          "descricao": "Disponível para compras online e em apps, com controle de transações únicas ou recorrentes pelo app Sicredi."
+        }
+      ],
+      "link_solicitacao": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/",
+      "fontes": [
+        "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/",
+        "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-mastercard-black/",
+        "https://www.sicredi.com.br/site/solucoes-exclusivas/",
+        "https://www.sicredi.com.br/site/cartoes/portfolio-mastercard/",
+        "https://www.sicredi.com.br/site/cartoes/programa-de-recompensa/",
+        "https://www.sicredi.com.br/site/blog/vantagens-mastercard/conheca-todos-os-beneficios-do-cartao-sicredi-mastercard-black/",
+        "https://www.sicredi.com.br/site/blog/vantagens-mastercard/servico-concierge-cartao-sicredi-mastercard-black/",
+        "https://www.sicredi.com.br/site/sobre-nos/noticias/vantagens-dos-cartoes/sicredi-novidades-cartao-mastercard-black/",
+        "https://www.sicredi.com.br/site/blog/produtos/viagem-descanso-verdadeiro/",
+        "https://sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/?amp="
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "iof",
+        "isencao",
+        "isencao.tipo",
+        "isencao.valor",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "A anuidade e regras de isenção NÃO constam nas páginas oficiais do produto no site sicredi.com.br — variam por cooperativa e não há tabela consolidada nacional publicada online. A política de pontuação por reciprocidade (2,0 / 2,3 / 2,5 pts/USD) é vigente desde faturamento fechado a partir de 15/09/2025. A promoção de boas-vindas (30.000 pts extras para novos portadores que gastarem R$20k/mês nas 3 primeiras faturas) foi válida de 15/09/2025 a 15/12/2025 — vigência expirada. O campo 'transfere_para' usa denominações atuais: TudoAzul (Azul), Smiles (GOL) e LATAM Pass — fontes mais antigas citavam 'Azul' e 'Multiplus' (descontinuada). A tabela de tarifas PDF localizada (sicredi.com.br/media/coop/filer_public/2025/05/12/tabela_de_tarifas_-_062025.pdf) é de cooperativa específica e não retornou conteúdo legível para extração de valores de anuidade.",
+      "procedencia": {
+        "pontos": "https://www.sicredi.com.br/site/blog/vantagens-mastercard/conheca-todos-os-beneficios-do-cartao-sicredi-mastercard-black/",
+        "validade_pontos": "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-mastercard-black/",
+        "salas_vip": "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-mastercard-black/",
+        "transfere_para": "https://www.sicredi.com.br/site/cartoes/programa-de-recompensa/",
+        "programa_proprio": "https://www.sicredi.com.br/site/cartoes/programa-de-recompensa/",
+        "cashback": "https://www.sicredi.com.br/site/blog/produtos/viagem-descanso-verdadeiro/",
+        "requisito_acesso": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/",
+        "beneficios_banco": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/",
+        "link_solicitacao": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao"
+      ],
+      "bandeira_ref": "mastercard-black",
+      "verificado_em": "2026-07-28"
     },
     {
       "slug": "sicredi-visa-infinite",
