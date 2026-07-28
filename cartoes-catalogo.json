@@ -2407,7 +2407,7 @@
       "bandeira": "Elo / Diners Club International",
       "categoria": "Premium",
       "anuidade": 1100.04,
-      "anuidade_parcelas": 91.67,
+      "anuidade_parcelas": 12,
       "isencao": {
         "tipo": "cashback",
         "valor": "50% ou 100% da parcela mensal de anuidade",
@@ -4000,17 +4000,22 @@
       "renda_minima": null,
       "requisito_acesso": null,
       "adicionais_gratis": null,
-      "pontos": null,
+      "pontos": {
+        "nacional": null,
+        "internacional": 3.5,
+        "unidade": "pts/USD",
+        "observacao": "Acumule ate 3,5 pontos para cada dolar gasto. A pagina oficial nao discrimina a taxa nacional separadamente."
+      },
       "cashback": null,
       "programa_proprio": "PortoPlus",
       "transfere_para": [],
       "spread": null,
-      "iof": "0%",
+      "iof": 0,
       "validade_pontos": null,
       "salas_vip": [
         {
-          "programa": "LoungeKey (Mastercard Airport Experiences)",
-          "regra": "Acesso disponível para portadores das versões Platinum e Black conforme confirmado pelo Mastercard Newsroom em parceria com Porto Bank. Regras detalhadas (número de acessos gratuitos, cobrança por excedente) não publicadas em fonte oficial do emissor consultada."
+          "programa": "Mastercard Airport Experiences (LoungeKey)",
+          "regra": "6 acessos gratuitos por ano, a partir de 08/04/2026"
         }
       ],
       "beneficios_banco": [
@@ -4038,7 +4043,8 @@
       "link_solicitacao": "https://www.portobank.com.br/",
       "fontes": [
         "https://www.portobank.com.br/",
-        "https://www.mastercard.com/news/latin-america/pt-br/noticias/comunicados-de-imprensa/pr-pt/2025/outubro/mastercard-celebra-seu-primeiro-ano-de-parceria-com-mclaren-formula-1-team-e-anuncia-o-porto-bank-como-parceiro-oficial-da-corrida-no-brasil/"
+        "https://www.mastercard.com/news/latin-america/pt-br/noticias/comunicados-de-imprensa/pr-pt/2025/outubro/mastercard-celebra-seu-primeiro-ano-de-parceria-com-mclaren-formula-1-team-e-anuncia-o-porto-bank-como-parceiro-oficial-da-corrida-no-brasil/",
+        "https://www.portoseguro.com.br/cartao-de-credito/mastercard"
       ],
       "campos_pendentes": [
         "adicionais_gratis",
@@ -4049,8 +4055,6 @@
         "isencao.regra",
         "isencao.tipo",
         "isencao.valor",
-        "pontos",
-        "pontos.internacional",
         "pontos.nacional",
         "renda_minima",
         "requisito_acesso",
@@ -4059,12 +4063,13 @@
         "transfere_para",
         "validade_pontos"
       ],
-      "nota_curadoria": "A página de produto específica do Porto Bank Mastercard Black em portobank.com.br não retornou dados estruturados nas buscas realizadas (anuidade, renda mínima, aceleração de pontos PortoPlus para a variante Black). O site portobank.com.br apresenta o portfólio de cartões de forma genérica, sem separar claramente os atributos da variante Mastercard Black das demais variantes (Gold, Platinum). Os dados de isenção de IOF e salas VIP LoungeKey foram confirmados pelo Mastercard Newsroom (fonte oficial da bandeira), porém sem os parâmetros quantitativos exigidos para os campos. Recomenda-se consultar diretamente https://www.portobank.com.br/cartoes ou a tabela de tarifas e o regulamento do PortoPlus disponíveis no aplicativo Porto Bank.",
+      "nota_curadoria": "Anuidade e regra de isencao nao sao publicadas pela Porto em pagina oficial: o site informa apenas 'anuidade gratis por gastos', sem valores.",
       "procedencia": {
-        "iof": "https://www.mastercard.com/news/latin-america/pt-br/noticias/comunicados-de-imprensa/pr-pt/2025/outubro/mastercard-celebra-seu-primeiro-ano-de-parceria-com-mclaren-formula-1-team-e-anuncia-o-porto-bank-como-parceiro-oficial-da-corrida-no-brasil/",
-        "salas_vip": "https://www.mastercard.com/news/latin-america/pt-br/noticias/comunicados-de-imprensa/pr-pt/2025/outubro/mastercard-celebra-seu-primeiro-ano-de-parceria-com-mclaren-formula-1-team-e-anuncia-o-porto-bank-como-parceiro-oficial-da-corrida-no-brasil/",
-        "programa_proprio": "https://www.portobank.com.br/",
-        "beneficios_banco": "https://www.mastercard.com/news/latin-america/pt-br/noticias/comunicados-de-imprensa/pr-pt/2025/outubro/mastercard-celebra-seu-primeiro-ano-de-parceria-com-mclaren-formula-1-team-e-anuncia-o-porto-bank-como-parceiro-oficial-da-corrida-no-brasil/"
+        "iof": "https://www.portoseguro.com.br/cartao-de-credito/mastercard",
+        "salas_vip": "https://www.portoseguro.com.br/cartao-de-credito/mastercard",
+        "programa_proprio": "https://www.portoseguro.com.br/cartao-de-credito/mastercard",
+        "beneficios_banco": "https://www.mastercard.com/news/latin-america/pt-br/noticias/comunicados-de-imprensa/pr-pt/2025/outubro/mastercard-celebra-seu-primeiro-ano-de-parceria-com-mclaren-formula-1-team-e-anuncia-o-porto-bank-como-parceiro-oficial-da-corrida-no-brasil/",
+        "pontos": "https://www.portoseguro.com.br/cartao-de-credito/mastercard"
       },
       "vigencia_ate": null,
       "analise": null,
@@ -4073,7 +4078,8 @@
         "pontos"
       ],
       "bandeira_ref": "mastercard-black",
-      "verificado_em": "2026-07-28"
+      "verificado_em": "2026-07-28",
+      "iof_isento": true
     },
     {
       "slug": "porto-bank-visa-infinite",
