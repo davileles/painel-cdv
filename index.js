@@ -3523,6 +3523,71 @@ function catalogoVazio(v){
          (typeof v === 'object' && !Array.isArray(v) && !Object.keys(v).length);
 }
 
+// Emissor e gravado sempre em nome comercial curto. A IA devolve razao social
+// completa ("Banco Bradesco S.A."), o que fragmenta o filtro por emissor na
+// aba "Todos os cartoes". Mapa aplicado a toda gravacao no catalogo.
+const CARTOES_EMISSORES_CANONICOS = {
+  'banco bradesco s.a.': 'Bradesco',
+  'banco btg pactual s.a.': 'BTG Pactual',
+  'brb / brbcard': 'BRB',
+  'brb - banco de brasilia (operado pela brbcard s.a.)': 'BRB',
+  'brb banco de brasilia': 'BRB',
+  'caixa economica federal': 'CAIXA',
+  'itau unibanco': 'Itaú',
+  'itau unibanco s.a.': 'Itaú',
+  'itau unibanco (banco itaucard s.a.)': 'Itaú',
+  'itau unibanco / banco itaucard s.a.': 'Itaú',
+  'banco itaucard s.a. (itau personnalite)': 'Itaú',
+  'banco itaucard s.a.': 'Itaú',
+  'sicoob (sistema de cooperativas de credito do brasil)': 'Sicoob',
+  'unicred (confederacao nacional das cooperativas centrais unicred ltda - unicred do brasil)': 'Unicred',
+  'unicred do brasil': 'Unicred',
+  'banco inter s.a.': 'Banco Inter',
+  'banco santander (brasil) s.a.': 'Santander',
+  'banco santander s.a.': 'Santander',
+  'banco xp s.a.': 'XP',
+  'banestes - banco do estado do espirito santo': 'Banestes'
+};
+
+// Nomes ja aceitos como canonicos. Usados so como alvo de comparacao: um valor
+// desconhecido nunca e reescrito por adivinhacao, apenas mantido como veio.
+const CARTOES_EMISSORES_ACEITOS = ['Bradesco','BTG Pactual','BRB','CAIXA','Itaú',
+  'Sicoob','Unicred','Banco Inter','Santander','XP','Banestes','Banco do Brasil',
+  'Banco Safra','C6 Bank','Genial Investimentos','Nubank','Porto Bank','Revolut','Sicredi'];
+
+function cartoesChaveEmissor(s) {
+  return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u2010-\u2015]/g, '-')       // travessoes unicode -> hifen simples
+    .toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+function cartoesNormalizarEmissor(valor) {
+  if (!valor || typeof valor !== 'string') return valor || null;
+  const bruto = valor.trim();
+  if (!bruto) return null;
+
+  const chave = cartoesChaveEmissor(bruto);
+  if (CARTOES_EMISSORES_CANONICOS[chave]) return CARTOES_EMISSORES_CANONICOS[chave];
+
+  // Segunda tentativa: remove sufixo entre parenteses, aposto apos travessao
+  // ou barra, e sufixo de razao social. Serve so para reconsultar o mapa.
+  const limpo = bruto
+    .replace(/\([^)]*\)/g, ' ')
+    .split(/\s+[-\u2010-\u2015/]\s+/)[0]
+    .replace(/\bS\.?\s*\/?\s*A\.?\b/gi, ' ')
+    .replace(/\s+/g, ' ').trim();
+
+  const chaveLimpa = cartoesChaveEmissor(limpo);
+  if (CARTOES_EMISSORES_CANONICOS[chaveLimpa]) return CARTOES_EMISSORES_CANONICOS[chaveLimpa];
+
+  const aceito = CARTOES_EMISSORES_ACEITOS.find(a => cartoesChaveEmissor(a) === chaveLimpa);
+  if (aceito) return aceito;
+
+  // Desconhecido: mantem o texto original. Normalizar por adivinhacao ja
+  // produziu emissor errado antes; melhor uma grafia nova visivel na lista.
+  return bruto;
+}
+
 function cartoesSanitizar(cartao) {
   const c = { ...(cartao || {}) };
   // A IA ora devolve cashback como objeto, ora como frase. Normaliza para objeto
@@ -3577,6 +3642,7 @@ function cartoesSanitizar(cartao) {
   if (rejeitados.length) c.campos_rejeitados = rejeitados;
   // Ref explicito prevalece: houve caso de nome com 'Privilege' num cartao Infinite.
   if (!c.bandeira_ref) c.bandeira_ref = catalogoBandeiraRef(c);
+  c.emissor = cartoesNormalizarEmissor(c.emissor);
   c.verificado_em = c.verificado_em || new Date().toISOString().slice(0, 10);
   return c;
 }
