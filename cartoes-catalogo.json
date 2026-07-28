@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-28",
-    "total": 55,
+    "total": 56,
     "validado_em": "2026-07-27",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização."
@@ -4855,6 +4855,109 @@
       "vigencia_ate": null,
       "analise": null,
       "bandeira_ref": "visa-infinite",
+      "verificado_em": "2026-07-28"
+    },
+    {
+      "slug": "santander-aadvantage-black",
+      "nome": "Santander AAdvantage® Black",
+      "emissor": "Santander",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "anuidade": 1632,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "desconto_parcial",
+        "valor": "50%",
+        "regra": "Correntistas Santander com investimentos superiores a R$ 150 mil (Poupança, Depósito a Prazo, Previdência e/ou Fundos) têm 50% de desconto na parcela mensal da anuidade (a partir de 09/06/2024). Não cumulativo com outros benefícios de redução."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Sujeito à análise de crédito. Disponível para correntistas (função múltipla crédito+débito) e não correntistas (somente crédito).",
+      "adicionais_gratis": 5,
+      "pontos": {
+        "nacional": 2,
+        "internacional": 3,
+        "unidade": "milhas/USD",
+        "observacao": "Base: 2 milhas AAdvantage por dólar gasto. +1 milha extra em compras em moeda estrangeira (= 3 milhas/USD internacional). Dobro de milhas em compras na American Airlines. Acelerador de Milhas opcional: dobro de milhas pagando 4% a mais sobre o valor da fatura (máx. 5 milhas/USD). Milhas de bonificação não contam como Loyalty Points."
+      },
+      "cashback": null,
+      "programa_proprio": "AAdvantage® (American Airlines)",
+      "transfere_para": [
+        "American Airlines AAdvantage®",
+        "Companhias parceiras oneworld® (British Airways, Ibéria, Qatar Airways, LATAM e outras)"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Milhas não expiram enquanto o cartão estiver ativo; ou enquanto houver acúmulo ou resgate a cada 24 meses na American Airlines ou companhia afiliada.",
+      "salas_vip": [
+        {
+          "programa": "LoungeKey (Mastercard Airport Experience)",
+          "regra": "4 acessos gratuitos por ano. A partir do 5º acesso, é cobrada a taxa vigente da sala acessada. Não inclui salas Admirals Club."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Seguro Viagem",
+          "descricao": "Cobertura para atraso e extravio de bagagem, atraso ou cancelamento de voo e proteção 24 horas."
+        },
+        {
+          "titulo": "Seguro Cartão Protegido (SCP)",
+          "descricao": "Proteção adicional para o cartão de crédito."
+        },
+        {
+          "titulo": "Acelerador de Milhas",
+          "descricao": "Dobro de milhas em todas as compras pagando 4% a mais sobre o valor da fatura. Adesão pelo app Santander Way."
+        },
+        {
+          "titulo": "Cartão Online",
+          "descricao": "Permite fazer compras na internet antes do cartão físico chegar."
+        },
+        {
+          "titulo": "Carteiras Digitais",
+          "descricao": "Compatível com Apple Pay, Samsung Pay e Google Pay."
+        },
+        {
+          "titulo": "Atualização automática de pagamentos recorrentes",
+          "descricao": "Atualização automática em assinaturas e serviços recorrentes."
+        },
+        {
+          "titulo": "Loyalty Points AAdvantage®",
+          "descricao": "Milhas base (2 milhas/USD) contam como Loyalty Points para status na American Airlines. Milhas de bonificação/extras não qualificam."
+        }
+      ],
+      "link_solicitacao": "https://www.santander.com.br/form/cartao-aadvantage-black/?ic=botao%3Aaa-black%3Avitrine-cartoes",
+      "fontes": [
+        "https://www.santander.com.br/cartao-credito-santander/aadvantage-black",
+        "https://www.santander.com.br/hotsite/cartaoaa/",
+        "https://cms.santander.com.br/sites/WPS/documentos/arq-reg-aa-out4/24-10-28_161622_regulamento-cartoes-aadvantage-24-10-24.pdf",
+        "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf",
+        "https://cms.santander.com.br/sites/WPS/documentos/arq-tarifas-e-pacotes-pessoa-fisica-lista3-conta-plus-select/25-12-24_140851_programa-de-bonificacao-conta-plus-e-select-3.pdf",
+        "https://www.santander.com.br/cartao-de-credito"
+      ],
+      "campos_pendentes": [
+        "cashback",
+        "iof",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "Anuidade calculada com base em 12x R$ 136,00 = R$ 1.632,00/ano, conforme página oficial do produto. A isenção dos 3 primeiros meses não foi confirmada explicitamente para o Black na fonte oficial consultada (confirmada apenas para Quartz e Platinum). Renda mínima não localizada em fonte oficial vigente. Spread e IOF de compras internacionais não publicados na página do produto. O programa de salas VIP foi atualizado: o FAQ de 2020 menciona 'Mastercard Airport Experience'; a página atual (2024-2026) lista 'LoungeKey' – ambos referem 4 acessos gratuitos/ano. O cartão NÃO concede acesso ao Admirals Club. Regulamento vigente a partir de 01/07/2026 referenciado na página oficial, mas PDF não estava acessível no momento da curadoria.",
+      "procedencia": {
+        "anuidade": "https://www.santander.com.br/cartao-credito-santander/aadvantage-black",
+        "anuidade_parcelas": "https://www.santander.com.br/cartao-credito-santander/aadvantage-black",
+        "isencao": "https://cms.santander.com.br/sites/WPS/documentos/arq-tarifas-e-pacotes-pessoa-fisica-lista3-conta-plus-select/25-12-24_140851_programa-de-bonificacao-conta-plus-e-select-3.pdf",
+        "adicionais_gratis": "https://www.santander.com.br/cartao-credito-santander/aadvantage-black",
+        "pontos": "https://www.santander.com.br/hotsite/cartaoaa/",
+        "validade_pontos": "https://www.santander.com.br/hotsite/cartaoaa/",
+        "salas_vip": "https://www.santander.com.br/hotsite/cartaoaa/",
+        "transfere_para": "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf",
+        "programa_proprio": "https://www.santander.com.br/cartao-credito-santander/aadvantage-black",
+        "bandeira": "https://www.santander.com.br/cartao-credito-santander/aadvantage-black",
+        "link_solicitacao": "https://www.santander.com.br/form/cartao-aadvantage-black/?ic=botao%3Aaa-black%3Avitrine-cartoes",
+        "beneficios_banco": "https://www.santander.com.br/cartao-credito-santander/aadvantage-black",
+        "requisito_acesso": "https://www.santander.com.br/hotsite/cartaoaa/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "bandeira_ref": "mastercard-black",
       "verificado_em": "2026-07-28"
     },
     {
