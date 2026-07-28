@@ -9,13 +9,15 @@
     },
     "atualizado_em": "2026-07-27",
     "total": 47,
-    "validado_em": "2026-07-27"
+    "validado_em": "2026-07-27",
+    "emissores_normalizados_em": "2026-07-28",
+    "regra_emissor": "Emissor gravado como nome comercial curto. Novas importacoes devem seguir a mesma normalizacao."
   },
   "cartoes": [
     {
       "slug": "azul-visa-infinite",
       "nome": "Azul Itaucard Visa Infinite",
-      "emissor": "Itaú Unibanco",
+      "emissor": "Itaú",
       "bandeira": "Visa",
       "categoria": "Infinite",
       "anuidade": 1260,
@@ -147,7 +149,7 @@
     {
       "slug": "azul-itau-mastercard-skyline",
       "nome": "Azul Itaú Mastercard Skyline",
-      "emissor": "Itaú Unibanco",
+      "emissor": "Itaú",
       "bandeira": "Mastercard",
       "categoria": "Black / World Elite",
       "anuidade": 1260,
@@ -497,7 +499,7 @@
     {
       "slug": "brb-visa-dux",
       "nome": "BRB Visa DUX",
-      "emissor": "BRB – Banco de Brasília (operado pela BRBCARD S.A.)",
+      "emissor": "BRB",
       "bandeira": "Visa",
       "categoria": "Infinite",
       "anuidade": 1680,
@@ -620,7 +622,7 @@
     {
       "slug": "brb-visa-infinite",
       "nome": "BRB Visa Infinite",
-      "emissor": "BRB / BRBCARD",
+      "emissor": "BRB",
       "bandeira": "Visa",
       "categoria": "Infinite",
       "anuidade": 996,
@@ -832,7 +834,7 @@
     {
       "slug": "btg-mastercard-world-legend-ultrablue",
       "nome": "BTG Mastercard World Legend Ultrablue",
-      "emissor": "Banco BTG Pactual S.A.",
+      "emissor": "BTG Pactual",
       "bandeira": "Mastercard",
       "categoria": "World Legend",
       "anuidade": 4800,
@@ -974,7 +976,7 @@
     {
       "slug": "btg-mastercard-black-ultrablue",
       "nome": "BTG Pactual Ultrablue",
-      "emissor": "Banco BTG Pactual S.A.",
+      "emissor": "BTG Pactual",
       "bandeira": "Mastercard",
       "categoria": "Black",
       "anuidade": 4800,
@@ -1108,7 +1110,7 @@
     {
       "slug": "banescard-visa-infinite-absoluto",
       "nome": "Banescard Visa Absoluto",
-      "emissor": "Banestes – Banco do Estado do Espírito Santo",
+      "emissor": "Banestes",
       "bandeira": "Visa Infinite",
       "categoria": "Alta Renda / Private",
       "anuidade": 1800,
@@ -1196,7 +1198,7 @@
     {
       "slug": "bradesco-elo-diners-club",
       "nome": "Bradesco Prime Elo Diners Club",
-      "emissor": "Banco Bradesco S.A.",
+      "emissor": "Bradesco",
       "bandeira": "Elo / Diners Club International",
       "categoria": "Premium / High-end",
       "anuidade": null,
@@ -1300,7 +1302,7 @@
     {
       "slug": "bradesco-smiles-visa-infinite",
       "nome": "Bradesco Smiles Visa Infinite",
-      "emissor": "Banco Bradesco S.A.",
+      "emissor": "Bradesco",
       "bandeira": "Visa",
       "categoria": "Infinite",
       "anuidade": null,
@@ -1419,7 +1421,7 @@
     {
       "slug": "bradesco-visa-aeternum",
       "nome": "Bradesco Visa Aeternum",
-      "emissor": "Banco Bradesco S.A.",
+      "emissor": "Bradesco",
       "bandeira": "Visa",
       "categoria": "Visa Infinite (tier Aeternum)",
       "anuidade": null,
@@ -2294,7 +2296,7 @@
     {
       "slug": "caixa-elo-diners",
       "nome": "Cartão CAIXA Elo Diners Club",
-      "emissor": "Caixa Econômica Federal",
+      "emissor": "CAIXA",
       "bandeira": "Elo / Diners Club International",
       "categoria": "Premium",
       "anuidade": 1100.04,
@@ -2410,7 +2412,7 @@
     {
       "slug": "inter-win",
       "nome": "Cartão Inter Win (Mastercard Black)",
-      "emissor": "Banco Inter S.A.",
+      "emissor": "Banco Inter",
       "bandeira": "Mastercard",
       "categoria": "Black / Wealth Management (segmento Win)",
       "anuidade": 0,
@@ -2595,7 +2597,7 @@
     {
       "slug": "itau-personnalite-latam-pass-visa-infinite",
       "nome": "Itaú Personnalité LATAM Pass Visa Infinite",
-      "emissor": "Itaú Unibanco",
+      "emissor": "Itaú",
       "bandeira": "Visa",
       "categoria": "Infinite",
       "anuidade": 1200,
@@ -2710,7 +2712,7 @@
     {
       "slug": "itau-personnalite-mastercard-legend",
       "nome": "Itaú Personnalité Mastercard Legend",
-      "emissor": "Itaú Unibanco S.A.",
+      "emissor": "Itaú",
       "bandeira": "Mastercard",
       "categoria": "World Elite Legend",
       "anuidade": null,
@@ -2804,7 +2806,7 @@
     {
       "slug": "itau-personnalite-mastercard-the-one",
       "nome": "Itaú Personnalité Mastercard The One",
-      "emissor": "Banco Itaucard S.A. (Itaú Personnalité)",
+      "emissor": "Itaú",
       "bandeira": "Mastercard Black",
       "categoria": "Ultra Premium / Metal",
       "anuidade": 4000,
@@ -2934,7 +2936,7 @@
     {
       "slug": "itau-personnalite-visa-infinite",
       "nome": "Itaú Personnalité Visa Infinite",
-      "emissor": "Itaú Unibanco / Banco Itaucard S.A.",
+      "emissor": "Itaú",
       "bandeira": "Visa",
       "categoria": "Infinite",
       "anuidade": 1056,
@@ -3031,7 +3033,7 @@
     {
       "slug": "itau-private-mastercard-the-one",
       "nome": "Itaú Private Mastercard The One",
-      "emissor": "Itaú Unibanco (Banco Itaucard S.A.)",
+      "emissor": "Itaú",
       "bandeira": "Mastercard",
       "categoria": "Mastercard Black (metal, segmento Private Bank)",
       "anuidade": 4000,
@@ -3148,7 +3150,7 @@
     {
       "slug": "itau-private-mastercard-legend",
       "nome": "Itaú Private World Legend Mastercard",
-      "emissor": "Itaú Unibanco",
+      "emissor": "Itaú",
       "bandeira": "Mastercard",
       "categoria": "World Legend",
       "anuidade": 4800,
@@ -3257,7 +3259,7 @@
     {
       "slug": "itau-visa-infinite-privilege",
       "nome": "Itaú Visa Infinite Privilege",
-      "emissor": "Itaú Unibanco",
+      "emissor": "Itaú",
       "bandeira": "Visa",
       "categoria": "Infinite Privilege",
       "anuidade": 4000,
@@ -3344,7 +3346,7 @@
     {
       "slug": "latam-pass-itau-mastercard-black",
       "nome": "LATAM Pass Itaú Mastercard Black",
-      "emissor": "Itaú Unibanco",
+      "emissor": "Itaú",
       "bandeira": "Mastercard",
       "categoria": "Black",
       "anuidade": 1260,
@@ -3977,7 +3979,7 @@
     {
       "slug": "santander-smiles-visa-infinite",
       "nome": "Santander GOL Smiles Visa Infinite",
-      "emissor": "Banco Santander (Brasil) S.A.",
+      "emissor": "Santander",
       "bandeira": "Visa",
       "categoria": "Infinite",
       "anuidade": 1495.92,
@@ -4083,7 +4085,7 @@
     {
       "slug": "santander-mastercard-unlimited",
       "nome": "Santander Mastercard Unlimited",
-      "emissor": "Banco Santander (Brasil) S.A.",
+      "emissor": "Santander",
       "bandeira": "Mastercard",
       "categoria": "Mastercard Black (Infinite)",
       "anuidade": 2199.96,
@@ -4237,7 +4239,7 @@
     {
       "slug": "sicoob-mastercard-black-merit",
       "nome": "Sicoob Mastercard Black Merit",
-      "emissor": "Sicoob (Sistema de Cooperativas de Crédito do Brasil)",
+      "emissor": "Sicoob",
       "bandeira": "Mastercard",
       "categoria": "Black",
       "anuidade": 1320,
@@ -4727,7 +4729,7 @@
     {
       "slug": "bradesco-amex-the-centurion",
       "nome": "The Centurion® Card Bradesco",
-      "emissor": "Banco Bradesco S.A.",
+      "emissor": "Bradesco",
       "bandeira": "American Express",
       "categoria": "Ultra Premium / Convite",
       "anuidade": null,
@@ -4811,7 +4813,7 @@
     {
       "slug": "unicred-visa-privilege",
       "nome": "Unicred Visa Privilege",
-      "emissor": null,
+      "emissor": "Unicred",
       "bandeira": "Visa",
       "categoria": "Infinite",
       "anuidade": null,
@@ -4866,7 +4868,7 @@
     {
       "slug": "xp-visa-infinite",
       "nome": "XP Visa Infinite",
-      "emissor": "Banco XP S.A.",
+      "emissor": "XP",
       "bandeira": "Visa",
       "categoria": "Infinite",
       "anuidade": 0,
@@ -4982,7 +4984,7 @@
     {
       "slug": "xp-visa-legacy",
       "nome": "XP Visa Legacy",
-      "emissor": "Banco XP S.A.",
+      "emissor": "XP",
       "bandeira": "Visa",
       "categoria": "Infinite",
       "anuidade": null,
@@ -5091,7 +5093,7 @@
     {
       "slug": "unicred-impar-visa-infinite",
       "nome": "Ímpar Unicred Visa Infinite",
-      "emissor": "Unicred (Confederação Nacional das Cooperativas Centrais Unicred Ltda – Unicred do Brasil)",
+      "emissor": "Unicred",
       "bandeira": "Visa",
       "categoria": "Infinite",
       "anuidade": null,
