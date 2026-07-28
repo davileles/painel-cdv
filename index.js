@@ -3425,9 +3425,19 @@ const CARTOES_DOMINIOS_OFICIAIS = [
   'sicoob.com.br',
   'xpi.com.br', 'xpinvestimentos.com.br',
   'elo.com.br',
-  'mastercard.com', 'mastercard.com.br',
+  // Mastercard global removido: mastercard.com hospeda tambem sala de imprensa,
+  // que ja entrou como 'fonte' de beneficio. Mantido apenas o dominio BR.
+  'mastercard.com.br',
   'visa.com.br', 'visa-infinite.com',
-  'americanexpress.com'
+  'americanexpress.com',
+  // Emissor: o site de produto do Porto Bank fica em portoseguro.com.br,
+  // nao em portobank.com.br (que e apenas institucional).
+  'portoseguro.com.br',
+  // Programas de fidelidade: para co-branded, a regra de pontuacao costuma
+  // estar publicada no site do programa e nao no do banco emissor.
+  'smiles.com.br', 'latampass.com', 'latampass.latam.com', 'voeazul.com.br', 'aa.com',
+  // Fintechs (hosts nao verificados em pagina de produto; conferir na 1a extracao)
+  'picpay.com', 'picpay.com.br', 'recargapay.com.br', 'rico.com.vc', 'mercadopago.com.br'
 ];
 
 // A IA costuma anexar a citacao apos a URL ("...pdf - item 1.1.1").
