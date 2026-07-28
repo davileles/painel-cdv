@@ -380,7 +380,7 @@
       ],
       "spread": null,
       "iof": "Alíquota vigente na data da transação, conforme legislação",
-      "validade_pontos": "Conforme categoria do participante no Programa Smiles, nos termos do regulamento do Programa",
+      "validade_pontos": "Nao expiram (compras e bonus, regra vigente desde 23/01/2023)",
       "salas_vip": [
         {
           "programa": "Visa Airport Companion (VAC)",
@@ -407,6 +407,26 @@
         {
           "titulo": "Cartão adicional",
           "descricao": "Anuidade do cartão adicional equivale a 50% do valor da anuidade do titular."
+        },
+        {
+          "titulo": "Primeira bagagem gratuita",
+          "descricao": "1a bagagem de ate 23kg gratuita em voos GOL, para titular e adicional. Exclusivo das variantes Infinite e Platinum."
+        },
+        {
+          "titulo": "Embarque prioritario",
+          "descricao": "Embarque e check-in prioritarios em voos GOL mediante apresentacao do cartao ativo."
+        },
+        {
+          "titulo": "Parcelamento em 12x sem juros",
+          "descricao": "Compras parceladas em ate 12x sem juros no site voegol.com.br. Valido para todas as variantes."
+        },
+        {
+          "titulo": "Milha extra em compras GOL",
+          "descricao": "1 milha Smiles adicional por USD 1,00 gasto no site da GOL."
+        },
+        {
+          "titulo": "Booking.com",
+          "descricao": "5 milhas por real em reservas de acomodacao."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
@@ -417,7 +437,8 @@
         "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "https://www.bb.com.br/site/contratos-e-tabelas-cartoes/",
-        "https://www.bb.com.br/docs/portal/dimep/RegulamentoSmiles.pdf"
+        "https://www.bb.com.br/docs/portal/dimep/RegulamentoSmiles.pdf",
+        "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
       "campos_pendentes": [
         "adicionais_gratis",
@@ -439,10 +460,11 @@
         "programa_proprio": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
         "transfere_para": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
         "salas_vip": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "validade_pontos": "https://www.bb.com.br/docs/portal/dimep/RegulamentoSmiles.pdf",
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
         "iof": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
         "requisito_acesso": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
-        "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/"
+        "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "beneficios_banco": "https://www.smiles.com.br/portal/cartao-de-credito"
       },
       "vigencia_ate": null,
       "analise": null,
@@ -450,7 +472,7 @@
         "isencao",
         "pontos"
       ],
-      "verificado_em": "2026-07-27",
+      "verificado_em": "2026-07-28",
       "bandeira_ref": "visa-infinite"
     },
     {
@@ -472,13 +494,13 @@
         "observacao": "Fator de conversão: 2,00 pontos para cada US$1,00 efetivamente pago. Os pontos são convertidos 1:1 em Milhas Smiles. Bônus de Aquisição: 10.000 pontos. Bônus de Renovação: 3.000 pontos. O cartão acumula exclusivamente no Programa Smiles (GOL). Não há programa de relacionamento Benefícios BB nesta modalidade co-branded."
       },
       "cashback": null,
-      "programa_proprio": false,
+      "programa_proprio": "Smiles",
       "transfere_para": [
         "Smiles (GOL)"
       ],
       "spread": null,
       "iof": null,
-      "validade_pontos": "Válida de acordo com a categoria do Participante no Programa Smiles, conforme regulamento em smiles.com.br.",
+      "validade_pontos": "Seguem a Categoria Smiles do titular no momento do credito",
       "salas_vip": [
         {
           "programa": "Visa Airport Companion (VAC)",
@@ -505,6 +527,26 @@
         {
           "titulo": "Função exclusiva crédito",
           "descricao": "O cartão Smiles é emitido apenas com a Função Crédito (sem débito), com uso internacional habilitado."
+        },
+        {
+          "titulo": "Primeira bagagem gratuita",
+          "descricao": "1a bagagem de ate 23kg gratuita em voos GOL, para titular e adicional. Exclusivo das variantes Infinite e Platinum."
+        },
+        {
+          "titulo": "Embarque prioritario",
+          "descricao": "Embarque e check-in prioritarios em voos GOL mediante apresentacao do cartao ativo."
+        },
+        {
+          "titulo": "Parcelamento em 12x sem juros",
+          "descricao": "Compras parceladas em ate 12x sem juros no site voegol.com.br. Valido para todas as variantes."
+        },
+        {
+          "titulo": "Milha extra em compras GOL",
+          "descricao": "1 milha Smiles adicional por USD 1,00 gasto no site da GOL."
+        },
+        {
+          "titulo": "Booking.com",
+          "descricao": "5 milhas por real em reservas de acomodacao."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
@@ -517,7 +559,8 @@
         "https://www.bb.com.br/docs/pub/trf/tarifasPFAnt.pdf",
         "https://www.bb.com.br/docs/portal/dimep/RegulamentoSmiles.pdf",
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/use-ourocard/sala-vip/",
-        "https://bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-em-viagens"
+        "https://bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-em-viagens",
+        "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
       "campos_pendentes": [
         "adicionais_gratis",
@@ -534,11 +577,11 @@
       "procedencia": {
         "anuidade": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
         "pontos": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
-        "programa_proprio": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
+        "programa_proprio": "https://www.smiles.com.br/portal/cartao-de-credito",
         "transfere_para": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
-        "validade_pontos": "https://www.bb.com.br/docs/portal/dimep/RegulamentoSmiles.pdf",
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
         "salas_vip": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "beneficios_banco": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "beneficios_banco": "https://www.smiles.com.br/portal/cartao-de-credito",
         "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/"
       },
       "vigencia_ate": null,
@@ -1090,13 +1133,13 @@
         "observacao": "A cada dólar pago em fatura ou equivalente em real, o titular ganha milhas transferidas automaticamente para a Conta Smiles em até 5 dias úteis após confirmação do pagamento. Faturas de adicionais pontuam na mesma conta do titular. Clientes Clube Smiles acumulam quantidade diferenciada."
       },
       "cashback": null,
-      "programa_proprio": false,
+      "programa_proprio": "Smiles",
       "transfere_para": [
         "Smiles (GOL)"
       ],
       "spread": null,
       "iof": null,
-      "validade_pontos": "Conforme categoria do cliente no Programa Smiles. Milhas do cartão Infinite não expiram (verificar regulamento Smiles vigente).",
+      "validade_pontos": "Nao expiram (compras e bonus, regra vigente desde 23/01/2023)",
       "salas_vip": [
         {
           "programa": "Visa Airport Companion",
@@ -1147,6 +1190,26 @@
         {
           "titulo": "Transferência automática de milhas",
           "descricao": "As milhas acumuladas são transferidas automaticamente para a Conta Smiles em até 5 dias úteis após confirmação do pagamento da fatura, proporcional ao valor pago."
+        },
+        {
+          "titulo": "Primeira bagagem gratuita",
+          "descricao": "1a bagagem de ate 23kg gratuita em voos GOL, para titular e adicional. Exclusivo das variantes Infinite e Platinum."
+        },
+        {
+          "titulo": "Embarque prioritario",
+          "descricao": "Embarque e check-in prioritarios em voos GOL mediante apresentacao do cartao ativo."
+        },
+        {
+          "titulo": "Parcelamento em 12x sem juros",
+          "descricao": "Compras parceladas em ate 12x sem juros no site voegol.com.br. Valido para todas as variantes."
+        },
+        {
+          "titulo": "Milha extra em compras GOL",
+          "descricao": "1 milha Smiles adicional por USD 1,00 gasto no site da GOL."
+        },
+        {
+          "titulo": "Booking.com",
+          "descricao": "5 milhas por real em reservas de acomodacao."
         }
       ],
       "link_solicitacao": "https://imprensa.bradesco.com.br/smiles/index.shtm",
@@ -1155,7 +1218,8 @@
         "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/smiles-lanca-novos-cartoes-de-credito-com-marca-visa-em-parceria-com-banco-do-brasil-bradesco-e-santander.html",
         "https://www.visa.com.br/sobre-a-visa/vac.html",
         "http://200-155-86-38.bradesco.com.br/assets/classic/pdf/produtos-servicos/cartoes/guia-beneficios/card-bradesco-smile-visa-infinite.PDF",
-        "https://express.bradesco.com.br/naocorrentista/cartoes/smiles-visa-gold/"
+        "https://express.bradesco.com.br/naocorrentista/cartoes/smiles-visa-gold/",
+        "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
       "campos_pendentes": [
         "adicionais_gratis",
@@ -1174,12 +1238,12 @@
       "procedencia": {
         "bandeira": "https://imprensa.bradesco.com.br/smiles/index.shtm",
         "categoria": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/smiles-lanca-novos-cartoes-de-credito-com-marca-visa-em-parceria-com-banco-do-brasil-bradesco-e-santander.html",
-        "programa_proprio": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "programa_proprio": "https://www.smiles.com.br/portal/cartao-de-credito",
         "transfere_para": "https://imprensa.bradesco.com.br/smiles/index.shtm",
         "pontos": "https://imprensa.bradesco.com.br/smiles/index.shtm",
         "salas_vip": "https://imprensa.bradesco.com.br/smiles/index.shtm",
-        "validade_pontos": "https://imprensa.bradesco.com.br/smiles/index.shtm",
-        "beneficios_banco": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
+        "beneficios_banco": "https://www.smiles.com.br/portal/cartao-de-credito",
         "link_solicitacao": "https://imprensa.bradesco.com.br/smiles/index.shtm"
       },
       "vigencia_ate": "2025-08-31",
@@ -1187,7 +1251,7 @@
       "campos_rejeitados": [
         "isencao"
       ],
-      "verificado_em": "2026-07-27",
+      "verificado_em": "2026-07-28",
       "bandeira_ref": "visa-infinite"
     },
     {
@@ -5461,7 +5525,7 @@
       ],
       "spread": null,
       "iof": "3,38% sobre o valor da compra internacional (alíquota federal padrão)",
-      "validade_pontos": "Milhas GOL Smiles acumuladas pelo Infinite não expiram",
+      "validade_pontos": "Nao expiram (compras e bonus, regra vigente desde 23/01/2023)",
       "salas_vip": [
         {
           "programa": "Visa Airport Companion",
@@ -5500,6 +5564,26 @@
         {
           "titulo": "Descontos Esfera",
           "descricao": "Descontos de até 50% em parceiros Esfera com uso do cartão."
+        },
+        {
+          "titulo": "Primeira bagagem gratuita",
+          "descricao": "1a bagagem de ate 23kg gratuita em voos GOL, para titular e adicional. Exclusivo das variantes Infinite e Platinum."
+        },
+        {
+          "titulo": "Embarque prioritario",
+          "descricao": "Embarque e check-in prioritarios em voos GOL mediante apresentacao do cartao ativo."
+        },
+        {
+          "titulo": "Parcelamento em 12x sem juros",
+          "descricao": "Compras parceladas em ate 12x sem juros no site voegol.com.br. Valido para todas as variantes."
+        },
+        {
+          "titulo": "Milha extra em compras GOL",
+          "descricao": "1 milha Smiles adicional por USD 1,00 gasto no site da GOL."
+        },
+        {
+          "titulo": "Booking.com",
+          "descricao": "5 milhas por real em reservas de acomodacao."
         }
       ],
       "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/smiles-infinite",
@@ -5510,7 +5594,8 @@
         "https://contaselect.santander.com.br/cartao-gol-smiles-infinite-black-wtl",
         "https://cms.santander.com.br/sites/WPS/documentos/novo-arq-smiles/24-01-02_192743_novo-reg-smiles.pdf",
         "https://www.santander.com.br/cartoes-santander/acesso-salas-vip",
-        "https://www.santander.com.br/document/gsb/cartoes_santander.pdf"
+        "https://www.santander.com.br/document/gsb/cartoes_santander.pdf",
+        "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
       "campos_pendentes": [
         "cashback",
@@ -5526,12 +5611,12 @@
         "requisito_acesso": "https://www.santander.com.br/hotsite/cartaosmiles/",
         "adicionais_gratis": "https://www.santander.com.br/cartao-credito-santander/smiles-infinite",
         "pontos": "https://cms.santander.com.br/sites/WPS/documentos/novo-arq-smiles/24-01-02_192743_novo-reg-smiles.pdf",
-        "validade_pontos": "https://www.santander.com.br/cartao-credito-santander/smiles-infinite",
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
         "salas_vip": "https://www.santander.com.br/cartao-credito-santander/smiles-infinite",
         "programa_proprio": "https://www.santander.com.br/hotsite/cartaosmiles/",
         "transfere_para": "https://www.santander.com.br/hotsite/cartaosmiles/",
         "iof": "https://www.santander.com.br/document/gsb/cartoes_santander.pdf",
-        "beneficios_banco": "https://contaselect.santander.com.br/cartao-gol-smiles-infinite-black-wtl",
+        "beneficios_banco": "https://www.smiles.com.br/portal/cartao-de-credito",
         "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/smiles-infinite"
       },
       "vigencia_ate": null,
@@ -5539,7 +5624,7 @@
       "campos_rejeitados": [
         "isencao"
       ],
-      "verificado_em": "2026-07-27",
+      "verificado_em": "2026-07-28",
       "bandeira_ref": "visa-infinite"
     },
     {
@@ -5569,7 +5654,7 @@
       "transfere_para": [],
       "spread": null,
       "iof": "5,38% sobre compras internacionais",
-      "validade_pontos": "Varia por categoria Smiles: 3 anos (Smiles/Prata), 4 anos (Ouro), 10 anos (Diamante). Milhas bônus de aquisição/renovação: 6 meses a partir do crédito.",
+      "validade_pontos": "Seguem a Categoria Smiles do titular no momento do credito",
       "salas_vip": [
         {
           "programa": "GOL Premium Lounges",
@@ -5600,6 +5685,26 @@
         {
           "titulo": "Parcelamento GOL",
           "descricao": "Parcelamento de compras no site da GOL em até 12 vezes sem juros."
+        },
+        {
+          "titulo": "Primeira bagagem gratuita",
+          "descricao": "1a bagagem de ate 23kg gratuita em voos GOL, para titular e adicional. Exclusivo das variantes Infinite e Platinum."
+        },
+        {
+          "titulo": "Embarque prioritario",
+          "descricao": "Embarque e check-in prioritarios em voos GOL mediante apresentacao do cartao ativo."
+        },
+        {
+          "titulo": "Parcelamento em 12x sem juros",
+          "descricao": "Compras parceladas em ate 12x sem juros no site voegol.com.br. Valido para todas as variantes."
+        },
+        {
+          "titulo": "Milha extra em compras GOL",
+          "descricao": "1 milha Smiles adicional por USD 1,00 gasto no site da GOL."
+        },
+        {
+          "titulo": "Booking.com",
+          "descricao": "5 milhas por real em reservas de acomodacao."
         }
       ],
       "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/smiles-platinum",
@@ -5610,7 +5715,8 @@
         "https://cms.santander.com.br/sites/WPS/documentos/arq-regulamento-decolar-jan23/23-01-20_194401_regulamento-programa-de-fidelidade-cartao-smiles-230123.pdf",
         "https://www.santander.com.br/cartao-credito-santander",
         "https://www.santander.com.br/blog/tarifas-cartao-credito",
-        "https://www.santander.com.br/cartoes-santander/acesso-salas-vip"
+        "https://www.santander.com.br/cartoes-santander/acesso-salas-vip",
+        "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
       "campos_pendentes": [
         "cashback",
@@ -5627,12 +5733,12 @@
         "renda_minima": "https://www.santander.com.br/hotsite/cartaosmiles/",
         "pontos": "https://cms.santander.com.br/sites/WPS/documentos/arq-regulamento-decolar-jan23/23-01-20_194401_regulamento-programa-de-fidelidade-cartao-smiles-230123.pdf",
         "adicionais_gratis": "https://www.santander.com.br/cartao-credito-santander/smiles-platinum",
-        "validade_pontos": "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
         "salas_vip": "https://www.santander.com.br/hotsite/cartaosmiles/",
         "iof": "https://www.santander.com.br/blog/tarifas-cartao-credito",
         "isencao": "https://www.santander.com.br/cartao-credito-santander",
         "programa_proprio": "https://cms.santander.com.br/sites/WPS/documentos/arq-regulamento-decolar-jan23/23-01-20_194401_regulamento-programa-de-fidelidade-cartao-smiles-230123.pdf",
-        "beneficios_banco": "https://www.santander.com.br/cartao-credito-santander/smiles-platinum",
+        "beneficios_banco": "https://www.smiles.com.br/portal/cartao-de-credito",
         "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/smiles-platinum"
       },
       "vigencia_ate": null,
@@ -5642,7 +5748,8 @@
         "requisito_acesso"
       ],
       "bandeira_ref": null,
-      "verificado_em": "2026-07-28"
+      "verificado_em": "2026-07-28",
+      "nota_transferencia": "As milhas sao creditadas direto na conta Smiles; nao ha transferencia de pontos do banco emissor."
     },
     {
       "slug": "santander-mastercard-unlimited",
