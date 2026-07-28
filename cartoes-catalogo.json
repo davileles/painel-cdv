@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-28",
-    "total": 59,
+    "total": 60,
     "validado_em": "2026-07-27",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização."
@@ -1279,6 +1279,103 @@
       ],
       "verificado_em": "2026-07-27",
       "bandeira_ref": "visa-infinite"
+    },
+    {
+      "slug": "bradesco-visa-infinite",
+      "nome": "Bradesco Visa Infinite",
+      "emissor": "Bradesco",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 2,
+        "internacional": 2,
+        "unidade": "pts Livelo/USD",
+        "observacao": "2 pontos Livelo a cada US$1 gasto (ou equivalente em reais) em compras nacionais e internacionais. Necessário ativar conta Livelo em livelo.com.br/cadastro ou pelo App."
+      },
+      "cashback": null,
+      "programa_proprio": "Livelo",
+      "transfere_para": [
+        "Livelo"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion",
+          "regra": "4 acessos gratuitos por ano a mais de 1.300 salas VIP ao redor do mundo."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Visa Luxury Hotel Collection",
+          "descricao": "Benefícios exclusivos nos resorts e hotéis mais sofisticados do mundo com o Visa Luxury Hotel Collection."
+        },
+        {
+          "titulo": "Concierge Bradesco",
+          "descricao": "Assistente pessoal disponível 7 dias por semana para ajudar com viagens, experiências, compras e muito mais. Elegível para Visa Infinite."
+        },
+        {
+          "titulo": "Seguro Viagem",
+          "descricao": "Seguro Viagem gratuito para despesas médicas, odontológicas e hospitalares mediante compra das passagens com o cartão."
+        },
+        {
+          "titulo": "Desconto Cinemark",
+          "descricao": "50% de desconto na rede Cinemark no ingresso, na pipoca e no refri."
+        },
+        {
+          "titulo": "Desconto Teatro Bradesco",
+          "descricao": "50% de desconto no Teatro Bradesco na compra de até quatro entradas por sessão."
+        },
+        {
+          "titulo": "Garantia Estendida Original",
+          "descricao": "Proteção gratuita que estende a garantia original do fabricante por até 1 ano."
+        }
+      ],
+      "link_solicitacao": "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
+      "fontes": [
+        "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
+        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "https://institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html",
+        "https://adc.bradesco.com.br/html/corporate/solucoes-integradas/cartoes/beneficios/salavip.shtm"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "A página específica do produto Bradesco Visa Infinite (adc.bradesco.com.br/html/prime/produtos-servicos/cartoes/conheca-os-cartoes/bradesco-visa-infinite.shtm) retornou erro 404 no momento da pesquisa. Os valores de anuidade não foram publicados diretamente nas páginas rastreáveis — o Bradesco remete à 'Tabela Geral de Tarifas' (institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html), cujo conteúdo não foi renderizado nos resultados. Dados de pontos e benefícios coletados da página de benefícios oficiais e da landing page para não correntistas. O programa de salas VIP mencionado na fonte oficial é o Visa Airport Companion com 4 acessos anuais gratuitos para a categoria Infinite.",
+      "procedencia": {
+        "pontos": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "salas_vip": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "programa_proprio": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "transfere_para": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "beneficios_banco": "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
+        "link_solicitacao": "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
+        "nome": "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
+        "bandeira": "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
+        "categoria": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao"
+      ],
+      "bandeira_ref": "visa-infinite",
+      "verificado_em": "2026-07-28"
     },
     {
       "slug": "brb-visa-dux",
