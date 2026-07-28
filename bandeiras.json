@@ -1,7 +1,7 @@
 {
   "_meta": {
     "descricao": "Catalogo de beneficios por categoria de bandeira. Cartoes referenciam via campo bandeira_ref.",
-    "atualizado_em": "2026-07-27",
+    "atualizado_em": "2026-07-28",
     "nota_links": "Link so e preenchido quando ha pagina oficial da bandeira. Beneficios operados por terceiros (Priceless, Surpreenda, Mastercard Travel Rewards) ficam sem link ate haver URL em dominio oficial."
   },
   "bandeiras": [
@@ -262,6 +262,149 @@
           "titulo": "Coberturas adicionais",
           "link": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-lanca-brasil-visa-infinite-privilege-segmento-altissima-renda.html",
           "descricao": "Protecao para cancelamento de eventos, danos ou perda de equipamentos pessoais e esportivos, e protecao de compras."
+        }
+      ]
+    },
+    {
+      "ref": "elo-flex",
+      "bandeira": "Elo",
+      "categoria": "Todas (Elo Flex)",
+      "modelo": "flex",
+      "fonte": "https://www.elo.com.br/elo-flex/home/",
+      "verificado_em": "2026-07-28",
+      "nota": "A Elo nao trabalha com lista fixa de beneficios. O portador escolhe um numero limitado de itens dentro do catalogo abaixo, e a quantidade varia conforme a categoria do cartao e o banco emissor. Alguns cartoes tambem tem beneficios fixos, que nao ocupam vaga de escolha.",
+      "regras": [
+        "O Elo Flex nao tem custo adicional.",
+        "Um beneficio escolhido pode ser trocado apos 90 dias.",
+        "Depois da primeira utilizacao, o beneficio so pode ser alterado novamente um ano depois."
+      ],
+      "nota_cobertura": "A Elo publica o catalogo completo, mas nao divulga publicamente qual subconjunto e a quantidade valem para cada categoria: esse recorte fica atras de login no site da Elo. Por isso a quantidade e os beneficios fixos sao declarados por cartao, com fonte do emissor.",
+      "beneficios": [
+        {
+          "grupo": "Viagem",
+          "titulo": "Sala VIP",
+          "descricao": "Acesso as salas VIP do Priority Pass para voce esperar seu voo com todo conforto.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Viagem",
+          "titulo": "Seguro Viagem",
+          "descricao": "Tenha mais tranquilidade nas suas viagens pelo Brasil ou exterior.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Viagem",
+          "titulo": "Transfer Voo Domestico",
+          "descricao": "Transfer para ir e voltar de aeroportos no Brasil em suas viagens nacionais.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Viagem",
+          "titulo": "Transfer Voo Internacional",
+          "descricao": "Transfer para ir e voltar de aeroportos no Brasil em suas viagens internacionais.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Viagem",
+          "titulo": "Deslocamento para viagens",
+          "descricao": "Voucher de deslocamento para rodoviarias e aeroportos no Brasil.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Saude e Bem-estar",
+          "titulo": "Saude Todo Dia",
+          "descricao": "Cuide da sua saude com consultas online ilimitadas.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Saude e Bem-estar",
+          "titulo": "Corpo e Mente",
+          "descricao": "Cuidados especiais pra voce ter uma vida mais saudavel.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Saude e Bem-estar",
+          "titulo": "Assistencia Pet",
+          "descricao": "Um pacote de servicos dedicado a saude e bem-estar do seu pet.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Compras",
+          "titulo": "Seguro Protecao de Compras",
+          "descricao": "Um seguro que repara suas compras em casos de dano, roubo e furto.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Compras",
+          "titulo": "Seguro Garantia Estendida",
+          "descricao": "Dobre a garantia de compras com cartao Elo, no Brasil ou exterior.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Compras",
+          "titulo": "Clube Elo Mania",
+          "descricao": "Descontos em lojas, cinemas, restaurantes e muito mais.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Conectividade",
+          "titulo": "Bonus Celular",
+          "descricao": "Conectividade para todos os momentos na palma da sua mao. Use tres vezes dentro de um ano.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Conectividade",
+          "titulo": "Super Bonus Celular",
+          "descricao": "Conectividade para todos os momentos na palma da sua mao. Use 1 acionamento por mes.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Para casa",
+          "titulo": "Assistencia Residencial",
+          "descricao": "Servicos de instalacao, fixacao e consertos para ajudar a cuidar do seu lar.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Automovel",
+          "titulo": "Assistencia Mobilidade",
+          "descricao": "Voce pode contar com 10 servicos exclusivos para ajudar com imprevistos.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Educacao",
+          "titulo": "EduK",
+          "descricao": "Aprenda algo novo com mais de 1.300 cursos profissionalizantes.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Entretenimento",
+          "titulo": "Deezer",
+          "descricao": "Ouca seus artistas favoritos em milhoes de musicas, podcasts e radios sem anuncios.",
+          "tipo": "flex",
+          "link": null
+        },
+        {
+          "grupo": "Empresarial",
+          "titulo": "Assistencia Empresarial",
+          "descricao": "Servicos de manutencao, instalacao e pequenos reparos para sua empresa.",
+          "tipo": "flex",
+          "link": null
         }
       ]
     }
