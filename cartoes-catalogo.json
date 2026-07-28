@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-28",
-    "total": 61,
+    "total": 62,
     "validado_em": "2026-07-27",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização."
@@ -4528,6 +4528,144 @@
         "pontos"
       ],
       "bandeira_ref": "elo-flex",
+      "verificado_em": "2026-07-28"
+    },
+    {
+      "slug": "bb-mastercard-black",
+      "nome": "Ourocard Mastercard Black",
+      "emissor": "Banco do Brasil",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "anuidade": 1098,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "gasto_mensal_ou_investimento",
+        "valor": 15000,
+        "regra": "Isenção automática da parcela mensal ao atingir R$ 15.000 em compras no crédito no mês, OU mantendo investimentos no BB a partir de R$ 250.000 (independente do gasto no cartão)"
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Oferta exclusiva por convite a clientes BB Estilo selecionados; não disponível para solicitação aberta",
+      "adicionais_gratis": false,
+      "pontos": {
+        "nacional": 2,
+        "internacional": 3,
+        "unidade": "pts/USD",
+        "observacao": "Pontos acumulados no programa Benefícios BB, convertidos automaticamente para Livelo. Correntistas podem optar por Dotz, Cashback (1% na conta corrente) ou Investimento (1% em fundo de renda fixa). Não-correntistas acumulam Livelo ou Dotz."
+      },
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "1% direto na conta corrente (opção exclusiva para correntistas BB, em substituição aos pontos)"
+      },
+      "programa_proprio": "Benefícios BB (conversão automática para Livelo; alternativas: Dotz, Cashback ou Investimento)",
+      "transfere_para": [
+        "Livelo",
+        "Dotz"
+      ],
+      "spread": null,
+      "iof": "1,1% nas compras internacionais a crédito (IOF reduzido)",
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "Sala VIP Mastercard Black – Aeroporto de Guarulhos (GRU)",
+          "regra": "Acesso gratuito mediante apresentação do cartão e cartão de embarque (Terminal 3, piso superior e piso térreo). A partir de novembro de 2025, condicionado a gastos mínimos trimestrais de R$ 15.000 no cartão."
+        },
+        {
+          "programa": "LoungeKey",
+          "regra": "Acesso mediante pagamento de tarifa (não gratuito pela bandeira Mastercard Black BB)"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Seguro Médico em Viagens",
+          "descricao": "Cobertura médica internacional, atende ao Tratado de Schengen. Requer emissão prévia do Bilhete de Seguro no site da Mastercard e pagamento com o cartão."
+        },
+        {
+          "titulo": "Assistência de Viagem",
+          "descricao": "Planejamento de viagem, emergências médicas e legais, substituição emergencial de passagem e envio de mensagens urgentes."
+        },
+        {
+          "titulo": "Concierge Mastercard Black",
+          "descricao": "Assistência 24h em viagem, reservas, lazer, presentes e serviços especiais para executivos."
+        },
+        {
+          "titulo": "Seguro Locação de Veículos",
+          "descricao": "Cobertura ao alugar carro em qualquer lugar do mundo, inclusive no país de residência, ao pagar com o cartão."
+        },
+        {
+          "titulo": "Garantia Estendida",
+          "descricao": "Aumenta a garantia original dos produtos adquiridos com o cartão sem custo adicional."
+        },
+        {
+          "titulo": "Proteção de Compras",
+          "descricao": "Produtos protegidos contra danos acidentais, roubo ou furto qualificado após a compra com o cartão."
+        },
+        {
+          "titulo": "Wi-Fi Global Boingo",
+          "descricao": "Acesso gratuito e ilimitado ao serviço Wi-Fi global via Boingo em diversos pontos no Brasil e no mundo."
+        },
+        {
+          "titulo": "Substituição Emergencial de Cartão",
+          "descricao": "Comunicação de perda/roubo, substituição emergencial do cartão e adiantamento emergencial de dinheiro."
+        },
+        {
+          "titulo": "Mastercard Surpreenda",
+          "descricao": "Programa de benefícios da bandeira com acúmulo de pontos trocáveis por experiências e produtos exclusivos em lojas e restaurantes parceiros."
+        },
+        {
+          "titulo": "Parcelamento de Compras à Vista",
+          "descricao": "Possibilidade de parcelar compras à vista no cartão de crédito em até 12 vezes."
+        },
+        {
+          "titulo": "Ourocard-e (Cartão Virtual)",
+          "descricao": "Cartão virtual para compras online com mais segurança."
+        },
+        {
+          "titulo": "Benefícios Ourocard (Entretenimento)",
+          "descricao": "Acesso a benefícios em entretenimento, esportes e cultura pela plataforma de Benefícios Ourocard."
+        },
+        {
+          "titulo": "Tag de Pedágio e Estacionamento",
+          "descricao": "Uso em 100% das rodovias com pedágios no Brasil e principais estacionamentos conveniados."
+        }
+      ],
+      "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+      "fontes": [
+        "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
+        "https://www.bb.com.br/site/estilo/cartoes/ourocard-estilo-mastercard-black/",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/ourocard-mastercard-black",
+        "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/"
+      ],
+      "campos_pendentes": [
+        "renda_minima",
+        "spread",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "O cartão é ofertado por convite a clientes BB Estilo selecionados, sem renda mínima publicada oficialmente na página do produto. O IOF reduzido de 1,1% está citado no blog.bb.com.br (fonte editorial do próprio banco) mas não foi localizado em tabela de tarifas oficial; campo marcado como pendente para confirmação em tabela SARB. A regra de salas VIP teve prorrogação anunciada para novembro de 2025 (gasto trimestral mínimo de R$ 15 mil); status de vigência atual não confirmado na data de coleta (julho/2026) — campo vigencia_ate não preenchido por ausência de data final explícita na fonte. Anuidade dos adicionais é 50% da anuidade do titular (R$ 549,00/ano por adicional), permitindo até 6 adicionais. O cashback/investimento de 1% é alternativa ao acúmulo de pontos, disponível apenas para correntistas BB.",
+      "procedencia": {
+        "nome": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "emissor": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "bandeira": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "categoria": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "anuidade": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "anuidade_parcelas": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "isencao": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "adicionais_gratis": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "pontos": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "cashback": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "programa_proprio": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "transfere_para": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "iof": "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
+        "salas_vip": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "requisito_acesso": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "beneficios_banco": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "bandeira_ref": "mastercard-black",
       "verificado_em": "2026-07-28"
     },
     {
