@@ -2298,6 +2298,78 @@ function ctAnalise(c){
   '</div>';
 }
 
+// Bandeira com catalogo de escolha (Elo Flex) nao pode ser exibida como lista
+// fixa: daria a entender que o cliente tem todos os itens. Aqui o bloco explica
+// o modelo, mostra quantas escolhas o cartao tem e separa os fixos do catalogo.
+function ctBlocoBandeira(c){
+  var info  = c.bandeira_info || {};
+  var itens = c.beneficios_bandeira || [];
+  var titulo = (c.bandeira || '') + ' ' + (c.categoria || '');
+
+  if (info.modelo !== 'flex') {
+    return ctListaBeneficios(itens, titulo) ||
+           '<div class="ct-box"><span class="ct-na">sem registro</span></div>';
+  }
+  if (!itens.length) return '<div class="ct-box"><span class="ct-na">sem registro</span></div>';
+
+  var qtd   = c.flex_quantidade;
+  var fixos = (c.flex_fixos || []).map(String);
+
+  var linhaQtd = qtd
+    ? '<div style="font-size:12.5px;font-weight:700;color:var(--cdv-coral);margin-bottom:8px">'+
+        'Seu cartão permite escolher '+qtd+' benefício'+(qtd>1?'s':'')+' do catálogo abaixo.</div>'
+    : '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">'+
+        'A quantidade de escolhas deste cartão não consta das fontes oficiais consultadas.</div>';
+
+  var blocoFixos = fixos.length
+    ? '<div style="margin:12px 0"><div style="font-size:11px;font-weight:800;letter-spacing:.5px;'+
+      'text-transform:uppercase;color:#34d399;margin-bottom:6px">Fixos — não ocupam vaga de escolha</div>'+
+      fixos.map(function(f){
+        return '<div style="font-size:12.5px;margin:3px 0;display:flex;gap:7px">'+
+               '<span style="color:#34d399">✓</span><span>'+f+'</span></div>';
+      }).join('')+'</div>'
+    : '';
+
+  // Agrupa o catalogo pelas categorias declaradas na propria bandeira.
+  var grupos = [], mapa = {};
+  itens.forEach(function(b){
+    var g = b.grupo || 'Outros';
+    if (!mapa[g]) { mapa[g] = []; grupos.push(g); }
+    mapa[g].push(b);
+  });
+  grupos.sort(function(x,y){ return x.localeCompare(y, 'pt-BR'); });
+
+  var catalogo = grupos.map(function(g){
+    return '<div style="margin-bottom:10px">'+
+      '<div style="font-size:10.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;'+
+      'color:var(--muted);margin-bottom:5px">'+g+'</div>'+
+      mapa[g].map(function(b){
+        return '<div style="margin-bottom:7px">'+
+          '<div style="font-size:12.5px;font-weight:600">'+b.titulo+'</div>'+
+          (b.descricao ? '<div style="font-size:11.5px;color:var(--muted);margin-top:1px">'+b.descricao+'</div>' : '')+
+        '</div>';
+      }).join('')+'</div>';
+  }).join('');
+
+  var regras = (info.regras || []).length
+    ? '<div style="font-size:11px;color:var(--muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">'+
+      info.regras.map(function(r){ return '• '+r; }).join('<br>')+'</div>'
+    : '';
+
+  return '<div class="ct-box">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">'+
+      '<div style="font-weight:700;font-size:13px">'+titulo+'</div>'+
+      '<span style="font-size:9.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--cdv-coral);'+
+      'border:1px solid rgba(255,88,94,.45);border-radius:6px;padding:2px 8px">Escolha</span>'+
+    '</div>'+
+    (info.nota ? '<div style="font-size:11.5px;color:var(--muted);margin-bottom:8px;line-height:1.5">'+info.nota+'</div>' : '')+
+    linhaQtd + blocoFixos +
+    '<div style="font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);'+
+    'margin:12px 0 8px;padding-top:10px;border-top:1px solid var(--border)">Catálogo de opções ('+itens.length+')</div>'+
+    catalogo + regras +
+  '</div>';
+}
+
 async function ctRenderComparacao(){
   var box = document.getElementById('ct-comparacao');
   if (!box) return;
@@ -2344,8 +2416,7 @@ async function ctRenderComparacao(){
 
     '<h3 style="font-size:14px;margin:26px 0 10px">Benefícios da bandeira</h3>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+
-      (ctListaBeneficios(a.beneficios_bandeira, (a.bandeira||'')+' '+(a.categoria||'')) || '<div class="ct-box"><span class="ct-na">sem registro</span></div>')+
-      (ctListaBeneficios(b.beneficios_bandeira, (b.bandeira||'')+' '+(b.categoria||'')) || '<div class="ct-box"><span class="ct-na">sem registro</span></div>')+
+      ctBlocoBandeira(a) + ctBlocoBandeira(b) +
     '</div>';
 }
 
