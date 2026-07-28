@@ -3583,7 +3583,18 @@ const CARTOES_EMISSORES_CANONICOS = {
   'banco santander (brasil) s.a.': 'Santander',
   'banco santander s.a.': 'Santander',
   'banco xp s.a.': 'XP',
-  'banestes - banco do estado do espirito santo': 'Banestes'
+  'banestes - banco do estado do espirito santo': 'Banestes',
+  // Variantes devolvidas pela extracao de 28/07/2026
+  'banco bradesco / banco bankpar s.a.': 'Bradesco',
+  'banco bradesco': 'Bradesco',
+  'banco bankpar s.a.': 'Bradesco',
+  'banco do brasil s.a.': 'Banco do Brasil',
+  'banco safra s.a.': 'Banco Safra',
+  'banco sicredi': 'Sicredi',
+  'banco c6 s.a.': 'C6 Bank',
+  'nu pagamentos s.a.': 'Nubank',
+  'porto seguro': 'Porto Bank',
+  'porto bank / porto seguro': 'Porto Bank'
 };
 
 // Nomes ja aceitos como canonicos. Usados so como alvo de comparacao: um valor
@@ -3593,10 +3604,18 @@ const CARTOES_EMISSORES_ACEITOS = ['Bradesco','BTG Pactual','BRB','CAIXA','Itaú
   'Banco Safra','C6 Bank','Genial Investimentos','Nubank','Porto Bank','Revolut','Sicredi'];
 
 function cartoesChaveEmissor(s) {
+  // Descarta acento e TODA pontuacao. Sem isso, remover o sufixo 'S.A.' deixava
+  // um ponto orfao ('Banco do Brasil .') e a chave nunca casava com o canonico.
   return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[\u2010-\u2015]/g, '-')       // travessoes unicode -> hifen simples
-    .toLowerCase().replace(/\s+/g, ' ').trim();
+    .toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 }
+
+// Mapa indexado pela mesma funcao de chave, para as entradas legiveis acima
+// continuarem casando depois que a pontuacao passou a ser descartada.
+const CARTOES_EMISSORES_INDEX = {};
+Object.keys(CARTOES_EMISSORES_CANONICOS).forEach(k => {
+  CARTOES_EMISSORES_INDEX[cartoesChaveEmissor(k)] = CARTOES_EMISSORES_CANONICOS[k];
+});
 
 function cartoesNormalizarEmissor(valor) {
   if (!valor || typeof valor !== 'string') return valor || null;
@@ -3604,7 +3623,7 @@ function cartoesNormalizarEmissor(valor) {
   if (!bruto) return null;
 
   const chave = cartoesChaveEmissor(bruto);
-  if (CARTOES_EMISSORES_CANONICOS[chave]) return CARTOES_EMISSORES_CANONICOS[chave];
+  if (CARTOES_EMISSORES_INDEX[chave]) return CARTOES_EMISSORES_INDEX[chave];
 
   // Segunda tentativa: remove sufixo entre parenteses, aposto apos travessao
   // ou barra, e sufixo de razao social. Serve so para reconsultar o mapa.
@@ -3615,7 +3634,7 @@ function cartoesNormalizarEmissor(valor) {
     .replace(/\s+/g, ' ').trim();
 
   const chaveLimpa = cartoesChaveEmissor(limpo);
-  if (CARTOES_EMISSORES_CANONICOS[chaveLimpa]) return CARTOES_EMISSORES_CANONICOS[chaveLimpa];
+  if (CARTOES_EMISSORES_INDEX[chaveLimpa]) return CARTOES_EMISSORES_INDEX[chaveLimpa];
 
   const aceito = CARTOES_EMISSORES_ACEITOS.find(a => cartoesChaveEmissor(a) === chaveLimpa);
   if (aceito) return aceito;
