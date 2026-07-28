@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-28",
-    "total": 50,
+    "total": 51,
     "validado_em": "2026-07-27",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização."
@@ -4351,6 +4351,129 @@
       ],
       "verificado_em": "2026-07-27",
       "bandeira_ref": "visa-infinite"
+    },
+    {
+      "slug": "safra-investor-visa-infinite",
+      "nome": "Safra Investor Visa Infinite",
+      "emissor": "Banco Safra S.A.",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": 1500,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "investimento_ou_gasto",
+        "valor": "R$ 500.000 em investimentos no Safra OU R$ 10.000 em gastos por fatura mensal",
+        "regra": "Isenção da parcela mensal da anuidade quando fatura mensal >= R$ 10.000 ou investimentos >= R$ 500.000. Válido apenas para o titular. Histórico de faturas em dia obrigatório."
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Ser cliente Safra com R$ 300.000 ou mais investidos junto ao Safra (sujeito a análise e aprovação de crédito)",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": "2 pts/USD em faturas < R$ 20.000; 2,5 pts/USD em faturas >= R$ 20.000",
+        "internacional": "3 pts/USD",
+        "unidade": "pts/USD",
+        "observacao": "Programa Safra Rewards. Pontos sem validade para cartões Safra Visa Infinite. Acumulação em compras nacionais e internacionais, à vista ou parceladas (acúmulo por parcela)."
+      },
+      "cashback": null,
+      "programa_proprio": "Safra Rewards",
+      "transfere_para": [
+        "Livelo (a partir de 30/09/2025, somente via Livelo; mínimo de 35.000 pontos; acesso a mais de 11 companhias aéreas nacionais e internacionais)"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Sem validade (cartões Safra Visa Infinite)",
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion / Dragon Pass",
+          "regra": "4 acessos anuais gratuitos a mais de 1.400 salas VIP em mais de 140 países. Válido apenas para o titular. Exige fatura em dia e gasto mínimo de R$ 10.000 por fatura para liberação. Acessos acompanhados e utilizados via App Visa Airport Companion."
+        },
+        {
+          "programa": "Espaço Banco Safra – Guarulhos (GRU)",
+          "regra": "Acesso ilimitado e gratuito à sala VIP exclusiva do Banco Safra no Terminal 3 do Aeroporto de Guarulhos. Espaço com buffet, Wi-Fi, TV a cabo, banheiros e chuveiros privativos."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Acesso prioritário à área de embarque (fila prioritária ao raio-x) nos aeroportos de Guarulhos (SP) e RIOgaleão (RJ) – Terminais 2 e 3."
+        },
+        {
+          "titulo": "Visa Concierge 24h",
+          "descricao": "Concierge pessoal disponível 24 horas por dia para planejamento de viagens, reservas, presentes, sugestões de destinos, roteiros personalizados e assistência em situações inesperadas."
+        },
+        {
+          "titulo": "Visa Luxury Hotel Collection",
+          "descricao": "Acesso a coleção de hotéis e resorts de luxo com upgrade automático de quarto, café da manhã cortesia para titular e convidado, e check-out estendido."
+        },
+        {
+          "titulo": "Emergência Médica Internacional",
+          "descricao": "Seguro de emergência médica internacional para viagens ao exterior."
+        },
+        {
+          "titulo": "Cobertura de Cancelamento de Viagem",
+          "descricao": "Cobertura para cancelamento de viagem, conforme condições da bandeira Visa."
+        },
+        {
+          "titulo": "Proteção de Compra",
+          "descricao": "Proteção contra roubos ou danos acidentais pelo prazo de 180 dias a partir da data da compra."
+        },
+        {
+          "titulo": "Seguro Garantia Estendida",
+          "descricao": "Extensão da garantia original do fabricante de produtos adquiridos com o cartão."
+        },
+        {
+          "titulo": "Vai de Visa",
+          "descricao": "Ofertas em parceiros, ações de cashback, sorteios e benefícios adicionais da bandeira."
+        },
+        {
+          "titulo": "Gerente Dedicado",
+          "descricao": "Suporte de um gerente dedicado com ofertas de acordo com o perfil de investidor do cliente."
+        },
+        {
+          "titulo": "Limite Investidor",
+          "descricao": "Possibilidade de converter investimentos em limite no cartão."
+        },
+        {
+          "titulo": "Parcerias Exclusivas Safra",
+          "descricao": "Benefícios com parceiros como ConectCar (pedágios e estacionamentos), Rhino (carros blindados e chofer), Mistral (vinhos), Teatro J.Safra, Kazuo (gastronomia) e Perfectrip (viagens personalizadas e concierge)."
+        }
+      ],
+      "link_solicitacao": "https://www.safra.com.br/abra-sua-conta.htm",
+      "fontes": [
+        "https://www.safra.com.br/cartoes/",
+        "https://www.safra.com.br/lp/cartoes-safra.htm",
+        "https://www.safra.com.br/abra-sua-conta.htm",
+        "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/safra-visa-infinite.htm",
+        "https://www.safra.com.br/cartoes/programa-safra-rewards/",
+        "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/programa-safra-rewards.htm",
+        "https://www.safra.com.br/external-files/servicos/pessoa-fisica/conta-corrente/tabela-de-tarifas-pf.pdf",
+        "https://www.safra.com.br/investimentos/"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "renda_minima",
+        "spread"
+      ],
+      "nota_curadoria": "O requisito de investimento mínimo para acesso ao cartão Safra Investor Visa Infinite apresenta divergência entre páginas oficiais: a LP 'lp/cartoes-safra.htm' cita R$ 200 mil; as páginas 'abra-sua-conta.htm' e rodapé de 'safra.com.br' citam R$ 300 mil para o 'Infinite Investor'. A tabela de tarifas PDF (safra.com.br/external-files/.../tabela-de-tarifas-pf.pdf) detalha isenção de anuidade para 'Cartões Safra Investor Visa' com fatura >= R$ 10 mil/mês ou investimentos >= R$ 500 mil. A pontuação (até 3 pts/USD) aplica-se aos cartões identificados como 'Novo Safra Visa Infinite' nas fontes do Safra Rewards, que abrange o Investor. A transferência para companhias aéreas passou a ser feita exclusivamente via Livelo a partir de 30/09/2025, com mínimo de 35.000 pontos.",
+      "procedencia": {
+        "anuidade": "https://www.safra.com.br/cartoes/",
+        "anuidade_parcelas": "https://www.safra.com.br/cartoes/",
+        "isencao": "https://www.safra.com.br/external-files/servicos/pessoa-fisica/conta-corrente/tabela-de-tarifas-pf.pdf",
+        "requisito_acesso": "https://www.safra.com.br/abra-sua-conta.htm",
+        "pontos": "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/programa-safra-rewards.htm",
+        "validade_pontos": "https://www.safra.com.br/cartoes/programa-safra-rewards/",
+        "transfere_para": "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/programa-safra-rewards.htm",
+        "salas_vip": "https://www.safra.com.br/cartoes/",
+        "programa_proprio": "https://www.safra.com.br/cartoes/programa-safra-rewards/",
+        "beneficios_banco": "https://www.safra.com.br/lp/cartoes-safra.htm",
+        "link_solicitacao": "https://www.safra.com.br/abra-sua-conta.htm"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "bandeira_ref": "visa-infinite",
+      "verificado_em": "2026-07-28"
     },
     {
       "slug": "safra-iridium-visa-infinite",
