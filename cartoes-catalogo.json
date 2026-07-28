@@ -1,17 +1,17 @@
 {
   "_meta": {
-    "descricao": "Base de cartoes do Clube do Viajante. Curadoria propria a partir de fontes oficiais dos emissores e das bandeiras.",
-    "regra": "Campo factual so tem valor se houver URL oficial declarada em procedencia[campo]. Validado por valida_catalogo.py.",
+    "descricao": "Base de cartões do Clube do Viajante. Curadoria própria a partir de fontes oficiais dos emissores e das bandeiras.",
+    "regra": "Campo factual só tem valor se houver URL oficial declarada em procedencia[campo]. Validado por valida_catalogo.py.",
     "iof_compras_internacionais": {
       "aliquota": 3.5,
-      "observacao": "Aliquota federal aplicada a todos os cartoes. O que varia por cartao e se o emissor absorve o custo (campo iof_isento).",
+      "observacao": "Alíquota federal aplicada a todos os cartões. O que varia por cartão é se o emissor absorve o custo (campo iof_isento).",
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-27",
     "total": 47,
     "validado_em": "2026-07-27",
     "emissores_normalizados_em": "2026-07-28",
-    "regra_emissor": "Emissor gravado como nome comercial curto. Novas importacoes devem seguir a mesma normalizacao."
+    "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização."
   },
   "cartoes": [
     {
