@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-28",
-    "total": 54,
+    "total": 55,
     "validado_em": "2026-07-27",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização."
@@ -784,6 +784,98 @@
       ],
       "verificado_em": "2026-07-27",
       "bandeira_ref": "visa-infinite"
+    },
+    {
+      "slug": "bradesco-american-express-platinum",
+      "nome": "Bradesco American Express Platinum Credit",
+      "emissor": "Banco Bradesco / Banco Bankpar S.A.",
+      "bandeira": "American Express",
+      "categoria": "Platinum",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": null,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "O American Express Platinum Credit (linha Exclusive/Classic) NÃO está listado no programa Livelo conforme página de benefícios oficial. O Livelo é exclusivo para: Visa Aeternum, Visa Infinite, Visa Signature, The Platinum Card® e American Express® Gold Card. O Platinum Credit possui programa de Recompensas próprio com pontos que não expiram, conforme página do produto."
+      },
+      "cashback": null,
+      "programa_proprio": "Programa de Recompensas American Express (pontos sem expiração)",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Sem expiração (conforme página oficial do produto American Express Gold Credit que referencia o Platinum Credit na mesma nota de rodapé)",
+      "salas_vip": [],
+      "beneficios_banco": [
+        {
+          "titulo": "Programa de Recompensas com pontos que não expiram",
+          "descricao": "Pontos acumulados no Programa de Recompensas American Express não expiram, conforme indicado na página oficial do produto."
+        },
+        {
+          "titulo": "Soluções financeiras unificadas",
+          "descricao": "Limites de crédito unificados para maior flexibilidade de pagamento."
+        },
+        {
+          "titulo": "Canais digitais e serviços on-line",
+          "descricao": "Acesso a canais digitais e serviços on-line exclusivos para gestão do cartão."
+        },
+        {
+          "titulo": "Central de Assistência 24 horas",
+          "descricao": "Assistência American Express Platinum Credit 24h: 0800 770 7120 (demais localidades); (55 11) 4133-9304 (outros países, a cobrar)."
+        },
+        {
+          "titulo": "Serviço de Atendimento ao Associado American Express Membership Cards",
+          "descricao": "Capitais e regiões metropolitanas: 4004 2639 | Demais localidades: 0800 726 2639 | Exterior (a cobrar): (55 34) 2102-6266."
+        }
+      ],
+      "link_solicitacao": "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
+      "fontes": [
+        "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
+        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
+        "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/platinum-card/meu-cartao.shtm",
+        "https://adc.bradesco.com.br/html/prime/index.shtm",
+        "http://200-155-86-38.bradesco.com.br/html/classic/produtos-servicos/cartoes/servicos/seguros-opcionais/seguro-american-express.shtm"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "isencao.regra",
+        "isencao.tipo",
+        "isencao.valor",
+        "pontos.internacional",
+        "pontos.nacional",
+        "renda_minima",
+        "requisito_acesso",
+        "salas_vip",
+        "spread",
+        "transfere_para"
+      ],
+      "nota_curadoria": "ATENÇÃO: O cartão American Express® Platinum Credit (linha Exclusive/Classic do Bradesco) está DESCONTINUADO para novas aquisições, conforme declarado explicitamente na página oficial do produto ('Este cartão não está mais disponível para novas aquisições'). Existe um produto distinto chamado 'Bradesco Prime Platinum American Express®' ainda ativo na linha Prime. Os valores de anuidade, renda mínima e isenção NÃO estão publicados em nenhuma página pública oficial — o Bradesco remete exclusivamente à Tabela Geral de Tarifas acessível via Internet Banking. O programa de pontos Livelo NÃO inclui o Platinum Credit conforme página de benefícios oficial (apenas Visa Aeternum, Visa Infinite, Visa Signature, The Platinum Card® e American Express® Gold Card são listados). O produto possui programa de Recompensas próprio com pontos sem expiração.",
+      "procedencia": {
+        "nome": "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
+        "bandeira": "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
+        "categoria": "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
+        "programa_proprio": "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
+        "validade_pontos": "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
+        "pontos.observacao": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "beneficios_banco": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao"
+      ],
+      "bandeira_ref": null,
+      "verificado_em": "2026-07-28"
     },
     {
       "slug": "bradesco-elo-diners-club",
