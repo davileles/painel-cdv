@@ -3497,7 +3497,10 @@ function catalogoBandeiraRef(c) {
   const t = [c.bandeira, c.categoria, c.nome].join(' ')
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   // Tiers com catalogo proprio tem precedencia sobre Black/Infinite.
-  if (t.includes('centurion') || t.includes('diners')) return null;
+  // Amex Centurion nao tem catalogo publico de bandeira.
+  if (t.includes('centurion')) return null;
+  // Elo (inclusive Elo Diners Club) usa catalogo unico: o Elo Flex nao varia por categoria.
+  if (t.includes('elo') || t.includes('diners')) return 'elo-flex';
   if (t.includes('legend')) return t.includes('mastercard') ? 'mastercard-world-legend' : null;
   if (t.includes('privilege') && t.includes('visa') && t.includes('infinite')) return 'visa-infinite-privilege';
   if (t.includes('mastercard') && /black|world elite/.test(t)) return 'mastercard-black';
@@ -3642,6 +3645,31 @@ function cartoesSanitizar(cartao) {
   if (rejeitados.length) c.campos_rejeitados = rejeitados;
   // Ref explicito prevalece: houve caso de nome com 'Privilege' num cartao Infinite.
   if (!c.bandeira_ref) c.bandeira_ref = catalogoBandeiraRef(c);
+  // Quantidade de escolhas e beneficios fixos do Elo Flex variam por emissor,
+  // entao sao declarados no cartao. Valem a mesma regra de procedencia dos demais
+  // campos factuais, mas so entram em campos_pendentes quando o cartao os declara:
+  // marcar como pendente em cartao Visa/Mastercard seria ruido.
+  ['flex_quantidade', 'flex_fixos'].forEach(campo => {
+    if (catalogoVazio(c[campo])) { delete c[campo]; return; }
+    const fonteBruta = cartoesProcDoCampo(proc, campo);
+    if (!fonteBruta || !cartoesFonteOficial(fonteBruta)) {
+      rejeitados.push(campo);
+      delete c[campo];
+      delete proc[campo];
+      return;
+    }
+    const limpa = cartoesUrlLimpa(fonteBruta);
+    if (c.fontes.indexOf(limpa) < 0) c.fontes.push(limpa);
+    if (campo === 'flex_quantidade') {
+      const n = parseInt(c[campo], 10);
+      if (!Number.isFinite(n) || n <= 0) { delete c[campo]; return; }
+      c[campo] = n;
+    } else {
+      c[campo] = c[campo].map(String).filter(Boolean);
+    }
+  });
+  if (rejeitados.length) c.campos_rejeitados = rejeitados;
+
   c.emissor = cartoesNormalizarEmissor(c.emissor);
   c.verificado_em = c.verificado_em || new Date().toISOString().slice(0, 10);
   return c;
@@ -3677,13 +3705,25 @@ app.get('/catalogo-cartoes/:slug', async (req, res) => {
 
     // Resolve os beneficios herdados da bandeira
     let beneficiosBandeira = [];
+    let bandeiraInfo = null;
     const ref = cartao.bandeira_ref || catalogoBandeiraRef(cartao);
     if (ref) {
       const { data: bd } = await ghGetJson(BANDEIRAS_PATH, { bandeiras: [] });
       const b = (bd.bandeiras || []).find(x => x.ref === ref);
-      if (b) beneficiosBandeira = b.beneficios || [];
+      if (b) {
+        beneficiosBandeira = b.beneficios || [];
+        // O front precisa saber se o catalogo e fixo ou de escolha (Elo Flex)
+        // para nao dar a entender que o cliente tem todos os itens da lista.
+        bandeiraInfo = {
+          ref: b.ref, bandeira: b.bandeira, categoria: b.categoria,
+          modelo: b.modelo || 'fixo', nota: b.nota || null,
+          regras: b.regras || [], fonte: b.fonte || null
+        };
+      }
     }
-    res.json({ ok: true, cartao: { ...cartao, beneficios_bandeira: beneficiosBandeira } });
+    res.json({ ok: true, cartao: {
+      ...cartao, beneficios_bandeira: beneficiosBandeira, bandeira_info: bandeiraInfo
+    } });
   } catch (e) {
     console.error('[catalogo GET slug]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
