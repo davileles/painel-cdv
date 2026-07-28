@@ -3425,9 +3425,10 @@ const CARTOES_DOMINIOS_OFICIAIS = [
   'sicoob.com.br',
   'xpi.com.br', 'xpinvestimentos.com.br',
   'elo.com.br',
-  // Mastercard global removido: mastercard.com hospeda tambem sala de imprensa,
-  // que ja entrou como 'fonte' de beneficio. Mantido apenas o dominio BR.
-  'mastercard.com.br',
+  // mastercard.com hospeda a pagina de produto BR (/br/pt/) e tambem a sala de
+  // imprensa. Os dois convivem no mesmo host, entao o corte e por caminho
+  // em CARTOES_CAMINHOS_BLOQUEADOS, nao pela remocao do dominio.
+  'mastercard.com', 'mastercard.com.br',
   'visa.com.br', 'visa-infinite.com',
   'americanexpress.com',
   // Emissor: o site de produto do Porto Bank fica em portoseguro.com.br,
@@ -3446,10 +3447,29 @@ function cartoesUrlLimpa(v) {
   return String(v || '').trim().split(/[\s,;]/)[0];
 }
 
+// Dominio oficial nao garante conteudo de produto: bancos e bandeiras hospedam
+// sala de imprensa, blog e campanha no mesmo host. Esses caminhos noticiam
+// beneficio sem valer como ficha tecnica e ja entraram como fonte por engano.
+const CARTOES_CAMINHOS_BLOQUEADOS = [
+  '/news', '/noticias', '/noticia', '/imprensa', '/comunicados-de-imprensa',
+  '/press', '/press-release', '/pressroom', '/sala-de-imprensa', '/releases',
+  '/institucional/imprensa'
+];
+// '/blog' NAO entra: C6 e BTG publicam ficha de produto no proprio blog
+// (c6bank.com.br/blog/c6-mastercard-black, por exemplo). Bloquear /blog
+// derrubaria 46 campos legitimos em vez dos 6 de imprensa.
+
+function cartoesCaminhoEditorial(pathname) {
+  const p = String(pathname || '').toLowerCase();
+  return CARTOES_CAMINHOS_BLOQUEADOS.some(b => p === b || p.startsWith(b + '/') || p.startsWith(b + '-'));
+}
+
 function cartoesFonteOficial(url) {
   try {
-    const host = new URL(cartoesUrlLimpa(url)).hostname.toLowerCase().replace(/^www\./, '');
-    return CARTOES_DOMINIOS_OFICIAIS.some(d => host === d || host.endsWith('.' + d));
+    const u = new URL(cartoesUrlLimpa(url));
+    const host = u.hostname.toLowerCase().replace(/^www\./, '');
+    if (!CARTOES_DOMINIOS_OFICIAIS.some(d => host === d || host.endsWith('.' + d))) return false;
+    return !cartoesCaminhoEditorial(u.pathname);
   } catch (e) { return false; }
 }
 
