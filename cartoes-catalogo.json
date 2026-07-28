@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-28",
-    "total": 58,
+    "total": 59,
     "validado_em": "2026-07-27",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização."
@@ -4293,6 +4293,145 @@
       "iof": 0,
       "requisito_acesso": "Análise de crédito automática, realizada no momento do cadastro de novos clientes e mensalmente para clientes existentes. Não há renda mínima declarada.",
       "validade_pontos": "Não expira"
+    },
+    {
+      "slug": "bb-ourocard-elo-nanquim",
+      "nome": "Ourocard Elo Nanquim",
+      "emissor": "Banco do Brasil",
+      "bandeira": "Elo",
+      "categoria": "Nanquim (premium)",
+      "anuidade": 1056,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "desconto_progressivo",
+        "valor": "até 100%",
+        "regra": "Desconto Progressivo de Anuidade (DPA): quanto mais o cartão é utilizado, menor a anuidade cobrada, podendo chegar a 100% de desconto com ou sem uso de pontos do programa Benefícios BB"
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Segmento Private do Banco do Brasil (indicado pela URL bb.com.br/site/private/cartoes/ourocard-elo-nanquim/)",
+      "adicionais_gratis": null,
+      "pontos": null,
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "0,15% direto na conta corrente (opção no programa Benefícios BB, correntistas)"
+      },
+      "programa_proprio": "Benefícios BB",
+      "transfere_para": [
+        "Livelo",
+        "Dotz"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "Priority Pass",
+          "regra": "2 acessos gratuitos por ano mediante apresentação do cartão; acompanhante conta na cota. Acessos adicionais ou acima de 1 acompanhante devem ser pagos."
+        },
+        {
+          "programa": "Sala VIP Elo em Congonhas",
+          "regra": "2 acessos gratuitos por ano com direito a 1 acompanhante, dentro da cota do Priority Pass."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Elo Flex – até 6 benefícios flexíveis",
+          "descricao": "Titular pode escolher até 6 benefícios Elo Flex, incluindo Seguro Viagem, Assistência Pet, Sala VIP Priority Pass e outros, via plataforma elo.com.br/elo-flex-bb/"
+        },
+        {
+          "titulo": "Assistência Residencial",
+          "descricao": "Assistência profissional para serviços e reparos no lar (modalidades Elo Grafite, Nanquim e Nanquim Diners Club)"
+        },
+        {
+          "titulo": "Assistência Veicular",
+          "descricao": "Serviços especializados para emergências com o veículo (modalidades Elo Grafite, Nanquim e Nanquim Diners Club)"
+        },
+        {
+          "titulo": "Assistência de Bem-Estar",
+          "descricao": "Cuidado com bem-estar físico e emocional da família (modalidades Elo Grafite, Nanquim e Nanquim Diners Club)"
+        },
+        {
+          "titulo": "Garantia Estendida Original",
+          "descricao": "Dobra a garantia de compras com cartão no Brasil ou exterior (modalidades Elo Mais, Grafite, Nanquim e Nanquim Diners Club)"
+        },
+        {
+          "titulo": "Proteção de Eletrodomésticos",
+          "descricao": "Eletrodomésticos protegidos contra roubos ou acidentes sem custo adicional (modalidades Elo Grafite, Nanquim e Nanquim Diners Club)"
+        },
+        {
+          "titulo": "Transfer Aeroporto",
+          "descricao": "Comodidade para ir e voltar dos principais aeroportos internacionais do Brasil"
+        },
+        {
+          "titulo": "Seguro Viagem",
+          "descricao": "Cobertura de viagem mediante emissão de Bilhete de Seguro no site da Elo e pagamento integral da compra com o cartão"
+        },
+        {
+          "titulo": "Programa Use Elo",
+          "descricao": "Descontos e ofertas em parceiros, promoções especiais e pré-venda de shows para todos os cartões Elo"
+        },
+        {
+          "titulo": "Investimento automático (opção Benefícios BB)",
+          "descricao": "Retorno de 0,15% do valor das compras aplicado automaticamente em fundo de renda fixa específico (opção para correntistas)"
+        },
+        {
+          "titulo": "Carteiras Digitais",
+          "descricao": "Pagamentos via Apple Pay, Samsung Pay e Google Pay"
+        },
+        {
+          "titulo": "Isenção de anuidade promocional para novos cartões",
+          "descricao": "Clientes Private: isenção de 6 meses para novos cartões ou ativação da função crédito; isenção adicional de 12 meses em algumas condições de Clube"
+        }
+      ],
+      "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+      "fontes": [
+        "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-elo-nanquim/",
+        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "https://www.bb.com.br/docs/pub/trf/tarifasPFAnt.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "https://www.bb.com.br/pbb/home-beneficios/beneficios-e-promocoes",
+        "https://www.bb.com.br/pbb/pagina-inicial/clube-de-beneficios/vantagens-financeiras",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/tabjurosVarejo2.pdf",
+        "https://www.bb.com.br/site/agronegocios/ourocard-agronegocio/elo/"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "iof",
+        "pontos",
+        "pontos.internacional",
+        "pontos.nacional",
+        "renda_minima",
+        "spread",
+        "validade_pontos"
+      ],
+      "nota_curadoria": "O cartão possui duas versões de página: segmento 'Pra Você' (bb.com.br/site/pra-voce) e segmento 'Private' (bb.com.br/site/private), o que indica que pode ser acessível a ambos os segmentos ou que a versão Private é a principal. A anuidade de R$ 1.056,00 foi confirmada na Tabela de Tarifas PF vigente (versão 02/2026, maio/2026). A taxa de acúmulo de pontos (pts/USD) não foi localizada em nenhum PDF ou página oficial do BB para o Nanquim especificamente — menções a '2,2 pts/USD' aparecem apenas em blog.bb.com.br, que não é fonte oficial aceita por este processo. O campo cashback se refere à opção disponível no programa Benefícios BB, não a cashback direto por bandeira.",
+      "procedencia": {
+        "anuidade": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "anuidade_parcelas": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "isencao": "https://www.bb.com.br/pbb/pagina-inicial/clube-de-beneficios/vantagens-financeiras",
+        "programa_proprio": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "transfere_para": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "cashback": "https://www.bb.com.br/site/agronegocios/ourocard-agronegocio/elo/",
+        "salas_vip": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
+        "beneficios_banco": "https://www.bb.com.br/pbb/home-beneficios/beneficios-e-promocoes",
+        "nome": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "emissor": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "bandeira": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "categoria": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "requisito_acesso": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "pontos"
+      ],
+      "bandeira_ref": "elo-flex",
+      "verificado_em": "2026-07-28"
     },
     {
       "slug": "bb-ourocard-visa-infinite",
