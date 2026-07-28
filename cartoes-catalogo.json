@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-28",
-    "total": 56,
+    "total": 57,
     "validado_em": "2026-07-27",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização."
@@ -5895,6 +5895,131 @@
         "pontos"
       ],
       "verificado_em": "2026-07-27"
+    },
+    {
+      "slug": "unicred-visa-infinite",
+      "nome": "Unicred Visa Infinite",
+      "emissor": "Unicred",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": "Ser cooperado Unicred (associação obrigatória à cooperativa regional)",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": null,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Acumula pontos pelo programa Único de Fidelidade. Tabela de pontuação por categoria exibida dinamicamente no site; valor numérico específico do Infinite padrão não disponível em texto indexado. O valor 3,5 pts/USD mencionado em fonte oficial refere-se ao Ímpar Unicred Visa Infinite, não ao Infinite padrão."
+      },
+      "cashback": {
+        "nacional": null,
+        "internacional": null,
+        "observacao": "Sim – pontos podem ser convertidos em crédito direto na conta corrente, aporte em previdência (Precaver) ou cota capital"
+      },
+      "programa_proprio": "Único Programa de Fidelidade (unico.unicred.com.br)",
+      "transfere_para": [
+        "Livelo",
+        "Smiles",
+        "Latam Pass",
+        "TudoAzul"
+      ],
+      "spread": "Zero (compras internacionais calculadas pelo dólar PTAX/comercial, sem acréscimo de spread)",
+      "iof": "3,5% (conforme Decreto nº 12.466/2025)",
+      "validade_pontos": "36 meses (3 anos) para cartão Infinite",
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion",
+          "regra": "Acesso ilimitado gratuito a mais de 1.000 salas VIP com direito a um acompanhante (titulares e adicionais Unicred Visa Infinite)"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Spread zero em compras internacionais",
+          "descricao": "Compras no exterior calculadas pelo dólar PTAX do dia, sem taxas operacionais adicionais"
+        },
+        {
+          "titulo": "Concierge Visa Infinite",
+          "descricao": "Serviço de assistência pessoal 24h (0800 892 4060) para reservas, roteiros de viagem, ingressos e envio de presentes"
+        },
+        {
+          "titulo": "Seguros de viagem",
+          "descricao": "Proteção para perda/roubo de bagagem, cancelamento de viagem, atraso de conexão, atraso de embarque e seguro de garantia estendida. Inclui Visa Médico Online"
+        },
+        {
+          "titulo": "Vai de Visa",
+          "descricao": "Acesso à plataforma de ofertas e promoções da Visa com descontos em viagens e experiências selecionadas"
+        },
+        {
+          "titulo": "Unicred Tag",
+          "descricao": "Tag eletrônica para pedágios e estacionamentos sem custo adicional"
+        },
+        {
+          "titulo": "Luxury Hotel Collection",
+          "descricao": "Benefícios e ofertas em mais de 900 hotéis de luxo no mundo"
+        },
+        {
+          "titulo": "Pagamento por aproximação (NFC)",
+          "descricao": "Tecnologia contactless e EMV com proteção contra fraudes e biometria facial"
+        },
+        {
+          "titulo": "Opções de cores",
+          "descricao": "Portador pode escolher entre dois designs: preto ou pérola"
+        }
+      ],
+      "link_solicitacao": "https://www.unicred.com.br/solucoes/cartoes",
+      "fontes": [
+        "https://www.unicred.com.br/solucoes/cartoes",
+        "https://www.unicred.com.br/solucoes/cartoes?modal=visa_visainfinite",
+        "https://www.unicred.com.br/solucoes/unico",
+        "https://www.unicred.com.br/atendimento/duvidas-frequentes",
+        "https://www.unicred.com.br/fique-por-dentro/informativos/cartao-unicred-visa-infinite-oferece-novos-beneficios-com-o-visa-airport-companion",
+        "https://www.unicred.com.br/site/1690556044481-cartaz-tabela-de-tarifaspdf.pdf",
+        "https://www.unicred.com.br/site/1643734596556-tabelaa1---1232021-1pdf.pdf",
+        "https://www.unicred.com.br/site/1738350826607-tabela-de-tarifas-010125-tamanho-a3pdf.pdf",
+        "https://unicred.com.br/site/REGULAMENTO_DO_PROGRAMA_V3.pdf",
+        "https://unico.unicred.com.br/MarAberto/Faq/Faq",
+        "https://materiais.unicred.com.br/visa-unicred",
+        "https://unicred.com.br/blog/produtos-e-servicos/cartao-internacional-sem-spread-bancario-entenda-as-vantagens-do-cartao-unicred-visa/",
+        "https://unicred.com.br/blog/produtos-e-servicos/novas-regras-do-iof-unicred-visa-e-o-melhor-cartao-internacional-para-compras/",
+        "https://unicred.com.br/blog/produtos-e-servicos/como-escolher-o-melhor-cartao-de-credito-internacional/",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
+        "https://www.unicred.com.br/solucoes/privilege"
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "isencao",
+        "pontos.internacional",
+        "pontos.nacional",
+        "renda_minima"
+      ],
+      "nota_curadoria": "A Unicred é um sistema cooperativo descentralizado: anuidade e pontuação por dólar variam por cooperativa regional e não são publicadas de forma unificada na página nacional unicred.com.br. A tabela PDF de 2021 (Unicred Minas ES) indica R$ 750,00 para o Infinite; outra tabela PDF de 2025 registra R$ 900,00 para 'Cartão Infinite - Internacional - VISA', porém ambas são de cooperativas específicas. A tabela de pontuação do Único é carregada via JavaScript e não ficou disponível em texto indexado, impedindo leitura automatizada. Recomenda-se consulta direta à cooperativa local ou à central 4007-1038 para confirmação dos valores de anuidade e pontuação vigentes. O cartão Unicred Visa Infinite padrão deve ser diferenciado do 'Ímpar Unicred Visa Infinite' (produto distinto lançado em 2024, com design metálico e 3,5 pts/USD) e do 'Unicred Visa Infinite Privilege' (convite exclusivo, com acesso ilimitado LoungeKey/DragonPass para 8 convidados).",
+      "procedencia": {
+        "bandeira": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
+        "categoria": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
+        "requisito_acesso": "https://www.unicred.com.br/atendimento/duvidas-frequentes",
+        "pontos": "https://www.unicred.com.br/solucoes/unico",
+        "cashback": "https://materiais.unicred.com.br/visa-unicred",
+        "programa_proprio": "https://www.unicred.com.br/solucoes/unico",
+        "transfere_para": "https://www.unicred.com.br/solucoes/privilege",
+        "spread": "https://unicred.com.br/blog/produtos-e-servicos/novas-regras-do-iof-unicred-visa-e-o-melhor-cartao-internacional-para-compras/",
+        "iof": "https://unicred.com.br/blog/produtos-e-servicos/novas-regras-do-iof-unicred-visa-e-o-melhor-cartao-internacional-para-compras/",
+        "validade_pontos": "https://unico.unicred.com.br/MarAberto/Faq/Faq",
+        "salas_vip": "https://materiais.unicred.com.br/visa-unicred",
+        "beneficios_banco": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
+        "link_solicitacao": "https://www.unicred.com.br/solucoes/cartoes"
+      },
+      "vigencia_ate": null,
+      "analise": null,
+      "campos_rejeitados": [
+        "isencao"
+      ],
+      "bandeira_ref": "visa-infinite",
+      "verificado_em": "2026-07-28"
     },
     {
       "slug": "unicred-visa-privilege",
