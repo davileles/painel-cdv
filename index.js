@@ -2196,8 +2196,12 @@ function injetarOpenGraph(html, slug, capaUrl, D) {
   const urlCan  = ROTEIROS_BASE_URL + '/' + slug + '/';
   const tituloFull = titulo + ' · ' + marca;
 
+  // Preserva atributos do <title> original (o template usa id="page-title" no JS)
+  const mTitle = html.match(/<title([^>]*)>/i);
+  const titleAttrs = mTitle ? (mTitle[1] || '') : ' id="page-title"';
+
   const linhas = [
-    '<title>' + escAttrHtml(tituloFull) + '</title>',
+    '<title' + titleAttrs + '>' + escAttrHtml(tituloFull) + '</title>',
     '<link rel="canonical" href="' + escAttrHtml(urlCan) + '"/>',
     '<meta name="description" content="' + escAttrHtml(desc) + '"/>',
     '<meta property="og:type" content="website"/>',
@@ -2228,11 +2232,12 @@ function injetarOpenGraph(html, slug, capaUrl, D) {
     .replace(/[ \t]*<meta\s+(?:property|name)\s*=\s*"(?:og:|twitter:|description)[^"]*"[^>]*>\s*\n?/gi, '')
     .replace(/[ \t]*<link\s+rel\s*=\s*"canonical"[^>]*>\s*\n?/gi, '');
 
-  if (/<title>[\s\S]*?<\/title>/i.test(out)) {
-    out = out.replace(/<title>[\s\S]*?<\/title>/i, function() { return bloco; });
+  if (/<title[^>]*>[\s\S]*?<\/title>/i.test(out)) {
+    out = out.replace(/<title[^>]*>[\s\S]*?<\/title>/i, function() { return bloco; });
   } else {
     out = out.replace(/<\/head>/i, function() { return bloco + '\n</head>'; });
   }
+
   return out;
 }
 
