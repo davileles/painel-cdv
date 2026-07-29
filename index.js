@@ -2099,30 +2099,92 @@ app.post('/concierge/alerta/disparar', async (req, res) => {
 // ══════════════════════════════════════════════════════════════════
 const ROTEIROS_BASE_URL = 'https://roteiros.clubedoviajante.com.br';
 
-function extrairRoteiroData(html) {
-  const i = html.indexOf('ROTEIRO_DATA');
-  if (i === -1) return null;
-  const start = html.indexOf('{', i);
-  if (start === -1) return null;
-  let depth = 0, inStr = false, esc = false;
-  for (let p = start; p < html.length; p++) {
-    const ch = html[p];
-    if (inStr) {
-      if (esc) esc = false;
-      else if (ch === '\\') esc = true;
-      else if (ch === '"') inStr = false;
-      continue;
-    }
-    if (ch === '"') { inStr = true; continue; }
-    if (ch === '{') depth++;
-    else if (ch === '}') {
-      depth--;
-      if (depth === 0) {
-        try { return JSON.parse(html.slice(start, p + 1)); } catch(e) { return null; }
+// Retorna os blocos "{...}" de cada atribuicao real a ROTEIRO_DATA.
+// A primeira mencao no arquivo costuma ser um comentario do template, e o
+// template embutido traz exemplos ("Santiago & Andes") que nao sao o roteiro.
+function extrairBlocosRoteiroData(html) {
+  const blocos = [];
+  const re = /ROTEIRO_DATA\s*=\s*\{/g;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    const start = html.indexOf('{', m.index);
+    if (start === -1) continue;
+    let depth = 0, inStr = false, esc = false;
+    for (let p = start; p < html.length; p++) {
+      const ch = html[p];
+      if (inStr) {
+        if (esc) esc = false;
+        else if (ch === '\\') esc = true;
+        else if (ch === '"') inStr = false;
+        continue;
+      }
+      if (ch === '"') { inStr = true; continue; }
+      if (ch === '{') depth++;
+      else if (ch === '}') {
+        depth--;
+        if (depth === 0) { blocos.push(html.slice(start, p + 1)); break; }
       }
     }
   }
+  return blocos;
+}
+
+function extrairRoteiroData(html) {
+  const blocos = extrairBlocosRoteiroData(html);
+  for (const b of blocos) {
+    try {
+      const obj = JSON.parse(b);
+      if (obj && typeof obj === 'object' && !Array.isArray(obj)) return obj;
+    } catch(e) { /* tenta o proximo bloco */ }
+  }
   return null;
+}
+
+// Fallback: roteiros legados usam objeto JS literal (chaves sem aspas) ou
+// nem sequer possuem ROTEIRO_DATA. Extrai os poucos campos que o OG precisa.
+function montarDadosOG(html) {
+  const D = extrairRoteiroData(html);
+  if (D) return D;
+
+  // Busca restrita ao bloco da atribuicao, para nao capturar exemplos do template
+  const blocos = extrairBlocosRoteiroData(html);
+  const escopo = blocos.length ? blocos[blocos.length - 1] : '';
+
+  const pick = function(re) {
+    const m = escopo.match(re);
+    if (!m) return null;
+    try { return JSON.parse('"' + m[1] + '"'); } catch(e) { return m[1]; }
+  };
+
+  const out = {};
+  out.titulo     = pick(/\btitulo"?\s*:\s*"((?:[^"\\]|\\.)*)"/);
+  out.subtitulo  = pick(/\bsubtitulo"?\s*:\s*"((?:[^"\\]|\\.)*)"/);
+  out.marcaTexto = pick(/\bmarcaTexto"?\s*:\s*"((?:[^"\\]|\\.)*)"/);
+  out.footerNote = pick(/\bfooterNote"?\s*:\s*"((?:[^"\\]|\\.)*)"/);
+
+  // heroImage: ignora placeholders do template (ex.: "https://images.unsplash.com/...")
+  const reImg = /heroImage"?\s*:\s*"([^"]+)"/g;
+  let mi;
+  while ((mi = reImg.exec(escopo)) !== null) {
+    const u = mi[1];
+    if (u.indexOf('http') === 0 && u.indexOf('/...') === -1 && !/\.\.\.$/.test(u)) { out.heroImage = u; break; }
+  }
+
+  // Ultimo recurso: deriva do <title> ("Titulo · Marca")
+  if (!out.titulo) {
+    const mt = html.match(/<title[^>]*>([^<]*)<\/title>/i);
+    if (mt && mt[1].trim()) {
+      const partes = mt[1].split('·').map(function(s) { return s.trim(); }).filter(Boolean);
+      if (partes.length >= 2) {
+        out.titulo = partes.slice(0, -1).join(' · ');
+        out.marcaTexto = out.marcaTexto || partes[partes.length - 1];
+      } else {
+        out.titulo = mt[1].trim();
+      }
+    }
+  }
+
+  return (out.titulo || out.heroImage) ? out : null;
 }
 
 function escAttrHtml(s) {
@@ -2280,7 +2342,7 @@ app.post('/roteiros/publicar', async (req, res) => {
     // 1b. Injetar Open Graph (preview com imagem no WhatsApp/Telegram)
     let htmlFinal = htmlContent;
     try {
-      const D = extrairRoteiroData(htmlContent);
+      const D = montarDadosOG(htmlContent);
       const capaUrl = D ? await publicarCapaRoteiro(slug, D.heroImage, ghHeaders, ROTEIROS_REPO) : null;
       htmlFinal = injetarOpenGraph(htmlContent, slug, capaUrl, D);
     } catch(e) {
