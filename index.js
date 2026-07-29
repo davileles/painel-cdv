@@ -2093,6 +2093,150 @@ app.post('/concierge/alerta/disparar', async (req, res) => {
 });
 
 // ══════════════════════════════════════════════════════════════════
+//  Open Graph para roteiros publicados
+//  O crawler do WhatsApp/Telegram nao executa JS, entao titulo,
+//  descricao e imagem precisam estar no HTML estatico.
+// ══════════════════════════════════════════════════════════════════
+const ROTEIROS_BASE_URL = 'https://roteiros.clubedoviajante.com.br';
+
+function extrairRoteiroData(html) {
+  const i = html.indexOf('ROTEIRO_DATA');
+  if (i === -1) return null;
+  const start = html.indexOf('{', i);
+  if (start === -1) return null;
+  let depth = 0, inStr = false, esc = false;
+  for (let p = start; p < html.length; p++) {
+    const ch = html[p];
+    if (inStr) {
+      if (esc) esc = false;
+      else if (ch === '\\') esc = true;
+      else if (ch === '"') inStr = false;
+      continue;
+    }
+    if (ch === '"') { inStr = true; continue; }
+    if (ch === '{') depth++;
+    else if (ch === '}') {
+      depth--;
+      if (depth === 0) {
+        try { return JSON.parse(html.slice(start, p + 1)); } catch(e) { return null; }
+      }
+    }
+  }
+  return null;
+}
+
+function escAttrHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+// Unsplash aceita parametros de resize: garante ~1200x630 em JPG leve
+function normalizarCapaUrl(url) {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    if (u.hostname.indexOf('images.unsplash.com') !== -1) {
+      u.searchParams.delete('auto');
+      u.searchParams.set('w', '1200');
+      u.searchParams.set('h', '630');
+      u.searchParams.set('fit', 'crop');
+      u.searchParams.set('fm', 'jpg');
+      u.searchParams.set('q', '70');
+      return u.toString();
+    }
+    return url;
+  } catch(e) { return url; }
+}
+
+// Baixa a capa e commita em {slug}/capa.jpg — garante peso e disponibilidade.
+// Retorna null se falhar (o og:image cai para a URL original).
+async function publicarCapaRoteiro(slug, heroImage, ghHeaders, repo) {
+  const src = normalizarCapaUrl(heroImage);
+  if (!src) return null;
+  try {
+    const r = await fetch(src, { headers: { 'User-Agent': 'cdv-proxy' } });
+    if (!r.ok) return null;
+    const ct = (r.headers.get('content-type') || '').toLowerCase();
+    let ext = null;
+    if (ct.indexOf('jpeg') !== -1 || ct.indexOf('jpg') !== -1) ext = 'jpg';
+    else if (ct.indexOf('png') !== -1) ext = 'png';
+    if (!ext) return null;
+
+    const buf = Buffer.from(await r.arrayBuffer());
+    if (!buf.length || buf.length > 1500000) return null;
+
+    const caminhoCapa = slug + '/capa.' + ext;
+    let shaCapa = null;
+    try {
+      const chk = await fetch('https://api.github.com/repos/' + repo + '/contents/' + caminhoCapa, { headers: ghHeaders });
+      if (chk.ok) { const d = await chk.json(); shaCapa = d.sha || null; }
+    } catch(e) { /* capa ainda nao existe */ }
+
+    const body = { message: 'roteiro: capa ' + slug, content: buf.toString('base64') };
+    if (shaCapa) body.sha = shaCapa;
+
+    const put = await fetch('https://api.github.com/repos/' + repo + '/contents/' + caminhoCapa, {
+      method: 'PUT', headers: ghHeaders, body: JSON.stringify(body)
+    });
+    if (!put.ok) return null;
+
+    return ROTEIROS_BASE_URL + '/' + slug + '/capa.' + ext;
+  } catch(e) { return null; }
+}
+
+function injetarOpenGraph(html, slug, capaUrl, D) {
+  D = D || {};
+  const marca   = D.marcaTexto || 'Travel Concierge';
+  const titulo  = D.titulo || 'Roteiro';
+  const desc    = D.subtitulo || D.footerNote || ('Roteiro de viagem · ' + marca);
+  const imagem  = capaUrl || normalizarCapaUrl(D.heroImage) || '';
+  const urlCan  = ROTEIROS_BASE_URL + '/' + slug + '/';
+  const tituloFull = titulo + ' · ' + marca;
+
+  const linhas = [
+    '<title>' + escAttrHtml(tituloFull) + '</title>',
+    '<link rel="canonical" href="' + escAttrHtml(urlCan) + '"/>',
+    '<meta name="description" content="' + escAttrHtml(desc) + '"/>',
+    '<meta property="og:type" content="website"/>',
+    '<meta property="og:site_name" content="' + escAttrHtml(marca) + '"/>',
+    '<meta property="og:locale" content="pt_BR"/>',
+    '<meta property="og:title" content="' + escAttrHtml(titulo) + '"/>',
+    '<meta property="og:description" content="' + escAttrHtml(desc) + '"/>',
+    '<meta property="og:url" content="' + escAttrHtml(urlCan) + '"/>'
+  ];
+  if (imagem) {
+    linhas.push('<meta property="og:image" content="' + escAttrHtml(imagem) + '"/>');
+    linhas.push('<meta property="og:image:secure_url" content="' + escAttrHtml(imagem) + '"/>');
+    linhas.push('<meta property="og:image:type" content="image/' + (imagem.indexOf('.png') !== -1 ? 'png' : 'jpeg') + '"/>');
+    linhas.push('<meta property="og:image:width" content="1200"/>');
+    linhas.push('<meta property="og:image:height" content="630"/>');
+    linhas.push('<meta property="og:image:alt" content="' + escAttrHtml(titulo) + '"/>');
+    linhas.push('<meta name="twitter:card" content="summary_large_image"/>');
+    linhas.push('<meta name="twitter:image" content="' + escAttrHtml(imagem) + '"/>');
+  } else {
+    linhas.push('<meta name="twitter:card" content="summary"/>');
+  }
+  linhas.push('<meta name="twitter:title" content="' + escAttrHtml(titulo) + '"/>');
+  linhas.push('<meta name="twitter:description" content="' + escAttrHtml(desc) + '"/>');
+  const bloco = linhas.join('\n');
+
+  // Remove tags anteriores (republicacao do mesmo slug)
+  let out = html
+    .replace(/[ \t]*<meta\s+(?:property|name)\s*=\s*"(?:og:|twitter:|description)[^"]*"[^>]*>\s*\n?/gi, '')
+    .replace(/[ \t]*<link\s+rel\s*=\s*"canonical"[^>]*>\s*\n?/gi, '');
+
+  if (/<title>[\s\S]*?<\/title>/i.test(out)) {
+    out = out.replace(/<title>[\s\S]*?<\/title>/i, function() { return bloco; });
+  } else {
+    out = out.replace(/<\/head>/i, function() { return bloco + '\n</head>'; });
+  }
+  return out;
+}
+
+// ══════════════════════════════════════════════════════════════════
 //  POST /roteiros/publicar
 //  Recebe: { slug, html (base64 ou string), viagemId? }
 //  - Faz commit do HTML em davileles/roteiros/{slug}/index.html
@@ -2128,10 +2272,20 @@ app.post('/roteiros/publicar', async (req, res) => {
       }
     } catch(e) { /* arquivo não existe ainda */ }
 
+    // 1b. Injetar Open Graph (preview com imagem no WhatsApp/Telegram)
+    let htmlFinal = htmlContent;
+    try {
+      const D = extrairRoteiroData(htmlContent);
+      const capaUrl = D ? await publicarCapaRoteiro(slug, D.heroImage, ghHeaders, ROTEIROS_REPO) : null;
+      htmlFinal = injetarOpenGraph(htmlContent, slug, capaUrl, D);
+    } catch(e) {
+      console.warn('[roteiros/publicar] Aviso: Open Graph não injetado:', e.message);
+    }
+
     // 2. Commit do HTML no repositório roteiros
     const putBody = {
       message: `roteiro: ${slug}`,
-      content: Buffer.from(htmlContent).toString('base64')
+      content: Buffer.from(htmlFinal).toString('base64')
     };
     if (shaBefore) putBody.sha = shaBefore;
 
@@ -2146,7 +2300,7 @@ app.post('/roteiros/publicar', async (req, res) => {
       throw new Error(putErr.message || `GitHub PUT falhou (${putRes.status})`);
     }
 
-    const url = `https://davileles.github.io/roteiros/${slug}/`;
+    const url = `${ROTEIROS_BASE_URL}/${slug}/`;
 
     // 3. Se viagemId fornecido, atualizar viagem no concierge com slugRoteiro + urlRoteiro
     if (viagemId) {
@@ -2187,7 +2341,7 @@ app.get('/roteiros/publicar', async (req, res) => {
       }
     });
     if (checkRes.ok) {
-      res.json({ ok: true, existe: true, url: `https://davileles.github.io/roteiros/${slug}/` });
+      res.json({ ok: true, existe: true, url: `${ROTEIROS_BASE_URL}/${slug}/` });
     } else {
       res.json({ ok: true, existe: false });
     }
