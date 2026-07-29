@@ -319,20 +319,48 @@ function montarResumoEmissoes() {
 // ENVIO
 // ══════════════════════════════════════════════════════════════════════════════
 
+// Backoff entre tentativas: cobre janelas curtas de reconexao do Baileys
+// (o /enviar devolve 503 se o socket do WhatsApp estiver caido).
+const RETRY_DELAYS_MS = [30000, 60000, 120000];
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function postEnviar(mensagem, grupo, agendarEm) {
+  const r = await fetch(`${BAILEYS}/enviar`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    // direto:true → o resumo nao entra na fila de envio do Baileys
+    // (intervalo de 10 min / janela 8h-21h), sai no horario agendado.
+    body: JSON.stringify({ mensagem, grupo, agendarEm, direto: true }),
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || !d.ok) throw new Error(`Baileys /enviar grupo=${grupo}: ${d.erro || r.status}`);
+  return d;
+}
+
+// Retorna true se enviou/agendou, false se esgotou as tentativas.
+// Nunca lanca: uma falha em um grupo nao pode cancelar o outro.
 async function enviar(mensagem, grupo) {
   const agendarEm = agendar20hSP();
   if (DRY_RUN) {
     console.log(`\n──── [DRY RUN] grupo=${grupo} agendarEm=${agendarEm} ────\n${mensagem}\n`);
-    return;
+    return true;
   }
-  const r = await fetch(`${BAILEYS}/enviar`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mensagem, grupo, agendarEm }),
-  });
-  const d = await r.json().catch(() => ({}));
-  if (!r.ok || !d.ok) throw new Error(`Baileys /enviar grupo=${grupo}: ${d.erro || r.status}`);
-  console.log(`[Resumo] ${grupo}: ${d.agendado ? `agendado para ${d.horario}` : 'enviado imediatamente'}`);
+  for (let tentativa = 0; tentativa <= RETRY_DELAYS_MS.length; tentativa++) {
+    try {
+      const d = await postEnviar(mensagem, grupo, agendarEm);
+      console.log(`[Resumo] ${grupo}: ${d.agendado ? `agendado para ${d.horario}` : 'enviado imediatamente'}`);
+      return true;
+    } catch (e) {
+      if (tentativa === RETRY_DELAYS_MS.length) {
+        console.error(`[Resumo] ${grupo}: falhou apos ${tentativa + 1} tentativa(s) — ${e.message}`);
+        return false;
+      }
+      const espera = RETRY_DELAYS_MS[tentativa];
+      console.warn(`[Resumo] ${grupo}: tentativa ${tentativa + 1} falhou (${e.message}). Nova tentativa em ${espera / 1000}s...`);
+      await sleep(espera);
+    }
+  }
+  return false;
 }
 
 async function main() {
@@ -341,10 +369,19 @@ async function main() {
   const msgOfertas = await montarResumoOfertas();
   const msgEmissoes = montarResumoEmissoes();
 
-  if (msgOfertas) await enviar(msgOfertas, 'cdv_ofertas');
-  if (msgEmissoes) await enviar(msgEmissoes, 'cdv_emissao');
+  const resultados = [];
+  if (msgOfertas)  resultados.push(await enviar(msgOfertas, 'cdv_ofertas'));
+  if (msgEmissoes) resultados.push(await enviar(msgEmissoes, 'cdv_emissao'));
 
-  if (!msgOfertas && !msgEmissoes) console.log('[Resumo] Nada a enviar hoje.');
+  if (!resultados.length) {
+    console.log('[Resumo] Nada a enviar hoje.');
+    return;
+  }
+  const falhas = resultados.filter((ok) => !ok).length;
+  if (falhas) {
+    console.error(`[Resumo] ${falhas} de ${resultados.length} envio(s) falharam.`);
+    process.exit(1);
+  }
   console.log('[Resumo] Concluído.');
 }
 
