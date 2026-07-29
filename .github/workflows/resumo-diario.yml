@@ -2,7 +2,7 @@ name: Resumo Diário — Ofertas e Emissões (20h)
 
 on:
   schedule:
-    - cron: '0 22 * * 1-5'  # 22:00 UTC seg-sex = 19:00 SP seg-sex; sem envio aos sábados e domingos
+    - cron: '0 21 * * 1-5'  # 21:00 UTC seg-sex = 18:00 SP; folga p/ atraso do Actions antes do agendamento das 20h SP
   workflow_dispatch: {}     # permite rodar manualmente pela aba Actions
 
 permissions:
