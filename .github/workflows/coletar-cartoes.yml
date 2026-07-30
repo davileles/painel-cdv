@@ -53,6 +53,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Instalar poppler-utils (extração de texto de PDF)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+
       - name: Rodar coletor
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
