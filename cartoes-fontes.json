@@ -2,7 +2,7 @@
   "_meta": {
     "descricao": "Hash do conteúdo das fontes por cartão. Se o hash não mudou, o coletor não chama a IA.",
     "atualizado_em": "2026-07-30",
-    "total": 41
+    "total": 44
   },
   "cartoes": {
     "brb-visa-dux": {
@@ -364,6 +364,27 @@
       "hash": "fc76ed9ac137b1af",
       "urls": [
         "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx"
+      ],
+      "em": "2026-07-30"
+    },
+    "azul-itau-mastercard-skyline": {
+      "hash": "f37ccdca467aa3ec",
+      "urls": [
+        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html"
+      ],
+      "em": "2026-07-30"
+    },
+    "santander-mastercard-unlimited": {
+      "hash": "e3dac4bf84575573",
+      "urls": [
+        "https://www.santander.com.br/cartao-credito-santander/unlimited"
+      ],
+      "em": "2026-07-30"
+    },
+    "santander-visa-unique-pontos": {
+      "hash": "0d603c68e2e3cbfd",
+      "urls": [
+        "https://www.santander.com.br/banco/unique-black"
       ],
       "em": "2026-07-30"
     }
