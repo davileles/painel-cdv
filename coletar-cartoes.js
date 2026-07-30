@@ -18,6 +18,7 @@
  *   CARTOES_MODEL      modelo (default: claude-sonnet-5)
  *   MAX_CARTOES        teto de cartões processados por execução (default: 25)
  *   SLUGS              lista separada por vírgula — processa só esses
+ *   CATEGORIAS         filtra por categoria (substring). Ex: "black,infinite,platinum" 
  *   FORCAR             "true" ignora o hash e reprocessa mesmo sem mudança
  *   DRY_RUN            "true" coleta e mostra o diff, mas não grava arquivos
  *   DIAG               "true" só testa acessibilidade das URLs (não gasta tokens)
@@ -37,6 +38,7 @@ const MODEL = process.env.CARTOES_MODEL || 'claude-sonnet-5';
 const MAX_CARTOES = parseInt(process.env.MAX_CARTOES || '25', 10);
 const SLUGS = (process.env.SLUGS || '').split(',').map(s => s.trim()).filter(Boolean);
 const FORCAR = String(process.env.FORCAR || '').toLowerCase() === 'true';
+const CATEGORIAS = (process.env.CATEGORIAS || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
 const DRY_RUN = String(process.env.DRY_RUN || '').toLowerCase() === 'true';
 const DIAG = String(process.env.DIAG || '').toLowerCase() === 'true';
 
@@ -58,6 +60,24 @@ const DOMINIOS_OFICIAIS = [
   'elo.com.br', 'mastercard.com', 'mastercard.com.br', 'visa.com.br',
   'visa-infinite.com', 'americanexpress.com', 'revolut.com',
 ];
+
+// Hierarquia de fontes: a pagina do EMISSOR manda mais que a da BANDEIRA.
+// A bandeira costuma publicar material de lancamento, que envelhece: foi assim
+// que a anuidade do Azul virou conflito (nota da Visa dizia 1200, Itau dizia 1260).
+const DOMINIOS_BANDEIRA = [
+  'elo.com.br', 'mastercard.com', 'mastercard.com.br', 'visa.com.br',
+  'visa-infinite.com', 'americanexpress.com',
+];
+
+function ehBandeira(url) {
+  try {
+    let h = new URL(String(url)).hostname.toLowerCase();
+    if (h.startsWith('www.')) h = h.slice(4);
+    return DOMINIOS_BANDEIRA.some(d => h === d || h.endsWith('.' + d));
+  } catch (e) {
+    return false;
+  }
+}
 
 const CAMPOS_FACTUAIS = [
   'anuidade', 'anuidade_parcelas', 'isencao', 'renda_minima',
@@ -425,13 +445,23 @@ function detectarConflitos(existente, novo) {
     if (antes === depois) continue;
 
     const raiz = nome.split('.')[0];
+    const fonteAntes = procAntiga[raiz] || null;
+    const fonteDepois = procNova[raiz] || null;
+
+    // Hierarquia: se o valor antigo veio do emissor e o novo veio da bandeira,
+    // o antigo prevalece. O conflito continua registrado para revisão.
+    const rebaixado = !!fonteAntes && !!fonteDepois
+      && !ehBandeira(fonteAntes) && ehBandeira(fonteDepois);
+
     conflitos.push({
       campo: nome,
       antes,
       depois,
       variacao_pct: antes ? Number((((depois - antes) / antes) * 100).toFixed(1)) : null,
-      fonte_antes: procAntiga[raiz] || null,
-      fonte_depois: procNova[raiz] || null,
+      fonte_antes: fonteAntes,
+      fonte_depois: fonteDepois,
+      valor_mantido: rebaixado ? 'antes' : 'depois',
+      motivo: rebaixado ? 'fonte nova e da bandeira; fonte anterior e do emissor (tem precedencia)' : null,
       detectado_em: hoje(),
       resolvido: false,
     });
@@ -484,6 +514,18 @@ function mesclar(existente, novo) {
 
   // Divergência de número entre catálogo e extração: grava o novo, sinaliza o antigo
   const conflitos = detectarConflitos(existente, novo);
+
+  // Aplica a hierarquia: restaura o valor do emissor onde a bandeira tentou sobrescrever
+  for (const c of conflitos.filter(x => x.valor_mantido === 'antes')) {
+    const partes = c.campo.split('.');
+    if (partes.length === 1) {
+      novo[partes[0]] = c.antes;
+      if (procAntiga[partes[0]]) novo.procedencia[partes[0]] = procAntiga[partes[0]];
+    } else if (novo[partes[0]] && typeof novo[partes[0]] === 'object') {
+      novo[partes[0]][partes[1]] = c.antes;
+    }
+  }
+
   if (conflitos.length) novo.conflitos = conflitos;
   else delete novo.conflitos;   // conflito que sumiu está resolvido
 
@@ -532,6 +574,7 @@ async function main() {
     const doc = JSON.parse(fs.readFileSync(ARQ_ALVOS, 'utf8'));
     let lista = (doc.alvos || []).filter(a => a.ativo !== false && (a.urls || []).length);
     if (SLUGS.length) lista = lista.filter(a => SLUGS.includes(a.slug));
+    if (CATEGORIAS.length) lista = lista.filter(a => CATEGORIAS.some(k => (a.categoria || '').toLowerCase().includes(k)));
     return diagnostico(lista);
   }
 
@@ -549,6 +592,12 @@ async function main() {
 
   let alvos = (alvosDoc.alvos || []).filter(a => a.ativo !== false && (a.urls || []).length);
   if (SLUGS.length) alvos = alvos.filter(a => SLUGS.includes(a.slug));
+  if (CATEGORIAS.length) {
+    alvos = alvos.filter(a => {
+      const cat = (a.categoria || '').toLowerCase();
+      return CATEGORIAS.some(k => cat.includes(k));
+    });
+  }
 
   console.log(`[Cartões] ${alvos.length} alvos elegíveis | modelo=${MODEL} | forcar=${FORCAR} | dry=${DRY_RUN}`);
 
@@ -599,7 +648,8 @@ async function main() {
       if (cartao.conflitos) {
         cartao.conflitos.forEach(c => {
           const pct = c.variacao_pct === null ? '' : ` (${c.variacao_pct > 0 ? '+' : ''}${c.variacao_pct}%)`;
-          console.log(`  ⚠ CONFLITO ${c.campo}: ${c.antes} → ${c.depois}${pct}`);
+          const mantido = c.valor_mantido === 'antes' ? ` — MANTIDO ${c.antes} (fonte do emissor tem precedência)` : '';
+          console.log(`  ⚠ CONFLITO ${c.campo}: ${c.antes} → ${c.depois}${pct}${mantido}`);
         });
       }
 
@@ -653,7 +703,7 @@ async function main() {
     for (const c of conflitosAbertos) {
       console.log(`\n${c.nome} (${c.slug})`);
       c.conflitos.forEach(x => {
-        console.log(`  ${x.campo}: ${x.antes} → ${x.depois}`);
+        console.log(`  ${x.campo}: ${x.antes} → ${x.depois}  [gravado: ${x.valor_mantido === 'antes' ? x.antes : x.depois}]`);
         console.log(`    fonte anterior: ${x.fonte_antes || '—'}`);
         console.log(`    fonte nova:     ${x.fonte_depois || '—'}`);
       });
