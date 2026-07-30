@@ -1,0 +1,532 @@
+/**
+ * coletar-cartoes.js — Coletor do catálogo de cartões do Clube do Viajante
+ *
+ * Substitui a curadoria manual via chat. Fluxo:
+ *   1. Lê cartoes-alvos.json (slug + URLs oficiais de cada cartão)
+ *   2. Baixa cada URL, limpa HTML → texto, calcula hash do conteúdo
+ *   3. Compara com cartoes-fontes.json — se nada mudou, NÃO chama a IA
+ *   4. Só o que mudou (ou é novo) vai para a IA com prompt de sistema em cache
+ *   5. Sanitiza o resultado pela mesma regra do valida_catalogo.py:
+ *      campo factual só sobrevive com URL de fonte oficial em procedencia[campo]
+ *   6. Faz merge em cartoes-catalogo.json preservando curadoria manual
+ *
+ * O passo 3 é o que torna a manutenção barata: revalidação semanal de 200
+ * cartões custa quase nada porque a maioria das páginas não muda.
+ *
+ * Variáveis de ambiente:
+ *   ANTHROPIC_API_KEY  (obrigatória)
+ *   CARTOES_MODEL      modelo (default: claude-sonnet-5)
+ *   MAX_CARTOES        teto de cartões processados por execução (default: 25)
+ *   SLUGS              lista separada por vírgula — processa só esses
+ *   FORCAR             "true" ignora o hash e reprocessa mesmo sem mudança
+ *   DRY_RUN            "true" coleta e mostra o diff, mas não grava arquivos
+ *   DIAG               "true" só testa acessibilidade das URLs (não gasta tokens)
+ */
+
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+
+const DIR = __dirname;
+const ARQ_ALVOS = path.join(DIR, 'cartoes-alvos.json');
+const ARQ_CATALOGO = path.join(DIR, 'cartoes-catalogo.json');
+const ARQ_FONTES = path.join(DIR, 'cartoes-fontes.json');
+
+const API_KEY = process.env.ANTHROPIC_API_KEY || '';
+const MODEL = process.env.CARTOES_MODEL || 'claude-sonnet-5';
+const MAX_CARTOES = parseInt(process.env.MAX_CARTOES || '25', 10);
+const SLUGS = (process.env.SLUGS || '').split(',').map(s => s.trim()).filter(Boolean);
+const FORCAR = String(process.env.FORCAR || '').toLowerCase() === 'true';
+const DRY_RUN = String(process.env.DRY_RUN || '').toLowerCase() === 'true';
+const DIAG = String(process.env.DIAG || '').toLowerCase() === 'true';
+
+// Limites de custo/segurança
+const MAX_CHARS_POR_FONTE = 14000;   // texto limpo de uma página HTML
+const MAX_CHARS_TOTAL = 45000;       // soma de todas as fontes HTML de um cartão
+const MAX_PDF_BYTES = 2.5 * 1024 * 1024;
+const MAX_PDFS_POR_CARTAO = 2;       // regulamentos longos estouram o custo sozinhos
+const TIMEOUT_FETCH = 30000;
+
+// ── Regra de procedência (espelha valida_catalogo.py) ────────────────────────
+const DOMINIOS_OFICIAIS = [
+  'bb.com.br', 'bradesco.com.br', 'brb.com.br', 'btgpactual.com', 'c6bank.com.br',
+  'caixa.gov.br', 'bancointer.com.br', 'inter.co', 'itau.com.br', 'nubank.com.br',
+  'santander.com.br', 'sicredi.com.br', 'sicoob.com.br', 'xpi.com.br',
+  'banco.bradesco', 'assets.bradesco', 'safra.com.br', 'banrisul.com.br',
+  'genial.com.vc', 'genialinvestimentos.com.br', 'unicred.com.br',
+  'portobank.com.br', 'porto.com.br', 'banestes.com.br',
+  'elo.com.br', 'mastercard.com', 'mastercard.com.br', 'visa.com.br',
+  'visa-infinite.com', 'americanexpress.com', 'revolut.com',
+];
+
+const CAMPOS_FACTUAIS = [
+  'anuidade', 'anuidade_parcelas', 'isencao', 'renda_minima',
+  'adicionais_gratis', 'pontos', 'cashback', 'spread', 'iof',
+  'salas_vip', 'transfere_para', 'requisito_acesso',
+];
+
+function ehOficial(url) {
+  try {
+    let h = new URL(String(url)).hostname.toLowerCase();
+    if (h.startsWith('www.')) h = h.slice(4);
+    return DOMINIOS_OFICIAIS.some(d => h === d || h.endsWith('.' + d));
+  } catch (e) {
+    return false;
+  }
+}
+
+function vazio(v) {
+  if (v === null || v === undefined || v === '') return true;
+  if (Array.isArray(v)) return v.length === 0;
+  if (typeof v === 'object') return Object.keys(v).length === 0;
+  return false;
+}
+
+const sha = (s) => crypto.createHash('sha256').update(s).digest('hex').slice(0, 16);
+
+// ── Limpeza de HTML → texto ──────────────────────────────────────────────────
+// Corta ~90-95% dos tokens: uma página de banco tem 200-600 KB de HTML e
+// costuma render 5-15 KB de texto útil.
+function htmlParaTexto(html) {
+  let t = html;
+
+  // Blocos que nunca contêm informação de produto
+  t = t.replace(/<script[\s\S]*?<\/script>/gi, ' ');
+  t = t.replace(/<style[\s\S]*?<\/style>/gi, ' ');
+  t = t.replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ');
+  t = t.replace(/<svg[\s\S]*?<\/svg>/gi, ' ');
+  t = t.replace(/<nav[\s\S]*?<\/nav>/gi, ' ');
+  t = t.replace(/<header[\s\S]*?<\/header>/gi, ' ');
+  t = t.replace(/<footer[\s\S]*?<\/footer>/gi, ' ');
+  t = t.replace(/<iframe[\s\S]*?<\/iframe>/gi, ' ');
+  t = t.replace(/<!--[\s\S]*?-->/g, ' ');
+
+  // Preserva estrutura de tabela — anuidade e pontuação quase sempre vêm em tabela
+  t = t.replace(/<\/t[dh]>/gi, ' | ');
+  t = t.replace(/<\/tr>/gi, '\n');
+  t = t.replace(/<br\s*\/?>/gi, '\n');
+  t = t.replace(/<\/(p|div|li|h[1-6]|section|article)>/gi, '\n');
+
+  t = t.replace(/<[^>]+>/g, ' ');
+
+  // Entidades nomeadas acentuadas — páginas de banco usam muito
+  const ACENTOS = {
+    agrave: 'à', aacute: 'á', acirc: 'â', atilde: 'ã', auml: 'ä',
+    eacute: 'é', ecirc: 'ê', egrave: 'è', euml: 'ë',
+    iacute: 'í', icirc: 'î', iuml: 'ï',
+    oacute: 'ó', ocirc: 'ô', otilde: 'õ', ouml: 'ö', ograve: 'ò',
+    uacute: 'ú', ucirc: 'û', uuml: 'ü', ugrave: 'ù',
+    ccedil: 'ç', ntilde: 'ñ', reg: '®', copy: '©', deg: '°',
+    ordm: 'º', ordf: 'ª', hellip: '…', ndash: '–', mdash: '—',
+  };
+  t = t.replace(/&([a-z]+);/gi, (m, nome) => {
+    const k = nome.toLowerCase();
+    if (ACENTOS[k] !== undefined) {
+      const maiuscula = /^[A-Z]/.test(nome) && k.length > 3;
+      return maiuscula ? ACENTOS[k].toUpperCase() : ACENTOS[k];
+    }
+    return m;
+  });
+
+  // Entidades comuns
+  t = t.replace(/&nbsp;/gi, ' ')
+       .replace(/&amp;/gi, '&')
+       .replace(/&lt;/gi, '<')
+       .replace(/&gt;/gi, '>')
+       .replace(/&quot;/gi, '"')
+       .replace(/&#0?39;/g, "'")
+       .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
+       .replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d));
+
+  t = t.replace(/[ \t\u00a0]+/g, ' ');
+  t = t.split('\n').map(l => l.trim()).filter(Boolean).join('\n');
+  t = t.replace(/\n{3,}/g, '\n\n');
+
+  return t.trim();
+}
+
+async function baixar(url) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), TIMEOUT_FETCH);
+  try {
+    const res = await fetch(url, {
+      signal: ctrl.signal,
+      redirect: 'follow',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/pdf,*/*;q=0.8',
+        'Accept-Language': 'pt-BR,pt;q=0.9',
+      },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const ct = (res.headers.get('content-type') || '').toLowerCase();
+
+    if (ct.includes('pdf') || url.toLowerCase().endsWith('.pdf')) {
+      const buf = Buffer.from(await res.arrayBuffer());
+      if (buf.length > MAX_PDF_BYTES) {
+        throw new Error(`PDF muito grande (${(buf.length / 1048576).toFixed(1)} MB)`);
+      }
+      return { tipo: 'pdf', base64: buf.toString('base64'), hash: sha(buf.toString('base64')) };
+    }
+
+    const html = await res.text();
+    let texto = htmlParaTexto(html);
+
+    // Bancos brasileiros usam WAF (Akamai/Cloudflare) que bloqueia IP de datacenter.
+    // Às vezes o bloqueio vem com HTTP 200, então precisa ser detectado pelo conteúdo.
+    const BLOQUEIO = /access denied|erro no acesso|attention required|request unsuccessful|checking your browser|forbidden|identificador de seguran|not authorized/i;
+    if (texto.length < 1500 && BLOQUEIO.test(texto)) {
+      throw new Error('BLOQUEADO pelo WAF do site (IP de datacenter)');
+    }
+
+    if (texto.length > MAX_CHARS_POR_FONTE) texto = texto.slice(0, MAX_CHARS_POR_FONTE) + '\n[...truncado]';
+    if (texto.length < 200) throw new Error('conteúdo vazio após limpeza (possível página JS-only)');
+    return { tipo: 'html', texto, hash: sha(texto) };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function coletarFontes(alvo) {
+  const fontes = [];
+  const falhas = [];
+  let charsTotal = 0;
+  let pdfs = 0;
+
+  for (const url of alvo.urls || []) {
+    try {
+      const r = await baixar(url);
+      if (r.tipo === 'pdf') {
+        if (pdfs >= MAX_PDFS_POR_CARTAO) { falhas.push(`${url}: limite de PDFs atingido`); continue; }
+        pdfs++;
+      } else {
+        if (charsTotal + r.texto.length > MAX_CHARS_TOTAL) {
+          const resta = MAX_CHARS_TOTAL - charsTotal;
+          if (resta < 500) { falhas.push(`${url}: limite de caracteres atingido`); continue; }
+          r.texto = r.texto.slice(0, resta) + '\n[...truncado]';
+        }
+        charsTotal += r.texto.length;
+      }
+      fontes.push({ url, ...r });
+    } catch (e) {
+      falhas.push(`${url}: ${e.message}`);
+    }
+  }
+  return { fontes, falhas };
+}
+
+// ── Prompt ───────────────────────────────────────────────────────────────────
+const PROMPT_SISTEMA = `Você é um curador de dados de cartões de crédito brasileiros para o Clube do Viajante.
+
+Sua tarefa: extrair os dados de UM cartão a partir do conteúdo de páginas e documentos oficiais do emissor ou da bandeira, e devolver um único objeto JSON.
+
+REGRA CENTRAL — PROCEDÊNCIA:
+Um campo factual só pode ter valor se a informação estiver EXPLÍCITA no conteúdo de uma fonte específica. Para cada campo factual que você preencher, registre em "procedencia" a URL exata da fonte de onde tirou aquela informação. Se a informação não estiver nas fontes, use null (ou [] para listas) e NÃO registre procedência. Nunca deduza, estime, arredonde ou complete com conhecimento próprio — um campo vazio é sempre melhor que um campo inventado.
+
+CAMPOS FACTUAIS (exigem procedência): anuidade, anuidade_parcelas, isencao, renda_minima, adicionais_gratis, pontos, cashback, spread, iof, salas_vip, transfere_para, requisito_acesso.
+
+SCHEMA DE SAÍDA (todos os campos obrigatórios; use null quando não houver informação):
+{
+  "nome": string,
+  "emissor": string,           // nome comercial curto: Itaú, Bradesco, Banco do Brasil, Santander, CAIXA, BTG Pactual, C6 Bank, Banco Safra, Sicoob, Unicred, BRB, Porto Bank, Sicredi, XP, Banestes, Banco Inter, Nubank
+  "bandeira": string,          // Visa, Mastercard, Elo, American Express
+  "categoria": string,         // Infinite, Signature, Platinum, Gold, Internacional, Black, Nanquim, Grafite, etc.
+  "anuidade": number|null,     // valor ANUAL total em reais, mesmo que cobrado mensalmente
+  "anuidade_parcelas": number|null,
+  "isencao": {"tipo": "gasto_mensal"|"gasto_anual"|"investimento"|"relacionamento"|"vitalicia"|"outro", "valor": number|null, "regra": string}|null,
+  "renda_minima": number|null,
+  "requisito_acesso": string|null,
+  "adicionais_gratis": number|null,
+  "pontos": {"nacional": number|null, "internacional": number|null, "unidade": "pts/USD"|"pts/BRL", "observacao": string}|null,
+  "cashback": {"percentual": number, "regra": string}|null,
+  "programa_proprio": string|null,
+  "transfere_para": string[],
+  "spread": number|null,
+  "iof": number|null,
+  "validade_pontos": string|null,
+  "salas_vip": [{"programa": string, "regra": string}],
+  "beneficios_banco": [{"titulo": string, "descricao": string}],
+  "link_solicitacao": string|null,
+  "nota_curadoria": string,
+  "procedencia": {"<campo>": "<url da fonte>"}
+}
+
+REGRAS DE PREENCHIMENTO:
+- "anuidade": sempre o TOTAL ANUAL. Se a página informa R$ 105,00/mês, grave 1260 e use anuidade_parcelas=12.
+- "pontos": informe a unidade correta. Cartões premium quase sempre pontuam por dólar (pts/USD); cartões de entrada costumam pontuar por real (pts/BRL). Se a fonte não deixar claro, use null.
+- "isencao.regra": descreva a regra completa em uma ou duas frases, incluindo faixas de desconto parcial quando houver.
+- "salas_vip": um item por programa (LoungeKey, Priority Pass, Dragon Pass, salas próprias do emissor). Inclua a quantidade de acessos na "regra".
+- "beneficios_banco": no máximo 6 itens, os mais relevantes para viajante. Ignore seguros genéricos de bandeira já cobertos pelo campo bandeira.
+- "nota_curadoria": 2 a 4 frases em português com o que um assessor precisa saber — pegadinhas de anuidade, condições de acesso, o que ficou sem confirmação oficial.
+- Textos em português do Brasil.
+
+Responda APENAS com o objeto JSON. Sem markdown, sem crases, sem texto antes ou depois.`;
+
+async function extrairComIA(alvo, fontes) {
+  const blocos = [];
+
+  blocos.push({
+    type: 'text',
+    text: `CARTÃO: ${alvo.nome}\nEMISSOR ESPERADO: ${alvo.emissor || 'não informado'}\nBANDEIRA ESPERADA: ${alvo.bandeira || 'não informada'}\n\nSegue o conteúdo das fontes oficiais. Cada fonte vem marcada com sua URL — use exatamente essas URLs em "procedencia".`,
+  });
+
+  for (const f of fontes) {
+    if (f.tipo === 'pdf') {
+      blocos.push({ type: 'text', text: `\n===== FONTE (PDF): ${f.url} =====` });
+      blocos.push({
+        type: 'document',
+        source: { type: 'base64', media_type: 'application/pdf', data: f.base64 },
+      });
+    } else {
+      blocos.push({ type: 'text', text: `\n===== FONTE: ${f.url} =====\n${f.texto}` });
+    }
+  }
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': API_KEY,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 4000,
+      // cache_control no prompt de sistema: ele é idêntico para todo cartão,
+      // então a partir da 2ª chamada o input dele custa 10%
+      system: [{ type: 'text', text: PROMPT_SISTEMA, cache_control: { type: 'ephemeral' } }],
+      messages: [{ role: 'user', content: blocos }],
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`API ${res.status}: ${err.slice(0, 300)}`);
+  }
+
+  const data = await res.json();
+  const texto = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
+  const limpo = texto.replace(/^```(?:json)?/gm, '').replace(/```$/gm, '').trim();
+
+  let obj;
+  try {
+    obj = JSON.parse(limpo);
+  } catch (e) {
+    const m = limpo.match(/\{[\s\S]*\}/);
+    if (!m) throw new Error('resposta da IA não é JSON válido');
+    obj = JSON.parse(m[0]);
+  }
+
+  const u = data.usage || {};
+  return {
+    obj,
+    uso: {
+      in: u.input_tokens || 0,
+      out: u.output_tokens || 0,
+      cache_w: u.cache_creation_input_tokens || 0,
+      cache_r: u.cache_read_input_tokens || 0,
+    },
+  };
+}
+
+// ── Sanitização: zera o que não tem procedência oficial ──────────────────────
+function sanitizar(cartao, urlsPermitidas) {
+  const proc = cartao.procedencia || {};
+  const pend = new Set();
+  const rejeitados = [];
+  const permitidas = new Set(urlsPermitidas);
+
+  for (const campo of CAMPOS_FACTUAIS) {
+    const v = cartao[campo];
+    const temValor = !vazio(v);
+    const fonte = proc[campo];
+    // Só vale se a URL for oficial E tiver sido realmente uma das fontes lidas
+    const fonteOk = !!fonte && ehOficial(fonte) && permitidas.has(fonte);
+
+    if (temValor && !fonteOk) {
+      cartao[campo] = Array.isArray(v) ? [] : null;
+      delete proc[campo];
+      pend.add(campo);
+      rejeitados.push(campo);
+    } else if (!temValor) {
+      pend.add(campo);
+      delete proc[campo];
+    }
+  }
+
+  // Limpa procedência órfã (campo inexistente ou URL não oficial)
+  for (const k of Object.keys(proc)) {
+    if (!ehOficial(proc[k]) || !permitidas.has(proc[k])) delete proc[k];
+  }
+
+  cartao.procedencia = proc;
+  cartao.campos_pendentes = [...pend].sort();
+  cartao.campos_rejeitados = rejeitados.sort();
+  return cartao;
+}
+
+function mesclar(existente, novo) {
+  if (!existente) return novo;
+  // Preserva curadoria manual quando a IA não trouxe substituto
+  for (const campo of ['analise', 'bandeira_ref', 'vigencia_ate']) {
+    if (vazio(novo[campo]) && !vazio(existente[campo])) novo[campo] = existente[campo];
+  }
+  if (vazio(novo.nota_curadoria) && !vazio(existente.nota_curadoria)) {
+    novo.nota_curadoria = existente.nota_curadoria;
+  }
+  return novo;
+}
+
+const hoje = () => new Date().toISOString().slice(0, 10);
+
+// ── Modo diagnóstico: testa acessibilidade das URLs sem gastar 1 token ───────
+// Bancos brasileiros bloqueiam IP de datacenter com frequência. Rode isto ANTES
+// de qualquer coleta para saber de quais emissores o runner consegue ler.
+async function diagnostico(alvos) {
+  const porEmissor = new Map();
+
+  for (const alvo of alvos) {
+    for (const url of alvo.urls || []) {
+      let status;
+      try {
+        await baixar(url);
+        status = 'OK';
+      } catch (e) {
+        status = /BLOQUEADO|HTTP 40|HTTP 50/.test(e.message) ? 'BLOQUEADO' : 'FALHA';
+      }
+      const em = alvo.emissor || '?';
+      if (!porEmissor.has(em)) porEmissor.set(em, { OK: 0, BLOQUEADO: 0, FALHA: 0, exemplos: [] });
+      const r = porEmissor.get(em);
+      r[status]++;
+      if (status !== 'OK' && r.exemplos.length < 2) r.exemplos.push(url);
+    }
+  }
+
+  console.log('\n=== DIAGNÓSTICO DE ACESSO POR EMISSOR ===');
+  let totOk = 0, totBloq = 0;
+  for (const [em, r] of [...porEmissor.entries()].sort()) {
+    totOk += r.OK; totBloq += r.BLOQUEADO + r.FALHA;
+    const marca = r.OK === 0 ? '❌' : (r.BLOQUEADO + r.FALHA ? '⚠️ ' : '✅');
+    console.log(`${marca} ${em}: ok=${r.OK} bloqueado=${r.BLOQUEADO} falha=${r.FALHA}`);
+    r.exemplos.forEach(u => console.log(`      ${u}`));
+  }
+  console.log(`\nTotal: ${totOk} URLs acessíveis, ${totBloq} inacessíveis deste runner.`);
+}
+
+// ── Main ─────────────────────────────────────────────────────────────────────
+async function main() {
+  if (DIAG) {
+    const doc = JSON.parse(fs.readFileSync(ARQ_ALVOS, 'utf8'));
+    let lista = (doc.alvos || []).filter(a => a.ativo !== false && (a.urls || []).length);
+    if (SLUGS.length) lista = lista.filter(a => SLUGS.includes(a.slug));
+    return diagnostico(lista);
+  }
+
+  if (!API_KEY) { console.error('ANTHROPIC_API_KEY não configurada.'); process.exit(1); }
+
+  const alvosDoc = JSON.parse(fs.readFileSync(ARQ_ALVOS, 'utf8'));
+  const catalogo = JSON.parse(fs.readFileSync(ARQ_CATALOGO, 'utf8'));
+  let fontesDoc = { _meta: { descricao: 'Hash do conteúdo das fontes por cartão. Se o hash não mudou, o coletor não chama a IA.' }, cartoes: {} };
+  if (fs.existsSync(ARQ_FONTES)) {
+    try { fontesDoc = JSON.parse(fs.readFileSync(ARQ_FONTES, 'utf8')); } catch (e) { /* recomeça */ }
+  }
+  fontesDoc.cartoes = fontesDoc.cartoes || {};
+
+  const porSlug = new Map((catalogo.cartoes || []).map(c => [c.slug, c]));
+
+  let alvos = (alvosDoc.alvos || []).filter(a => a.ativo !== false && (a.urls || []).length);
+  if (SLUGS.length) alvos = alvos.filter(a => SLUGS.includes(a.slug));
+
+  console.log(`[Cartões] ${alvos.length} alvos elegíveis | modelo=${MODEL} | forcar=${FORCAR} | dry=${DRY_RUN}`);
+
+  const uso = { in: 0, out: 0, cache_w: 0, cache_r: 0 };
+  let processados = 0, pulados = 0, novos = 0, atualizados = 0, erros = 0;
+
+  for (const alvo of alvos) {
+    if (processados >= MAX_CARTOES) {
+      console.log(`[Cartões] Teto de ${MAX_CARTOES} atingido — o restante fica para a próxima execução.`);
+      break;
+    }
+
+    const { fontes, falhas } = await coletarFontes(alvo);
+    if (falhas.length) falhas.forEach(f => console.warn(`  ! ${alvo.slug} — ${f}`));
+    if (!fontes.length) { console.warn(`[${alvo.slug}] nenhuma fonte acessível — pulado`); erros++; continue; }
+
+    const hashAtual = sha(fontes.map(f => `${f.url}:${f.hash}`).join('|'));
+    const registro = fontesDoc.cartoes[alvo.slug];
+    const existente = porSlug.get(alvo.slug);
+
+    if (!FORCAR && existente && registro && registro.hash === hashAtual) {
+      pulados++;
+      continue;
+    }
+
+    console.log(`[${alvo.slug}] ${fontes.length} fonte(s), ${fontes.filter(f => f.tipo === 'pdf').length} PDF — chamando IA`);
+
+    try {
+      const { obj, uso: u } = await extrairComIA(alvo, fontes);
+      uso.in += u.in; uso.out += u.out; uso.cache_w += u.cache_w; uso.cache_r += u.cache_r;
+
+      let cartao = {
+        slug: alvo.slug,
+        ...obj,
+        fontes: fontes.map(f => f.url),
+        verificado_em: hoje(),
+      };
+      cartao = sanitizar(cartao, fontes.map(f => f.url));
+      cartao = mesclar(existente, cartao);
+
+      if (cartao.campos_rejeitados.length) {
+        console.log(`  → rejeitados por falta de procedência: ${cartao.campos_rejeitados.join(', ')}`);
+      }
+
+      if (existente) {
+        const i = catalogo.cartoes.findIndex(c => c.slug === alvo.slug);
+        catalogo.cartoes[i] = cartao;
+        atualizados++;
+      } else {
+        catalogo.cartoes.push(cartao);
+        novos++;
+      }
+      porSlug.set(alvo.slug, cartao);
+
+      fontesDoc.cartoes[alvo.slug] = { hash: hashAtual, urls: fontes.map(f => f.url), em: hoje() };
+      processados++;
+    } catch (e) {
+      // Não grava o hash: o cartão será retentado na próxima execução
+      console.error(`[${alvo.slug}] ERRO: ${e.message}`);
+      erros++;
+    }
+  }
+
+  // Estimativa de custo (tarifas de julho/2026, USD por milhão de tokens)
+  const TARIFAS = {
+    'claude-sonnet-5': [2, 10],
+    'claude-opus-5': [5, 25],
+    'claude-haiku-4-5': [1, 5],
+  };
+  const [pIn, pOut] = TARIFAS[MODEL] || TARIFAS['claude-sonnet-5'];
+  const custo = (uso.in * pIn + uso.cache_w * pIn * 1.25 + uso.cache_r * pIn * 0.1 + uso.out * pOut) / 1e6;
+
+  console.log(`\n[Cartões] novos=${novos} atualizados=${atualizados} inalterados=${pulados} erros=${erros}`);
+  console.log(`[Cartões] tokens: in=${uso.in} cache_write=${uso.cache_w} cache_read=${uso.cache_r} out=${uso.out}`);
+  console.log(`[Cartões] custo estimado: US$ ${custo.toFixed(4)}`);
+
+  if (DRY_RUN) { console.log('[Cartões] DRY_RUN — nada foi gravado.'); return; }
+  if (!processados) { console.log('[Cartões] Nada a gravar.'); return; }
+
+  catalogo.cartoes.sort((a, b) => (a.emissor || '').localeCompare(b.emissor || '') || (a.nome || '').localeCompare(b.nome || ''));
+  catalogo._meta.total = catalogo.cartoes.length;
+  catalogo._meta.atualizado_em = hoje();
+  catalogo._meta.coletor = 'coletar-cartoes.js';
+  catalogo._meta.modelo_coleta = MODEL;
+
+  fontesDoc._meta.atualizado_em = hoje();
+  fontesDoc._meta.total = Object.keys(fontesDoc.cartoes).length;
+
+  fs.writeFileSync(ARQ_CATALOGO, JSON.stringify(catalogo, null, 2), 'utf8');
+  fs.writeFileSync(ARQ_FONTES, JSON.stringify(fontesDoc, null, 2), 'utf8');
+  console.log(`[Cartões] Gravado. Catálogo com ${catalogo.cartoes.length} cartões.`);
+}
+
+main().catch(e => { console.error('Falha geral:', e); process.exit(1); });
