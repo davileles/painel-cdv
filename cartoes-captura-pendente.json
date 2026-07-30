@@ -1,0 +1,188 @@
+{
+  "_meta": {
+    "descricao": "Cartoes cujas fontes o runner do GitHub Actions nao consegue acessar (WAF bloqueia IP de datacenter). Capturar o texto destas paginas por fora, num navegador com IP residencial, e gravar em cartoes-fontes-manuais.json.",
+    "como_capturar": "Para cada URL: abrir no navegador, extrair o texto visivel da pagina (sem menu/rodape) e gravar em cartoes-fontes-manuais.json na chave fontes[\"<url>\"] = {texto, capturado_em, origem}.",
+    "gerado_em": "2026-07-30",
+    "origem": "run 30568505530",
+    "total_cartoes": 15,
+    "total_urls": 71
+  },
+  "pendentes": [
+    {
+      "slug": "bb-smiles-visa-infinite",
+      "nome": "BB Smiles Visa Infinite",
+      "emissor": "Banco do Brasil",
+      "urls": [
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
+        "https://www.bb.com.br/site/contratos-e-tabelas-cartoes/"
+      ]
+    },
+    {
+      "slug": "bb-smiles-visa-platinum",
+      "nome": "BB Smiles Visa Platinum",
+      "emissor": "Banco do Brasil",
+      "urls": [
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
+        "https://www.bb.com.br/docs/pub/trf/tarifasPFAnt.pdf"
+      ]
+    },
+    {
+      "slug": "bb-ourocard-visa-infinite",
+      "nome": "Ourocard Visa Infinite",
+      "emissor": "Banco do Brasil",
+      "urls": [
+        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/livreto220210.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf"
+      ]
+    },
+    {
+      "slug": "bradesco-american-express-platinum",
+      "nome": "Bradesco American Express Platinum Credit",
+      "emissor": "Bradesco",
+      "urls": [
+        "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
+        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
+        "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/platinum-card/meu-cartao.shtm",
+        "https://adc.bradesco.com.br/html/prime/index.shtm",
+        "http://200-155-86-38.bradesco.com.br/html/classic/produtos-servicos/cartoes/servicos/seguros-opcionais/seguro-american-express.shtm"
+      ]
+    },
+    {
+      "slug": "bradesco-visa-aeternum",
+      "nome": "Bradesco Visa Aeternum",
+      "emissor": "Bradesco",
+      "urls": [
+        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "https://institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html"
+      ]
+    },
+    {
+      "slug": "bradesco-visa-infinite",
+      "nome": "Bradesco Visa Infinite",
+      "emissor": "Bradesco",
+      "urls": [
+        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
+        "https://institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html",
+        "https://adc.bradesco.com.br/html/corporate/solucoes-integradas/cartoes/beneficios/salavip.shtm"
+      ]
+    },
+    {
+      "slug": "c6-black",
+      "nome": "C6 Black",
+      "emissor": "C6 Bank",
+      "urls": [
+        "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
+        "https://www.c6bank.com.br/cartao-black/",
+        "https://www.c6bank.com.br/blog/o-que-e-iof",
+        "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas",
+        "https://www.c6bank.com.br/blog/c6-mastercard-black",
+        "https://www.c6bank.com.br/programa-de-pontos-atomos/"
+      ]
+    },
+    {
+      "slug": "c6-carbon",
+      "nome": "C6 Carbon",
+      "emissor": "C6 Bank",
+      "urls": [
+        "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-carbon-mastercard-black",
+        "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
+        "https://www.c6bank.com.br/blog/c6-bank-lanca-carbon",
+        "https://www.c6bank.com.br/blog/c6-carbon-como-conseguir",
+        "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas"
+      ]
+    },
+    {
+      "slug": "caixa-elo-nanquim",
+      "nome": "CAIXA Elo Nanquim",
+      "emissor": "CAIXA",
+      "urls": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
+        "https://caixanoticias.caixa.gov.br/Paginas/Notícias/2025/01-JANEIRO/CAIXA-disponibiliza-pontos-extras-para-clientes-de-cartao-de-credito-em-seu-164-aniversario.aspx",
+        "https://www.caixa.gov.br/Downloads/cartoes-caixa-pessoa-fisica-regulamentos/Programa_Pontos_Cartoes_CAIXA.pdf",
+        "https://www.caixa.gov.br/Downloads/cartoes-caixa-promocoes/Regulamento-Mes-do-Cliente-2024-Carteiras-Digitais.pdf",
+        "https://www.caixa.gov.br/voce/cartoes/credito/simulador-cartoes/Paginas/default.aspx"
+      ]
+    },
+    {
+      "slug": "caixa-icone-visa",
+      "nome": "CAIXA Icone Visa",
+      "emissor": "CAIXA",
+      "urls": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/credito/vantagens/Paginas/default.aspx"
+      ]
+    },
+    {
+      "slug": "caixa-visa-infinite",
+      "nome": "CAIXA Visa Infinite",
+      "emissor": "CAIXA",
+      "urls": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx"
+      ]
+    },
+    {
+      "slug": "caixa-visa-infinite-investidores",
+      "nome": "CAIXA Visa Infinite para Investidores",
+      "emissor": "CAIXA",
+      "urls": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx"
+      ]
+    },
+    {
+      "slug": "azul-itau-mastercard-skyline",
+      "nome": "Azul Itaú Mastercard Skyline",
+      "emissor": "Itaú",
+      "urls": [
+        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "https://www.itau.com.br/cartoes/beneficios/programa-fidelidade-azul",
+        "https://www.itau.com.br/cartoes/escolha/formulario/tudoazul-itaucard-20-internacional-visa.html",
+        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html?l=&cpg_s=azl_prc",
+        "https://www.itau.com.br/media/dam/m/7a27c611cf1fb00d/original/cartoes-tabela-geral.pdf"
+      ]
+    },
+    {
+      "slug": "santander-mastercard-unlimited",
+      "nome": "Santander Mastercard Unlimited",
+      "emissor": "Santander",
+      "urls": [
+        "https://www.santander.com.br/cartao-credito-santander/unlimited",
+        "https://www.santander.com.br/banco/conta-corrente/select",
+        "https://www.santander.com.br/blog/esfera/aplicativo-esfera",
+        "https://www.santander.com.br/cartoes-santander/acesso-salas-vip",
+        "https://www.santander.com.br/blog/esfera/validade-dos-pontos-esfera",
+        "https://www.santander.com.br/banco/private-banking"
+      ]
+    },
+    {
+      "slug": "santander-visa-unique-pontos",
+      "nome": "Santander Visa Unique Pontos",
+      "emissor": "Santander",
+      "urls": [
+        "https://www.santander.com.br/banco/unique-black",
+        "https://www.santander.com.br/upgrade-cartao-unique",
+        "https://www.santander.com.br/blog/dia-dos-namorados",
+        "https://www.santander.com.br/blog/programa-esfera",
+        "https://www.santander.com.br/blog/esfera/aplicativo-esfera",
+        "https://www.santander.com.br/banco/beneficios-visa"
+      ]
+    }
+  ]
+}
