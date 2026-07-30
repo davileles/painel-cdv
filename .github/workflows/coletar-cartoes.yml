@@ -1,0 +1,79 @@
+name: Catálogo de Cartões — Coleta e Revalidação
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'      # segunda-feira, 06:00 UTC (03:00 BRT)
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: 'diagnostico = só testa acesso às URLs (0 tokens) | coleta = extrai com IA'
+        type: choice
+        options: [diagnostico, coleta]
+        default: diagnostico
+      slugs:
+        description: 'Slugs separados por vírgula (vazio = todos)'
+        type: string
+        default: ''
+      forcar:
+        description: 'Reprocessar mesmo sem mudança no conteúdo da fonte'
+        type: boolean
+        default: false
+      max_cartoes:
+        description: 'Teto de cartões processados nesta execução'
+        type: string
+        default: '25'
+      modelo:
+        description: 'Modelo da API'
+        type: choice
+        options: [claude-sonnet-5, claude-opus-5, claude-haiku-4-5]
+        default: claude-sonnet-5
+      dry_run:
+        description: 'Coletar e estimar custo sem gravar arquivos'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  cartoes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Rodar coletor
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DIAG: ${{ github.event.inputs.modo == 'diagnostico' }}
+          SLUGS: ${{ github.event.inputs.slugs }}
+          FORCAR: ${{ github.event.inputs.forcar }}
+          MAX_CARTOES: ${{ github.event.inputs.max_cartoes || '25' }}
+          CARTOES_MODEL: ${{ github.event.inputs.modelo || 'claude-sonnet-5' }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: node coletar-cartoes.js
+
+      - name: Validar catálogo
+        if: github.event.inputs.modo != 'diagnostico' && github.event.inputs.dry_run != 'true'
+        run: python3 valida_catalogo.py cartoes-catalogo.json
+
+      - name: Commit
+        if: github.event.inputs.modo != 'diagnostico' && github.event.inputs.dry_run != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add cartoes-catalogo.json cartoes-fontes.json
+          git diff --staged --quiet || git commit -m "chore: atualiza catálogo de cartões [skip ci]"
+          git pull --rebase origin main
+          git push
