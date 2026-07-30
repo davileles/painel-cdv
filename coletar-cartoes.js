@@ -391,6 +391,54 @@ function sanitizar(cartao, urlsPermitidas) {
 // Se a nova extração não trouxe um campo (porque uma fonte caiu, tomou 403 ou
 // foi truncada) mas o catálogo já tinha valor com procedência oficial, o valor
 // antigo é preservado. Sem isso, uma fonte fora do ar apaga curadoria boa.
+// Campos onde uma mudança de NÚMERO é significativa o bastante para exigir
+// revisão humana. Texto reformulado não conta — só valores.
+// Sem esse filtro, toda reescrita de "regra" viraria conflito e o sinal se perderia.
+const CAMPOS_CRITICOS = {
+  'anuidade': c => c.anuidade,
+  'anuidade_parcelas': c => c.anuidade_parcelas,
+  'renda_minima': c => c.renda_minima,
+  'adicionais_gratis': c => c.adicionais_gratis,
+  'spread': c => c.spread,
+  'iof': c => c.iof,
+  'isencao.valor': c => c.isencao && c.isencao.valor,
+  'pontos.nacional': c => c.pontos && c.pontos.nacional,
+  'pontos.internacional': c => c.pontos && c.pontos.internacional,
+  'cashback.percentual': c => c.cashback && c.cashback.percentual,
+};
+
+function numero(v) {
+  return typeof v === 'number' && !Number.isNaN(v);
+}
+
+// Detecta divergência de valor entre catálogo e nova extração.
+// O valor NOVO é gravado; o antigo fica registrado em conflitos para revisão.
+function detectarConflitos(existente, novo) {
+  const conflitos = [];
+  const procAntiga = existente.procedencia || {};
+  const procNova = novo.procedencia || {};
+
+  for (const [nome, ler] of Object.entries(CAMPOS_CRITICOS)) {
+    const antes = ler(existente);
+    const depois = ler(novo);
+    if (!numero(antes) || !numero(depois)) continue;   // só compara número com número
+    if (antes === depois) continue;
+
+    const raiz = nome.split('.')[0];
+    conflitos.push({
+      campo: nome,
+      antes,
+      depois,
+      variacao_pct: antes ? Number((((depois - antes) / antes) * 100).toFixed(1)) : null,
+      fonte_antes: procAntiga[raiz] || null,
+      fonte_depois: procNova[raiz] || null,
+      detectado_em: hoje(),
+      resolvido: false,
+    });
+  }
+  return conflitos;
+}
+
 function mesclar(existente, novo) {
   if (!existente) return novo;
 
@@ -433,6 +481,12 @@ function mesclar(existente, novo) {
   if (vazio(novo.nota_curadoria) && !vazio(existente.nota_curadoria)) {
     novo.nota_curadoria = existente.nota_curadoria;
   }
+
+  // Divergência de número entre catálogo e extração: grava o novo, sinaliza o antigo
+  const conflitos = detectarConflitos(existente, novo);
+  if (conflitos.length) novo.conflitos = conflitos;
+  else delete novo.conflitos;   // conflito que sumiu está resolvido
+
   return novo;
 }
 
@@ -500,6 +554,7 @@ async function main() {
 
   const uso = { in: 0, out: 0, cache_w: 0, cache_r: 0 };
   let processados = 0, pulados = 0, novos = 0, atualizados = 0, erros = 0;
+  const conflitosAbertos = [];
 
   for (const alvo of alvos) {
     if (processados >= MAX_CARTOES) {
@@ -538,6 +593,15 @@ async function main() {
       if (cartao.campos_rejeitados.length) {
         console.log(`  → rejeitados por falta de procedência: ${cartao.campos_rejeitados.join(', ')}`);
       }
+      if (cartao.campos_preservados && cartao.campos_preservados.length) {
+        console.log(`  → preservados do catálogo (extração veio vazia): ${cartao.campos_preservados.join(', ')}`);
+      }
+      if (cartao.conflitos) {
+        cartao.conflitos.forEach(c => {
+          const pct = c.variacao_pct === null ? '' : ` (${c.variacao_pct > 0 ? '+' : ''}${c.variacao_pct}%)`;
+          console.log(`  ⚠ CONFLITO ${c.campo}: ${c.antes} → ${c.depois}${pct}`);
+        });
+      }
 
       if (DRY_RUN) {
         console.log(`  --- JSON extraído ---`);
@@ -552,6 +616,8 @@ async function main() {
           console.log(mudancas.length ? `  --- DIFF vs catálogo atual ---\n${mudancas.join('\n')}` : '  --- sem mudanças nos campos factuais ---');
         }
       }
+
+      if (cartao.conflitos) conflitosAbertos.push({ slug: alvo.slug, nome: cartao.nome, conflitos: cartao.conflitos });
 
       if (existente) {
         const i = catalogo.cartoes.findIndex(c => c.slug === alvo.slug);
@@ -581,7 +647,21 @@ async function main() {
   const [pIn, pOut] = TARIFAS[MODEL] || TARIFAS['claude-sonnet-5'];
   const custo = (uso.in * pIn + uso.cache_w * pIn * 1.25 + uso.cache_r * pIn * 0.1 + uso.out * pOut) / 1e6;
 
-  console.log(`\n[Cartões] novos=${novos} atualizados=${atualizados} inalterados=${pulados} erros=${erros}`);
+  if (conflitosAbertos.length) {
+    console.log('\n=== ⚠ CONFLITOS PARA REVISÃO HUMANA ===');
+    console.log('O valor novo foi gravado. O anterior está no campo "conflitos" de cada cartão.');
+    for (const c of conflitosAbertos) {
+      console.log(`\n${c.nome} (${c.slug})`);
+      c.conflitos.forEach(x => {
+        console.log(`  ${x.campo}: ${x.antes} → ${x.depois}`);
+        console.log(`    fonte anterior: ${x.fonte_antes || '—'}`);
+        console.log(`    fonte nova:     ${x.fonte_depois || '—'}`);
+      });
+    }
+    console.log('');
+  }
+
+  console.log(`\n[Cartões] novos=${novos} atualizados=${atualizados} inalterados=${pulados} erros=${erros} conflitos=${conflitosAbertos.length}`);
   console.log(`[Cartões] tokens: in=${uso.in} cache_write=${uso.cache_w} cache_read=${uso.cache_r} out=${uso.out}`);
   console.log(`[Cartões] custo estimado: US$ ${custo.toFixed(4)}`);
 
@@ -593,6 +673,7 @@ async function main() {
   catalogo._meta.atualizado_em = hoje();
   catalogo._meta.coletor = 'coletar-cartoes.js';
   catalogo._meta.modelo_coleta = MODEL;
+  catalogo._meta.conflitos_abertos = catalogo.cartoes.filter(c => c.conflitos && c.conflitos.length).length;
 
   fontesDoc._meta.atualizado_em = hoje();
   fontesDoc._meta.total = Object.keys(fontesDoc.cartoes).length;
