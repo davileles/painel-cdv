@@ -23,66 +23,72 @@
       "emissor": "Banco do Brasil",
       "bandeira": "Visa",
       "categoria": "Gold",
-      "anuidade": null,
-      "anuidade_parcelas": null,
-      "isencao": null,
+      "anuidade": 428,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "gasto_mensal",
+        "valor": 3000,
+        "regra": "Ao atingir R$ 3.000,00 em compras no crédito no mês (não contam pagamentos de contas, parcelas de anuidade, proteção ouro, saques e encargos), a parcela mensal da anuidade do cartão titular e dos adicionais é zerada automaticamente."
+      },
       "renda_minima": null,
       "requisito_acesso": null,
-      "adicionais_gratis": null,
-      "pontos": null,
+      "adicionais_gratis": 0,
+      "pontos": {
+        "nacional": 1.8,
+        "internacional": 1.8,
+        "unidade": "pts/USD",
+        "observacao": "1,8 milha por dólar gasto para clientes Smiles; 3 milhas por dólar para clientes Clube Smiles ou categoria Diamante. Na renovação: 2.000 milhas (Smiles) ou 3.000 milhas (Clube Smiles/Diamante), condicionadas ao pagamento da anuidade de renovação."
+      },
       "cashback": null,
       "programa_proprio": "Smiles",
       "transfere_para": [],
       "spread": null,
-      "iof": null,
+      "iof": 1.1,
       "validade_pontos": "Seguem a Categoria Smiles do titular no momento do credito",
       "salas_vip": [],
       "beneficios_banco": [
         {
-          "titulo": "Usou, zerou",
-          "descricao": "Ao atingir R$ 3 mil em compras no crédito no mês, a anuidade mensal do titular e dos adicionais é zerada automaticamente."
+          "titulo": "Milhas de aquisição do cartão",
+          "descricao": "Bônus de 5.000 milhas (clientes Smiles) ou 7.500 milhas (Clube Smiles/Diamante) na aquisição do cartão, creditadas em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades. Exclusivo para o primeiro titular."
         },
         {
           "titulo": "Crédito automático de milhas",
-          "descricao": "A cada fatura paga, o valor equivalente em dólar é convertido em milhas e transferido automaticamente e sem tarifa para a conta Smiles do titular."
+          "descricao": "A cada pagamento de fatura, o valor equivalente em dólar é convertido automaticamente em milhas e transferido para a conta Smiles, sem cobrança de tarifa."
         },
         {
-          "titulo": "Milhas de aquisição do cartão",
-          "descricao": "Bônus de milhas na contratação do cartão (5.000 para clientes Smiles ou 7.500 para Clube Smiles/Diamante), creditado em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades."
+          "titulo": "Cartões adicionais",
+          "descricao": "É possível solicitar até quatro cartões adicionais, cada um com anuidade de 50% do valor do titular; as milhas geradas pelas faturas pagas dos adicionais são creditadas ao titular."
+        },
+        {
+          "titulo": "Programa Usou, Zerou",
+          "descricao": "Compras no crédito que somem R$ 3.000,00 no mês zeram automaticamente a parcela da anuidade mensal do titular e dos adicionais."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-      "nota_curadoria": "A anuidade de R$ 428,00 pode ser totalmente zerada pelo programa 'Usou, zerou' ao atingir R$ 3 mil em compras no crédito no mês, o que reduz bastante o custo efetivo para quem usa o cartão como principal. Benefícios de sala VIP e bagagem gratuita mencionados na página oficial parecem restritos ao Visa Infinite, não havendo confirmação explícita de que se estendam ao Gold. Não há informação oficial de renda mínima exigida nem de transferência de milhas Smiles para outros programas de fidelidade além do próprio Smiles.",
+      "nota_curadoria": "A anuidade de R$ 428,00 pode ser zerada mensalmente com R$ 3 mil em compras no crédito, mas atenção: pagamentos de contas, parcelas de anuidade e saques não contam para essa meta. O cartão pontua em milhas por dólar gasto na função Smiles (1,8 ou 3 milhas, dependendo da categoria do cliente na Smiles), não havendo benefício de salas VIP para esta versão Gold — esse benefício é exclusivo do Smiles Visa Infinite. IOF padrão de 1,1% se aplica; não há informação oficial sobre renda mínima exigida.",
+      "procedencia": {
+        "anuidade": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "anuidade_parcelas": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "isencao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "adicionais_gratis": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "pontos": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito"
+      },
       "fontes": [
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
       "verificado_em": "2026-07-30",
-      "procedencia": {
-        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito"
-      },
       "campos_pendentes": [
-        "adicionais_gratis",
-        "anuidade",
-        "anuidade_parcelas",
         "cashback",
-        "iof",
-        "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "salas_vip",
         "spread",
         "transfere_para"
       ],
-      "campos_rejeitados": [
-        "adicionais_gratis",
-        "anuidade",
-        "anuidade_parcelas",
-        "iof",
-        "isencao",
-        "pontos"
-      ],
+      "campos_rejeitados": [],
       "campos_preservados": [
         "validade_pontos"
       ]
