@@ -101,6 +101,21 @@ function ehOficial(url) {
   }
 }
 
+// Compara URLs ignorando diferencas cosmeticas. A IA frequentemente devolve a
+// URL sem a barra final ou sem www, e a comparacao literal rejeitava o campo
+// mesmo com a procedencia correta.
+function normalizarUrl(u) {
+  try {
+    const x = new URL(String(u));
+    let h = x.hostname.toLowerCase();
+    if (h.startsWith('www.')) h = h.slice(4);
+    let caminho = x.pathname.replace(/\/+$/, '').toLowerCase();
+    return h + caminho + (x.search || '');
+  } catch (e) {
+    return String(u).trim().toLowerCase().replace(/\/+$/, '');
+  }
+}
+
 function vazio(v) {
   if (v === null || v === undefined || v === '') return true;
   if (Array.isArray(v)) return v.length === 0;
@@ -441,14 +456,18 @@ function sanitizar(cartao, urlsPermitidas) {
   const proc = cartao.procedencia || {};
   const pend = new Set();
   const rejeitados = [];
-  const permitidas = new Set(urlsPermitidas);
+  // mapa normalizada -> URL canonica (a que foi realmente lida)
+  const permitidas = new Map(urlsPermitidas.map(u => [normalizarUrl(u), u]));
+  const canonica = (u) => (u ? permitidas.get(normalizarUrl(u)) : undefined);
 
   for (const campo of CAMPOS_FACTUAIS) {
     const v = cartao[campo];
     const temValor = !vazio(v);
     const fonte = proc[campo];
     // Só vale se a URL for oficial E tiver sido realmente uma das fontes lidas
-    const fonteOk = !!fonte && ehOficial(fonte) && permitidas.has(fonte);
+    const url = canonica(fonte);
+    const fonteOk = !!fonte && ehOficial(fonte) && !!url;
+    if (fonteOk) proc[campo] = url;   // grava sempre a URL canonica
 
     if (temValor && !fonteOk) {
       cartao[campo] = Array.isArray(v) ? [] : null;
@@ -463,7 +482,9 @@ function sanitizar(cartao, urlsPermitidas) {
 
   // Limpa procedência órfã (campo inexistente ou URL não oficial)
   for (const k of Object.keys(proc)) {
-    if (!ehOficial(proc[k]) || !permitidas.has(proc[k])) delete proc[k];
+    const u = canonica(proc[k]);
+    if (!u || !ehOficial(u)) delete proc[k];
+    else proc[k] = u;
   }
 
   cartao.procedencia = proc;
