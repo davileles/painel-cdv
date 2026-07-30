@@ -72,9 +72,12 @@ jobs:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
         run: node coletar-cartoes.js
 
-      - name: Validar catálogo
+      # --corrigir zera campo sem procedência oficial e sai com código 0.
+      # Sem isso, dívida antiga do catálogo (fontes de smiles.com.br etc.)
+      # derruba o step e descarta uma coleta inteira que deu certo.
+      - name: Validar e corrigir catálogo
         if: github.event.inputs.modo != 'diagnostico' && github.event.inputs.dry_run != 'true'
-        run: python3 valida_catalogo.py cartoes-catalogo.json
+        run: python3 valida_catalogo.py cartoes-catalogo.json --corrigir
 
       - name: Commit
         if: github.event.inputs.modo != 'diagnostico' && github.event.inputs.dry_run != 'true'
