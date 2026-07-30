@@ -480,6 +480,20 @@ async function main() {
         console.log(`  → rejeitados por falta de procedência: ${cartao.campos_rejeitados.join(', ')}`);
       }
 
+      if (DRY_RUN) {
+        console.log(`  --- JSON extraído ---`);
+        console.log(JSON.stringify(cartao, null, 2));
+        if (existente) {
+          const mudancas = [];
+          for (const campo of CAMPOS_FACTUAIS.concat(['programa_proprio', 'validade_pontos'])) {
+            const a = JSON.stringify(existente[campo] ?? null);
+            const b = JSON.stringify(cartao[campo] ?? null);
+            if (a !== b) mudancas.push(`    ${campo}:\n      antes: ${a}\n      agora: ${b}`);
+          }
+          console.log(mudancas.length ? `  --- DIFF vs catálogo atual ---\n${mudancas.join('\n')}` : '  --- sem mudanças nos campos factuais ---');
+        }
+      }
+
       if (existente) {
         const i = catalogo.cartoes.findIndex(c => c.slug === alvo.slug);
         catalogo.cartoes[i] = cartao;
