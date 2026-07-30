@@ -10,6 +10,10 @@
  *      campo factual só sobrevive com URL de fonte oficial em procedencia[campo]
  *   6. Faz merge em cartoes-catalogo.json preservando curadoria manual
  *
+ * Fontes bloqueadas por WAF podem ser capturadas por fora (navegador com IP
+ * residencial) e gravadas em cartoes-fontes-manuais.json — o coletor usa esse
+ * texto no lugar do fetch.
+ *
  * O passo 3 é o que torna a manutenção barata: revalidação semanal de 200
  * cartões custa quase nada porque a maioria das páginas não muda.
  *
@@ -32,6 +36,7 @@ const DIR = __dirname;
 const ARQ_ALVOS = path.join(DIR, 'cartoes-alvos.json');
 const ARQ_CATALOGO = path.join(DIR, 'cartoes-catalogo.json');
 const ARQ_FONTES = path.join(DIR, 'cartoes-fontes.json');
+const ARQ_MANUAIS = path.join(DIR, 'cartoes-fontes-manuais.json');
 
 const API_KEY = process.env.ANTHROPIC_API_KEY || '';
 const MODEL = process.env.CARTOES_MODEL || 'claude-sonnet-5';
@@ -48,6 +53,7 @@ const MAX_CHARS_TOTAL = 60000;       // soma de todas as fontes HTML de um cart�
 const MAX_PDF_BYTES = 2.5 * 1024 * 1024;
 const MAX_PDFS_POR_CARTAO = 4;       // regulamentos longos estouram o custo sozinhos
 const TIMEOUT_FETCH = 30000;
+const DIAS_VALIDADE_MANUAL = 45;   // captura manual mais velha que isso: tenta a rede antes
 
 // ── Regra de procedência (espelha valida_catalogo.py) ────────────────────────
 const DOMINIOS_OFICIAIS = [
@@ -227,6 +233,46 @@ async function baixar(url) {
   }
 }
 
+// ── Fontes capturadas manualmente (via navegador) ────────────────────────────
+// Bancos com WAF (C6, CAIXA, Bradesco, BB, Santander, parte do Itaú) bloqueiam o
+// IP do runner. O texto dessas páginas é capturado por fora, num navegador com
+// IP residencial, e gravado em cartoes-fontes-manuais.json. O coletor consome
+// dali. A extração com IA continua acontecendo aqui, no Actions.
+let MANUAIS = null;
+
+function carregarManuais() {
+  if (MANUAIS) return MANUAIS;
+  MANUAIS = {};
+  if (fs.existsSync(ARQ_MANUAIS)) {
+    try {
+      const doc = JSON.parse(fs.readFileSync(ARQ_MANUAIS, 'utf8'));
+      MANUAIS = doc.fontes || {};
+    } catch (e) {
+      console.warn(`[Cartões] cartoes-fontes-manuais.json ilegível: ${e.message}`);
+    }
+  }
+  return MANUAIS;
+}
+
+function diasDesde(iso) {
+  if (!iso) return Infinity;
+  const d = (Date.now() - new Date(iso).getTime()) / 86400000;
+  return Number.isNaN(d) ? Infinity : d;
+}
+
+function lerManual(url) {
+  const m = carregarManuais()[url];
+  if (!m || !m.texto || m.texto.length < 200) return null;
+  let texto = m.texto;
+  if (texto.length > MAX_CHARS_POR_FONTE) texto = texto.slice(0, MAX_CHARS_POR_FONTE) + '\n[...truncado]';
+  return {
+    tipo: 'manual',
+    texto,
+    hash: sha(texto),
+    idade_dias: Math.round(diasDesde(m.capturado_em)),
+  };
+}
+
 async function coletarFontes(alvo) {
   const fontes = [];
   const falhas = [];
@@ -235,7 +281,24 @@ async function coletarFontes(alvo) {
 
   for (const url of alvo.urls || []) {
     try {
-      const r = await baixar(url);
+      let r = null;
+      const manual = lerManual(url);
+
+      // Captura manual recente vence: evita gastar 30s de timeout numa URL que
+      // sabidamente bloqueia o runner.
+      if (manual && manual.idade_dias <= DIAS_VALIDADE_MANUAL) {
+        r = manual;
+      } else {
+        try {
+          r = await baixar(url);
+        } catch (eRede) {
+          // Rede falhou. Se existe captura manual (mesmo velha), ela salva o cartão.
+          if (!manual) throw eRede;
+          r = manual;
+          falhas.push(`${url}: rede falhou (${eRede.message}) — usando captura manual de ${manual.idade_dias} dias atrás`);
+        }
+      }
+
       if (r.tipo === 'pdf') {   // base64 (fallback) — caro, limite rigido
         if (pdfs >= MAX_PDFS_POR_CARTAO) { falhas.push(`${url}: limite de PDFs atingido`); continue; }
         pdfs++;
@@ -311,7 +374,9 @@ async function extrairComIA(alvo, fontes) {
   });
 
   for (const f of fontes) {
-    if (f.tipo === 'pdf_texto') {
+    if (f.tipo === 'manual') {
+      blocos.push({ type: 'text', text: `\n===== FONTE: ${f.url} =====\n${f.texto}` });
+    } else if (f.tipo === 'pdf_texto') {
       blocos.push({ type: 'text', text: `\n===== FONTE (PDF): ${f.url} =====\n${f.texto}` });
     } else if (f.tipo === 'pdf') {
       blocos.push({ type: 'text', text: `\n===== FONTE (PDF): ${f.url} =====` });
@@ -624,7 +689,9 @@ async function main() {
       continue;
     }
 
-    console.log(`[${alvo.slug}] ${fontes.length} fonte(s), ${fontes.filter(f => f.tipo.startsWith('pdf')).length} PDF — chamando IA`);
+    const nManual = fontes.filter(f => f.tipo === 'manual').length;
+    console.log(`[${alvo.slug}] ${fontes.length} fonte(s), ${fontes.filter(f => f.tipo.startsWith('pdf')).length} PDF`
+      + (nManual ? `, ${nManual} de captura manual` : '') + ' — chamando IA');
 
     try {
       const { obj, uso: u } = await extrairComIA(alvo, fontes);
