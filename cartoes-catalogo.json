@@ -23,44 +23,44 @@
       "emissor": "Banco do Brasil",
       "bandeira": "Visa",
       "categoria": "Gold",
-      "bandeira_ref": null,
       "anuidade": null,
       "anuidade_parcelas": null,
-      "nota_anuidade": "A anuidade do GOL Smiles pode ser parcelada em ate 4x, conforme regras do banco emissor.",
       "isencao": null,
       "renda_minima": null,
+      "requisito_acesso": null,
       "adicionais_gratis": null,
       "pontos": null,
       "cashback": null,
-      "spread": null,
-      "iof": null,
       "programa_proprio": "Smiles",
       "transfere_para": [],
-      "nota_transferencia": "As milhas sao creditadas direto na conta Smiles; nao ha transferencia de pontos do banco emissor.",
+      "spread": null,
+      "iof": null,
       "validade_pontos": "Seguem a Categoria Smiles do titular no momento do credito",
       "salas_vip": [],
       "beneficios_banco": [
         {
-          "titulo": "Embarque prioritario",
-          "descricao": "Embarque e check-in prioritarios em voos GOL mediante apresentacao do cartao ativo."
+          "titulo": "Usou, zerou",
+          "descricao": "Ao atingir R$ 3 mil em compras no crédito no mês, a anuidade mensal do titular e dos adicionais é zerada automaticamente."
         },
         {
-          "titulo": "Parcelamento em 12x sem juros",
-          "descricao": "Compras parceladas em ate 12x sem juros no site voegol.com.br."
+          "titulo": "Crédito automático de milhas",
+          "descricao": "A cada fatura paga, o valor equivalente em dólar é convertido em milhas e transferido automaticamente e sem tarifa para a conta Smiles do titular."
         },
         {
-          "titulo": "Milha extra em compras GOL",
-          "descricao": "1 milha Smiles adicional por USD 1,00 gasto no site da GOL."
-        },
-        {
-          "titulo": "Booking.com",
-          "descricao": "5 milhas por real em reservas de acomodacao."
+          "titulo": "Milhas de aquisição do cartão",
+          "descricao": "Bônus de milhas na contratação do cartão (5.000 para clientes Smiles ou 7.500 para Clube Smiles/Diamante), creditado em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades."
         }
       ],
-      "link_solicitacao": null,
+      "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+      "nota_curadoria": "A anuidade de R$ 428,00 pode ser totalmente zerada pelo programa 'Usou, zerou' ao atingir R$ 3 mil em compras no crédito no mês, o que reduz bastante o custo efetivo para quem usa o cartão como principal. Benefícios de sala VIP e bagagem gratuita mencionados na página oficial parecem restritos ao Visa Infinite, não havendo confirmação explícita de que se estendam ao Gold. Não há informação oficial de renda mínima exigida nem de transferência de milhas Smiles para outros programas de fidelidade além do próprio Smiles.",
       "fontes": [
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
+      "verificado_em": "2026-07-30",
+      "procedencia": {
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito"
+      },
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade",
@@ -75,17 +75,17 @@
         "spread",
         "transfere_para"
       ],
-      "procedencia": {
-        "nome": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "emissor": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "bandeira": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "categoria": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "programa_proprio": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "beneficios_banco": "https://www.smiles.com.br/portal/cartao-de-credito"
-      },
-      "nota_curadoria": "Camada de programa vinda do regulamento oficial GOL Smiles. Anuidade, pontuacao e isencao dependem do banco emissor e seguem pendentes.",
-      "verificado_em": "2026-07-28"
+      "campos_rejeitados": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "iof",
+        "isencao",
+        "pontos"
+      ],
+      "campos_preservados": [
+        "validade_pontos"
+      ]
     },
     {
       "slug": "bb-smiles-visa-infinite",
@@ -192,69 +192,69 @@
       "emissor": "Banco do Brasil",
       "bandeira": "Visa",
       "categoria": "Internacional",
-      "bandeira_ref": null,
-      "anuidade": null,
-      "anuidade_parcelas": null,
-      "nota_anuidade": "A anuidade do GOL Smiles pode ser parcelada em ate 4x, conforme regras do banco emissor.",
+      "anuidade": 312,
+      "anuidade_parcelas": 12,
       "isencao": null,
       "renda_minima": null,
+      "requisito_acesso": null,
       "adicionais_gratis": null,
-      "pontos": null,
+      "pontos": {
+        "nacional": 1.35,
+        "internacional": 1.35,
+        "unidade": "pts/USD",
+        "observacao": "1,35 milha por dólar gasto para clientes Smiles; 2 milhas por dólar para clientes Clube Smiles ou categoria Diamante. Milhas de renovação: 1.000 (Smiles) ou 2.000 (Clube Smiles/Diamante), condicionadas ao pagamento da anuidade de renovação. Milhas de aquisição (creditadas em 4 parcelas, ligadas ao pagamento das 4 primeiras parcelas da anuidade, exclusivo primeiro titular): 2.000 (Smiles) ou 3.000 (Clube Smiles/Diamante)."
+      },
       "cashback": null,
-      "spread": null,
-      "iof": null,
       "programa_proprio": "Smiles",
-      "transfere_para": [],
-      "nota_transferencia": "As milhas sao creditadas direto na conta Smiles; nao ha transferencia de pontos do banco emissor.",
+      "transfere_para": [
+        "Smiles"
+      ],
+      "spread": null,
+      "iof": 1.1,
       "validade_pontos": "Seguem a Categoria Smiles do titular no momento do credito",
       "salas_vip": [],
       "beneficios_banco": [
         {
-          "titulo": "Embarque prioritario",
-          "descricao": "Embarque e check-in prioritarios em voos GOL mediante apresentacao do cartao ativo."
+          "titulo": "Crédito automático de milhas",
+          "descricao": "A cada pagamento de fatura, o valor pago é convertido em dólar e transferido automaticamente como milhas para a conta Smiles, sem tarifa de transferência."
         },
         {
-          "titulo": "Parcelamento em 12x sem juros",
-          "descricao": "Compras parceladas em ate 12x sem juros no site voegol.com.br."
+          "titulo": "Cartões adicionais",
+          "descricao": "É possível solicitar até quatro cartões adicionais, cada um custando 50% do valor da anuidade do titular; as milhas geradas pelas faturas pagas dos adicionais são transferidas para o cartão do titular."
         },
         {
-          "titulo": "Milha extra em compras GOL",
-          "descricao": "1 milha Smiles adicional por USD 1,00 gasto no site da GOL."
-        },
-        {
-          "titulo": "Booking.com",
-          "descricao": "5 milhas por real em reservas de acomodacao."
+          "titulo": "Milhas de aquisição",
+          "descricao": "Bônus de milhas na contratação (2.000 para clientes Smiles ou 3.000 para Clube Smiles/Diamante), creditado em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades, exclusivo para o primeiro titular."
         }
       ],
-      "link_solicitacao": null,
+      "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+      "nota_curadoria": "Este é o cartão de entrada da linha GOL Smiles do BB, com anuidade de R$312 e pontuação de 1,35 a 2 milhas por dólar gasto, sem o benefício 'usou, zerou' nem acesso a salas VIP, restritos às categorias Gold, Platinum e Infinite. Vale checar se há renda mínima exigida, pois essa informação não constava na página oficial consultada.",
+      "procedencia": {
+        "anuidade": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "anuidade_parcelas": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "pontos": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "transfere_para": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito"
+      },
       "fontes": [
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
+      "verificado_em": "2026-07-30",
       "campos_pendentes": [
         "adicionais_gratis",
-        "anuidade",
-        "anuidade_parcelas",
         "cashback",
-        "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "salas_vip",
-        "spread",
-        "transfere_para"
+        "spread"
       ],
-      "procedencia": {
-        "nome": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "emissor": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "bandeira": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "categoria": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "programa_proprio": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "beneficios_banco": "https://www.smiles.com.br/portal/cartao-de-credito"
-      },
-      "nota_curadoria": "Camada de programa vinda do regulamento oficial GOL Smiles. Anuidade, pontuacao e isencao dependem do banco emissor e seguem pendentes.",
-      "verificado_em": "2026-07-28"
+      "campos_rejeitados": [],
+      "campos_preservados": [
+        "validade_pontos"
+      ]
     },
     {
       "slug": "bb-smiles-visa-platinum",

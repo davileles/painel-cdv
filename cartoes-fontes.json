@@ -2,7 +2,7 @@
   "_meta": {
     "descricao": "Hash do conteúdo das fontes por cartão. Se o hash não mudou, o coletor não chama a IA.",
     "atualizado_em": "2026-07-30",
-    "total": 47
+    "total": 49
   },
   "cartoes": {
     "brb-visa-dux": {
@@ -406,6 +406,20 @@
       "hash": "c057253ae8af287f",
       "urls": [
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/"
+      ],
+      "em": "2026-07-30"
+    },
+    "bb-smiles-visa-gold": {
+      "hash": "2b449456ed6bb81d",
+      "urls": [
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/"
+      ],
+      "em": "2026-07-30"
+    },
+    "bb-smiles-visa-internacional": {
+      "hash": "2b449456ed6bb81d",
+      "urls": [
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/"
       ],
       "em": "2026-07-30"
     }
