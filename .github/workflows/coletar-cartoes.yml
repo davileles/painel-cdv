@@ -14,6 +14,10 @@ on:
         description: 'Slugs separados por vírgula (vazio = todos)'
         type: string
         default: ''
+      categorias:
+        description: 'Filtrar por categoria, substring separada por vírgula. Ex: black,infinite,platinum'
+        type: string
+        default: ''
       forcar:
         description: 'Reprocessar mesmo sem mudança no conteúdo da fonte'
         type: boolean
@@ -38,7 +42,7 @@ permissions:
 jobs:
   cartoes:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,6 +65,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           DIAG: ${{ github.event.inputs.modo == 'diagnostico' }}
           SLUGS: ${{ github.event.inputs.slugs }}
+          CATEGORIAS: ${{ github.event.inputs.categorias }}
           FORCAR: ${{ github.event.inputs.forcar }}
           MAX_CARTOES: ${{ github.event.inputs.max_cartoes || '25' }}
           CARTOES_MODEL: ${{ github.event.inputs.modelo || 'claude-sonnet-5' }}
