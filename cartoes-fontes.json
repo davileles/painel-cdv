@@ -2,7 +2,7 @@
   "_meta": {
     "descricao": "Hash do conteúdo das fontes por cartão. Se o hash não mudou, o coletor não chama a IA.",
     "atualizado_em": "2026-07-30",
-    "total": 35
+    "total": 41
   },
   "cartoes": {
     "brb-visa-dux": {
@@ -321,6 +321,49 @@
       "hash": "534073fb5c83ebf7",
       "urls": [
         "https://pages.xpi.com.br/content/dam/Revenue/XP/Banco/Cartao/Campanha/Regulamento%20-%20Campanha%20Capta%C3%A7%C3%A3o%20Legacy_Set%201.pdf"
+      ],
+      "em": "2026-07-30"
+    },
+    "c6-black": {
+      "hash": "4fc39b324a66f325",
+      "urls": [
+        "https://www.c6bank.com.br/cartao-black/",
+        "https://www.c6bank.com.br/programa-de-pontos-atomos/"
+      ],
+      "em": "2026-07-30"
+    },
+    "c6-carbon": {
+      "hash": "1e064cd3c5fdebeb",
+      "urls": [
+        "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/"
+      ],
+      "em": "2026-07-30"
+    },
+    "caixa-elo-nanquim": {
+      "hash": "3b49b2f953d6ca2b",
+      "urls": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx"
+      ],
+      "em": "2026-07-30"
+    },
+    "caixa-icone-visa": {
+      "hash": "33a01e992cad2899",
+      "urls": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx"
+      ],
+      "em": "2026-07-30"
+    },
+    "caixa-visa-infinite": {
+      "hash": "f4a0214a5e037849",
+      "urls": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx"
+      ],
+      "em": "2026-07-30"
+    },
+    "caixa-visa-infinite-investidores": {
+      "hash": "fc76ed9ac137b1af",
+      "urls": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx"
       ],
       "em": "2026-07-30"
     }

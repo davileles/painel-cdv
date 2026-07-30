@@ -14,7 +14,7 @@
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização.",
     "coletor": "coletar-cartoes.js",
     "modelo_coleta": "claude-sonnet-5",
-    "conflitos_abertos": 4
+    "conflitos_abertos": 6
   },
   "cartoes": [
     {
@@ -2902,18 +2902,15 @@
       "emissor": "C6 Bank",
       "bandeira": "Mastercard",
       "categoria": "Black",
-      "bandeira_ref": "mastercard-black",
-      "imagem": null,
       "anuidade": 600,
       "anuidade_parcelas": 12,
-      "anuidade_modelo": "anuidade",
-      "anuidade_observacao": "12 parcelas de R$ 50, com isencao nos 6 primeiros meses.",
       "isencao": {
         "tipo": "gasto",
         "valor": 5000,
         "regra": "Isencao total com gasto mensal a partir de R$ 5 mil na funcao credito."
       },
       "renda_minima": null,
+      "requisito_acesso": "Sujeito a análise de crédito interna do C6 Bank. Disponível como upgrade no app.",
       "adicionais_gratis": 10,
       "pontos": {
         "nacional": 2,
@@ -2926,7 +2923,7 @@
         "internacional": null,
         "observacao": "Até 1,2% ao converter pontos C6 Átomos em dinheiro na conta (consultar condições no app)"
       },
-      "programa_proprio": "C6 Atomos",
+      "programa_proprio": "C6 Átomos",
       "transfere_para": [
         "LATAM Pass",
         "TudoAzul",
@@ -2936,7 +2933,8 @@
         "Miles&Go"
       ],
       "spread": null,
-      "iof_isento": false,
+      "iof": "4,38% sobre compras internacionais no cartão de crédito (alíquota federal padrão)",
+      "validade_pontos": "Pontos não expiram",
       "salas_vip": [
         {
           "programa": "Sala VIP Mastercard Black (GRU)",
@@ -2945,111 +2943,75 @@
       ],
       "beneficios_banco": [
         {
-          "titulo": "C6 Tag gratuita",
-          "descricao": "1 tag de pedágio e estacionamento gratuita. Basta ter feito ao menos uma compra no crédito no mês anterior."
+          "titulo": "C6 Tag gratuito",
+          "descricao": "1ª tag de pedágio e estacionamento gratuita, mediante ao menos uma compra no crédito no mês anterior."
         },
         {
           "titulo": "Cartões adicionais grátis",
-          "descricao": "Até 10 cartões adicionais gratuitos, gerenciáveis no mesmo app."
+          "descricao": "Até 10 cartões adicionais sem custo, que também contam para o cálculo de isenção de anuidade."
         },
         {
-          "titulo": "C6 Conta Global – abertura sem custo",
-          "descricao": "Clientes C6 Mastercard Black têm isenção da taxa de abertura da C6 Conta Global (dólar e euro)."
+          "titulo": "Cashback em pontos",
+          "descricao": "Possibilidade de converter pontos C6 Átomos em dinheiro na conta, com percentual de até 1,2%."
         },
         {
-          "titulo": "CDB Limite Garantido",
-          "descricao": "Permite aumentar o limite do cartão em até R$ 200.000, com o valor investido continuando a render acima do CDI."
+          "titulo": "Pontos sem expiração",
+          "descricao": "Os pontos acumulados no programa C6 Átomos não expiram, dando flexibilidade para resgate a qualquer momento."
         },
         {
-          "titulo": "Concierge Mastercard Black 24h",
-          "descricao": "Serviço de concierge disponível 24h/7 dias para auxiliar em reservas, viagens e mais."
-        },
-        {
-          "titulo": "Seguro saúde internacional (MasterAssist Black)",
-          "descricao": "Cobertura médica e hospitalar durante viagens internacionais. Despesas médicas cobertas até o limite de US$ 150.000."
-        },
-        {
-          "titulo": "Proteção de bagagem",
-          "descricao": "Cobertura contra atraso, perda ou dano de bagagem durante viagens."
-        },
-        {
-          "titulo": "Seguro de automóvel alugado",
-          "descricao": "Cobertura contra danos por colisão, roubo ou incêndio acidental em veículos alugados no Brasil ou exterior."
-        },
-        {
-          "titulo": "Compra Protegida",
-          "descricao": "Proteção contra danos ou roubo nos primeiros 90 dias após a aquisição do produto."
-        },
-        {
-          "titulo": "Garantia Estendida Original",
-          "descricao": "Prolonga a garantia de fábrica dos produtos em até 12 meses adicionais."
-        },
-        {
-          "titulo": "Proteção contra roubo em caixas eletrônicos",
-          "descricao": "Reembolso do dinheiro roubado durante ou até 2 horas após saque em ATM. Cobertura de até US$ 1.000 por incidente e US$ 3.000 por ano."
-        },
-        {
-          "titulo": "Isenção de rolha",
-          "descricao": "Isenção de taxa de rolha em restaurantes parceiros Mastercard."
-        },
-        {
-          "titulo": "Priceless Cities",
-          "descricao": "Acesso a experiências e eventos exclusivos Mastercard ao redor do mundo."
-        },
-        {
-          "titulo": "Mastercard Surpreenda",
-          "descricao": "Programa de benefícios com ofertas e descontos exclusivos para portadores Mastercard."
-        },
-        {
-          "titulo": "Pague com Pontos (PWR)",
-          "descricao": "Permite pagar compras feitas no crédito com pontos C6 Átomos, sem precisar aguardar o fechamento da fatura."
-        },
-        {
-          "titulo": "C6 Tag",
-          "descricao": "Uma tag de pedagio gratuita para quem usou o cartao ao menos uma vez no mes anterior."
+          "titulo": "Transferência para parceiros aéreos",
+          "descricao": "Pontos podem ser transferidos para Livelo, Latam Pass, Smiles, TudoAzul e TAP, sem perda de pontos na transferência e com promoções de bônus."
         }
       ],
-      "link_solicitacao": "https://www.c6bank.com.br/",
+      "link_solicitacao": "https://www.c6bank.com.br/cartao-black/",
+      "nota_curadoria": "A anuidade de 12x R$ 50 (R$ 600/ano) tem isenção automática nos 6 primeiros meses e pode ser zerada permanentemente com fatura a partir de R$ 3.500/mês ou investimento de R$ 20 mil em Renda Fixa no C6. A pontuação de até 2,5 pts/US$ depende de faixas de investimento ou gastos mensais, então o assessor deve checar qual faixa o cliente atinge antes de prometer a pontuação máxima. Não há confirmação oficial de salas VIP (LoungeKey, Priority Pass) para este cartão nas fontes analisadas, diferente do C6 Carbon.",
       "fontes": [
-        "https://ajuda.c6bank.com.br/s/article/Quais-os-beneficios-Mastercard-do-cartao-C6-Black-e-C6-Carbon",
-        "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
-        "https://www.c6bank.com.br/blog/c6-bank-e-decolar-firmam-parceria-para-transferencia-de-pontos",
-        "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas",
-        "https://www.c6bank.com.br/blog/c6-mastercard-black",
-        "https://www.c6bank.com.br/blog/cartao-black-beneficios",
-        "https://www.c6bank.com.br/blog/como-ter-um-c6-mastercard-black-sem-pagar-anuidade",
-        "https://www.c6bank.com.br/blog/isencao-de-anuidade-cartoes-black-c6",
-        "https://www.c6bank.com.br/blog/melhores-cartoes-de-credito-2025",
-        "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-mastercard-black",
-        "https://www.c6bank.com.br/blog/o-que-e-iof",
-        "https://www.c6bank.com.br/blog/tipos-de-cartao",
         "https://www.c6bank.com.br/cartao-black/",
-        "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
-        "https://www.c6bank.com.br/guia-cartao-black/",
-        "https://www.c6bank.com.br/programa-de-pontos-atomos/"
+        "https://www.c6bank.com.br/programa-de-pontos-atomos/",
+        "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
+        "https://www.c6bank.com.br/blog/o-que-e-iof",
+        "https://www.c6bank.com.br/blog/c6-mastercard-black",
+        "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas"
       ],
-      "campos_pendentes": [
-        "renda_minima",
-        "spread"
-      ],
-      "verificado_em": "2026-07-27",
-      "iof": "4,38% sobre compras internacionais no cartão de crédito (alíquota federal padrão)",
+      "verificado_em": "2026-07-30",
       "procedencia": {
         "anuidade": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
         "anuidade_parcelas": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
         "isencao": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
-        "pontos": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
         "adicionais_gratis": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
-        "salas_vip": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
+        "pontos": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
         "cashback": "https://www.c6bank.com.br/cartao-black/",
         "iof": "https://www.c6bank.com.br/blog/o-que-e-iof",
+        "salas_vip": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
         "transfere_para": "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas",
-        "requisito_acesso": "https://www.c6bank.com.br/blog/c6-mastercard-black",
-        "validade_pontos": "https://www.c6bank.com.br/programa-de-pontos-atomos/"
+        "requisito_acesso": "https://www.c6bank.com.br/blog/c6-mastercard-black"
       },
-      "requisito_acesso": "Sujeito a análise de crédito interna do C6 Bank. Disponível como upgrade no app.",
-      "validade_pontos": "Não expiram",
-      "nota_curadoria": "Renda mínima não publicada em página oficial — o C6 Bank informa apenas que o cartão é sujeito a análise de crédito interna, sem divulgar valor de renda mínima exigida. Spread para compras internacionais com o cartão de crédito em reais não é publicado pelo C6 Bank em página de produto (o spread divulgado se refere exclusivamente à C6 Conta Global). O IOF de 4,38% informado é a alíquota legal federal sobre compras internacionais no crédito, não específica do emissor. A pontuação-base confirmada na página oficial do produto (c6bank.com.br/cartao-black/) é de 2,0 pts/USD, com aceleração possível até 2,5 pts/USD. Divergência menor encontrada entre blog (mencionava 'a partir de R$ 4 mil/mês' em guia-cartao-black) e a página oficial do produto e demais blogs oficiais mais recentes (R$ 3.500/mês): foi adotado o valor da página oficial do produto e do blog mais recente (2025). Benefícios Mastercard listados com base na página de ajuda oficial (ajuda.c6bank.com.br) e na página de benefícios do cartão black."
+      "campos_pendentes": [
+        "renda_minima",
+        "spread"
+      ],
+      "campos_rejeitados": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "isencao",
+        "pontos",
+        "transfere_para"
+      ],
+      "campos_preservados": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "requisito_acesso",
+        "salas_vip",
+        "transfere_para"
+      ],
+      "bandeira_ref": "mastercard-black"
     },
     {
       "slug": "c6-carbon",
@@ -3057,31 +3019,27 @@
       "emissor": "C6 Bank",
       "bandeira": "Mastercard",
       "categoria": "Black",
-      "bandeira_ref": "mastercard-black",
-      "imagem": null,
       "anuidade": 1176,
       "anuidade_parcelas": 12,
-      "anuidade_modelo": "anuidade",
-      "anuidade_observacao": "12 parcelas de R$ 98, com isencao nos 3 primeiros meses.",
       "isencao": {
-        "tipo": "gasto_ou_investimento",
+        "tipo": "gasto_mensal",
         "valor": 8000,
-        "regra": "Isencao nos 3 primeiros meses para quem solicita pela primeira vez. Depois, 100% com gasto mensal a partir de R$ 8.000 (somando adicionais) ou com R$ 50.000 investidos em CDBs do C6. A isencao por gastos e creditada na fatura seguinte ao atingimento."
+        "regra": "Anuidade zero para quem gasta a partir de R$ 8 mil por mês na fatura (titular + adicionais). Alternativamente, isenção também para quem investe R$ 50 mil em renda fixa emitida pelo C6 Bank ou R$ 1 milhão em investimentos no Brasil e/ou exterior. Fora dessas condições, a anuidade é de R$ 98/mês."
       },
       "renda_minima": null,
-      "adicionais_gratis": 6,
+      "requisito_acesso": "Sujeito a análise de crédito interna pelo C6 Bank. O cartão aparece como opção de upgrade na aba Cartões do app quando disponível para o perfil do cliente. Não há renda mínima divulgada publicamente.",
+      "adicionais_gratis": 10,
       "pontos": {
-        "nacional": 2.5,
-        "internacional": 2.5,
+        "nacional": null,
+        "internacional": 3.5,
         "unidade": "pts/USD",
-        "observacao": "Padrao 2,5. Sobe por faixa: 2,7 com R$ 250 mil a R$ 500 mil em renda fixa ou pagamentos elegiveis acima de R$ 4 mil/mes; 3,0 com R$ 500 mil a R$ 1 milhao; ate 3,5 a partir de R$ 1 milhao."
+        "observacao": "Pontuação escalonada conforme investimentos: 2,5 pts/US$1 até R$250 mil investidos; 2,7 pts/US$1 entre R$250 mil e R$500 mil (ou pagamentos elegíveis a partir de R$4 mil/mês); 3 pts/US$1 entre R$500 mil e R$1 milhão; 3,5 pts/US$1 acima de R$1 milhão investido. Pontos não expiram, sujeito a análise."
       },
       "cashback": {
-        "nacional": null,
-        "internacional": null,
-        "observacao": "Até 1,7% ao converter pontos C6 Átomos em dinheiro na conta (condições consultadas no app antes do resgate)."
+        "percentual": 1.7,
+        "regra": "Até 1,7% de cashback ao converter os pontos C6 Átomos em dinheiro na conta."
       },
-      "programa_proprio": "C6 Atomos",
+      "programa_proprio": "C6 Átomos",
       "transfere_para": [
         "Livelo",
         "Smiles (Gol)",
@@ -3090,136 +3048,109 @@
         "TAP Miles&Go"
       ],
       "spread": null,
-      "iof_isento": false,
+      "iof": "6,38% sobre compras internacionais com cartão de crédito (alíquota padrão federal). Via C6 Conta Global o IOF é de 1,1% por transferência.",
+      "validade_pontos": "Pontos não expiram (sujeito a análise)",
       "salas_vip": [
         {
           "programa": "DragonPass",
-          "regra": "4 acessos/ano gratuitos em mais de 1.200 salas ao redor do mundo, divididos entre titular, adicionais, acompanhantes e convidados. A partir do 5º acesso, cobrança de tarifa adicional."
+          "regra": "4 acessos/ano gratuitos a lounges no Brasil e no mundo, divididos entre titular, adicionais e acompanhantes."
+        },
+        {
+          "programa": "Espaço C6 Bank",
+          "regra": "4 acessos/ano gratuitos a lounges no Brasil e no mundo, divididos entre titular, adicionais e acompanhantes."
         },
         {
           "programa": "W Premium",
-          "regra": "Incluído nos 4 acessos/ano gratuitos. Acesso mediante apresentação do cartão físico na entrada."
-        },
-        {
-          "programa": "Espaço C6 Bank (Mastercard Black) – Terminal 3 Guarulhos",
-          "regra": "Acesso ilimitado para clientes com gasto acumulado de R$ 15.000 no crédito nos 3 meses anteriores ao mês de acesso. Válido para titular, adicionais e acompanhantes. Requer validação de US$ 1 (estornado) via app DragonPass. A partir do 5º acesso (sem critério de gasto atingido), tarifa de R$ 200/entrada."
-        },
-        {
-          "programa": "Lounge Key (Mastercard Black)",
-          "regra": "Acesso mediante cobrança de US$ 35/acesso feita na fatura pela Mastercard. Clientes C6 Carbon com mais de R$ 1 milhão investidos têm acesso ilimitado e gratuito para titular, adicionais e acompanhantes."
+          "regra": "4 acessos/ano gratuitos a lounges no Brasil e no mundo, divididos entre titular, adicionais e acompanhantes."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "C6 Tag (pedágio e estacionamento)",
-          "descricao": "Até 4 tags gratuitas para até 4 veículos, condicionado ao uso do cartão C6 Carbon na função crédito no mês anterior ao da cobrança da mensalidade."
-        },
-        {
-          "titulo": "Cartões adicionais gratuitos",
-          "descricao": "Até 10 cartões adicionais sem custo, com os mesmos benefícios do titular."
-        },
-        {
-          "titulo": "Seguro Viagem",
-          "descricao": "Cobertura para despesas médicas e extravio de bagagens em viagens internacionais."
-        },
-        {
-          "titulo": "Proteção de Compras e Garantia Estendida",
-          "descricao": "Proteção para itens adquiridos com o cartão durante viagens."
-        },
-        {
-          "titulo": "Concierge de Viagens",
-          "descricao": "Assistência na organização de roteiros, reservas em hotéis e restaurantes exclusivos (benefício Mastercard Black)."
-        },
-        {
-          "titulo": "Isenção de Rolha",
-          "descricao": "Sem taxa de rolha em mais de 200 restaurantes parceiros (benefício Mastercard Black / Priceless Cities)."
-        },
-        {
-          "titulo": "Cobertura de Aluguel de Automóvel",
-          "descricao": "Proteção contra danos por colisão, roubo ou incêndio acidental em veículos alugados com o cartão."
-        },
-        {
-          "titulo": "Cheque Especial Beneficiado",
-          "descricao": "Até 10 dias sem cobrança de juros no cheque especial por mês, após ativação no app (sujeito a elegibilidade)."
-        },
-        {
-          "titulo": "Isenção de taxa de abertura da C6 Conta Global",
-          "descricao": "Clientes C6 Carbon não pagam tarifa de abertura da Conta Global (conta em dólar e euro)."
-        },
-        {
-          "titulo": "C6+Benefícios",
-          "descricao": "Descontos exclusivos em grandes marcas parceiras."
-        },
-        {
-          "titulo": "Acesso ilimitado a salas VIP (clientes investidores)",
-          "descricao": "Clientes com R$ 1 milhão ou mais investidos no C6 Bank têm acesso ilimitado e gratuito às salas VIP dos programas DragonPass, Lounge Key e W Premium para titular, adicionais e acompanhantes."
-        },
-        {
-          "titulo": "Mastercard Surpreenda / Priceless Cities",
-          "descricao": "Acesso a descontos em restaurantes em diferentes localidades e outros benefícios da plataforma Mastercard."
-        },
-        {
-          "titulo": "Carteiras digitais",
-          "descricao": "Compatível com Apple Pay, Google Pay e Samsung Wallet."
-        },
-        {
-          "titulo": "Pontos Atomos que nao expiram",
-          "descricao": "Adesao gratuita e pontos sem prazo de validade."
-        },
-        {
-          "titulo": "Transferencia 1:1",
-          "descricao": "Pontos Atomos transferidos na paridade 1:1 para LATAM Pass, Smiles, Azul Fidelidade, TAP Miles&Go e Livelo."
-        },
-        {
-          "titulo": "Pague com Pontos (PWR)",
-          "descricao": "Uso dos pontos para abater compras ja lancadas na fatura, em parceria com a Mastercard."
+          "titulo": "Investidor C6 Carbon",
+          "descricao": "A partir de R$ 1 milhão investidos, atendimento exclusivo, assessor de investimentos e acesso ilimitado a salas VIP no mundo todo."
         },
         {
           "titulo": "C6 Tag",
-          "descricao": "Quatro tags de pedagio gratuitas para quem usou o cartao ao menos uma vez no mes anterior."
+          "descricao": "Até 4 tags de pedágio e estacionamento gratuitas, bastando ter utilizado o cartão no crédito no mês anterior."
+        },
+        {
+          "titulo": "C6 Conta Global",
+          "descricao": "Conta para comprar, sacar e transferir em dólar e euro sem custo de abertura."
+        },
+        {
+          "titulo": "Assistente de viagens 24h",
+          "descricao": "Assistência global de emergência 24 horas, 365 dias por ano, em português."
+        },
+        {
+          "titulo": "Concierge",
+          "descricao": "Serviço de concierge disponível para o titular do cartão."
+        },
+        {
+          "titulo": "Priceless Cities",
+          "descricao": "Acesso a experiências exclusivas do programa Priceless Cities da Mastercard."
         }
       ],
-      "link_solicitacao": "https://www.c6bank.com.br/",
-      "fontes": [
-        "https://ajuda.c6bank.com.br/s/article/Qual-a-taxa-para-compras-internacionais-com-o-cartao-C6-Bank",
-        "https://www.c6bank.com.br/blog/beneficios-exclusivos-para-investimentos-acima-de-1-milhao",
-        "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
-        "https://www.c6bank.com.br/blog/c6-bank-lanca-carbon",
-        "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas",
-        "https://www.c6bank.com.br/blog/c6-bank-vai-oferecer-pontos-atomos-adicionais-para-clientes-que-investem-a-partir-de-r-250-mil-no-banco",
-        "https://www.c6bank.com.br/blog/c6-carbon-como-conseguir",
-        "https://www.c6bank.com.br/blog/como-funciona-o-c6-carbon",
-        "https://www.c6bank.com.br/blog/como-pagar-menos-spread-de-cambio",
-        "https://www.c6bank.com.br/blog/isencao-de-anuidade-cartoes-black-c6",
-        "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-carbon-mastercard-black",
-        "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
-        "https://www.c6bank.com.br/cartao-de-credito/",
-        "https://www.c6bank.com.br/guia-cartao-black/",
-        "https://www.c6bank.com.br/programa-de-pontos-atomos/"
-      ],
-      "campos_pendentes": [
-        "renda_minima",
-        "salas_vip.regra",
-        "spread"
-      ],
-      "verificado_em": "2026-07-27",
-      "nota_curadoria": "Anuidade confirmada em R$ 1.176 na pagina oficial. Fontes secundarias ainda publicam R$ 1.020 e R$ 780, valores desatualizados.",
+      "link_solicitacao": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+      "nota_curadoria": "Atenção à anuidade: só é zerada com gastos mensais de R$ 8 mil ou investimentos relevantes (R$ 50 mil em renda fixa C6 ou R$ 1 milhão em investimentos); fora disso, o custo é R$ 98/mês. A pontuação em pts/US$ é escalonada por volume investido, podendo variar de 2,5 a 3,5 pts/US$1, o que exige checagem do perfil do cliente antes de prometer a taxa máxima. Não há confirmação oficial sobre transferência de pontos para programas de milhagem parceiros nem sobre renda mínima exigida para aprovação.",
       "procedencia": {
+        "emissor": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "bandeira": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
         "anuidade": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
         "anuidade_parcelas": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
         "isencao": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
-        "pontos": "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-carbon-mastercard-black",
-        "adicionais_gratis": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
+        "adicionais_gratis": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "pontos": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
         "cashback": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "salas_vip": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "validade_pontos": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
         "iof": "https://www.c6bank.com.br/blog/c6-bank-lanca-carbon",
-        "salas_vip": "https://www.c6bank.com.br/blog/c6-carbon-como-conseguir",
         "transfere_para": "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas",
-        "requisito_acesso": "https://www.c6bank.com.br/guia-cartao-black/",
-        "validade_pontos": "https://www.c6bank.com.br/programa-de-pontos-atomos/"
+        "requisito_acesso": "https://www.c6bank.com.br/guia-cartao-black/"
       },
-      "iof": "6,38% sobre compras internacionais com cartão de crédito (alíquota padrão federal). Via C6 Conta Global o IOF é de 1,1% por transferência.",
-      "requisito_acesso": "Sujeito a análise de crédito interna pelo C6 Bank. O cartão aparece como opção de upgrade na aba Cartões do app quando disponível para o perfil do cliente. Não há renda mínima divulgada publicamente.",
-      "validade_pontos": "Não expiram"
+      "fontes": [
+        "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "https://www.c6bank.com.br/blog/c6-bank-lanca-carbon",
+        "https://www.c6bank.com.br/guia-cartao-black/",
+        "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas"
+      ],
+      "verificado_em": "2026-07-30",
+      "campos_pendentes": [
+        "renda_minima",
+        "spread"
+      ],
+      "campos_rejeitados": [],
+      "campos_preservados": [
+        "iof",
+        "requisito_acesso",
+        "transfere_para"
+      ],
+      "bandeira_ref": "mastercard-black",
+      "conflitos": [
+        {
+          "campo": "adicionais_gratis",
+          "antes": 6,
+          "depois": 10,
+          "variacao_pct": 66.7,
+          "fonte_antes": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
+          "fonte_depois": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+          "valor_mantido": "depois",
+          "motivo": null,
+          "detectado_em": "2026-07-30",
+          "resolvido": false
+        },
+        {
+          "campo": "pontos.internacional",
+          "antes": 2.5,
+          "depois": 3.5,
+          "variacao_pct": 40,
+          "fonte_antes": "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-carbon-mastercard-black",
+          "fonte_depois": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+          "valor_mantido": "depois",
+          "motivo": null,
+          "detectado_em": "2026-07-30",
+          "resolvido": false
+        }
+      ]
     },
     {
       "slug": "c6-graphene",
@@ -3378,7 +3309,7 @@
       "nome": "CAIXA Elo Nanquim",
       "emissor": "CAIXA",
       "bandeira": "Elo",
-      "categoria": "Nanquim (topo de linha Elo CAIXA, equivalente a Infinite/Black)",
+      "categoria": "Nanquim",
       "anuidade": 828,
       "anuidade_parcelas": 12,
       "isencao": {
@@ -3387,20 +3318,19 @@
         "regra": "Cashback creditado na fatura mediante pagamento (entre o mínimo e o total) até a data de vencimento. Compras crédito à vista e parceladas, nacionais e internacionais, do titular e adicionais, contabilizadas pelo valor da parcela lançada. Excluídos: parcelamento de fatura, saque, IOF, juros, multa, anuidade e demais tarifas. Cartões contratados antes de 03/04/2023 devem solicitar adesão via Central de Atendimento."
       },
       "renda_minima": null,
-      "requisito_acesso": "Limite mínimo de crédito de R$ 15.000,00. Idade mínima 18 anos (ou 16 anos emancipado/assistido com renda própria). Sujeito a análise de risco de crédito pela CAIXA.",
+      "requisito_acesso": "Limite mínimo de crédito para contratação de R$ 15.000,00.",
       "adicionais_gratis": true,
       "pontos": {
         "nacional": 2.3,
         "internacional": 3.2,
         "unidade": "pts/USD",
-        "observacao": "Pontos calculados com base na cotação do dólar do dia da compra. Pontos fracionados: frações de 0,01–0,49 arredondadas para zero; frações de 0,50–0,99 arredondadas para 1 ponto. Pontos acumulados via Programa Pontos CAIXA (em migração para Programa de Vantagens Uau CAIXA)."
+        "observacao": "Programa Pontos CAIXA: 2,3 pontos por US$ 1,00 em compras nacionais e 3,2 pontos por US$ 1,00 em compras internacionais."
       },
       "cashback": {
-        "nacional": null,
-        "internacional": null,
-        "observacao": "Cashback restrito à anuidade (ver campo isencao). Não há cashback genérico sobre compras."
+        "percentual": 100,
+        "regra": "Cashback sobre a parcela mensal da anuidade: 100% de devolução para fatura mensal a partir de R$ 8.000,00 e 50% para fatura a partir de R$ 4.000,00, condicionado ao pagamento da fatura (mínimo ou total) até o vencimento; não considera saque, IOF, juros, multa, anuidade e tarifas."
       },
-      "programa_proprio": "Programa Pontos CAIXA (em transição para Programa de Vantagens Uau CAIXA)",
+      "programa_proprio": "Programa Pontos CAIXA",
       "transfere_para": [
         "Latam Pass",
         "Smiles (Gol)",
@@ -3413,151 +3343,176 @@
       "salas_vip": [
         {
           "programa": "Priority Pass",
-          "regra": "2 acessos gratuitos anuais por cartão elegível (BIN iniciado em 651658 ou 651659 — padrão internacional). Acessos podem ser divididos entre titular e acompanhantes, via aplicativo Priority Pass."
+          "regra": "Acesso a salas VIP via benefício selecionável na plataforma Elo Flex (o titular pode escolher até 5 benefícios simultâneos entre 11 disponíveis)."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Plataforma Elo Flex — 11 benefícios configuráveis",
-          "descricao": "O Nanquim conta com 11 benefícios disponíveis na plataforma Elo Flex, dos quais até 5 podem ser ativos simultaneamente. O titular pode trocar os benefícios a qualquer momento entre as categorias Auto, Casa, Pet, Compras, entre outras."
+          "titulo": "Cashback de Anuidade",
+          "descricao": "Devolução de até 100% da parcela mensal da anuidade conforme valor gasto na fatura."
         },
         {
-          "titulo": "Seguros de viagem",
-          "descricao": "O cartão oferece uma série de seguros para tranquilidade nas viagens (coberturas específicas não detalhadas na página do produto; consultar condições completas na bandeira Elo)."
+          "titulo": "Sala VIP Priority Pass",
+          "descricao": "Acesso a salas VIP no Brasil e exterior como um dos benefícios selecionáveis via Elo Flex."
         },
         {
-          "titulo": "Saques no exterior",
-          "descricao": "Disponível para cartões Elo Nanquim nas redes Pulse (caixas eletrônicos). Para compras internacionais presenciais, procurar pelas marcas Discover ou Diners Club International."
+          "titulo": "Seguro Viagem",
+          "descricao": "Benefício selecionável na plataforma Elo Flex para proteção em viagens."
         },
         {
-          "titulo": "Parcelamento em até 24x",
-          "descricao": "Compras podem ser parceladas sem juros (nos estabelecimentos credenciados) ou com juros em até 24 meses."
+          "titulo": "Assistência Auto",
+          "descricao": "Benefício selecionável via Elo Flex com assistência para veículos."
         },
         {
-          "titulo": "Isenção de anuidade para adicionais",
-          "descricao": "Todos os cartões adicionais vinculados à proposta do titular são isentos de anuidade (para propostas aprovadas a partir de 02/09/2020)."
+          "titulo": "tagCAIXA com isenção da mensalidade",
+          "descricao": "Isenção da mensalidade da tag de pedágio como benefício selecionável via Elo Flex."
         },
         {
-          "titulo": "App Cartões CAIXA",
-          "descricao": "Gerenciamento completo do cartão: consulta de fatura, bloqueio temporário, cancelamento, controle de gastos e resgate de pontos."
+          "titulo": "Programa Pontos CAIXA",
+          "descricao": "Acúmulo de pontos por gasto em compras nacionais e internacionais, trocáveis por passagens aéreas e produtos de parceiros da CAIXA."
         }
       ],
       "link_solicitacao": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+      "nota_curadoria": "Atenção: o cartão exige limite mínimo de crédito de R$ 15.000,00 para contratação, o que restringe o acesso a um público de renda mais alta. A anuidade é cobrada em 12 parcelas de R$ 69,00, mas pode ser total ou parcialmente reembolsada via cashback conforme o gasto mensal na fatura. Os benefícios, incluindo sala VIP Priority Pass, são flexíveis e escolhidos na plataforma Elo Flex, limitados a 5 simultâneos entre 11 opções, então o acesso a salas VIP não é automático.",
+      "procedencia": {
+        "anuidade": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "anuidade_parcelas": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "requisito_acesso": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "pontos": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "cashback": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "salas_vip": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "isencao": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "adicionais_gratis": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
+        "transfere_para": "https://caixanoticias.caixa.gov.br/Paginas/Notícias/2025/01-JANEIRO/CAIXA-disponibiliza-pontos-extras-para-clientes-de-cartao-de-credito-em-seu-164-aniversario.aspx",
+        "validade_pontos": "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx"
+      },
       "fontes": [
         "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
-        "https://www.caixa.gov.br/voce/cartoes/credito/simulador-cartoes/Paginas/default.aspx",
-        "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
-        "https://www.caixa.gov.br/voce/cartoes/credito/vantagens/Paginas/default.aspx",
-        "https://www.caixa.gov.br/voce/cartoes/perguntas-frequentes/Paginas/default.aspx",
-        "https://www.caixa.gov.br/Downloads/tabelas-tarifas-pessoa-fisica-pessoa-juridica/tabela-beneficios-e-servicos-vinculados-ao-cartao-diferenciado.pdf",
-        "https://www.caixa.gov.br/Downloads/cartoes-caixa-pessoa-fisica-regulamentos/Regulamento_Programa_Pontos_CAIXA.pdf",
-        "https://www.caixa.gov.br/Downloads/cartoes-caixa-pessoa-fisica-regulamentos/Programa_Pontos_Cartoes_CAIXA.pdf",
-        "https://www.caixa.gov.br/Downloads/cartoes-caixa-promocoes/Regulamento-Mes-do-Cliente-2024-Carteiras-Digitais.pdf",
-        "https://caixanoticias.caixa.gov.br/Paginas/Notícias/2025/01-JANEIRO/CAIXA-disponibiliza-pontos-extras-para-clientes-de-cartao-de-credito-em-seu-164-aniversario.aspx"
+        "https://caixanoticias.caixa.gov.br/Paginas/Notícias/2025/01-JANEIRO/CAIXA-disponibiliza-pontos-extras-para-clientes-de-cartao-de-credito-em-seu-164-aniversario.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx"
       ],
+      "verificado_em": "2026-07-30",
       "campos_pendentes": [
         "iof",
         "renda_minima",
         "spread"
       ],
-      "nota_curadoria": "Anuidade oficial confirmada em R$ 828,00 (12x R$ 69,00) pelas páginas do produto, simulador e programa de pontos da CAIXA. A tabela de tarifas PDF (tabela-beneficios-e-servicos-vinculados-ao-cartao-diferenciado.pdf) apresenta valor de R$ 921,00 para o CAIXA Elo Nanquim — divergência pode indicar atualização não sincronizada no PDF ou encargos adicionais (ex: tarifa de emissão). Recomenda-se confirmação junto à agência CAIXA. Os parceiros de transferência (Latam Pass, Smiles, TudoAzul, Dotz) foram confirmados via CAIXA Notícias oficial, mas a taxa de conversão (ratio pts CAIXA : milhas/pontos parceiro) não foi encontrada em fonte oficial e consta como campo pendente. O Programa Pontos CAIXA está em processo de migração para o Programa de Vantagens Uau CAIXA (uaucaixa.com.br), conforme regulamento v021 de setembro de 2025.",
-      "procedencia": {
-        "anuidade": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
-        "anuidade_parcelas": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
-        "isencao": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
-        "requisito_acesso": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
-        "adicionais_gratis": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
-        "pontos": "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
-        "validade_pontos": "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
-        "salas_vip": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx",
-        "transfere_para": "https://caixanoticias.caixa.gov.br/Paginas/Notícias/2025/01-JANEIRO/CAIXA-disponibiliza-pontos-extras-para-clientes-de-cartao-de-credito-em-seu-164-aniversario.aspx",
-        "programa_proprio": "https://www.caixa.gov.br/Downloads/cartoes-caixa-pessoa-fisica-regulamentos/Programa_Pontos_Cartoes_CAIXA.pdf",
-        "cashback": "https://www.caixa.gov.br/Downloads/cartoes-caixa-promocoes/Regulamento-Mes-do-Cliente-2024-Carteiras-Digitais.pdf",
-        "beneficios_banco": "https://www.caixa.gov.br/voce/cartoes/credito/nanquim/paginas/default.aspx"
-      },
-      "vigencia_ate": null,
-      "analise": null,
-      "bandeira_ref": "elo-flex",
-      "verificado_em": "2026-07-28"
+      "campos_rejeitados": [],
+      "campos_preservados": [
+        "adicionais_gratis",
+        "isencao",
+        "link_solicitacao",
+        "transfere_para",
+        "validade_pontos"
+      ],
+      "bandeira_ref": "elo-flex"
     },
     {
       "slug": "caixa-icone-visa",
-      "nome": "CAIXA Icone Visa",
+      "nome": "CAIXA Ícone Visa",
       "emissor": "CAIXA",
       "bandeira": "Visa",
       "categoria": "Infinite",
-      "bandeira_ref": "visa-infinite",
-      "imagem": null,
       "anuidade": 1650,
       "anuidade_parcelas": 12,
       "isencao": {
-        "tipo": "segmento_ou_gasto",
+        "tipo": "outro",
         "valor": null,
-        "regra": "Cobrada somente apos o desbloqueio. Clientes Private tem isencao por um ano. Demais recebem cashback de 50% ou 100% da parcela mensal conforme faixa de gasto."
+        "regra": "Clientes do segmento Private têm isenção da anuidade no primeiro ano. Cartões adicionais são isentos de anuidade permanentemente."
       },
       "renda_minima": null,
-      "requisito_acesso": "Comercializado por convite ou via gerente de relacionamento, sem exigencia de valor minimo de aplicacoes. Limite de credito minimo de R$ 100.000.",
+      "requisito_acesso": "Limite de crédito mínimo para comercialização de R$ 100.000,00.",
       "adicionais_gratis": 5,
       "pontos": {
-        "nacional": 4,
+        "nacional": 5,
         "internacional": 6,
         "unidade": "pts/USD",
-        "observacao": "Pontuacao base de 4 pontos nacionais, elevada a 5 em carater promocional ate 20/10/2026. Pontos nao expiram."
+        "observacao": "5 pontos por dólar em compras nacionais em caráter promocional até 20/10/2026 (regra padrão é 4 pontos por dólar); 6 pontos por dólar em compras internacionais."
       },
-      "cashback": null,
-      "programa_proprio": "Pontos CAIXA / Uau CAIXA",
+      "cashback": {
+        "percentual": 100,
+        "regra": "Cashback sobre a parcela mensal da anuidade: 50% para fatura mensal a partir de R$ 12.500,00 e 100% para fatura mensal a partir de R$ 25.000,00."
+      },
+      "programa_proprio": "Uau CAIXA",
       "transfere_para": [],
       "spread": null,
       "iof": 0,
+      "validade_pontos": "Pontuação sem prazo de expiração.",
       "salas_vip": [
         {
-          "programa": "Visa Airport Companion (Dragon Pass)",
-          "regra": "Acesso ilimitado para titular e adicionais, sem gasto minimo no cartao"
+          "programa": "LoungeKey (Visa Infinite)",
+          "regra": "Acesso ilimitado para titular e adicionais, sem gasto mínimo, mais até 10 acessos para convidados por ano."
         },
         {
-          "programa": "LoungeKey",
-          "regra": "Acesso ilimitado para titular e adicionais, sem gasto minimo no cartao"
+          "programa": "Visa Airport Companion",
+          "regra": "Acesso ilimitado para titular e adicionais, sem gasto mínimo, mais até 10 acessos para convidados por ano."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "IOF zero em compras internacionais",
-          "descricao": "Isencao de IOF sem limite de gastos, vigente ate janeiro de 2027."
+          "descricao": "Isenção de IOF em compras internacionais, sem limite de gastos, válida até janeiro de 2027."
         },
         {
-          "titulo": "Cashback da anuidade",
-          "descricao": "Devolucao de 50% ou 100% da parcela mensal da anuidade conforme o volume de gastos."
+          "titulo": "tagCAIXA gratuita",
+          "descricao": "Tag para pedágio e estacionamento sem custo de mensalidade."
         },
         {
-          "titulo": "Pontuacao promocional",
-          "descricao": "5 pontos por dolar em compras nacionais ate 20/10/2026, acima da regra padrao de 4."
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Fila de segurança diferenciada com até 5 acompanhantes em GRU (terminais 2 e 3) e GIG (piso 1)."
+        },
+        {
+          "titulo": "Visa Concierge",
+          "descricao": "Serviço de concierge disponível para o titular do cartão."
+        },
+        {
+          "titulo": "Visa Luxury Hotel Collection",
+          "descricao": "Acesso a coleção de hotéis de luxo com benefícios exclusivos."
+        },
+        {
+          "titulo": "Cashback de anuidade",
+          "descricao": "Devolução de até 100% da parcela mensal da anuidade conforme faturamento mensal do cartão."
         }
       ],
       "link_solicitacao": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
-      "fontes": [
-        "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
-        "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
-        "https://www.caixa.gov.br/voce/cartoes/credito/vantagens/Paginas/default.aspx"
-      ],
-      "campos_pendentes": [
-        "cashback",
-        "isencao.faixas",
-        "renda_minima",
-        "spread",
-        "transfere_para"
-      ],
-      "nota_curadoria": "IOF zero e pontuacao de 5 pontos nacionais sao temporarios. Campos com prazo devem ser revisados antes de 20/10/2026 e janeiro/2027.",
-      "verificado_em": "2026-07-27",
+      "nota_curadoria": "Cartão de nicho, exige limite de crédito mínimo de R$ 100.000,00 para comercialização, o que restringe fortemente o acesso. A anuidade de R$ 1.650,00 pode ser reduzida via cashback sobre gastos elevados (100% de desconto a partir de R$ 25.000,00 de fatura mensal). A pontuação de 5 pts/USD em compras nacionais é promocional até 20/10/2026, caindo para 4 pts/USD depois; atenção a essa mudança futura na régua de valor.",
       "procedencia": {
         "anuidade": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
         "anuidade_parcelas": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
         "isencao": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+        "requisito_acesso": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
         "adicionais_gratis": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
         "pontos": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
-        "salas_vip": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+        "cashback": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
         "iof": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
-        "requisito_acesso": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx"
-      }
+        "validade_pontos": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+        "salas_vip": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx"
+      },
+      "fontes": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx"
+      ],
+      "verificado_em": "2026-07-30",
+      "campos_pendentes": [
+        "renda_minima",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": [],
+      "bandeira_ref": "visa-infinite",
+      "conflitos": [
+        {
+          "campo": "pontos.nacional",
+          "antes": 4,
+          "depois": 5,
+          "variacao_pct": 25,
+          "fonte_antes": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+          "fonte_depois": "https://www.caixa.gov.br/voce/cartoes/credito/icone/Paginas/default.aspx",
+          "valor_mantido": "depois",
+          "motivo": null,
+          "detectado_em": "2026-07-30",
+          "resolvido": false
+        }
+      ]
     },
     {
       "slug": "caixa-visa-infinite",
@@ -3565,58 +3520,83 @@
       "emissor": "CAIXA",
       "bandeira": "Visa",
       "categoria": "Infinite",
-      "bandeira_ref": "visa-infinite",
-      "imagem": null,
-      "anuidade": null,
-      "anuidade_parcelas": null,
-      "anuidade_modelo": "anuidade",
+      "anuidade": 828,
+      "anuidade_parcelas": 12,
       "isencao": {
-        "tipo": "gasto",
-        "valor": null,
-        "regra": "Cashback de 50% ou 100% da parcela mensal da anuidade conforme faixa de gasto, condicionado ao pagamento da fatura ate o vencimento. Nao consideram-se parcelamento de fatura, saque, IOF, juros, multa, anuidade, demais tarifas e compras na funcao debito."
+        "tipo": "gasto_mensal",
+        "valor": 8000,
+        "regra": "Cashback de até 100% da parcela mensal da anuidade: fatura mensal a partir de R$ 8.000,00 gera 100% de cashback; fatura mensal a partir de R$ 4.000,00 gera 50% de cashback. É necessário pagar a fatura (entre o mínimo e o total) até o vencimento; não contam parcelamentos, saques, IOF, juros, multa, anuidade e demais tarifas."
       },
       "renda_minima": null,
+      "requisito_acesso": "Limite mínimo de contratação de R$ 15.000,00.",
       "adicionais_gratis": null,
-      "pontos": null,
+      "pontos": {
+        "nacional": 2.3,
+        "internacional": 3.2,
+        "unidade": "pts/USD",
+        "observacao": "2,3 pontos por US$ 1,00 em compras nacionais e 3,2 pontos por US$ 1,00 em compras internacionais."
+      },
       "cashback": null,
       "programa_proprio": "Uau CAIXA",
       "transfere_para": [],
       "spread": null,
-      "iof_isento": false,
+      "iof": null,
+      "validade_pontos": null,
       "salas_vip": [
         {
-          "programa": "Visa Infinite Fast Pass",
-          "regra": "Titular mais ate 5 acompanhantes, em GRU terminais 2 e 3 e no GIG piso 1"
+          "programa": "Visa Airport Companion",
+          "regra": "2 acessos gratuitos anuais em mais de 1.200 salas VIP no Brasil e no mundo, utilizáveis pelo titular, convidados e dependentes; descontos em restaurantes, lojas, farmácias e estacionamentos em mais de 600 aeroportos internacionais em 140 países."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Cashback da anuidade",
-          "descricao": "Devolucao na fatura de 50% ou 100% da parcela mensal da anuidade conforme o volume de gastos concentrados no cartao."
+          "titulo": "Cashback de anuidade",
+          "descricao": "Cashback de até 100% da parcela mensal da anuidade conforme valor da fatura paga no mês."
+        },
+        {
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Acesso a fila de segurança diferenciada para o titular e até 5 acompanhantes nos aeroportos de Guarulhos (GRU, terminais 2 e 3) e Galeão (GIG, piso 1)."
+        },
+        {
+          "titulo": "Visa Concierge",
+          "descricao": "Serviço de concierge exclusivo para clientes Visa Infinite, com suporte personalizado em viagens, reservas e experiências."
+        },
+        {
+          "titulo": "Visa Luxury Hotel Collection",
+          "descricao": "Acesso a coleção de hotéis de luxo com benefícios exclusivos como upgrades e late check-out."
+        },
+        {
+          "titulo": "Isenção de anuidade para adicionais",
+          "descricao": "Cartões adicionais não possuem cobrança de anuidade."
         }
       ],
       "link_solicitacao": "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx",
+      "nota_curadoria": "O grande diferencial deste cartão é o mecanismo de cashback da própria anuidade (até 100% de volta), o que na prática pode zerar o custo para quem gasta a partir de R$ 8.000/mês na fatura — mas atenção às exclusões (saques, IOF, parcelamentos, juros). O limite mínimo de R$ 15.000,00 funciona como principal barreira de acesso, já que não há renda mínima explicitada na fonte. Os benefícios de viagem (Fast Pass, Concierge, Luxury Hotel Collection) são majoritariamente da bandeira Visa Infinite, não exclusivos da CAIXA, e não há informação sobre programa de pontos próprio ou parceiros de transferência.",
+      "procedencia": {
+        "anuidade": "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx",
+        "anuidade_parcelas": "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx",
+        "isencao": "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx",
+        "requisito_acesso": "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx",
+        "pontos": "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx",
+        "salas_vip": "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx"
+      },
       "fontes": [
         "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx"
       ],
+      "verificado_em": "2026-07-30",
       "campos_pendentes": [
         "adicionais_gratis",
-        "anuidade",
-        "anuidade_parcelas",
         "cashback",
         "iof",
-        "isencao.valor",
-        "pontos",
         "renda_minima",
-        "requisito_acesso",
         "spread",
         "transfere_para"
       ],
-      "verificado_em": "2026-07-27",
-      "procedencia": {
-        "isencao": "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx",
-        "salas_vip": "https://www.caixa.gov.br/voce/cartoes/credito/infinite/Paginas/default.aspx"
-      }
+      "campos_rejeitados": [],
+      "campos_preservados": [
+        "programa_proprio"
+      ],
+      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "caixa-visa-infinite-investidores",
@@ -3624,79 +3604,98 @@
       "emissor": "CAIXA",
       "bandeira": "Visa",
       "categoria": "Infinite",
-      "bandeira_ref": "visa-infinite",
-      "imagem": null,
       "anuidade": 1650,
       "anuidade_parcelas": 12,
       "isencao": {
-        "tipo": "segmento_ou_gasto",
-        "valor": null,
-        "regra": "Cobrada somente apos o desbloqueio. Adicionais isentos. Clientes Private tem isencao permanente enquanto enquadrados no segmento. Demais clientes recebem cashback de 50% ou 100% da parcela mensal conforme faixa de gasto, com adesao automatica."
+        "tipo": "investimento",
+        "valor": 1000000,
+        "regra": "Clientes do segmento Private, com mais de R$ 1 milhão investidos na CAIXA, têm isenção permanente da anuidade enquanto enquadrados nesse nicho. Adicionalmente, há programa de cashback que pode cobrir de 50% a 100% da parcela mensal da anuidade conforme o valor da fatura."
       },
       "renda_minima": null,
-      "requisito_acesso": "Exclusivo para pessoa fisica com mais de R$ 1 milhao investido na CAIXA. Limite de credito minimo de R$ 50.000.",
+      "requisito_acesso": "Pessoa física com mais de R$ 1 milhão investidos na CAIXA; limite de crédito mínimo de R$ 50.000,00",
       "adicionais_gratis": null,
       "pontos": {
         "nacional": 4,
         "internacional": 6,
         "unidade": "pts/USD",
-        "observacao": "Pagina do produto informa 4 pontos nacionais. A pagina do Programa Pontos CAIXA informa 5 pontos nacionais em carater promocional ate 20/10/2026. Pontos nao expiram."
+        "observacao": "4 pontos por dólar (ou equivalente em reais) em compras nacionais e 6 pontos por dólar em compras internacionais; pontos não expiram."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 100,
+        "regra": "Cashback sobre a parcela mensal da anuidade: 50% de desconto para fatura mensal a partir de R$ 12.500,00 e 100% de desconto para fatura mensal a partir de R$ 25.000,00. Participação automática."
+      },
       "programa_proprio": "Pontos CAIXA",
       "transfere_para": [
-        "Azul Fidelidade",
-        "Dotz",
-        "LATAM Pass",
+        "TudoAzul",
         "Smiles",
-        "TAP Miles&Go"
+        "LATAM Pass",
+        "TAP Miles&Go",
+        "Dotz"
       ],
       "spread": null,
       "iof": null,
+      "validade_pontos": "Não expira",
       "salas_vip": [
         {
-          "programa": "Visa Airport Companion (Dragon Pass)",
-          "regra": "Acesso ilimitado para titular e adicionais"
+          "programa": "LoungeKey",
+          "regra": "Acesso ilimitado para o titular; até 10 acessos anuais para convidados, dentro do total de 20 acessos combinados com o Visa Airport Companion."
         },
         {
-          "programa": "LoungeKey",
-          "regra": "Acesso ilimitado para titular e adicionais"
+          "programa": "Visa Airport Companion",
+          "regra": "Acesso ilimitado para o titular; até 10 acessos anuais para convidados, dentro do total de 20 acessos combinados com o LoungeKey."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Cashback da anuidade",
-          "descricao": "Devolucao de 50% ou 100% da parcela mensal da anuidade conforme o volume de gastos. Participacao automatica para este cartao."
+          "titulo": "Cashback de anuidade",
+          "descricao": "Desconto de 50% a 100% na parcela mensal da anuidade conforme o valor da fatura do mês (a partir de R$ 12.500 ou R$ 25.000)."
         },
         {
-          "titulo": "Isencao Private",
-          "descricao": "Clientes do segmento Private nao pagam anuidade enquanto permanecerem no segmento."
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Fila de segurança diferenciada com até 5 acompanhantes nos aeroportos de Guarulhos (terminais 2 e 3) e Galeão (piso 1)."
+        },
+        {
+          "titulo": "Visa Concierge",
+          "descricao": "Serviço de concierge exclusivo para auxiliar em reservas, compras e organização de viagens."
+        },
+        {
+          "titulo": "Visa Luxury Hotel Collection",
+          "descricao": "Acesso a coleção de hotéis de luxo com benefícios exclusivos para portadores do cartão."
+        },
+        {
+          "titulo": "Pontos sem expiração",
+          "descricao": "Pontuação acumulada no Programa Pontos CAIXA não expira, com transferência para diversos programas de milhagem parceiros."
+        },
+        {
+          "titulo": "Isenção para adicionais",
+          "descricao": "Cartões adicionais possuem isenção total da anuidade."
         }
       ],
       "link_solicitacao": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
-      "fontes": [
-        "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
-        "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx"
-      ],
-      "campos_pendentes": [
-        "adicionais_gratis",
-        "cashback",
-        "iof",
-        "isencao.faixas",
-        "renda_minima",
-        "spread"
-      ],
-      "nota_curadoria": "Fontes secundarias ainda publicam anuidade de R$ 1.440, valor desatualizado. Oficial e R$ 1.650 (12x R$ 137,50).",
-      "verificado_em": "2026-07-27",
+      "nota_curadoria": "Cartão de nicho, restrito a clientes com mais de R$ 1 milhão investidos na CAIXA e limite mínimo de R$ 50 mil, com isenção vitalícia de anuidade para quem permanece no segmento Private. A anuidade de R$ 1.650/ano pode ser zerada via cashback automático para faturas mensais elevadas (R$ 12,5 mil ou R$ 25 mil). Não há informação oficial sobre renda mínima nem quantidade de adicionais gratuitos, apenas que os adicionais são isentos de anuidade.",
       "procedencia": {
         "anuidade": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
         "anuidade_parcelas": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
         "isencao": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
+        "requisito_acesso": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
         "pontos": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
-        "salas_vip": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
+        "cashback": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
         "transfere_para": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
-        "requisito_acesso": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx"
-      }
+        "validade_pontos": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
+        "salas_vip": "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx"
+      },
+      "fontes": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx"
+      ],
+      "verificado_em": "2026-07-30",
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "iof",
+        "renda_minima",
+        "spread"
+      ],
+      "campos_rejeitados": [],
+      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "caixa-elo-diners",
