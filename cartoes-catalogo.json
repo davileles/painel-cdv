@@ -14,7 +14,7 @@
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização.",
     "coletor": "coletar-cartoes.js",
     "modelo_coleta": "claude-sonnet-5",
-    "conflitos_abertos": 6
+    "conflitos_abertos": 8
   },
   "cartoes": [
     {
@@ -94,112 +94,96 @@
       "bandeira": "Visa",
       "categoria": "Infinite",
       "anuidade": 1188,
-      "anuidade_parcelas": null,
-      "isencao": null,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "gasto_mensal",
+        "valor": 15000,
+        "regra": "Programa 'Usou, zerou': ao atingir R$ 15 mil em compras no crédito no mês, a parcela mensal da anuidade do titular e dos adicionais é zerada automaticamente. Não contam pagamentos de contas, parcelas de anuidade, saques, encargos, taxas e tarifas."
+      },
       "renda_minima": null,
       "requisito_acesso": "Correntista ou não-correntista do Banco do Brasil, sujeito a análise de crédito",
-      "adicionais_gratis": null,
-      "pontos": null,
+      "adicionais_gratis": 0,
+      "pontos": {
+        "nacional": null,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Acúmulo em milhas Smiles por dólar gasto: 3 milhas para clientes Smiles ou 5,5 milhas para Clube Smiles/categoria Diamante. Milhas de renovação: 5.000 (Smiles) ou 7.000 (Clube Smiles/Diamante), condicionadas ao pagamento da anuidade de renovação. Milhas de aquisição (só para o primeiro titular): 15.000 (Smiles) ou 20.000 (Clube Smiles/Diamante), creditadas em 4 parcelas."
+      },
       "cashback": null,
-      "programa_proprio": "Smiles (GOL)",
+      "programa_proprio": "Smiles",
       "transfere_para": [
         "Smiles"
       ],
       "spread": null,
-      "iof": "Alíquota vigente na data da transação, conforme legislação",
+      "iof": 1.1,
       "validade_pontos": "Nao expiram (compras e bonus, regra vigente desde 23/01/2023)",
       "salas_vip": [
         {
-          "programa": "Visa Airport Companion (VAC)",
-          "regra": "4 acessos gratuitos por ano, custeados pelo BB. Acesso somente via QR Code pelo aplicativo VAC. Baixar app em visa.com.br/pt_br/visa-ofertas-e-promocoes/visa-airport-companion/140997"
+          "programa": "GOL Premium Lounges",
+          "regra": "Acesso ilimitado para o titular do cartão."
+        },
+        {
+          "programa": "VAC (Visa Airport Companion)",
+          "regra": "4 visitas anuais gratuitas a salas VIP em aeroportos ao redor do mundo, mediante apresentação de bilhete de viagem GOL ou afiliadas."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Milhas extras na aquisição e renovação",
-          "descricao": "Bônus de milhas Smiles ao adquirir e ao renovar a anuidade do cartão, conforme regulamento específico da modalidade."
+          "titulo": "Crédito automático de milhas",
+          "descricao": "O valor pago nas faturas é convertido em dólar e transformado em milhas Smiles, transferidas automaticamente e sem tarifa."
         },
         {
-          "titulo": "Pontuação Smiles em compras",
-          "descricao": "Todas as compras elegíveis geram pontos convertidos automaticamente em Milhas Smiles, creditadas após pagamento da fatura."
-        },
-        {
-          "titulo": "Benefícios GOL Smiles",
-          "descricao": "Acesso a benefícios exclusivos da parceria GOL/Smiles, incluindo acesso a salas VIP GOL em aeroportos participantes conforme regulamento."
-        },
-        {
-          "titulo": "Uso internacional habilitado",
-          "descricao": "Cartão habilitado para uso no exterior, com habilitação via Internet Banking ou app BB."
-        },
-        {
-          "titulo": "Cartão adicional",
-          "descricao": "Anuidade do cartão adicional equivale a 50% do valor da anuidade do titular."
+          "titulo": "Milhas de aquisição",
+          "descricao": "Bônus de 15.000 ou 20.000 milhas (conforme categoria do cliente) para o primeiro titular, creditado em 4 parcelas condicionadas ao pagamento da anuidade."
         },
         {
           "titulo": "Primeira bagagem gratuita",
-          "descricao": "1a bagagem de ate 23kg gratuita em voos GOL, para titular e adicional. Exclusivo das variantes Infinite e Platinum."
+          "descricao": "Franquia de primeira bagagem despachada gratuita em todos os voos GOL, mediante apresentação do cartão."
         },
         {
-          "titulo": "Embarque prioritario",
-          "descricao": "Embarque e check-in prioritarios em voos GOL mediante apresentacao do cartao ativo."
+          "titulo": "Programa Usou, Zerou",
+          "descricao": "Isenção da parcela mensal da anuidade ao atingir R$ 15 mil em compras no crédito no mês."
         },
         {
-          "titulo": "Parcelamento em 12x sem juros",
-          "descricao": "Compras parceladas em ate 12x sem juros no site voegol.com.br. Valido para todas as variantes."
+          "titulo": "IOF reduzido com Ourocard",
+          "descricao": "O BB paga a diferença de IOF do cartão GOL Smiles Visa Infinite para clientes Ourocard."
         },
         {
-          "titulo": "Milha extra em compras GOL",
-          "descricao": "1 milha Smiles adicional por USD 1,00 gasto no site da GOL."
-        },
-        {
-          "titulo": "Booking.com",
-          "descricao": "5 milhas por real em reservas de acomodacao."
+          "titulo": "Até 4 cartões adicionais",
+          "descricao": "Possibilidade de solicitar até quatro cartões adicionais, cada um com anuidade de 50% do valor do titular."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+      "nota_curadoria": "A anuidade de R$ 1.188/ano é isenta via programa 'Usou, Zerou' ao gastar R$ 15 mil/mês no crédito, mas atenção: pagamentos de contas, saques e tarifas não contam para essa meta. As milhas por dólar variam conforme o status do cliente (Smiles comum vs. Clube Smiles/Diamante), quase dobrando o rendimento para clientes fidelizados. Não há confirmação de renda mínima exigida nem de programas de transferência externos, já que o acúmulo é direto em Smiles.",
+      "procedencia": {
+        "anuidade": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "anuidade_parcelas": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "isencao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "adicionais_gratis": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "pontos": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "salas_vip": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "transfere_para": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
+        "requisito_acesso": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito"
+      },
       "fontes": [
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "https://www.bb.com.br/site/contratos-e-tabelas-cartoes/",
-        "https://www.bb.com.br/docs/portal/dimep/RegulamentoSmiles.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
         "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
+      "verificado_em": "2026-07-30",
       "campos_pendentes": [
-        "adicionais_gratis",
-        "anuidade_parcelas",
         "cashback",
-        "isencao",
-        "pontos",
-        "pontos.internacional",
-        "pontos.nacional",
         "renda_minima",
         "spread"
       ],
-      "nota_curadoria": "A Tabela de Benefícios e Recompensas (CartoesBandeira.pdf, vigência 31/01/2025) confirma anuidade de R$ 1.188,00 para o Smiles Infinite Visa e 4 acessos VAC gratuitos por ano. O fator de conversão de milhas por dólar gasto não está discriminado por categoria nas tabelas públicas — requer consulta ao regulamento específico da modalidade disponível em bb.com.br (menu Produtos e Serviços > Cartões > Contratos e tabelas). A página de produto do cartão (smiles-visa) não carrega conteúdo HTML indexável com valores detalhados. Renda mínima e regras de isenção por gasto não constam nas fontes oficiais rastreadas. O benefício de salas VIP GOL (aeroportos de Guarulhos e Galeão) citado em nota de imprensa da Visa (visa.com.br) é anterior e pode estar desatualizado; mantido apenas o benefício VAC confirmado na tabela oficial do BB. Nota: o contrato antigo (contratosmiles.pdf, 2010) menciona modalidades Platinum, Gold e International — versão atual inclui Infinite, conforme tabela de 2025.",
-      "procedencia": {
-        "anuidade": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "bandeira": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "categoria": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "emissor": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
-        "programa_proprio": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
-        "transfere_para": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
-        "salas_vip": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "iof": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
-        "requisito_acesso": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
-        "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "beneficios_banco": "https://www.smiles.com.br/portal/cartao-de-credito"
-      },
-      "vigencia_ate": null,
-      "analise": null,
-      "campos_rejeitados": [
-        "isencao",
-        "pontos"
+      "campos_rejeitados": [],
+      "campos_preservados": [
+        "requisito_acesso",
+        "transfere_para",
+        "validade_pontos"
       ],
-      "verificado_em": "2026-07-28",
       "bandeira_ref": "visa-infinite"
     },
     {
@@ -279,16 +263,20 @@
       "bandeira": "Visa",
       "categoria": "Platinum",
       "anuidade": 576,
-      "anuidade_parcelas": null,
-      "isencao": null,
+      "anuidade_parcelas": 12,
+      "isencao": {
+        "tipo": "gasto_mensal",
+        "valor": 6000,
+        "regra": "Programa 'Usou, zerou': ao atingir R$ 6 mil em compras no crédito no mês, a parcela mensal da anuidade do cartão Platinum (e de adicionais) é zerada automaticamente. Não entram no cálculo pagamentos de contas, parcelas de anuidade, proteção ouro, saques no crédito, encargos, taxas e tarifas."
+      },
       "renda_minima": null,
       "requisito_acesso": null,
-      "adicionais_gratis": null,
+      "adicionais_gratis": 0,
       "pontos": {
-        "nacional": null,
-        "internacional": 2,
+        "nacional": 2.3,
+        "internacional": 2.3,
         "unidade": "pts/USD",
-        "observacao": "Fator de conversão: 2,00 pontos para cada US$1,00 efetivamente pago. Os pontos são convertidos 1:1 em Milhas Smiles. Bônus de Aquisição: 10.000 pontos. Bônus de Renovação: 3.000 pontos. O cartão acumula exclusivamente no Programa Smiles (GOL). Não há programa de relacionamento Benefícios BB nesta modalidade co-branded."
+        "observacao": "2,3 milhas por dólar gasto para clientes Smiles; 3,5 milhas por dólar para clientes Clube Smiles ou categoria Diamante. Milhas creditadas automaticamente na conta Smiles a cada pagamento de fatura, sem tarifa."
       },
       "cashback": null,
       "programa_proprio": "Smiles",
@@ -296,7 +284,7 @@
         "Smiles (GOL)"
       ],
       "spread": null,
-      "iof": null,
+      "iof": 1.1,
       "validade_pontos": "Seguem a Categoria Smiles do titular no momento do credito",
       "salas_vip": [
         {
@@ -306,88 +294,78 @@
       ],
       "beneficios_banco": [
         {
-          "titulo": "Milhas extras na aquisição e renovação",
-          "descricao": "Bônus de 10.000 milhas Smiles ao adquirir o cartão e 3.000 milhas ao renovar a anuidade."
+          "titulo": "Milhas de aquisição do cartão",
+          "descricao": "Bônus de 15.000 milhas (clientes Clube Smiles/Diamante) ou 10.000 milhas (clientes Smiles) creditadas em 4 parcelas, condicionado ao pagamento das 4 primeiras parcelas da anuidade; exclusivo para o primeiro titular."
         },
         {
-          "titulo": "Pontuação no Smiles",
-          "descricao": "Compras nacionais e internacionais geram milhas diretamente creditadas na conta Smiles do titular, na proporção de 2 pts/USD."
+          "titulo": "Milhas de renovação anual",
+          "descricao": "3.000 milhas (clientes Smiles) ou 4.000 milhas (Clube Smiles/Diamante) na renovação do cartão, condicionadas ao pagamento da anuidade de renovação."
         },
         {
-          "titulo": "Benefícios GOL Smiles",
-          "descricao": "Acesso aos benefícios da parceria GOL Smiles, conforme regulamento do Programa Smiles disponível em smiles.com.br."
-        },
-        {
-          "titulo": "Cartão adicional",
-          "descricao": "Anuidade do adicional corresponde a 50% do valor da anuidade do titular. O titular pode emitir até 4 adicionais."
-        },
-        {
-          "titulo": "Função exclusiva crédito",
-          "descricao": "O cartão Smiles é emitido apenas com a Função Crédito (sem débito), com uso internacional habilitado."
+          "titulo": "Programa Usou, zerou",
+          "descricao": "Ao gastar R$ 6 mil em compras no crédito no mês, a parcela mensal da anuidade é zerada automaticamente."
         },
         {
           "titulo": "Primeira bagagem gratuita",
-          "descricao": "1a bagagem de ate 23kg gratuita em voos GOL, para titular e adicional. Exclusivo das variantes Infinite e Platinum."
+          "descricao": "Isenção da primeira bagagem despachada mediante apresentação do cartão, válida para todos os voos GOL."
         },
         {
-          "titulo": "Embarque prioritario",
-          "descricao": "Embarque e check-in prioritarios em voos GOL mediante apresentacao do cartao ativo."
+          "titulo": "Crédito automático de milhas",
+          "descricao": "A cada fatura paga, o valor equivalente em dólar é convertido em milhas e transferido automaticamente para a conta Smiles, sem cobrança de tarifa."
         },
         {
-          "titulo": "Parcelamento em 12x sem juros",
-          "descricao": "Compras parceladas em ate 12x sem juros no site voegol.com.br. Valido para todas as variantes."
-        },
-        {
-          "titulo": "Milha extra em compras GOL",
-          "descricao": "1 milha Smiles adicional por USD 1,00 gasto no site da GOL."
-        },
-        {
-          "titulo": "Booking.com",
-          "descricao": "5 milhas por real em reservas de acomodacao."
+          "titulo": "Cartões adicionais",
+          "descricao": "Possibilidade de solicitar até 4 cartões adicionais, cada um com anuidade de 50% do valor da anuidade do titular; milhas geradas pelos adicionais são transferidas ao titular."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+      "nota_curadoria": "A anuidade de R$ 576/ano é parcelada em 12x de R$ 48,00 e pode ser zerada mensalmente com R$ 6 mil em compras via programa 'Usou, zerou'. O benefício de 4 visitas anuais a salas VIP via Visa Airport Companion é exclusivo do Smiles Visa Infinite, não do Platinum, por isso não foi atribuído a este cartão; não há confirmação de acesso a GOL Premium Lounges para a versão Platinum. Não há informação oficial sobre renda mínima exigida nem requisito específico de acesso.",
+      "procedencia": {
+        "anuidade": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "anuidade_parcelas": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "isencao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "adicionais_gratis": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "pontos": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "salas_vip": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "transfere_para": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito"
+      },
       "fontes": [
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
         "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
-        "https://www.bb.com.br/docs/pub/trf/tarifasPFAnt.pdf",
-        "https://www.bb.com.br/docs/portal/dimep/RegulamentoSmiles.pdf",
-        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/use-ourocard/sala-vip/",
-        "https://bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-em-viagens",
         "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
+      "verificado_em": "2026-07-30",
       "campos_pendentes": [
-        "adicionais_gratis",
-        "anuidade_parcelas",
         "cashback",
-        "iof",
-        "isencao",
-        "pontos.nacional",
         "renda_minima",
         "requisito_acesso",
         "spread"
       ],
-      "nota_curadoria": "A anuidade de R$ 576,00 foi extraída da Tabela de Benefícios e Recompensas (CartoesBandeira.pdf, vigência 31/01/2025) e confirmada na tabela de tarifas PF (tarifasPFAnt.pdf, vigência 23/10/2025). O fator de conversão de 2 pts/USD e os bônus de aquisição (10.000 pts) e renovação (3.000 pts) foram extraídos do contrato co-branded oficial (contratosmiles.pdf). A tabela de tarifas PF mais recente (Set/2025) NÃO lista o 'Smiles Platinum Visa' pelo nome — lista apenas as variantes Internacional, Gold e Infinite — o que pode indicar renomeação ou descontinuação do produto; o valor de R$ 576,00 constante na CartoesBandeira.pdf (Jan/2025) foi mantido como referência mais recente disponível. O fator de conversão para compras nacionais (BRL) não foi encontrado em fonte oficial; o contrato usa exclusivamente a unidade USD. Salas VIP gratuitas não são listadas para a categoria Platinum Visa nas tabelas oficiais; o VAC gratuito é exclusivo para Infinite e Altus. A validade dos pontos Smiles depende do regulamento do Programa Smiles (smiles.com.br), não do BB. Isenção de anuidade por gasto mensal não foi encontrada para esta modalidade em fonte oficial vigente.",
-      "procedencia": {
-        "anuidade": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "pontos": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
-        "programa_proprio": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "transfere_para": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
-        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "salas_vip": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "beneficios_banco": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/"
-      },
-      "vigencia_ate": null,
-      "analise": null,
       "campos_rejeitados": [
-        "isencao"
+        "transfere_para"
       ],
-      "bandeira_ref": null,
-      "verificado_em": "2026-07-28"
+      "campos_preservados": [
+        "salas_vip",
+        "transfere_para",
+        "validade_pontos"
+      ],
+      "conflitos": [
+        {
+          "campo": "pontos.internacional",
+          "antes": 2,
+          "depois": 2.3,
+          "variacao_pct": 15,
+          "fonte_antes": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
+          "fonte_depois": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+          "valor_mantido": "depois",
+          "motivo": null,
+          "detectado_em": "2026-07-30",
+          "resolvido": false
+        }
+      ]
     },
     {
       "slug": "bb-visa-infinite-altus-liv",
@@ -861,99 +839,102 @@
       "categoria": "Infinite",
       "anuidade": 996,
       "anuidade_parcelas": 12,
-      "isencao": null,
+      "isencao": {
+        "tipo": "gasto_mensal",
+        "valor": 15000,
+        "regra": "Isenção automática da parcela mensal da anuidade (titular e adicionais) ao atingir R$ 15 mil em compras no crédito no mês; alternativamente, clientes com R$ 250 mil ou mais investidos no BB têm o desconto automático independentemente do gasto. Não contam para o cálculo pagamentos de contas, parcelas de anuidade, proteção ouro, saques no crédito, encargos, taxas e tarifas."
+      },
       "renda_minima": null,
-      "requisito_acesso": null,
+      "requisito_acesso": "Cartão oferecido por convite a um seleto grupo de clientes do Banco do Brasil.",
       "adicionais_gratis": null,
       "pontos": {
         "nacional": 2,
-        "internacional": 2,
+        "internacional": 3,
         "unidade": "pts/USD",
-        "observacao": "Cada 1 dólar ou equivalente em reais pagos na fatura geram 2 pontos no programa Ponto pra Você / Benefícios BB (modalidade Pontos). Dado extraído de livreto de 2021; taxa atual deve ser confirmada no regulamento vigente do Benefícios BB."
+        "observacao": "Pontos acumulados no programa Benefícios BB convertidos automaticamente em pontos Livelo; cliente pode optar por Dotz ou, se correntista, por Investimento ou Cashback em vez de pontos."
       },
-      "cashback": null,
-      "programa_proprio": "Benefícios BB (modalidades: Pontos, Cashback ou Investimento – cliente escolhe uma)",
-      "transfere_para": [],
+      "cashback": {
+        "percentual": 1,
+        "regra": "1% de cashback direto na conta corrente, disponível em até 3 dias úteis após o pagamento da fatura, como alternativa à pontuação."
+      },
+      "programa_proprio": "Benefícios BB",
+      "transfere_para": [
+        "Livelo",
+        "Dotz"
+      ],
       "spread": null,
-      "iof": null,
+      "iof": 1.1,
       "validade_pontos": null,
       "salas_vip": [
         {
           "programa": "Visa Airport Companion (VAC)",
-          "regra": "4 acessos gratuitos por ano, custeados pelo BB, para titular e adicionais. Acesso via QR Code pelo aplicativo VAC (iOS e Android). Mais de 1.000 salas VIP em aeroportos ao redor do mundo."
+          "regra": "4 acessos gratuitos por ano às salas VIP, válidos para titular e adicionais."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Seguro Viagem",
-          "descricao": "Cobertura para emergências médicas, perda de conexão aérea, atraso de bagagem e outras situações. Requer emissão do Bilhete de Seguro no site da Visa e compra das passagens com o cartão."
+          "titulo": "Flexibilidade de recompensa",
+          "descricao": "Parte dos gastos pode ser convertida em pontos (Livelo/Dotz), investimento (1% em fundo de renda fixa) ou cashback (1% na conta corrente)."
         },
         {
-          "titulo": "Visa Luxury Hotel Collection",
-          "descricao": "Benefícios exclusivos em hotéis de luxo ao redor do mundo: upgrades de quarto, café da manhã gratuito, check-in antecipado, check-out tardio e créditos para utilizar no hotel."
+          "titulo": "Segunda bandeira com desconto",
+          "descricao": "Até 90% de desconto na anuidade de uma segunda bandeira, bastando manter o Ourocard Visa Infinite ativo."
         },
         {
-          "titulo": "Garantia Estendida",
-          "descricao": "Dobra a garantia original do fabricante por até 12 meses adicionais em produtos comprados com o cartão."
+          "titulo": "Tag BB",
+          "descricao": "Tag para pagamento automático de pedágios e estacionamentos vinculada ao cartão."
         },
         {
-          "titulo": "Proteção de Compras",
-          "descricao": "Proteção contra roubo ou danos acidentais no prazo de 180 dias a contar da data da compra."
+          "titulo": "Cartão virtual Ourocard-e",
+          "descricao": "Cartão virtual para compras online com maior segurança."
         },
         {
-          "titulo": "Proteção de Preço",
-          "descricao": "Proteção quando o mesmo item for encontrado por preço menor dentro de 30 dias da data da compra."
+          "titulo": "Pagamento por aproximação",
+          "descricao": "Suporte a Apple Pay, Samsung Pay e Google Pay, além de Pulseira Ourocard."
         },
         {
-          "titulo": "Programa Benefícios BB",
-          "descricao": "Programa de relacionamento com opção de acumular Pontos, Cashback ou Investimento sobre as compras no crédito."
-        },
-        {
-          "titulo": "Cartão adicional com 50% de anuidade",
-          "descricao": "Anuidade do cartão adicional corresponde a 50% do valor da anuidade do titular."
+          "titulo": "Cobertura de IOF internacional",
+          "descricao": "O BB paga a diferença de IOF em compras internacionais a crédito, cobrando apenas 1,1%."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+      "nota_curadoria": "Cartão de convite, não há informação pública sobre renda mínima exigida. A isenção de anuidade é automática pelo mecanismo 'usou, zerou' (R$15 mil em compras/mês) ou por manter R$250 mil investidos no BB, o que pode confundir clientes que buscam isenção tradicional por gasto anual. Os adicionais custam 50% da anuidade do titular, não são gratuitos. Vale destacar a flexibilidade rara de escolher entre pontos, cashback ou investimento como retorno das compras.",
+      "procedencia": {
+        "anuidade": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "anuidade_parcelas": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "isencao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "requisito_acesso": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "pontos": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "cashback": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "transfere_para": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "salas_vip": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/"
+      },
       "fontes": [
-        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
-        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
-        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/livreto220210.pdf"
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/"
       ],
+      "verificado_em": "2026-07-30",
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
-        "iof",
-        "isencao",
-        "pontos.internacional_atual",
-        "pontos.nacional_atual",
         "renda_minima",
-        "requisito_acesso",
-        "spread",
-        "transfere_para",
-        "validade_pontos"
+        "spread"
       ],
-      "nota_curadoria": "A anuidade de R$ 996,00 em 12x consta na Tabela de Benefícios e Recompensas (CartoesBandeira.pdf e CartoesAnuidade.pdf) e é confirmada na Tabela de Tarifas PF vigente a partir de 29/06/2026 (tarifasPF.pdf). O valor de 2 pts/USD é extraído do livreto manual de 2021 (livreto220210.pdf) e pode estar desatualizado; a taxa atual do programa Benefícios BB deve ser verificada no regulamento vigente. Renda mínima, isenção de anuidade por gasto, spread cambial, IOF e parceiros de transferência não foram localizados em nenhuma página oficial pública rastreável. A página do produto (ourocard-visa-infinite/) retornou conteúdo mínimo sem dados técnicos detalhados. Campos pendentes devem ser obtidos via contrato/regulamento do Benefícios BB ou Central de Atendimento BB.",
-      "procedencia": {
-        "anuidade": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
-        "anuidade_parcelas": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
-        "bandeira": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
-        "categoria": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "salas_vip": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "pontos": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/livreto220210.pdf",
-        "programa_proprio": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
-        "beneficios_banco": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard"
-      },
-      "vigencia_ate": null,
-      "analise": null,
-      "campos_rejeitados": [
-        "isencao",
-        "requisito_acesso"
-      ],
+      "campos_rejeitados": [],
       "bandeira_ref": "visa-infinite",
-      "verificado_em": "2026-07-28"
+      "conflitos": [
+        {
+          "campo": "pontos.internacional",
+          "antes": 2,
+          "depois": 3,
+          "variacao_pct": 50,
+          "fonte_antes": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/livreto220210.pdf",
+          "fonte_depois": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+          "valor_mantido": "depois",
+          "motivo": null,
+          "detectado_em": "2026-07-30",
+          "resolvido": false
+        }
+      ]
     },
     {
       "slug": "inter-win",

@@ -2,7 +2,7 @@
   "_meta": {
     "descricao": "Hash do conteúdo das fontes por cartão. Se o hash não mudou, o coletor não chama a IA.",
     "atualizado_em": "2026-07-30",
-    "total": 44
+    "total": 47
   },
   "cartoes": {
     "brb-visa-dux": {
@@ -385,6 +385,27 @@
       "hash": "0d603c68e2e3cbfd",
       "urls": [
         "https://www.santander.com.br/banco/unique-black"
+      ],
+      "em": "2026-07-30"
+    },
+    "bb-smiles-visa-infinite": {
+      "hash": "2b449456ed6bb81d",
+      "urls": [
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/"
+      ],
+      "em": "2026-07-30"
+    },
+    "bb-smiles-visa-platinum": {
+      "hash": "2b449456ed6bb81d",
+      "urls": [
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/"
+      ],
+      "em": "2026-07-30"
+    },
+    "bb-ourocard-visa-infinite": {
+      "hash": "c057253ae8af287f",
+      "urls": [
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/"
       ],
       "em": "2026-07-30"
     }
