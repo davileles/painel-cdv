@@ -164,9 +164,11 @@
       "bandeira": "Visa",
       "categoria": "Gold",
       "bandeira_ref": null,
-      "urls": [],
-      "ativo": false,
-      "nota": "Sem URL oficial mapeada — preencher urls[] e marcar ativo=true para o coletor processar."
+      "urls": [
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/"
+      ],
+      "ativo": true,
+      "nota": "Pagina unica do BB cobre as 4 categorias GOL Smiles (Internacional, Gold, Platinum, Infinite)."
     },
     {
       "slug": "bb-smiles-visa-infinite",
@@ -192,9 +194,11 @@
       "bandeira": "Visa",
       "categoria": "Internacional",
       "bandeira_ref": null,
-      "urls": [],
-      "ativo": false,
-      "nota": "Sem URL oficial mapeada — preencher urls[] e marcar ativo=true para o coletor processar."
+      "urls": [
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/"
+      ],
+      "ativo": true,
+      "nota": "Pagina unica do BB cobre as 4 categorias GOL Smiles (Internacional, Gold, Platinum, Infinite)."
     },
     {
       "slug": "bb-smiles-visa-platinum",
