@@ -1,0 +1,11 @@
+{
+  "_meta": {
+    "descricao": "Texto de paginas capturado por fora do runner (navegador com IP residencial), para fontes que o WAF do emissor bloqueia. O coletar-cartoes.js le daqui antes de tentar a rede.",
+    "formato": "fontes[\"<url exata do alvo>\"] = {\"texto\": \"...\", \"capturado_em\": \"YYYY-MM-DD\", \"origem\": \"claude-in-chrome\"}",
+    "validade": "Capturas com mais de 45 dias fazem o coletor tentar a rede primeiro; a manual vira fallback.",
+    "requisito": "texto com no minimo 200 caracteres, ja limpo (sem menu, rodape ou script).",
+    "atualizado_em": "2026-07-30",
+    "total": 0
+  },
+  "fontes": {}
+}
