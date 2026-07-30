@@ -42,9 +42,9 @@ const DIAG = String(process.env.DIAG || '').toLowerCase() === 'true';
 
 // Limites de custo/segurança
 const MAX_CHARS_POR_FONTE = 14000;   // texto limpo de uma página HTML
-const MAX_CHARS_TOTAL = 45000;       // soma de todas as fontes HTML de um cartão
+const MAX_CHARS_TOTAL = 60000;       // soma de todas as fontes HTML de um cartão
 const MAX_PDF_BYTES = 2.5 * 1024 * 1024;
-const MAX_PDFS_POR_CARTAO = 2;       // regulamentos longos estouram o custo sozinhos
+const MAX_PDFS_POR_CARTAO = 4;       // regulamentos longos estouram o custo sozinhos
 const TIMEOUT_FETCH = 30000;
 
 // ── Regra de procedência (espelha valida_catalogo.py) ────────────────────────
@@ -166,7 +166,27 @@ async function baixar(url) {
       if (buf.length > MAX_PDF_BYTES) {
         throw new Error(`PDF muito grande (${(buf.length / 1048576).toFixed(1)} MB)`);
       }
-      return { tipo: 'pdf', base64: buf.toString('base64'), hash: sha(buf.toString('base64')) };
+      // pdftotext reduz o custo em ~10x frente a enviar o PDF em base64,
+      // que a API cobra por página renderizada.
+      const tmp = path.join(require('os').tmpdir(), `cdv-${sha(url)}.pdf`);
+      try {
+        fs.writeFileSync(tmp, buf);
+        let texto = require('child_process')
+          .execFileSync('pdftotext', ['-layout', '-enc', 'UTF-8', tmp, '-'], { maxBuffer: 32 * 1024 * 1024 })
+          .toString('utf8');
+        texto = texto.replace(/[ \t]+/g, ' ').split('\n').map(l => l.trim()).filter(Boolean).join('\n');
+        if (texto.length < 200) throw new Error('PDF sem texto extraível (provável PDF escaneado)');
+        if (texto.length > MAX_CHARS_POR_FONTE) texto = texto.slice(0, MAX_CHARS_POR_FONTE) + '\n[...truncado]';
+        return { tipo: 'pdf_texto', texto, hash: sha(texto) };
+      } catch (e) {
+        if (e.code === 'ENOENT') {
+          // pdftotext ausente — cai para base64 (funciona, porém mais caro)
+          return { tipo: 'pdf', base64: buf.toString('base64'), hash: sha(buf.toString('base64')) };
+        }
+        throw e;
+      } finally {
+        try { fs.unlinkSync(tmp); } catch (_) {}
+      }
     }
 
     const html = await res.text();
@@ -196,7 +216,7 @@ async function coletarFontes(alvo) {
   for (const url of alvo.urls || []) {
     try {
       const r = await baixar(url);
-      if (r.tipo === 'pdf') {
+      if (r.tipo === 'pdf') {   // base64 (fallback) — caro, limite rigido
         if (pdfs >= MAX_PDFS_POR_CARTAO) { falhas.push(`${url}: limite de PDFs atingido`); continue; }
         pdfs++;
       } else {
@@ -271,7 +291,9 @@ async function extrairComIA(alvo, fontes) {
   });
 
   for (const f of fontes) {
-    if (f.tipo === 'pdf') {
+    if (f.tipo === 'pdf_texto') {
+      blocos.push({ type: 'text', text: `\n===== FONTE (PDF): ${f.url} =====\n${f.texto}` });
+    } else if (f.tipo === 'pdf') {
       blocos.push({ type: 'text', text: `\n===== FONTE (PDF): ${f.url} =====` });
       blocos.push({
         type: 'document',
@@ -291,7 +313,7 @@ async function extrairComIA(alvo, fontes) {
     },
     body: JSON.stringify({
       model: MODEL,
-      max_tokens: 4000,
+      max_tokens: 8000,
       // cache_control no prompt de sistema: ele é idêntico para todo cartão,
       // então a partir da 2ª chamada o input dele custa 10%
       system: [{ type: 'text', text: PROMPT_SISTEMA, cache_control: { type: 'ephemeral' } }],
@@ -365,9 +387,46 @@ function sanitizar(cartao, urlsPermitidas) {
   return cartao;
 }
 
+// Merge NÃO-DESTRUTIVO. Regra: o coletor só enriquece.
+// Se a nova extração não trouxe um campo (porque uma fonte caiu, tomou 403 ou
+// foi truncada) mas o catálogo já tinha valor com procedência oficial, o valor
+// antigo é preservado. Sem isso, uma fonte fora do ar apaga curadoria boa.
 function mesclar(existente, novo) {
   if (!existente) return novo;
-  // Preserva curadoria manual quando a IA não trouxe substituto
+
+  const procAntiga = existente.procedencia || {};
+  const preservados = [];
+
+  const CAMPOS_PRESERVAVEIS = CAMPOS_FACTUAIS.concat([
+    'programa_proprio', 'validade_pontos', 'beneficios_banco', 'link_solicitacao',
+  ]);
+
+  for (const campo of CAMPOS_PRESERVAVEIS) {
+    if (!vazio(novo[campo])) continue;              // extração nova trouxe algo — vale a nova
+    if (vazio(existente[campo])) continue;          // nada a preservar
+
+    const fonteAntiga = procAntiga[campo];
+    const factual = CAMPOS_FACTUAIS.includes(campo);
+    // Campo factual só é preservado se tinha procedência oficial declarada
+    if (factual && !(fonteAntiga && ehOficial(fonteAntiga))) continue;
+
+    novo[campo] = existente[campo];
+    if (fonteAntiga) novo.procedencia[campo] = fonteAntiga;
+    preservados.push(campo);
+  }
+
+  if (preservados.length) {
+    const pend = new Set(novo.campos_pendentes || []);
+    preservados.forEach(c => pend.delete(c));
+    novo.campos_pendentes = [...pend].sort();
+    novo.campos_preservados = preservados.sort();
+    // fontes preservadas continuam sendo fontes do registro
+    const fontes = new Set(novo.fontes || []);
+    preservados.forEach(c => { if (procAntiga[c]) fontes.add(procAntiga[c]); });
+    novo.fontes = [...fontes];
+  }
+
+  // Curadoria manual pura
   for (const campo of ['analise', 'bandeira_ref', 'vigencia_ate']) {
     if (vazio(novo[campo]) && !vazio(existente[campo])) novo[campo] = existente[campo];
   }
@@ -461,7 +520,7 @@ async function main() {
       continue;
     }
 
-    console.log(`[${alvo.slug}] ${fontes.length} fonte(s), ${fontes.filter(f => f.tipo === 'pdf').length} PDF — chamando IA`);
+    console.log(`[${alvo.slug}] ${fontes.length} fonte(s), ${fontes.filter(f => f.tipo.startsWith('pdf')).length} PDF — chamando IA`);
 
     try {
       const { obj, uso: u } = await extrairComIA(alvo, fontes);
