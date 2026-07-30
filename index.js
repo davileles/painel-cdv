@@ -512,6 +512,50 @@ app.post('/ofertas/publicar', async (req, res) => {
 // ── Registrar passagem enviada ────────────────────────────────────────────────
 // Chamado pelo gerador após envio bem-sucedido via Baileys (aba Emissão e Alertas)
 // Body: { origem, destino, cia, programa, pontos, cabine, datas_ida, datas_volta, fonte }
+// ── NORMALIZAÇÃO DE NOME DE CIA (siglas e variações → nome canônico) ──────────
+// Espelha ALIAS_CIA de baileys-server/server.js. Mantém a grupoKey do histórico
+// 180d consistente entre alertas (radar) e emissões manuais (gerador-cdv).
+const ALIAS_CIA = {
+  'saa':'South African', 'sa':'South African', 'south african airways':'South African', 'south african':'South African',
+  'gol':'GOL', 'gol linhas aereas':'GOL', 'g3':'GOL', 'voegol':'GOL',
+  'azul':'Azul', 'azul linhas aereas':'Azul', 'ad':'Azul', 'voeazul':'Azul',
+  'latam':'LATAM', 'latam airlines':'LATAM', 'tam':'LATAM', 'la':'LATAM',
+  'aa':'American Airlines', 'american':'American Airlines', 'american airlines':'American Airlines',
+  'tap':'TAP', 'tap air portugal':'TAP', 'tp':'TAP',
+  'af':'Air France', 'air france':'Air France', 'airfrance':'Air France',
+  'kl':'KLM', 'klm':'KLM', 'klm royal dutch airlines':'KLM',
+  'ba':'British Airways', 'british':'British Airways', 'british airways':'British Airways',
+  'ib':'Iberia', 'iberia':'Iberia', 'iberia express':'Iberia',
+  'cm':'COPA', 'copa':'COPA', 'copa airlines':'COPA',
+  'ua':'United', 'united':'United', 'united airlines':'United',
+  'dl':'Delta', 'delta':'Delta', 'delta air lines':'Delta',
+  'tk':'Turkish', 'turkish':'Turkish', 'turkish airlines':'Turkish',
+  'qr':'Qatar Airways', 'qatar':'Qatar Airways', 'qatar airways':'Qatar Airways',
+  'ek':'Emirates', 'emirates':'Emirates',
+  'ay':'Finnair', 'finnair':'Finnair',
+  'lh':'Lufthansa', 'lufthansa':'Lufthansa',
+  'ux':'Air Europa', 'air europa':'Air Europa',
+  'ar':'Aerolineas Argentinas', 'aerolineas':'Aerolineas Argentinas', 'aerolineas argentinas':'Aerolineas Argentinas',
+  'av':'Avianca', 'avianca':'Avianca',
+  'et':'Ethiopian', 'ethiopian':'Ethiopian', 'ethiopian airlines':'Ethiopian',
+  'ac':'Air Canada', 'air canada':'Air Canada',
+  'sq':'Singapore Airlines', 'singapore':'Singapore Airlines', 'singapore airlines':'Singapore Airlines',
+  'a3':'Aegean', 'aegean':'Aegean', 'aegean airlines':'Aegean',
+  'vs':'Virgin Atlantic', 'virgin atlantic':'Virgin Atlantic',
+};
+
+function normalizarCia(cia) {
+  const bruto = String(cia == null ? '' : cia).trim();
+  if (!bruto) return bruto;
+  const chave = bruto
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[.]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return ALIAS_CIA[chave] || bruto;
+}
+
 // fonte: 'emissao' | 'alerta'
 app.post('/passagens/registrar', async (req, res) => {
   // apenasConsulta: true → calcula e devolve hist180 SEM gravar em passagens.json.
@@ -539,7 +583,7 @@ app.post('/passagens/registrar', async (req, res) => {
       id,
       origem:      origem.trim(),
       destino:     destino.trim(),
-      cia:         (cia || '').trim(),
+      cia:         normalizarCia(cia),
       programa:    programa.trim(),
       pontos:      Number(pontos),
       cabine:      (cabine || '').trim(),
