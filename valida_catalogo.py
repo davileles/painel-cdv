@@ -87,7 +87,8 @@ def main():
                 print("   -", p)
 
     if corrigir:
-        d['_meta']['validado_em'] = '2026-07-27'
+        from datetime import date
+        d['_meta']['validado_em'] = date.today().isoformat()
         d['_meta']['regra'] = ('Campo factual so tem valor se houver URL oficial '
                                'declarada em procedencia[campo]. Validado por valida_catalogo.py.')
         json.dump(d, open(caminho, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
