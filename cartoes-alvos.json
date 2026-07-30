@@ -5,7 +5,8 @@
     "gerado_em": "2026-07-30",
     "origem": "Semeado a partir de procedencia/fontes de cartoes-catalogo.json",
     "total": 69,
-    "inativos_sem_url": 8
+    "inativos_sem_url": 8,
+    "ajustado_em": "2026-07-30"
   },
   "alvos": [
     {
@@ -452,14 +453,11 @@
       "categoria": "Black",
       "bandeira_ref": "mastercard-black",
       "urls": [
-        "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
         "https://www.c6bank.com.br/cartao-black/",
-        "https://www.c6bank.com.br/blog/o-que-e-iof",
-        "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas",
-        "https://www.c6bank.com.br/blog/c6-mastercard-black",
         "https://www.c6bank.com.br/programa-de-pontos-atomos/"
       ],
-      "ativo": true
+      "ativo": true,
+      "nota": "URLs limitadas as que possuem captura manual (WAF bloqueia o runner)."
     },
     {
       "slug": "c6-carbon",
@@ -469,14 +467,10 @@
       "categoria": "Black",
       "bandeira_ref": "mastercard-black",
       "urls": [
-        "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
-        "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-carbon-mastercard-black",
-        "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
-        "https://www.c6bank.com.br/blog/c6-bank-lanca-carbon",
-        "https://www.c6bank.com.br/blog/c6-carbon-como-conseguir",
-        "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas"
+        "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/"
       ],
-      "ativo": true
+      "ativo": true,
+      "nota": "URLs limitadas as que possuem captura manual (WAF bloqueia o runner)."
     },
     {
       "slug": "c6-graphene",
