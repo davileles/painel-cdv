@@ -14,7 +14,7 @@
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização.",
     "coletor": "coletar-cartoes.js",
     "modelo_coleta": "claude-sonnet-5",
-    "conflitos_abertos": 6
+    "conflitos_abertos": 5
   },
   "cartoes": [
     {
@@ -2934,7 +2934,7 @@
       ],
       "spread": null,
       "iof": "4,38% sobre compras internacionais no cartão de crédito (alíquota federal padrão)",
-      "validade_pontos": "Pontos não expiram",
+      "validade_pontos": "Não expiram",
       "salas_vip": [
         {
           "programa": "Sala VIP Mastercard Black (GRU)",
@@ -2944,27 +2944,31 @@
       "beneficios_banco": [
         {
           "titulo": "C6 Tag gratuito",
-          "descricao": "1ª tag de pedágio e estacionamento gratuita, mediante ao menos uma compra no crédito no mês anterior."
+          "descricao": "1 tag de pedágio e estacionamento gratuita, mediante ao menos uma compra no crédito no mês anterior."
         },
         {
           "titulo": "Cartões adicionais grátis",
-          "descricao": "Até 10 cartões adicionais sem custo, que também contam para o cálculo de isenção de anuidade."
+          "descricao": "Até 10 cartões adicionais sem custo."
         },
         {
-          "titulo": "Cashback em pontos",
-          "descricao": "Possibilidade de converter pontos C6 Átomos em dinheiro na conta, com percentual de até 1,2%."
+          "titulo": "Isenção de anuidade condicional",
+          "descricao": "Anuidade zerada para quem atinge R$3,5 mil de gasto mensal ou R$20 mil investidos em Renda Fixa, com isenção automática nos 6 primeiros meses para novas contratações."
         },
         {
-          "titulo": "Pontos sem expiração",
-          "descricao": "Os pontos acumulados no programa C6 Átomos não expiram, dando flexibilidade para resgate a qualquer momento."
+          "titulo": "Pague com Pontos",
+          "descricao": "Uso dos pontos C6 Átomos para quitar despesas elegíveis da fatura."
         },
         {
-          "titulo": "Transferência para parceiros aéreos",
-          "descricao": "Pontos podem ser transferidos para Livelo, Latam Pass, Smiles, TudoAzul e TAP, sem perda de pontos na transferência e com promoções de bônus."
+          "titulo": "Transferência de pontos para parceiros",
+          "descricao": "Transferência sem perda de pontos para programas como Livelo, Latam Pass, Smiles, TudoAzul e TAP, com promoções de bônus."
+        },
+        {
+          "titulo": "Cashback em compras",
+          "descricao": "Conversão de pontos em dinheiro direto na conta, com percentual de até 1,2%."
         }
       ],
       "link_solicitacao": "https://www.c6bank.com.br/cartao-black/",
-      "nota_curadoria": "A anuidade de 12x R$ 50 (R$ 600/ano) tem isenção automática nos 6 primeiros meses e pode ser zerada permanentemente com fatura a partir de R$ 3.500/mês ou investimento de R$ 20 mil em Renda Fixa no C6. A pontuação de até 2,5 pts/US$ depende de faixas de investimento ou gastos mensais, então o assessor deve checar qual faixa o cliente atinge antes de prometer a pontuação máxima. Não há confirmação oficial de salas VIP (LoungeKey, Priority Pass) para este cartão nas fontes analisadas, diferente do C6 Carbon.",
+      "nota_curadoria": "A anuidade de R$600/ano só é isenta se o cliente mantiver gasto mensal de R$3,5 mil ou investimento de R$20 mil em Renda Fixa no C6 Bank, além da isenção automática nos primeiros 6 meses. A pontuação é por dólar gasto (pts/USD) e pode variar conforme volume investido, o que exige atenção ao perfil do cliente. Não há confirmação oficial de acesso a salas VIP (Priority Pass, LoungeKey ou salas próprias) para este cartão nas fontes analisadas.",
       "fontes": [
         "https://www.c6bank.com.br/cartao-black/",
         "https://www.c6bank.com.br/programa-de-pontos-atomos/",
@@ -3024,7 +3028,7 @@
       "isencao": {
         "tipo": "gasto_mensal",
         "valor": 8000,
-        "regra": "Anuidade zero para quem gasta a partir de R$ 8 mil por mês na fatura (titular + adicionais). Alternativamente, isenção também para quem investe R$ 50 mil em renda fixa emitida pelo C6 Bank ou R$ 1 milhão em investimentos no Brasil e/ou exterior. Fora dessas condições, a anuidade é de R$ 98/mês."
+        "regra": "Anuidade zero para quem tem gastos a partir de R$ 8 mil/mês na fatura (titular + adicionais), ou investe R$ 50 mil em renda fixa emitida pelo C6 Bank, ou possui R$ 1 milhão em investimentos no Brasil e/ou exterior. Fora dessas condições, a anuidade é de R$ 98/mês."
       },
       "renda_minima": null,
       "requisito_acesso": "Sujeito a análise de crédito interna pelo C6 Bank. O cartão aparece como opção de upgrade na aba Cartões do app quando disponível para o perfil do cliente. Não há renda mínima divulgada publicamente.",
@@ -3033,11 +3037,11 @@
         "nacional": null,
         "internacional": 3.5,
         "unidade": "pts/USD",
-        "observacao": "Pontuação escalonada conforme investimentos: 2,5 pts/US$1 até R$250 mil investidos; 2,7 pts/US$1 entre R$250 mil e R$500 mil (ou pagamentos elegíveis a partir de R$4 mil/mês); 3 pts/US$1 entre R$500 mil e R$1 milhão; 3,5 pts/US$1 acima de R$1 milhão investido. Pontos não expiram, sujeito a análise."
+        "observacao": "Até 3,5 pts/US$1 no crédito, pontos não expiram. Faixas: 2,5 pts/US$1 (sem investimento relevante); 2,7 pts/US$1 (investindo R$250mil-R$500mil em renda fixa C6 ou gastos a partir de R$4mil/mês); 3 pts/US$1 (R$500mil-R$1milhão em renda fixa); 3,5 pts/US$1 (acima de R$1 milhão investido)."
       },
       "cashback": {
         "percentual": 1.7,
-        "regra": "Até 1,7% de cashback ao converter os pontos C6 Átomos em dinheiro na conta."
+        "regra": "Até 1,7% de cashback ao converter os pontos C6 Átomos em dinheiro direto na conta."
       },
       "programa_proprio": "C6 Átomos",
       "transfere_para": [
@@ -3049,25 +3053,29 @@
       ],
       "spread": null,
       "iof": "6,38% sobre compras internacionais com cartão de crédito (alíquota padrão federal). Via C6 Conta Global o IOF é de 1,1% por transferência.",
-      "validade_pontos": "Pontos não expiram (sujeito a análise)",
+      "validade_pontos": "Não expiram (sujeito a análise)",
       "salas_vip": [
         {
           "programa": "DragonPass",
-          "regra": "4 acessos/ano gratuitos a lounges no Brasil e no mundo, divididos entre titular, adicionais e acompanhantes."
+          "regra": "4 acessos/ano gratuitos, divididos entre titular, adicionais e acompanhantes, para salas VIP no Brasil e no mundo."
         },
         {
           "programa": "Espaço C6 Bank",
-          "regra": "4 acessos/ano gratuitos a lounges no Brasil e no mundo, divididos entre titular, adicionais e acompanhantes."
+          "regra": "Incluído nos 4 acessos/ano gratuitos compartilhados com DragonPass e W Premium."
         },
         {
           "programa": "W Premium",
-          "regra": "4 acessos/ano gratuitos a lounges no Brasil e no mundo, divididos entre titular, adicionais e acompanhantes."
+          "regra": "Incluído nos 4 acessos/ano gratuitos compartilhados com DragonPass e Espaço C6 Bank."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Investidor C6 Carbon",
-          "descricao": "A partir de R$ 1 milhão investidos, atendimento exclusivo, assessor de investimentos e acesso ilimitado a salas VIP no mundo todo."
+          "descricao": "A partir de R$ 1 milhão investidos: atendimento exclusivo, assessor de investimentos dedicado e acesso ilimitado a salas VIP no mundo todo."
+        },
+        {
+          "titulo": "Cartões adicionais gratuitos",
+          "descricao": "Até 10 cartões adicionais sem custo."
         },
         {
           "titulo": "C6 Tag",
@@ -3076,25 +3084,11 @@
         {
           "titulo": "C6 Conta Global",
           "descricao": "Conta para comprar, sacar e transferir em dólar e euro sem custo de abertura."
-        },
-        {
-          "titulo": "Assistente de viagens 24h",
-          "descricao": "Assistência global de emergência 24 horas, 365 dias por ano, em português."
-        },
-        {
-          "titulo": "Concierge",
-          "descricao": "Serviço de concierge disponível para o titular do cartão."
-        },
-        {
-          "titulo": "Priceless Cities",
-          "descricao": "Acesso a experiências exclusivas do programa Priceless Cities da Mastercard."
         }
       ],
       "link_solicitacao": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
-      "nota_curadoria": "Atenção à anuidade: só é zerada com gastos mensais de R$ 8 mil ou investimentos relevantes (R$ 50 mil em renda fixa C6 ou R$ 1 milhão em investimentos); fora disso, o custo é R$ 98/mês. A pontuação em pts/US$ é escalonada por volume investido, podendo variar de 2,5 a 3,5 pts/US$1, o que exige checagem do perfil do cliente antes de prometer a taxa máxima. Não há confirmação oficial sobre transferência de pontos para programas de milhagem parceiros nem sobre renda mínima exigida para aprovação.",
+      "nota_curadoria": "A anuidade de R$ 98/mês (R$ 1.176/ano) só é isenta se o cliente atingir gastos mensais de R$ 8 mil, investir R$ 50 mil em renda fixa C6 ou ter R$ 1 milhão investido — condições relativamente altas para o segmento. A pontuação varia bastante conforme o volume investido (2,5 a 3,5 pts/US$1), o que exige atenção ao perfil do cliente. O acesso ilimitado a salas VIP só vale para quem tem R$ 1 milhão investido; os demais ficam limitados a 4 acessos/ano compartilhados entre DragonPass, Espaço C6 e W Premium.",
       "procedencia": {
-        "emissor": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
-        "bandeira": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
         "anuidade": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
         "anuidade_parcelas": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
         "isencao": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
@@ -3102,7 +3096,6 @@
         "pontos": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
         "cashback": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
         "salas_vip": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
-        "validade_pontos": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
         "iof": "https://www.c6bank.com.br/blog/c6-bank-lanca-carbon",
         "transfere_para": "https://www.c6bank.com.br/blog/c6-bank-reduz-valor-minimo-necessario-para-transferir-pontos-atomos-para-programas-de-companhias-aereas",
         "requisito_acesso": "https://www.c6bank.com.br/guia-cartao-black/"
@@ -3124,33 +3117,7 @@
         "requisito_acesso",
         "transfere_para"
       ],
-      "bandeira_ref": "mastercard-black",
-      "conflitos": [
-        {
-          "campo": "adicionais_gratis",
-          "antes": 6,
-          "depois": 10,
-          "variacao_pct": 66.7,
-          "fonte_antes": "https://www.c6bank.com.br/blog/c6-bank-da-pontos-extras-no-cartao-para-clientes-que-usarem-mais-o-banco",
-          "fonte_depois": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
-          "valor_mantido": "depois",
-          "motivo": null,
-          "detectado_em": "2026-07-30",
-          "resolvido": false
-        },
-        {
-          "campo": "pontos.internacional",
-          "antes": 2.5,
-          "depois": 3.5,
-          "variacao_pct": 40,
-          "fonte_antes": "https://www.c6bank.com.br/blog/nova-pontuacao-para-clientes-c6-carbon-mastercard-black",
-          "fonte_depois": "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
-          "valor_mantido": "depois",
-          "motivo": null,
-          "detectado_em": "2026-07-30",
-          "resolvido": false
-        }
-      ]
+      "bandeira_ref": "mastercard-black"
     },
     {
       "slug": "c6-graphene",
