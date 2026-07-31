@@ -252,7 +252,6 @@
   .modal-cat{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:20px}
   .modal-rows{display:flex;flex-direction:column;gap:10px}
   #hist-chart{height:200px!important}
-  #transf-hist-chart{height:200px!important}
   .modal-row{background:var(--card);border:1px solid var(--border-ctrl);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;transition:border-color .15s,background .15s}
   .modal-row:hover{background:var(--card);border-color:var(--muted)}
   .modal-row.best:hover{border-color:var(--cdv-coral);background:#1f1f38}
@@ -2020,6 +2019,24 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 #tab-cartoes .ct-tag{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;
   color:var(--muted);border:1px solid var(--border);border-radius:5px;padding:1px 6px;margin-left:6px}
 #tab-cartoes .ct-tag-rej{color:#f87171;border-color:rgba(248,113,113,.45)}
+#tab-cartoes .ct-filtros{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-bottom:10px}
+#tab-cartoes .ct-filtros input,#tab-cartoes .ct-filtros select{width:100%;box-sizing:border-box}
+#tab-cartoes .ct-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+#tab-cartoes .ct-res-stats{font-size:11px;color:var(--muted);margin-bottom:12px;font-weight:700}
+#tab-cartoes .ct-res{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+#tab-cartoes .ct-res-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:15px;cursor:pointer;transition:border-color .15s,transform .15s}
+#tab-cartoes .ct-res-card:hover{border-color:var(--cdv-coral);transform:translateY(-2px)}
+#tab-cartoes .ct-res-nome{font-weight:700;font-size:13.5px;line-height:1.3}
+#tab-cartoes .ct-res-sub{font-size:11px;color:var(--muted);margin-top:3px}
+#tab-cartoes .ct-res-linha{font-size:12px;margin-top:9px;display:flex;justify-content:space-between;gap:8px}
+#tab-cartoes .ct-res-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+#tab-cartoes .ct-ficha-topo{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
+  flex-wrap:wrap;margin-bottom:16px}
+#tab-cartoes .ct-voltar{background:transparent;border:none;color:var(--cdv-coral);font-weight:700;font-size:12px;
+  cursor:pointer;padding:0 0 8px;font-family:'Montserrat',sans-serif}
+#tab-cartoes .ct-ficha-tabela td:first-child{width:230px}
+@media(max-width:760px){#tab-cartoes .ct-ficha-tabela td:first-child{width:130px}}
 
 </style>
 <div id="tab-cartoes" class="tab-panel" style="display:none">
@@ -2028,7 +2045,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 
   <div class="ct-sub">
     <button class="ct-btn" id="ct-sub-comparar" onclick="ctSubTab('comparar')">Comparar</button>
-    <button class="ct-btn" id="ct-sub-lista" onclick="ctSubTab('lista')">Todos os cartões</button>
+    <button class="ct-btn" id="ct-sub-lista" onclick="ctSubTab('lista')">Buscar cartão</button>
     <button class="ct-btn" id="ct-sub-admin" onclick="ctSubTab('admin')" style="display:none">Admin</button>
   </div>
 
@@ -2037,8 +2054,43 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   </div>
 
   <div id="ct-pane-lista" style="display:none">
-    <input id="ct-busca" placeholder="Filtrar por nome ou emissor…" oninput="ctRenderLista()" style="width:100%;margin-bottom:14px">
-    <div id="ct-lista"></div>
+    <div id="ct-busca-view">
+      <div class="ct-filtros">
+        <input id="ct-busca" placeholder="Buscar por nome ou banco…" oninput="ctRenderLista()" autocomplete="off">
+        <select id="ct-f-emissor" onchange="ctRenderLista()"></select>
+        <select id="ct-f-bandeira" onchange="ctRenderLista()"></select>
+        <select id="ct-f-anuidade" onchange="ctRenderLista()">
+          <option value="">Anuidade: qualquer</option>
+          <option value="0">Sem anuidade</option>
+          <option value="500">Até R$ 500</option>
+          <option value="1000">Até R$ 1.000</option>
+          <option value="2000">Até R$ 2.000</option>
+        </select>
+        <select id="ct-f-transf" onchange="ctRenderLista()"></select>
+        <select id="ct-f-pontos" onchange="ctRenderLista()">
+          <option value="">Pontuação: qualquer</option>
+          <option value="1">A partir de 1 pt/US$</option>
+          <option value="1.5">A partir de 1,5 pt/US$</option>
+          <option value="2">A partir de 2 pts/US$</option>
+          <option value="3">A partir de 3 pts/US$</option>
+        </select>
+        <select id="ct-f-ordem" onchange="ctRenderLista()">
+          <option value="nome">Ordenar: A → Z</option>
+          <option value="anuidade">Ordenar: menor anuidade</option>
+          <option value="pontos">Ordenar: maior pontuação</option>
+        </select>
+      </div>
+      <div class="ct-chips">
+        <button class="ct-btn" id="ct-c-vip" onclick="ctChip('vip')">🛋️ Com sala VIP</button>
+        <button class="ct-btn" id="ct-c-cashback" onclick="ctChip('cashback')">💵 Com cashback</button>
+        <button class="ct-btn" id="ct-c-isencao" onclick="ctChip('isencao')">🆓 Com isenção de anuidade</button>
+        <button class="ct-btn" id="ct-c-adicionais" onclick="ctChip('adicionais')">👥 Adicionais grátis</button>
+        <button class="ct-btn" onclick="ctLimparFiltros()">Limpar filtros</button>
+      </div>
+      <div class="ct-res-stats" id="ct-lista-stats"></div>
+      <div id="ct-lista"></div>
+    </div>
+    <div id="ct-ficha-view" style="display:none"></div>
   </div>
 
   <div id="ct-pane-admin" style="display:none">
@@ -2067,6 +2119,12 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
         Vantagens e desvantagens derivadas apenas dos dados já apurados. Não consulta a web e não altera nenhum campo factual.
       </p>
       <div id="ct-analises"></div>
+    </div>
+    <div class="ct-box">
+      <div style="font-weight:700;font-size:13px;margin-bottom:8px">Inventário do catálogo</div>
+      <p class="ct-hint" style="margin:0 0 10px">Cobertura de fontes e campos pendentes por cartão. Visível apenas no Admin.</p>
+      <input id="ct-inv-busca" placeholder="Filtrar por nome ou banco…" oninput="ctRenderInventario()" style="width:100%;margin-bottom:10px">
+      <div id="ct-inventario"></div>
     </div>
     <div id="ct-retomar" class="ct-box" style="display:none;font-size:12px"></div>
     <div id="ct-falhas" class="ct-box" style="display:none"></div>
@@ -2184,6 +2242,7 @@ async function ctSalvarAnalise(slug){
 
 
 function ctSubTab(qual){
+  if (typeof ctVoltarBusca === 'function') ctVoltarBusca();
   ['comparar','lista','admin'].forEach(function(k){
     var pane = document.getElementById('ct-pane-'+k);
     var btn  = document.getElementById('ct-sub-'+k);
@@ -2564,24 +2623,289 @@ async function ctRenderComparacao(){
     '</div>';
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+//  BUSCA POR CRITERIO  +  FICHA INDIVIDUAL
+// ─────────────────────────────────────────────────────────────────────────
+var CT_CHIPS = { vip:false, cashback:false, isencao:false, adicionais:false };
+
+// Familias de programas de transferencia: a base traz o mesmo programa escrito
+// de varias formas ("Smiles", "Smiles (GOL)", "Latam Pass"...), entao o filtro
+// trabalha por palavra-chave e nao por igualdade exata.
+var CT_FAMILIAS = [
+  ['Livelo',              ['livelo']],
+  ['Esfera',              ['esfera']],
+  ['Smiles (GOL)',        ['smiles']],
+  ['LATAM Pass',          ['latam']],
+  ['Azul Fidelidade',     ['azul']],
+  ['TAP Miles&Go',        ['tap','miles&go']],
+  ['Dotz',                ['dotz']],
+  ['AAdvantage (American)',['aadvantage','american airlines']],
+  ['ConnectMiles (Copa)', ['connectmiles']],
+  ['Iberia Plus',         ['iberia']],
+  ['Accor ALL',           ['accor']]
+];
+
+function ctFamiliasTransf(c){
+  var alvo = (c.transfere_para||[]).map(ctNorm).join(' | ');
+  if (!alvo) return [];
+  var out = [];
+  CT_FAMILIAS.forEach(function(f){
+    if (f[1].some(function(k){ return alvo.indexOf(ctNorm(k)) >= 0; })) out.push(f[0]);
+  });
+  return out;
+}
+
+function ctTemVip(c){
+  return (c.salas_vip||[]).some(function(s){
+    var txt = ctNorm((s.programa||'') + ' ' + (s.regra||''));
+    if (!txt) return false;
+    return txt.indexOf('nao ha') < 0 && txt.indexOf('nao possui') < 0 && txt.indexOf('nao oferece') < 0;
+  });
+}
+function ctTemCashback(c){
+  return !!(c.cashback && (c.cashback.nacional != null || c.cashback.observacao));
+}
+function ctTemIsencao(c){
+  return !!(c.isencao && c.isencao.regra);
+}
+function ctPtsMax(c){
+  var p = c.pontos || {};
+  var v = [p.nacional, p.internacional].filter(function(x){ return x != null; });
+  return v.length ? Math.max.apply(null, v) : null;
+}
+
+// Popula os selects preservando a escolha atual. Chamado a cada render porque a
+// base pode mudar depois de uma extracao no Admin.
+function ctPopularFiltros(){
+  function preencher(id, rotulo, valores){
+    var el = document.getElementById(id);
+    if (!el) return;
+    var atual = el.value;
+    el.innerHTML = '<option value="">'+rotulo+'</option>' +
+      valores.map(function(v){ return '<option value="'+ctEsc(v)+'">'+ctEsc(v)+'</option>'; }).join('');
+    if (valores.indexOf(atual) >= 0) el.value = atual;
+  }
+  var ord = function(a,b){ return a.localeCompare(b,'pt-BR'); };
+  preencher('ct-f-emissor', 'Banco: todos',
+    Array.from(new Set(CT_CARTOES.map(function(c){ return c.emissor; }).filter(Boolean))).sort(ord));
+  preencher('ct-f-bandeira', 'Bandeira: todas',
+    Array.from(new Set(CT_CARTOES.map(function(c){ return c.bandeira; }).filter(Boolean))).sort(ord));
+  var fams = new Set();
+  CT_CARTOES.forEach(function(c){ ctFamiliasTransf(c).forEach(function(f){ fams.add(f); }); });
+  preencher('ct-f-transf', 'Transfere para: qualquer', Array.from(fams).sort(ord));
+}
+
+function ctChip(qual){
+  CT_CHIPS[qual] = !CT_CHIPS[qual];
+  var b = document.getElementById('ct-c-'+qual);
+  if (b) b.classList.toggle('on', CT_CHIPS[qual]);
+  ctRenderLista();
+}
+
+function ctLimparFiltros(){
+  ['vip','cashback','isencao','adicionais'].forEach(function(k){
+    CT_CHIPS[k] = false;
+    var b = document.getElementById('ct-c-'+k);
+    if (b) b.classList.remove('on');
+  });
+  ['ct-busca','ct-f-emissor','ct-f-bandeira','ct-f-anuidade','ct-f-transf','ct-f-pontos'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  var ord = document.getElementById('ct-f-ordem');
+  if (ord) ord.value = 'nome';
+  ctRenderLista();
+}
+
+function ctValorFiltro(id){
+  var el = document.getElementById(id);
+  return el ? el.value : '';
+}
+
+function ctFiltrarCartoes(){
+  var q         = ctNorm(ctValorFiltro('ct-busca'));
+  var emissor   = ctValorFiltro('ct-f-emissor');
+  var bandeira  = ctValorFiltro('ct-f-bandeira');
+  var anuidade  = ctValorFiltro('ct-f-anuidade');
+  var transf    = ctValorFiltro('ct-f-transf');
+  var pontosMin = parseFloat(ctValorFiltro('ct-f-pontos'));
+
+  return CT_CARTOES.filter(function(c){
+    if (q && ctNorm(c.nome).indexOf(q) < 0 && ctNorm(c.emissor).indexOf(q) < 0) return false;
+    if (emissor  && c.emissor  !== emissor)  return false;
+    if (bandeira && c.bandeira !== bandeira) return false;
+    if (anuidade !== ''){
+      var lim = parseFloat(anuidade);
+      if (c.anuidade == null) return false;
+      if (lim === 0 ? Number(c.anuidade) !== 0 : Number(c.anuidade) > lim) return false;
+    }
+    if (transf && ctFamiliasTransf(c).indexOf(transf) < 0) return false;
+    if (!isNaN(pontosMin)){
+      var pm = ctPtsMax(c);
+      if (pm == null || pm < pontosMin) return false;
+    }
+    if (CT_CHIPS.vip        && !ctTemVip(c))        return false;
+    if (CT_CHIPS.cashback   && !ctTemCashback(c))   return false;
+    if (CT_CHIPS.isencao    && !ctTemIsencao(c))    return false;
+    if (CT_CHIPS.adicionais && !(Number(c.adicionais_gratis) > 0)) return false;
+    return true;
+  });
+}
+
 function ctRenderLista(){
   var box = document.getElementById('ct-lista');
   if (!box) return;
-  var q = (document.getElementById('ct-busca').value || '').toLowerCase();
+  ctPopularFiltros();
+
+  var itens = ctFiltrarCartoes();
+  var ordem = ctValorFiltro('ct-f-ordem') || 'nome';
+  itens.sort(function(a,b){
+    if (ordem === 'anuidade'){
+      var aa = a.anuidade == null ? Infinity : Number(a.anuidade);
+      var bb = b.anuidade == null ? Infinity : Number(b.anuidade);
+      if (aa !== bb) return aa - bb;
+    } else if (ordem === 'pontos'){
+      var pa = ctPtsMax(a), pb = ctPtsMax(b);
+      pa = pa == null ? -1 : pa; pb = pb == null ? -1 : pb;
+      if (pa !== pb) return pb - pa;
+    }
+    return String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR');
+  });
+
+  var stats = document.getElementById('ct-lista-stats');
+  if (stats) stats.textContent = itens.length + ' de ' + CT_CARTOES.length +
+    (itens.length === 1 ? ' cartão' : ' cartões');
+
+  if (!itens.length){
+    box.innerHTML = '<div class="ct-vazio">Nenhum cartão atende a esses critérios. Tente afrouxar um filtro.</div>';
+    ctRenderInventario();
+    return;
+  }
+
+  box.innerHTML = '<div class="ct-res">' + itens.map(function(c){
+    var pts  = ctPtsMax(c);
+    var tags = [];
+    if (ctTemVip(c))      tags.push('🛋️ sala VIP');
+    if (ctTemCashback(c)) tags.push('💵 cashback');
+    if (ctTemIsencao(c))  tags.push('🆓 isenção');
+    if (Number(c.adicionais_gratis) > 0) tags.push('👥 '+c.adicionais_gratis+' adicional'+(c.adicionais_gratis>1?'is':'')+' grátis');
+    return '<div class="ct-res-card" onclick="ctAbrirFicha(\''+c.slug+'\')">'+
+      '<div class="ct-res-nome">'+ctEsc(c.nome)+'</div>'+
+      '<div class="ct-res-sub">'+ctEsc(c.emissor||'')+' · '+ctEsc(c.bandeira||'')+' '+ctEsc(c.categoria||'')+'</div>'+
+      '<div class="ct-res-linha"><span style="color:var(--muted)">Anuidade</span><strong>'+
+        (c.anuidade != null ? ctFmtMoeda(c.anuidade) : '<span class="ct-na">a confirmar</span>')+'</strong></div>'+
+      '<div class="ct-res-linha"><span style="color:var(--muted)">Pontuação</span><strong>'+
+        (pts != null ? pts + ' pts/US$' : '<span class="ct-na">a confirmar</span>')+'</strong></div>'+
+      (tags.length ? '<div class="ct-res-tags">'+tags.map(function(t){ return '<span class="ct-tag">'+t+'</span>'; }).join('')+'</div>' : '')+
+    '</div>';
+  }).join('') + '</div>';
+
+  ctRenderInventario();
+}
+
+// ── Ficha individual ──────────────────────────────────────────────────────
+function ctVoltarBusca(){
+  var busca = document.getElementById('ct-busca-view');
+  var ficha = document.getElementById('ct-ficha-view');
+  if (busca) busca.style.display = 'block';
+  if (ficha){ ficha.style.display = 'none'; ficha.innerHTML = ''; }
+}
+
+function ctCompararDaqui(slug){
+  if (CT_SEL_B === slug) CT_SEL_B = CT_SEL_A;
+  CT_SEL_A = slug;
+  ctSubTab('comparar');
+  ctRenderComparacao();
+}
+
+async function ctAbrirFicha(slug){
+  var busca = document.getElementById('ct-busca-view');
+  var ficha = document.getElementById('ct-ficha-view');
+  if (!ficha) return;
+  if (busca) busca.style.display = 'none';
+  ficha.style.display = 'block';
+  ficha.innerHTML = '<button class="ct-voltar" onclick="ctVoltarBusca()">← Voltar para a busca</button>'+
+                    '<div class="ct-vazio">Carregando…</div>';
+
+  var c = await ctDetalhe(slug);
+  if (!c){
+    ficha.innerHTML = '<button class="ct-voltar" onclick="ctVoltarBusca()">← Voltar para a busca</button>'+
+                      '<div class="ct-vazio">Não foi possível carregar este cartão.</div>';
+    return;
+  }
+
+  var campos = ctCampos(c);
+  var LINHAS = [
+    ['Anuidade','anuidade','💰'],            ['Isenção de anuidade','isencao','🆓'],
+    ['Pontuação (nacional)','pontosNac','🇧🇷'], ['Pontuação (internacional)','pontosInt','🌎'],
+    ['Cashback','cashback','💵'],            ['Validade dos pontos','validade','⏳'],
+    ['Programa de fidelidade','programa','🎯'], ['Transfere para','transf','🔁'],
+    ['Renda / requisito','renda','📊'],      ['Adicionais grátis','adicionais','👥'],
+    ['Spread','spread','💱'],                ['IOF','iof','🏛️'],
+    ['Salas VIP','vip','🛋️']
+  ];
+
+  var fontes = (c.fontes||[]).filter(Boolean);
+  var blocoFontes = fontes.length
+    ? '<div class="ct-box"><div style="font-weight:700;font-size:13px;margin-bottom:8px">Fontes oficiais consultadas</div>'+
+      fontes.map(function(f){
+        var url = typeof f === 'string' ? f : (f.url || '');
+        var rot = typeof f === 'string' ? f : (f.titulo || f.url || '');
+        return url ? '<div style="margin:3px 0"><a href="'+ctEsc(url)+'" target="_blank" rel="noopener" '+
+          'style="font-size:11.5px;color:var(--cdv-coral);text-decoration:none;word-break:break-all">'+ctEsc(rot)+' ↗</a></div>' : '';
+      }).join('')+
+      (c.verificado_em ? '<div style="font-size:11px;color:var(--muted);margin-top:8px">Verificado em '+ctEsc(c.verificado_em)+'</div>' : '')+
+      '</div>'
+    : '';
+
+  ficha.innerHTML =
+    '<button class="ct-voltar" onclick="ctVoltarBusca()">← Voltar para a busca</button>'+
+    '<div class="ct-ficha-topo">'+
+      '<div>'+
+        '<div style="font-size:19px;font-weight:800;line-height:1.25">'+ctEsc(c.nome)+'</div>'+
+        '<div style="font-size:12px;color:var(--muted);margin-top:3px">'+
+          ctEsc(c.emissor||'')+' · '+ctEsc(c.bandeira||'')+' '+ctEsc(c.categoria||'')+'</div>'+
+      '</div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+        '<button class="ct-btn" onclick="ctCompararDaqui(\''+c.slug+'\')">⚖️ Comparar este cartão</button>'+
+        (c.link_solicitacao ? '<a class="ct-btn on" href="'+ctEsc(c.link_solicitacao)+'" target="_blank" rel="noopener" '+
+          'style="text-decoration:none;display:inline-block">Página oficial ↗</a>' : '')+
+      '</div>'+
+    '</div>'+
+    '<table class="ct-tabela ct-ficha-tabela">'+
+      LINHAS.map(function(l){
+        return '<tr><td class="ct-rot"><span style="margin-right:7px;opacity:.85">'+l[2]+'</span>'+l[0]+'</td>'+
+               '<td>'+ctValor(campos[l[1]])+'</td></tr>';
+      }).join('')+
+    '</table>'+
+    '<p class="ct-hint" style="margin-top:12px">“A confirmar” significa que o dado não consta das fontes oficiais consultadas — nunca que o benefício não existe.</p>'+
+    (c.nota_curadoria ? '<div class="ct-box" style="margin-top:14px"><div style="font-weight:700;font-size:13px;margin-bottom:6px">Nota de curadoria</div>'+
+      '<div style="font-size:12px;color:var(--muted);line-height:1.55">'+ctEsc(c.nota_curadoria)+'</div></div>' : '')+
+    '<h3 style="font-size:14px;margin:26px 0 10px">Benefícios do banco</h3>'+
+    (ctListaBeneficios(c.beneficios_banco, c.nome) || '<div class="ct-box"><span class="ct-na">sem registro</span></div>')+
+    '<h3 style="font-size:14px;margin:26px 0 10px">Benefícios da bandeira</h3>'+
+    ctBlocoBandeira(c)+
+    (blocoFontes ? '<h3 style="font-size:14px;margin:26px 0 10px">Procedência</h3>'+blocoFontes : '');
+}
+
+// ── Inventario de curadoria (somente Admin) ───────────────────────────────
+function ctRenderInventario(){
+  var box = document.getElementById('ct-inventario');
+  if (!box) return;
+  var q = ctNorm((document.getElementById('ct-inv-busca')||{}).value || '');
   var itens = CT_CARTOES.filter(function(c){
-    return !q || String(c.nome||'').toLowerCase().indexOf(q)>=0
-              || String(c.emissor||'').toLowerCase().indexOf(q)>=0;
+    return !q || ctNorm(c.nome).indexOf(q) >= 0 || ctNorm(c.emissor).indexOf(q) >= 0;
   }).sort(function(a,b){ return String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR'); });
 
-  if (!itens.length) { box.innerHTML = '<p style="opacity:.6">Nenhum cartão encontrado.</p>'; return; }
+  if (!itens.length){ box.innerHTML = '<p style="opacity:.6;font-size:12px">Nenhum cartão encontrado.</p>'; return; }
   box.innerHTML = itens.map(function(c){
     var pend = (c.campos_pendentes||[]).length;
-    return '<div class="ct-box" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">'+
-      '<div><div style="font-weight:600">'+c.nome+'</div>'+
-      '<div style="opacity:.65;font-size:13px">'+(c.emissor||'')+' · '+(c.bandeira||'')+' '+(c.categoria||'')+'</div></div>'+
-      '<div style="text-align:right;font-size:13px">'+
-        '<div>'+(c.anuidade ? ctFmtMoeda(c.anuidade) : '<span class="ct-na">anuidade a confirmar</span>')+'</div>'+
-        '<div style="opacity:.6">'+(c.fontes||[]).length+' fonte(s)'+(pend ? ' · '+pend+' pendente(s)' : '')+'</div>'+
+    return '<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;'+
+      'padding:8px 0;border-bottom:1px solid var(--border)">'+
+      '<div><div style="font-weight:600;font-size:12.5px">'+ctEsc(c.nome)+'</div>'+
+      '<div style="opacity:.65;font-size:11px">'+ctEsc(c.emissor||'')+' · '+ctEsc(c.bandeira||'')+' '+ctEsc(c.categoria||'')+'</div></div>'+
+      '<div style="text-align:right;font-size:11px;opacity:.75">'+
+        (c.fontes||[]).length+' fonte(s)'+(pend ? ' · '+pend+' pendente(s)' : ' · completo')+
       '</div>'+
     '</div>';
   }).join('');
@@ -3855,13 +4179,6 @@ function abrirModalTransf(destinoEncoded){
     return a.origem.localeCompare(b.origem, 'pt-BR');
   });
 
-  currentModalTransfDestino = destino;
-  const tHistDiv = document.getElementById('transf-modal-hist');
-  const tHistBtn = document.getElementById('transf-modal-hist-btn');
-  if (tHistDiv) tHistDiv.style.display = 'none';
-  if (tHistBtn) tHistBtn.textContent = '📈 Ver histórico';
-  if (transfHistChart) { transfHistChart.destroy(); transfHistChart = null; }
-
   document.getElementById('transf-modal-name').textContent = destino;
   document.getElementById('transf-modal-cat').textContent = `${origens.length} ${origens.length===1?'origem':'origens'} rastreada${origens.length===1?'':'s'}`;
 
@@ -3892,130 +4209,6 @@ function abrirModalTransf(destinoEncoded){
   }).join('');
 
   document.getElementById('transf-modal-overlay').classList.add('open');
-}
-
-// ══ HISTÓRICO DE TRANSFERÊNCIAS BONIFICADAS (gráfico do modal) ══
-let transfHistChart = null;
-let currentModalTransfDestino = null;
-
-const TRANSF_CORES_FIXAS = {
-  'Todos':'#ff585e', 'Livelo':'#df0979', 'Esfera':'#e8371b', 'Itaú':'#ff6900',
-  'Inter':'#fb923c', 'C6':'#94a3b8', 'Nubank':'#a78bfa', 'Caixa':'#0ea5e9',
-  'BTG':'#60a5fa', 'BRB':'#22d3ee', 'Sicoob':'#34d399', 'Sicredi':'#4ade80',
-  'Porto Seguro':'#38bdf8', 'Revolut':'#c084fc',
-  'Smiles':'#f59e0b', 'Azul Fidelidade':'#0ea5e9', 'LATAM Pass':'#dc2626'
-};
-const TRANSF_CORES_POOL = ['#f472b6','#facc15','#2dd4bf','#818cf8','#fb7185','#a3e635','#e879f9','#7dd3fc'];
-
-function corOrigemTransf(origem, idx){
-  return TRANSF_CORES_FIXAS[origem] || TRANSF_CORES_POOL[idx % TRANSF_CORES_POOL.length];
-}
-
-function toggleHistoricoTransf(){
-  const div = document.getElementById('transf-modal-hist');
-  const btn = document.getElementById('transf-modal-hist-btn');
-  const isOpen = div.style.display !== 'none';
-  if (isOpen){
-    div.style.display = 'none';
-    btn.textContent = '📈 Ver histórico';
-  } else {
-    div.style.display = 'block';
-    btn.textContent = '✕ Fechar histórico';
-    renderTransfHistChart(currentModalTransfDestino);
-  }
-}
-
-function renderTransfHistChart(destino){
-  if (!destino) return;
-  const canvas = document.getElementById('transf-hist-chart');
-  const emptyEl = document.getElementById('transf-hist-empty');
-
-  const registros = ((historicoTransferencias||{}).items||[]).filter(r => r.destino === destino);
-  if (!registros.length){
-    canvas.style.display = 'none';
-    emptyEl.style.display = 'block';
-    return;
-  }
-  canvas.style.display = 'block';
-  emptyEl.style.display = 'none';
-
-  // Eixo X: todas as datas de início de promoção rastreadas para este destino
-  const datas = [...new Set(registros.map(r => r.dataInicio))].sort();
-  const labels = datas.map(d => {
-    const [, m, dia] = d.split('-');
-    return `${dia}/${m}`;
-  });
-
-  // Uma série por origem — "Todos" primeiro, demais em ordem alfabética
-  const origens = [...new Set(registros.map(r => r.origem))].sort((a,b)=>{
-    if (a === 'Todos') return -1;
-    if (b === 'Todos') return 1;
-    return a.localeCompare(b, 'pt-BR');
-  });
-
-  const datasets = origens.map((origem, idx) => {
-    const cor = corOrigemTransf(origem, idx);
-    const vals = datas.map(d => {
-      const doDia = registros.filter(r => r.origem === origem && r.dataInicio === d);
-      if (!doDia.length) return null;
-      return Math.max(...doDia.map(r => r.bonusMax));
-    });
-    return {
-      label: origem,
-      data: vals,
-      borderColor: cor,
-      backgroundColor: cor + '22',
-      pointBackgroundColor: cor,
-      borderWidth: 2,
-      pointRadius: 3,
-      pointHoverRadius: 6,
-      spanGaps: true,
-      tension: 0.3,
-    };
-  });
-
-  if (transfHistChart){ transfHistChart.destroy(); transfHistChart = null; }
-
-  const ctx = canvas.getContext('2d');
-  transfHistChart = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: { duration: 300 },
-      plugins: {
-        legend: {
-          labels: {
-            color: '#8a9bbf',
-            font: { family: 'Montserrat', size: 11 },
-            boxWidth: 12, padding: 10
-          }
-        },
-        tooltip: {
-          backgroundColor: '#2a3246',
-          titleColor: '#eeeeee',
-          bodyColor: '#8a9bbf',
-          borderColor: '#3d4a66',
-          borderWidth: 1,
-          callbacks: {
-            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y ?? '—'}% de bônus`
-          }
-        }
-      },
-      scales: {
-        x: {
-          ticks: { color:'#5a6a8a', font:{family:'Montserrat',size:10}, maxRotation:45 },
-          grid: { color:'#3d4a6633' }
-        },
-        y: {
-          ticks: { color:'#5a6a8a', font:{family:'Montserrat',size:10}, callback: v => v + '%' },
-          grid: { color:'#3d4a6633' },
-          beginAtZero: false
-        }
-      }
-    }
-  });
 }
 document.addEventListener('DOMContentLoaded', () => {
   const closeBtn = document.getElementById('transf-modal-close-btn');
@@ -9131,11 +9324,6 @@ function mapaRenderAll() {
     <div class="modal-name" id="transf-modal-name"></div>
     <div class="modal-cat" id="transf-modal-cat"></div>
     <div class="modal-rows" id="transf-modal-rows"></div>
-    <button class="modal-url" id="transf-modal-hist-btn" onclick="toggleHistoricoTransf()" style="width:100%;margin-top:14px">📈 Ver histórico</button>
-    <div id="transf-modal-hist" style="display:none;margin-top:14px">
-      <canvas id="transf-hist-chart" style="width:100%;height:200px"></canvas>
-      <div id="transf-hist-empty" style="display:none;text-align:center;font-size:12px;color:var(--muted);padding:20px 0">Histórico ainda sendo construído — volte em breve 📅</div>
-    </div>
   </div>
 </div>
 
