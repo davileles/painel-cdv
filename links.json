@@ -1,0 +1,109 @@
+{
+  "smiles": {
+    "programa": "Smiles",
+    "destino": "https://www.smiles.com.br/portal/passagens",
+    "params": {
+      "utm_source": "pontos_pra_voar",
+      "utm_medium": "cpa"
+    },
+    "dominios": ["smiles.com.br"],
+    "afiliado": true
+  },
+  "latam": {
+    "programa": "LATAM Pass",
+    "destino": "https://www.latamairlines.com/br/pt/ofertas/promocoes-latam",
+    "params": {
+      "origin": "all",
+      "city": "all",
+      "utm_source": "pontos-para-voar",
+      "utm_medium": "affiliate",
+      "utm_campaign": "br_ltm_pontos-para-voar_affiliate_tkt_aon_conv_lower",
+      "utm_content": "aberta_display_20260407"
+    },
+    "dominios": ["latamairlines.com", "latampass.latam.com"],
+    "afiliado": true
+  },
+  "azul": {
+    "programa": "Azul Fidelidade",
+    "destino": "https://www.voeazul.com.br/home/br/pt/home",
+    "params": {
+      "s_kwcid": "buscapaga_brv_azf_ppv_conteudo_uf_aon-marca_insti_afiliado_cpc_rspnsv_lp_pontospravoar_responsivo",
+      "utm_source": "ppv",
+      "utm_medium": "cpc",
+      "utm_campaign": "brv_azf_ppv_conteudo_uf_aon-marca_insti",
+      "utm_term": "aon-marca_pontospravoar"
+    },
+    "dominios": ["voeazul.com.br"],
+    "afiliado": true
+  },
+  "azul-mundo": {
+    "programa": "Azul pelo Mundo",
+    "destino": "https://azulpelomundo.voeazul.com.br",
+    "params": {},
+    "dominios": ["voeazul.com.br"],
+    "afiliado": false
+  },
+  "iberia": {
+    "programa": "Iberia Plus",
+    "destino": "https://www.iberia.com/",
+    "params": {},
+    "dominios": ["iberia.com"],
+    "afiliado": false
+  },
+  "qatar": {
+    "programa": "Privilege Club",
+    "destino": "https://www.qatarairways.com/",
+    "params": {},
+    "dominios": ["qatarairways.com"],
+    "afiliado": false
+  },
+  "british": {
+    "programa": "Executive Club",
+    "destino": "https://www.britishairways.com/",
+    "params": {},
+    "dominios": ["britishairways.com"],
+    "afiliado": false
+  },
+  "tap": {
+    "programa": "TAP",
+    "destino": "https://www.flytap.com/",
+    "params": {},
+    "dominios": ["flytap.com"],
+    "afiliado": false
+  },
+  "aadvantage": {
+    "programa": "AAdvantage",
+    "destino": "https://www.aa.com.br/",
+    "params": {},
+    "dominios": ["aa.com.br", "aa.com"],
+    "afiliado": false
+  },
+  "suma": {
+    "programa": "SUMA",
+    "destino": "https://www.aireuropa.com/en/flights/home",
+    "params": {},
+    "dominios": ["aireuropa.com"],
+    "afiliado": false
+  },
+  "virgin": {
+    "programa": "Flying Club",
+    "destino": "https://www.virginatlantic.com/",
+    "params": {},
+    "dominios": ["virginatlantic.com"],
+    "afiliado": false
+  },
+  "finnair": {
+    "programa": "Finnair Plus",
+    "destino": "https://www.finnair.com/br/gb/finnair-plus",
+    "params": {},
+    "dominios": ["finnair.com"],
+    "afiliado": false
+  },
+  "aeroplan": {
+    "programa": "Aeroplan",
+    "destino": "https://www.aircanada.com/home/ca/en/aco/flights",
+    "params": {},
+    "dominios": ["aircanada.com"],
+    "afiliado": false
+  }
+}
