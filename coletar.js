@@ -22,6 +22,7 @@ const RESEND_API_KEY  = process.env.RESEND_API_KEY || '';
 // Montagem da mensagem, enfileiramento no Baileys e kill switch vivem em
 // mensagem-radar.js, compartilhado com coletar-inter.js.
 const { publicarOfertas, MAX_OFERTAS_APROVADAS } = require('./mensagem-radar');
+const { alertarOperador, detectarQuedas } = require('./alerta-operador');
 
 // ── Programas monitorados ─────────────────────────────────────────────────────
 const PROGRAMS = [
@@ -784,8 +785,12 @@ async function main() {
 
   // 3. Snapshot do dia: { "shopee": { programs: { livelo: 8, esfera: 5 } } }
   const snapshot = {};
+  // Contagem por programa — usada na checagem de saúde da coleta logo abaixo.
+  const contagemPorPrograma = {};
+  const nomesPorPrograma = Object.fromEntries(PROGRAMS.map(p => [p.id, p.name]));
 
   for (const prog of PROGRAMS) {
+    contagemPorPrograma[prog.id] = 0;
     console.log(`[Histórico] Coletando ${prog.name}…`);
     try {
       const html = await fetchDirect(prog.url);
@@ -801,6 +806,7 @@ async function main() {
 
       const parceiros = parseComparemaniaPts(html, prog.id);
       const count = Object.keys(parceiros).length;
+      contagemPorPrograma[prog.id] = count;
       console.log(`[Histórico] ${prog.name}: ${count} parceiros encontrados`);
 
       // Popula snapshot
@@ -823,8 +829,29 @@ async function main() {
   console.log(`[Histórico] Snapshot do dia: ${totalParceiros} parceiros únicos`);
 
   if (totalParceiros === 0) {
+    await alertarOperador('Coleta Comparemania falhou por completo', [
+      'Nenhum parceiro foi coletado em nenhum programa — nada foi salvo.',
+      'Provável causa: proxy fora do ar, bloqueio de IP ou mudança estrutural no Comparemania.',
+    ]);
     console.error('[Histórico] Nenhum dado coletado — abortando sem salvar.');
     process.exit(1);
+  }
+
+  // 3b. Saúde da coleta por programa.
+  // O LATAM Pass ficou meses retornando 0 sem ninguém notar: a URL passou a
+  // redirecionar para /erro, que responde 200 e contém "ponto", então a checagem
+  // hasContent acima passava e o parser simplesmente extraía zero linhas.
+  // Comparar a contagem de hoje com a última contagem conhecida pega isso.
+  const quedas = detectarQuedas(contagemPorPrograma, historico, hoje, nomesPorPrograma);
+  if (quedas.length) {
+    const linhas = quedas.map(q => q.gravidade === 'zerado'
+      ? `❌ ${q.nome}: 0 parceiros hoje (tinha ${q.anterior} em ${q.dataRef})`
+      : `⚠️ ${q.nome}: ${q.atual} parceiros hoje (tinha ${q.anterior} em ${q.dataRef})`);
+    linhas.push('', 'Verifique se a URL do programa no Comparemania mudou ou se o parser quebrou.');
+    await alertarOperador('Coleta degradada no Comparemania', linhas);
+    for (const q of quedas) console.warn(`[Histórico] ALERTA — ${q.nome}: ${q.atual} vs ${q.anterior} (${q.dataRef})`);
+  } else {
+    console.log('[Histórico] Saúde da coleta: OK em todos os programas.');
   }
 
   // 4. Verifica alertas e dispara os atingidos (remove após enviar)
