@@ -2,7 +2,7 @@
   "_meta": {
     "descricao": "Hash do conteúdo das fontes por cartão. Se o hash não mudou, o coletor não chama a IA.",
     "atualizado_em": "2026-07-31",
-    "total": 50
+    "total": 52
   },
   "cartoes": {
     "brb-visa-dux": {
@@ -427,6 +427,20 @@
       "hash": "fdf748dcf4be75b1",
       "urls": [
         "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-infinite"
+      ],
+      "em": "2026-07-31"
+    },
+    "bradesco-american-express-platinum": {
+      "hash": "4bcfc49130885b8d",
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-platinum"
+      ],
+      "em": "2026-07-31"
+    },
+    "bradesco-visa-aeternum": {
+      "hash": "c4fa1ccc51c4c13e",
+      "urls": [
+        "https://banco.bradesco/cartoes/aeternum/"
       ],
       "em": "2026-07-31"
     }

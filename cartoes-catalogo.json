@@ -14,7 +14,7 @@
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização.",
     "coletor": "coletar-cartoes.js",
     "modelo_coleta": "claude-sonnet-5",
-    "conflitos_abertos": 8
+    "conflitos_abertos": 9
   },
   "cartoes": [
     {
@@ -1444,43 +1444,45 @@
       "adicionais_gratis": null,
       "pontos": null,
       "cashback": null,
-      "programa_proprio": "Programa de Recompensas American Express (pontos sem expiração)",
+      "programa_proprio": "Livelo (Membership Rewards convertido em pontos Livelo)",
       "transfere_para": [],
       "spread": null,
       "iof": null,
-      "validade_pontos": "Sem expiração (conforme página oficial do produto American Express Gold Credit que referencia o Platinum Credit na mesma nota de rodapé)",
+      "validade_pontos": "Pontos nunca expiram",
       "salas_vip": [],
       "beneficios_banco": [
         {
-          "titulo": "Programa de Recompensas com pontos que não expiram",
-          "descricao": "Pontos acumulados no Programa de Recompensas American Express não expiram, conforme indicado na página oficial do produto."
+          "titulo": "Fine Hotels & Resorts",
+          "descricao": "Benefícios exclusivos em hotéis selecionados do programa American Express"
         },
         {
-          "titulo": "Soluções financeiras unificadas",
-          "descricao": "Limites de crédito unificados para maior flexibilidade de pagamento."
+          "titulo": "Garantia estendida",
+          "descricao": "Dobra a garantia original do fabricante em até 12 meses, sem custo adicional, mediante emissão do bilhete de seguro antes da compra"
         },
         {
-          "titulo": "Canais digitais e serviços on-line",
-          "descricao": "Acesso a canais digitais e serviços on-line exclusivos para gestão do cartão."
+          "titulo": "Desconto no Cinemark",
+          "descricao": "50% de desconto em ingresso, pipoca e refrigerante"
         },
         {
-          "titulo": "Central de Assistência 24 horas",
-          "descricao": "Assistência American Express Platinum Credit 24h: 0800 770 7120 (demais localidades); (55 11) 4133-9304 (outros países, a cobrar)."
+          "titulo": "Saque em moeda local no exterior",
+          "descricao": "Saque em toda rede 24h, no Brasil ou no exterior, conforme limite de saque do cartão"
         },
         {
-          "titulo": "Serviço de Atendimento ao Associado American Express Membership Cards",
-          "descricao": "Capitais e regiões metropolitanas: 4004 2639 | Demais localidades: 0800 726 2639 | Exterior (a cobrar): (55 34) 2102-6266."
+          "titulo": "Parcelamento de fatura",
+          "descricao": "Parcelamento da fatura em até 12 parcelas fixas"
+        },
+        {
+          "titulo": "Proteção on-line contra fraude",
+          "descricao": "Monitoramento e proteção contra fraudes em compras on-line"
         }
       ],
-      "link_solicitacao": "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
+      "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-platinum",
+      "nota_curadoria": "A anuidade de R$1.992,00/ano é cobrada em 12 parcelas de R$166,00, mas o valor pode variar nos anos seguintes conforme tabela vigente do Bradesco — não há informação sobre isenção por gasto ou relacionamento. Renda mínima e requisitos de acesso não foram divulgados na fonte, apenas menção genérica a 'análise de crédito e critérios de elegibilidade'. Destaque para pontuação em dólar (2,2x nacional / 3,0x internacional) com pontos Livelo que nunca expiram, e acesso a salas VIP tanto no Brasil (Bradesco Lounge) quanto no exterior (Centurion Lounge/Delta Sky Club). Não há dados sobre cashback, spread ou IOF nesta fonte.",
       "fontes": [
-        "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
-        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/escolha-seu-cartao.shtm",
-        "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/platinum-card/meu-cartao.shtm",
-        "https://adc.bradesco.com.br/html/prime/index.shtm",
-        "http://200-155-86-38.bradesco.com.br/html/classic/produtos-servicos/cartoes/servicos/seguros-opcionais/seguro-american-express.shtm"
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-platinum"
       ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {},
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade",
@@ -1488,35 +1490,19 @@
         "cashback",
         "iof",
         "isencao",
-        "isencao.regra",
-        "isencao.tipo",
-        "isencao.valor",
         "pontos",
-        "pontos.internacional",
-        "pontos.nacional",
         "renda_minima",
         "requisito_acesso",
         "salas_vip",
         "spread",
         "transfere_para"
       ],
-      "nota_curadoria": "ATENÇÃO: O cartão American Express® Platinum Credit (linha Exclusive/Classic do Bradesco) está DESCONTINUADO para novas aquisições, conforme declarado explicitamente na página oficial do produto ('Este cartão não está mais disponível para novas aquisições'). Existe um produto distinto chamado 'Bradesco Prime Platinum American Express®' ainda ativo na linha Prime. Os valores de anuidade, renda mínima e isenção NÃO estão publicados em nenhuma página pública oficial — o Bradesco remete exclusivamente à Tabela Geral de Tarifas acessível via Internet Banking. O programa de pontos Livelo NÃO inclui o Platinum Credit conforme página de benefícios oficial (apenas Visa Aeternum, Visa Infinite, Visa Signature, The Platinum Card® e American Express® Gold Card são listados). O produto possui programa de Recompensas próprio com pontos sem expiração.",
-      "procedencia": {
-        "nome": "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
-        "bandeira": "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
-        "categoria": "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
-        "programa_proprio": "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
-        "validade_pontos": "https://200-155-86-34.bradesco.com.br/html/exclusive/produtos-servicos/cartoes/conheca-os-cartoes/american-express-gold-credit.shtm",
-        "pontos.observacao": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "beneficios_banco": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
-      },
-      "vigencia_ate": null,
-      "analise": null,
       "campos_rejeitados": [
-        "isencao"
-      ],
-      "bandeira_ref": null,
-      "verificado_em": "2026-07-28"
+        "anuidade",
+        "anuidade_parcelas",
+        "pontos",
+        "salas_vip"
+      ]
     },
     {
       "slug": "bradesco-elo-diners-club",
@@ -2042,62 +2028,61 @@
       "nome": "Bradesco Visa Aeternum",
       "emissor": "Bradesco",
       "bandeira": "Visa",
-      "categoria": "Visa Infinite (tier Aeternum)",
+      "categoria": "Aeternum",
       "anuidade": null,
       "anuidade_parcelas": null,
       "isencao": null,
       "renda_minima": null,
-      "requisito_acesso": null,
+      "requisito_acesso": "Cartão de acesso restrito, mediante convite, exclusivo para clientes do segmento Private Bank do Bradesco.",
       "adicionais_gratis": null,
       "pontos": {
         "nacional": 4,
-        "internacional": 4,
+        "internacional": 7,
         "unidade": "pts/USD",
-        "observacao": "4 pontos Livelo a cada dólar gasto em compras nacionais e internacionais"
+        "observacao": "Pontos acumulados no programa Livelo (Fidelidade Bradesco Cartões) e que nunca expiram; é necessário criar conta Livelo pelo site ou app."
       },
       "cashback": null,
-      "programa_proprio": "Livelo (via Bradesco Cartões)",
+      "programa_proprio": "Livelo",
       "transfere_para": [],
       "spread": null,
       "iof": null,
-      "validade_pontos": null,
+      "validade_pontos": "Pontos não expiram",
       "salas_vip": [
         {
-          "programa": "LoungeKey",
-          "regra": "Acesso gratuito e ilimitado para o portador; 12 acessos gratuitos por ano para convidados. Acesso a mais de 1.200 salas VIP ao redor do mundo."
+          "programa": "Bradesco Lounge",
+          "regra": "Acesso às salas VIP Bradesco Lounge nos principais aeroportos do Brasil, além de fila exclusiva de segurança e raio-X no aeroporto de Congonhas."
         },
         {
-          "programa": "Visa Infinite Lounge (Guarulhos T3)",
-          "regra": "Acesso à sala VIP exclusiva da Visa no embarque do Terminal 3 do Aeroporto Internacional de Guarulhos."
-        },
-        {
-          "programa": "Visa Infinite Fast Pass (Guarulhos T2/T3)",
-          "regra": "Fila de segurança diferenciada nos Terminais 2 e 3 do Aeroporto Internacional de Guarulhos."
+          "programa": "Visa Airport Companion",
+          "regra": "Acesso a centenas de salas VIP ao redor do mundo, com 12 convidados gratuitos por ano; fila de segurança e raio-X nos aeroportos de Guarulhos (GRU) e RIOgaleão (GIG)."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Programa de Pontos Livelo",
-          "descricao": "Acumule 4 pontos Livelo a cada dólar gasto em compras nacionais e internacionais. Ative a conta Livelo em livelo.com.br/cadastro ou pelo App."
+          "titulo": "Viagens e Concierge Bradesco",
+          "descricao": "Atendimento exclusivo oferecido por consultores com ampla experiência, disponível 7 dias por semana."
         },
         {
-          "titulo": "LoungeKey – Salas VIP",
-          "descricao": "Acesso gratuito e ilimitado ao portador titular; 12 acessos gratuitos por ano para convidados em mais de 1.200 salas VIP no mundo."
+          "titulo": "Assessoria exclusiva",
+          "descricao": "Assistente pessoal disponível sempre que o cliente precisar."
         },
         {
-          "titulo": "Visa Infinite Lounge Guarulhos",
-          "descricao": "Acesso à sala VIP exclusiva da Visa no Terminal 3 do Aeroporto Internacional de Guarulhos."
-        },
-        {
-          "titulo": "Visa Infinite Fast Pass",
-          "descricao": "Fila de segurança diferenciada nos Terminais 2 e 3 do Aeroporto Internacional de Guarulhos."
+          "titulo": "Fila exclusiva em aeroportos",
+          "descricao": "Fila exclusiva para checagem de segurança e raio-X no aeroporto de Congonhas, além de filas de segurança em GRU e GIG via Visa Airport Companion."
         }
       ],
       "link_solicitacao": null,
+      "nota_curadoria": "Cartão de convite exclusivo para clientes Private Bank do Bradesco, sem informações públicas sobre anuidade ou renda mínima — esses dados provavelmente são tratados individualmente pelo gerente Private. Destaque para pontuação elevada no Livelo (4 pts/USD nacional e 7 pts/USD internacional) com pontos que nunca expiram, além de forte estrutura de lounges e concierge de viagens. Não há confirmação oficial sobre para quais parceiros os pontos Livelo podem ser transferidos neste cartão específico.",
+      "procedencia": {
+        "requisito_acesso": "https://banco.bradesco/cartoes/aeternum/",
+        "pontos": "https://banco.bradesco/cartoes/aeternum/",
+        "validade_pontos": "https://banco.bradesco/cartoes/aeternum/",
+        "salas_vip": "https://banco.bradesco/cartoes/aeternum/"
+      },
       "fontes": [
-        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "https://institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html"
+        "https://banco.bradesco/cartoes/aeternum/"
       ],
+      "verificado_em": "2026-07-31",
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade",
@@ -2106,26 +2091,25 @@
         "iof",
         "isencao",
         "renda_minima",
-        "requisito_acesso",
         "spread",
-        "transfere_para",
-        "validade_pontos"
-      ],
-      "nota_curadoria": "O Bradesco Visa Aeternum é um cartão de acesso restrito (convite/segmento Private/Exclusive), sem página pública de produto identificada nos domínios oficiais rastreados. Os dados de pontuação e salas VIP foram extraídos da página oficial de benefícios de cartões Bradesco. Anuidade, renda mínima, isenção e demais condições comerciais não constam em nenhuma página pública oficial acessível — devem ser confirmados diretamente com o gerente Bradesco ou via tabela geral de tarifas atualizada em institucional.bradesco.com.br. A tabela de tarifas agrupa o Aeternum com Infinite e Black OK, mas os valores numéricos da anuidade não estavam acessíveis na versão rastreada.",
-      "procedencia": {
-        "pontos": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "salas_vip": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "categoria": "https://institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html",
-        "programa_proprio": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
-      },
-      "vigencia_ate": null,
-      "analise": null,
-      "campos_rejeitados": [
-        "isencao",
         "transfere_para"
       ],
-      "verificado_em": "2026-07-27",
-      "bandeira_ref": "visa-infinite"
+      "campos_rejeitados": [],
+      "bandeira_ref": "visa-infinite",
+      "conflitos": [
+        {
+          "campo": "pontos.internacional",
+          "antes": 4,
+          "depois": 7,
+          "variacao_pct": 75,
+          "fonte_antes": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+          "fonte_depois": "https://banco.bradesco/cartoes/aeternum/",
+          "valor_mantido": "depois",
+          "motivo": null,
+          "detectado_em": "2026-07-31",
+          "resolvido": false
+        }
+      ]
     },
     {
       "slug": "bradesco-visa-infinite",
@@ -2162,15 +2146,15 @@
       "beneficios_banco": [
         {
           "titulo": "Seguro viagem gratuito",
-          "descricao": "Coberturas e assistência para despesas médicas, odontológicas e hospitalares, inclusive em pandemias, sem custo adicional."
+          "descricao": "Coberturas e serviços de assistência para despesas médicas, odontológicas e hospitalares, incluindo situações de pandemia, sem custo adicional."
         },
         {
           "titulo": "Concierge Bradesco",
-          "descricao": "Serviço de Viagens e Concierge Bradesco disponível para o portador."
+          "descricao": "Serviço de concierge e assistência para viagens disponível aos portadores do cartão."
         },
         {
           "titulo": "Seguro para veículo de locadora",
-          "descricao": "Cobertura gratuita contra roubo ou danos ao veículo alugado."
+          "descricao": "Cobertura gratuita contra roubo ou danos ao veículo alugado durante viagens."
         },
         {
           "titulo": "Garantia estendida",
@@ -2178,25 +2162,25 @@
         },
         {
           "titulo": "Desconto no Cinemark",
-          "descricao": "50% de desconto em ingresso, pipoca e refrigerante."
+          "descricao": "50% de desconto em ingresso, pipoca e refrigerante nas redes de cinema Cinemark."
         },
         {
           "titulo": "Desconto no Teatro Bradesco",
-          "descricao": "50% de desconto na compra de até 4 ingressos por sessão."
+          "descricao": "50% de desconto na compra de até 4 ingressos por sessão no Teatro Bradesco."
         }
       ],
       "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-infinite",
-      "nota_curadoria": "A anuidade é cobrada mensalmente (12x R$105) totalizando R$1.260/ano, mas pode variar conforme tabela vigente do banco em anos seguintes. Não há informação oficial sobre isenção de anuidade, renda mínima exigida ou parceiros de transferência de pontos Livelo nesta fonte. O acesso a salas VIP é limitado a 4 por ano via Visa Airport Companion, o que é bem menos generoso que outros cartões Infinite do mercado.",
-      "procedencia": {
-        "pontos": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "salas_vip": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "transfere_para": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
-      },
+      "nota_curadoria": "A anuidade é cobrada em 12 parcelas de R$ 105,00 (total R$ 1.260,00/ano), mas a página não detalha regras de isenção por gasto nem renda mínima exigida, sendo necessário confirmar diretamente com o gerente. O acúmulo de pontos Livelo (2 pts/US$) é competitivo para um Infinite, mas a fonte não especifica parceiros de transferência para milhas aéreas, apenas resgates via Livelo. O acesso a salas VIP é limitado a 4 por ano via Visa Airport Companion, bem abaixo de concorrentes com Priority Pass ilimitado.",
       "fontes": [
         "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-infinite",
         "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
       ],
       "verificado_em": "2026-07-31",
+      "procedencia": {
+        "pontos": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "salas_vip": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "transfere_para": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
+      },
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade",
