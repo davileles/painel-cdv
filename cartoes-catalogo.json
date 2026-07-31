@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-31",
-    "total": 69,
+    "total": 76,
     "validado_em": "2026-07-31",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização.",
@@ -1412,6 +1412,161 @@
       "bandeira_ref": "visa-infinite"
     },
     {
+      "slug": "bradesco-american-express-gold",
+      "nome": "Bradesco American Express Gold",
+      "emissor": "Bradesco",
+      "bandeira": "American Express",
+      "categoria": "Gold",
+      "anuidade": 816,
+      "anuidade_parcelas": 12,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 1.5,
+        "internacional": 1.8,
+        "unidade": "pts/USD",
+        "observacao": "Pontos Livelo que nunca expiram: até 1,5 ponto por dólar gasto no Brasil e até 1,8 ponto por dólar gasto no exterior."
+      },
+      "cashback": null,
+      "programa_proprio": "Membership Rewards / Livelo",
+      "transfere_para": [
+        "Livelo"
+      ],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Pontos não expiram",
+      "salas_vip": [],
+      "beneficios_banco": [
+        {
+          "titulo": "Seguro viagem gratuito",
+          "descricao": "Coberturas e serviços de assistência para despesas médicas, odontológicas e hospitalares, inclusive em pandemias, sem custo adicional."
+        },
+        {
+          "titulo": "Concierge Bradesco Cartões",
+          "descricao": "Assistente pessoal para necessidades em viagens, compras, entretenimento e dia a dia."
+        },
+        {
+          "titulo": "Descontos exclusivos American Express",
+          "descricao": "Vantagens e descontos em compras, viagens, gastronomia e entretenimento por meio do Portal Amex."
+        },
+        {
+          "titulo": "Desconto Cinemark",
+          "descricao": "50% de desconto no ingresso, na pipoca e no refrigerante."
+        },
+        {
+          "titulo": "Pagamento de contas com prazo estendido",
+          "descricao": "Possibilidade de pagar contas com até 40 dias de prazo."
+        },
+        {
+          "titulo": "Parcelamento da fatura",
+          "descricao": "Parcelamento da fatura em até 12 parcelas fixas, além de saque em rede 24hrs no Brasil ou exterior."
+        }
+      ],
+      "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-gold",
+      "nota_curadoria": "A anuidade de R$68/mês (R$816/ano) é válida apenas para o primeiro ano; os valores dos anos seguintes não estão detalhados na fonte consultada. Não há menção a salas VIP, renda mínima ou requisitos de acesso explícitos, portanto esses campos ficaram em branco. Os pontos Livelo variam conforme o gasto em dólar, sendo mais vantajosos em compras internacionais, mas o cartão parece mais voltado a benefícios de conveniência (seguro viagem, concierge, descontos Amex) do que a um programa de milhas robusto.",
+      "procedencia": {
+        "anuidade": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-gold",
+        "anuidade_parcelas": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-gold",
+        "pontos": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-gold",
+        "transfere_para": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-gold",
+        "validade_pontos": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-gold"
+      },
+      "fontes": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-gold"
+      ],
+      "verificado_em": "2026-07-31",
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "renda_minima",
+        "requisito_acesso",
+        "salas_vip",
+        "spread"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "bradesco-american-express-green",
+      "nome": "Bradesco American Express Green",
+      "emissor": "Bradesco",
+      "bandeira": "American Express",
+      "categoria": "Green",
+      "anuidade": 648,
+      "anuidade_parcelas": 12,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 1,
+        "internacional": 1,
+        "unidade": "pts/USD",
+        "observacao": "1 ponto Livelo a cada US$ 1 gasto, tanto no Brasil quanto no exterior; pontos nunca expiram."
+      },
+      "cashback": null,
+      "programa_proprio": "Livelo (Membership Rewards)",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": "Nunca expiram",
+      "salas_vip": [],
+      "beneficios_banco": [
+        {
+          "titulo": "Seguro viagem gratuito",
+          "descricao": "Coberturas e serviços de assistência para despesas médicas, odontológicas, hospitalares, inclusive em pandemias, sem qualquer custo."
+        },
+        {
+          "titulo": "Descontos exclusivos American Express",
+          "descricao": "Vantagens e descontos exclusivos em compras, viagens, gastronomia e entretenimento."
+        },
+        {
+          "titulo": "Portal Amex",
+          "descricao": "Benefícios exclusivos em gastronomia, compras, viagens e muito mais para titulares do cartão."
+        },
+        {
+          "titulo": "Desconto no Teatro Bradesco",
+          "descricao": "50% de desconto na compra de até 4 ingressos por sessão para o titular do cartão."
+        },
+        {
+          "titulo": "50% de desconto Cinemark",
+          "descricao": "50% de desconto no ingresso, na pipoca e no refrigerante em salas Cinemark."
+        },
+        {
+          "titulo": "Pagamento de contas com 40 dias para pagar",
+          "descricao": "Possibilidade de pagar contas com prazo estendido de até 40 dias, além de parcelamento da fatura em até 12 vezes."
+        }
+      ],
+      "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green",
+      "nota_curadoria": "A anuidade é cobrada em 12 parcelas de R$ 54,00 (total R$ 648,00), mas a página não detalha o valor para anos seguintes nem critérios de isenção. Não há menção a acesso a salas VIP, concierge ou seguro de carro de locadora nas informações oficiais consultadas. O grande atrativo é a pontuação Livelo (Membership Rewards) que nunca expira, na proporção de 1 ponto por dólar gasto.",
+      "procedencia": {
+        "anuidade": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green",
+        "anuidade_parcelas": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green",
+        "pontos": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green",
+        "validade_pontos": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green",
+        "beneficios_banco": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green"
+      },
+      "fontes": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green"
+      ],
+      "verificado_em": "2026-07-31",
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "renda_minima",
+        "requisito_acesso",
+        "salas_vip",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
       "slug": "bradesco-american-express-platinum",
       "nome": "Bradesco American Express Platinum Credit",
       "emissor": "Bradesco",
@@ -1478,6 +1633,247 @@
       },
       "fontes": [
         "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-platinum"
+      ],
+      "verificado_em": "2026-07-31",
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "bradesco-elo-grafite",
+      "nome": "Bradesco Elo Grafite",
+      "emissor": "Bradesco",
+      "bandeira": "Elo",
+      "categoria": "Grafite",
+      "anuidade": 708,
+      "anuidade_parcelas": 12,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 1,
+        "internacional": 2,
+        "unidade": "pts/USD",
+        "observacao": "1,0 ponto por dólar gasto no Brasil e 2,0 pontos por dólar gasto no exterior, acumulados no programa Livelo."
+      },
+      "cashback": null,
+      "programa_proprio": "Livelo",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "Priority Pass",
+          "regra": "Acesso tarifado a salas VIP no Brasil e no mundo; não há acessos gratuitos inclusos."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Elo Flex",
+          "descricao": "Possibilidade de escolher entre 7 opções de benefícios nas categorias Viagem, Compras, Conectividade, Streaming e outros, sem custo adicional."
+        },
+        {
+          "titulo": "Seguro viagem",
+          "descricao": "Coberturas e serviços de assistência para despesas médicas, odontológicas e hospitalares, inclusive em pandemias, sem custo."
+        },
+        {
+          "titulo": "Saúde Todo Dia",
+          "descricao": "Atendimento online 24h com Clínico Geral e Pediatra, com a qualidade Einstein Conecta, sem custo adicional."
+        },
+        {
+          "titulo": "Assistência residencial",
+          "descricao": "Consertos e reparos para emergências e manutenção da casa."
+        },
+        {
+          "titulo": "Assistência automóvel",
+          "descricao": "Socorro mecânico, auxílio pane seca, chaveiro e troca de pneus, com suporte 24h, 7 dias por semana."
+        },
+        {
+          "titulo": "50% de desconto Cinemark",
+          "descricao": "Desconto de 50% no ingresso, pipoca e refrigerante nas redes Cinemark."
+        }
+      ],
+      "link_solicitacao": null,
+      "nota_curadoria": "A anuidade é cobrada em 12 parcelas de R$59,00, totalizando R$708,00 no primeiro ano; valores dos anos seguintes não são informados nesta fonte. O acesso a salas VIP via Priority Pass é tarifado, sem cortesias inclusas, o que pode surpreender clientes que esperam acesso gratuito. Não há informação oficial sobre renda mínima, isenção de anuidade ou requisitos específicos de elegibilidade nesta página.",
+      "procedencia": {
+        "anuidade": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-grafite",
+        "anuidade_parcelas": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-grafite",
+        "pontos": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-grafite",
+        "salas_vip": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-grafite"
+      },
+      "fontes": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-grafite"
+      ],
+      "verificado_em": "2026-07-31",
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "bradesco-elo-mais-internacional",
+      "nome": "Bradesco Elo Mais Internacional",
+      "emissor": "Bradesco",
+      "bandeira": "Elo",
+      "categoria": "Internacional",
+      "anuidade": 480,
+      "anuidade_parcelas": 12,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 1,
+        "internacional": 1,
+        "unidade": "pts/USD",
+        "observacao": "1 ponto Livelo a cada US$ 1 gasto no Brasil e no exterior."
+      },
+      "cashback": null,
+      "programa_proprio": "Livelo",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [],
+      "beneficios_banco": [
+        {
+          "titulo": "Saúde Todo Dia",
+          "descricao": "Clínico Geral e Pediatra disponíveis online, 24h por dia, todos os dias, com a qualidade Einstein Conecta, sem custo adicional."
+        },
+        {
+          "titulo": "Assistência automóvel",
+          "descricao": "Socorro mecânico, auxílio pane seca, chaveiro e troca de pneus, com suporte 24 horas, 7 dias por semana."
+        },
+        {
+          "titulo": "Assistência residencial",
+          "descricao": "Consertos e reparos para emergências e manutenção da casa."
+        },
+        {
+          "titulo": "Programa Use Elo",
+          "descricao": "Ofertas, descontos e benefícios exclusivos para clientes Elo."
+        },
+        {
+          "titulo": "50% de desconto Cinemark",
+          "descricao": "50% de desconto no ingresso, na pipoca e no refrigerante."
+        },
+        {
+          "titulo": "Pagamento de Contas",
+          "descricao": "Pagamento de contas com até 40 dias para pagar, além de parcelamento da fatura em até 12 parcelas fixas."
+        }
+      ],
+      "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-mais",
+      "nota_curadoria": "A anuidade divulgada (12x R$ 40,00) é apenas para o ano de contratação; a página avisa que os valores podem variar nos anos seguintes, sem detalhar a regra. Não há informação sobre isenção de anuidade, renda mínima ou requisitos de acesso, tampouco sobre salas VIP, seguro viagem ou concierge, que a própria fonte confirma não estarem incluídos neste cartão. A pontuação Livelo (1 ponto por US$1) é atrativa para um cartão de entrada, mas não há dados sobre transferência para milhas aéreas.",
+      "procedencia": {
+        "anuidade": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-mais",
+        "anuidade_parcelas": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-mais",
+        "pontos": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-mais",
+        "beneficios_banco": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-mais",
+        "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-mais"
+      },
+      "fontes": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-mais"
+      ],
+      "verificado_em": "2026-07-31",
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "renda_minima",
+        "requisito_acesso",
+        "salas_vip",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "bradesco-elo-nanquim",
+      "nome": "Bradesco Elo Nanquim",
+      "emissor": "Bradesco",
+      "bandeira": "Elo",
+      "categoria": "Nanquim",
+      "anuidade": 1428,
+      "anuidade_parcelas": 12,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 1.8,
+        "internacional": 2.5,
+        "unidade": "pts/USD",
+        "observacao": "1,8 ponto por dólar em compras no Brasil e 2,5 pontos por dólar em compras no exterior, acumulados no programa Livelo."
+      },
+      "cashback": null,
+      "programa_proprio": "Livelo",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [
+        {
+          "programa": "Priority Pass",
+          "regra": "2 acessos gratuitos por ano, com ativação necessária em prioritypass.com/pt/activate-your-account"
+        },
+        {
+          "programa": "LoungeKey (Mastercard Airport Experiences)",
+          "regra": "2 acessos gratuitos por ano às salas VIP do programa"
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Elo Flex",
+          "descricao": "Possibilidade de escolher entre 10 opções de benefícios nas categorias Vida, Casa, Auto, Pet, Viagem, Conectividade e outros, sem custo adicional."
+        },
+        {
+          "titulo": "Concierge Bradesco Cartões",
+          "descricao": "Assistente pessoal para necessidades em viagem, compras, entretenimento e dia a dia."
+        },
+        {
+          "titulo": "Seguro viagem gratuito",
+          "descricao": "Cobertura para despesas médicas, odontológicas e hospitalares, inclusive em pandemias, sem custo adicional."
+        },
+        {
+          "titulo": "Assistência automóvel",
+          "descricao": "Socorro mecânico, auxílio pane seca, chaveiro e troca de pneus com suporte 24h, 7 dias por semana."
+        },
+        {
+          "titulo": "Garantia estendida",
+          "descricao": "Dobra a garantia original do fabricante em até 12 meses, sem custo adicional, mediante emissão do bilhete de seguro antes da compra."
+        },
+        {
+          "titulo": "50% de desconto Cinemark",
+          "descricao": "Desconto de 50% em ingresso, pipoca e refrigerante nas unidades Cinemark."
+        }
+      ],
+      "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-nanquim",
+      "nota_curadoria": "A anuidade é parcelada em 12x R$119,00 (total R$1.428,00), mas o próprio site avisa que o valor pode variar nos anos seguintes conforme tabela vigente, sem detalhar isenção por gasto. As salas VIP citam tanto Priority Pass quanto LoungeKey/Mastercard Airport Experiences, ambos com 2 acessos gratuitos ao ano, o que é incomum para um cartão Elo — vale confirmar com o emissor qual realmente se aplica. Não há informação sobre renda mínima, adicionais gratuitos ou cashback nas fontes disponíveis.",
+      "procedencia": {
+        "anuidade": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-nanquim",
+        "anuidade_parcelas": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-nanquim",
+        "pontos": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-nanquim",
+        "salas_vip": "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-nanquim"
+      },
+      "fontes": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-nanquim"
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
@@ -2165,6 +2561,154 @@
         "transfere_para"
       ],
       "bandeira_ref": "visa-infinite"
+    },
+    {
+      "slug": "bradesco-visa-platinum",
+      "nome": "Bradesco Visa Platinum",
+      "emissor": "Bradesco",
+      "bandeira": "Visa",
+      "categoria": "Platinum",
+      "anuidade": null,
+      "anuidade_parcelas": null,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": null,
+      "cashback": null,
+      "programa_proprio": "Livelo",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [],
+      "beneficios_banco": [
+        {
+          "titulo": "Seguro viagem gratuito",
+          "descricao": "Coberturas e serviços de assistência para despesas médicas, odontológicas e hospitalares, inclusive em pandemias, sem custo adicional."
+        },
+        {
+          "titulo": "Visa Concierge",
+          "descricao": "Assistente pessoal 24 horas que auxilia na organização de viagens, indicação de eventos, restaurantes e serviços."
+        },
+        {
+          "titulo": "Visa Luxury Hotel Collection",
+          "descricao": "Benefícios exclusivos nos mais sofisticados hotéis e resorts do mundo."
+        },
+        {
+          "titulo": "Visa médico online",
+          "descricao": "Assistência de emergência médica internacional com opção de consulta médica virtual quando estiver fora do país."
+        },
+        {
+          "titulo": "50% de desconto Cinemark",
+          "descricao": "Desconto de 50% no ingresso, na pipoca e no refrigerante."
+        },
+        {
+          "titulo": "Proteção de compra",
+          "descricao": "Cobertura em caso de roubo, furto ou perda do item comprado dentro de um prazo de 180 dias."
+        }
+      ],
+      "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum",
+      "nota_curadoria": "A anuidade informada (12x R$52,00 = R$624,00 ao ano) é referente ao ano corrente; a página avisa que o valor pode variar nos anos seguintes conforme tabela vigente, sem detalhar isenção. Não há renda mínima, requisito de acesso, salas VIP ou regras de transferência de pontos explicitados na fonte, então esses campos ficaram nulos. A pontuação Livelo (1 pt/USD) é o principal atrativo, mas não há garantia de conversão para milhas aéreas de outras companhias nesta página.",
+      "fontes": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {},
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "salas_vip",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": [
+        "anuidade",
+        "anuidade_parcelas",
+        "pontos"
+      ]
+    },
+    {
+      "slug": "bradesco-visa-signature",
+      "nome": "Bradesco Visa Signature",
+      "emissor": "Bradesco",
+      "bandeira": "Visa",
+      "categoria": "Signature",
+      "anuidade": 768,
+      "anuidade_parcelas": 12,
+      "isencao": null,
+      "renda_minima": null,
+      "requisito_acesso": null,
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 1,
+        "internacional": 1,
+        "unidade": "pts/USD",
+        "observacao": "1 ponto Livelo a cada US$ 1 gasto, tanto no Brasil quanto no exterior."
+      },
+      "cashback": null,
+      "programa_proprio": "Livelo",
+      "transfere_para": [],
+      "spread": null,
+      "iof": null,
+      "validade_pontos": null,
+      "salas_vip": [],
+      "beneficios_banco": [
+        {
+          "titulo": "Concierge Signature",
+          "descricao": "Assistente pessoal disponível a qualquer hora para confirmar voos, reservas em restaurantes, ingressos para shows e envio de presentes."
+        },
+        {
+          "titulo": "Seguro viagem gratuito",
+          "descricao": "Coberturas e serviços de assistência para despesas médicas, odontológicas e hospitalares, inclusive em pandemias, sem custo adicional."
+        },
+        {
+          "titulo": "Visa médico online",
+          "descricao": "Assistência de emergência médica internacional com opção de consulta médica virtual quando o titular estiver fora do país."
+        },
+        {
+          "titulo": "Seguro para veículo de locadora",
+          "descricao": "Cobertura gratuita contra roubo ou danos ao veículo alugado."
+        },
+        {
+          "titulo": "Garantia estendida original",
+          "descricao": "Extensão da garantia de fábrica em até 1 ano sem custo adicional."
+        },
+        {
+          "titulo": "Visa Luxury Hotel Collection",
+          "descricao": "Benefícios exclusivos em hotéis e resorts sofisticados ao redor do mundo."
+        }
+      ],
+      "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-signature",
+      "nota_curadoria": "A anuidade informada é de 12x R$64,00 (R$768,00 no primeiro ano), mas o próprio Bradesco alerta que o valor pode variar nos anos seguintes conforme tabela vigente, sem detalhar a regra de reajuste. A pontuação Livelo é por dólar gasto, tanto nacional quanto internacional, mas não há confirmação de acesso a salas VIP nem de renda mínima exigida nesta fonte. Vale checar a política de anuidade atualizada diretamente com o banco antes de recomendar ao cliente.",
+      "procedencia": {
+        "anuidade": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-signature",
+        "anuidade_parcelas": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-signature",
+        "pontos": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-signature"
+      },
+      "fontes": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-signature"
+      ],
+      "verificado_em": "2026-07-31",
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "renda_minima",
+        "requisito_acesso",
+        "salas_vip",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
     },
     {
       "slug": "bradesco-amex-the-centurion",

@@ -2,7 +2,7 @@
   "_meta": {
     "descricao": "Hash do conteúdo das fontes por cartão. Se o hash não mudou, o coletor não chama a IA.",
     "atualizado_em": "2026-07-31",
-    "total": 52
+    "total": 59
   },
   "cartoes": {
     "brb-visa-dux": {
@@ -440,6 +440,55 @@
       "hash": "c4fa1ccc51c4c13e",
       "urls": [
         "https://banco.bradesco/cartoes/aeternum/"
+      ],
+      "em": "2026-07-31"
+    },
+    "bradesco-american-express-gold": {
+      "hash": "609e030656b553ed",
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-gold"
+      ],
+      "em": "2026-07-31"
+    },
+    "bradesco-american-express-green": {
+      "hash": "ac91f5656add8d5d",
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green"
+      ],
+      "em": "2026-07-31"
+    },
+    "bradesco-elo-grafite": {
+      "hash": "8d6d8a79afe2af8f",
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-grafite"
+      ],
+      "em": "2026-07-31"
+    },
+    "bradesco-elo-mais-internacional": {
+      "hash": "7a3fdbc83ce83577",
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-mais"
+      ],
+      "em": "2026-07-31"
+    },
+    "bradesco-elo-nanquim": {
+      "hash": "3c48d8a957084a15",
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-nanquim"
+      ],
+      "em": "2026-07-31"
+    },
+    "bradesco-visa-platinum": {
+      "hash": "2de6a767e7aecbea",
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum"
+      ],
+      "em": "2026-07-31"
+    },
+    "bradesco-visa-signature": {
+      "hash": "70486022e175f0b0",
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-signature"
       ],
       "em": "2026-07-31"
     }
