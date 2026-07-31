@@ -2488,16 +2488,25 @@ function ctAnalise(c){
 // Bandeira com catalogo de escolha (Elo Flex) nao pode ser exibida como lista
 // fixa: daria a entender que o cliente tem todos os itens. Aqui o bloco explica
 // o modelo, mostra quantas escolhas o cartao tem e separa os fixos do catalogo.
+// Quando bandeiras.json nao tem catalogo para o tier (ex.: Visa Gold), a mensagem
+// precisa dizer que a lacuna e do catalogo — nao que o cartao nao tenha beneficio.
+function ctBandeiraSemCatalogo(c){
+  var titulo = ((c.bandeira || '') + ' ' + (c.categoria || '')).trim();
+  return '<div class="ct-box">'+
+    (titulo ? '<div style="font-weight:700;font-size:13px;margin-bottom:6px">'+ctEsc(titulo)+'</div>' : '')+
+    '<span class="ct-na">Catálogo da bandeira ainda não mapeado para esta categoria.</span>'+
+  '</div>';
+}
+
 function ctBlocoBandeira(c){
   var info  = c.bandeira_info || {};
   var itens = c.beneficios_bandeira || [];
   var titulo = (c.bandeira || '') + ' ' + (c.categoria || '');
 
   if (info.modelo !== 'flex') {
-    return ctListaBeneficios(itens, titulo) ||
-           '<div class="ct-box"><span class="ct-na">sem registro</span></div>';
+    return ctListaBeneficios(itens, titulo) || ctBandeiraSemCatalogo(c);
   }
-  if (!itens.length) return '<div class="ct-box"><span class="ct-na">sem registro</span></div>';
+  if (!itens.length) return ctBandeiraSemCatalogo(c);
 
   var qtd   = c.flex_quantidade;
   var fixos = (c.flex_fixos || []).map(String);
