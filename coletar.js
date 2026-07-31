@@ -48,7 +48,7 @@ const PROGRAMS = [
   {
     id:   'latam',
     name: 'LATAM Pass',
-    url:  'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-latam-pass',
+    url:  'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-shopping-latam',
   },
 ];
 
