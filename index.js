@@ -123,7 +123,11 @@ function parseMeliuz(html, slug) {
     ate,
     era: (mOff && mOff[2]) ? parseFloat(mOff[2].replace(',', '.')) : null,
     nome: mNome ? mNome[1].trim() : slug,
-    link: (mLink && mLink[1]) || ('https://www.meliuz.com.br/desconto/' + slug),
+    // `link` é a página pública da loja — é o que vai para o grupo e para o modal.
+    // O data-redirect-url (/redirecionar2/oferta/ID) exige login no Méliuz e por
+    // isso não serve como link compartilhável; fica exposto à parte em `linkAtivar`.
+    link: 'https://www.meliuz.com.br/desconto/' + slug,
+    linkAtivar: (mLink && mLink[1]) || null,
   };
 }
 
