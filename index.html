@@ -4121,13 +4121,15 @@ function render(){
 const directUrlCache={};
 const PROG_NAME_MAP={azul:'tudo azul','latam':'latam pass',livelo:'livelo',esfera:'esfera',smiles:'smiles'};
 
-function resolveLink(pid, links){
-  if(isCashback(pid)) return links[pid]||'';
+function resolveLink(pid, links, data){
+  // Programas de cashback já trazem o link direto do historico.json (data.url) —
+  // não dependem do scraping de links do Comparemania.
+  if(isCashback(pid)) return links[pid]||data?.url||'';
   const key=PROG_NAME_MAP[pid]||pid;
   return links[key]||links[pid]||'';
 }
 
-function renderModalRows(p, links={}){
+function renderModalRows(p, links={}, resolvido=false){
   // Calcula o melhor equiv real SÓ entre programas de pontos —
   // cashback (%) nunca compete com pts/R$ pela "melhor opção"
   const programasPontos = Object.entries(p.programs).filter(([pid])=>!isCashback(pid));
@@ -4147,9 +4149,12 @@ function renderModalRows(p, links={}){
     const equiv=data.pts*(EQUIV[pid]||1);
     const isBest=!isCashback(pid) && Math.abs(equiv-bestEquivReal)<0.01;
     const lbl=isCashback(pid)?'%':(data.per>1)?`R$${data.per}`:data.dollar?'U$':'R$';
-    const destUrl=resolveLink(pid,links);
-    const linksLoaded=Object.keys(links).length>0;
-    const loading=!linksLoaded;
+    const destUrl=resolveLink(pid,links,data);
+    // `resolvido` = a busca de links já terminou (mesmo que sem resultado).
+    // Sem isso, um fetch que volta vazio deixava a linha travada em
+    // "carregando link…" para sempre.
+    const linksLoaded=resolvido||Object.keys(links).length>0;
+    const loading=!linksLoaded&&!destUrl;
     const hasLink=!!destUrl;
     // Não oculta programas sem link — mostra sem âncora clicável
     const linkAttr=loading?'href="#" onclick="return false;"':hasLink?`href="${destUrl}" target="_blank"`:'href="#" onclick="return false;"';
@@ -4251,20 +4256,29 @@ async function openModal(name){
   document.getElementById('modal-cat').textContent=p.cat;
 
   const cached=directUrlCache[name];
-  document.getElementById('modal-rows').innerHTML=renderModalRows(p, cached||{});
+  document.getElementById('modal-rows').innerHTML=renderModalRows(p, cached||{}, !!cached);
 
   document.getElementById('modal-overlay').classList.add('open');
 
   if(!cached){
-    const anyProgUrl=Object.values(p.programs)[0]?.url;
-    console.log('[CDV] Buscando links para:', name, '| URL:', anyProgUrl);
+    // A busca de links diretos é um scraping da página do Comparemania, então só
+    // faz sentido a partir de um programa de PONTOS. Parceiros que existem só em
+    // programas de cashback (ex: ALL Accor via Méliuz) não têm página lá — o link
+    // deles já vem pronto no historico.json.
+    const progPontos=Object.entries(p.programs).find(([pid])=>!isCashback(pid));
+    const anyProgUrl=progPontos?.[1]?.url;
+    let links={};
     if(anyProgUrl){
-      const links=await fetchRedirectLinks(anyProgUrl);
-      console.log('[CDV] Links encontrados:', JSON.stringify(links));
-      directUrlCache[name]=links;
-      if(document.getElementById('modal-name').textContent===name){
-        document.getElementById('modal-rows').innerHTML=renderModalRows(p,links);
+      try{
+        links=await fetchRedirectLinks(anyProgUrl)||{};
+      }catch(e){
+        console.warn('[CDV] Falha ao buscar links de', name, e);
       }
+    }
+    // Marca como resolvido mesmo sem resultado, para não travar o modal
+    directUrlCache[name]=links;
+    if(document.getElementById('modal-name').textContent===name){
+      document.getElementById('modal-rows').innerHTML=renderModalRows(p,links,true);
     }
   }
 }
