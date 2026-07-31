@@ -1444,7 +1444,7 @@
       "adicionais_gratis": null,
       "pontos": null,
       "cashback": null,
-      "programa_proprio": "Livelo (Membership Rewards convertido em pontos Livelo)",
+      "programa_proprio": "Livelo",
       "transfere_para": [],
       "spread": null,
       "iof": null,
@@ -1453,31 +1453,31 @@
       "beneficios_banco": [
         {
           "titulo": "Fine Hotels & Resorts",
-          "descricao": "Benefícios exclusivos em hotéis selecionados do programa American Express"
+          "descricao": "Benefícios exclusivos em hotéis selecionados através do programa Fine Hotels & Resorts."
         },
         {
           "titulo": "Garantia estendida",
-          "descricao": "Dobra a garantia original do fabricante em até 12 meses, sem custo adicional, mediante emissão do bilhete de seguro antes da compra"
+          "descricao": "Dobra a garantia original do fabricante em até 12 meses, sem custo adicional, mediante emissão do bilhete de seguro antes da compra."
         },
         {
-          "titulo": "Desconto no Cinemark",
-          "descricao": "50% de desconto em ingresso, pipoca e refrigerante"
-        },
-        {
-          "titulo": "Saque em moeda local no exterior",
-          "descricao": "Saque em toda rede 24h, no Brasil ou no exterior, conforme limite de saque do cartão"
+          "titulo": "Saque em moeda local",
+          "descricao": "Saque disponível em toda rede 24h, em moeda local, no Brasil ou no exterior, conforme limite de saque do cartão."
         },
         {
           "titulo": "Parcelamento de fatura",
-          "descricao": "Parcelamento da fatura em até 12 parcelas fixas"
+          "descricao": "Possibilidade de parcelar a fatura em até 12 parcelas fixas."
         },
         {
-          "titulo": "Proteção on-line contra fraude",
-          "descricao": "Monitoramento e proteção contra fraudes em compras on-line"
+          "titulo": "Limite emergencial",
+          "descricao": "Disponibilização de limite emergencial para uso do cliente."
+        },
+        {
+          "titulo": "Desconto Cinemark",
+          "descricao": "50% de desconto em ingresso, pipoca e refrigerante nas unidades Cinemark."
         }
       ],
       "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-platinum",
-      "nota_curadoria": "A anuidade de R$1.992,00/ano é cobrada em 12 parcelas de R$166,00, mas o valor pode variar nos anos seguintes conforme tabela vigente do Bradesco — não há informação sobre isenção por gasto ou relacionamento. Renda mínima e requisitos de acesso não foram divulgados na fonte, apenas menção genérica a 'análise de crédito e critérios de elegibilidade'. Destaque para pontuação em dólar (2,2x nacional / 3,0x internacional) com pontos Livelo que nunca expiram, e acesso a salas VIP tanto no Brasil (Bradesco Lounge) quanto no exterior (Centurion Lounge/Delta Sky Club). Não há dados sobre cashback, spread ou IOF nesta fonte.",
+      "nota_curadoria": "A anuidade é cobrada em 12 parcelas de R$166,00, totalizando R$1.992,00 ao ano, sem informação sobre isenção ou faixas de renda mínima nas fontes oficiais. A pontuação Livelo é diferenciada entre gastos nacionais (2,2 pts/USD) e internacionais (3,0 pts/USD), sem expiração dos pontos. Faltam dados sobre requisitos de acesso, adicionais gratuitos e parceiros de transferência de pontos, que não constam nas fontes analisadas.",
       "fontes": [
         "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-platinum"
       ],
@@ -2117,8 +2117,8 @@
       "emissor": "Bradesco",
       "bandeira": "Visa",
       "categoria": "Infinite",
-      "anuidade": null,
-      "anuidade_parcelas": null,
+      "anuidade": 1260,
+      "anuidade_parcelas": 12,
       "isencao": null,
       "renda_minima": null,
       "requisito_acesso": null,
@@ -2126,8 +2126,8 @@
       "pontos": {
         "nacional": 2,
         "internacional": 2,
-        "unidade": "pts Livelo/USD",
-        "observacao": "2 pontos Livelo a cada US$1 gasto (ou equivalente em reais) em compras nacionais e internacionais. Necessário ativar conta Livelo em livelo.com.br/cadastro ou pelo App."
+        "unidade": "pts/USD",
+        "observacao": "2 pontos Livelo a cada US$ 1 gasto, tanto no Brasil quanto no exterior."
       },
       "cashback": null,
       "programa_proprio": "Livelo",
@@ -2140,17 +2140,17 @@
       "salas_vip": [
         {
           "programa": "Visa Airport Companion",
-          "regra": "4 acessos gratuitos por ano a mais de 1.300 salas VIP ao redor do mundo."
+          "regra": "4 acessos por ano a salas VIP em aeroportos ao redor do mundo."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Seguro viagem gratuito",
-          "descricao": "Coberturas e serviços de assistência para despesas médicas, odontológicas e hospitalares, incluindo situações de pandemia, sem custo adicional."
+          "descricao": "Coberturas e assistência para despesas médicas, odontológicas e hospitalares, inclusive em situações de pandemia, sem custo adicional."
         },
         {
-          "titulo": "Concierge Bradesco",
-          "descricao": "Serviço de concierge e assistência para viagens disponível aos portadores do cartão."
+          "titulo": "Viagens e Concierge Bradesco",
+          "descricao": "Serviço de concierge para auxiliar em reservas, viagens e outras solicitações do portador."
         },
         {
           "titulo": "Seguro para veículo de locadora",
@@ -2158,11 +2158,11 @@
         },
         {
           "titulo": "Garantia estendida",
-          "descricao": "Estende a garantia original do fabricante em até 1 ano, sem custo adicional."
+          "descricao": "Estende em até 1 ano a garantia original de fábrica dos produtos comprados com o cartão, sem custo adicional."
         },
         {
           "titulo": "Desconto no Cinemark",
-          "descricao": "50% de desconto em ingresso, pipoca e refrigerante nas redes de cinema Cinemark."
+          "descricao": "50% de desconto em ingresso, pipoca e refrigerante nas redes Cinemark participantes."
         },
         {
           "titulo": "Desconto no Teatro Bradesco",
@@ -2170,21 +2170,21 @@
         }
       ],
       "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-infinite",
-      "nota_curadoria": "A anuidade é cobrada em 12 parcelas de R$ 105,00 (total R$ 1.260,00/ano), mas a página não detalha regras de isenção por gasto nem renda mínima exigida, sendo necessário confirmar diretamente com o gerente. O acúmulo de pontos Livelo (2 pts/US$) é competitivo para um Infinite, mas a fonte não especifica parceiros de transferência para milhas aéreas, apenas resgates via Livelo. O acesso a salas VIP é limitado a 4 por ano via Visa Airport Companion, bem abaixo de concorrentes com Priority Pass ilimitado.",
+      "nota_curadoria": "A anuidade de R$ 1.260,00 é cobrada em 12 parcelas fixas de R$ 105,00, mas o valor pode variar nos anos seguintes conforme tabela vigente do banco — não há informação oficial sobre isenção por gastos ou renda mínima exigida. O acesso a salas VIP é limitado a 4 usos anuais pelo programa Visa Airport Companion, bem menos generoso que concorrentes com Priority Pass ilimitado. A pontuação de 2 pts Livelo por dólar vale tanto para compras nacionais quanto internacionais, mas o programa de transferência para milhas aéreas não foi detalhado na fonte.",
+      "procedencia": {
+        "anuidade": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-infinite",
+        "anuidade_parcelas": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-infinite",
+        "pontos": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-infinite",
+        "salas_vip": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-infinite",
+        "transfere_para": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
+      },
       "fontes": [
         "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-infinite",
         "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
       ],
       "verificado_em": "2026-07-31",
-      "procedencia": {
-        "pontos": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "salas_vip": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "transfere_para": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
-      },
       "campos_pendentes": [
         "adicionais_gratis",
-        "anuidade",
-        "anuidade_parcelas",
         "cashback",
         "iof",
         "isencao",
@@ -2192,15 +2192,8 @@
         "requisito_acesso",
         "spread"
       ],
-      "campos_rejeitados": [
-        "anuidade",
-        "anuidade_parcelas",
-        "pontos",
-        "salas_vip"
-      ],
+      "campos_rejeitados": [],
       "campos_preservados": [
-        "pontos",
-        "salas_vip",
         "transfere_para"
       ],
       "bandeira_ref": "visa-infinite"
