@@ -180,20 +180,23 @@ function decodeEntidades(s) {
 }
 
 function parseTopcashback(html, slug, pais) {
-  // Os pares (categoria, taxa) aparecem sempre nesta ordem no rate card.
-  const toks = [...html.matchAll(/class="merch-cat__(sub-cat|rate)">([^<]*)</g)]
-    .map(m => ({ tipo: m[1], valor: m[2] }));
+  // Uma loja pode ter VÁRIOS rate cards (ex: ALL Accor UK tem um para membros e
+  // outro para novos clientes), cada um com suas faixas. Os tokens aparecem em
+  // ordem — title, (sub-cat, rate)* — então varremos mantendo o título corrente
+  // como `grupo`, senão as faixas dos dois cards se misturam e viram duplicata.
+  const toks = [...html.matchAll(/class="merch-cat__(title|sub-cat|rate)">([\s\S]*?)<\/(?:h2|span)>/g)]
+    .map(m => ({ tipo: m[1], valor: decodeEntidades(m[2].replace(/<[^>]+>/g, '')) }));
 
   const categorias = [];
-  for (let i = 0; i < toks.length; i++) {
-    if (toks[i].tipo !== 'rate') continue;
-    const pct = parseFloat(String(toks[i].valor).replace('%', '').replace(',', '.'));
-    if (!isFinite(pct) || pct <= 0) continue;
-    const anterior = toks[i - 1];
-    categorias.push({
-      nome: anterior && anterior.tipo === 'sub-cat' ? decodeEntidades(anterior.valor) : '',
-      pct,
-    });
+  let grupo = '';
+  let sub = '';
+  for (const t of toks) {
+    if (t.tipo === 'title') { grupo = t.valor.replace(/\s*Cash\s*back\s*$/i, '').trim(); sub = ''; continue; }
+    if (t.tipo === 'sub-cat') { sub = t.valor; continue; }
+    const pct = parseFloat(String(t.valor).replace('%', '').replace(',', '.'));
+    if (!isFinite(pct) || pct <= 0) { sub = ''; continue; }
+    categorias.push({ grupo, nome: sub, pct });
+    sub = '';
   }
 
   if (!categorias.length) return { slug, pais, temCashback: false, pts: null };
@@ -202,8 +205,6 @@ function parseTopcashback(html, slug, pais) {
   const pts = Math.max(...valores);
   const distintos = new Set(valores);
 
-  const mNome = html.match(/class="merch-cat__title">([\s\S]*?)<\/h2>/);
-
   return {
     slug,
     pais,
@@ -211,7 +212,7 @@ function parseTopcashback(html, slug, pais) {
     pts,
     ate: distintos.size > 1,
     categorias,
-    nome: mNome ? decodeEntidades(mNome[1].replace(/<[^>]+>/g, '')) : slug,
+    nome: categorias[0]?.grupo || slug,
     link: `${TCB_BASES[pais]}/${slug}/`,
   };
 }
