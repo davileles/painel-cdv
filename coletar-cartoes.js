@@ -95,6 +95,9 @@ const CAMPOS_FACTUAIS = [
 ];
 
 function ehOficial(url) {
+  // Curadoria manual do operador (planilha importada) conta como procedencia
+  // valida. Sem isso, a validacao zera esses campos no run seguinte.
+  if (/^planilha:/i.test(String(url))) return true;
   try {
     let h = new URL(String(url)).hostname.toLowerCase();
     if (h.startsWith('www.')) h = h.slice(4);
