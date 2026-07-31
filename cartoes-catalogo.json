@@ -7,9 +7,9 @@
       "observacao": "Alíquota federal aplicada a todos os cartões. O que varia por cartão é se o emissor absorve o custo (campo iof_isento).",
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
-    "atualizado_em": "2026-07-30",
+    "atualizado_em": "2026-07-31",
     "total": 69,
-    "validado_em": "2026-07-30",
+    "validado_em": "2026-07-31",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização.",
     "coletor": "coletar-cartoes.js",
@@ -2161,37 +2161,42 @@
       ],
       "beneficios_banco": [
         {
-          "titulo": "Visa Luxury Hotel Collection",
-          "descricao": "Benefícios exclusivos nos resorts e hotéis mais sofisticados do mundo com o Visa Luxury Hotel Collection."
+          "titulo": "Seguro viagem gratuito",
+          "descricao": "Coberturas e assistência para despesas médicas, odontológicas e hospitalares, inclusive em pandemias, sem custo adicional."
         },
         {
           "titulo": "Concierge Bradesco",
-          "descricao": "Assistente pessoal disponível 7 dias por semana para ajudar com viagens, experiências, compras e muito mais. Elegível para Visa Infinite."
+          "descricao": "Serviço de Viagens e Concierge Bradesco disponível para o portador."
         },
         {
-          "titulo": "Seguro Viagem",
-          "descricao": "Seguro Viagem gratuito para despesas médicas, odontológicas e hospitalares mediante compra das passagens com o cartão."
+          "titulo": "Seguro para veículo de locadora",
+          "descricao": "Cobertura gratuita contra roubo ou danos ao veículo alugado."
         },
         {
-          "titulo": "Desconto Cinemark",
-          "descricao": "50% de desconto na rede Cinemark no ingresso, na pipoca e no refri."
+          "titulo": "Garantia estendida",
+          "descricao": "Estende a garantia original do fabricante em até 1 ano, sem custo adicional."
         },
         {
-          "titulo": "Desconto Teatro Bradesco",
-          "descricao": "50% de desconto no Teatro Bradesco na compra de até quatro entradas por sessão."
+          "titulo": "Desconto no Cinemark",
+          "descricao": "50% de desconto em ingresso, pipoca e refrigerante."
         },
         {
-          "titulo": "Garantia Estendida Original",
-          "descricao": "Proteção gratuita que estende a garantia original do fabricante por até 1 ano."
+          "titulo": "Desconto no Teatro Bradesco",
+          "descricao": "50% de desconto na compra de até 4 ingressos por sessão."
         }
       ],
-      "link_solicitacao": "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
+      "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-infinite",
+      "nota_curadoria": "A anuidade é cobrada mensalmente (12x R$105) totalizando R$1.260/ano, mas pode variar conforme tabela vigente do banco em anos seguintes. Não há informação oficial sobre isenção de anuidade, renda mínima exigida ou parceiros de transferência de pontos Livelo nesta fonte. O acesso a salas VIP é limitado a 4 por ano via Visa Airport Companion, o que é bem menos generoso que outros cartões Infinite do mercado.",
+      "procedencia": {
+        "pontos": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "salas_vip": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
+        "transfere_para": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
+      },
       "fontes": [
-        "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
-        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "https://institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html",
-        "https://adc.bradesco.com.br/html/corporate/solucoes-integradas/cartoes/beneficios/salavip.shtm"
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-infinite",
+        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
       ],
+      "verificado_em": "2026-07-31",
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade",
@@ -2201,28 +2206,20 @@
         "isencao",
         "renda_minima",
         "requisito_acesso",
-        "spread",
-        "validade_pontos"
+        "spread"
       ],
-      "nota_curadoria": "A página específica do produto Bradesco Visa Infinite (adc.bradesco.com.br/html/prime/produtos-servicos/cartoes/conheca-os-cartoes/bradesco-visa-infinite.shtm) retornou erro 404 no momento da pesquisa. Os valores de anuidade não foram publicados diretamente nas páginas rastreáveis — o Bradesco remete à 'Tabela Geral de Tarifas' (institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html), cujo conteúdo não foi renderizado nos resultados. Dados de pontos e benefícios coletados da página de benefícios oficiais e da landing page para não correntistas. O programa de salas VIP mencionado na fonte oficial é o Visa Airport Companion com 4 acessos anuais gratuitos para a categoria Infinite.",
-      "procedencia": {
-        "pontos": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "salas_vip": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "programa_proprio": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "transfere_para": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "beneficios_banco": "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
-        "link_solicitacao": "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
-        "nome": "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
-        "bandeira": "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
-        "categoria": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/"
-      },
-      "vigencia_ate": null,
-      "analise": null,
       "campos_rejeitados": [
-        "isencao"
+        "anuidade",
+        "anuidade_parcelas",
+        "pontos",
+        "salas_vip"
       ],
-      "bandeira_ref": "visa-infinite",
-      "verificado_em": "2026-07-28"
+      "campos_preservados": [
+        "pontos",
+        "salas_vip",
+        "transfere_para"
+      ],
+      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "bradesco-amex-the-centurion",
