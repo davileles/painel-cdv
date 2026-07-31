@@ -1972,7 +1972,21 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 #tab-cartoes .ct-seletor-wrap:hover{border-bottom-color:var(--cdv-coral)}
 #tab-cartoes .ct-seletor{flex:1;min-width:0;font-weight:700;font-size:15px;padding:0;border:none;
   background:transparent;color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none;
-  font-family:'Montserrat',sans-serif;text-overflow:ellipsis}
+  font-family:'Montserrat',sans-serif;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tab-cartoes .ct-combo-wrap{position:relative}
+#tab-cartoes .ct-combo{display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:30;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px;
+  box-shadow:0 14px 34px rgba(0,0,0,.30)}
+#tab-cartoes .ct-combo.open{display:block}
+#tab-cartoes .ct-combo-busca{width:100%;box-sizing:border-box;margin-bottom:6px}
+#tab-cartoes .ct-combo-lista{max-height:300px;overflow-y:auto}
+#tab-cartoes .ct-combo-grupo{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
+  color:var(--muted);padding:9px 8px 4px;position:sticky;top:0;background:var(--card)}
+#tab-cartoes .ct-combo-item{font-size:12.5px;padding:7px 8px;border-radius:8px;cursor:pointer;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tab-cartoes .ct-combo-item:hover{background:rgba(255,88,94,.12);color:var(--cdv-coral)}
+#tab-cartoes .ct-combo-item.on{color:var(--cdv-coral);font-weight:700}
+#tab-cartoes .ct-combo-vazio{font-size:12px;color:var(--muted);padding:10px 8px}
 #tab-cartoes .ct-seletor-wrap:hover .ct-seletor,
 #tab-cartoes .ct-seletor-wrap:hover .ct-seta{color:var(--cdv-coral)}
 #tab-cartoes .ct-seta{color:var(--muted);font-size:13px;line-height:1;flex-shrink:0}
@@ -2223,14 +2237,98 @@ function ctPopularSelects(){
   if (slugs.indexOf(CT_SEL_B) < 0 || CT_SEL_B === CT_SEL_A) CT_SEL_B = slugs[1] || slugs[0] || '';
 }
 
-function ctSeletorHtml(lado, atual){
-  return '<div class="ct-seletor-wrap" title="Clique para trocar de cartão">'+
-    '<select class="ct-seletor" onchange="ctTrocar(\''+lado+'\', this.value)">' +
-      ctOrdenados().map(function(c){
-        return '<option value="'+c.slug+'"'+(c.slug===atual?' selected':'')+'>'+c.nome+'</option>';
-      }).join('') +
-    '</select><span class="ct-seta" aria-hidden="true">▾</span></div>';
+function ctEsc(s){
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+function ctNorm(s){
+  return String(s==null?'':s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+}
+
+// Seletor digitavel: campo de busca (nome do cartao OU banco) + lista agrupada por emissor
+var CT_COMBO_ABERTO = null;
+
+function ctSeletorHtml(lado, atual){
+  var c = CT_CARTOES.find(function(x){ return x.slug === atual; }) || {};
+  return '<div class="ct-combo-wrap">'+
+    '<div class="ct-seletor-wrap" onclick="ctToggleCombo(\''+lado+'\', event)" title="Clique para trocar de cartão">'+
+      '<span class="ct-seletor">'+ctEsc(c.nome||'Selecionar cartão')+'</span>'+
+      '<span class="ct-seta" aria-hidden="true">▾</span>'+
+    '</div>'+
+    '<div class="ct-combo" id="ct-combo-'+lado+'">'+
+      '<input class="ct-combo-busca" id="ct-combo-busca-'+lado+'" autocomplete="off" '+
+        'placeholder="Digite o cartão ou o banco…" oninput="ctFiltrarCombo(\''+lado+'\')" '+
+        'onkeydown="ctComboTecla(\''+lado+'\', event)" onclick="event.stopPropagation()">'+
+      '<div class="ct-combo-lista" id="ct-combo-lista-'+lado+'"></div>'+
+    '</div>'+
+  '</div>';
+}
+
+function ctFiltrarCombo(lado){
+  var box = document.getElementById('ct-combo-lista-'+lado);
+  if (!box) return;
+  var inp = document.getElementById('ct-combo-busca-'+lado);
+  var q = ctNorm(inp ? inp.value : '');
+  var itens = ctOrdenados().filter(function(c){
+    if (!q) return true;
+    return ctNorm(c.nome).indexOf(q) >= 0 || ctNorm(c.emissor).indexOf(q) >= 0;
+  });
+  if (!itens.length){ box.innerHTML = '<div class="ct-combo-vazio">Nenhum cartão encontrado.</div>'; return; }
+  var atual = (lado === 'a') ? CT_SEL_A : CT_SEL_B;
+  var grupos = {};
+  itens.forEach(function(c){
+    var e = c.emissor || 'Outros';
+    (grupos[e] = grupos[e] || []).push(c);
+  });
+  box.innerHTML = Object.keys(grupos).sort(function(a,b){ return a.localeCompare(b,'pt-BR'); })
+    .map(function(e){
+      return '<div class="ct-combo-grupo">'+ctEsc(e)+'</div>'+
+        grupos[e].map(function(c){
+          return '<div class="ct-combo-item'+(c.slug===atual?' on':'')+'" '+
+            'onclick="ctEscolherCombo(\''+lado+'\', \''+c.slug+'\', event)">'+ctEsc(c.nome)+'</div>';
+        }).join('');
+    }).join('');
+}
+
+function ctFecharCombos(){
+  CT_COMBO_ABERTO = null;
+  ['a','b'].forEach(function(l){
+    var el = document.getElementById('ct-combo-'+l);
+    if (el) el.classList.remove('open');
+  });
+}
+
+function ctToggleCombo(lado, ev){
+  if (ev) ev.stopPropagation();
+  var jaAberto = (CT_COMBO_ABERTO === lado);
+  ctFecharCombos();
+  if (jaAberto) return;
+  CT_COMBO_ABERTO = lado;
+  var el = document.getElementById('ct-combo-'+lado);
+  if (el) el.classList.add('open');
+  var inp = document.getElementById('ct-combo-busca-'+lado);
+  if (inp) inp.value = '';
+  ctFiltrarCombo(lado);
+  if (inp) inp.focus();
+}
+
+function ctEscolherCombo(lado, slug, ev){
+  if (ev) ev.stopPropagation();
+  ctFecharCombos();
+  ctTrocar(lado, slug);
+}
+
+function ctComboTecla(lado, ev){
+  if (ev.key === 'Enter'){
+    var first = document.querySelector('#ct-combo-lista-'+lado+' .ct-combo-item');
+    if (first){ first.click(); }
+    ev.preventDefault();
+  } else if (ev.key === 'Escape'){
+    ctFecharCombos();
+  }
+}
+
+document.addEventListener('click', function(){ if (CT_COMBO_ABERTO) ctFecharCombos(); });
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && CT_COMBO_ABERTO) ctFecharCombos(); });
 
 function ctTrocar(lado, slug){
   if (lado === 'a') CT_SEL_A = slug; else CT_SEL_B = slug;
@@ -2421,10 +2519,8 @@ async function ctRenderComparacao(){
   box.innerHTML =
     '<div class="ct-cabecalho">'+
       '<div class="ct-selecione">Selecione os cartões <span class="ct-seta-dir">→</span></div>'+
-      '<div class="ct-box" style="margin-bottom:0">'+ ctSeletorHtml('a', a.slug) +
-        '<div style="color:var(--muted);font-size:12px;margin-top:2px">'+(a.emissor||'')+' · '+(a.bandeira||'')+' '+(a.categoria||'')+'</div></div>'+
-      '<div class="ct-box" style="margin-bottom:0">'+ ctSeletorHtml('b', b.slug) +
-        '<div style="color:var(--muted);font-size:12px;margin-top:2px">'+(b.emissor||'')+' · '+(b.bandeira||'')+' '+(b.categoria||'')+'</div></div>'+
+      '<div class="ct-box" style="margin-bottom:0">'+ ctSeletorHtml('a', a.slug) +'</div>'+
+      '<div class="ct-box" style="margin-bottom:0">'+ ctSeletorHtml('b', b.slug) +'</div>'+
       '<div class="ct-versus">×</div>'+
     '</div>'+
     '<table class="ct-tabela">'+
@@ -3692,7 +3788,6 @@ function renderTransferencias(){
 
   destinos.sort((a,b)=>{
     if (a.temAtiva !== b.temAtiva) return a.temAtiva ? -1 : 1;
-    if (a.temAtrasada !== b.temAtrasada) return a.temAtrasada ? -1 : 1;
     return b.bonusMaxGeral - a.bonusMaxGeral;
   });
 
@@ -3705,10 +3800,9 @@ function renderTransferencias(){
   }
 
   gridEl.innerHTML = destinos.map(d=>{
+    // "Atrasada" NAO aparece no card: so dentro do modal, na origem especifica
     const badge = d.temAtiva
       ? '<div class="fire-badge" style="background:rgba(52,211,153,.15);color:#34d399;border-color:rgba(52,211,153,.4)">🔥 Ativa agora</div>'
-      : d.temAtrasada
-      ? '<div class="fire-badge">⏰ Atrasada</div>'
       : '';
     return `<div class="card" onclick="abrirModalTransf('${encodeURIComponent(d.destino)}')">
       <div class="pname">${d.destino}</div>
@@ -3746,10 +3840,12 @@ function abrirModalTransf(destinoEncoded){
     const s = o.stats;
     const statusHtml = s.ativa
       ? `<div style="font-size:11px;color:#34d399;font-weight:800;margin-top:2px">🔥 Ativa: ${s.ativa.bonusMax}% até ${formatarDataBRTransf(s.ativa.prazo)}</div>`
-      : `<div style="font-size:11px;color:var(--muted);margin-top:2px">Última: ${s.ultimoBonus}% em ${formatarDataBRTransf(s.ultimaData)}${s.atrasada?' · ⏰ atrasada':''}</div>`;
-    const freqHtml = s.freqMediaDias!=null
-      ? `<div style="font-size:10px;color:var(--muted2);margin-top:2px">Sobe a cada ~${s.freqMediaDias} dias · possível próxima: ${formatarDataBRTransf(s.proximaEstimada)}</div>`
-      : `<div style="font-size:10px;color:var(--muted2);margin-top:2px">Só ${s.qtd} registro — sem padrão de frequência ainda</div>`;
+      : `<div style="font-size:11px;color:var(--muted);margin-top:2px">Última: ${s.ultimoBonus}% em ${formatarDataBRTransf(s.ultimaData)}</div>`;
+    const freqHtml = s.freqMediaDias==null
+      ? `<div style="font-size:10px;color:var(--muted2);margin-top:2px">Só ${s.qtd} registro — sem padrão de frequência ainda</div>`
+      : s.atrasada
+      ? `<div style="font-size:10px;color:#fbbf24;font-weight:700;margin-top:2px">⏰ Atrasada — sobe a cada ~${s.freqMediaDias} dias · era esperada em ${formatarDataBRTransf(s.proximaEstimada)}</div>`
+      : `<div style="font-size:10px;color:var(--muted2);margin-top:2px">Sobe a cada ~${s.freqMediaDias} dias · possível próxima: ${formatarDataBRTransf(s.proximaEstimada)}</div>`;
     return `<div class="modal-row" style="cursor:default">
       <div class="modal-prog">
         <div class="modal-prog-dot" style="background:#ff585e"></div>
