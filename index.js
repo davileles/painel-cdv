@@ -598,6 +598,32 @@ app.post('/ofertas/rejeitar', async (req, res) => {
 // Proxy para /radar/enviar do baileys-server, mantendo o gerador desacoplado.
 const BAILEYS_URL = process.env.BAILEYS_URL || 'https://baileys-server-production-ebfe.up.railway.app';
 
+// ── Alerta operacional para o grupo interno do operador ───────────────────────
+// Avisos de infraestrutura (coleta degradada, parser quebrado) — NAO sao ofertas
+// e por isso nao passam pela filaRadar: vao diretos, no mesmo grupo onde caem os
+// avisos de "Novo cupom capturado".
+app.post('/alertas/operador', async (req, res) => {
+  const { mensagem } = req.body || {};
+  if (!mensagem || !String(mensagem).trim()) {
+    return res.status(400).json({ ok: false, erro: 'Campo mensagem obrigatório.' });
+  }
+  try {
+    const r = await fetch(BAILEYS_URL + '/enviar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ grupo: 'operador', mensagem, direto: true }),
+      signal: AbortSignal.timeout(25000),
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || d.ok === false) {
+      return res.status(502).json({ ok: false, erro: d.erro || d.error || `status ${r.status}` });
+    }
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(502).json({ ok: false, erro: e.message });
+  }
+});
+
 app.post('/ofertas/enviar', async (req, res) => {
   const { id, mensagem, grupo } = req.body || {};
   if (!mensagem?.trim()) return res.status(400).json({ ok: false, erro: 'mensagem obrigatória' });
