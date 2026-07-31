@@ -19,6 +19,7 @@ const fs   = require('fs');
 const path = require('path');
 
 const { publicarOfertas, MAX_OFERTAS_APROVADAS } = require('./mensagem-radar');
+const { alertarOperador } = require('./alerta-operador');
 
 const HISTORICO_FILE = path.join(__dirname, 'historico.json');
 const LOJAS_FILE     = path.join(__dirname, 'meliuz-lojas.json');
@@ -412,6 +413,13 @@ async function main() {
 
   // Guarda de sanidade — nunca grava snapshot degradado por falha de rede/WAF
   if (resultados.length < lojas.length * 0.7 || comCashback.length < lojas.length * 0.2) {
+    await alertarOperador('Coleta Méliuz abaixo do esperado', [
+      `Catálogo: ${lojas.length} lojas`,
+      `Respostas recebidas: ${resultados.length}`,
+      `Com cashback ativo: ${comCashback.length}`,
+      '',
+      'Nada foi salvo. Provável causa: mudança no HTML do Méliuz (data-has-cashback / offer-cpn__cashback) ou bloqueio do proxy.',
+    ]);
     console.error('[Méliuz] Retorno abaixo do esperado — abortando sem salvar.');
     process.exit(1);
   }
