@@ -252,6 +252,7 @@
   .modal-cat{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:20px}
   .modal-rows{display:flex;flex-direction:column;gap:10px}
   #hist-chart{height:200px!important}
+  #transf-hist-chart{height:200px!important}
   .modal-row{background:var(--card);border:1px solid var(--border-ctrl);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;transition:border-color .15s,background .15s}
   .modal-row:hover{background:var(--card);border-color:var(--muted)}
   .modal-row.best:hover{border-color:var(--cdv-coral);background:#1f1f38}
@@ -3854,6 +3855,13 @@ function abrirModalTransf(destinoEncoded){
     return a.origem.localeCompare(b.origem, 'pt-BR');
   });
 
+  currentModalTransfDestino = destino;
+  const tHistDiv = document.getElementById('transf-modal-hist');
+  const tHistBtn = document.getElementById('transf-modal-hist-btn');
+  if (tHistDiv) tHistDiv.style.display = 'none';
+  if (tHistBtn) tHistBtn.textContent = '📈 Ver histórico';
+  if (transfHistChart) { transfHistChart.destroy(); transfHistChart = null; }
+
   document.getElementById('transf-modal-name').textContent = destino;
   document.getElementById('transf-modal-cat').textContent = `${origens.length} ${origens.length===1?'origem':'origens'} rastreada${origens.length===1?'':'s'}`;
 
@@ -3884,6 +3892,130 @@ function abrirModalTransf(destinoEncoded){
   }).join('');
 
   document.getElementById('transf-modal-overlay').classList.add('open');
+}
+
+// ══ HISTÓRICO DE TRANSFERÊNCIAS BONIFICADAS (gráfico do modal) ══
+let transfHistChart = null;
+let currentModalTransfDestino = null;
+
+const TRANSF_CORES_FIXAS = {
+  'Todos':'#ff585e', 'Livelo':'#df0979', 'Esfera':'#e8371b', 'Itaú':'#ff6900',
+  'Inter':'#fb923c', 'C6':'#94a3b8', 'Nubank':'#a78bfa', 'Caixa':'#0ea5e9',
+  'BTG':'#60a5fa', 'BRB':'#22d3ee', 'Sicoob':'#34d399', 'Sicredi':'#4ade80',
+  'Porto Seguro':'#38bdf8', 'Revolut':'#c084fc',
+  'Smiles':'#f59e0b', 'Azul Fidelidade':'#0ea5e9', 'LATAM Pass':'#dc2626'
+};
+const TRANSF_CORES_POOL = ['#f472b6','#facc15','#2dd4bf','#818cf8','#fb7185','#a3e635','#e879f9','#7dd3fc'];
+
+function corOrigemTransf(origem, idx){
+  return TRANSF_CORES_FIXAS[origem] || TRANSF_CORES_POOL[idx % TRANSF_CORES_POOL.length];
+}
+
+function toggleHistoricoTransf(){
+  const div = document.getElementById('transf-modal-hist');
+  const btn = document.getElementById('transf-modal-hist-btn');
+  const isOpen = div.style.display !== 'none';
+  if (isOpen){
+    div.style.display = 'none';
+    btn.textContent = '📈 Ver histórico';
+  } else {
+    div.style.display = 'block';
+    btn.textContent = '✕ Fechar histórico';
+    renderTransfHistChart(currentModalTransfDestino);
+  }
+}
+
+function renderTransfHistChart(destino){
+  if (!destino) return;
+  const canvas = document.getElementById('transf-hist-chart');
+  const emptyEl = document.getElementById('transf-hist-empty');
+
+  const registros = ((historicoTransferencias||{}).items||[]).filter(r => r.destino === destino);
+  if (!registros.length){
+    canvas.style.display = 'none';
+    emptyEl.style.display = 'block';
+    return;
+  }
+  canvas.style.display = 'block';
+  emptyEl.style.display = 'none';
+
+  // Eixo X: todas as datas de início de promoção rastreadas para este destino
+  const datas = [...new Set(registros.map(r => r.dataInicio))].sort();
+  const labels = datas.map(d => {
+    const [, m, dia] = d.split('-');
+    return `${dia}/${m}`;
+  });
+
+  // Uma série por origem — "Todos" primeiro, demais em ordem alfabética
+  const origens = [...new Set(registros.map(r => r.origem))].sort((a,b)=>{
+    if (a === 'Todos') return -1;
+    if (b === 'Todos') return 1;
+    return a.localeCompare(b, 'pt-BR');
+  });
+
+  const datasets = origens.map((origem, idx) => {
+    const cor = corOrigemTransf(origem, idx);
+    const vals = datas.map(d => {
+      const doDia = registros.filter(r => r.origem === origem && r.dataInicio === d);
+      if (!doDia.length) return null;
+      return Math.max(...doDia.map(r => r.bonusMax));
+    });
+    return {
+      label: origem,
+      data: vals,
+      borderColor: cor,
+      backgroundColor: cor + '22',
+      pointBackgroundColor: cor,
+      borderWidth: 2,
+      pointRadius: 3,
+      pointHoverRadius: 6,
+      spanGaps: true,
+      tension: 0.3,
+    };
+  });
+
+  if (transfHistChart){ transfHistChart.destroy(); transfHistChart = null; }
+
+  const ctx = canvas.getContext('2d');
+  transfHistChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 300 },
+      plugins: {
+        legend: {
+          labels: {
+            color: '#8a9bbf',
+            font: { family: 'Montserrat', size: 11 },
+            boxWidth: 12, padding: 10
+          }
+        },
+        tooltip: {
+          backgroundColor: '#2a3246',
+          titleColor: '#eeeeee',
+          bodyColor: '#8a9bbf',
+          borderColor: '#3d4a66',
+          borderWidth: 1,
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y ?? '—'}% de bônus`
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color:'#5a6a8a', font:{family:'Montserrat',size:10}, maxRotation:45 },
+          grid: { color:'#3d4a6633' }
+        },
+        y: {
+          ticks: { color:'#5a6a8a', font:{family:'Montserrat',size:10}, callback: v => v + '%' },
+          grid: { color:'#3d4a6633' },
+          beginAtZero: false
+        }
+      }
+    }
+  });
 }
 document.addEventListener('DOMContentLoaded', () => {
   const closeBtn = document.getElementById('transf-modal-close-btn');
@@ -8999,6 +9131,11 @@ function mapaRenderAll() {
     <div class="modal-name" id="transf-modal-name"></div>
     <div class="modal-cat" id="transf-modal-cat"></div>
     <div class="modal-rows" id="transf-modal-rows"></div>
+    <button class="modal-url" id="transf-modal-hist-btn" onclick="toggleHistoricoTransf()" style="width:100%;margin-top:14px">📈 Ver histórico</button>
+    <div id="transf-modal-hist" style="display:none;margin-top:14px">
+      <canvas id="transf-hist-chart" style="width:100%;height:200px"></canvas>
+      <div id="transf-hist-empty" style="display:none;text-align:center;font-size:12px;color:var(--muted);padding:20px 0">Histórico ainda sendo construído — volte em breve 📅</div>
+    </div>
   </div>
 </div>
 
