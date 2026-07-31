@@ -66,6 +66,8 @@ const DOMINIOS_OFICIAIS = [
   'portobank.com.br', 'porto.com.br', 'banestes.com.br',
   'elo.com.br', 'mastercard.com', 'mastercard.com.br', 'visa.com.br',
   'visa-infinite.com', 'americanexpress.com', 'revolut.com',
+  // Programas de fidelidade aerea — fonte oficial para cartoes co-branded
+  'smiles.com.br', 'latampass.latam.com', 'voeazul.com.br', 'tudoazul.com',
 ];
 
 // Hierarquia de fontes: a pagina do EMISSOR manda mais que a da BANDEIRA.
