@@ -19,6 +19,8 @@ DOMINIOS_OFICIAIS = {
     'banco.bradesco','assets.bradesco','soliciteseucartao.bradesco','safra.com.br','banrisul.com.br',
     'genial.com.vc','genialinvestimentos.com.br','unicred.com.br',
     'portobank.com.br','porto.com.br','banestes.com.br',
+    # Programas de fidelidade aerea — fonte oficial para cartoes co-branded
+    'smiles.com.br','latampass.latam.com','voeazul.com.br','tudoazul.com',
     'elo.com.br','mastercard.com','mastercard.com.br','visa.com.br',
     'visa-infinite.com','americanexpress.com',
 }
