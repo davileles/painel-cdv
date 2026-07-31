@@ -112,24 +112,51 @@ async function carregarLinks() {
 
 // Monta a URL final. Se urlAlvo vier preenchida (?u=), valida o domínio contra a
 // whitelist do slug antes de anexar os params — sem isso vira open redirect.
-function montarDestinoIr(cfg, urlAlvo) {
-  let base = cfg.destino;
-  if (urlAlvo) {
+function hostPermitido(cfg, host) {
+  host = String(host || '').toLowerCase();
+  return (cfg.dominios || []).some(function (d) {
+    d = String(d).toLowerCase();
+    return host === d || host.endsWith('.' + d);
+  });
+}
+
+// Monta a URL final em tres modos:
+//   1. padrao      -> destino fixo do slug
+//   2. passthrough -> /<slug>/<resto do path> reconstroi no dominio do programa,
+//                     preservando a query original. Ex: /smiles/portal/campanhas/x
+//   3. ?u=<url>    -> URL completa, usada quando a campanha vive em outro host
+//                     do mesmo programa (ex: latampass.latam.com)
+// Em todos, os params de afiliado do links.json sao anexados por ultimo.
+function montarDestinoIr(cfg, opts) {
+  opts = opts || {};
+  let base;
+  if (opts.urlAlvo) {
     let u;
-    try { u = new URL(String(urlAlvo)); } catch (e) { return null; }
+    try { u = new URL(String(opts.urlAlvo)); } catch (e) { return null; }
     if (u.protocol !== 'https:' && u.protocol !== 'http:') return null;
-    const host = String(u.hostname || '').toLowerCase();
-    const permitido = (cfg.dominios || []).some(function (d) {
-      d = String(d).toLowerCase();
-      return host === d || host.endsWith('.' + d);
-    });
-    if (!permitido) return null;
+    if (!hostPermitido(cfg, u.hostname)) return null;
     base = u.toString();
+  } else if (opts.resto) {
+    let origem;
+    try { origem = new URL(cfg.destino).origin; } catch (e) { return null; }
+    base = origem + (opts.resto.charAt(0) === '/' ? opts.resto : '/' + opts.resto);
+  } else {
+    base = cfg.destino;
   }
   let final;
   try { final = new URL(base); } catch (e) { return null; }
+  // Repassa a query original da campanha, menos os parametros de controle
+  if (opts.query) {
+    for (const k of Object.keys(opts.query)) {
+      if (k === 'o' || k === 'u') continue;
+      const v = opts.query[k];
+      if (typeof v === 'string') final.searchParams.set(k, v);
+    }
+  }
   const params = cfg.params || {};
   for (const k of Object.keys(params)) final.searchParams.set(k, params[k]);
+  // Defesa em profundidade: nada sai fora dos dominios declarados no slug
+  if (!hostPermitido(cfg, final.hostname)) return null;
   return final.toString();
 }
 
@@ -199,12 +226,12 @@ function paginaPreviewIr(destino, cfg) {
     '</body></html>';
 }
 
-async function handleIr(req, res, slug) {
+async function handleIr(req, res, slug, resto) {
   let links;
   try { links = await carregarLinks(); } catch (e) { links = linksCache.data || {}; }
   const cfg = links[slug];
   if (!cfg || !cfg.destino) return res.redirect(302, LINKS_FALLBACK);
-  const destino = montarDestinoIr(cfg, req.query.u);
+  const destino = montarDestinoIr(cfg, { urlAlvo: req.query.u, resto: resto, query: req.query });
   if (!destino) return res.status(400).send('Destino inválido para este link.');
   if (PREVIEW_BOT_RE.test(req.headers['user-agent'] || '')) {
     res.set('Content-Type', 'text/html; charset=utf-8');
@@ -220,9 +247,10 @@ app.use(async (req, res, next) => {
   const host = String(req.hostname || '').toLowerCase();
   if (host !== LINKS_HOST) return next();
   if (req.path === '/' || req.path === '') return res.redirect(302, LINKS_FALLBACK);
-  const m = req.path.match(/^\/([a-zA-Z0-9\-_]{1,40})\/?$/);
+  const m = req.path.match(/^\/([a-zA-Z0-9\-_]{1,40})(\/.*)?$/);
   if (!m) return next();
   const slug = m[1].toLowerCase();
+  const resto = (m[2] && m[2] !== '/') ? m[2] : '';
   // Paths operacionais do proxy continuam funcionando mesmo neste host
   if (RESERVADOS_IR.has(slug)) return next();
   let links;
@@ -230,11 +258,11 @@ app.use(async (req, res, next) => {
   // Slug desconhecido (typo em mensagem antiga, link cadastrado errado): manda
   // para o site do Clube em vez de devolver 404 do Express na cara do membro.
   if (!links[slug]) return res.redirect(302, LINKS_FALLBACK);
-  return handleIr(req, res, slug);
+  return handleIr(req, res, slug, resto);
 });
 
-app.get('/ir/:slug', (req, res) =>
-  handleIr(req, res, String(req.params.slug || '').toLowerCase()));
+app.get(/^\/ir\/([a-zA-Z0-9\-_]{1,40})(\/.*)?$/, (req, res) =>
+  handleIr(req, res, String(req.params[0] || '').toLowerCase(), req.params[1] || ''));
 
 // Consulta de métricas (acumulado gravado + buffer ainda não persistido)
 app.get('/ir-stats', async (req, res) => {
