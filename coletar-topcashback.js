@@ -18,6 +18,7 @@ const fs   = require('fs');
 const path = require('path');
 
 const { publicarOfertas, MAX_OFERTAS_APROVADAS } = require('./mensagem-radar');
+const { alertarOperador } = require('./alerta-operador');
 
 const HISTORICO_FILE = path.join(__dirname, 'historico.json');
 const LOJAS_FILE     = path.join(__dirname, 'topcashback-lojas.json');
@@ -408,6 +409,15 @@ async function main() {
 
   // Guarda de sanidade — catálogo é pequeno e curado, então exigimos a maioria
   if (validos.length < Math.ceil(lojas.length * 0.5)) {
+    const falhas = resultados.filter(r => !r.dados.temCashback || r.dados.erro)
+      .map(r => `- ${r.loja.nome} (${r.loja.pais.toUpperCase()}): ${r.dados.erro || 'sem faixa de cashback'}`);
+    await alertarOperador('Coleta TopCashback abaixo do esperado', [
+      `Catálogo: ${lojas.length} lojas | com cashback: ${validos.length}`,
+      '',
+      ...falhas,
+      '',
+      'Nada foi salvo. Provável causa: mudança no HTML do TopCashback (merch-cat__rate) ou slug de loja alterado.',
+    ]);
     console.error('[TopCashback] Retorno abaixo do esperado — abortando sem salvar.');
     process.exit(1);
   }
