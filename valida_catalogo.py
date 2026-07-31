@@ -30,6 +30,10 @@ CAMPOS_FACTUAIS = ['anuidade','anuidade_parcelas','isencao','renda_minima',
                    'salas_vip','transfere_para','requisito_acesso']
 
 def oficial(url):
+    # Curadoria manual do operador (planilha importada) conta como procedencia
+    # valida. Sem isso, a validacao zera esses campos no run seguinte.
+    if str(url).lower().startswith('planilha:'):
+        return True
     try:
         h = urlparse(str(url)).hostname or ''
         h = h.lower().replace('www.','',1)
