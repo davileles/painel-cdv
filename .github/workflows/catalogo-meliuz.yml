@@ -1,0 +1,29 @@
+name: Atualizar catálogo de lojas Méliuz
+on:
+  schedule:
+    - cron: '0 8 * * 1'   # toda segunda-feira às 05h (horário de Brasília / UTC-3)
+  workflow_dispatch:
+jobs:
+  catalogo:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      # Cruza o índice A-Z do Méliuz (~2.360 lojas) com os parceiros presentes
+      # no snapshot mais recente do historico.json, gerando meliuz-lojas.json.
+      - name: Gerar meliuz-lojas.json
+        run: node catalogo-meliuz.js
+      - name: Salvar arquivos
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add meliuz-lojas.json
+          git diff --staged --quiet || git commit -m "chore: atualiza catálogo Méliuz $(date -u +'%Y-%m-%d')"
+          git pull --rebase origin main
+          git push
