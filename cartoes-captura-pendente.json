@@ -2,12 +2,37 @@
   "_meta": {
     "descricao": "Cartoes cujas fontes o runner do GitHub Actions nao consegue acessar (WAF bloqueia IP de datacenter). Capturar o texto destas paginas por fora, num navegador com IP residencial, e gravar em cartoes-fontes-manuais.json.",
     "como_capturar": "Para cada URL: abrir no navegador, extrair o texto visivel da pagina (sem menu/rodape) e gravar em cartoes-fontes-manuais.json na chave fontes[\"<url>\"] = {texto, capturado_em, origem}.",
-    "gerado_em": "2026-07-30",
-    "origem": "run 30568505530",
-    "total_cartoes": 15,
-    "total_urls": 71
+    "gerado_em": "2026-07-31",
+    "origem": "lista Bradesco enviada pelo operador (soliciteseucartao.bradesco)",
+    "total_cartoes": 22,
+    "total_urls": 78
   },
   "pendentes": [
+    {
+      "slug": "azul-itau-mastercard-skyline",
+      "nome": "Azul Itaú Mastercard Skyline",
+      "emissor": "Itaú",
+      "urls": [
+        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "https://www.itau.com.br/cartoes/beneficios/programa-fidelidade-azul",
+        "https://www.itau.com.br/cartoes/escolha/formulario/tudoazul-itaucard-20-internacional-visa.html",
+        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html?l=&cpg_s=azl_prc",
+        "https://www.itau.com.br/media/dam/m/7a27c611cf1fb00d/original/cartoes-tabela-geral.pdf"
+      ]
+    },
+    {
+      "slug": "bb-ourocard-visa-infinite",
+      "nome": "Ourocard Visa Infinite",
+      "emissor": "Banco do Brasil",
+      "urls": [
+        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/livreto220210.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf"
+      ]
+    },
     {
       "slug": "bb-smiles-visa-infinite",
       "nome": "BB Smiles Visa Infinite",
@@ -35,16 +60,19 @@
       ]
     },
     {
-      "slug": "bb-ourocard-visa-infinite",
-      "nome": "Ourocard Visa Infinite",
-      "emissor": "Banco do Brasil",
+      "slug": "bradesco-american-express-gold",
+      "nome": "Bradesco American Express Gold",
+      "emissor": "Bradesco",
       "urls": [
-        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
-        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/livreto220210.pdf",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf"
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-gold"
+      ]
+    },
+    {
+      "slug": "bradesco-american-express-green",
+      "nome": "Bradesco American Express Green",
+      "emissor": "Bradesco",
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green"
       ]
     },
     {
@@ -58,6 +86,30 @@
         "http://200-155-86-38.bradesco.com.br/html/prime/produtos-servicos/cartoes/meu-cartao/platinum-card/meu-cartao.shtm",
         "https://adc.bradesco.com.br/html/prime/index.shtm",
         "http://200-155-86-38.bradesco.com.br/html/classic/produtos-servicos/cartoes/servicos/seguros-opcionais/seguro-american-express.shtm"
+      ]
+    },
+    {
+      "slug": "bradesco-elo-grafite",
+      "nome": "Bradesco Elo Grafite",
+      "emissor": "Bradesco",
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-grafite"
+      ]
+    },
+    {
+      "slug": "bradesco-elo-mais-internacional",
+      "nome": "Bradesco Elo Mais Internacional",
+      "emissor": "Bradesco",
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-mais"
+      ]
+    },
+    {
+      "slug": "bradesco-elo-nanquim",
+      "nome": "Bradesco Elo Nanquim",
+      "emissor": "Bradesco",
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-nanquim"
       ]
     },
     {
@@ -78,6 +130,22 @@
         "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
         "https://institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html",
         "https://adc.bradesco.com.br/html/corporate/solucoes-integradas/cartoes/beneficios/salavip.shtm"
+      ]
+    },
+    {
+      "slug": "bradesco-visa-platinum",
+      "nome": "Bradesco Visa Platinum",
+      "emissor": "Bradesco",
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum"
+      ]
+    },
+    {
+      "slug": "bradesco-visa-signature",
+      "nome": "Bradesco Visa Signature",
+      "emissor": "Bradesco",
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-signature"
       ]
     },
     {
@@ -144,18 +212,6 @@
       "urls": [
         "https://www.caixa.gov.br/voce/cartoes/credito/infinite-investidores/Paginas/default.aspx",
         "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx"
-      ]
-    },
-    {
-      "slug": "azul-itau-mastercard-skyline",
-      "nome": "Azul Itaú Mastercard Skyline",
-      "emissor": "Itaú",
-      "urls": [
-        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "https://www.itau.com.br/cartoes/beneficios/programa-fidelidade-azul",
-        "https://www.itau.com.br/cartoes/escolha/formulario/tudoazul-itaucard-20-internacional-visa.html",
-        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html?l=&cpg_s=azl_prc",
-        "https://www.itau.com.br/media/dam/m/7a27c611cf1fb00d/original/cartoes-tabela-geral.pdf"
       ]
     },
     {
