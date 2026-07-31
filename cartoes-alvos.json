@@ -429,12 +429,12 @@
       "categoria": "Infinite",
       "bandeira_ref": "visa-infinite",
       "urls": [
-        "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
-        "http://200-155-86-38.bradesco.com.br/naocorrentista/cartoes/bradesco-visa-infinite/",
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-infinite",
         "https://institucional.bradesco.com.br/hotsites/cartoes/informacoes/tabela_taxas.html",
         "https://adc.bradesco.com.br/html/corporate/solucoes-integradas/cartoes/beneficios/salavip.shtm"
       ],
-      "ativo": true
+      "ativo": true,
+      "nota": "URLs antigas usavam IP literal (200-155-86-*.bradesco.com.br), fora do ar. Atualizado para soliciteseucartao.bradesco."
     },
     {
       "slug": "bradesco-amex-the-centurion",
