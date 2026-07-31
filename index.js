@@ -1567,7 +1567,7 @@ app.post('/ia/extrair-reserva', (req, res) => {
     'Analise este documento (' + (textoDoc ? 'texto extraído de um arquivo HTML' : (isPdf ? 'PDF' : 'imagem')) + ') de ' + (tipoCampos || 'reserva de viagem') + '. ' +
     'Extraia os dados REAIS do documento e retorne SOMENTE um JSON válido (sem markdown). ' +
     'Use exatamente esta estrutura JSON (substitua pelos valores reais): ' +
-    '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","cabine":"cabine exata","cia":"companhia aerea"}],"pnr":"","pax":0,"programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","subtipo":"transfer","transferOrigem":"","transferDestino":"","transferData":"","transferHora":"","transferPax":"","transferOp":"","transferVeiculo":"","transferConf":"","transferValor":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","obs":""} ' +
+    '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","cabine":"cabine exata","cia":"companhia aerea"}],"pnr":"","pax":0,"programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","subtipo":"transfer","transferOrigem":"","transferDestino":"","transferData":"","transferHora":"","transferPax":"","transferOp":"","transferVeiculo":"","transferConf":"","transferValor":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","seguradora":"","seguroPlano":"","seguroApolice":"","seguroCartao":"","seguroInicio":"","seguroFim":"","seguroModalidade":"","seguroDias":"","seguroTerritorio":"","seguroCobertura":"","seguroPax":"","seguroValor":"","seguroEmergencia":"","obs":""} ' +
     'REGRAS: ' +
     '1) trechos[]: um objeto por segmento de voo na ordem do itinerário. ' +
     '2) Em cada trecho, cia = nome da companhia aérea operadora (ex: LATAM, Azul, Gol, TAP, KLM). ' +
@@ -1583,9 +1583,25 @@ app.post('/ia/extrair-reserva', (req, res) => {
     '   Para transfer/trem/onibus/ferry preencha: transferOrigem, transferDestino, transferData, transferHora, transferPax, transferOp, transferVeiculo, transferConf, transferValor. ' +
     '   Para locacao preencha: locadora, carroCat, retLocal, devLocal, retData, devData, carroConf, carroValor. ' +
     '7) Para passeio/atividade, use tipo=\"passeio\" e preencha passeio*. ' +
-    '8) DATAS: se o documento não informar o ano de alguma data, use o ano atual (' + new Date().getFullYear() + '). ' +
+    '8) SEGURO VIAGEM: bilhete de seguro viagem, apólice, certificado ou voucher de assistência internacional ' +
+    '   (Assist Card, Coris, GTA, Universal Assistance, April, Affinity, Intermac, ITA, Porto Seguro, Allianz Travel, AXA, Travel Ace, Vital Card, World Assistance, SulAmerica, MAPFRE, AIG e similares) ' +
+    '   -> use tipo=\"seguro\", trechos=[] e preencha: ' +
+    '   seguradora = nome comercial curto da assistência/seguradora (ex: \"Assist Card\") — nunca a razão social nem a seguradora emissora do risco; ' +
+    '   seguroPlano = nome do plano/produto (ex: \"PLANO 250\"); ' +
+    '   seguroApolice = número do bilhete, apólice ou certificado (identificador principal do documento, ex: \"2013.94318.26.0012623\"); ' +
+    '   seguroCartao = número do cartão de assistência, se houver (ex: \"550 33378809 0B59\"); ' +
+    '   seguroInicio e seguroFim = início e fim da VIGÊNCIA do serviço em YYYY-MM-DD — nunca use a data de emissão do bilhete; ' +
+    '   seguroModalidade = \"multiviagem\" quando o documento indicar multitrip/multiviagem, \"anual\" quando for plano anual sem limite de dias por viagem, \"unica\" quando cobrir uma única viagem; ' +
+    '   seguroDias = dias consecutivos por viagem SOMENTE quando seguroModalidade=\"multiviagem\" (ex: \"MULTITRIP 30 DAYS\" -> \"30\"); ' +
+    '   seguroTerritorio = validade territorial (ex: \"Internacional\", \"Europa (Schengen)\", \"America do Sul\", \"Brasil\", \"Mercosul\"); ' +
+    '   seguroCobertura = capital segurado de despesas médicas e hospitalares, resumido (ex: \"EUR/USD 250.000\"); ' +
+    '   seguroPax = quantidade de segurados nominados no documento; ' +
+    '   seguroValor = valor TOTAL pago pelo cliente em reais, somando prêmio de seguro, IOF e custo de assistência (ex: \"1.690,65\"); ' +
+    '   seguroEmergencia = telefone principal de emergência para acionamento no exterior. ' +
+    '   Nunca classifique um bilhete de seguro viagem como voo, hotel, carro ou passeio. ' +
+    '9) DATAS: se o documento não informar o ano de alguma data, use o ano atual (' + new Date().getFullYear() + '). ' +
     '   Toda data deve sair completa no formato YYYY-MM-DD — nunca retorne data sem ano. ' +
-    '9) Retorne SOMENTE o JSON, sem explicações.';
+    '10) Retorne SOMENTE o JSON, sem explicações.';
 
   // Completa o ano atual em datas que a IA retornou sem ano (ex: "12/03", "03-12", "--03-12")
   function normalizarAnoDatas(d) {
@@ -1603,7 +1619,7 @@ app.post('/ia/extrair-reserva', (req, res) => {
       return s;
     }
     if (Array.isArray(d.trechos)) d.trechos.forEach(t => { if (t) t.data = fix(t.data); });
-    ['checkin', 'checkout', 'transferData', 'retData', 'devData', 'passeioData', 'dataIda', 'dataVolta']
+    ['checkin', 'checkout', 'transferData', 'retData', 'devData', 'passeioData', 'dataIda', 'dataVolta', 'seguroInicio', 'seguroFim']
       .forEach(k => { if (d[k]) d[k] = fix(d[k]); });
     return d;
   }
