@@ -341,6 +341,11 @@ Sua tarefa: extrair os dados de UM cartão a partir do conteúdo de páginas e d
 REGRA CENTRAL — PROCEDÊNCIA:
 Um campo factual só pode ter valor se a informação estiver EXPLÍCITA no conteúdo de uma fonte específica. Para cada campo factual que você preencher, registre em "procedencia" a URL exata da fonte de onde tirou aquela informação. Se a informação não estiver nas fontes, use null (ou [] para listas) e NÃO registre procedência. Nunca deduza, estime, arredonde ou complete com conhecimento próprio — um campo vazio é sempre melhor que um campo inventado.
 
+ATENÇÃO — DE ONDE COPIAR A URL DE PROCEDÊNCIA:
+O valor de "procedencia" DEVE ser copiado literalmente de um dos cabeçalhos "===== FONTE: <url> =====" que separam os blocos de conteúdo, e de nenhum outro lugar.
+O texto das páginas frequentemente MENCIONA outros endereços ("Acesse banco.bradesco/cartoes/anuidade", "Veja mais em visa.com.br/..."). Essas URLs citadas dentro do texto NÃO são fontes — você não leu o conteúdo delas. Usá-las como procedência faz o campo ser descartado.
+Ao final, confira cada valor de "procedencia": ele tem de ser idêntico a uma das URLs listadas em FONTES VÁLIDAS abaixo.
+
 CAMPOS FACTUAIS (exigem procedência): anuidade, anuidade_parcelas, isencao, renda_minima, adicionais_gratis, pontos, cashback, spread, iof, salas_vip, transfere_para, requisito_acesso.
 
 SCHEMA DE SAÍDA (todos os campos obrigatórios; use null quando não houver informação):
@@ -383,9 +388,13 @@ Responda APENAS com o objeto JSON. Sem markdown, sem crases, sem texto antes ou 
 async function extrairComIA(alvo, fontes) {
   const blocos = [];
 
+  const listaUrls = fontes.map((f, i) => `  ${i + 1}. ${f.url}`).join('\n');
   blocos.push({
     type: 'text',
-    text: `CARTÃO: ${alvo.nome}\nEMISSOR ESPERADO: ${alvo.emissor || 'não informado'}\nBANDEIRA ESPERADA: ${alvo.bandeira || 'não informada'}\n\nSegue o conteúdo das fontes oficiais. Cada fonte vem marcada com sua URL — use exatamente essas URLs em "procedencia".`,
+    text: `CARTÃO: ${alvo.nome}\nEMISSOR ESPERADO: ${alvo.emissor || 'não informado'}\nBANDEIRA ESPERADA: ${alvo.bandeira || 'não informada'}\n\n`
+      + `FONTES VÁLIDAS (os ÚNICOS valores aceitos em "procedencia" — copie exatamente, sem alterar):\n${listaUrls}\n\n`
+      + `Qualquer outro endereço, mesmo que apareça escrito dentro do texto das páginas, é INVÁLIDO como procedência.\n\n`
+      + `Segue o conteúdo das fontes.`,
   });
 
   for (const f of fontes) {
