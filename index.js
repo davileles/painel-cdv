@@ -36,7 +36,7 @@ function repoDoArquivo(filePath) {
   return ARQUIVOS_SENSIVEIS.has(base) ? GITHUB_REPO_DADOS : GITHUB_REPO;
 }
 
-const ALLOWED = ['comparemania.com.br', 'passageirodeprimeira.com', 'marketplace-api.web.bancointer.com.br', 'meliuz.com.br'];
+const ALLOWED = ['comparemania.com.br', 'passageirodeprimeira.com', 'marketplace-api.web.bancointer.com.br', 'meliuz.com.br', 'topcashback.co.uk', 'topcashback.com'];
 
 // ── Modo DEV ──────────────────────────────────────────────────────────────────
 // Requisições com header "x-cdv-env: dev" lêem/escrevem arquivos *-dev.json
@@ -158,6 +158,95 @@ app.get('/meliuz/cashback', async (req, res) => {
     out.push(...lote);
   }
   res.json({ geradoEm: new Date().toISOString(), lojas: out });
+});
+
+// ── Cashback TopCashback (UK e US) ────────────────────────────────────────────
+// Mesma abordagem do Méliuz: não há API pública, o cashback vem do HTML SSR da
+// página de cada loja. O TopCashback publica uma ou mais faixas por loja
+// (categorias de produto / tipo de cliente), então devolvemos todas as faixas e
+// o máximo — que é o número usado como pontuação do parceiro no Comparador.
+const TCB_BASES = {
+  uk: 'https://www.topcashback.co.uk',
+  us: 'https://www.topcashback.com',
+};
+
+function decodeEntidades(s) {
+  return String(s || '')
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
+    .replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ')
+    .trim();
+}
+
+function parseTopcashback(html, slug, pais) {
+  // Os pares (categoria, taxa) aparecem sempre nesta ordem no rate card.
+  const toks = [...html.matchAll(/class="merch-cat__(sub-cat|rate)">([^<]*)</g)]
+    .map(m => ({ tipo: m[1], valor: m[2] }));
+
+  const categorias = [];
+  for (let i = 0; i < toks.length; i++) {
+    if (toks[i].tipo !== 'rate') continue;
+    const pct = parseFloat(String(toks[i].valor).replace('%', '').replace(',', '.'));
+    if (!isFinite(pct) || pct <= 0) continue;
+    const anterior = toks[i - 1];
+    categorias.push({
+      nome: anterior && anterior.tipo === 'sub-cat' ? decodeEntidades(anterior.valor) : '',
+      pct,
+    });
+  }
+
+  if (!categorias.length) return { slug, pais, temCashback: false, pts: null };
+
+  const valores = categorias.map(x => x.pct);
+  const pts = Math.max(...valores);
+  const distintos = new Set(valores);
+
+  const mNome = html.match(/class="merch-cat__title">([\s\S]*?)<\/h2>/);
+
+  return {
+    slug,
+    pais,
+    temCashback: true,
+    pts,
+    ate: distintos.size > 1,
+    categorias,
+    nome: mNome ? decodeEntidades(mNome[1].replace(/<[^>]+>/g, '')) : slug,
+    link: `${TCB_BASES[pais]}/${slug}/`,
+  };
+}
+
+app.get('/topcashback/cashback', async (req, res) => {
+  const pais = String(req.query.pais || '').toLowerCase();
+  const base = TCB_BASES[pais];
+  if (!base) return res.status(400).json({ error: "Parâmetro ?pais= deve ser 'uk' ou 'us'" });
+
+  const slugs = String(req.query.slugs || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 10);
+  if (!slugs.length) return res.status(400).json({ error: 'Parâmetro ?slugs= obrigatório' });
+
+  const CONC = 3;
+  const out = [];
+  for (let i = 0; i < slugs.length; i += CONC) {
+    const lote = await Promise.all(slugs.slice(i, i + CONC).map(async (slug) => {
+      try {
+        const r = await fetch(`${base}/${encodeURIComponent(slug)}/`, {
+          redirect: 'follow',
+          headers: {
+            'User-Agent': MELIUZ_UA,
+            'Accept': 'text/html,application/xhtml+xml',
+            'Accept-Language': pais === 'uk' ? 'en-GB,en;q=0.9' : 'en-US,en;q=0.9',
+          },
+          signal: AbortSignal.timeout(20000),
+        });
+        if (!r.ok) return { slug, pais, erro: `HTTP ${r.status}` };
+        return parseTopcashback(await r.text(), slug, pais);
+      } catch (e) {
+        return { slug, pais, erro: e.message };
+      }
+    }));
+    out.push(...lote);
+  }
+  res.json({ geradoEm: new Date().toISOString(), pais, lojas: out });
 });
 
 // ── Fetch para análise de ofertas (sem restrição de domínio) ─────────────────
