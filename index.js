@@ -36,7 +36,7 @@ function repoDoArquivo(filePath) {
   return ARQUIVOS_SENSIVEIS.has(base) ? GITHUB_REPO_DADOS : GITHUB_REPO;
 }
 
-const ALLOWED = ['comparemania.com.br', 'passageirodeprimeira.com', 'marketplace-api.web.bancointer.com.br'];
+const ALLOWED = ['comparemania.com.br', 'passageirodeprimeira.com', 'marketplace-api.web.bancointer.com.br', 'meliuz.com.br'];
 
 // ── Modo DEV ──────────────────────────────────────────────────────────────────
 // Requisições com header "x-cdv-env: dev" lêem/escrevem arquivos *-dev.json
@@ -93,6 +93,67 @@ app.get('/inter/gift-cards', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// ── Cashback Méliuz ───────────────────────────────────────────────────────────
+// O Méliuz não expõe API pública de cashback: api-seo.meliuz.com.br responde 403
+// (CloudFront bloqueia IPs de datacenter, mesmo caso do Inter). O www responde
+// normalmente, e o cashback vem no HTML SSR da página de cada loja.
+// Recebe até 20 slugs por chamada e devolve JSON já parseado.
+const MELIUZ_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
+
+function parseMeliuz(html, slug) {
+  if (!/data-has-cashback="true"/.test(html)) return { slug, temCashback: false, pts: null };
+
+  const mBtn = html.match(/Ativar\s*<span>([^<]+)<\/span>\s*de cashback/i);
+  const mOff = html.match(/<strong>\s*\+?\s*([^<]*?)\s*cashback\s*<\/strong>(?:\s*\.\s*era\s*([0-9.,]+)%)?/i);
+  const bruto = (mBtn && mBtn[1]) || (mOff && mOff[1]) || '';
+
+  const ate = /at[ée]/i.test(bruto);
+  const num = (bruto.match(/([0-9]+(?:[.,][0-9]+)?)\s*%/) || [])[1];
+  if (!num) return { slug, temCashback: false, pts: null };
+
+  const mNome = html.match(/<h1>([^<]+)<\/h1>/);
+  const mLink = html.match(/data-redirect-url="([^"]+)"/);
+
+  return {
+    slug,
+    temCashback: true,
+    pts: parseFloat(num.replace(',', '.')),
+    ate,
+    era: (mOff && mOff[2]) ? parseFloat(mOff[2].replace(',', '.')) : null,
+    nome: mNome ? mNome[1].trim() : slug,
+    link: (mLink && mLink[1]) || ('https://www.meliuz.com.br/desconto/' + slug),
+  };
+}
+
+app.get('/meliuz/cashback', async (req, res) => {
+  const slugs = String(req.query.slugs || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 20);
+  if (!slugs.length) return res.status(400).json({ error: 'Parâmetro ?slugs= obrigatório' });
+
+  const CONC = 5;
+  const out = [];
+  for (let i = 0; i < slugs.length; i += CONC) {
+    const lote = await Promise.all(slugs.slice(i, i + CONC).map(async (slug) => {
+      try {
+        const r = await fetch('https://www.meliuz.com.br/desconto/' + encodeURIComponent(slug), {
+          redirect: 'follow',
+          headers: {
+            'User-Agent': MELIUZ_UA,
+            'Accept': 'text/html,application/xhtml+xml',
+            'Accept-Language': 'pt-BR,pt;q=0.9',
+          },
+          signal: AbortSignal.timeout(15000),
+        });
+        if (!r.ok) return { slug, erro: `HTTP ${r.status}` };
+        return parseMeliuz(await r.text(), slug);
+      } catch (e) {
+        return { slug, erro: e.message };
+      }
+    }));
+    out.push(...lote);
+  }
+  res.json({ geradoEm: new Date().toISOString(), lojas: out });
 });
 
 // ── Fetch para análise de ofertas (sem restrição de domínio) ─────────────────
