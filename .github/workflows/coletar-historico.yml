@@ -34,11 +34,21 @@ jobs:
           else
             echo "Fora da janela do Méliuz (09h/18h UTC) — pulando."
           fi
+      # TopCashback: catálogo curado (poucas lojas), mesma janela do Méliuz.
+      - name: Coletar cashbacks TopCashback (UK e US)
+        continue-on-error: true
+        run: |
+          HORA=$(date -u +'%H')
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$HORA" = "09" ] || [ "$HORA" = "18" ]; then
+            node coletar-topcashback.js
+          else
+            echo "Fora da janela do TopCashback (09h/18h UTC) — pulando."
+          fi
       - name: Salvar arquivos
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add historico.json alertas.json variacoes-notificadas.json ofertas-pendentes.json ofertas.json meliuz-lojas.json
+          git add historico.json alertas.json variacoes-notificadas.json ofertas-pendentes.json ofertas.json meliuz-lojas.json topcashback-lojas.json
           git diff --staged --quiet || git commit -m "chore: atualiza histórico $(date -u +'%Y-%m-%d %H:%M')"
           git pull --rebase origin main
           git push
