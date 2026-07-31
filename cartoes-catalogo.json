@@ -18,8 +18,13 @@
     "imputacao_planilha": {
       "arquivo": "cartoes-premium-comparativo.xlsx",
       "em": "2026-07-31",
-      "campos": 109,
-      "cartoes": 37
+      "campos": 141,
+      "cartoes": 37,
+      "segunda_leva": {
+        "em": "2026-07-31",
+        "cartoes": 11,
+        "campos": 32
+      }
     }
   },
   "cartoes": [
@@ -48,10 +53,15 @@
       "cashback": null,
       "programa_proprio": "Smiles",
       "transfere_para": [],
-      "spread": null,
+      "spread": 4.0,
       "iof": 1.1,
       "validade_pontos": "Seguem a Categoria Smiles do titular no momento do credito",
-      "salas_vip": [],
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Não há"
+        }
+      ],
       "beneficios_banco": [
         {
           "titulo": "Crédito automático de milhas",
@@ -79,7 +89,9 @@
         "adicionais_gratis": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "pontos": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito"
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "salas_vip": "planilha:cartoes-premium-comparativo.xlsx"
       },
       "fontes": [
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
@@ -90,15 +102,22 @@
         "cashback",
         "renda_minima",
         "requisito_acesso",
-        "salas_vip",
-        "spread",
         "transfere_para"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
         "link_solicitacao",
         "validade_pontos"
-      ]
+      ],
+      "origem_planilha": {
+        "campos": [
+          "salas_vip",
+          "spread"
+        ],
+        "arquivo": "cartoes-premium-comparativo.xlsx",
+        "em": "2026-07-31",
+        "par_planilha": "Banco do Brasil GOL Smiles Visa Gold"
+      }
     },
     {
       "slug": "bb-smiles-visa-infinite",
@@ -524,10 +543,14 @@
       "categoria": "Infinite",
       "anuidade": 1800,
       "anuidade_parcelas": null,
-      "isencao": null,
+      "isencao": {
+        "tipo": "gasto_mensal",
+        "valor": 25000.0,
+        "regra": "Gastos acima de R$ 25 mil/mês ou R$ 2 milhões investidos"
+      },
       "renda_minima": null,
       "requisito_acesso": "Cliente BB Private",
-      "adicionais_gratis": null,
+      "adicionais_gratis": 7,
       "pontos": {
         "nacional": null,
         "internacional": 4,
@@ -537,8 +560,8 @@
       "cashback": null,
       "programa_proprio": "Benefícios BB",
       "transfere_para": [],
-      "spread": null,
-      "iof": null,
+      "spread": 4.0,
+      "iof": 0.0,
       "validade_pontos": "Pontos não expiram",
       "salas_vip": [
         {
@@ -581,7 +604,11 @@
         "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
         "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
         "anuidade": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
-        "programa_proprio": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard"
+        "programa_proprio": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "iof": "planilha:cartoes-premium-comparativo.xlsx",
+        "isencao": "planilha:cartoes-premium-comparativo.xlsx"
       },
       "fontes": [
         "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
@@ -590,13 +617,9 @@
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "adicionais_gratis",
         "anuidade_parcelas",
         "cashback",
-        "iof",
-        "isencao",
         "renda_minima",
-        "spread",
         "transfere_para"
       ],
       "campos_rejeitados": [],
@@ -605,7 +628,18 @@
         "link_solicitacao",
         "programa_proprio"
       ],
-      "bandeira_ref": "visa-infinite"
+      "bandeira_ref": "visa-infinite",
+      "origem_planilha": {
+        "campos": [
+          "adicionais_gratis",
+          "iof",
+          "isencao",
+          "spread"
+        ],
+        "arquivo": "cartoes-premium-comparativo.xlsx",
+        "em": "2026-07-31",
+        "par_planilha": "Banco do Brasil Altus Liv Visa Infinite"
+      }
     },
     {
       "slug": "bb-ourocard-elo-nanquim",
@@ -622,8 +656,13 @@
       },
       "renda_minima": null,
       "requisito_acesso": "Segmento Private do Banco do Brasil (indicado pela URL bb.com.br/site/private/cartoes/ourocard-elo-nanquim/)",
-      "adicionais_gratis": null,
-      "pontos": null,
+      "adicionais_gratis": 6,
+      "pontos": {
+        "nacional": 2.0,
+        "internacional": 3.0,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
       "cashback": {
         "nacional": null,
         "internacional": null,
@@ -634,9 +673,9 @@
         "Livelo",
         "Dotz"
       ],
-      "spread": null,
-      "iof": null,
-      "validade_pontos": null,
+      "spread": 4.0,
+      "iof": 3.5,
+      "validade_pontos": "4 anos",
       "salas_vip": [
         {
           "programa": "Priority Pass",
@@ -712,14 +751,9 @@
         "https://www.bb.com.br/site/agronegocios/ourocard-agronegocio/elo/"
       ],
       "campos_pendentes": [
-        "adicionais_gratis",
-        "iof",
-        "pontos",
         "pontos.internacional",
         "pontos.nacional",
-        "renda_minima",
-        "spread",
-        "validade_pontos"
+        "renda_minima"
       ],
       "nota_curadoria": "O cartão possui duas versões de página: segmento 'Pra Você' (bb.com.br/site/pra-voce) e segmento 'Private' (bb.com.br/site/private), o que indica que pode ser acessível a ambos os segmentos ou que a versão Private é a principal. A anuidade de R$ 1.056,00 foi confirmada na Tabela de Tarifas PF vigente (versão 02/2026, maio/2026). A taxa de acúmulo de pontos (pts/USD) não foi localizada em nenhum PDF ou página oficial do BB para o Nanquim especificamente — menções a '2,2 pts/USD' aparecem apenas em blog.bb.com.br, que não é fonte oficial aceita por este processo. O campo cashback se refere à opção disponível no programa Benefícios BB, não a cashback direto por bandeira.",
       "procedencia": {
@@ -736,7 +770,11 @@
         "bandeira": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
         "categoria": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
         "requisito_acesso": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
-        "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/"
+        "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "iof": "planilha:cartoes-premium-comparativo.xlsx",
+        "pontos": "planilha:cartoes-premium-comparativo.xlsx"
       },
       "vigencia_ate": null,
       "analise": null,
@@ -744,7 +782,19 @@
         "pontos"
       ],
       "bandeira_ref": "elo-flex",
-      "verificado_em": "2026-07-28"
+      "verificado_em": "2026-07-28",
+      "origem_planilha": {
+        "campos": [
+          "adicionais_gratis",
+          "iof",
+          "pontos",
+          "spread",
+          "validade_pontos"
+        ],
+        "arquivo": "cartoes-premium-comparativo.xlsx",
+        "em": "2026-07-31",
+        "par_planilha": "Banco do Brasil ELO Nanquim Estilo Pontos"
+      }
     },
     {
       "slug": "bb-mastercard-black",
@@ -778,9 +828,9 @@
         "Livelo",
         "Dotz"
       ],
-      "spread": null,
+      "spread": 4.0,
       "iof": 1.1,
-      "validade_pontos": null,
+      "validade_pontos": "4 anos",
       "salas_vip": [
         {
           "programa": "Sala VIP Guarulhos",
@@ -827,7 +877,8 @@
         "cashback": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
         "transfere_para": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
         "programa_proprio": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
-        "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/"
+        "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx"
       },
       "fontes": [
         "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
@@ -835,8 +886,7 @@
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "renda_minima",
-        "spread"
+        "renda_minima"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
@@ -848,7 +898,16 @@
         "programa_proprio",
         "transfere_para"
       ],
-      "bandeira_ref": "mastercard-black"
+      "bandeira_ref": "mastercard-black",
+      "origem_planilha": {
+        "campos": [
+          "spread",
+          "validade_pontos"
+        ],
+        "arquivo": "cartoes-premium-comparativo.xlsx",
+        "em": "2026-07-31",
+        "par_planilha": "Banco do Brasil Mastercard Black Pontos"
+      }
     },
     {
       "slug": "bb-ourocard-visa-infinite",
@@ -865,7 +924,7 @@
       },
       "renda_minima": null,
       "requisito_acesso": "Cartão oferecido por convite a um seleto grupo de clientes do Banco do Brasil",
-      "adicionais_gratis": null,
+      "adicionais_gratis": 6,
       "pontos": {
         "nacional": 2,
         "internacional": 3,
@@ -881,9 +940,9 @@
         "Livelo",
         "Dotz"
       ],
-      "spread": null,
+      "spread": 4.0,
       "iof": 1.1,
-      "validade_pontos": null,
+      "validade_pontos": "4 anos",
       "salas_vip": [
         {
           "programa": "Visa Airport Companion (VAC)",
@@ -927,22 +986,32 @@
         "cashback": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
         "transfere_para": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
         "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
-        "salas_vip": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/"
+        "salas_vip": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx"
       },
       "fontes": [
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/"
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "adicionais_gratis",
-        "renda_minima",
-        "spread"
+        "renda_minima"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
         "link_solicitacao"
       ],
-      "bandeira_ref": "visa-infinite"
+      "bandeira_ref": "visa-infinite",
+      "origem_planilha": {
+        "campos": [
+          "adicionais_gratis",
+          "spread",
+          "validade_pontos"
+        ],
+        "arquivo": "cartoes-premium-comparativo.xlsx",
+        "em": "2026-07-31",
+        "par_planilha": "Banco do Brasil Visa Infinite Pontos"
+      }
     },
     {
       "slug": "inter-win",
@@ -2558,12 +2627,16 @@
       "emissor": "Bradesco",
       "bandeira": "Visa",
       "categoria": "Aeternum",
-      "anuidade": null,
+      "anuidade": 2112.0,
       "anuidade_parcelas": null,
-      "isencao": null,
+      "isencao": {
+        "tipo": "investimento",
+        "valor": 5000.0,
+        "regra": "Clientes com R$ 5 milhões investidos"
+      },
       "renda_minima": null,
       "requisito_acesso": "Cartão de acesso restrito, mediante convite, para clientes do segmento Private Bank do Bradesco.",
-      "adicionais_gratis": null,
+      "adicionais_gratis": 5,
       "pontos": {
         "nacional": 4,
         "internacional": 7,
@@ -2573,8 +2646,8 @@
       "cashback": null,
       "programa_proprio": "Livelo (Fidelidade Bradesco Cartões)",
       "transfere_para": [],
-      "spread": null,
-      "iof": null,
+      "spread": 5.3,
+      "iof": 3.5,
       "validade_pontos": "Pontos que nunca expiram",
       "salas_vip": [
         {
@@ -2605,25 +2678,37 @@
       "procedencia": {
         "requisito_acesso": "https://banco.bradesco/cartoes/aeternum/",
         "pontos": "https://banco.bradesco/cartoes/aeternum/",
-        "salas_vip": "https://banco.bradesco/cartoes/aeternum/"
+        "salas_vip": "https://banco.bradesco/cartoes/aeternum/",
+        "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
+        "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "iof": "planilha:cartoes-premium-comparativo.xlsx",
+        "isencao": "planilha:cartoes-premium-comparativo.xlsx"
       },
       "fontes": [
         "https://banco.bradesco/cartoes/aeternum/"
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "adicionais_gratis",
-        "anuidade",
         "anuidade_parcelas",
         "cashback",
-        "iof",
-        "isencao",
         "renda_minima",
-        "spread",
         "transfere_para"
       ],
       "campos_rejeitados": [],
-      "bandeira_ref": "visa-infinite"
+      "bandeira_ref": "visa-infinite",
+      "origem_planilha": {
+        "campos": [
+          "adicionais_gratis",
+          "anuidade",
+          "iof",
+          "isencao",
+          "spread"
+        ],
+        "arquivo": "cartoes-premium-comparativo.xlsx",
+        "em": "2026-07-31",
+        "par_planilha": "Bradesco Aeternum Visa Infinite"
+      }
     },
     {
       "slug": "bradesco-visa-infinite",
@@ -2973,10 +3058,14 @@
       "categoria": "Dux",
       "anuidade": 1680,
       "anuidade_parcelas": 12,
-      "isencao": null,
+      "isencao": {
+        "tipo": "gasto_mensal",
+        "valor": 50000.0,
+        "regra": "Gastos acima de R$ 50 mil/mês"
+      },
       "renda_minima": null,
       "requisito_acesso": "Cartão voltado para clientes de alta renda (segmento premium do BRB).",
-      "adicionais_gratis": null,
+      "adicionais_gratis": 4,
       "pontos": {
         "nacional": 5,
         "internacional": 7,
@@ -2994,8 +3083,8 @@
         "Smiles",
         "InMais"
       ],
-      "spread": null,
-      "iof": null,
+      "spread": 4.0,
+      "iof": 3.5,
       "validade_pontos": "Pontos não expiram",
       "salas_vip": [
         {
@@ -3052,7 +3141,11 @@
         "anuidade": "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
         "anuidade_parcelas": "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
         "cashback": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
-        "link_solicitacao": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html"
+        "link_solicitacao": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
+        "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "iof": "planilha:cartoes-premium-comparativo.xlsx",
+        "isencao": "planilha:cartoes-premium-comparativo.xlsx"
       },
       "fontes": [
         "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/",
@@ -3064,11 +3157,7 @@
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "adicionais_gratis",
-        "iof",
-        "isencao",
-        "renda_minima",
-        "spread"
+        "renda_minima"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
@@ -3077,7 +3166,18 @@
         "cashback",
         "link_solicitacao"
       ],
-      "bandeira_ref": "visa-infinite"
+      "bandeira_ref": "visa-infinite",
+      "origem_planilha": {
+        "campos": [
+          "adicionais_gratis",
+          "iof",
+          "isencao",
+          "spread"
+        ],
+        "arquivo": "cartoes-premium-comparativo.xlsx",
+        "em": "2026-07-31",
+        "par_planilha": "BRB Dux Visa Infinite"
+      }
     },
     {
       "slug": "brb-visa-infinite",
@@ -3368,7 +3468,7 @@
         "Smiles",
         "Esfera"
       ],
-      "spread": null,
+      "spread": 6.0,
       "iof": 0,
       "validade_pontos": "Não expiram enquanto o cartão estiver ativo e a conta em dia.",
       "salas_vip": [
@@ -3416,7 +3516,8 @@
         "pontos": "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
         "cashback": "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
         "transfere_para": "https://content.btgpactual.com/blog/conta-e-cartao/programa-de-fidelidade",
-        "validade_pontos": "https://banking.btgpactual.com/ajuda/programadefidelidade/btgpontos"
+        "validade_pontos": "https://banking.btgpactual.com/ajuda/programadefidelidade/btgpontos",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx"
       },
       "fontes": [
         "https://conteudo.btgpactual.com/cartao-ultrablue",
@@ -3428,8 +3529,7 @@
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "renda_minima",
-        "spread"
+        "renda_minima"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
@@ -3438,7 +3538,15 @@
         "transfere_para",
         "validade_pontos"
       ],
-      "bandeira_ref": "mastercard-black"
+      "bandeira_ref": "mastercard-black",
+      "origem_planilha": {
+        "campos": [
+          "spread"
+        ],
+        "arquivo": "cartoes-premium-comparativo.xlsx",
+        "em": "2026-07-31",
+        "par_planilha": "BTG Pactual Ultrablue Mastercard Black"
+      }
     },
     {
       "slug": "btg-mastercard-black-tap",
@@ -6130,8 +6238,8 @@
       "transfere_para": [
         "American Airlines AAdvantage"
       ],
-      "spread": null,
-      "iof": null,
+      "spread": 6.0,
+      "iof": 3.5,
       "validade_pontos": "As milhas AAdvantage® expiram em 24 meses caso não haja nenhuma movimentação (compra, resgate ou acúmulo) na conta do Programa AAdvantage® nesse período.",
       "salas_vip": [
         {
@@ -6178,7 +6286,9 @@
         "anuidade_parcelas": "https://www.santander.com.br/cartao-credito-santander/aadvantage-black",
         "transfere_para": "https://cms.santander.com.br/sites/WPS/documentos/arq-reg-aa-out4/24-10-28_161622_regulamento-cartoes-aadvantage-24-10-24.pdf",
         "requisito_acesso": "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf",
-        "link_solicitacao": "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf"
+        "link_solicitacao": "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "iof": "planilha:cartoes-premium-comparativo.xlsx"
       },
       "fontes": [
         "https://cms.santander.com.br/sites/WPS/documentos/arq-tarifas-e-pacotes-pessoa-fisica-lista3-conta-plus-select/25-12-24_140851_programa-de-bonificacao-conta-plus-e-select-3.pdf",
@@ -6188,9 +6298,7 @@
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "cashback",
-        "iof",
-        "spread"
+        "cashback"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
@@ -6200,7 +6308,16 @@
         "requisito_acesso",
         "transfere_para"
       ],
-      "bandeira_ref": "mastercard-black"
+      "bandeira_ref": "mastercard-black",
+      "origem_planilha": {
+        "campos": [
+          "iof",
+          "spread"
+        ],
+        "arquivo": "cartoes-premium-comparativo.xlsx",
+        "em": "2026-07-31",
+        "par_planilha": "Santander AAdvantage Mastercard Black"
+      }
     },
     {
       "slug": "santander-gol-smiles-visa-gold",
@@ -6566,8 +6683,8 @@
         "LATAM Pass",
         "Iberia Plus"
       ],
-      "spread": null,
-      "iof": null,
+      "spread": 6.0,
+      "iof": 3.5,
       "validade_pontos": "Não expiram",
       "salas_vip": [
         {
@@ -6597,7 +6714,9 @@
         "beneficios_banco": "https://www.santander.com.br/banco/unique-black",
         "adicionais_gratis": "https://www.santander.com.br/upgrade-cartao-unique",
         "transfere_para": "https://www.santander.com.br/blog/esfera/aplicativo-esfera",
-        "validade_pontos": "https://www.santander.com.br/blog/dia-dos-namorados"
+        "validade_pontos": "https://www.santander.com.br/blog/dia-dos-namorados",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "iof": "planilha:cartoes-premium-comparativo.xlsx"
       },
       "fontes": [
         "https://www.santander.com.br/banco/unique-black",
@@ -6607,10 +6726,8 @@
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "iof",
         "renda_minima",
-        "requisito_acesso",
-        "spread"
+        "requisito_acesso"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
@@ -6619,7 +6736,16 @@
         "transfere_para",
         "validade_pontos"
       ],
-      "bandeira_ref": "visa-infinite"
+      "bandeira_ref": "visa-infinite",
+      "origem_planilha": {
+        "campos": [
+          "iof",
+          "spread"
+        ],
+        "arquivo": "cartoes-premium-comparativo.xlsx",
+        "em": "2026-07-31",
+        "par_planilha": "Santander Unique Visa Infinite Pontos"
+      }
     },
     {
       "slug": "santander-mastercard-unlimited",
@@ -7658,7 +7784,7 @@
       "emissor": "XP",
       "bandeira": "Visa",
       "categoria": "Legacy",
-      "anuidade": null,
+      "anuidade": 4200.0,
       "anuidade_parcelas": null,
       "isencao": {
         "tipo": "patrimônio_ou_gasto",
@@ -7685,7 +7811,7 @@
       "transfere_para": [
         "Livelo"
       ],
-      "spread": null,
+      "spread": 5.5,
       "iof": "Alíquota vigente conforme legislação federal, incidente sobre transações internacionais",
       "validade_pontos": "Não expiram no programa XP enquanto o cartão estiver ativo. Após transferência para parceiro (ex. Livelo), valem as regras do parceiro.",
       "salas_vip": [
@@ -7733,7 +7859,9 @@
         "programa_proprio": "https://www.xpi.com.br/documentos/regulamento-de-beneficios/",
         "validade_pontos": "https://www.xpi.com.br/documentos/regulamento-de-beneficios/",
         "beneficios_banco": "https://www.xpi.com.br/documentos/faq-pagina-de-cartoes/",
-        "link_solicitacao": "https://www.xpi.com.br/produtos/cartao-xp-legacy/"
+        "link_solicitacao": "https://www.xpi.com.br/produtos/cartao-xp-legacy/",
+        "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx"
       },
       "fontes": [
         "https://pages.xpi.com.br/content/dam/Revenue/XP/Banco/Cartao/Campanha/Regulamento%20-%20Campanha%20Capta%C3%A7%C3%A3o%20Legacy_Set%201.pdf",
@@ -7745,10 +7873,8 @@
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
         "adicionais_gratis",
-        "anuidade",
         "anuidade_parcelas",
-        "renda_minima",
-        "spread"
+        "renda_minima"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
@@ -7763,7 +7889,16 @@
         "transfere_para",
         "validade_pontos"
       ],
-      "bandeira_ref": "visa-infinite"
+      "bandeira_ref": "visa-infinite",
+      "origem_planilha": {
+        "campos": [
+          "anuidade",
+          "spread"
+        ],
+        "arquivo": "cartoes-premium-comparativo.xlsx",
+        "em": "2026-07-31",
+        "par_planilha": "XP Legacy Visa Infinite"
+      }
     }
   ]
 }
