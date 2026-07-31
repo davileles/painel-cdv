@@ -72,6 +72,182 @@ app.use((req, res, next) => {
 // Health check / warm-up
 app.get('/ping', (req, res) => res.json({ ok: true, ts: Date.now() }));
 
+// ══════════════════════════════════════════════════════════════════════════════
+// LINKS MASCARADOS / AFILIADO — ir.clubedoviajante.com.br
+// ══════════════════════════════════════════════════════════════════════════════
+// Redireciona 302 para o destino do programa de fidelidade com os parâmetros de
+// afiliado (utm_*) anexados. O mapa vive em links.json — trocar destino/params
+// lá NÃO exige redeploy nem reeditar mensagens já enviadas.
+//
+// Formatos aceitos:
+//   https://ir.clubedoviajante.com.br/smiles          → destino padrão do slug
+//   .../smiles?o=grupo-emissao                        → registra origem do clique
+//   .../smiles?u=<deep link>                          → aplica os params de afiliado
+//                                                       em uma URL específica.
+//                                                       Só aceita URLs dos domínios
+//                                                       declarados no slug (trava
+//                                                       contra open redirect).
+//   https://cdv-proxy-production.up.railway.app/ir/smiles  (mesma coisa, sem máscara)
+//
+// Cliques ficam em buffer na memória e são gravados em cliques.json a cada 10min
+// — escrever a cada clique geraria 409 de SHA e latência no redirect.
+const LINKS_FILE     = 'links.json';
+const CLIQUES_FILE   = 'cliques.json';
+const LINKS_HOST     = 'ir.clubedoviajante.com.br';
+const LINKS_TTL_MS   = 5 * 60 * 1000;
+const CLIQUES_FLUSH_MS = 10 * 60 * 1000;
+const LINKS_FALLBACK = 'https://davileles.com/clube-do-viajante/';
+const PREVIEW_BOT_RE = /whatsapp|facebookexternalhit|telegrambot|twitterbot|slackbot|discordbot|linkedinbot|skypeuripreview|bingbot|googlebot/i;
+
+let linksCache = { data: null, ts: 0 };
+
+async function carregarLinks() {
+  if (linksCache.data && (Date.now() - linksCache.ts) < LINKS_TTL_MS) return linksCache.data;
+  const { data } = await ghGetJson(LINKS_FILE, {});
+  linksCache = { data: (data && typeof data === 'object') ? data : {}, ts: Date.now() };
+  return linksCache.data;
+}
+
+// Monta a URL final. Se urlAlvo vier preenchida (?u=), valida o domínio contra a
+// whitelist do slug antes de anexar os params — sem isso vira open redirect.
+function montarDestinoIr(cfg, urlAlvo) {
+  let base = cfg.destino;
+  if (urlAlvo) {
+    let u;
+    try { u = new URL(String(urlAlvo)); } catch (e) { return null; }
+    if (u.protocol !== 'https:' && u.protocol !== 'http:') return null;
+    const host = String(u.hostname || '').toLowerCase();
+    const permitido = (cfg.dominios || []).some(function (d) {
+      d = String(d).toLowerCase();
+      return host === d || host.endsWith('.' + d);
+    });
+    if (!permitido) return null;
+    base = u.toString();
+  }
+  let final;
+  try { final = new URL(base); } catch (e) { return null; }
+  const params = cfg.params || {};
+  for (const k of Object.keys(params)) final.searchParams.set(k, params[k]);
+  return final.toString();
+}
+
+// ── Contador de cliques (buffer em memória + flush periódico) ────────────────
+const cliquesBuffer = {};
+let cliquesDirty = false;
+
+function registrarClique(slug, origem) {
+  const b = cliquesBuffer[slug] || (cliquesBuffer[slug] = { total: 0, origens: {} });
+  b.total++;
+  const o = String(origem || 'direto').slice(0, 40).replace(/[^\w.\-]/g, '') || 'direto';
+  b.origens[o] = (b.origens[o] || 0) + 1;
+  cliquesDirty = true;
+}
+
+async function flushCliques() {
+  if (!cliquesDirty) return;
+  const pendentes = JSON.parse(JSON.stringify(cliquesBuffer));
+  for (const k of Object.keys(cliquesBuffer)) delete cliquesBuffer[k];
+  cliquesDirty = false;
+  try {
+    // SHA sempre fresco, imediatamente antes do PUT
+    const { data, sha } = await ghGetJson(CLIQUES_FILE, {});
+    const acc = (data && typeof data === 'object') ? data : {};
+    const agora = new Date().toISOString();
+    for (const slug of Object.keys(pendentes)) {
+      const d = pendentes[slug];
+      const a = acc[slug] || (acc[slug] = { total: 0, origens: {} });
+      a.total = (a.total || 0) + d.total;
+      a.origens = a.origens || {};
+      for (const o of Object.keys(d.origens)) a.origens[o] = (a.origens[o] || 0) + d.origens[o];
+      a.ultimo = agora;
+    }
+    await ghPutJson(CLIQUES_FILE, acc, sha, 'cliques: flush de redirects /ir');
+  } catch (e) {
+    console.error('[cliques flush]', e.message);
+    // devolve ao buffer para não perder contagem
+    for (const slug of Object.keys(pendentes)) {
+      const d = pendentes[slug];
+      const b = cliquesBuffer[slug] || (cliquesBuffer[slug] = { total: 0, origens: {} });
+      b.total += d.total;
+      for (const o of Object.keys(d.origens)) b.origens[o] = (b.origens[o] || 0) + d.origens[o];
+    }
+    cliquesDirty = true;
+  }
+}
+
+const cliquesTimer = setInterval(flushCliques, CLIQUES_FLUSH_MS);
+if (cliquesTimer.unref) cliquesTimer.unref();
+
+// Preview do WhatsApp/Telegram: o bot segue o 302 e mostraria a marca do programa.
+// Servimos HTML com OG do Clube do Viajante só para bots; humano continua no 302.
+function paginaPreviewIr(destino, cfg) {
+  const titulo = 'Clube do Viajante';
+  const desc = cfg.programa ? ('Acesse ' + cfg.programa + ' pelo Clube do Viajante') : 'Economize até 90% nas suas passagens';
+  const esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+  return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>' + esc(titulo) + '</title>' +
+    '<meta property="og:title" content="' + esc(titulo) + '">' +
+    '<meta property="og:description" content="' + esc(desc) + '">' +
+    '<meta property="og:type" content="website">' +
+    '<meta name="robots" content="noindex,nofollow">' +
+    '<meta http-equiv="refresh" content="0;url=' + esc(destino) + '">' +
+    '</head><body><a href="' + esc(destino) + '">Continuar</a>' +
+    '<script>location.replace(' + JSON.stringify(destino) + ');</scr' + 'ipt>' +
+    '</body></html>';
+}
+
+async function handleIr(req, res, slug) {
+  let links;
+  try { links = await carregarLinks(); } catch (e) { links = linksCache.data || {}; }
+  const cfg = links[slug];
+  if (!cfg || !cfg.destino) return res.redirect(302, LINKS_FALLBACK);
+  const destino = montarDestinoIr(cfg, req.query.u);
+  if (!destino) return res.status(400).send('Destino inválido para este link.');
+  if (PREVIEW_BOT_RE.test(req.headers['user-agent'] || '')) {
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    return res.status(200).send(paginaPreviewIr(destino, cfg));
+  }
+  registrarClique(slug, req.query.o);
+  res.set('Cache-Control', 'no-store');
+  return res.redirect(302, destino);
+}
+
+// Host mascarado: ir.clubedoviajante.com.br/<slug> → mesmo tratamento de /ir/<slug>
+app.use(async (req, res, next) => {
+  const host = String(req.hostname || '').toLowerCase();
+  if (host !== LINKS_HOST) return next();
+  if (req.path === '/' || req.path === '') return res.redirect(302, LINKS_FALLBACK);
+  const m = req.path.match(/^\/([a-zA-Z0-9\-_]{1,40})\/?$/);
+  if (!m) return next();
+  const slug = m[1].toLowerCase();
+  if (slug === 'ir') return next();
+  let links;
+  try { links = await carregarLinks(); } catch (e) { links = linksCache.data || {}; }
+  if (!links[slug]) return next();
+  return handleIr(req, res, slug);
+});
+
+app.get('/ir/:slug', (req, res) =>
+  handleIr(req, res, String(req.params.slug || '').toLowerCase()));
+
+// Consulta de métricas (acumulado gravado + buffer ainda não persistido)
+app.get('/ir-stats', async (req, res) => {
+  try {
+    const { data } = await ghGetJson(CLIQUES_FILE, {});
+    res.json({ ok: true, gravado: data || {}, buffer: cliquesBuffer });
+  } catch (e) {
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// Força a gravação imediata do buffer (útil para testar sem esperar 10min)
+app.post('/ir-stats/flush', async (req, res) => {
+  try { await flushCliques(); res.json({ ok: true }); }
+  catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
+
 // ── Gift Cards do Shopping Inter ──────────────────────────────────────────────
 // Proxy para a API pública do Inter, que bloqueia IPs de datacenter (GitHub Actions).
 // O coletar-inter.js chama este endpoint para contornar o bloqueio por ASN.
