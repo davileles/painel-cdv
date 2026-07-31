@@ -4523,8 +4523,8 @@
       "anuidade_parcelas": 12,
       "isencao": {
         "tipo": "gasto_anual",
-        "valor": 120000,
-        "regra": "Redução da anuidade conforme gastos acumulados: nos primeiros 90 dias após o desbloqueio, gastos de R$30.000 a R$59.999,99 dão 50% de desconto e a partir de R$60.000 dão 100% de isenção no primeiro período de 12 meses; para renovações seguintes, gastos acumulados em 365 dias de R$120.000 a R$239.999,99 dão 50% de desconto e a partir de R$240.000 dão isenção total. Alternativamente, a isenção também pode ser obtida por volume de investimentos no Itaú a partir de R$3.000.000,00 (avaliação mensal, não vitalícia)."
+        "valor": 240000,
+        "regra": "A redução da anuidade pode ocorrer por dois caminhos: (1) gasto acumulado no cartão – nos primeiros 90 dias após o desbloqueio, gastos até R$29.999 dão 0% de desconto, de R$30.000 a R$59.999,99 dão 50% e a partir de R$60.000 dão 100% de isenção no primeiro período de 12 meses; para a renovação seguinte, considera-se o gasto acumulado em 365 dias, sendo até R$119.999 = 0%, de R$120.000 a R$239.999,99 = 50% e a partir de R$240.000 = 100% de isenção; (2) alternativamente, o cliente pode obter isenção por volume de investimentos no Itaú Personnalité, com valor mínimo de R$3.000.000,00 aplicados. A redução não é vitalícia e é reavaliada mensalmente."
       },
       "renda_minima": null,
       "requisito_acesso": "Cartão exclusivo para clientes do segmento Itaú Personnalité",
@@ -4541,7 +4541,7 @@
         "LATAM Pass"
       ],
       "spread": null,
-      "iof": "4,38% (compras internacionais — alíquota legal vigente para pessoa física)",
+      "iof": 4.38,
       "validade_pontos": "Milhas não expiram enquanto o cartão for utilizado. Em caso de inatividade por 12 meses consecutivos ou cancelamento do cartão, as milhas passam a ter validade de 24 meses.",
       "salas_vip": [
         {
@@ -4592,27 +4592,27 @@
         }
       ],
       "link_solicitacao": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
-      "nota_curadoria": "As únicas informações confirmadas oficialmente dizem respeito às regras de isenção de anuidade, que podem ser obtidas por gasto acumulado (90 dias e 365 dias) ou por volume de investimentos mínimo de R$3 milhões no Itaú. Não há dados oficiais na fonte sobre valor da anuidade, renda mínima, pontuação, salas VIP ou benefícios adicionais, portanto esses campos ficaram em branco. Antes de recomendar o cartão, é importante buscar confirmação direta com o gerente Personnalité sobre condições comerciais vigentes.",
+      "nota_curadoria": "As únicas informações oficiais confirmadas para este cartão dizem respeito às regras de isenção de anuidade, que combinam gasto acumulado (90 dias e depois 365 dias) ou volume de investimentos mínimo de R$3 milhões no Itaú Personnalité — não há valor de anuidade padrão confirmado nas fontes. A taxa de IOF de 4,38% citada no blog do Itaú é genérica para uso internacional do cartão de crédito, não específica deste produto. Dados como renda mínima, pontuação por dólar, salas VIP e benefícios específicos não foram encontrados nas fontes fornecidas e devem ser verificados diretamente com o gerente Personnalité antes de recomendar o produto.",
       "procedencia": {
         "isencao": "https://www.itau.com.br/content/dam/itau/personalite/cartoes/pdf/condicoes-de-isencao-de-anuidade-cartoes-personnalite-vigente-abr-2021.pdf",
-        "requisito_acesso": "https://www.itau.com.br/content/dam/itau/personalite/cartoes/pdf/condicoes-de-isencao-de-anuidade-cartoes-personnalite-vigente-abr-2021.pdf",
+        "iof": "https://blog.itau.com.br/artigos/taxa-de-cambio",
         "anuidade": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
         "anuidade_parcelas": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
         "adicionais_gratis": "https://www.itau.com.br/personnalite/cartoes",
         "pontos": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
-        "iof": "https://blog.itau.com.br/artigos/taxa-de-cambio",
         "salas_vip": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
         "transfere_para": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
+        "requisito_acesso": "https://www.itau.com.br/content/dam/itau/personalite/cartoes/pdf/condicoes-de-isencao-de-anuidade-cartoes-personnalite-vigente-abr-2021.pdf",
         "validade_pontos": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
         "beneficios_banco": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
         "link_solicitacao": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite"
       },
       "fontes": [
+        "https://blog.itau.com.br/artigos/taxa-de-cambio",
         "https://www.itau.com.br/content/dam/itau/personalite/cartoes/pdf/condicoes-de-isencao-de-anuidade-cartoes-personnalite-vigente-abr-2021.pdf",
         "https://www.itau.com.br/personnalite/cartoes",
         "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
-        "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
-        "https://blog.itau.com.br/artigos/taxa-de-cambio"
+        "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/"
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
@@ -4626,10 +4626,9 @@
         "anuidade",
         "anuidade_parcelas",
         "beneficios_banco",
-        "iof",
         "link_solicitacao",
         "pontos",
-        "programa_proprio",
+        "requisito_acesso",
         "salas_vip",
         "transfere_para",
         "validade_pontos"
@@ -4639,9 +4638,9 @@
       "conflitos": [
         {
           "campo": "isencao.valor",
-          "antes": 240000,
-          "depois": 120000,
-          "variacao_pct": -50,
+          "antes": 120000,
+          "depois": 240000,
+          "variacao_pct": 100,
           "fonte_antes": "https://www.itau.com.br/content/dam/itau/personalite/cartoes/pdf/condicoes-de-isencao-de-anuidade-cartoes-personnalite-vigente-abr-2021.pdf",
           "fonte_depois": "https://www.itau.com.br/content/dam/itau/personalite/cartoes/pdf/condicoes-de-isencao-de-anuidade-cartoes-personnalite-vigente-abr-2021.pdf",
           "valor_mantido": "depois",
@@ -6392,7 +6391,7 @@
       "isencao": {
         "tipo": "outro",
         "valor": null,
-        "regra": "Programa Vantagem Progressiva: os gastos realizados pelo titular e adicionais são convertidos em descontos na anuidade, concedidos a partir do segundo ano de emissão do cartão. Condições detalhadas dependem da cooperativa."
+        "regra": "Programa Vantagem Progressiva: os gastos realizados pelo titular e adicionais são convertidos em descontos na anuidade, concedidos a partir do segundo ano de emissão do cartão. Condições detalhadas devem ser confirmadas com o gerente de relacionamento."
       },
       "renda_minima": null,
       "requisito_acesso": "Ser cooperado de uma cooperativa filiada ao Sicoob. Cartão solicitado diretamente na cooperativa.",
@@ -6401,7 +6400,7 @@
         "nacional": null,
         "internacional": 2.5,
         "unidade": "pts/USD",
-        "observacao": "Programa Coopera: US$1 gasto = 2,5 pontos para o cartão Black Merit, um dos maiores retornos do mercado Sicoob."
+        "observacao": "Programa Coopera: US$ 1 = 2,5 pontos em compras internacionais na função crédito; pontos podem ser trocados por milhas aéreas, validade de 24 meses."
       },
       "cashback": null,
       "programa_proprio": "Coopera",
@@ -6413,49 +6412,48 @@
       "validade_pontos": "24 meses",
       "salas_vip": [
         {
-          "programa": "Mastercard Airport Experiences (LoungeKey)",
-          "regra": "Acesso ilimitado a mais de 1.400 salas VIP em mais de 400 aeroportos ao redor do mundo, independentemente da companhia aérea ou tipo de bilhete."
+          "programa": "LoungeKey (Mastercard Airport Experiences)",
+          "regra": "Acesso ilimitado a mais de 1.400 salas VIP em mais de 400 aeroportos ao redor do mundo, independente da companhia aérea ou tipo de bilhete."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Mastercard Black Concierge",
-          "descricao": "Assistente pessoal 24h para planejamento de viagens, ingressos para shows e eventos, e indicação de restaurantes."
+          "descricao": "Assistente pessoal 24h para planejamento de viagens, reservas em restaurantes e ingressos para eventos."
         },
         {
-          "titulo": "Cotação do Dólar sem taxas adicionais",
-          "descricao": "Conversão de compras internacionais pelo dólar PTAX do dia, mais IOF, sem cobrança de spread."
+          "titulo": "Salas VIP ilimitadas",
+          "descricao": "Acesso ilimitado via LoungeKey a mais de 1.400 salas VIP em aeroportos, incluindo sala exclusiva Mastercard em Guarulhos."
         },
         {
-          "titulo": "Cartão Virtual",
-          "descricao": "Geração de cartão virtual de uso único ou recorrente para compras seguras na internet, via App Sicoob ou Sicoobcard."
+          "titulo": "Cotação do Dólar PTAX",
+          "descricao": "Conversão de compras internacionais pelo dólar PTAX do dia, mais IOF, sem taxas adicionais e sem cobrança de spread."
+        },
+        {
+          "titulo": "Cartão Virtual e Carteira Digital",
+          "descricao": "Geração de cartão virtual para compras online e uso via Apple Pay, Google Pay, Samsung Wallet e WhatsApp."
+        },
+        {
+          "titulo": "MasterAssist Black e Proteção de Bagagem",
+          "descricao": "Cobertura para inconveniências de viagem, proteção de bagagem e assistência em viagens internacionais."
         },
         {
           "titulo": "Parcelamento de fatura",
-          "descricao": "Parcelamento da última fatura em até 12x diretamente pelo App Sicoob, com taxas de juros mais vantajosas."
-        },
-        {
-          "titulo": "Carteira Digital",
-          "descricao": "Pagamentos por aproximação via Apple Pay, Google Pay, Samsung Wallet e WhatsApp."
-        },
-        {
-          "titulo": "Programa Coopera",
-          "descricao": "Programa de fidelidade e marketplace gratuito que permite acumular e trocar pontos por diversas opções, incluindo milhas aéreas."
+          "descricao": "Parcelamento da última fatura em até 12x pelo App Sicoob, com taxas de juros diferenciadas."
         }
       ],
       "link_solicitacao": "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf",
-      "nota_curadoria": "A anuidade de R$ 1.320,00/ano pode ser totalmente isenta pelo Programa Vantagem Progressiva, mas os critérios de desconto por gasto não são detalhados publicamente e dependem da cooperativa. O acesso ilimitado a salas VIP via LoungeKey é um diferencial forte, mas a pontuação nacional (em reais) não é informada nas fontes oficiais, apenas o acúmulo internacional de 2,5 pontos por dólar. Vale confirmar com a cooperativa local a renda mínima exigida e o custo real de cartões adicionais, que não são gratuitos (50% da anuidade do titular).",
+      "nota_curadoria": "A anuidade de R$ 1.320,00/ano pode ser parcelada em até 12x e reduzida via Programa Vantagem Progressiva, mas os descontos só valem a partir do segundo ano de cartão — não há isenção imediata. As salas VIP via LoungeKey são ilimitadas, um diferencial forte frente a concorrentes com cota limitada. Não há confirmação oficial de renda mínima, requisito de acesso ou lista de parceiros de transferência de pontos; o programa Coopera permite troca por milhas aéreas, mas sem detalhamento das companhias parceiras nas fontes disponíveis.",
       "procedencia": {
         "anuidade": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
         "anuidade_parcelas": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
         "isencao": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
+        "adicionais_gratis": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
         "pontos": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
         "spread": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
         "iof": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
         "validade_pontos": "https://www.sicoob.com.br/documents/1948589/203636812/Tarifas+Cart%C3%A3o+de+Cr%C3%A9dito+por+anuidade.pdf/51734e6f-70b2-3314-ab76-7537a1fd7dcc?t=1719403877410",
         "salas_vip": "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf",
-        "programa_proprio": "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf",
-        "adicionais_gratis": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
         "transfere_para": "https://www.sicoob.com.br/web/sicoobagrorural/mastercard-black-pf",
         "requisito_acesso": "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf"
       },
@@ -6474,7 +6472,6 @@
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
-        "adicionais_gratis",
         "link_solicitacao",
         "requisito_acesso",
         "transfere_para"
@@ -6490,55 +6487,59 @@
       "anuidade": 1790,
       "anuidade_parcelas": 12,
       "isencao": {
-        "tipo": "outro",
+        "tipo": "gasto_anual",
         "valor": null,
-        "regra": "Pelo Programa Vantagem Progressiva, os gastos realizados pelo titular e adicionais são convertidos em descontos na anuidade, podendo chegar à isenção total; os descontos são concedidos a partir do segundo ano de emissão do cartão."
+        "regra": "Pelo Programa Vantagem Progressiva, os gastos realizados pelo titular e pelos adicionais são convertidos em descontos na anuidade, podendo chegar à isenção total; os descontos são concedidos a partir do segundo ano de emissão do cartão."
       },
       "renda_minima": null,
       "requisito_acesso": null,
       "adicionais_gratis": 0,
       "pontos": {
-        "nacional": null,
+        "nacional": 4,
         "internacional": 4,
         "unidade": "pts/USD",
-        "observacao": "O cartão Zenith oferece 4 pontos Coopera por dólar gasto, uma das maiores pontuações do mercado entre os cartões do Sicoob."
+        "observacao": "Pontuação Coopera de 4 pontos por dólar gasto, uma das maiores do mercado segundo divulgação do Sicoob; compras internacionais convertidas pelo dólar PTAX do dia, sem taxa adicional."
       },
       "cashback": null,
       "programa_proprio": "Coopera",
       "transfere_para": [],
       "spread": 0,
       "iof": 3.5,
-      "validade_pontos": "24 meses a partir da data de aquisição dos pontos",
+      "validade_pontos": "24 meses a partir da data de aquisição",
       "salas_vip": [
         {
           "programa": "LoungeKey",
-          "regra": "Acesso ilimitado às salas VIP, com direito a 2 convidados gratuitos por visita; acesso excedente cobrado a USD 35 por pessoa (Mastercard), diretamente na fatura."
+          "regra": "Acesso ilimitado a salas VIP para o titular, com até 2 convidados gratuitos por visita; adicionais têm o mesmo benefício. Acesso excedente cobrado a USD 35 por pessoa (cartões Mastercard), lançado na fatura."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Concierge 24h",
-          "descricao": "Serviço de concierge disponível 24 horas para organizar viagens, comprar ingressos e fazer reservas em restaurantes."
+          "descricao": "Serviço de concierge para organizar viagens, comprar ingressos e fazer reservas em restaurantes."
         },
         {
-          "titulo": "Seguro de viagem",
-          "descricao": "Seguro contra inconveniências de viagem incluso no cartão."
+          "titulo": "Seguro contra inconveniências de viagem",
+          "descricao": "Cobertura para imprevistos durante viagens do titular."
         },
         {
           "titulo": "Experiências Priceless",
-          "descricao": "Isenção de rolha e outras experiências exclusivas do programa Priceless da Mastercard."
+          "descricao": "Isenção de rolha e acesso a experiências exclusivas do programa Priceless."
         },
         {
-          "titulo": "Compras internacionais sem spread",
-          "descricao": "Transações internacionais convertidas pelo dólar PTAX do dia, sem cobrança adicional de spread, apenas o IOF de 3,5%."
+          "titulo": "Compras internacionais sem taxa extra",
+          "descricao": "Conversão pelo dólar PTAX do dia da compra, sem cobrança de spread, além de IOF reduzido de 3,5%."
         },
         {
           "titulo": "Cartão Digital e Virtual",
-          "descricao": "Disponibilidade de cartão digital compatível com Apple Pay, Google Pay e Samsung Pay, além de cartão virtual para compras online."
+          "descricao": "Cartão compatível com Apple Pay, Google Pay e Samsung Pay, além de versão virtual para compras online."
+        },
+        {
+          "titulo": "Programa Coopera",
+          "descricao": "Marketplace e programa de fidelidade gratuito com mais de 250 mil produtos, incluindo crédito na fatura, aporte em previdência e cota capital."
         }
       ],
       "link_solicitacao": "https://www.sicoob.com.br/web/sicoob/mastercard-zenith",
-      "nota_curadoria": "A anuidade de R$ 1.790,00/ano é uma das mais altas da linha Sicoob, com isenção não automática — depende do Programa Vantagem Progressiva, que converte gastos em desconto apenas a partir do segundo ano, sem garantia de isenção total no primeiro ano. A pontuação de 4 pontos Coopera por dólar e o acesso ilimitado a salas VIP LoungeKey (com 2 convidados grátis) são os grandes diferenciais, mas visitas excedentes geram cobrança extra em dólar. Não há confirmação oficial sobre renda mínima exigida, adicionais gratuitos ou parceiros de transferência de pontos do programa Coopera.",
+      "nota_curadoria": "A anuidade de R$ 1.790 é uma das mais altas do portfólio Sicoob, mas pode ser reduzida ou zerada via Programa Vantagem Progressiva, cujos critérios exatos dependem de negociação com o gerente e só valem a partir do segundo ano — não há valor de faixa de gasto divulgado publicamente. O cartão se destaca pela pontuação de 4 pontos Coopera por dólar (uma das maiores do mercado) e acesso ilimitado a salas VIP LoungeKey com 2 convidados grátis, mas renda mínima e requisitos de elegibilidade não são informados nas fontes oficiais consultadas.",
       "procedencia": {
         "anuidade": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d",
         "anuidade_parcelas": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d",
@@ -6590,10 +6591,10 @@
       "requisito_acesso": null,
       "adicionais_gratis": null,
       "pontos": {
-        "nacional": null,
+        "nacional": 4,
         "internacional": 4,
         "unidade": "pts/USD",
-        "observacao": "4 pontos Coopera por dólar gasto, uma das maiores pontuações do mercado para cartões de alta renda."
+        "observacao": "4 pontos Coopera por dólar gasto, uma das maiores pontuações do mercado segundo o Sicoob."
       },
       "cashback": null,
       "programa_proprio": "Coopera",
@@ -6602,17 +6603,17 @@
       ],
       "spread": null,
       "iof": null,
-      "validade_pontos": "Pontos Coopera vencem 24 meses após a data de aquisição/lançamento no extrato.",
+      "validade_pontos": "24 meses a partir da data de aquisição dos pontos",
       "salas_vip": [
         {
           "programa": "LoungeKey",
-          "regra": "Acesso ilimitado a salas VIP com direito a 2 convidados gratuitos por visita (titular e adicionais); acesso excedente cobrado a USD 32 por pessoa em cartões Visa, lançado diretamente na fatura."
+          "regra": "Acesso ilimitado a salas VIP, com 2 convidados gratuitos por visita (titular e adicionais); acesso excedente cobrado em USD 32 por pessoa para cartões Visa."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Visa Concierge",
-          "descricao": "Assistente pessoal disponível 24 horas para auxiliar em reservas, compras e organização de viagens."
+          "descricao": "Assistente pessoal disponível 24 horas por dia para auxiliar em reservas, compras e solicitações diversas."
         },
         {
           "titulo": "Fast Pass",
@@ -6624,20 +6625,25 @@
         },
         {
           "titulo": "Compras internacionais sem taxa extra",
-          "descricao": "Isenção de taxa adicional em compras realizadas fora do Brasil."
+          "descricao": "Isenção de taxa extra em compras internacionais realizadas com o cartão."
         },
         {
           "titulo": "Programa Coopera",
-          "descricao": "Marketplace e programa de fidelidade gratuito que permite trocar pontos por passagens, produtos, crédito na fatura e outros benefícios."
+          "descricao": "Programa de fidelidade e marketplace gratuito do Sicoob, com acúmulo de 4 pontos por dólar e resgate em passagens, hotéis, produtos e serviços."
         }
       ],
       "link_solicitacao": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
-      "nota_curadoria": "O Sicoob Zenith foi lançado em agosto/2026 como o novo topo de linha do banco, com pontuação de 4 pts/USD e acesso ilimitado a salas VIP LoungeKey (2 convidados grátis), destacando-se frente a outros cartões premium do mercado. Nenhuma fonte oficial encontrada até o momento traz valor de anuidade, renda mínima ou requisito de acesso específicos para o Zenith — os valores de anuidade encontrados em tabelas de tarifas referem-se ao produto anterior 'Visa Infinite', não confirmado como o mesmo cartão. Recomenda-se confirmar diretamente com a cooperativa local as condições comerciais (anuidade, isenção e renda mínima) antes de indicar o produto a clientes.",
+      "nota_curadoria": "O Sicoob Visa Infinite Zenith foi anunciado como o novo topo de linha do banco para alta renda, com pontuação de 4 pontos Coopera por dólar e acesso ilimitado a salas VIP LoungeKey (2 convidados grátis por visita). As fontes oficiais não divulgam publicamente valor de anuidade, renda mínima ou requisitos de acesso para este cartão específico — apenas para o antigo Sicoobcard Visa Infinite, que é um produto distinto. Confirmar anuidade e critérios de elegibilidade diretamente com a cooperativa antes de indicar ao cliente.",
       "procedencia": {
+        "nome": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
+        "emissor": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
+        "bandeira": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
+        "categoria": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
         "pontos": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
-        "salas_vip": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
         "programa_proprio": "https://www.sicoob.com.br/web/sicoob/coopera",
         "validade_pontos": "https://www.sicoob.com.br/web/sicoob/coopera",
+        "salas_vip": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
+        "beneficios_banco": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
         "anuidade": "https://www.sicoob.com.br/documents/56793504/105115028/sicoob_credfaz_tabela_de_tarifas_pf.pdf",
         "anuidade_parcelas": "https://www.sicoob.com.br/documents/56793504/105115028/sicoob_credfaz_tabela_de_tarifas_pf.pdf",
         "isencao": "https://www.sicoob.com.br/documents/56793504/105115028/sicoob_credfaz_tabela_de_tarifas_pf.pdf",
@@ -6883,18 +6889,18 @@
       "anuidade_parcelas": null,
       "isencao": null,
       "renda_minima": null,
-      "requisito_acesso": "Ser cooperado da Unicred (pessoa física ou jurídica), atendendo aos requisitos de associação da cooperativa.",
+      "requisito_acesso": "É necessário ser cooperado da Unicred para solicitar o cartão.",
       "adicionais_gratis": 3,
       "pontos": {
         "nacional": 2.2,
         "internacional": 2.2,
         "unidade": "pts/USD",
-        "observacao": "1 dólar = 2,2 pontos; passa para 2,5 pontos por dólar quando o gasto mensal é igual ou superior a R$ 15 mil, no programa Único da Unicred."
+        "observacao": "Programa Único: 1 dólar gasto = 2,2 pontos; a pontuação sobe para 2,5 pontos por dólar quando o gasto mensal atinge R$ 15 mil ou mais."
       },
       "cashback": null,
       "programa_proprio": "Único",
       "transfere_para": [
-        "Programas de milhagens (parceiros não especificados em fonte oficial consultada)"
+        "Precaver"
       ],
       "spread": 0,
       "iof": null,
@@ -6902,51 +6908,51 @@
       "salas_vip": [
         {
           "programa": "Visa Airport Companion",
-          "regra": "Acesso ilimitado a mais de 1.250 salas VIP em aeroportos pelo mundo, válido para titular, adicionais e convidados."
+          "regra": "Acesso ilimitado a mais de 1.250 salas VIP em aeroportos ao redor do mundo para titulares, adicionais e convidados."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Visa Concierge",
-          "descricao": "Serviço exclusivo de concierge para reservas, roteiros de viagem e outros serviços sob demanda."
+          "titulo": "Concierge Visa Infinite",
+          "descricao": "Serviço exclusivo de concierge que auxilia em reservas, roteiros de viagem e outros serviços sob demanda."
         },
         {
-          "titulo": "Isenção de spread em compras internacionais",
-          "descricao": "O cartão não cobra spread cambial nas compras feitas no exterior."
-        },
-        {
-          "titulo": "Câmbio pelo dólar PTAX",
-          "descricao": "Compras internacionais são calculadas pelo dólar PTAX do dia, sem acréscimo de taxas de custos operacionais, diferencial oferecido pela Unicred."
-        },
-        {
-          "titulo": "Programa Único",
-          "descricao": "Programa de recompensas da Unicred, com pontuação em compras no crédito, resgate por milhagens, catálogo de produtos de luxo, crédito na fatura ou aporte na previdência Precaver."
+          "titulo": "Design metalizado",
+          "descricao": "Cartão com design premium metalizado, disponível nas cores preto ou pérola."
         },
         {
           "titulo": "Adicionais gratuitos",
           "descricao": "Possibilidade de emissão de até três cartões adicionais sem custo."
         },
         {
-          "titulo": "Design exclusivo",
-          "descricao": "Cartão com acabamento metalizado, disponível nas cores preto ou pérola."
+          "titulo": "Isenção de spread internacional",
+          "descricao": "Isenção de spread em compras internacionais, com conversão pelo dólar PTAX do dia, sem acréscimo de taxas operacionais."
+        },
+        {
+          "titulo": "Validade estendida de pontos",
+          "descricao": "Pontos do programa Único têm validade de até 60 meses."
+        },
+        {
+          "titulo": "Programa Único",
+          "descricao": "Pontuação em compras no crédito, com opções de resgate em catálogo de produtos de luxo, transferência para milhagem, crédito na fatura ou aporte na previdência privada Precaver."
         }
       ],
       "link_solicitacao": "https://www.unicred.com.br/associe-se",
-      "nota_curadoria": "O Ímpar Unicred Visa Infinite é voltado ao público de alta renda e só pode ser solicitado por cooperados da Unicred, o que exige associação prévia à cooperativa. As fontes não divulgam valor de anuidade, renda mínima ou regras de isenção, então esses dados devem ser confirmados diretamente com a cooperativa local antes de recomendar o produto. Os diferenciais mais fortes são a isenção de spread internacional com câmbio PTAX, acesso ilimitado a salas VIP via Visa Airport Companion e validade de pontos estendida a 60 meses.",
+      "nota_curadoria": "O acesso ao Ímpar Unicred Visa Infinite exige ser cooperado da Unicred, o que pode ser uma barreira de entrada para quem não pertence à cooperativa. As fontes oficiais não divulgam valor de anuidade nem renda mínima exigida, apenas benefícios como isenção de spread internacional, acesso ilimitado a salas VIP via Visa Airport Companion e até três adicionais gratuitos. A pontuação segue faixas por gasto em dólar, podendo variar conforme o volume mensal transacionado.",
       "procedencia": {
         "adicionais_gratis": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
-        "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
-        "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
-        "programa_proprio": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
         "spread": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
         "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
         "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
+        "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
         "transfere_para": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html"
       },
       "fontes": [
         "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
         "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
-        "https://vaidevisa.visa.com.br/site/regulamento/unicred-vai-de-visa"
+        "https://vaidevisa.visa.com.br/site/regulamento/unicred-vai-de-visa",
+        "https://www.unicred.com.br/associe-se"
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
@@ -6959,8 +6965,7 @@
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
-        "link_solicitacao",
-        "transfere_para"
+        "link_solicitacao"
       ],
       "bandeira_ref": "visa-infinite"
     },
