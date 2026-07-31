@@ -54,6 +54,7 @@ const MAX_PDF_BYTES = 2.5 * 1024 * 1024;
 const MAX_PDFS_POR_CARTAO = 4;       // regulamentos longos estouram o custo sozinhos
 const TIMEOUT_FETCH = 30000;
 const DIAS_VALIDADE_MANUAL = 45;   // captura manual mais velha que isso: tenta a rede antes
+const MIN_CHARS_SPA = 1500;        // abaixo disso, numa pagina SPA, o texto e so casca
 
 // ── Regra de procedência (espelha valida_catalogo.py) ────────────────────────
 const DOMINIOS_OFICIAIS = [
@@ -238,6 +239,17 @@ async function baixar(url) {
     const BLOQUEIO = /access denied|erro no acesso|attention required|request unsuccessful|checking your browser|forbidden|identificador de seguran|not authorized/i;
     if (texto.length < 1500 && BLOQUEIO.test(texto)) {
       throw new Error('BLOQUEADO pelo WAF do site (IP de datacenter)');
+    }
+
+    // Paginas SPA (Next.js, Nuxt, React, Angular) entregam so o esqueleto ao runner:
+    // anuidade, pontuacao e beneficios sao montados por JS e nunca chegam ao HTML.
+    // O que sobra passa dos 200 chars (menu + rodape + aviso legal), entao o piso
+    // antigo nao pegava o caso e a IA recebia casca — gerando ficha vazia em silencio.
+    // Falhar alto aqui e o comportamento certo: sinaliza que a pagina precisa de
+    // captura manual em cartoes-fontes-manuais.json.
+    const SPA = /__NEXT_DATA__|\/_next\/static\/|id="__next"|__NUXT__|data-reactroot|ng-version=|<app-root/i;
+    if (texto.length < MIN_CHARS_SPA && SPA.test(html)) {
+      throw new Error('PAGINA JS-ONLY (SPA) — conteudo montado por JS; capturar em cartoes-fontes-manuais.json');
     }
 
     if (texto.length > MAX_CHARS_POR_FONTE) texto = texto.slice(0, MAX_CHARS_POR_FONTE) + '\n[...truncado]';
@@ -469,13 +481,29 @@ function sanitizar(cartao, urlsPermitidas) {
   const permitidas = new Map(urlsPermitidas.map(u => [normalizarUrl(u), u]));
   const canonica = (u) => (u ? permitidas.get(normalizarUrl(u)) : undefined);
 
+  // Fallback de fonte unica. Quando o cartao foi extraido de UMA so fonte oficial,
+  // nao ha ambiguidade possivel: o valor so pode ter saido dali. A IA as vezes
+  // preenche o campo e esquece de registrar a procedencia (ou atribui a uma URL
+  // apenas citada no texto), e a regra estrita descartava dado correto — foi o que
+  // aconteceu com o Bradesco Visa Platinum em 07/2026, duas execucoes seguidas.
+  // Com 2+ fontes a regra continua estrita: ai a origem importa de verdade.
+  const inferidos = [];
+  const fonteUnica = (urlsPermitidas.length === 1 && ehOficial(urlsPermitidas[0]))
+    ? urlsPermitidas[0]
+    : null;
+
   for (const campo of CAMPOS_FACTUAIS) {
     const v = cartao[campo];
     const temValor = !vazio(v);
     const fonte = proc[campo];
     // Só vale se a URL for oficial E tiver sido realmente uma das fontes lidas
-    const url = canonica(fonte);
-    const fonteOk = !!fonte && ehOficial(fonte) && !!url;
+    let url = canonica(fonte);
+    let fonteOk = !!fonte && ehOficial(fonte) && !!url;
+    if (!fonteOk && temValor && fonteUnica) {
+      url = fonteUnica;
+      fonteOk = true;
+      inferidos.push(campo);
+    }
     if (fonteOk) proc[campo] = url;   // grava sempre a URL canonica
 
     if (temValor && !fonteOk) {
@@ -499,6 +527,8 @@ function sanitizar(cartao, urlsPermitidas) {
   cartao.procedencia = proc;
   cartao.campos_pendentes = [...pend].sort();
   cartao.campos_rejeitados = rejeitados.sort();
+  if (inferidos.length) cartao.campos_procedencia_inferida = inferidos.sort();
+  else delete cartao.campos_procedencia_inferida;
   return cartao;
 }
 
@@ -738,6 +768,9 @@ async function main() {
 
       if (cartao.campos_rejeitados.length) {
         console.log(`  → rejeitados por falta de procedência: ${cartao.campos_rejeitados.join(', ')}`);
+      }
+      if (cartao.campos_procedencia_inferida && cartao.campos_procedencia_inferida.length) {
+        console.log(`  → procedência inferida da fonte única: ${cartao.campos_procedencia_inferida.join(', ')}`);
       }
       if (cartao.campos_preservados && cartao.campos_preservados.length) {
         console.log(`  → preservados do catálogo (extração veio vazia): ${cartao.campos_preservados.join(', ')}`);
