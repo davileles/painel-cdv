@@ -2568,13 +2568,18 @@
       "emissor": "Bradesco",
       "bandeira": "Visa",
       "categoria": "Platinum",
-      "anuidade": null,
-      "anuidade_parcelas": null,
+      "anuidade": 624,
+      "anuidade_parcelas": 12,
       "isencao": null,
       "renda_minima": null,
       "requisito_acesso": null,
       "adicionais_gratis": null,
-      "pontos": null,
+      "pontos": {
+        "nacional": 1,
+        "internacional": 1,
+        "unidade": "pts/USD",
+        "observacao": "1 ponto Livelo a cada US$ 1 gasto, tanto no Brasil quanto no exterior (conversão para dólar aplicada nas compras nacionais)."
+      },
       "cashback": null,
       "programa_proprio": "Livelo",
       "transfere_para": [],
@@ -2585,55 +2590,52 @@
       "beneficios_banco": [
         {
           "titulo": "Seguro viagem gratuito",
-          "descricao": "Coberturas e serviços de assistência para despesas médicas, odontológicas e hospitalares, inclusive em pandemias, sem custo adicional."
+          "descricao": "Coberturas e assistência para despesas médicas, odontológicas e hospitalares, inclusive em pandemias, sem custo adicional."
         },
         {
           "titulo": "Visa Concierge",
-          "descricao": "Assistente pessoal 24 horas que auxilia na organização de viagens, indicação de eventos, restaurantes e serviços."
-        },
-        {
-          "titulo": "Visa Luxury Hotel Collection",
-          "descricao": "Benefícios exclusivos nos mais sofisticados hotéis e resorts do mundo."
-        },
-        {
-          "titulo": "Visa médico online",
-          "descricao": "Assistência de emergência médica internacional com opção de consulta médica virtual quando estiver fora do país."
-        },
-        {
-          "titulo": "50% de desconto Cinemark",
-          "descricao": "Desconto de 50% no ingresso, na pipoca e no refrigerante."
+          "descricao": "Assistente pessoal 24 horas para organização de viagens, indicação de eventos, restaurantes e serviços."
         },
         {
           "titulo": "Proteção de compra",
-          "descricao": "Cobertura em caso de roubo, furto ou perda do item comprado dentro de um prazo de 180 dias."
+          "descricao": "Cobertura em caso de roubo, furto ou perda do item comprado dentro de 180 dias."
+        },
+        {
+          "titulo": "Visa Luxury Hotel Collection",
+          "descricao": "Benefícios exclusivos em hotéis e resorts sofisticados ao redor do mundo."
+        },
+        {
+          "titulo": "Desconto Cinemark",
+          "descricao": "50% de desconto no ingresso, pipoca e refrigerante."
+        },
+        {
+          "titulo": "Desconto Teatro Bradesco",
+          "descricao": "50% de desconto na compra de até 4 ingressos por sessão para o titular do cartão."
         }
       ],
       "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum",
-      "nota_curadoria": "A anuidade informada (12x R$52,00 = R$624,00 ao ano) é referente ao ano corrente; a página avisa que o valor pode variar nos anos seguintes conforme tabela vigente, sem detalhar isenção. Não há renda mínima, requisito de acesso, salas VIP ou regras de transferência de pontos explicitados na fonte, então esses campos ficaram nulos. A pontuação Livelo (1 pt/USD) é o principal atrativo, mas não há garantia de conversão para milhas aéreas de outras companhias nesta página.",
+      "nota_curadoria": "A anuidade divulgada (R$624,00/ano) refere-se apenas ao primeiro ano ou período vigente, podendo variar conforme tabela do banco em anos seguintes - não há confirmação de isenção. Não há informação sobre renda mínima, acesso a salas VIP ou parceiros de transferência de pontos Livelo, o que limita a comparação com cartões premium concorrentes.",
+      "procedencia": {
+        "anuidade": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum",
+        "anuidade_parcelas": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum",
+        "pontos": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum"
+      },
       "fontes": [
         "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum"
       ],
       "verificado_em": "2026-07-31",
-      "procedencia": {},
       "campos_pendentes": [
         "adicionais_gratis",
-        "anuidade",
-        "anuidade_parcelas",
         "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "salas_vip",
         "spread",
         "transfere_para"
       ],
-      "campos_rejeitados": [
-        "anuidade",
-        "anuidade_parcelas",
-        "pontos"
-      ]
+      "campos_rejeitados": []
     },
     {
       "slug": "bradesco-visa-signature",
