@@ -6,7 +6,9 @@
       "utm_source": "pontos_pra_voar",
       "utm_medium": "cpa"
     },
-    "dominios": ["smiles.com.br"],
+    "dominios": [
+      "smiles.com.br"
+    ],
     "afiliado": true
   },
   "latam": {
@@ -20,7 +22,80 @@
       "utm_campaign": "br_ltm_pontos-para-voar_affiliate_tkt_aon_conv_lower",
       "utm_content": "aberta_display_20260407"
     },
-    "dominios": ["latamairlines.com", "latampass.latam.com"],
+    "dominios": [
+      "latamairlines.com",
+      "latampass.latam.com"
+    ],
+    "afiliado": true
+  },
+  "latam-esfera": {
+    "programa": "LATAM Pass",
+    "destino": "https://latampass.latam.com/pt_br/promocao/esfera-milhas-extras",
+    "params": {
+      "utm_source": "pontos-para-voar",
+      "utm_medium": "display-mkt",
+      "utm_campaign": "br_ffp-bk-061_pontos-para-voar_display-mkt_ffp_esfera-milhas-extras_trafego_middle_site",
+      "utm_content": "aberta_banner"
+    },
+    "dominios": [
+      "latampass.latam.com"
+    ],
+    "afiliado": true
+  },
+  "latam-livelo": {
+    "programa": "LATAM Pass",
+    "destino": "https://latampass.latam.com/pt_br/promocao/livelo-milhas-extras",
+    "params": {
+      "utm_source": "pontos-para-voar",
+      "utm_medium": "display-mkt",
+      "utm_campaign": "br_ffp-bk-089_pontos-para-voar_display-mkt_ffp_promo-milhasextras-livelo_trafego_middle_site",
+      "utm_content": "aberta_banner"
+    },
+    "dominios": [
+      "latampass.latam.com"
+    ],
+    "afiliado": true
+  },
+  "latam-itau": {
+    "programa": "LATAM Pass",
+    "destino": "https://latampass.latam.com/pt_br/promocao/itau-milhas-extras",
+    "params": {
+      "utm_source": "pontos-para-voar",
+      "utm_medium": "display-mkt",
+      "utm_campaign": "br_ffp-it-024_pontos-para-voar_display-mkt_ffp_promo-milhasextras-itau_trafego_middle_site",
+      "utm_content": "aberta_banner"
+    },
+    "dominios": [
+      "latampass.latam.com"
+    ],
+    "afiliado": true
+  },
+  "latam-bancos": {
+    "programa": "LATAM Pass",
+    "destino": "https://latampass.latam.com/pt_br/promocao/bancos-milhas-extras",
+    "params": {
+      "utm_source": "pontos-para-voar",
+      "utm_medium": "display-mkt",
+      "utm_campaign": "br_ffp-bk-180_pontos-para-voar_display-mkt_ffp_promo-milhasextras-inst_trafego_middle_site",
+      "utm_content": "aberta_banner"
+    },
+    "dominios": [
+      "latampass.latam.com"
+    ],
+    "afiliado": true
+  },
+  "latam-compra": {
+    "programa": "LATAM Pass",
+    "destino": "https://latampass.com/facilidades/compra-milhas/lp",
+    "params": {
+      "utm_source": "pontos-para-voar",
+      "utm_medium": "display-perf",
+      "utm_campaign": "br_ffp-ds-185_pontos-para-voar_display-perf_ffp_promo-milhas_conv_lower_site",
+      "utm_content": "aberta_banner"
+    },
+    "dominios": [
+      "latampass.com"
+    ],
     "afiliado": true
   },
   "azul": {
@@ -33,77 +108,100 @@
       "utm_campaign": "brv_azf_ppv_conteudo_uf_aon-marca_insti",
       "utm_term": "aon-marca_pontospravoar"
     },
-    "dominios": ["voeazul.com.br"],
+    "dominios": [
+      "voeazul.com.br"
+    ],
     "afiliado": true
   },
   "azul-mundo": {
     "programa": "Azul pelo Mundo",
     "destino": "https://azulpelomundo.voeazul.com.br",
     "params": {},
-    "dominios": ["voeazul.com.br"],
+    "dominios": [
+      "voeazul.com.br"
+    ],
     "afiliado": false
   },
   "iberia": {
     "programa": "Iberia Plus",
     "destino": "https://www.iberia.com/",
     "params": {},
-    "dominios": ["iberia.com"],
+    "dominios": [
+      "iberia.com"
+    ],
     "afiliado": false
   },
   "qatar": {
     "programa": "Privilege Club",
     "destino": "https://www.qatarairways.com/",
     "params": {},
-    "dominios": ["qatarairways.com"],
+    "dominios": [
+      "qatarairways.com"
+    ],
     "afiliado": false
   },
   "british": {
     "programa": "Executive Club",
     "destino": "https://www.britishairways.com/",
     "params": {},
-    "dominios": ["britishairways.com"],
+    "dominios": [
+      "britishairways.com"
+    ],
     "afiliado": false
   },
   "tap": {
     "programa": "TAP",
     "destino": "https://www.flytap.com/",
     "params": {},
-    "dominios": ["flytap.com"],
+    "dominios": [
+      "flytap.com"
+    ],
     "afiliado": false
   },
   "aadvantage": {
     "programa": "AAdvantage",
     "destino": "https://www.aa.com.br/",
     "params": {},
-    "dominios": ["aa.com.br", "aa.com"],
+    "dominios": [
+      "aa.com.br",
+      "aa.com"
+    ],
     "afiliado": false
   },
   "suma": {
     "programa": "SUMA",
     "destino": "https://www.aireuropa.com/en/flights/home",
     "params": {},
-    "dominios": ["aireuropa.com"],
+    "dominios": [
+      "aireuropa.com"
+    ],
     "afiliado": false
   },
   "virgin": {
     "programa": "Flying Club",
     "destino": "https://www.virginatlantic.com/",
     "params": {},
-    "dominios": ["virginatlantic.com"],
+    "dominios": [
+      "virginatlantic.com"
+    ],
     "afiliado": false
   },
   "finnair": {
     "programa": "Finnair Plus",
     "destino": "https://www.finnair.com/br/gb/finnair-plus",
     "params": {},
-    "dominios": ["finnair.com"],
+    "dominios": [
+      "finnair.com"
+    ],
     "afiliado": false
   },
   "aeroplan": {
     "programa": "Aeroplan",
     "destino": "https://www.aircanada.com/home/ca/en/aco/flights",
     "params": {},
-    "dominios": ["aircanada.com"],
+    "dominios": [
+      "aircanada.com"
+    ],
     "afiliado": false
   }
 }
