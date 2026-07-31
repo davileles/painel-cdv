@@ -15,6 +15,7 @@
     --azul:#0ea5e9;--azul-dim:rgba(14,165,233,0.14);
     --latam:#dc2626;--latam-dim:rgba(220,38,38,0.14);
     --inter:#00a859;--inter-dim:rgba(0,168,89,0.14);
+    --meliuz:#ff3859;--meliuz-dim:rgba(255,56,89,0.14);
     --green:#34d399;--dollar:#60a5fa;--dollar-dim:rgba(96,165,250,0.12);
     --red:#f87171;--accent:#ff585e;--accent2:#e04449;--blue:#126eff;
     --cdv-navy:#262e42;--cdv-coral:#ff585e;
@@ -29,6 +30,7 @@
     --red:#dc2626;--accent:#ff585e;--accent2:#e04449;--blue:#126eff;
     --cdv-navy:#2a3246;--cdv-coral:#ff585e;
     --inter:#008c49;--inter-dim:rgba(0,140,73,0.10);
+    --meliuz:#e01f40;--meliuz-dim:rgba(224,31,64,0.10);
     --livelo-dim:rgba(223,9,121,0.10);--esfera-dim:rgba(232,55,27,0.10);
     --smiles-dim:rgba(249,115,22,0.10);--azul-dim:rgba(14,165,233,0.10);
     --latam-dim:rgba(220,38,38,0.10);
@@ -91,6 +93,7 @@
   .card.winner-azul::before{background:var(--azul)}
   .card.winner-latam::before{background:var(--latam)}
   .card.winner-inter::before{background:var(--inter)}
+  .card.winner-meliuz::before{background:var(--meliuz)}
   .card.winner-both::before{background:linear-gradient(90deg,var(--cdv-coral),#f97316)}
   .card.winner-livelo:hover{border-color:var(--livelo)}
   .card.winner-esfera:hover{border-color:var(--esfera)}
@@ -98,6 +101,7 @@
   .card.winner-azul:hover{border-color:var(--azul)}
   .card.winner-latam:hover{border-color:var(--latam)}
   .card.winner-inter:hover{border-color:var(--inter)}
+  .card.winner-meliuz:hover{border-color:var(--meliuz)}
   .card.winner-both:hover{border-color:var(--cdv-coral)}
   .card.is-dollar:hover{border-color:var(--dollar)}
 
@@ -129,6 +133,7 @@
   .pbdg-azul{background:var(--azul-dim);color:var(--azul);border:1px solid rgba(14,165,233,.3)}
   .pbdg-latam{background:var(--latam-dim);color:var(--latam);border:1px solid rgba(220,38,38,.3)}
   .pbdg-inter{background:var(--inter-dim);color:var(--inter);border:1px solid rgba(0,168,89,.3)}
+  .pbdg-meliuz{background:var(--meliuz-dim);color:var(--meliuz);border:1px solid rgba(255,56,89,.3)}
 
   .tag-dollar{background:var(--dollar-dim);border:1px solid rgba(96,165,250,.2);border-radius:5px;padding:2px 7px;font-size:10px;color:var(--dollar);font-weight:600;width:fit-content}
   .card-foot{margin-top:auto;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
@@ -3424,8 +3429,17 @@ const PROGRAMS = [
   { id:'latam',   name:'LATAM Pass',  color:'#dc2626', dim:'rgba(220,38,38,0.15)',
     url:'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-latam-pass' },
   { id:'inter',   name:'Inter',        color:'#00a859', dim:'rgba(0,168,89,0.15)',
-    url:'https://shopping.inter.co/gift-card', cashback:true },
+    url:'https://shopping.inter.co/gift-card', cashback:true,
+    fallbackMsg:'↗ Acesse o app do Banco Inter' },
+  { id:'meliuz',  name:'Méliuz',       color:'#ff3859', dim:'rgba(255,56,89,0.15)',
+    url:'https://www.meliuz.com.br/desconto', cashback:true },
 ];
+
+// Programas de cashback (%) — nunca competem com pts/R$ pela "melhor opção".
+// Tudo que antes checava pid==='inter' passa por aqui, para que adicionar um
+// novo programa de cashback exija apenas a flag cashback:true acima.
+const CASHBACK_IDS = new Set(PROGRAMS.filter(p=>p.cashback).map(p=>p.id));
+const isCashback = pid => CASHBACK_IDS.has(pid);
 
 const CAT_RULES=[
   [/seguro.*(viagem|travel|vida|residencial|celular|auto|moto|odonto)/i,'Seguros'],
@@ -3764,9 +3778,9 @@ function mediaHistoricaDiaria(partnerKey, progId){
 function isAboveAverage(p){
   const key=p.name.toLowerCase().trim();
   // Verifica programa a programa: se qualquer programa está acima da sua própria média histórica
-  // Inter (cashback %) é excluído — essa análise é só para ofertas de pontos
+  // Programas de cashback (%) são excluídos — a análise é só para ofertas de pontos
   for(const[pid,data] of Object.entries(p.programs)){
-    if(pid==='inter') continue;
+    if(isCashback(pid)) continue;
     const media=mediaHistoricaDiaria(key, pid);
     if(media===null) continue;
     if(data.pts >= media*1.2) return true; // 20% acima da média diária do programa
@@ -3919,19 +3933,19 @@ function injetarProgramasCashback(){
         // Adiciona o programa cashback no parceiro já existente
         existing.programs[prog.id] = { pts, dollar:false, url: dados.links?.[prog.id]||'' };
         // Recalcula bestPts/bestProg considerando SÓ programas de pontos —
-        // cashback do Inter (%) nunca compete com pts/R$ pela "melhor opção"
+        // cashback (%) nunca compete com pts/R$ pela "melhor opção"
         let bestE=0, bestP=null;
         for(const [pid2,pd2] of Object.entries(existing.programs)){
-          if(pid2==='inter') continue;
+          if(isCashback(pid2)) continue;
           const eq=(pd2.pts||0)*(EQUIV[pid2]||1);
           if(eq>bestE){bestE=eq;bestP=pid2;existing.bestPts=pd2.pts;}
         }
         if(bestP){
           existing.bestProg=bestP;
-        } else if(existing.programs.inter){
-          // Só tem Inter, sem programa de pontos — nada pra comparar, mantém Inter
-          existing.bestProg='inter';
-          existing.bestPts=existing.programs.inter.pts;
+        } else if(existing.programs[prog.id]){
+          // Só tem cashback, sem programa de pontos — nada pra comparar, mantém o cashback
+          existing.bestProg=prog.id;
+          existing.bestPts=existing.programs[prog.id].pts;
         }
       } else {
         // Cria novo parceiro só com o programa cashback
@@ -4013,13 +4027,20 @@ function pool(){
       if(eq>bestAerialEquiv){bestAerialEquiv=eq;bestAerialPts=activeMap[pid].pts;bestAerialProg=pid;}
     }
 
-    // Se filtro Inter está ativo (sozinho ou com outros), Inter tem prioridade de exibição
-    if(activeProgs!==null && activeProgs.has('inter') && activeMap['inter']){
-      return {...p,bestPts:activeMap['inter'].pts,bestProg:'inter'};
+    // Se um filtro de cashback está ativo (sozinho ou com outros), ele tem
+    // prioridade de exibição no card
+    if(activeProgs!==null){
+      for(const cid of CASHBACK_IDS){
+        if(activeProgs.has(cid) && activeMap[cid]){
+          return {...p,bestPts:activeMap[cid].pts,bestProg:cid};
+        }
+      }
     }
-    // Parceiro só tem Inter (sem nenhum programa de milhas)
-    if(!bestBaseProg && !bestAerialProg && activeMap['inter']){
-      return {...p,bestPts:activeMap['inter'].pts,bestProg:'inter'};
+    // Parceiro só tem cashback (sem nenhum programa de milhas)
+    if(!bestBaseProg && !bestAerialProg){
+      for(const cid of CASHBACK_IDS){
+        if(activeMap[cid]) return {...p,bestPts:activeMap[cid].pts,bestProg:cid};
+      }
     }
     if(bestAerialProg&&bestAerialEquiv>bestBaseEquiv) return {...p,bestPts:bestAerialPts,bestProg:bestAerialProg};
     if(bestBaseProg) return {...p,bestPts:bestBasePts,bestProg:bestBaseProg};
@@ -4060,14 +4081,14 @@ function render(){
   if(!list.length){document.getElementById('grid').innerHTML='<div class="status-box" style="color:var(--muted)">Nenhum parceiro encontrado.</div>';return;}
 
   const lbl=p=>{
-    if(p.bestProg==='inter') return '%';
+    if(isCashback(p.bestProg)) return '%';
     const bp=p.programs[p.bestProg==='both'?Object.keys(p.programs)[0]:p.bestProg]||{};
     return (bp.per>1)?`R$${bp.per}`:bp.dollar?'U$':'R$';
   };
 
   const progBadges=p=>Object.entries(p.programs).map(([pid,d])=>{
     const pr=PROGRAMS.find(x=>x.id===pid);
-    const unidade=pid==='inter'?'%':'pts';
+    const unidade=isCashback(pid)?'%':'pts';
     return `<span class="pbdg pbdg-${pid}">${pr.name} ${d.pts}${unidade}</span>`;
   }).join('');
 
@@ -4080,7 +4101,7 @@ function render(){
       ${p.ate?'<div class="pts-ate">até</div>':''}
       <div class="pts-row">
         <span class="pts-val">${p.bestPts}</span>
-        <span class="pts-lbl">${p.bestProg==='inter'?'':'pts/'}${lbl(p)}</span>
+        <span class="pts-lbl">${isCashback(p.bestProg)?'':'pts/'}${lbl(p)}</span>
       </div>
       <div class="prog-badges">${progBadges(p)}</div>
       ${p.dollar?'<span class="tag-dollar">em U$ turismo</span>':''}
@@ -4099,30 +4120,31 @@ const directUrlCache={};
 const PROG_NAME_MAP={azul:'tudo azul','latam':'latam pass',livelo:'livelo',esfera:'esfera',smiles:'smiles'};
 
 function resolveLink(pid, links){
-  if(pid==='inter') return links.inter||'';
+  if(isCashback(pid)) return links[pid]||'';
   const key=PROG_NAME_MAP[pid]||pid;
   return links[key]||links[pid]||'';
 }
 
 function renderModalRows(p, links={}){
   // Calcula o melhor equiv real SÓ entre programas de pontos —
-  // cashback do Inter (%) nunca compete com pts/R$ pela "melhor opção"
-  const programasPontos = Object.entries(p.programs).filter(([pid])=>pid!=='inter');
+  // cashback (%) nunca compete com pts/R$ pela "melhor opção"
+  const programasPontos = Object.entries(p.programs).filter(([pid])=>!isCashback(pid));
   const bestEquivReal = programasPontos.length
     ? Math.max(...programasPontos.map(([pid,d])=>d.pts*(EQUIV[pid]||1)))
     : -1;
   const padrao = calcularPadraoAltas(p);
 
   return Object.entries(p.programs).sort((a,b)=>{
-    // Inter sempre por último, depois de todos os parceiros de pontos
-    if(a[0]==='inter') return 1;
-    if(b[0]==='inter') return -1;
+    // Cashback sempre por último, depois de todos os programas de pontos
+    const ca=isCashback(a[0]), cb=isCashback(b[0]);
+    if(ca&&!cb) return 1;
+    if(cb&&!ca) return -1;
     return b[1].pts-a[1].pts;
   }).map(([pid,data])=>{
     const prog=PROGRAMS.find(x=>x.id===pid);
     const equiv=data.pts*(EQUIV[pid]||1);
-    const isBest=pid!=='inter' && Math.abs(equiv-bestEquivReal)<0.01;
-    const lbl=pid==='inter'?'%':(data.per>1)?`R$${data.per}`:data.dollar?'U$':'R$';
+    const isBest=!isCashback(pid) && Math.abs(equiv-bestEquivReal)<0.01;
+    const lbl=isCashback(pid)?'%':(data.per>1)?`R$${data.per}`:data.dollar?'U$':'R$';
     const destUrl=resolveLink(pid,links);
     const linksLoaded=Object.keys(links).length>0;
     const loading=!linksLoaded;
@@ -4143,14 +4165,14 @@ function renderModalRows(p, links={}){
         <div>
           <div class="modal-prog-name">${prog.name}</div>
           ${isBest?'<div class="best-badge">✓ Melhor opção</div>':''}
-          <div style="font-size:10px;color:var(--muted);margin-top:2px">${loading?'⟳ carregando link…':hasLink?'↗ Ir para o parceiro':pid==='inter'?'↗ Acesse o app do Banco Inter':'— sem link disponível'}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px">${loading?'⟳ carregando link…':hasLink?'↗ Ir para o parceiro':(prog.fallbackMsg||'— sem link disponível')}</div>
           ${padraoHtml}
         </div>
       </div>
       <div style="text-align:right">
         ${data.ate?'<div style="font-size:9px;color:var(--muted);margin-bottom:0">até</div>':''}
         <div class="modal-pts" style="color:${prog.color}">${data.pts}</div>
-        <div class="modal-pts-lbl">${pid==='inter'?'':'pts/'}${lbl}</div>
+        <div class="modal-pts-lbl">${isCashback(pid)?'':'pts/'}${lbl}</div>
       </div>
     </a>`;
   }).join('');
