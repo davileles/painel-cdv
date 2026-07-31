@@ -2575,8 +2575,8 @@
       "requisito_acesso": null,
       "adicionais_gratis": null,
       "pontos": {
-        "nacional": 1.0,
-        "internacional": 1.0,
+        "nacional": 1,
+        "internacional": 1,
         "unidade": "pts/USD",
         "observacao": "1 ponto Livelo a cada US$ 1 gasto no Brasil e no exterior."
       },
@@ -2590,31 +2590,31 @@
       "beneficios_banco": [
         {
           "titulo": "Seguro viagem gratuito",
-          "descricao": "Coberturas e serviços de assistência para despesas médicas, odontológicas e hospitalares, inclusive em pandemias, sem custo adicional."
+          "descricao": "Coberturas e serviços de assistência para despesas médicas, odontológicas, hospitalares, inclusive em pandemias, sem qualquer custo."
         },
         {
           "titulo": "Visa Concierge",
           "descricao": "Assistente pessoal 24 horas que auxilia na organização de viagens, indicação de eventos, restaurantes e serviços."
         },
         {
+          "titulo": "Visa médico online",
+          "descricao": "Assistência do seguro de emergência médica internacional, com opção de consulta médica virtual quando estiver fora do país."
+        },
+        {
           "titulo": "Visa Luxury Hotel Collection",
           "descricao": "Benefícios exclusivos nos mais sofisticados hotéis e resorts do mundo."
         },
         {
-          "titulo": "Visa médico online",
-          "descricao": "Assistência de emergência médica internacional com opção de consulta médica virtual quando estiver fora do país."
-        },
-        {
-          "titulo": "50% de desconto Cinemark",
-          "descricao": "Desconto de 50% no ingresso, na pipoca e no refrigerante."
-        },
-        {
           "titulo": "Proteção de compra",
-          "descricao": "Cobertura em caso de roubo, furto ou perda do item comprado dentro de um prazo de 180 dias."
+          "descricao": "Cobertura em caso de roubo, furto e perda do item comprado dentro de um prazo de 180 dias."
+        },
+        {
+          "titulo": "Desconto Cinemark",
+          "descricao": "50% de desconto no ingresso, na pipoca e no refrigerante."
         }
       ],
       "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum",
-      "nota_curadoria": "Anuidade de R$ 624,00 ao ano, parcelada em 12x de R$ 52,00, sem regra de isencao divulgada na pagina oficial — o valor pode variar nos anos seguintes conforme tabela vigente. Pontua 1 ponto Livelo por dolar gasto, no Brasil e no exterior. Nao ha acesso a salas VIP: o unico beneficio de viagem relevante e o seguro viagem gratuito, alem do Visa Concierge e da Visa Luxury Hotel Collection. Renda minima, spread, IOF e regras de transferencia nao sao informados na fonte oficial.",
+      "nota_curadoria": "A anuidade é cobrada em 12 parcelas de R$ 52,00, totalizando R$ 624,00 ao ano, mas a fonte não especifica regras de isenção nem renda mínima exigida. Não há confirmação oficial sobre acesso a salas VIP, cashback ou transferência de pontos para milhas aéreas — apenas resgates via Livelo em produtos, viagens e dinheiro. A pontuação de 1 ponto Livelo por dólar gasto é competitiva para um cartão Platinum, mas o assessor deve confirmar detalhes de elegibilidade diretamente com o Bradesco antes de recomendar.",
       "fontes": [
         "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum"
       ],
@@ -2635,7 +2635,12 @@
         "spread",
         "transfere_para"
       ],
-      "campos_rejeitados": []
+      "campos_rejeitados": [],
+      "campos_procedencia_inferida": [
+        "anuidade",
+        "anuidade_parcelas",
+        "pontos"
+      ]
     },
     {
       "slug": "bradesco-visa-signature",
