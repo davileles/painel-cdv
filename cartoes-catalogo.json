@@ -14,7 +14,7 @@
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização.",
     "coletor": "coletar-cartoes.js",
     "modelo_coleta": "claude-sonnet-5",
-    "conflitos_abertos": 4
+    "conflitos_abertos": 3
   },
   "cartoes": [
     {
@@ -28,7 +28,7 @@
       "isencao": {
         "tipo": "gasto_mensal",
         "valor": 3000,
-        "regra": "Ao atingir R$ 3.000,00 em compras no crédito no mês (não contam pagamentos de contas, parcelas de anuidade, proteção ouro, saques e encargos), a parcela mensal da anuidade do cartão titular e dos adicionais é zerada automaticamente."
+        "regra": "Ao atingir R$ 3 mil em compras no crédito no mês, a parcela mensal da anuidade do cartão (e dos adicionais) é zerada automaticamente. Não entram no cálculo pagamentos de contas, parcelas de anuidade, proteção ouro, saques no crédito, encargos, taxas e tarifas."
       },
       "renda_minima": null,
       "requisito_acesso": null,
@@ -37,7 +37,7 @@
         "nacional": 1.8,
         "internacional": 1.8,
         "unidade": "pts/USD",
-        "observacao": "1,8 milha por dólar gasto para clientes Smiles; 3 milhas por dólar para clientes Clube Smiles ou categoria Diamante. Na renovação: 2.000 milhas (Smiles) ou 3.000 milhas (Clube Smiles/Diamante), condicionadas ao pagamento da anuidade de renovação."
+        "observacao": "Cliente Smiles ganha 1,8 milha por dólar gasto; clientes Clube Smiles ou categoria Diamante ganham 3 milhas por dólar. Na renovação, são creditadas 2.000 milhas (Smiles) ou 3.000 milhas (Clube Smiles/Diamante), condicionadas ao pagamento da anuidade de renovação. Há também bônus de aquisição de 5.000 a 7.500 milhas, creditado em 4 parcelas."
       },
       "cashback": null,
       "programa_proprio": "Smiles",
@@ -48,24 +48,24 @@
       "salas_vip": [],
       "beneficios_banco": [
         {
-          "titulo": "Milhas de aquisição do cartão",
-          "descricao": "Bônus de 5.000 milhas (clientes Smiles) ou 7.500 milhas (Clube Smiles/Diamante) na aquisição do cartão, creditadas em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades. Exclusivo para o primeiro titular."
+          "titulo": "Crédito automático de milhas",
+          "descricao": "A cada fatura paga, o valor equivalente em dólar é convertido em milhas e transferido automaticamente para a conta Smiles, sem cobrança de tarifa."
         },
         {
-          "titulo": "Crédito automático de milhas",
-          "descricao": "A cada pagamento de fatura, o valor equivalente em dólar é convertido automaticamente em milhas e transferido para a conta Smiles, sem cobrança de tarifa."
+          "titulo": "Bônus de aquisição",
+          "descricao": "Na contratação do cartão pelo primeiro titular, são creditadas 5.000 (cliente Smiles) ou 7.500 milhas (Clube Smiles/Diamante), em 4 parcelas, condicionadas ao pagamento das 4 primeiras anuidades."
         },
         {
           "titulo": "Cartões adicionais",
-          "descricao": "É possível solicitar até quatro cartões adicionais, cada um com anuidade de 50% do valor do titular; as milhas geradas pelas faturas pagas dos adicionais são creditadas ao titular."
+          "descricao": "É possível solicitar até 4 cartões adicionais, cada um com custo de 50% da anuidade do titular; as milhas geradas pelas faturas dos adicionais são transferidas automaticamente para o cartão do titular."
         },
         {
-          "titulo": "Programa Usou, Zerou",
-          "descricao": "Compras no crédito que somem R$ 3.000,00 no mês zeram automaticamente a parcela da anuidade mensal do titular e dos adicionais."
+          "titulo": "Isenção por uso (Usou, zerou)",
+          "descricao": "Compras no crédito somando R$ 3 mil no mês zeram a parcela mensal da anuidade do titular e dos adicionais."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-      "nota_curadoria": "A anuidade de R$ 428,00 pode ser zerada mensalmente com R$ 3 mil em compras no crédito, mas atenção: pagamentos de contas, parcelas de anuidade e saques não contam para essa meta. O cartão pontua em milhas por dólar gasto na função Smiles (1,8 ou 3 milhas, dependendo da categoria do cliente na Smiles), não havendo benefício de salas VIP para esta versão Gold — esse benefício é exclusivo do Smiles Visa Infinite. IOF padrão de 1,1% se aplica; não há informação oficial sobre renda mínima exigida.",
+      "nota_curadoria": "A anuidade do BB Smiles Visa Gold é parcelada em 12x de R$ 35,67 (R$ 428,00/ano), mas pode ser zerada mensalmente com R$ 3 mil em compras no crédito. O benefício de acesso a salas VIP via VAC é exclusivo do Smiles Visa Infinite, não estando disponível na versão Gold. Não há informação oficial sobre renda mínima exigida nem sobre transferência das milhas Smiles para outros programas, já que o cartão credita diretamente na conta Smiles do titular.",
       "procedencia": {
         "anuidade": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "anuidade_parcelas": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
@@ -79,7 +79,7 @@
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
-      "verificado_em": "2026-07-30",
+      "verificado_em": "2026-07-31",
       "campos_pendentes": [
         "cashback",
         "renda_minima",
@@ -90,6 +90,7 @@
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
+        "link_solicitacao",
         "validade_pontos"
       ]
     },
@@ -104,7 +105,7 @@
       "isencao": {
         "tipo": "gasto_mensal",
         "valor": 15000,
-        "regra": "Programa 'Usou, zerou': ao atingir R$ 15 mil em compras no crédito no mês, a parcela mensal da anuidade do titular e dos adicionais é zerada automaticamente. Não contam pagamentos de contas, parcelas de anuidade, saques, encargos, taxas e tarifas."
+        "regra": "Programa 'Usou, zerou': ao atingir R$ 15 mil em compras no crédito no mês, a parcela mensal da anuidade do cartão titular e dos adicionais é zerada automaticamente. Não entram no cálculo pagamentos de contas, parcelas de anuidade, proteção ouro, saques no crédito, encargos, taxas e tarifas."
       },
       "renda_minima": null,
       "requisito_acesso": "Correntista ou não-correntista do Banco do Brasil, sujeito a análise de crédito",
@@ -113,7 +114,7 @@
         "nacional": null,
         "internacional": null,
         "unidade": "pts/USD",
-        "observacao": "Acúmulo em milhas Smiles por dólar gasto: 3 milhas para clientes Smiles ou 5,5 milhas para Clube Smiles/categoria Diamante. Milhas de renovação: 5.000 (Smiles) ou 7.000 (Clube Smiles/Diamante), condicionadas ao pagamento da anuidade de renovação. Milhas de aquisição (só para o primeiro titular): 15.000 (Smiles) ou 20.000 (Clube Smiles/Diamante), creditadas em 4 parcelas."
+        "observacao": "Milhas Smiles creditadas automaticamente por dólar do valor pago na fatura: clientes Smiles ganham 3 milhas/USD e clientes Clube Smiles ou categoria Diamante ganham 5,5 milhas/USD. Há ainda milhas de renovação anual (5.000 para clientes Smiles ou 7.000 para Clube Smiles/Diamante) e milhas de aquisição do cartão (15.000 ou 20.000, conforme categoria), creditadas em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades."
       },
       "cashback": null,
       "programa_proprio": "Smiles",
@@ -126,43 +127,41 @@
       "salas_vip": [
         {
           "programa": "GOL Premium Lounges",
-          "regra": "Acesso ilimitado para o titular do cartão."
+          "regra": "Acesso ilimitado do titular do cartão GOL Smiles Visa Infinite às salas GOL Premium Lounges."
         },
         {
           "programa": "VAC (Visa Airport Companion)",
-          "regra": "4 visitas anuais gratuitas a salas VIP em aeroportos ao redor do mundo, mediante apresentação de bilhete de viagem GOL ou afiliadas."
+          "regra": "4 visitas anuais gratuitas a salas VIP em aeroportos do mundo, válidas para clientes que adquirirem o bilhete de viagem pela GOL ou afiliadas, mediante apresentação do bilhete."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Primeira bagagem gratuita",
-          "descricao": "Mediante apresentação do cartão, válida para todos os voos GOL."
-        },
-        {
-          "titulo": "IOF diferenciado",
-          "descricao": "Com Ourocard, o BB paga a diferença de IOF do cartão GOL Smiles Visa Infinite."
+          "titulo": "Crédito automático de milhas",
+          "descricao": "Sempre que a fatura é paga, o valor equivalente em dólar é convertido em milhas Smiles e transferido automaticamente para a conta Smiles do titular, sem tarifa."
         },
         {
           "titulo": "Milhas de aquisição do cartão",
-          "descricao": "Bônus de até 20.000 milhas (Clube Smiles/Diamante) ou 15.000 milhas (Smiles) na contratação, creditadas em 4 parcelas, condicionadas ao pagamento das 4 primeiras anuidades."
+          "descricao": "20.000 milhas (Clube Smiles/Diamante) ou 15.000 milhas (Smiles) na aquisição do cartão Infinite pelo primeiro titular, creditadas em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades."
         },
         {
-          "titulo": "Usou, zerou",
-          "descricao": "Gastando R$ 15 mil no mês no crédito, a parcela da anuidade do titular e adicionais é zerada automaticamente."
+          "titulo": "Programa Usou, zerou",
+          "descricao": "Zera a parcela mensal da anuidade do titular e dos adicionais ao atingir R$ 15 mil em compras no crédito no mês."
         },
         {
-          "titulo": "Crédito automático de milhas",
-          "descricao": "O valor pago nas faturas é convertido em milhas e transferido automaticamente para a conta Smiles, sem tarifa."
+          "titulo": "Primeira bagagem gratuita",
+          "descricao": "Bagagem despachada gratuita mediante apresentação do cartão, válida para todos os voos GOL."
+        },
+        {
+          "titulo": "BB paga diferença de IOF",
+          "descricao": "Para clientes com Ourocard, o Banco do Brasil paga a diferença de IOF do cartão GOL Smiles Visa Infinite."
+        },
+        {
+          "titulo": "Milhas de renovação",
+          "descricao": "5.000 milhas (Smiles) ou 7.000 milhas (Clube Smiles/Diamante) creditadas na renovação anual, condicionadas ao pagamento da anuidade de renovação."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-      "nota_curadoria": "A anuidade de R$ 1.188,00 pode ser zerada mensalmente pelo programa 'Usou, zerou', mas exige gasto mínimo elevado (R$ 15 mil/mês) no crédito. As milhas variam bastante conforme o cliente seja apenas Smiles ou tenha Clube Smiles/categoria Diamante, o que impacta diretamente o retorno do cartão. Não há informação oficial sobre renda mínima exigida nesta fonte, e o cartão não permite transferência de pontos para outros programas, pois já credita diretamente em milhas Smiles.",
-      "fontes": [
-        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
-        "https://www.smiles.com.br/portal/cartao-de-credito"
-      ],
-      "verificado_em": "2026-07-31",
+      "nota_curadoria": "A anuidade de R$ 1.188/ano pode ser totalmente zerada via 'Usou, zerou' com R$ 15 mil em compras mensais no crédito, mas atenção: pagamentos de contas e encargos não contam para essa meta. As milhas de aquisição e renovação dependem do pagamento em dia das primeiras parcelas da anuidade, e os adicionais custam 50% da anuidade do titular, não sendo gratuitos. Renda mínima exigida não foi divulgada na fonte oficial consultada.",
       "procedencia": {
         "anuidade": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "anuidade_parcelas": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
@@ -175,30 +174,21 @@
         "requisito_acesso": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
         "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito"
       },
+      "fontes": [
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
+        "https://www.smiles.com.br/portal/cartao-de-credito"
+      ],
+      "verificado_em": "2026-07-31",
       "campos_pendentes": [
         "cashback",
         "renda_minima",
         "spread"
       ],
-      "campos_rejeitados": [
-        "adicionais_gratis",
-        "anuidade",
-        "anuidade_parcelas",
-        "iof",
-        "isencao",
-        "pontos",
-        "salas_vip"
-      ],
+      "campos_rejeitados": [],
       "campos_preservados": [
-        "adicionais_gratis",
-        "anuidade",
-        "anuidade_parcelas",
-        "iof",
-        "isencao",
         "link_solicitacao",
-        "pontos",
         "requisito_acesso",
-        "salas_vip",
         "transfere_para",
         "validade_pontos"
       ],
@@ -215,12 +205,12 @@
       "isencao": null,
       "renda_minima": null,
       "requisito_acesso": null,
-      "adicionais_gratis": null,
+      "adicionais_gratis": 0,
       "pontos": {
         "nacional": 1.35,
         "internacional": 1.35,
         "unidade": "pts/USD",
-        "observacao": "1,35 milha por dólar gasto para clientes Smiles; 2 milhas por dólar para clientes Clube Smiles ou categoria Diamante. Milhas de renovação: 1.000 (Smiles) ou 2.000 (Clube Smiles/Diamante), condicionadas ao pagamento da anuidade de renovação. Milhas de aquisição (creditadas em 4 parcelas, ligadas ao pagamento das 4 primeiras parcelas da anuidade, exclusivo primeiro titular): 2.000 (Smiles) ou 3.000 (Clube Smiles/Diamante)."
+        "observacao": "1,35 milha por dólar gasto para clientes Smiles; 2 milhas por dólar para clientes Clube Smiles ou categoria Diamante. Milhas de renovação: 1.000 (Smiles) ou 2.000 (Clube Smiles/Diamante), condicionadas ao pagamento da anuidade de renovação."
       },
       "cashback": null,
       "programa_proprio": "Smiles",
@@ -234,22 +224,27 @@
       "beneficios_banco": [
         {
           "titulo": "Crédito automático de milhas",
-          "descricao": "A cada pagamento de fatura, o valor pago é convertido em dólar e transferido automaticamente como milhas para a conta Smiles, sem tarifa de transferência."
+          "descricao": "O valor pago na fatura é convertido automaticamente em milhas Smiles, com transferência isenta de tarifa."
+        },
+        {
+          "titulo": "Milhas de aquisição do cartão",
+          "descricao": "Bônus de 2.000 milhas (Smiles) ou 3.000 milhas (Clube Smiles/Diamante) na aquisição do cartão, creditadas em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades, exclusivo para o primeiro titular."
+        },
+        {
+          "titulo": "Primeira bagagem gratuita",
+          "descricao": "Bagagem gratuita mediante apresentação do cartão, válida para todos os voos GOL."
         },
         {
           "titulo": "Cartões adicionais",
-          "descricao": "É possível solicitar até quatro cartões adicionais, cada um custando 50% do valor da anuidade do titular; as milhas geradas pelas faturas pagas dos adicionais são transferidas para o cartão do titular."
-        },
-        {
-          "titulo": "Milhas de aquisição",
-          "descricao": "Bônus de milhas na contratação (2.000 para clientes Smiles ou 3.000 para Clube Smiles/Diamante), creditado em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades, exclusivo para o primeiro titular."
+          "descricao": "Possibilidade de solicitar até quatro cartões adicionais, cobrados a 50% da anuidade do titular, com milhas das faturas pagas transferidas automaticamente ao titular."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-      "nota_curadoria": "Este é o cartão de entrada da linha GOL Smiles do BB, com anuidade de R$312 e pontuação de 1,35 a 2 milhas por dólar gasto, sem o benefício 'usou, zerou' nem acesso a salas VIP, restritos às categorias Gold, Platinum e Infinite. Vale checar se há renda mínima exigida, pois essa informação não constava na página oficial consultada.",
+      "nota_curadoria": "Cartão de entrada da linha Smiles, com acúmulo de 1,35 milha por dólar (ou 2 milhas para clientes Clube Smiles/Diamante), sem sala VIP nem mecanismo de isenção de anuidade por gasto (esse benefício só existe nas categorias Gold, Platinum e Infinite). A anuidade de R$312/ano é parcelada em 12x e o adicional custa 50% do valor do titular, não sendo gratuito. Não há informação oficial sobre renda mínima exigida para este cartão específico.",
       "procedencia": {
         "anuidade": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "anuidade_parcelas": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "adicionais_gratis": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "pontos": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "transfere_para": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
@@ -259,9 +254,8 @@
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
-      "verificado_em": "2026-07-30",
+      "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "adicionais_gratis",
         "cashback",
         "isencao",
         "renda_minima",
@@ -271,6 +265,8 @@
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
+        "link_solicitacao",
+        "transfere_para",
         "validade_pontos"
       ]
     },
@@ -285,7 +281,7 @@
       "isencao": {
         "tipo": "gasto_mensal",
         "valor": 6000,
-        "regra": "Ao atingir R$ 6 mil em compras no crédito no mês, a parcela mensal da anuidade do cartão e dos adicionais é zerada automaticamente (programa 'Usou, zerou'). Não entram no cálculo pagamentos de contas, parcelas de anuidade, proteção ouro, saques, encargos, taxas e tarifas."
+        "regra": "Ao atingir R$ 6 mil em compras no crédito no mês, a parcela mensal da anuidade do cartão Platinum (e de seus adicionais) é zerada automaticamente. Não entram no cálculo pagamentos de contas, parcelas de anuidade, saques, encargos, taxas e tarifas."
       },
       "renda_minima": null,
       "requisito_acesso": null,
@@ -294,7 +290,7 @@
         "nacional": 2.3,
         "internacional": 2.3,
         "unidade": "pts/USD",
-        "observacao": "Cliente Smiles ganha 2,3 milhas por dólar gasto; clientes Clube Smiles ou categoria Diamante ganham 3,5 milhas por dólar. Milhas de renovação: 3.000 (Smiles) ou 4.000 (Clube Smiles/Diamante), condicionadas ao pagamento da anuidade de renovação."
+        "observacao": "2,3 milhas por dólar gasto para clientes Smiles; 3,5 milhas por dólar para clientes Clube Smiles ou categoria Diamante. Milhas de renovação: 3.000 (Smiles) ou 4.000 (Clube Smiles/Diamante), condicionadas ao pagamento da anuidade de renovação. Milhas de aquisição (em 4 parcelas): 10.000 (Smiles) ou 15.000 (Clube Smiles/Diamante), condicionadas ao pagamento das 4 primeiras parcelas da anuidade."
       },
       "cashback": null,
       "programa_proprio": "Smiles",
@@ -312,35 +308,31 @@
       ],
       "beneficios_banco": [
         {
-          "titulo": "Milhas de aquisição",
-          "descricao": "10.000 milhas (cliente Smiles) ou 15.000 milhas (Clube Smiles/Diamante) creditadas em 4 parcelas, condicionadas ao pagamento das 4 primeiras parcelas da anuidade, exclusivo para o primeiro titular."
-        },
-        {
-          "titulo": "Programa Usou, Zerou",
-          "descricao": "Ao gastar R$ 6 mil em compras no crédito no mês, a parcela da anuidade do titular e dos adicionais é zerada automaticamente."
-        },
-        {
-          "titulo": "Primeira bagagem gratuita",
-          "descricao": "Bagagem gratuita mediante apresentação do cartão, válida para todos os voos GOL."
-        },
-        {
           "titulo": "Crédito automático de milhas",
-          "descricao": "O valor pago nas faturas é convertido em milhas Smiles e transferido automaticamente para a conta do titular, sem tarifa."
+          "descricao": "A cada fatura paga, o valor equivalente em dólar é convertido em milhas e transferido automaticamente para a conta Smiles, sem tarifa."
+        },
+        {
+          "titulo": "Usou, zerou",
+          "descricao": "Atingindo R$ 6 mil em compras no crédito no mês, a parcela mensal da anuidade é zerada automaticamente."
+        },
+        {
+          "titulo": "Milhas de aquisição do cartão",
+          "descricao": "Bônus de 10.000 ou 15.000 milhas (conforme categoria do cliente Smiles) creditado em 4 parcelas, exclusivo para o primeiro titular, condicionado ao pagamento das 4 primeiras parcelas da anuidade."
         },
         {
           "titulo": "Cartões adicionais",
-          "descricao": "Possibilidade de até quatro adicionais, cada um custando 50% da anuidade do titular; as milhas geradas pelas faturas pagas dos adicionais são transferidas ao titular."
+          "descricao": "Possibilidade de solicitar até quatro cartões adicionais, cujas faturas pagas também geram milhas transferidas automaticamente para o titular."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-      "nota_curadoria": "A anuidade de R$ 576/ano pode ser zerada pelo programa 'Usou, Zerou' ao atingir R$ 6 mil em compras mensais no crédito, mas gastos com contas, parcelas de anuidade e encargos não contam para essa meta. O acesso a salas VIP internacionais (VAC) é exclusivo do Smiles Visa Infinite — o Platinum tem apenas acesso ilimitado aos GOL Premium Lounges mediante bilhete GOL. Não há informação oficial sobre renda mínima exigida nem sobre spread cambial nesta página.",
+      "nota_curadoria": "A anuidade de R$ 576 pode ser zerada mensalmente com gasto de R$ 6 mil no crédito, mas atenção: pagamentos de contas, saques e tarifas não contam para essa meta. O acúmulo de milhas é por dólar gasto (2,3 a 3,5 milhas/USD conforme categoria Smiles do cliente), e não há confirmação de acesso a salas VIP para a versão Platinum — esse benefício é explicitamente restrito ao Visa Infinite. Adicionais custam 50% da anuidade do titular, portanto não são gratuitos.",
       "procedencia": {
         "anuidade": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "anuidade_parcelas": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "isencao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "adicionais_gratis": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "pontos": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "adicionais_gratis": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "salas_vip": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "transfere_para": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
         "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito"
@@ -359,7 +351,9 @@
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
+        "adicionais_gratis",
         "link_solicitacao",
+        "salas_vip",
         "transfere_para",
         "validade_pontos"
       ]
@@ -1427,16 +1421,16 @@
         "nacional": 1.5,
         "internacional": 1.8,
         "unidade": "pts/USD",
-        "observacao": "Pontos Livelo que nunca expiram: até 1,5 ponto por dólar gasto no Brasil e até 1,8 ponto por dólar gasto no exterior."
+        "observacao": "Pontos Livelo que nunca expiram, ganhos a cada dólar gasto; 1,5 ponto no Brasil e até 1,8 ponto no exterior."
       },
       "cashback": null,
-      "programa_proprio": "Membership Rewards / Livelo",
+      "programa_proprio": "Membership Rewards",
       "transfere_para": [
         "Livelo"
       ],
       "spread": null,
       "iof": null,
-      "validade_pontos": "Pontos não expiram",
+      "validade_pontos": "Não expira",
       "salas_vip": [],
       "beneficios_banco": [
         {
@@ -1445,27 +1439,27 @@
         },
         {
           "titulo": "Concierge Bradesco Cartões",
-          "descricao": "Assistente pessoal para necessidades em viagens, compras, entretenimento e dia a dia."
+          "descricao": "Assistente pessoal disponível para auxiliar em viagens, compras, entretenimento e necessidades do dia a dia."
         },
         {
           "titulo": "Descontos exclusivos American Express",
           "descricao": "Vantagens e descontos em compras, viagens, gastronomia e entretenimento por meio do Portal Amex."
         },
         {
-          "titulo": "Desconto Cinemark",
-          "descricao": "50% de desconto no ingresso, na pipoca e no refrigerante."
+          "titulo": "50% de desconto Cinemark",
+          "descricao": "Desconto de 50% no ingresso, pipoca e refrigerante nas redes Cinemark."
         },
         {
-          "titulo": "Pagamento de contas com prazo estendido",
-          "descricao": "Possibilidade de pagar contas com até 40 dias de prazo."
+          "titulo": "Pagamento de Contas com 40 dias",
+          "descricao": "Possibilidade de pagar contas com prazo estendido de até 40 dias."
         },
         {
-          "titulo": "Parcelamento da fatura",
-          "descricao": "Parcelamento da fatura em até 12 parcelas fixas, além de saque em rede 24hrs no Brasil ou exterior."
+          "titulo": "Parcelamento da Fatura",
+          "descricao": "Parcelamento da fatura em até 12 parcelas fixas."
         }
       ],
       "link_solicitacao": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-gold",
-      "nota_curadoria": "A anuidade de R$68/mês (R$816/ano) é válida apenas para o primeiro ano; os valores dos anos seguintes não estão detalhados na fonte consultada. Não há menção a salas VIP, renda mínima ou requisitos de acesso explícitos, portanto esses campos ficaram em branco. Os pontos Livelo variam conforme o gasto em dólar, sendo mais vantajosos em compras internacionais, mas o cartão parece mais voltado a benefícios de conveniência (seguro viagem, concierge, descontos Amex) do que a um programa de milhas robusto.",
+      "nota_curadoria": "A anuidade de R$ 816,00 é cobrada em 12 parcelas de R$ 68,00, mas o site não detalha se há isenção por gasto ou relacionamento, nem renda mínima exigida, o que exige confirmação direta com o banco. Os pontos Livelo não expiram e a pontuação varia conforme o local da compra (nacional ou internacional), mas não há menção a salas VIP nem a programas de transferência para milhas aéreas.",
       "procedencia": {
         "anuidade": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-gold",
         "anuidade_parcelas": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-gold",
@@ -2196,40 +2190,28 @@
       ],
       "beneficios_banco": [
         {
-          "titulo": "Bagagem gratuita",
-          "descricao": "Primeira bagagem gratuita em voos GOL."
+          "titulo": "Primeira bagagem gratuita",
+          "descricao": "Primeira bagagem gratuita em voos GOL para portadores do cartão."
+        },
+        {
+          "titulo": "Parcelamento sem juros em passagens GOL",
+          "descricao": "Parcelamento em até 12 vezes sem juros na compra de passagens GOL."
         },
         {
           "titulo": "Milhas bônus",
           "descricao": "Crédito de milhas bônus na aquisição do cartão e na renovação da anuidade."
         },
         {
-          "titulo": "Parcelamento de passagens GOL",
-          "descricao": "Parcelamento em até 12 vezes sem juros na compra de passagens GOL."
+          "titulo": "Check-in e embarque preferencial",
+          "descricao": "Check-in e embarque preferencial em voos GOL para portadores do cartão."
         },
         {
           "titulo": "Milha extra em passagens GOL",
-          "descricao": "1 milha adicional a cada dólar gasto em passagens GOL."
-        },
-        {
-          "titulo": "Check-in e embarque preferencial",
-          "descricao": "Check-in e embarque preferencial em voos GOL."
-        },
-        {
-          "titulo": "Acesso a salas VIP GOL",
-          "descricao": "Acesso às salas VIP da GOL nos Aeroportos de Guarulhos (embarque nacional e internacional) e do Galeão (embarque internacional)."
+          "descricao": "1 milha adicional a cada dólar gasto na compra de passagens GOL."
         }
       ],
       "link_solicitacao": "https://imprensa.bradesco.com.br/smiles/index.shtm",
-      "nota_curadoria": "O cartão foi lançado em parceria Smiles-Bradesco-Visa e concentra benefícios de milhagem GOL/Smiles e acesso VIP típico da categoria Infinite, mas as fontes oficiais consultadas não trazem valores de anuidade, renda mínima ou regras de isenção, portanto esses campos ficaram em branco. Os benefícios de sala VIP combinam o Lounge Key (via Smiles/Visa) com o Visa Infinite Lounge e Fast Pass em Guarulhos e Galeão, exclusivos da categoria Infinite. Assessores devem buscar diretamente no site do Bradesco os dados financeiros (anuidade, renda mínima) antes de recomendar o produto.",
-      "procedencia": {
-        "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/smiles-lanca-novos-cartoes-de-credito-com-marca-visa-em-parceria-com-banco-do-brasil-bradesco-e-santander.html",
-        "salas_vip": "https://www.visa.com.br/sobre-a-visa/vac.html",
-        "beneficios_banco": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/smiles-lanca-novos-cartoes-de-credito-com-marca-visa-em-parceria-com-banco-do-brasil-bradesco-e-santander.html",
-        "transfere_para": "https://imprensa.bradesco.com.br/smiles/index.shtm",
-        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "link_solicitacao": "https://imprensa.bradesco.com.br/smiles/index.shtm"
-      },
+      "nota_curadoria": "O cartão é o produto Infinite da parceria Smiles-Bradesco-Visa, com conversão de até 2,5 milhas Smiles por dólar gasto e benefícios de viagem robustos, como Visa Infinite Lounge, Fast Pass e LoungeKey (exclusivos da categoria Infinite). Não há nas fontes oficiais informação sobre anuidade, renda mínima, regras de isenção ou requisitos de acesso ao cartão, portanto esses campos ficaram em branco. Vale confirmar diretamente com o Bradesco/Smiles valores de anuidade e condições de elegibilidade antes de recomendar ao cliente.",
       "fontes": [
         "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/smiles-lanca-novos-cartoes-de-credito-com-marca-visa-em-parceria-com-banco-do-brasil-bradesco-e-santander.html",
         "https://www.visa.com.br/sobre-a-visa/vac.html",
@@ -2237,6 +2219,13 @@
         "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
       "verificado_em": "2026-07-31",
+      "procedencia": {
+        "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/smiles-lanca-novos-cartoes-de-credito-com-marca-visa-em-parceria-com-banco-do-brasil-bradesco-e-santander.html",
+        "salas_vip": "https://www.visa.com.br/sobre-a-visa/vac.html",
+        "transfere_para": "https://imprensa.bradesco.com.br/smiles/index.shtm",
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
+        "link_solicitacao": "https://imprensa.bradesco.com.br/smiles/index.shtm"
+      },
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade",
@@ -2248,9 +2237,14 @@
         "requisito_acesso",
         "spread"
       ],
-      "campos_rejeitados": [],
+      "campos_rejeitados": [
+        "pontos",
+        "salas_vip"
+      ],
       "campos_preservados": [
         "link_solicitacao",
+        "pontos",
+        "salas_vip",
         "transfere_para",
         "validade_pontos"
       ],
@@ -4326,7 +4320,7 @@
       "isencao": {
         "tipo": "gasto_mensal",
         "valor": 20000,
-        "regra": "Mensalidade gratuita ao gastar R$ 20 mil por fatura."
+        "regra": "Mensalidade gratuita ao atingir gasto de R$ 20 mil por fatura."
       },
       "renda_minima": null,
       "requisito_acesso": null,
@@ -4335,7 +4329,7 @@
         "nacional": null,
         "internacional": 3.5,
         "unidade": "pts/USD",
-        "observacao": "Até 3,5 pontos por dólar gasto."
+        "observacao": "Pontuação de até 3,5 pontos por dólar gasto."
       },
       "cashback": null,
       "programa_proprio": "Azul Fidelidade (TudoAzul) — nível Diamante automático",
@@ -4370,7 +4364,7 @@
         }
       ],
       "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-      "nota_curadoria": "A anuidade não é informada explicitamente na fonte, apenas a condição de isenção ao atingir R$ 20 mil de gasto por fatura, o que pode confundir clientes que buscam o valor cheio. A pontuação de até 3,5 pontos por dólar é atrativa para gastos internacionais, mas não há indicação de pontuação para gastos nacionais. Os benefícios de sala VIP e acompanhante grátis dependem de metas de gasto e acúmulo de pontos, exigindo atenção às regras de acesso.",
+      "nota_curadoria": "A anuidade não tem valor explícito informado, apenas a condição de isenção ao gastar R$ 20 mil por fatura, o que pode ser um ponto de atenção para o assessor confirmar diretamente com o banco. O cartão oferece bom potencial de pontos por dólar gasto e acesso a salas VIP, mas faltam dados sobre renda mínima, cashback e transferência de pontos, que não constam na fonte oficial consultada.",
       "procedencia": {
         "isencao": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
         "pontos": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
@@ -4417,7 +4411,7 @@
       "isencao": {
         "tipo": "gasto_mensal",
         "valor": 20000,
-        "regra": "Isenção total da parcela mensal de R$ 100 quando os gastos da fatura do mês (titular + adicionais) atingem R$ 20 mil ou mais; se ficar entre R$ 10 mil e R$ 20 mil, o desconto é de 50% na anuidade daquele mês."
+        "regra": "Isenção total da parcela mensal de R$100 quando os gastos da fatura (titular + adicionais) somam R$20 mil ou mais no mês; se atingir R$10 mil ou mais, mas menos que R$20 mil, o desconto é de 50% na anuidade daquele mês."
       },
       "renda_minima": null,
       "requisito_acesso": null,
@@ -4426,62 +4420,63 @@
         "nacional": 3,
         "internacional": 3.5,
         "unidade": "pts/USD",
-        "observacao": "Pontos não expiram. Para membros do Clube TudoAzul, o acúmulo promocional sobe para 4,5 pontos por dólar em transações nacionais e 5,25 em internacionais."
+        "observacao": "Pontos não expiram. Membros do Clube TudoAzul acumulam de forma promocional 4,5 pontos por dólar em compras nacionais e 5,25 em compras internacionais."
       },
       "cashback": null,
       "programa_proprio": "TudoAzul",
       "transfere_para": [],
       "spread": null,
       "iof": null,
-      "validade_pontos": "Pontos não expiram",
+      "validade_pontos": "Não expiram",
       "salas_vip": [
         {
           "programa": "LoungeKey",
-          "regra": "2 acessos anuais a salas LoungeKey distribuídas por todo o mundo."
+          "regra": "2 acessos anuais a salas VIP distribuídas pelo mundo."
         },
         {
           "programa": "Espaço Azul",
-          "regra": "Utilização ilimitada do Espaço Azul."
+          "regra": "Utilização ilimitada das salas Espaço Azul."
         },
         {
           "programa": "Salas VIP Congonhas e Viracopos",
-          "regra": "Acesso às salas VIP de Congonhas (São Paulo) e Viracopos (Campinas)."
+          "regra": "Acesso às salas VIP dos aeroportos de Congonhas (São Paulo) e Viracopos (Campinas)."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Companion Pass",
-          "descricao": "Ao atingir 50 mil pontos, o titular tem direito a levar um acompanhante gratuitamente, podendo usar o benefício 2 vezes a cada 12 meses (1 voo nacional e 1 internacional, ou 2 voos nacionais)."
+          "descricao": "Ao atingir 50 mil pontos, o titular ganha o direito de levar um acompanhante gratuitamente em 1 voo nacional e 1 internacional, ou em 2 viagens nacionais, podendo usar o benefício 2 vezes a cada 12 meses."
         },
         {
           "titulo": "Upgrade para Classe Azul Business",
-          "descricao": "Com a mesma pontuação de 50 mil pontos, o titular pode solicitar upgrade para a Classe Azul Business 2 vezes a cada 12 meses, sujeito a disponibilidade."
+          "descricao": "Com a mesma pontuação do companion pass, o titular pode solicitar upgrade para a Classe Azul Business 2 vezes a cada 12 meses, sujeito à disponibilidade."
         },
         {
-          "titulo": "Despacho de bagagens gratuito",
-          "descricao": "3 bagagens gratuitas em voos domésticos, 1 bagagem em voos para a América do Sul e 3 bagagens em voos para Europa ou Estados Unidos."
+          "titulo": "Despacho de bagagens grátis",
+          "descricao": "Direito a despacho gratuito de 3 bagagens em voos domésticos, 1 bagagem em voos para a América do Sul e 3 bagagens em voos para Europa ou Estados Unidos."
         },
         {
-          "titulo": "Desconto TudoAzul",
-          "descricao": "10% de desconto em passagens, pontos e produtos do Shopping TudoAzul, Clube TudoAzul e Azul Viagens."
-        },
-        {
-          "titulo": "Locação de veículos Unidas",
-          "descricao": "2 diárias grátis na locação de automóveis da Unidas."
+          "titulo": "Check-in e embarque prioritários",
+          "descricao": "Prioridade no check-in e embarque, além de possibilidade de antecipação gratuita de voos."
         },
         {
           "titulo": "Visa Concierge e Visa Luxury Hotel Collection",
-          "descricao": "Acesso a serviços de concierge Visa e à coleção de hotéis de luxo Visa Luxury Hotel Collection."
+          "descricao": "Serviço de concierge gratuito para reservas e solicitações diversas, além de acesso ao programa de hotéis de luxo Visa Luxury Hotel Collection."
+        },
+        {
+          "titulo": "Desconto em locação de veículos Unidas",
+          "descricao": "2 diárias grátis na locação de automóveis da Unidas."
         }
       ],
       "link_solicitacao": "https://www.voeazul.com.br/br/pt/programa-fidelidade",
-      "nota_curadoria": "A anuidade de R$ 100/mês (R$ 1.200/ano) pode ser totalmente isenta com gasto de R$ 20 mil na fatura, com desconto parcial de 50% a partir de R$ 10 mil — importante deixar claro essa faixa intermediária ao cliente. Os pontos não expiram e o acúmulo é atrelado ao dólar, com bônus extra para membros do Clube TudoAzul. Benefícios de viagem como companion pass e upgrade de cabine dependem de acumular 50 mil pontos, o que exige gasto elevado; renda mínima e requisitos de aprovação não foram divulgados na fonte consultada.",
+      "nota_curadoria": "A isenção da anuidade depende de gasto mensal elevado (R$20 mil para isenção total, R$10 mil para 50% de desconto), o que pode ser uma pegadinha para clientes com gasto médio menor. Os pontos não expiram e a pontuação sobe bastante para membros do Clube TudoAzul, mas não há confirmação oficial sobre renda mínima exigida ou parceiros de transferência de pontos. Benefícios de viagem (companion pass, upgrade de cabine, salas VIP) são fortes, mas dependem de acúmulo de pontos e disponibilidade de poltronas.",
       "procedencia": {
         "anuidade": "https://www.itau.com.br/cartoes/escolha/g/azul-visa-infinite/",
         "anuidade_parcelas": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
         "isencao": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
         "adicionais_gratis": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
         "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
+        "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
         "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html"
       },
       "fontes": [
@@ -4524,7 +4519,7 @@
       "isencao": {
         "tipo": "gasto_anual",
         "valor": 240000,
-        "regra": "A redução da anuidade pode ocorrer por dois caminhos: (1) gasto acumulado no cartão – nos primeiros 90 dias após o desbloqueio, gastos até R$29.999 dão 0% de desconto, de R$30.000 a R$59.999,99 dão 50% e a partir de R$60.000 dão 100% de isenção no primeiro período de 12 meses; para a renovação seguinte, considera-se o gasto acumulado em 365 dias, sendo até R$119.999 = 0%, de R$120.000 a R$239.999,99 = 50% e a partir de R$240.000 = 100% de isenção; (2) alternativamente, o cliente pode obter isenção por volume de investimentos no Itaú Personnalité, com valor mínimo de R$3.000.000,00 aplicados. A redução não é vitalícia e é reavaliada mensalmente."
+        "regra": "Isenção parcial ou total da anuidade conforme gastos acumulados: nos primeiros 90 dias após o desbloqueio, gastos de R$30.000 a R$59.999,99 dão 50% de desconto e a partir de R$60.000 dão 100% de isenção no primeiro período de 12 meses. Nas renovações seguintes, considera-se o acumulado de 365 dias: de R$120.000 a R$239.999,99 gera 50% de desconto e a partir de R$240.000 gera isenção total. Alternativamente, mantendo volume médio de investimentos no Itaú Personnalité a partir de R$3.000.000,00 (apenas no CPF do titular), o cliente também obtém redução/isenção da anuidade, reavaliada mensalmente."
       },
       "renda_minima": null,
       "requisito_acesso": "Cartão exclusivo para clientes do segmento Itaú Personnalité",
@@ -4592,14 +4587,14 @@
         }
       ],
       "link_solicitacao": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
-      "nota_curadoria": "As únicas informações oficiais confirmadas para este cartão dizem respeito às regras de isenção de anuidade, que combinam gasto acumulado (90 dias e depois 365 dias) ou volume de investimentos mínimo de R$3 milhões no Itaú Personnalité — não há valor de anuidade padrão confirmado nas fontes. A taxa de IOF de 4,38% citada no blog do Itaú é genérica para uso internacional do cartão de crédito, não específica deste produto. Dados como renda mínima, pontuação por dólar, salas VIP e benefícios específicos não foram encontrados nas fontes fornecidas e devem ser verificados diretamente com o gerente Personnalité antes de recomendar o produto.",
+      "nota_curadoria": "A fonte oficial trata apenas das regras de isenção/redução de anuidade, sem informar o valor cheio da anuidade, renda mínima, pontuação, cashback ou salas VIP — todos esses campos ficaram em branco por falta de procedência. A isenção depende de gasto acumulado em janelas de 90 e 365 dias ou de manter R$3 milhões em investimentos no Itaú Personnalité, sendo reavaliada mensalmente e não vitalícia. Fica a pegadinha: parcelamentos só contam pelas parcelas efetivamente postadas no período, e valores em CPF de co-titulares não contam para o benefício de investimento.",
       "procedencia": {
         "isencao": "https://www.itau.com.br/content/dam/itau/personalite/cartoes/pdf/condicoes-de-isencao-de-anuidade-cartoes-personnalite-vigente-abr-2021.pdf",
-        "iof": "https://blog.itau.com.br/artigos/taxa-de-cambio",
         "anuidade": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
         "anuidade_parcelas": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
         "adicionais_gratis": "https://www.itau.com.br/personnalite/cartoes",
         "pontos": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
+        "iof": "https://blog.itau.com.br/artigos/taxa-de-cambio",
         "salas_vip": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
         "transfere_para": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
         "requisito_acesso": "https://www.itau.com.br/content/dam/itau/personalite/cartoes/pdf/condicoes-de-isencao-de-anuidade-cartoes-personnalite-vigente-abr-2021.pdf",
@@ -4608,11 +4603,11 @@
         "link_solicitacao": "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite"
       },
       "fontes": [
-        "https://blog.itau.com.br/artigos/taxa-de-cambio",
         "https://www.itau.com.br/content/dam/itau/personalite/cartoes/pdf/condicoes-de-isencao-de-anuidade-cartoes-personnalite-vigente-abr-2021.pdf",
         "https://www.itau.com.br/personnalite/cartoes",
         "https://www.itau.com.br/personnalite/cartoes/cartao-de-credito-latam-pass-visa-infinite",
-        "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/"
+        "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
+        "https://blog.itau.com.br/artigos/taxa-de-cambio"
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
@@ -4626,29 +4621,17 @@
         "anuidade",
         "anuidade_parcelas",
         "beneficios_banco",
+        "iof",
         "link_solicitacao",
         "pontos",
+        "programa_proprio",
         "requisito_acesso",
         "salas_vip",
         "transfere_para",
         "validade_pontos"
       ],
       "bandeira_ref": "visa-infinite",
-      "vigencia_ate": "2026-07-31",
-      "conflitos": [
-        {
-          "campo": "isencao.valor",
-          "antes": 120000,
-          "depois": 240000,
-          "variacao_pct": 100,
-          "fonte_antes": "https://www.itau.com.br/content/dam/itau/personalite/cartoes/pdf/condicoes-de-isencao-de-anuidade-cartoes-personnalite-vigente-abr-2021.pdf",
-          "fonte_depois": "https://www.itau.com.br/content/dam/itau/personalite/cartoes/pdf/condicoes-de-isencao-de-anuidade-cartoes-personnalite-vigente-abr-2021.pdf",
-          "valor_mantido": "depois",
-          "motivo": null,
-          "detectado_em": "2026-07-31",
-          "resolvido": false
-        }
-      ]
+      "vigencia_ate": "2026-07-31"
     },
     {
       "slug": "itau-personnalite-mastercard-legend",
@@ -5292,49 +5275,40 @@
       ],
       "spread": null,
       "iof": null,
-      "validade_pontos": "Nas variantes Black e Infinite, as Milhas/Pontos LATAM Pass não expiram enquanto o cartão estiver em uso. Se o cartão ficar 12 meses consecutivos sem uso ou for cancelado, as milhas passam a ter validade de 24 meses.",
+      "validade_pontos": "As Milhas/Pontos LATAM Pass da variante Black não expiram enquanto o cartão estiver em uso. Se o cartão ficar sem uso por 12 meses consecutivos ou for cancelado, as milhas passam a ter validade de 24 meses.",
       "salas_vip": [
         {
           "programa": "LoungeKey (Mastercard Airport Experiences)",
-          "regra": "Acesso a rede de salas VIP em aeroportos via Mastercard Airport Experiences, fornecido pela LoungeKey; quantidade de acessos gratuitos não especificada na fonte."
-        },
-        {
-          "programa": "Sala VIP Guarulhos (própria Mastercard)",
-          "regra": "Acesso exclusivo a sala própria no Aeroporto de Guarulhos para portadores Mastercard Black, com estações de trabalho e espaço gourmet; quantidade de acessos não especificada."
+          "regra": "Acesso a salas VIP em aeroportos através do programa Mastercard Airport Experiences, fornecido pela LoungeKey; quantidade de acessos e condições de uso não especificadas na fonte."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Concierge Mastercard Black 24h",
-          "descricao": "Assistente pessoal disponível 24 horas para organização e planejamento de viagens, reservas personalizadas, experiências especiais e outras solicitações."
+          "titulo": "Sala Vip Guarulhos",
+          "descricao": "Acesso exclusivo à sala VIP no Aeroporto de Guarulhos, com estações de trabalho e espaço gourmet para viagens internacionais."
+        },
+        {
+          "titulo": "Concierge Mastercard Black",
+          "descricao": "Assistente pessoal 24h para organização e planejamento de viagens, reservas personalizadas, experiências especiais e outras solicitações."
+        },
+        {
+          "titulo": "Assistência Global de Emergência",
+          "descricao": "Central de atendimento 24h, 365 dias por ano, em qualquer idioma, para orientação e emergências como perda ou roubo do cartão."
         },
         {
           "titulo": "Mastercard Travel Rewards",
-          "descricao": "Cashback de 6% em reservas de hospedagem feitas via Booking.com e outros descontos automáticos em viagens."
-        },
-        {
-          "titulo": "MasterAssist Black",
-          "descricao": "Seguro viagem que inclui assistência médica de emergência, viagem médica de emergência para o país de origem e pagamento de despesas hospitalares."
-        },
-        {
-          "titulo": "Assistência Global de Emergência (Global Services)",
-          "descricao": "Central de assistência ao portador, disponível 24h/365 dias, em qualquer idioma, para orientação e emergências como perda ou roubo do cartão."
-        },
-        {
-          "titulo": "Benefícios em resorts parceiros",
-          "descricao": "Vantagens exclusivas como early check-in, late check-out, welcome drink e pontos em dobro em reservas em resorts parceiros (ex.: Clara Resorts)."
+          "descricao": "Cashback e descontos automáticos em viagens, incluindo 6% de cashback em reservas de hospedagem pelo Booking.com."
         }
       ],
       "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/formulario/latam-pass-itaucard-mastercard-black.html",
-      "nota_curadoria": "As fontes oficiais disponíveis tratam principalmente das regras de acúmulo e validade de milhas do Programa LATAM Pass Itaú e dos benefícios genéricos da categoria Mastercard Black, sem confirmar anuidade, renda mínima, isenção, cashback do cartão em si ou taxas de câmbio/IOF — todos esses campos ficaram como null por falta de procedência. Um ponto de atenção para o assessor: nas variantes Black e Infinite as milhas não expiram enquanto o cartão estiver em uso, mas passam a ter validade de 24 meses após 12 meses de inatividade ou cancelamento. Os benefícios listados (concierge, sala VIP Guarulhos, seguros) vêm da página institucional da bandeira Mastercard Black, não de material específico do Itaú, então convém confirmar diretamente com o emissor se todos se aplicam integralmente a este produto.",
+      "nota_curadoria": "As fontes oficiais disponíveis tratam do regulamento genérico do programa LATAM Pass Itaú (válido para todas as variantes) e da página institucional da bandeira Mastercard Black, sem detalhar anuidade, renda mínima, taxa de pontuação por dólar ou cashback específicos deste cartão — todos esses campos ficaram como null por falta de dado explícito. O ponto confirmado mais relevante é que, na variante Black, as milhas não expiram enquanto o cartão estiver ativo, caindo para validade de 24 meses após 12 meses sem uso ou cancelamento. Os benefícios de viagem listados (sala VIP Guarulhos, concierge, LoungeKey) vêm da página institucional da Mastercard Black e podem variar conforme condições definidas pelo Itaú como emissor.",
       "procedencia": {
         "validade_pontos": "https://www.itau.com.br/media/dam/m/4474d6764777bb8b/original/pontos_milhas_latam_03_2025.pdf",
-        "pontos": "https://www.itau.com.br/media/dam/m/25dc6670a45fec09/original/Regulamento-Latam-Pass.pdf",
         "salas_vip": "https://www.mastercard.com.br/pt-br/consumidores/encontre-seu-cartao/cartoes-credito/mastercard-black.html",
-        "beneficios_banco": "https://www.mastercard.com.br/pt-br/consumidores/encontre-seu-cartao/cartoes-credito/mastercard-black.html",
         "anuidade": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-mastercard-black/",
         "anuidade_parcelas": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-mastercard-black/",
         "isencao": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-mastercard-black/",
+        "pontos": "https://www.itau.com.br/media/dam/m/25dc6670a45fec09/original/Regulamento-Latam-Pass.pdf",
         "transfere_para": "https://www.itau.com.br/media/dam/m/4474d6764777bb8b/original/pontos_milhas_latam_03_2025.pdf",
         "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/formulario/latam-pass-itaucard-mastercard-black.html"
       },
@@ -5360,6 +5334,7 @@
         "anuidade_parcelas",
         "isencao",
         "link_solicitacao",
+        "pontos",
         "transfere_para"
       ],
       "bandeira_ref": "mastercard-black",
@@ -5376,7 +5351,7 @@
       "isencao": {
         "tipo": "gasto_mensal",
         "valor": 20000,
-        "regra": "Isenção de anuidade para quem gasta a partir de R$ 20.000 em compras por fatura; caso os gastos fiquem abaixo desse valor, a anuidade é de 12x R$100,00 (R$1.200,00 por ano)."
+        "regra": "Isenção da anuidade possível gastando a partir de R$ 20 mil em compras por fatura (os gastos dos adicionais também contam). Caso os gastos fiquem abaixo de R$ 10.000, não há benefício e a anuidade é cobrada em 12x R$ 100,00 (R$ 1.200,00 no ano)."
       },
       "renda_minima": null,
       "requisito_acesso": null,
@@ -5385,7 +5360,7 @@
         "nacional": 2.5,
         "internacional": 3.5,
         "unidade": "pts/USD",
-        "observacao": "Fora de condição promocional: 2,5 pontos por dólar em compras nacionais e 3,5 pontos por dólar em compras internacionais. Em promoção válida até 31/12/2021 para assinantes do Clube LATAM Pass, a conversão chegava a 5 pontos por dólar nacional e 7 pontos por dólar internacional."
+        "observacao": "Conversão padrão de 2,5 pontos por dólar em compras nacionais e 3,5 em internacionais. Para assinantes do Clube LATAM Pass, promoção válida até 31/12/2021 elevava a conversão para até 5 pontos/USD (nacional) e 7 pontos/USD (internacional). Pontos não expiram enquanto o cartão estiver ativo."
       },
       "cashback": null,
       "programa_proprio": "LATAM Pass",
@@ -5394,45 +5369,45 @@
       ],
       "spread": null,
       "iof": null,
-      "validade_pontos": "Pontos não expiram enquanto o cliente mantiver o cartão ativo.",
+      "validade_pontos": "Pontos não expiram enquanto o cliente mantiver o cartão ativo",
       "salas_vip": [
         {
           "programa": "LoungeKey",
-          "regra": "2 acessos gratuitos por ano, com acesso a mais de 850 salas VIP em aeroportos no Brasil e no mundo."
+          "regra": "2 acessos gratuitos por ano"
         },
         {
           "programa": "Sala VIP LATAM",
-          "regra": "Acesso ilimitado às salas VIP LATAM no Brasil e no exterior."
+          "regra": "Acesso ilimitado às salas VIP LATAM no Brasil e no exterior, além de acesso a mais de 850 salas VIP em aeroportos no mundo"
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Cupons de upgrade de cabine",
-          "descricao": "6 cupons de upgrade de cabine em voos LATAM Airlines."
-        },
-        {
-          "titulo": "Check-in e embarque preferenciais",
-          "descricao": "Prioridade no check-in e embarque em voos LATAM Airlines."
-        },
-        {
-          "titulo": "Pontos qualificáveis para categoria Elite",
-          "descricao": "Pontos do cartão contam para atingir categorias Elite do LATAM Pass, podendo chegar à categoria Gold apenas com pontos do cartão."
+          "titulo": "Cupons de upgrade de cabine LATAM Airlines",
+          "descricao": "6 cupons de upgrade de cabine em voos operados pela LATAM Airlines"
         },
         {
           "titulo": "Parcelamento sem juros em passagens LATAM",
-          "descricao": "Parcelamento em até 10 vezes sem juros na compra de qualquer passagem da LATAM Airlines."
+          "descricao": "Parcelamento em até 10 vezes sem juros na compra de qualquer passagem da LATAM Airlines"
         },
         {
           "titulo": "ConectCar gratuito",
-          "descricao": "ConectCar gratuito por 36 meses, meio de pagamento eletrônico para pedágios e estacionamentos."
+          "descricao": "Meio de pagamento eletrônico para pedágios e estacionamentos, gratuito por 36 meses"
         },
         {
-          "titulo": "Adicionais gratuitos contam para isenção",
-          "descricao": "Até 6 cartões adicionais gratuitos, cujos gastos também compõem o valor necessário para isenção da anuidade."
+          "titulo": "Check-in e embarque preferenciais",
+          "descricao": "Prioridade no check-in e embarque em voos LATAM Airlines"
+        },
+        {
+          "titulo": "Pontos qualificáveis para categoria Elite LATAM Pass",
+          "descricao": "Possibilidade de atingir a categoria Gold do LATAM Pass apenas com pontos qualificáveis acumulados via cartão de crédito"
+        },
+        {
+          "titulo": "Pagamento de contas pelo app",
+          "descricao": "Cliente pode cadastrar contas no app Itaucard e o valor pago compõe os gastos exigidos para isenção da anuidade"
         }
       ],
       "link_solicitacao": "https://cartoes.itau.com.br/",
-      "nota_curadoria": "A anuidade padrão é de R$1.200/ano (12x R$100), mas pode ser isenta com gastos a partir de R$20.000 por fatura, incluindo gastos de adicionais. A pontuação padrão fora de promoções é de 2,5 pts/USD nacional e 3,5 pts/USD internacional, bem abaixo dos valores promocionais citados (até 5 e 7 pts/USD), que já expiraram em 31/12/2021. Não há informação oficial sobre renda mínima exigida ou transferência de pontos para outros programas, pois o cartão gera pontos diretamente no LATAM Pass.",
+      "nota_curadoria": "Atenção à regra de isenção: é preciso gastar a partir de R$ 20 mil por fatura (somando adicionais e contas pagas pelo app) para isenção total; abaixo de R$ 10 mil não há desconto e a anuidade cheia de R$ 1.200 é cobrada em 12x. As promoções de multiplicador de pontos (até 5x/7x por dólar) e o bônus de 10 mil ou 20 mil pontos eram condições temporárias válidas apenas em 2021, portanto não devem ser tratadas como benefício permanente. Renda mínima e requisito de acesso não constam na fonte oficial consultada.",
       "procedencia": {
         "anuidade": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-visa-infinite/",
         "anuidade_parcelas": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/latam-pass-itau-visa-infinite.html",
@@ -5440,6 +5415,7 @@
         "adicionais_gratis": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/latam-pass-itau-visa-infinite.html",
         "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/latam-pass-itau-visa-infinite.html",
         "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/latam-pass-itau-visa-infinite.html",
+        "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/latam-pass-itau-visa-infinite.html",
         "transfere_para": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/latam-pass-itau-visa-infinite.html"
       },
       "fontes": [
@@ -6053,7 +6029,7 @@
         }
       ],
       "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/smiles-infinite",
-      "nota_curadoria": "A única fonte disponível é uma tabela genérica de tarifas do Santander (válida a partir de 2010), que não menciona especificamente o cartão GOL Smiles Visa Infinite nem seus benefícios, pontuação, anuidade ou salas VIP. Não foi possível confirmar nenhum dado factual específico deste produto nessa fonte, por isso todos os campos relevantes ficaram em branco. Recomenda-se buscar documentação oficial atualizada e específica do cartão para preencher esses dados com segurança.",
+      "nota_curadoria": "O documento-fonte disponível é apenas a tabela geral de tarifas do Santander e não traz nenhuma informação específica sobre o cartão GOL Smiles Visa Infinite (anuidade, renda mínima, pontuação, salas VIP, etc.). Por isso, todos os campos factuais foram deixados em branco para evitar dados inventados. É necessário buscar a página ou documento oficial específico deste produto para completar o registro.",
       "procedencia": {
         "anuidade": "https://www.santander.com.br/hotsite/cartaosmiles/",
         "anuidade_parcelas": "https://www.santander.com.br/hotsite/cartaosmiles/",
@@ -6120,16 +6096,16 @@
         "nacional": 2.3,
         "internacional": 2.3,
         "unidade": "pts/USD",
-        "observacao": "Para compras realizadas após 23/01/23, cada US$ 1,00 (valor da compra convertido para dólar pela cotação do dia do fechamento da fatura) gera 2,3 Milhas Smiles. Não há distinção entre compras nacionais e internacionais, pois todas são convertidas para dólar para fins de cálculo."
+        "observacao": "Milhas Smiles: para compras a partir de 23/01/2023, cada US$ 1,00 em compras (convertido pela cotação do dólar no fechamento da fatura) gera 2,3 Milhas Smiles no cartão Platinum. Recebe ainda 10.000 milhas extras no primeiro desbloqueio e 3.000 milhas extras a cada novo ciclo de anuidade."
       },
       "cashback": null,
-      "programa_proprio": "Programa de Recompensas do Cartão Smiles Santander",
+      "programa_proprio": "Smiles",
       "transfere_para": [
         "Smiles"
       ],
       "spread": null,
       "iof": "5,38% sobre compras internacionais",
-      "validade_pontos": "36 meses a partir do crédito das Milhas na conta Smiles",
+      "validade_pontos": "36 meses a partir do crédito na conta Smiles (pode ser ampliado conforme categoria do titular no Smiles)",
       "salas_vip": [
         {
           "programa": "GOL Premium Lounges",
@@ -6138,24 +6114,24 @@
       ],
       "beneficios_banco": [
         {
-          "titulo": "Milhas de boas-vindas",
-          "descricao": "10.000 Milhas extras concedidas no primeiro desbloqueio do cartão Platinum."
+          "titulo": "Milhas extras no primeiro desbloqueio",
+          "descricao": "10.000 Milhas Smiles extras concedidas ao realizar o primeiro desbloqueio do cartão Platinum."
         },
         {
-          "titulo": "Milhas a cada ciclo de anuidade",
-          "descricao": "3.000 Milhas extras concedidas a cada novo ciclo de anuidade, proporcionais ao pagamento das parcelas."
+          "titulo": "Milhas extras por ciclo de anuidade",
+          "descricao": "3.000 Milhas Smiles extras a cada novo ciclo de anuidade paga, proporcional caso haja desconto na anuidade."
         },
         {
-          "titulo": "Milhas por adicionais",
+          "titulo": "Acúmulo em adicionais",
           "descricao": "Compras realizadas com cartões adicionais também geram Milhas para o titular do cartão."
         }
       ],
       "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/smiles-platinum",
-      "nota_curadoria": "A única fonte disponível é o regulamento do programa de milhas Smiles, então dados essenciais como anuidade, isenção, renda mínima e salas VIP não puderam ser confirmados oficialmente e ficaram como null. O destaque é a conversão de gastos em dólar (2,3 milhas por US$1 após jan/2023) e as milhas extras por desbloqueio e renovação de anuidade. É importante buscar fonte complementar do Santander para confirmar condições comerciais do cartão (preço, isenção, requisitos).",
+      "nota_curadoria": "O regulamento consultado trata apenas do programa de milhas Smiles vinculado ao cartão, não trazendo informações sobre anuidade, renda mínima ou salas VIP para a variante Platinum. A conversão de 2,3 milhas por dólar vale para compras a partir de 23/01/2023, com milhas válidas por 36 meses. Recomenda-se buscar fonte adicional para confirmar anuidade, requisitos de renda e benefícios de viagem específicos do Platinum.",
       "procedencia": {
         "pontos": "https://cms.santander.com.br/sites/WPS/documentos/arq-regulamento-decolar-jan23/23-01-20_194401_regulamento-programa-de-fidelidade-cartao-smiles-230123.pdf",
-        "transfere_para": "https://cms.santander.com.br/sites/WPS/documentos/arq-regulamento-decolar-jan23/23-01-20_194401_regulamento-programa-de-fidelidade-cartao-smiles-230123.pdf",
         "validade_pontos": "https://cms.santander.com.br/sites/WPS/documentos/arq-regulamento-decolar-jan23/23-01-20_194401_regulamento-programa-de-fidelidade-cartao-smiles-230123.pdf",
+        "programa_proprio": "https://cms.santander.com.br/sites/WPS/documentos/arq-regulamento-decolar-jan23/23-01-20_194401_regulamento-programa-de-fidelidade-cartao-smiles-230123.pdf",
         "anuidade": "https://www.santander.com.br/hotsite/cartaosmiles/",
         "anuidade_parcelas": "https://www.santander.com.br/hotsite/cartaosmiles/",
         "isencao": "https://www.santander.com.br/cartao-credito-santander",
@@ -6163,6 +6139,7 @@
         "adicionais_gratis": "https://www.santander.com.br/cartao-credito-santander/smiles-platinum",
         "iof": "https://www.santander.com.br/blog/tarifas-cartao-credito",
         "salas_vip": "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "transfere_para": "https://cms.santander.com.br/sites/WPS/documentos/arq-regulamento-decolar-jan23/23-01-20_194401_regulamento-programa-de-fidelidade-cartao-smiles-230123.pdf",
         "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/smiles-platinum"
       },
       "fontes": [
@@ -6187,7 +6164,8 @@
         "isencao",
         "link_solicitacao",
         "renda_minima",
-        "salas_vip"
+        "salas_vip",
+        "transfere_para"
       ]
     },
     {
