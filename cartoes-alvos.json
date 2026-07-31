@@ -4,156 +4,104 @@
     "como_adicionar": "Inclua um objeto em \"alvos\" com slug unico, nome, emissor e ao menos 1 URL oficial. Rode o workflow coletar-cartoes com forcar=true e slugs=<slug> para processar so ele.",
     "gerado_em": "2026-07-30",
     "origem": "Semeado a partir de procedencia/fontes de cartoes-catalogo.json",
-    "total": 69,
+    "total": 76,
     "inativos_sem_url": 8,
-    "ajustado_em": "2026-07-30"
+    "ajustado_em": "2026-07-31"
   },
   "alvos": [
     {
-      "slug": "brb-visa-dux",
-      "nome": "BRB Visa DUX",
-      "emissor": "BRB",
-      "bandeira": "Visa",
-      "categoria": "Infinite",
-      "bandeira_ref": "visa-infinite",
-      "urls": [
-        "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/",
-        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
-        "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
-        "https://novo.brb.com.br/imprensa/brb-reafirma-compromisso-com-o-cliente-e-disponibiliza-novas-condicoes-de-transferencia-de-pontos-para-o-tap-milesgo/",
-        "https://nbf.brb.com.br/wp-content/uploads/2025/02/REGULAMENTO-SALA-BRB-VIP-CLUB-NOVA-REGRA-GASTOS-VF-6.pdf",
-        "https://novo.brb.com.br/imprensa/01-03-2021-brb-dux-visa-e-eleito-melhor-cartao-de-credito-de-2021/"
-      ],
-      "ativo": true
-    },
-    {
-      "slug": "brb-visa-infinite",
-      "nome": "BRB Visa Infinite",
-      "emissor": "BRB",
-      "bandeira": "Visa",
-      "categoria": "Infinite",
-      "bandeira_ref": "visa-infinite",
-      "urls": [
-        "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
-        "https://nbf.brb.com.br/wp-content/uploads/2025/02/REGULAMENTO-SALA-BRB-VIP-CLUB-NOVA-REGRA-GASTOS-VF-6.pdf",
-        "https://novo.brb.com.br/para-voce/abra-sua-conta/",
-        "https://www.visa.com.br/pague-com-visa/cartoes/beneficios.html",
-        "https://www.visa.com.br/pague-com-visa/cartoes/cartoes-de-credito/detalhes-visa-infinite.html",
-        "https://novo.brb.com.br/imprensa/brb-lanca-cartao-connect/"
-      ],
-      "ativo": true
-    },
-    {
-      "slug": "btg-mastercard-black-tap",
-      "nome": "BTG Mastercard Black TAP",
-      "emissor": "BTG Pactual",
-      "bandeira": "Mastercard Black",
-      "categoria": "Black",
+      "slug": "azul-itau-mastercard-skyline",
+      "nome": "Azul Itaú Mastercard Skyline",
+      "emissor": "Itaú",
+      "bandeira": "Mastercard",
+      "categoria": "Black / World Elite",
       "bandeira_ref": "mastercard-black",
       "urls": [
-        "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
-        "https://banking.btgpactual.com/solicite-seu-cartao/tap",
-        "https://conteudo.btgpactual.com/cartao-tap-lastreado",
-        "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf",
-        "https://banking.btgpactual.com/cartao-de-credito/cartao-tap-black",
-        "https://conteudo.btgpactual.com/cartao-black-lastreado/"
+        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "https://www.itau.com.br/cartoes/beneficios/programa-fidelidade-azul",
+        "https://www.itau.com.br/cartoes/escolha/formulario/tudoazul-itaucard-20-internacional-visa.html",
+        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html?l=&cpg_s=azl_prc",
+        "https://www.itau.com.br/media/dam/m/7a27c611cf1fb00d/original/cartoes-tabela-geral.pdf"
       ],
       "ativo": true
     },
     {
-      "slug": "btg-mastercard-world-legend-ultrablue",
-      "nome": "BTG Mastercard World Legend Ultrablue",
-      "emissor": "BTG Pactual",
-      "bandeira": "Mastercard",
-      "categoria": "World Legend",
-      "bandeira_ref": "mastercard-world-legend",
+      "slug": "azul-visa-infinite",
+      "nome": "Azul Itaucard Visa Infinite",
+      "emissor": "Itaú",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "bandeira_ref": "visa-infinite",
       "urls": [
-        "https://conteudo.btgpactual.com/cartao-ultrablue",
-        "https://banking.btgpactual.com/ajuda/programadefidelidade/btgpontos",
-        "https://banking.btgpactual.com/conta-corrente",
-        "https://banking.btgpactual.com/assets/files/comparativo-cartoes-btg-pactual.pdf",
-        "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/world-legend-mastercard.html",
-        "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf"
+        "https://www.itau.com.br/cartoes/escolha/g/azul-visa-infinite/",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
+        "https://www.itau.com.br/cartoes/beneficios/programa-fidelidade-azul",
+        "https://www.itau.com.br/cartoes/escolha/formulario/tudoazul-itaucard-20-internacional-visa.html",
+        "https://www.itau.com.br/cartoes/escolha/formulario/azul-itaucard-visa-infinite.html",
+        "https://www.itau.com.br/media/dam/m/7a27c611cf1fb00d/original/cartoes-tabela-geral.pdf"
       ],
       "ativo": true
     },
     {
-      "slug": "btg-mastercard-black-ultrablue",
-      "nome": "BTG Pactual Ultrablue",
-      "emissor": "BTG Pactual",
+      "slug": "banescard-visa-infinite-absoluto",
+      "nome": "Banescard Visa Absoluto",
+      "emissor": "Banestes",
+      "bandeira": "Visa Infinite",
+      "categoria": "Alta Renda / Private",
+      "bandeira_ref": "visa-infinite",
+      "urls": [
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html"
+      ],
+      "ativo": true
+    },
+    {
+      "slug": "bb-mastercard-black",
+      "nome": "Ourocard Mastercard Black",
+      "emissor": "Banco do Brasil",
       "bandeira": "Mastercard",
       "categoria": "Black",
       "bandeira_ref": "mastercard-black",
       "urls": [
-        "https://conteudo.btgpactual.com/cartao-ultrablue",
-        "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
-        "https://banking.btgpactual.com/ajuda/programadefidelidade/btgpontos",
-        "https://conteudo.btgpactual.com/iof-zero",
-        "https://content.btgpactual.com/blog/conta-e-cartao/programa-de-fidelidade",
-        "https://banking.btgpactual.com/assets/files/regulamento-campanha-ultrablue.pdf"
+        "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
+        "https://www.bb.com.br/site/estilo/cartoes/ourocard-estilo-mastercard-black/",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/ourocard-mastercard-black"
       ],
       "ativo": true
     },
     {
-      "slug": "inter-win",
-      "nome": "Cartão Inter Win (Mastercard Black)",
-      "emissor": "Banco Inter",
-      "bandeira": "Mastercard",
-      "categoria": "Black / Wealth Management (segmento Win)",
-      "bandeira_ref": "mastercard-black",
+      "slug": "bb-ourocard-elo-nanquim",
+      "nome": "Ourocard Elo Nanquim",
+      "emissor": "Banco do Brasil",
+      "bandeira": "Elo",
+      "categoria": "Nanquim (premium)",
+      "bandeira_ref": "elo-flex",
       "urls": [
-        "https://ajuda.inter.co/sobre-o-inter/quais-as-vantagens-de-ser-cliente-win",
-        "https://inter.co/pra-voce/cartoes/programa-de-pontos/",
-        "https://inter.co/pra-voce/relacionamento/inter-win/",
-        "https://inter.co/sala-vip/",
-        "https://ajuda.inter.co/cartao/como-usar-a-sala-vip-nos-aeroportos-com-o-cartao-black-mastercard-do-inter",
-        "https://ajuda.bancointer.com.br/pt-BR/articles/1963873-o-inter-cobra-tarifas-dos-clientes-da-conta-digital"
+        "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "https://www.bb.com.br/pbb/pagina-inicial/clube-de-beneficios/vantagens-financeiras",
+        "https://www.bb.com.br/site/agronegocios/ourocard-agronegocio/elo/",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf"
       ],
       "ativo": true
     },
     {
-      "slug": "safra-investor-visa-infinite",
-      "nome": "Safra Investor Visa Infinite",
-      "emissor": "Banco Safra",
+      "slug": "bb-ourocard-visa-infinite",
+      "nome": "Ourocard Visa Infinite",
+      "emissor": "Banco do Brasil",
       "bandeira": "Visa",
       "categoria": "Infinite",
       "bandeira_ref": "visa-infinite",
       "urls": [
-        "https://www.safra.com.br/cartoes/",
-        "https://www.safra.com.br/abra-sua-conta.htm",
-        "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/programa-safra-rewards.htm",
-        "https://www.safra.com.br/cartoes/programa-safra-rewards/",
-        "https://www.safra.com.br/external-files/servicos/pessoa-fisica/conta-corrente/tabela-de-tarifas-pf.pdf",
-        "https://www.safra.com.br/lp/cartoes-safra.htm"
-      ],
-      "ativo": true
-    },
-    {
-      "slug": "safra-iridium-visa-infinite",
-      "nome": "Safra Iridium Visa Infinite",
-      "emissor": "Banco Safra",
-      "bandeira": "Visa",
-      "categoria": "Infinite",
-      "bandeira_ref": "visa-infinite",
-      "urls": [
-        "https://www.safra.com.br/cartoes/"
-      ],
-      "ativo": true
-    },
-    {
-      "slug": "safra-visa-infinite",
-      "nome": "Safra Visa Infinite",
-      "emissor": "Banco Safra",
-      "bandeira": "Visa",
-      "categoria": "Infinite",
-      "bandeira_ref": "visa-infinite",
-      "urls": [
-        "https://www.safra.com.br/cartoes/",
-        "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/safra-visa-infinite.htm",
-        "https://www.safra.com.br/",
-        "https://www.safra.com.br/cartoes/programa-safra-rewards/",
-        "https://www.safra.com.br/abra-sua-conta.htm",
-        "https://www.safra.com.br/lp/cartoes-safra.htm"
+        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/livreto220210.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf"
       ],
       "ativo": true
     },
@@ -252,67 +200,30 @@
       "ativo": true
     },
     {
-      "slug": "bb-ourocard-elo-nanquim",
-      "nome": "Ourocard Elo Nanquim",
-      "emissor": "Banco do Brasil",
-      "bandeira": "Elo",
-      "categoria": "Nanquim (premium)",
-      "bandeira_ref": "elo-flex",
+      "slug": "bradesco-american-express-gold",
+      "nome": "Bradesco American Express Gold",
+      "emissor": "Bradesco",
+      "bandeira": "American Express",
+      "categoria": "Gold",
+      "bandeira_ref": null,
       "urls": [
-        "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
-        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
-        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
-        "https://www.bb.com.br/pbb/pagina-inicial/clube-de-beneficios/vantagens-financeiras",
-        "https://www.bb.com.br/site/agronegocios/ourocard-agronegocio/elo/",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf"
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-gold"
       ],
-      "ativo": true
+      "ativo": true,
+      "nota": "Pagina oficial e SPA Next.js: anuidade, pontuacao e beneficios sao carregados via JS e nao aparecem no HTML servido ao runner. Exige captura manual em cartoes-fontes-manuais.json antes de rodar o coletor."
     },
     {
-      "slug": "bb-mastercard-black",
-      "nome": "Ourocard Mastercard Black",
-      "emissor": "Banco do Brasil",
-      "bandeira": "Mastercard",
-      "categoria": "Black",
-      "bandeira_ref": "mastercard-black",
+      "slug": "bradesco-american-express-green",
+      "nome": "Bradesco American Express Green",
+      "emissor": "Bradesco",
+      "bandeira": "American Express",
+      "categoria": "Green",
+      "bandeira_ref": null,
       "urls": [
-        "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
-        "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
-        "https://www.bb.com.br/site/estilo/cartoes/ourocard-estilo-mastercard-black/",
-        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/ourocard-mastercard-black"
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green"
       ],
-      "ativo": true
-    },
-    {
-      "slug": "bb-ourocard-visa-infinite",
-      "nome": "Ourocard Visa Infinite",
-      "emissor": "Banco do Brasil",
-      "bandeira": "Visa",
-      "categoria": "Infinite",
-      "bandeira_ref": "visa-infinite",
-      "urls": [
-        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
-        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/livreto220210.pdf",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf"
-      ],
-      "ativo": true
-    },
-    {
-      "slug": "banescard-visa-infinite-absoluto",
-      "nome": "Banescard Visa Absoluto",
-      "emissor": "Banestes",
-      "bandeira": "Visa Infinite",
-      "categoria": "Alta Renda / Private",
-      "bandeira_ref": "visa-infinite",
-      "urls": [
-        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html"
-      ],
-      "ativo": true
+      "ativo": true,
+      "nota": "Pagina oficial e SPA Next.js: anuidade, pontuacao e beneficios sao carregados via JS e nao aparecem no HTML servido ao runner. Exige captura manual em cartoes-fontes-manuais.json antes de rodar o coletor."
     },
     {
       "slug": "bradesco-american-express-platinum",
@@ -326,6 +237,19 @@
       ],
       "ativo": true,
       "nota": "URL atualizada em 2026-07-30; endereco anterior estava fora do ar."
+    },
+    {
+      "slug": "bradesco-amex-the-centurion",
+      "nome": "The Centurion® Card Bradesco",
+      "emissor": "Bradesco",
+      "bandeira": "American Express",
+      "categoria": "Ultra Premium / Convite",
+      "bandeira_ref": null,
+      "urls": [
+        "https://www.americanexpress.com/pt-br/network/cartoes-credito/bradesco/",
+        "https://www.americanexpress.com/pt-br/network/beneficios/viagem/salasvips.html/"
+      ],
+      "ativo": true
     },
     {
       "slug": "bradesco-elo-diners-club",
@@ -344,16 +268,43 @@
       "ativo": true
     },
     {
-      "slug": "bradesco-visa-principal",
-      "nome": "Bradesco Principal Visa Infinite",
+      "slug": "bradesco-elo-grafite",
+      "nome": "Bradesco Elo Grafite",
       "emissor": "Bradesco",
-      "bandeira": "Visa",
-      "categoria": "Infinite",
-      "bandeira_ref": "visa-infinite",
+      "bandeira": "Elo",
+      "categoria": "Grafite",
+      "bandeira_ref": null,
       "urls": [
-        "https://banco.bradesco/html/principal/cartoes.html"
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-grafite"
       ],
-      "ativo": true
+      "ativo": true,
+      "nota": "Pagina oficial e SPA Next.js: anuidade, pontuacao e beneficios sao carregados via JS e nao aparecem no HTML servido ao runner. Exige captura manual em cartoes-fontes-manuais.json antes de rodar o coletor."
+    },
+    {
+      "slug": "bradesco-elo-mais-internacional",
+      "nome": "Bradesco Elo Mais Internacional",
+      "emissor": "Bradesco",
+      "bandeira": "Elo",
+      "categoria": "Internacional",
+      "bandeira_ref": null,
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-mais"
+      ],
+      "ativo": true,
+      "nota": "Pagina oficial e SPA Next.js: anuidade, pontuacao e beneficios sao carregados via JS e nao aparecem no HTML servido ao runner. Exige captura manual em cartoes-fontes-manuais.json antes de rodar o coletor."
+    },
+    {
+      "slug": "bradesco-elo-nanquim",
+      "nome": "Bradesco Elo Nanquim",
+      "emissor": "Bradesco",
+      "bandeira": "Elo",
+      "categoria": "Nanquim",
+      "bandeira_ref": null,
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-elo-nanquim"
+      ],
+      "ativo": true,
+      "nota": "Pagina oficial e SPA Next.js: anuidade, pontuacao e beneficios sao carregados via JS e nao aparecem no HTML servido ao runner. Exige captura manual em cartoes-fontes-manuais.json antes de rodar o coletor."
     },
     {
       "slug": "bradesco-smiles-visa-gold",
@@ -431,15 +382,125 @@
       "nota": "URLs antigas usavam IP literal (200-155-86-*.bradesco.com.br), fora do ar. Atualizado para soliciteseucartao.bradesco."
     },
     {
-      "slug": "bradesco-amex-the-centurion",
-      "nome": "The Centurion® Card Bradesco",
+      "slug": "bradesco-visa-platinum",
+      "nome": "Bradesco Visa Platinum",
       "emissor": "Bradesco",
-      "bandeira": "American Express",
-      "categoria": "Ultra Premium / Convite",
+      "bandeira": "Visa",
+      "categoria": "Platinum",
       "bandeira_ref": null,
       "urls": [
-        "https://www.americanexpress.com/pt-br/network/cartoes-credito/bradesco/",
-        "https://www.americanexpress.com/pt-br/network/beneficios/viagem/salasvips.html/"
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum"
+      ],
+      "ativo": true,
+      "nota": "Pagina oficial e SPA Next.js: anuidade, pontuacao e beneficios sao carregados via JS e nao aparecem no HTML servido ao runner. Exige captura manual em cartoes-fontes-manuais.json antes de rodar o coletor."
+    },
+    {
+      "slug": "bradesco-visa-principal",
+      "nome": "Bradesco Principal Visa Infinite",
+      "emissor": "Bradesco",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "bandeira_ref": "visa-infinite",
+      "urls": [
+        "https://banco.bradesco/html/principal/cartoes.html"
+      ],
+      "ativo": true
+    },
+    {
+      "slug": "bradesco-visa-signature",
+      "nome": "Bradesco Visa Signature",
+      "emissor": "Bradesco",
+      "bandeira": "Visa",
+      "categoria": "Signature",
+      "bandeira_ref": null,
+      "urls": [
+        "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-signature"
+      ],
+      "ativo": true,
+      "nota": "Pagina oficial e SPA Next.js: anuidade, pontuacao e beneficios sao carregados via JS e nao aparecem no HTML servido ao runner. Exige captura manual em cartoes-fontes-manuais.json antes de rodar o coletor."
+    },
+    {
+      "slug": "brb-visa-dux",
+      "nome": "BRB Visa DUX",
+      "emissor": "BRB",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "bandeira_ref": "visa-infinite",
+      "urls": [
+        "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
+        "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
+        "https://novo.brb.com.br/imprensa/brb-reafirma-compromisso-com-o-cliente-e-disponibiliza-novas-condicoes-de-transferencia-de-pontos-para-o-tap-milesgo/",
+        "https://nbf.brb.com.br/wp-content/uploads/2025/02/REGULAMENTO-SALA-BRB-VIP-CLUB-NOVA-REGRA-GASTOS-VF-6.pdf",
+        "https://novo.brb.com.br/imprensa/01-03-2021-brb-dux-visa-e-eleito-melhor-cartao-de-credito-de-2021/"
+      ],
+      "ativo": true
+    },
+    {
+      "slug": "brb-visa-infinite",
+      "nome": "BRB Visa Infinite",
+      "emissor": "BRB",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "bandeira_ref": "visa-infinite",
+      "urls": [
+        "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
+        "https://nbf.brb.com.br/wp-content/uploads/2025/02/REGULAMENTO-SALA-BRB-VIP-CLUB-NOVA-REGRA-GASTOS-VF-6.pdf",
+        "https://novo.brb.com.br/para-voce/abra-sua-conta/",
+        "https://www.visa.com.br/pague-com-visa/cartoes/beneficios.html",
+        "https://www.visa.com.br/pague-com-visa/cartoes/cartoes-de-credito/detalhes-visa-infinite.html",
+        "https://novo.brb.com.br/imprensa/brb-lanca-cartao-connect/"
+      ],
+      "ativo": true
+    },
+    {
+      "slug": "btg-mastercard-black-tap",
+      "nome": "BTG Mastercard Black TAP",
+      "emissor": "BTG Pactual",
+      "bandeira": "Mastercard Black",
+      "categoria": "Black",
+      "bandeira_ref": "mastercard-black",
+      "urls": [
+        "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
+        "https://banking.btgpactual.com/solicite-seu-cartao/tap",
+        "https://conteudo.btgpactual.com/cartao-tap-lastreado",
+        "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf",
+        "https://banking.btgpactual.com/cartao-de-credito/cartao-tap-black",
+        "https://conteudo.btgpactual.com/cartao-black-lastreado/"
+      ],
+      "ativo": true
+    },
+    {
+      "slug": "btg-mastercard-black-ultrablue",
+      "nome": "BTG Pactual Ultrablue",
+      "emissor": "BTG Pactual",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "bandeira_ref": "mastercard-black",
+      "urls": [
+        "https://conteudo.btgpactual.com/cartao-ultrablue",
+        "https://content.btgpactual.com/blog/conta-e-cartao/cartoes-btg-pactual",
+        "https://banking.btgpactual.com/ajuda/programadefidelidade/btgpontos",
+        "https://conteudo.btgpactual.com/iof-zero",
+        "https://content.btgpactual.com/blog/conta-e-cartao/programa-de-fidelidade",
+        "https://banking.btgpactual.com/assets/files/regulamento-campanha-ultrablue.pdf"
+      ],
+      "ativo": true
+    },
+    {
+      "slug": "btg-mastercard-world-legend-ultrablue",
+      "nome": "BTG Mastercard World Legend Ultrablue",
+      "emissor": "BTG Pactual",
+      "bandeira": "Mastercard",
+      "categoria": "World Legend",
+      "bandeira_ref": "mastercard-world-legend",
+      "urls": [
+        "https://conteudo.btgpactual.com/cartao-ultrablue",
+        "https://banking.btgpactual.com/ajuda/programadefidelidade/btgpontos",
+        "https://banking.btgpactual.com/conta-corrente",
+        "https://banking.btgpactual.com/assets/files/comparativo-cartoes-btg-pactual.pdf",
+        "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/world-legend-mastercard.html",
+        "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf"
       ],
       "ativo": true
     },
@@ -484,6 +545,23 @@
         "https://www.c6bank.com.br/blog/world-legend",
         "https://www.c6bank.com.br/cartao-de-credito/",
         "https://www.c6bank.com.br/blog/c6-bank-cria-segmento-para-atender-publico-de-mais-alta-renda"
+      ],
+      "ativo": true
+    },
+    {
+      "slug": "caixa-elo-diners",
+      "nome": "Cartão CAIXA Elo Diners Club",
+      "emissor": "CAIXA",
+      "bandeira": "Elo / Diners Club International",
+      "categoria": "Premium",
+      "bandeira_ref": null,
+      "urls": [
+        "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/credito/simulador-cartoes/Paginas/default.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
+        "https://caixanoticias.caixa.gov.br/Paginas/Not%C3%ADcias/2025/01-JANEIRO/CAIXA-disponibiliza-pontos-extras-para-clientes-de-cartao-de-credito-em-seu-164-aniversario.aspx",
+        "https://www.caixa.gov.br/voce/cartoes/credito/vantagens/Paginas/default.aspx",
+        "https://www.caixa.gov.br/Downloads/cartoes-caixa-pessoa-fisica-regulamentos/Programa_Pontos_Cartoes_CAIXA.pdf"
       ],
       "ativo": true
     },
@@ -544,23 +622,6 @@
       "ativo": true
     },
     {
-      "slug": "caixa-elo-diners",
-      "nome": "Cartão CAIXA Elo Diners Club",
-      "emissor": "CAIXA",
-      "bandeira": "Elo / Diners Club International",
-      "categoria": "Premium",
-      "bandeira_ref": null,
-      "urls": [
-        "https://www.caixa.gov.br/voce/cartoes/credito/elodiners/Paginas/default.aspx",
-        "https://www.caixa.gov.br/voce/cartoes/credito/simulador-cartoes/Paginas/default.aspx",
-        "https://www.caixa.gov.br/voce/cartoes/programa-pontos/Paginas/default.aspx",
-        "https://caixanoticias.caixa.gov.br/Paginas/Not%C3%ADcias/2025/01-JANEIRO/CAIXA-disponibiliza-pontos-extras-para-clientes-de-cartao-de-credito-em-seu-164-aniversario.aspx",
-        "https://www.caixa.gov.br/voce/cartoes/credito/vantagens/Paginas/default.aspx",
-        "https://www.caixa.gov.br/Downloads/cartoes-caixa-pessoa-fisica-regulamentos/Programa_Pontos_Cartoes_CAIXA.pdf"
-      ],
-      "ativo": true
-    },
-    {
       "slug": "genial-mastercard-black",
       "nome": "Genial Mastercard Black",
       "emissor": "Genial Investimentos",
@@ -572,35 +633,19 @@
       "nota": "Sem URL oficial mapeada — preencher urls[] e marcar ativo=true para o coletor processar."
     },
     {
-      "slug": "azul-visa-infinite",
-      "nome": "Azul Itaucard Visa Infinite",
-      "emissor": "Itaú",
-      "bandeira": "Visa",
-      "categoria": "Infinite",
-      "bandeira_ref": "visa-infinite",
-      "urls": [
-        "https://www.itau.com.br/cartoes/escolha/g/azul-visa-infinite/",
-        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
-        "https://www.itau.com.br/cartoes/beneficios/programa-fidelidade-azul",
-        "https://www.itau.com.br/cartoes/escolha/formulario/tudoazul-itaucard-20-internacional-visa.html",
-        "https://www.itau.com.br/cartoes/escolha/formulario/azul-itaucard-visa-infinite.html",
-        "https://www.itau.com.br/media/dam/m/7a27c611cf1fb00d/original/cartoes-tabela-geral.pdf"
-      ],
-      "ativo": true
-    },
-    {
-      "slug": "azul-itau-mastercard-skyline",
-      "nome": "Azul Itaú Mastercard Skyline",
-      "emissor": "Itaú",
+      "slug": "inter-win",
+      "nome": "Cartão Inter Win (Mastercard Black)",
+      "emissor": "Banco Inter",
       "bandeira": "Mastercard",
-      "categoria": "Black / World Elite",
+      "categoria": "Black / Wealth Management (segmento Win)",
       "bandeira_ref": "mastercard-black",
       "urls": [
-        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "https://www.itau.com.br/cartoes/beneficios/programa-fidelidade-azul",
-        "https://www.itau.com.br/cartoes/escolha/formulario/tudoazul-itaucard-20-internacional-visa.html",
-        "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html?l=&cpg_s=azl_prc",
-        "https://www.itau.com.br/media/dam/m/7a27c611cf1fb00d/original/cartoes-tabela-geral.pdf"
+        "https://ajuda.inter.co/sobre-o-inter/quais-as-vantagens-de-ser-cliente-win",
+        "https://inter.co/pra-voce/cartoes/programa-de-pontos/",
+        "https://inter.co/pra-voce/relacionamento/inter-win/",
+        "https://inter.co/sala-vip/",
+        "https://ajuda.inter.co/cartao/como-usar-a-sala-vip-nos-aeroportos-com-o-cartao-black-mastercard-do-inter",
+        "https://ajuda.bancointer.com.br/pt-BR/articles/1963873-o-inter-cobra-tarifas-dos-clientes-da-conta-digital"
       ],
       "ativo": true
     },
@@ -671,22 +716,6 @@
       "ativo": true
     },
     {
-      "slug": "itau-private-mastercard-the-one",
-      "nome": "Itaú Private Mastercard The One",
-      "emissor": "Itaú",
-      "bandeira": "Mastercard",
-      "categoria": "Mastercard Black (metal, segmento Private Bank)",
-      "bandeira_ref": "mastercard-black",
-      "urls": [
-        "https://www.itau.com.br/private-bank/produtos-servicos/banking/cartao-itauprivate-theone",
-        "https://cloud.sfmc.itau.com.br/itau_personnalite_m_the_one",
-        "https://www.itau.com.br/private-bank/seja-cliente",
-        "https://www.itau.com.br/personnalite/cartoes/theone",
-        "https://www.itau.com.br/private-bank/beneficios"
-      ],
-      "ativo": true
-    },
-    {
       "slug": "itau-private-mastercard-legend",
       "nome": "Itaú Private World Legend Mastercard",
       "emissor": "Itaú",
@@ -699,6 +728,22 @@
         "https://www.itau.com.br/private-bank/produtos-servicos/banking",
         "https://www.itau.com.br/private-bank/beneficios",
         "https://www.itau.com.br/imprensa"
+      ],
+      "ativo": true
+    },
+    {
+      "slug": "itau-private-mastercard-the-one",
+      "nome": "Itaú Private Mastercard The One",
+      "emissor": "Itaú",
+      "bandeira": "Mastercard",
+      "categoria": "Mastercard Black (metal, segmento Private Bank)",
+      "bandeira_ref": "mastercard-black",
+      "urls": [
+        "https://www.itau.com.br/private-bank/produtos-servicos/banking/cartao-itauprivate-theone",
+        "https://cloud.sfmc.itau.com.br/itau_personnalite_m_the_one",
+        "https://www.itau.com.br/private-bank/seja-cliente",
+        "https://www.itau.com.br/personnalite/cartoes/theone",
+        "https://www.itau.com.br/private-bank/beneficios"
       ],
       "ativo": true
     },
@@ -805,6 +850,52 @@
       "nota": "Sem URL oficial mapeada — preencher urls[] e marcar ativo=true para o coletor processar."
     },
     {
+      "slug": "safra-investor-visa-infinite",
+      "nome": "Safra Investor Visa Infinite",
+      "emissor": "Banco Safra",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "bandeira_ref": "visa-infinite",
+      "urls": [
+        "https://www.safra.com.br/cartoes/",
+        "https://www.safra.com.br/abra-sua-conta.htm",
+        "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/programa-safra-rewards.htm",
+        "https://www.safra.com.br/cartoes/programa-safra-rewards/",
+        "https://www.safra.com.br/external-files/servicos/pessoa-fisica/conta-corrente/tabela-de-tarifas-pf.pdf",
+        "https://www.safra.com.br/lp/cartoes-safra.htm"
+      ],
+      "ativo": true
+    },
+    {
+      "slug": "safra-iridium-visa-infinite",
+      "nome": "Safra Iridium Visa Infinite",
+      "emissor": "Banco Safra",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "bandeira_ref": "visa-infinite",
+      "urls": [
+        "https://www.safra.com.br/cartoes/"
+      ],
+      "ativo": true
+    },
+    {
+      "slug": "safra-visa-infinite",
+      "nome": "Safra Visa Infinite",
+      "emissor": "Banco Safra",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "bandeira_ref": "visa-infinite",
+      "urls": [
+        "https://www.safra.com.br/cartoes/",
+        "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/safra-visa-infinite.htm",
+        "https://www.safra.com.br/",
+        "https://www.safra.com.br/cartoes/programa-safra-rewards/",
+        "https://www.safra.com.br/abra-sua-conta.htm",
+        "https://www.safra.com.br/lp/cartoes-safra.htm"
+      ],
+      "ativo": true
+    },
+    {
       "slug": "santander-aadvantage-black",
       "nome": "Santander AAdvantage® Black",
       "emissor": "Santander",
@@ -831,23 +922,6 @@
       "urls": [],
       "ativo": false,
       "nota": "Sem URL oficial mapeada — preencher urls[] e marcar ativo=true para o coletor processar."
-    },
-    {
-      "slug": "santander-smiles-visa-infinite",
-      "nome": "Santander GOL Smiles Visa Infinite",
-      "emissor": "Santander",
-      "bandeira": "Visa",
-      "categoria": "Infinite",
-      "bandeira_ref": "visa-infinite",
-      "urls": [
-        "https://www.santander.com.br/hotsite/cartaosmiles/",
-        "https://www.santander.com.br/cartao-credito-santander/smiles-infinite",
-        "https://cms.santander.com.br/sites/WPS/documentos/novo-arq-smiles/24-01-02_192743_novo-reg-smiles.pdf",
-        "https://www.santander.com.br/document/gsb/cartoes_santander.pdf",
-        "https://www.santander.com.br/cartoes-santander/pessoa-fisica/smiles-infinite",
-        "https://contaselect.santander.com.br/cartao-gol-smiles-infinite-black-wtl"
-      ],
-      "ativo": true
     },
     {
       "slug": "santander-gol-smiles-visa-platinum",
@@ -880,6 +954,23 @@
         "https://www.santander.com.br/cartoes-santander/acesso-salas-vip",
         "https://www.santander.com.br/blog/esfera/validade-dos-pontos-esfera",
         "https://www.santander.com.br/banco/private-banking"
+      ],
+      "ativo": true
+    },
+    {
+      "slug": "santander-smiles-visa-infinite",
+      "nome": "Santander GOL Smiles Visa Infinite",
+      "emissor": "Santander",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "bandeira_ref": "visa-infinite",
+      "urls": [
+        "https://www.santander.com.br/hotsite/cartaosmiles/",
+        "https://www.santander.com.br/cartao-credito-santander/smiles-infinite",
+        "https://cms.santander.com.br/sites/WPS/documentos/novo-arq-smiles/24-01-02_192743_novo-reg-smiles.pdf",
+        "https://www.santander.com.br/document/gsb/cartoes_santander.pdf",
+        "https://www.santander.com.br/cartoes-santander/pessoa-fisica/smiles-infinite",
+        "https://contaselect.santander.com.br/cartao-gol-smiles-infinite-black-wtl"
       ],
       "ativo": true
     },
@@ -986,6 +1077,21 @@
       "ativo": true
     },
     {
+      "slug": "unicred-impar-visa-infinite",
+      "nome": "Ímpar Unicred Visa Infinite",
+      "emissor": "Unicred",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "bandeira_ref": "visa-infinite",
+      "urls": [
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
+        "https://vaidevisa.visa.com.br/site/regulamento/unicred-vai-de-visa",
+        "https://www.unicred.com.br/associe-se"
+      ],
+      "ativo": true
+    },
+    {
       "slug": "unicred-visa-infinite",
       "nome": "Unicred Visa Infinite",
       "emissor": "Unicred",
@@ -1014,21 +1120,6 @@
         "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
         "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-lanca-brasil-visa-infinite-privilege-segmento-altissima-renda.html",
         "https://www.visa.com.br/pague-com-visa/cartoes/cartoes-credito.html"
-      ],
-      "ativo": true
-    },
-    {
-      "slug": "unicred-impar-visa-infinite",
-      "nome": "Ímpar Unicred Visa Infinite",
-      "emissor": "Unicred",
-      "bandeira": "Visa",
-      "categoria": "Infinite",
-      "bandeira_ref": "visa-infinite",
-      "urls": [
-        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
-        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
-        "https://vaidevisa.visa.com.br/site/regulamento/unicred-vai-de-visa",
-        "https://www.unicred.com.br/associe-se"
       ],
       "ativo": true
     },
