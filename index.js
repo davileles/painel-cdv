@@ -99,6 +99,8 @@ const CLIQUES_FLUSH_MS = 10 * 60 * 1000;
 const LINKS_FALLBACK = 'https://davileles.com/clube-do-viajante/';
 const PREVIEW_BOT_RE = /whatsapp|facebookexternalhit|telegrambot|twitterbot|slackbot|discordbot|linkedinbot|skypeuripreview|bingbot|googlebot/i;
 
+const RESERVADOS_IR = new Set(['ir', 'ir-stats', 'ping', 'health', 'fetch', 'parceiros', 'bandeiras']);
+
 let linksCache = { data: null, ts: 0 };
 
 async function carregarLinks() {
@@ -221,10 +223,13 @@ app.use(async (req, res, next) => {
   const m = req.path.match(/^\/([a-zA-Z0-9\-_]{1,40})\/?$/);
   if (!m) return next();
   const slug = m[1].toLowerCase();
-  if (slug === 'ir') return next();
+  // Paths operacionais do proxy continuam funcionando mesmo neste host
+  if (RESERVADOS_IR.has(slug)) return next();
   let links;
   try { links = await carregarLinks(); } catch (e) { links = linksCache.data || {}; }
-  if (!links[slug]) return next();
+  // Slug desconhecido (typo em mensagem antiga, link cadastrado errado): manda
+  // para o site do Clube em vez de devolver 404 do Express na cara do membro.
+  if (!links[slug]) return res.redirect(302, LINKS_FALLBACK);
   return handleIr(req, res, slug);
 });
 
