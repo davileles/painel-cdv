@@ -8,7 +8,7 @@
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
     "atualizado_em": "2026-07-31",
-    "total": 113,
+    "total": 143,
     "validado_em": "2026-07-31",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização.",
@@ -2008,6 +2008,63 @@
       }
     },
     {
+      "slug": "bb-visa-gold",
+      "nome": "BB Visa Gold",
+      "emissor": "Banco do Brasil",
+      "bandeira": "Visa",
+      "categoria": "Gold",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 408.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": {
+        "percentual": 0.3,
+        "regra": "0.3%"
+      },
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
       "slug": "bb-visa-infinite-altus-liv",
       "nome": "BB Visa Infinite Altus Liv",
       "emissor": "Banco do Brasil",
@@ -2254,6 +2311,63 @@
         "em": "2026-07-31",
         "par_planilha": "Banco do Brasil Altus Liv Visa Infinite"
       }
+    },
+    {
+      "slug": "bb-visa-platinum",
+      "nome": "BB Visa Platinum",
+      "emissor": "Banco do Brasil",
+      "bandeira": "Visa",
+      "categoria": "Platinum",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 546.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": {
+        "percentual": 0.75,
+        "regra": "0.75%"
+      },
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
     },
     {
       "slug": "bb-ourocard-elo-nanquim",
@@ -2805,7 +2919,10 @@
         ],
         "arquivo": "cartoes-premium-comparativo.xlsx",
         "em": "2026-07-31"
-      }
+      },
+      "aliases": [
+        "Bradesco Amex Gold"
+      ]
     },
     {
       "slug": "bradesco-american-express-green",
@@ -2831,7 +2948,12 @@
       "spread": null,
       "iof": null,
       "validade_pontos": "Nunca expiram",
-      "salas_vip": [],
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
       "beneficios_banco": [
         {
           "titulo": "Seguro viagem gratuito",
@@ -2865,7 +2987,8 @@
         "anuidade_parcelas": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green",
         "pontos": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green",
         "validade_pontos": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green",
-        "beneficios_banco": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green"
+        "beneficios_banco": "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://soliciteseucartao.bradesco/home/cartoes/cartao-amex-green"
@@ -2878,11 +3001,20 @@
         "isencao",
         "renda_minima",
         "requisito_acesso",
-        "salas_vip",
         "spread",
         "transfere_para"
       ],
-      "campos_rejeitados": []
+      "campos_rejeitados": [],
+      "origem_planilha": {
+        "campos": [
+          "salas_vip"
+        ],
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31"
+      },
+      "aliases": [
+        "Bradesco Amex Green"
+      ]
     },
     {
       "slug": "bradesco-american-express-platinum",
@@ -2975,6 +3107,114 @@
       }
     },
     {
+      "slug": "bradesco-amex-platinum",
+      "nome": "Bradesco Amex Platinum",
+      "emissor": "Bradesco",
+      "bandeira": "American Express",
+      "categoria": "Platinum",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 1750.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "5 acessos cadastrados"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "bradesco-elo-diners",
+      "nome": "Bradesco Elo Diners",
+      "emissor": "Bradesco",
+      "bandeira": "Elo",
+      "categoria": "Premium",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 1607.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "2 acessos cadastrados"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
       "slug": "bradesco-elo-grafite",
       "nome": "Bradesco Elo Grafite",
       "emissor": "Bradesco",
@@ -3047,6 +3287,60 @@
         "cashback",
         "iof",
         "isencao",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "bradesco-elo-mais",
+      "nome": "Bradesco Elo Mais",
+      "emissor": "Bradesco",
+      "bandeira": "Elo",
+      "categoria": "Elo Mais",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 456.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -3234,7 +3528,7 @@
       "nome": "Bradesco Mastercard Amazon Prime",
       "emissor": "Bradesco",
       "bandeira": "Mastercard",
-      "categoria": "Outro",
+      "categoria": "Platinum",
       "programa_proprio": null,
       "validade_pontos": null,
       "anuidade_parcelas": null,
@@ -4033,6 +4327,60 @@
       }
     },
     {
+      "slug": "bradesco-visa-gold",
+      "nome": "Bradesco Visa Gold",
+      "emissor": "Bradesco",
+      "bandeira": "Visa",
+      "categoria": "Gold",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 434.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
       "slug": "bradesco-visa-infinite",
       "nome": "Bradesco Visa Infinite",
       "emissor": "Bradesco",
@@ -4592,6 +4940,78 @@
       "bandeira_ref": "mastercard-black"
     },
     {
+      "slug": "c6-carbon-mastercard-black",
+      "nome": "C6 Carbon Mastercard Black",
+      "emissor": "C6 Bank",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "programa_proprio": "Átomos",
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "adicionais_gratis": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "spread": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "iof": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "transfere_para": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "isencao": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 1068.0,
+      "renda_minima": null,
+      "adicionais_gratis": 10,
+      "spread": 5.5,
+      "iof": 3.5,
+      "requisito_acesso": null,
+      "transfere_para": [
+        "Latam Pass",
+        "TAP Miles&Go",
+        "Smiles",
+        "Azul Fidelidade",
+        "Livelo"
+      ],
+      "pontos": {
+        "nacional": 2.5,
+        "internacional": 3.5,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 1.7,
+        "regra": "1.7%"
+      },
+      "isencao": {
+        "tipo": "gasto_mensal",
+        "valor": 8000.0,
+        "regra": "Gastos a partir de R$ 8 mil (inclui adicionais); 100% para quem investe a partir de R$ 50 mil em renda fixa; 100% para quem investe R$ 1 milhão+ em quaisquer produtos"
+      },
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "2 acessos cadastrados"
+        }
+      ],
+      "campos_pendentes": [
+        "renda_minima",
+        "requisito_acesso"
+      ],
+      "campos_rejeitados": []
+    },
+    {
       "slug": "c6-graphene",
       "nome": "C6 Graphene World Legend Mastercard",
       "emissor": "C6 Bank",
@@ -4742,6 +5162,63 @@
       "analise": null,
       "verificado_em": "2026-07-27",
       "bandeira_ref": "mastercard-world-legend"
+    },
+    {
+      "slug": "c6-mastercard-black",
+      "nome": "C6 Mastercard Black",
+      "emissor": "C6 Bank",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 600.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": {
+        "percentual": 1.2,
+        "regra": "1.2%"
+      },
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Ilimitado MasterCard Guarulhos"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
     },
     {
       "slug": "c6-mastercard-platinum",
@@ -5294,6 +5771,114 @@
       }
     },
     {
+      "slug": "caixa-elo-grafite",
+      "nome": "Caixa Elo Grafite",
+      "emissor": "CAIXA",
+      "bandeira": "Elo",
+      "categoria": "Grafite",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 650.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "caixa-elo-mais",
+      "nome": "Caixa Elo Mais",
+      "emissor": "CAIXA",
+      "bandeira": "Elo",
+      "categoria": "Elo Mais",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 207.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
       "slug": "caixa-mastercard-platinum",
       "nome": "Caixa Mastercard Platinum",
       "emissor": "CAIXA",
@@ -5319,6 +5904,114 @@
         "criado": true
       },
       "anuidade": 453.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "caixa-visa-gold",
+      "nome": "Caixa Visa Gold",
+      "emissor": "CAIXA",
+      "bandeira": "Visa",
+      "categoria": "Gold",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 207.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "caixa-visa-platinum",
+      "nome": "Caixa Visa Platinum",
+      "emissor": "CAIXA",
+      "bandeira": "Visa",
+      "categoria": "Platinum",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 414.0,
       "renda_minima": null,
       "adicionais_gratis": null,
       "spread": null,
@@ -5835,6 +6528,60 @@
         {
           "programa": "Ver regra",
           "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "azul-mastercard-platinum",
+      "nome": "Azul Mastercard Platinum",
+      "emissor": "Itaú",
+      "bandeira": "Mastercard",
+      "categoria": "Platinum",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 650.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Em VCP (embarque internacional) Lounge Azul"
         }
       ],
       "campos_pendentes": [
@@ -6988,6 +7735,60 @@
       }
     },
     {
+      "slug": "latam-mastercard-black",
+      "nome": "Latam Mastercard Black",
+      "emissor": "Itaú",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 1200.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "3 acessos cadastrados"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
       "slug": "latam-mastercard-gold",
       "nome": "Latam Mastercard Gold",
       "emissor": "Itaú",
@@ -7134,6 +7935,60 @@
         {
           "programa": "Ver regra",
           "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "latam-visa-infinite",
+      "nome": "Latam Visa Infinite",
+      "emissor": "Itaú",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 1200.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "2 acessos cadastrados"
         }
       ],
       "campos_pendentes": [
@@ -7412,6 +8267,63 @@
       "campos_pendentes": [
         "adicionais_gratis",
         "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "nubank-mastercard-ultravioleta",
+      "nome": "Nubank Mastercard Ultravioleta",
+      "emissor": "Nubank",
+      "bandeira": "Mastercard",
+      "categoria": "Black",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 1068.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": {
+        "percentual": 1.25,
+        "regra": "1.25%"
+      },
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "3 acessos cadastrados"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
         "iof",
         "isencao",
         "pontos",
@@ -7796,6 +8708,168 @@
       }
     },
     {
+      "slug": "porto-bank-mastercard-gold",
+      "nome": "Porto Bank Mastercard Gold",
+      "emissor": "Porto Bank",
+      "bandeira": "Mastercard",
+      "categoria": "Gold",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 468.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "porto-bank-mastercard-platinum",
+      "nome": "Porto Bank Mastercard Platinum",
+      "emissor": "Porto Bank",
+      "bandeira": "Mastercard",
+      "categoria": "Platinum",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 708.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "porto-bank-visa-gold",
+      "nome": "Porto Bank Visa Gold",
+      "emissor": "Porto Bank",
+      "bandeira": "Visa",
+      "categoria": "Gold",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 468.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
       "slug": "porto-bank-visa-infinite",
       "nome": "Porto Bank Visa Infinite",
       "emissor": "Porto Bank",
@@ -7890,6 +8964,60 @@
         "arquivo": "cartoes-premium-comparativo.xlsx",
         "em": "2026-07-31"
       }
+    },
+    {
+      "slug": "porto-bank-visa-platinum",
+      "nome": "Porto Bank Visa Platinum",
+      "emissor": "Porto Bank",
+      "bandeira": "Visa",
+      "categoria": "Platinum",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 708.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
     },
     {
       "slug": "recargapay-mastercard-black-titan",
@@ -8190,6 +9318,114 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "santander-aadvantage-platinum",
+      "nome": "Santander AAdvantage Platinum",
+      "emissor": "Santander",
+      "bandeira": null,
+      "categoria": "Platinum",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 660.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "santander-aadvantage-quartz",
+      "nome": "Santander AAdvantage Quartz",
+      "emissor": "Santander",
+      "bandeira": null,
+      "categoria": "Platinum",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 564.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
         "iof",
         "isencao",
         "pontos",
@@ -8847,11 +10083,65 @@
       }
     },
     {
+      "slug": "santander-visa-elite-pontos",
+      "nome": "Santander Visa Elite Pontos",
+      "emissor": "Santander",
+      "bandeira": "Visa",
+      "categoria": "Platinum",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 660.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
       "slug": "santander-visa-unique-cashback",
       "nome": "Santander Visa Unique Cashback",
       "emissor": "Santander",
       "bandeira": "Visa",
-      "categoria": "Outro",
+      "categoria": "Infinite",
       "programa_proprio": null,
       "validade_pontos": null,
       "anuidade_parcelas": null,
@@ -9323,6 +10613,168 @@
       }
     },
     {
+      "slug": "sicredi-mastercard-gold",
+      "nome": "Sicredi Mastercard Gold",
+      "emissor": "Sicredi",
+      "bandeira": "Mastercard",
+      "categoria": "Gold",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 180.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "sicredi-mastercard-internacional",
+      "nome": "Sicredi Mastercard Internacional",
+      "emissor": "Sicredi",
+      "bandeira": "Mastercard",
+      "categoria": "Internacional",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 0.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "sicredi-mastercard-platinum",
+      "nome": "Sicredi Mastercard Platinum",
+      "emissor": "Sicredi",
+      "bandeira": "Mastercard",
+      "categoria": "Platinum",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 450.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
       "slug": "sicredi-visa-infinite",
       "nome": "Sicredi Visa Infinite",
       "emissor": "Sicredi",
@@ -9433,6 +10885,60 @@
       }
     },
     {
+      "slug": "sicredi-visa-internacional",
+      "nome": "Sicredi Visa Internacional",
+      "emissor": "Sicredi",
+      "bandeira": "Visa",
+      "categoria": "Internacional",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 150.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
       "slug": "unicred-visa-classic",
       "nome": "Unicred Visa Classic",
       "emissor": "Unicred",
@@ -9458,6 +10964,60 @@
         "criado": true
       },
       "anuidade": 110.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
+    },
+    {
+      "slug": "unicred-visa-gold",
+      "nome": "Unicred Visa Gold",
+      "emissor": "Unicred",
+      "bandeira": "Visa",
+      "categoria": "Gold",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 200.0,
       "renda_minima": null,
       "adicionais_gratis": null,
       "spread": null,
@@ -9597,6 +11157,60 @@
         "arquivo": "cartoes-premium-comparativo.xlsx",
         "em": "2026-07-31"
       }
+    },
+    {
+      "slug": "unicred-visa-platinum",
+      "nome": "Unicred Visa Platinum",
+      "emissor": "Unicred",
+      "bandeira": "Visa",
+      "categoria": "Platinum",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 300.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": null,
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "Nenhum acesso"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
     },
     {
       "slug": "unicred-visa-privilege",
@@ -10006,6 +11620,63 @@
         "em": "2026-07-31",
         "par_planilha": "XP Legacy Visa Infinite"
       }
+    },
+    {
+      "slug": "xp-visa-the-one",
+      "nome": "XP Visa The One",
+      "emissor": "XP",
+      "bandeira": "Visa",
+      "categoria": "Ultra Premium",
+      "programa_proprio": null,
+      "validade_pontos": null,
+      "anuidade_parcelas": null,
+      "link_solicitacao": null,
+      "beneficios_banco": [],
+      "fontes": [
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-07-31",
+      "procedencia": {
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+      },
+      "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
+      "origem_planilha": {
+        "arquivo": "arquivo_unificado_fuzzy.xlsx",
+        "em": "2026-07-31",
+        "criado": true
+      },
+      "anuidade": 0.0,
+      "renda_minima": null,
+      "adicionais_gratis": null,
+      "spread": null,
+      "iof": null,
+      "requisito_acesso": null,
+      "transfere_para": [],
+      "pontos": null,
+      "cashback": {
+        "percentual": 1.0,
+        "regra": "1%"
+      },
+      "isencao": null,
+      "salas_vip": [
+        {
+          "programa": "Ver regra",
+          "regra": "2 acessos/ano por cartão Dragon Pass"
+        }
+      ],
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "iof",
+        "isencao",
+        "pontos",
+        "renda_minima",
+        "requisito_acesso",
+        "spread",
+        "transfere_para"
+      ],
+      "campos_rejeitados": []
     }
   ]
 }
