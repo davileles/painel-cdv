@@ -184,7 +184,10 @@
         "unidade": "pts/USD",
         "observacao": ""
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "Curtaí",
       "transfere_para": [],
       "spread": 4.0,
@@ -240,7 +243,8 @@
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
         "iof": "planilha:cartoes-premium-comparativo.xlsx",
         "pontos": "planilha:cartoes-premium-comparativo.xlsx",
-        "isencao": "planilha:cartoes-premium-comparativo.xlsx"
+        "isencao": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
@@ -253,7 +257,6 @@
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "renda_minima",
         "transfere_para"
       ],
@@ -266,6 +269,7 @@
       "bandeira_ref": "visa-infinite",
       "origem_planilha": {
         "campos": [
+          "cashback",
           "iof",
           "isencao",
           "pontos",
@@ -776,12 +780,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 0.0,
       "renda_minima": null,
@@ -790,8 +800,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 0.1,
+        "internacional": null,
+        "unidade": "pts/BRL",
+        "observacao": "Ao abrir conta gratuita já ganha o Inter Gold (sujeito à análise)"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -801,10 +819,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -830,12 +846,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 0.0,
       "renda_minima": null,
@@ -844,8 +866,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 0.2,
+        "internacional": null,
+        "unidade": "pts/BRL",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -855,10 +885,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -884,12 +912,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 0.0,
       "renda_minima": null,
@@ -898,8 +932,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 0.4,
+        "internacional": null,
+        "unidade": "pts/BRL",
+        "observacao": "3 formas de obter: R$150 mil investidos; 4 faturas consecutivas de R$7 mil+; ou plano anual Duo Gourmet"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -909,10 +951,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -938,12 +978,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 0.0,
       "renda_minima": null,
@@ -952,8 +998,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 0.5,
+        "internacional": null,
+        "unidade": "pts/BRL",
+        "observacao": "Necessário ter pelo menos R$ 1 milhão investido no banco"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -963,10 +1017,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -1188,12 +1240,16 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback"
+        ]
       },
       "anuidade": 0.0,
       "renda_minima": null,
@@ -1203,7 +1259,10 @@
       "requisito_acesso": null,
       "transfere_para": [],
       "pontos": null,
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -1213,7 +1272,6 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
         "pontos",
@@ -1241,12 +1299,15 @@
       "requisito_acesso": "Correntista do Banco Safra com investimentos a partir de R$ 300.000 no Safra, sujeito à análise e aprovação de crédito.",
       "adicionais_gratis": null,
       "pontos": {
-        "nacional": "2,0 pts/USD em faturas abaixo de R$ 20 mil; 2,5 pts/USD em faturas a partir de R$ 20 mil",
-        "internacional": "3,0 pts/USD",
+        "nacional": 2.0,
+        "internacional": 3.0,
         "unidade": "pts/USD",
-        "observacao": "Pontos acumulados via programa Safra Rewards. Cartões antigos (versão anterior ao 'Novo Safra Visa Infinite') acumulam 1,3 pts/USD. A pontuação de 3 pts/USD aplica-se apenas a compras internacionais na versão nova."
+        "observacao": "2,0 pts/USD em faturas abaixo de R$ 20 mil; 2,5 pts/USD em faturas a partir de R$ 20 mil. Pontos acumulados via programa Safra Rewards. Cartões antigos (versão anterior ao 'Novo Safra Visa Infinite') acumulam 1,3 pts/USD. A pontuação de 3 pts/USD aplica-se apenas a compras internacionais na versão n"
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "Safra Rewards",
       "transfere_para": [
         "Livelo (a partir de 35.000 pontos, via app Safra Rewards, com acesso a mais de 11 companhias aéreas nacionais e internacionais — vigente a partir de 30/09/2025)"
@@ -1309,11 +1370,11 @@
         "transfere_para": "https://www.safra.com.br/cartoes/",
         "requisito_acesso": "https://www.safra.com.br/",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "planilha:cartoes-premium-comparativo.xlsx"
+        "iof": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "renda_minima"
       ],
       "campos_rejeitados": [
@@ -1337,6 +1398,7 @@
       "bandeira_ref": "visa-infinite",
       "origem_planilha": {
         "campos": [
+          "cashback",
           "iof",
           "spread"
         ],
@@ -1362,12 +1424,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 660.0,
       "renda_minima": null,
@@ -1376,8 +1444,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 2.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -1387,10 +1463,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -1417,12 +1491,16 @@
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
         "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "pontos"
+        ]
       },
       "anuidade": 210.0,
       "renda_minima": null,
@@ -1431,7 +1509,12 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
+      "pontos": {
+        "nacional": 0.5,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Planilha declara 0,5 pts/US$ — valor baixo para pontuacao por dolar; confirmar em fonte oficial do BB."
+      },
       "cashback": {
         "percentual": 0.15,
         "regra": "0.15%"
@@ -1447,7 +1530,6 @@
         "adicionais_gratis",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -1474,12 +1556,16 @@
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
         "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "pontos"
+        ]
       },
       "anuidade": 519.0,
       "renda_minima": null,
@@ -1488,7 +1574,12 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
+      "pontos": {
+        "nacional": 1.4,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
       "cashback": {
         "percentual": 0.75,
         "regra": "0.75%"
@@ -1504,7 +1595,6 @@
         "adicionais_gratis",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -1531,12 +1621,16 @@
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
         "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "pontos"
+        ]
       },
       "anuidade": 390.0,
       "renda_minima": null,
@@ -1545,7 +1639,12 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
+      "pontos": {
+        "nacional": 1.2,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Acesso a 01 benefício alterável na Plataforma Elo Flex"
+      },
       "cashback": {
         "percentual": 0.3,
         "regra": "0.3%"
@@ -1561,7 +1660,6 @@
         "adicionais_gratis",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -1588,12 +1686,16 @@
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
         "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "pontos"
+        ]
       },
       "anuidade": 1056.0,
       "renda_minima": null,
@@ -1602,7 +1704,12 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
+      "pontos": {
+        "nacional": 3.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
       "cashback": {
         "percentual": 1.0,
         "regra": "1%"
@@ -1618,7 +1725,6 @@
         "adicionais_gratis",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -1648,7 +1754,10 @@
         "unidade": "pts/USD",
         "observacao": "Cliente Smiles ganha 1,8 milha por dólar gasto; clientes Clube Smiles ou categoria Diamante ganham 3 milhas por dólar. Na renovação, são creditadas 2.000 milhas (Smiles) ou 3.000 milhas (Clube Smiles/Diamante), condicionadas ao pagamento da anuidade de renovação. Há também bônus de aquisição de 5.000 a 7.500 milhas, creditado em 4 parcelas."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "Smiles",
       "transfere_para": [],
       "spread": 4.0,
@@ -1689,7 +1798,8 @@
         "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "salas_vip": "planilha:cartoes-premium-comparativo.xlsx"
+        "salas_vip": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
@@ -1697,7 +1807,6 @@
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "cashback",
         "renda_minima",
         "requisito_acesso",
         "transfere_para"
@@ -1709,6 +1818,7 @@
       ],
       "origem_planilha": {
         "campos": [
+          "cashback",
           "salas_vip",
           "spread"
         ],
@@ -1739,7 +1849,10 @@
         "unidade": "pts/USD",
         "observacao": "Milhas Smiles creditadas automaticamente por dólar do valor pago na fatura: clientes Smiles ganham 3 milhas/USD e clientes Clube Smiles ou categoria Diamante ganham 5,5 milhas/USD. Há ainda milhas de renovação anual (5.000 para clientes Smiles ou 7.000 para Clube Smiles/Diamante) e milhas de aquisição do cartão (15.000 ou 20.000, conforme categoria), creditadas em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "Smiles",
       "transfere_para": [
         "Smiles"
@@ -1796,7 +1909,8 @@
         "transfere_para": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
         "requisito_acesso": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
         "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "spread": "planilha:cartoes-premium-comparativo.xlsx"
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
@@ -1805,7 +1919,6 @@
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "cashback",
         "renda_minima"
       ],
       "campos_rejeitados": [],
@@ -1818,6 +1931,7 @@
       "bandeira_ref": "visa-infinite",
       "origem_planilha": {
         "campos": [
+          "cashback",
           "spread"
         ],
         "arquivo": "cartoes-premium-comparativo.xlsx",
@@ -1842,7 +1956,10 @@
         "unidade": "pts/USD",
         "observacao": "1,35 milha por dólar gasto para clientes Smiles; 2 milhas por dólar para clientes Clube Smiles ou categoria Diamante. Milhas de renovação: 1.000 (Smiles) ou 2.000 (Clube Smiles/Diamante), condicionadas ao pagamento da anuidade de renovação."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "Smiles",
       "transfere_para": [
         "Smiles"
@@ -1884,7 +2001,8 @@
         "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "transfere_para": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
@@ -1892,7 +2010,6 @@
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "cashback",
         "isencao",
         "renda_minima",
         "requisito_acesso",
@@ -1906,6 +2023,7 @@
       ],
       "origem_planilha": {
         "campos": [
+          "cashback",
           "salas_vip"
         ],
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
@@ -1934,7 +2052,10 @@
         "unidade": "pts/USD",
         "observacao": "2,3 milhas por dólar gasto para clientes Smiles; 3,5 milhas por dólar para clientes Clube Smiles ou categoria Diamante. Milhas de renovação: 3.000 (Smiles) ou 4.000 (Clube Smiles/Diamante), condicionadas ao pagamento da anuidade de renovação. Milhas de aquisição (em 4 parcelas): 10.000 (Smiles) ou 15.000 (Clube Smiles/Diamante), condicionadas ao pagamento das 4 primeiras parcelas da anuidade."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "Smiles",
       "transfere_para": [
         "Smiles (GOL)"
@@ -1978,7 +2099,8 @@
         "salas_vip": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "transfere_para": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
         "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
-        "spread": "planilha:cartoes-premium-comparativo.xlsx"
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
@@ -1987,7 +2109,6 @@
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "cashback",
         "renda_minima",
         "requisito_acesso"
       ],
@@ -2001,6 +2122,7 @@
       ],
       "origem_planilha": {
         "campos": [
+          "cashback",
           "spread"
         ],
         "arquivo": "cartoes-premium-comparativo.xlsx",
@@ -2025,13 +2147,17 @@
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
         "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "pontos"
+        ]
       },
       "anuidade": 408.0,
       "renda_minima": null,
@@ -2040,7 +2166,12 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
+      "pontos": {
+        "nacional": 1.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "2ª bandeira com 90% de desconto na anuidade"
+      },
       "cashback": {
         "percentual": 0.3,
         "regra": "0.3%"
@@ -2056,7 +2187,6 @@
         "adicionais_gratis",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -2330,13 +2460,17 @@
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
         "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "pontos"
+        ]
       },
       "anuidade": 546.0,
       "renda_minima": null,
@@ -2345,7 +2479,12 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
+      "pontos": {
+        "nacional": 1.2,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Pode escolher entre Pontos, Investimento ou Cashback"
+      },
       "cashback": {
         "percentual": 0.75,
         "regra": "0.75%"
@@ -2361,7 +2500,6 @@
         "adicionais_gratis",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -3123,13 +3261,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 1750.0,
       "renda_minima": null,
@@ -3138,8 +3282,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 3.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -3149,10 +3301,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -3177,13 +3327,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 1607.0,
       "renda_minima": null,
@@ -3192,8 +3348,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 3.5,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -3203,10 +3367,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -3311,13 +3473,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 456.0,
       "renda_minima": null,
@@ -3326,8 +3494,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Cartão de entrada pontuando diretamente na Livelo"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -3337,10 +3513,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -3598,12 +3772,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 708.0,
       "renda_minima": null,
@@ -3612,8 +3792,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Isenção de anuidade no primeiro ano para adicionais"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -3623,10 +3811,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -3776,7 +3962,10 @@
         "unidade": "pts/USD",
         "observacao": "Até 3 pontos por dólar em compras, pontos que não expiram."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "Livelo",
       "transfere_para": [
         "Livelo"
@@ -3828,7 +4017,8 @@
         "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
         "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "planilha:cartoes-premium-comparativo.xlsx"
+        "iof": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://banco.bradesco/html/principal/cartoes.html"
@@ -3836,7 +4026,6 @@
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
         "anuidade_parcelas",
-        "cashback",
         "renda_minima",
         "requisito_acesso"
       ],
@@ -3849,6 +4038,7 @@
         "campos": [
           "adicionais_gratis",
           "anuidade",
+          "cashback",
           "iof",
           "spread"
         ],
@@ -3965,7 +4155,10 @@
         "unidade": "pts/USD",
         "observacao": "Conversão de até 2,5 milhas Smiles por dólar gasto; 1 milha adicional a cada dólar gasto em passagens GOL."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "Smiles",
       "transfere_para": [
         "Smiles (GOL)"
@@ -4026,12 +4219,12 @@
         "link_solicitacao": "https://imprensa.bradesco.com.br/smiles/index.shtm",
         "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "planilha:cartoes-premium-comparativo.xlsx"
+        "iof": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade_parcelas",
-        "cashback",
         "isencao",
         "renda_minima",
         "requisito_acesso"
@@ -4052,6 +4245,7 @@
       "origem_planilha": {
         "campos": [
           "anuidade",
+          "cashback",
           "iof",
           "spread"
         ],
@@ -4072,8 +4266,16 @@
       "isencao": null,
       "renda_minima": null,
       "adicionais_gratis": null,
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.35,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Cliente Smiles 1,35 milha; Clube/Diamante 2 milhas. Renovação: 1.000 / 2.000 milhas"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "spread": null,
       "iof": null,
       "programa_proprio": "Smiles",
@@ -4111,10 +4313,8 @@
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade_parcelas",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -4129,13 +4329,17 @@
         "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
         "beneficios_banco": "https://www.smiles.com.br/portal/cartao-de-credito",
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Camada de programa vinda do regulamento oficial GOL Smiles. Anuidade, pontuacao e isencao dependem do banco emissor e seguem pendentes.",
       "verificado_em": "2026-07-28",
       "origem_planilha": {
         "campos": [
           "anuidade",
+          "cashback",
+          "pontos",
           "salas_vip"
         ],
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
@@ -4161,7 +4365,10 @@
         "unidade": "pts/USD",
         "observacao": "3,3 milhas/US$ em passagens GOL; 1ª bagagem grátis e prioridade GOL"
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "spread": 5.3,
       "iof": 3.5,
       "programa_proprio": "Smiles",
@@ -4203,7 +4410,6 @@
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade_parcelas",
-        "cashback",
         "isencao",
         "renda_minima",
         "requisito_acesso",
@@ -4221,13 +4427,15 @@
         "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
         "iof": "planilha:cartoes-premium-comparativo.xlsx",
-        "pontos": "planilha:cartoes-premium-comparativo.xlsx"
+        "pontos": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Camada de programa vinda do regulamento oficial GOL Smiles. Anuidade, pontuacao e isencao dependem do banco emissor e seguem pendentes.",
       "verificado_em": "2026-07-28",
       "origem_planilha": {
         "campos": [
           "anuidade",
+          "cashback",
           "iof",
           "pontos",
           "salas_vip",
@@ -4259,7 +4467,10 @@
         "unidade": "pts/USD",
         "observacao": "Pontos acumulados no programa Livelo: 4,0 pontos por US$ 1 gasto no Brasil e 7,0 pontos por US$ 1 gasto no exterior."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "Livelo (Fidelidade Bradesco Cartões)",
       "transfere_para": [],
       "spread": 5.3,
@@ -4299,7 +4510,8 @@
         "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
         "iof": "planilha:cartoes-premium-comparativo.xlsx",
-        "isencao": "planilha:cartoes-premium-comparativo.xlsx"
+        "isencao": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://banco.bradesco/cartoes/aeternum/"
@@ -4307,7 +4519,6 @@
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
         "anuidade_parcelas",
-        "cashback",
         "renda_minima",
         "transfere_para"
       ],
@@ -4317,6 +4528,7 @@
         "campos": [
           "adicionais_gratis",
           "anuidade",
+          "cashback",
           "iof",
           "isencao",
           "spread"
@@ -4343,13 +4555,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 434.0,
       "renda_minima": null,
@@ -4358,8 +4576,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -4369,10 +4595,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -4402,7 +4626,10 @@
         "unidade": "pts/USD",
         "observacao": "2 pontos Livelo a cada US$ 1 gasto, tanto no Brasil quanto no exterior. Simulação da página: gasto de R$ 500/mês rende aproximadamente 184 pontos Livelo/mês (dólar a R$ 5,43)."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "Livelo",
       "transfere_para": [
         "Livelo"
@@ -4452,7 +4679,8 @@
         "transfere_para": "http://200-155-86-38.bradesco.com.br/beneficioscartoes/",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
         "iof": "planilha:cartoes-premium-comparativo.xlsx",
-        "isencao": "planilha:cartoes-premium-comparativo.xlsx"
+        "isencao": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-infinite",
@@ -4461,7 +4689,6 @@
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "renda_minima",
         "requisito_acesso"
       ],
@@ -4472,6 +4699,7 @@
       "bandeira_ref": "visa-infinite",
       "origem_planilha": {
         "campos": [
+          "cashback",
           "iof",
           "isencao",
           "spread",
@@ -4499,7 +4727,10 @@
         "unidade": "pts/USD",
         "observacao": "1 ponto Livelo a cada US$ 1 gasto no Brasil e no exterior."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "Livelo",
       "transfere_para": [],
       "spread": null,
@@ -4547,11 +4778,11 @@
         "anuidade": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum",
         "anuidade_parcelas": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum",
         "pontos": "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-platinum",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
         "renda_minima",
@@ -4567,6 +4798,7 @@
       ],
       "origem_planilha": {
         "campos": [
+          "cashback",
           "salas_vip"
         ],
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
@@ -5181,13 +5413,17 @@
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
         "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "pontos"
+        ]
       },
       "anuidade": 600.0,
       "renda_minima": null,
@@ -5196,7 +5432,12 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
+      "pontos": {
+        "nacional": 2.5,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Cartão não muito bom porque não tem nenhum acesso à sala VIP gratuito"
+      },
       "cashback": {
         "percentual": 1.2,
         "regra": "1.2%"
@@ -5212,7 +5453,6 @@
         "adicionais_gratis",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -5239,12 +5479,16 @@
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
         "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "pontos"
+        ]
       },
       "anuidade": 0.0,
       "renda_minima": null,
@@ -5253,7 +5497,12 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
+      "pontos": {
+        "nacional": 0.45,
+        "internacional": null,
+        "unidade": "pts/BRL",
+        "observacao": ""
+      },
       "cashback": {
         "percentual": 0.8,
         "regra": "0.8%"
@@ -5269,7 +5518,6 @@
         "adicionais_gratis",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -5295,12 +5543,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 0.0,
       "renda_minima": null,
@@ -5309,8 +5563,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 0.05,
+        "internacional": null,
+        "unidade": "pts/BRL",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -5320,10 +5582,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -5787,13 +6047,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 650.0,
       "renda_minima": null,
@@ -5802,8 +6068,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.6,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -5813,10 +6087,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -5841,13 +6113,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 207.0,
       "renda_minima": null,
@@ -5856,8 +6134,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.2,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -5867,10 +6153,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -5896,12 +6180,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 453.0,
       "renda_minima": null,
@@ -5910,8 +6200,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.4,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -5921,10 +6219,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -5949,13 +6245,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 207.0,
       "renda_minima": null,
@@ -5964,8 +6266,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.2,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -5975,10 +6285,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -6003,13 +6311,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 414.0,
       "renda_minima": null,
@@ -6018,8 +6332,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.6,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -6029,10 +6351,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -6242,7 +6562,10 @@
         "unidade": "pts/USD",
         "observacao": "Pontos não expiram. Membros do Clube TudoAzul acumulam de forma promocional 4,5 pontos por dólar em compras nacionais e 5,25 em compras internacionais."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "TudoAzul",
       "transfere_para": [],
       "spread": 5.5,
@@ -6299,14 +6622,14 @@
         "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
         "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "planilha:cartoes-premium-comparativo.xlsx"
+        "iof": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html"
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "cashback",
         "renda_minima",
         "requisito_acesso",
         "transfere_para"
@@ -6329,6 +6652,7 @@
       ],
       "origem_planilha": {
         "campos": [
+          "cashback",
           "iof",
           "spread"
         ],
@@ -6453,12 +6777,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 438.0,
       "renda_minima": null,
@@ -6467,8 +6797,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 2.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -6478,10 +6816,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -6507,12 +6843,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 300.0,
       "renda_minima": null,
@@ -6521,8 +6863,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.5,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -6532,10 +6882,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -6560,13 +6908,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 650.0,
       "renda_minima": null,
@@ -6575,8 +6929,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 2.6,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -6586,10 +6948,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -6615,12 +6975,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 438.0,
       "renda_minima": null,
@@ -6629,8 +6995,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 2.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -6640,10 +7014,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -6669,12 +7041,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 300.0,
       "renda_minima": null,
@@ -6683,8 +7061,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.5,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -6694,10 +7080,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -6723,12 +7107,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 650.0,
       "renda_minima": null,
@@ -6737,8 +7127,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 2.6,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -6748,10 +7146,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -7751,13 +8147,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 1200.0,
       "renda_minima": null,
@@ -7766,8 +8168,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 3.5,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Benefícios exclusivos para clientes Latam Pass"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -7777,10 +8187,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -7806,12 +8214,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 438.0,
       "renda_minima": null,
@@ -7820,8 +8234,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 2.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "2 mil milhas bônus mantendo gasto de R$2 mil/fatura nas 3 primeiras faturas"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -7831,10 +8253,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -7860,12 +8280,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 650.0,
       "renda_minima": null,
@@ -7874,8 +8300,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 2.6,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -7885,10 +8319,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -7914,12 +8346,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 438.0,
       "renda_minima": null,
@@ -7928,8 +8366,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 2.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "2 mil milhas bônus mantendo gasto de R$2 mil/fatura nas 3 primeiras faturas"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -7939,10 +8385,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -7967,13 +8411,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 1200.0,
       "renda_minima": null,
@@ -7982,8 +8432,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 3.5,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Benefícios exclusivos para clientes Latam Pass"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -7993,10 +8451,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -8022,12 +8478,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 300.0,
       "renda_minima": null,
@@ -8036,8 +8498,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.5,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -8047,10 +8517,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -8076,12 +8544,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 650.0,
       "renda_minima": null,
@@ -8090,8 +8564,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 2.6,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -8101,10 +8583,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -8187,12 +8667,16 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback"
+        ]
       },
       "anuidade": 0.0,
       "renda_minima": null,
@@ -8202,7 +8686,10 @@
       "requisito_acesso": null,
       "transfere_para": [],
       "pontos": null,
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -8212,7 +8699,6 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
         "pontos",
@@ -8241,12 +8727,16 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback"
+        ]
       },
       "anuidade": 0.0,
       "renda_minima": null,
@@ -8256,7 +8746,10 @@
       "requisito_acesso": null,
       "transfere_para": [],
       "pontos": null,
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -8266,7 +8759,6 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
         "pontos",
@@ -8295,13 +8787,17 @@
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
         "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "pontos"
+        ]
       },
       "anuidade": 1068.0,
       "renda_minima": null,
@@ -8310,7 +8806,12 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
+      "pontos": {
+        "nacional": 2.2,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "IOF zerado: cashback do imposto em compras internacionais creditado na fatura em até 7 dias"
+      },
       "cashback": {
         "percentual": 1.25,
         "regra": "1.25%"
@@ -8326,7 +8827,6 @@
         "adicionais_gratis",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -8514,12 +9014,16 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback"
+        ]
       },
       "anuidade": 0.0,
       "renda_minima": null,
@@ -8529,7 +9033,10 @@
       "requisito_acesso": null,
       "transfere_para": [],
       "pontos": null,
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -8539,7 +9046,6 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
         "pontos",
@@ -8629,7 +9135,10 @@
         "unidade": "pts/USD",
         "observacao": "3,5 pts/US$ em gastos acima de R$ 20 mil/mês"
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "PortoPlus",
       "transfere_para": [],
       "spread": 5.75,
@@ -8673,7 +9182,8 @@
         "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
         "pontos": "planilha:cartoes-premium-comparativo.xlsx",
-        "isencao": "planilha:cartoes-premium-comparativo.xlsx"
+        "isencao": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://www.mastercard.com/news/latin-america/pt-br/noticias/comunicados-de-imprensa/pr-pt/2025/outubro/mastercard-celebra-seu-primeiro-ano-de-parceria-com-mclaren-formula-1-team-e-anuncia-o-porto-bank-como-parceiro-oficial-da-corrida-no-brasil/",
@@ -8682,7 +9192,6 @@
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
         "anuidade_parcelas",
-        "cashback",
         "renda_minima",
         "requisito_acesso",
         "transfere_para"
@@ -8698,6 +9207,7 @@
         "campos": [
           "adicionais_gratis",
           "anuidade",
+          "cashback",
           "isencao",
           "pontos",
           "spread",
@@ -8724,13 +9234,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 468.0,
       "renda_minima": null,
@@ -8739,8 +9255,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "2ª bandeira isenta; pode somar gastos dos dois cartões para isenção"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -8750,10 +9274,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -8778,13 +9300,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 708.0,
       "renda_minima": null,
@@ -8793,8 +9321,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.5,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "2ª bandeira isenta; pode somar gastos dos dois cartões para isenção"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -8804,10 +9340,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -8832,13 +9366,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 468.0,
       "renda_minima": null,
@@ -8847,8 +9387,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "2ª bandeira isenta; pode somar gastos dos dois cartões para isenção"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -8858,10 +9406,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -8891,7 +9437,10 @@
         "unidade": "pts/USD",
         "observacao": "Programa PortoPlus: acumule até 2 pontos para cada dólar gasto (valor máximo; regra de aceleração e divisão nacional/internacional não confirmada em fonte oficial disponível)"
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "PortoPlus",
       "transfere_para": [],
       "spread": 5.75,
@@ -8930,7 +9479,8 @@
         "programa_proprio": "https://www.visa.com.br/pague-com-visa/solicite-seu-cartao.html",
         "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "planilha:cartoes-premium-comparativo.xlsx"
+        "iof": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://www.visa.com.br/pague-com-visa/solicite-seu-cartao.html",
@@ -8939,7 +9489,6 @@
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "cashback",
         "requisito_acesso",
         "transfere_para"
       ],
@@ -8957,6 +9506,7 @@
       "origem_planilha": {
         "campos": [
           "adicionais_gratis",
+          "cashback",
           "iof",
           "spread",
           "validade_pontos"
@@ -8982,13 +9532,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 708.0,
       "renda_minima": null,
@@ -8997,8 +9553,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.5,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "2ª bandeira isenta; pode somar gastos dos dois cartões para isenção"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -9008,10 +9572,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -9345,13 +9907,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 660.0,
       "renda_minima": null,
@@ -9360,8 +9928,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 2.5,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Dobro de milhas em compras na American Airlines"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -9371,10 +9947,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -9399,13 +9973,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 564.0,
       "renda_minima": null,
@@ -9414,8 +9994,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 2.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -9425,10 +10013,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -9458,7 +10044,10 @@
         "unidade": "pts/USD",
         "observacao": "A cada US$ 1,00 em compras convencionais (nacionais ou internacionais, convertidas em dólar na data de fechamento da fatura), o cartão concede 2 milhas AAdvantage®. Em compras feitas diretamente com a American Airlines, o cliente recebe o dobro (4 milhas por US$ 1,00)."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "AAdvantage®",
       "transfere_para": [
         "American Airlines AAdvantage"
@@ -9513,7 +10102,8 @@
         "requisito_acesso": "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf",
         "link_solicitacao": "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "planilha:cartoes-premium-comparativo.xlsx"
+        "iof": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://cms.santander.com.br/sites/WPS/documentos/arq-tarifas-e-pacotes-pessoa-fisica-lista3-conta-plus-select/25-12-24_140851_programa-de-bonificacao-conta-plus-e-select-3.pdf",
@@ -9522,9 +10112,7 @@
         "https://www.santander.com.br/cartao-credito-santander/aadvantage-black"
       ],
       "verificado_em": "2026-07-31",
-      "campos_pendentes": [
-        "cashback"
-      ],
+      "campos_pendentes": [],
       "campos_rejeitados": [],
       "campos_preservados": [
         "anuidade",
@@ -9536,6 +10124,7 @@
       "bandeira_ref": "mastercard-black",
       "origem_planilha": {
         "campos": [
+          "cashback",
           "iof",
           "spread"
         ],
@@ -9653,7 +10242,10 @@
         "unidade": "milhas/USD",
         "observacao": "3 milhas por dólar gasto em compras gerais (vigente a partir de 23/01/2023). Clientes Clube Smiles e/ou Diamante acumulam 5,5 milhas/USD em compras gerais ou 6,5 milhas/USD em compras no site GOL. Clientes Smiles padrão: 4 milhas/USD em compras no site GOL."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "Smiles (GOL)",
       "transfere_para": [
         "Smiles"
@@ -9737,7 +10329,8 @@
         "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
         "beneficios_banco": "https://www.smiles.com.br/portal/cartao-de-credito",
         "link_solicitacao": "https://www.santander.com.br/cartao-credito-santander/smiles-infinite",
-        "spread": "planilha:cartoes-premium-comparativo.xlsx"
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://www.santander.com.br/document/gsb/cartoes_santander.pdf",
@@ -9748,7 +10341,6 @@
       ],
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
-        "cashback",
         "isencao"
       ],
       "campos_rejeitados": [],
@@ -9770,6 +10362,7 @@
       "bandeira_ref": "visa-infinite",
       "origem_planilha": {
         "campos": [
+          "cashback",
           "spread"
         ],
         "arquivo": "cartoes-premium-comparativo.xlsx",
@@ -10099,13 +10692,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 660.0,
       "renda_minima": null,
@@ -10114,8 +10713,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.5,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -10125,10 +10732,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -10629,13 +11234,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 180.0,
       "renda_minima": null,
@@ -10644,8 +11255,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -10655,10 +11274,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -10683,13 +11300,17 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback"
+        ]
       },
       "anuidade": 0.0,
       "renda_minima": null,
@@ -10699,7 +11320,10 @@
       "requisito_acesso": null,
       "transfere_para": [],
       "pontos": null,
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -10709,7 +11333,6 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
         "pontos",
@@ -10737,13 +11360,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 450.0,
       "renda_minima": null,
@@ -10752,8 +11381,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.5,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -10763,10 +11400,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -10901,13 +11536,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 150.0,
       "renda_minima": null,
@@ -10916,8 +11557,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -10927,10 +11576,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -10956,12 +11603,18 @@
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 110.0,
       "renda_minima": null,
@@ -10970,8 +11623,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -10981,10 +11642,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -11009,13 +11668,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 200.0,
       "renda_minima": null,
@@ -11024,8 +11689,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 1.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -11035,10 +11708,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -11175,13 +11846,19 @@
       "verificado_em": "2026-07-31",
       "procedencia": {
         "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "nota_curadoria": "Cartao criado a partir da planilha unificada do operador. Dados nao verificados em fonte oficial do emissor — revalidar no proximo run do coletor.",
       "origem_planilha": {
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31",
-        "criado": true
+        "criado": true,
+        "campos": [
+          "cashback",
+          "pontos"
+        ]
       },
       "anuidade": 300.0,
       "renda_minima": null,
@@ -11190,8 +11867,16 @@
       "iof": null,
       "requisito_acesso": null,
       "transfere_para": [],
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 2.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": ""
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "isencao": null,
       "salas_vip": [
         {
@@ -11201,10 +11886,8 @@
       ],
       "campos_pendentes": [
         "adicionais_gratis",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "requisito_acesso",
         "spread",
@@ -11224,8 +11907,16 @@
       "renda_minima": null,
       "requisito_acesso": "Ser cooperado da Unicred, com adesão sujeita à disponibilidade na cooperativa da região do associado.",
       "adicionais_gratis": 3,
-      "pontos": null,
-      "cashback": null,
+      "pontos": {
+        "nacional": 7.0,
+        "internacional": null,
+        "unidade": "pts/USD",
+        "observacao": "Excelente cartão com Spread zero e boa quantidade de acesso às salas VIPs"
+      },
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "Único",
       "transfere_para": [],
       "spread": 0,
@@ -11264,7 +11955,9 @@
         "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
         "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
         "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
-        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "anuidade": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "pontos": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
@@ -11275,10 +11968,8 @@
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
         "anuidade_parcelas",
-        "cashback",
         "iof",
         "isencao",
-        "pontos",
         "renda_minima",
         "transfere_para"
       ],
@@ -11286,7 +11977,9 @@
       "bandeira_ref": "visa-infinite",
       "origem_planilha": {
         "campos": [
-          "anuidade"
+          "anuidade",
+          "cashback",
+          "pontos"
         ],
         "arquivo": "arquivo_unificado_fuzzy.xlsx",
         "em": "2026-07-31"
@@ -11314,7 +12007,10 @@
         "unidade": "pts/USD",
         "observacao": "Programa Único: 1 dólar gasto = 2,2 pontos; a pontuação sobe para 2,5 pontos por dólar quando o gasto mensal atinge R$ 15 mil ou mais."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0.0,
+        "regra": "0%"
+      },
       "programa_proprio": "Único",
       "transfere_para": [
         "Precaver"
@@ -11366,7 +12062,8 @@
         "transfere_para": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
         "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
         "iof": "planilha:cartoes-premium-comparativo.xlsx",
-        "isencao": "planilha:cartoes-premium-comparativo.xlsx"
+        "isencao": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
       },
       "fontes": [
         "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/visa-e-unicred-lancam-cartao-ultra-renda.html",
@@ -11377,7 +12074,6 @@
       "verificado_em": "2026-07-31",
       "campos_pendentes": [
         "anuidade_parcelas",
-        "cashback",
         "renda_minima"
       ],
       "campos_rejeitados": [],
@@ -11388,6 +12084,7 @@
       "origem_planilha": {
         "campos": [
           "anuidade",
+          "cashback",
           "iof",
           "isencao"
         ],
