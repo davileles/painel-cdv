@@ -120,6 +120,55 @@ function hostPermitido(cfg, host) {
   });
 }
 
+// ── Deep link de busca por programa ──────────────────────────────────────────
+// Alguns programas aceitam a pesquisa inteira na URL. Quando o link mascarado
+// recebe bo/bd/bi/bv/bc, o destino deixa de ser a home e passa a ser o
+// resultado da busca ja preenchido — o membro so troca a data se quiser.
+//   bo = origem IATA | bd = destino IATA | bi = ida YYYY-MM-DD
+//   bv = volta YYYY-MM-DD (vazio = so ida) | bc = eco | exec
+const BUSCA_PARAMS = ['bo', 'bd', 'bi', 'bv', 'bc'];
+
+// Meio-dia de Brasilia (15:00 UTC). A Smiles espera epoch em ms; usar meia-noite
+// deixaria a data sujeita a virar para o dia anterior em qualquer conversao de
+// fuso, e o meio-dia e imune a isso.
+function epochMeioDiaBRT(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || '').trim());
+  if (!m) return null;
+  const t = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 15, 0, 0);
+  return Number.isFinite(t) ? t : null;
+}
+
+const BUSCA_BUILDERS = {
+  smiles(q) {
+    const ida = epochMeioDiaBRT(q.bi);
+    if (!ida || !/^[A-Z]{3}$/.test(q.bo || '') || !/^[A-Z]{3}$/.test(q.bd || '')) return null;
+    const volta = q.bv ? epochMeioDiaBRT(q.bv) : null;
+    const u = new URL('https://www.smiles.com.br/mfe/emissao-passagem/');
+    const p = u.searchParams;
+    p.set('adults', '1');
+    p.set('cabin', q.bc === 'exec' ? 'BUSINESS' : 'ALL');
+    p.set('children', '0');
+    p.set('departureDate', String(ida));
+    p.set('infants', '0');
+    p.set('isElegible', 'false');
+    p.set('isFlexibleDateChecked', 'false');
+    p.set('returnDate', volta ? String(volta) : '');
+    p.set('searchType', 'congenere');
+    p.set('segments', '1');
+    p.set('tripType', volta ? '1' : '2');   // 1 = ida e volta, 2 = so ida
+    p.set('originAirport', q.bo);
+    p.set('originCity', '');
+    p.set('originCountry', '');
+    p.set('originAirportIsAny', 'false');
+    p.set('destinationAirport', q.bd);
+    p.set('destinCity', '');
+    p.set('destinCountry', '');
+    p.set('destinAirportIsAny', 'false');
+    p.set('novo-resultado-voos', 'true');
+    return u.toString();
+  },
+};
+
 // Monta a URL final em tres modos:
 //   1. padrao      -> destino fixo do slug
 //   2. passthrough -> /<slug>/<resto do path> reconstroi no dominio do programa,
@@ -130,6 +179,25 @@ function hostPermitido(cfg, host) {
 function montarDestinoIr(cfg, opts) {
   opts = opts || {};
   let base;
+  const q = opts.query || {};
+  // Busca preenchida tem prioridade sobre o destino fixo do slug.
+  // Se algo vier malformado, cai no destino padrao em vez de errar o redirect.
+  const builder = BUSCA_BUILDERS[opts.slug];
+  if (builder && q.bi && q.bo && q.bd) {
+    const alvo = builder({
+      bo: String(q.bo || '').toUpperCase(), bd: String(q.bd || '').toUpperCase(),
+      bi: q.bi, bv: q.bv, bc: q.bc,
+    });
+    if (alvo) {
+      let u;
+      try { u = new URL(alvo); } catch (e) { u = null; }
+      if (u && hostPermitido(cfg, u.hostname)) {
+        const params = cfg.params || {};
+        for (const k of Object.keys(params)) u.searchParams.set(k, params[k]);
+        return u.toString();
+      }
+    }
+  }
   if (opts.urlAlvo) {
     let u;
     try { u = new URL(String(opts.urlAlvo)); } catch (e) { return null; }
@@ -148,7 +216,7 @@ function montarDestinoIr(cfg, opts) {
   // Repassa a query original da campanha, menos os parametros de controle
   if (opts.query) {
     for (const k of Object.keys(opts.query)) {
-      if (k === 'o' || k === 'u') continue;
+      if (k === 'o' || k === 'u' || BUSCA_PARAMS.includes(k)) continue;
       const v = opts.query[k];
       if (typeof v === 'string') final.searchParams.set(k, v);
     }
@@ -231,7 +299,7 @@ async function handleIr(req, res, slug, resto) {
   try { links = await carregarLinks(); } catch (e) { links = linksCache.data || {}; }
   const cfg = links[slug];
   if (!cfg || !cfg.destino) return res.redirect(302, LINKS_FALLBACK);
-  const destino = montarDestinoIr(cfg, { urlAlvo: req.query.u, resto: resto, query: req.query });
+  const destino = montarDestinoIr(cfg, { urlAlvo: req.query.u, resto: resto, query: req.query, slug: slug });
   if (!destino) return res.status(400).send('Destino inválido para este link.');
   if (PREVIEW_BOT_RE.test(req.headers['user-agent'] || '')) {
     res.set('Content-Type', 'text/html; charset=utf-8');
