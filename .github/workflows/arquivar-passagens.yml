@@ -1,0 +1,41 @@
+name: Arquivar passagens (rotação semestral)
+
+on:
+  schedule:
+    - cron: '0 4 * * *'   # 04:00 UTC = 01:00 BRT — janela sem concorrência de escrita
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Simular sem gravar'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: arquivar-passagens
+  cancel-in-progress: false
+
+jobs:
+  arquivar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Rotacionar passagens para shards semestrais
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            node arquivar-passagens.js --dry-run
+          else
+            node arquivar-passagens.js
+          fi
