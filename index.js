@@ -120,55 +120,6 @@ function hostPermitido(cfg, host) {
   });
 }
 
-// ── Deep link de busca por programa ──────────────────────────────────────────
-// Alguns programas aceitam a pesquisa inteira na URL. Quando o link mascarado
-// recebe bo/bd/bi/bv/bc, o destino deixa de ser a home e passa a ser o
-// resultado da busca ja preenchido — o membro so troca a data se quiser.
-//   bo = origem IATA | bd = destino IATA | bi = ida YYYY-MM-DD
-//   bv = volta YYYY-MM-DD (vazio = so ida) | bc = eco | exec
-const BUSCA_PARAMS = ['bo', 'bd', 'bi', 'bv', 'bc'];
-
-// Meio-dia de Brasilia (15:00 UTC). A Smiles espera epoch em ms; usar meia-noite
-// deixaria a data sujeita a virar para o dia anterior em qualquer conversao de
-// fuso, e o meio-dia e imune a isso.
-function epochMeioDiaBRT(iso) {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || '').trim());
-  if (!m) return null;
-  const t = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 15, 0, 0);
-  return Number.isFinite(t) ? t : null;
-}
-
-const BUSCA_BUILDERS = {
-  smiles(q) {
-    const ida = epochMeioDiaBRT(q.bi);
-    if (!ida || !/^[A-Z]{3}$/.test(q.bo || '') || !/^[A-Z]{3}$/.test(q.bd || '')) return null;
-    const volta = q.bv ? epochMeioDiaBRT(q.bv) : null;
-    const u = new URL('https://www.smiles.com.br/mfe/emissao-passagem/');
-    const p = u.searchParams;
-    p.set('adults', '1');
-    p.set('cabin', q.bc === 'exec' ? 'BUSINESS' : 'ALL');
-    p.set('children', '0');
-    p.set('departureDate', String(ida));
-    p.set('infants', '0');
-    p.set('isElegible', 'false');
-    p.set('isFlexibleDateChecked', 'false');
-    p.set('returnDate', volta ? String(volta) : '');
-    p.set('searchType', 'congenere');
-    p.set('segments', '1');
-    p.set('tripType', volta ? '1' : '2');   // 1 = ida e volta, 2 = so ida
-    p.set('originAirport', q.bo);
-    p.set('originCity', '');
-    p.set('originCountry', '');
-    p.set('originAirportIsAny', 'false');
-    p.set('destinationAirport', q.bd);
-    p.set('destinCity', '');
-    p.set('destinCountry', '');
-    p.set('destinAirportIsAny', 'false');
-    p.set('novo-resultado-voos', 'true');
-    return u.toString();
-  },
-};
-
 // Monta a URL final em tres modos:
 //   1. padrao      -> destino fixo do slug
 //   2. passthrough -> /<slug>/<resto do path> reconstroi no dominio do programa,
@@ -179,25 +130,6 @@ const BUSCA_BUILDERS = {
 function montarDestinoIr(cfg, opts) {
   opts = opts || {};
   let base;
-  const q = opts.query || {};
-  // Busca preenchida tem prioridade sobre o destino fixo do slug.
-  // Se algo vier malformado, cai no destino padrao em vez de errar o redirect.
-  const builder = BUSCA_BUILDERS[opts.slug];
-  if (builder && q.bi && q.bo && q.bd) {
-    const alvo = builder({
-      bo: String(q.bo || '').toUpperCase(), bd: String(q.bd || '').toUpperCase(),
-      bi: q.bi, bv: q.bv, bc: q.bc,
-    });
-    if (alvo) {
-      let u;
-      try { u = new URL(alvo); } catch (e) { u = null; }
-      if (u && hostPermitido(cfg, u.hostname)) {
-        const params = cfg.params || {};
-        for (const k of Object.keys(params)) u.searchParams.set(k, params[k]);
-        return u.toString();
-      }
-    }
-  }
   if (opts.urlAlvo) {
     let u;
     try { u = new URL(String(opts.urlAlvo)); } catch (e) { return null; }
@@ -216,7 +148,7 @@ function montarDestinoIr(cfg, opts) {
   // Repassa a query original da campanha, menos os parametros de controle
   if (opts.query) {
     for (const k of Object.keys(opts.query)) {
-      if (k === 'o' || k === 'u' || BUSCA_PARAMS.includes(k)) continue;
+      if (k === 'o' || k === 'u') continue;
       const v = opts.query[k];
       if (typeof v === 'string') final.searchParams.set(k, v);
     }
@@ -299,7 +231,7 @@ async function handleIr(req, res, slug, resto) {
   try { links = await carregarLinks(); } catch (e) { links = linksCache.data || {}; }
   const cfg = links[slug];
   if (!cfg || !cfg.destino) return res.redirect(302, LINKS_FALLBACK);
-  const destino = montarDestinoIr(cfg, { urlAlvo: req.query.u, resto: resto, query: req.query, slug: slug });
+  const destino = montarDestinoIr(cfg, { urlAlvo: req.query.u, resto: resto, query: req.query });
   if (!destino) return res.status(400).send('Destino inválido para este link.');
   if (PREVIEW_BOT_RE.test(req.headers['user-agent'] || '')) {
     res.set('Content-Type', 'text/html; charset=utf-8');
@@ -2044,11 +1976,11 @@ app.post('/ia/extrair-reserva', (req, res) => {
     'Analise este documento (' + (textoDoc ? 'texto extraído de um arquivo HTML' : (isPdf ? 'PDF' : 'imagem')) + ') de ' + (tipoCampos || 'reserva de viagem') + '. ' +
     'Extraia os dados REAIS do documento e retorne SOMENTE um JSON válido (sem markdown). ' +
     'Use exatamente esta estrutura JSON (substitua pelos valores reais): ' +
-    '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","cabine":"cabine exata","cia":"companhia aerea"}],"pnr":"","pax":0,"programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","subtipo":"transfer","transferOrigem":"","transferDestino":"","transferData":"","transferHora":"","transferPax":"","transferOp":"","transferVeiculo":"","transferConf":"","transferValor":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","seguradora":"","seguroPlano":"","seguroApolice":"","seguroCartao":"","seguroInicio":"","seguroFim":"","seguroModalidade":"","seguroDias":"","seguroTerritorio":"","seguroCobertura":"","seguroPax":"","seguroValor":"","seguroEmergencia":"","obs":""} ' +
+    '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","cabine":"cabine exata","cia":"companhia aerea"}],"pnr":"","pax":0,"programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","subtipo":"transfer","transferOrigem":"","transferDestino":"","transferData":"","transferHora":"","transferPax":"","transferOp":"","transferVeiculo":"","transferConf":"","transferValor":"","transferVoltaOrigem":"","transferVoltaDestino":"","transferVoltaData":"","transferVoltaHora":"","transferVoltaHoraChegada":"","transferVoltaOp":"","transferVoltaConf":"","transferVoltaCategoria":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","seguradora":"","seguroPlano":"","seguroApolice":"","seguroCartao":"","seguroInicio":"","seguroFim":"","seguroModalidade":"","seguroDias":"","seguroTerritorio":"","seguroCobertura":"","seguroPax":"","seguroValor":"","seguroEmergencia":"","obs":""} ' +
     'REGRAS: ' +
     '1) trechos[]: um objeto por segmento de voo na ordem do itinerário. ' +
     '2) Em cada trecho, cia = nome da companhia aérea operadora (ex: LATAM, Azul, Gol, TAP, KLM). ' +
-    '3) pax = total de passageiros listados por nome no documento. ' +
+    '3) pax = total de passageiros DISTINTOS listados por nome no documento. Se a mesma pessoa aparecer em bilhetes separados (ex: um bilhete de ida e outro de volta, ou um bilhete por passageiro), conte cada pessoa uma unica vez. ' +
     '4) milhasTotal = total bruto de milhas do documento inteiro, sem dividir. ' +
     '5) Para hotel, preencha os campos hotel* e trechos=[]. ' +
     '6) Para qualquer transporte terrestre ou aquático: use tipo=\"carro\" e defina subtipo conforme abaixo. ' +
@@ -2058,6 +1990,12 @@ app.post('/ia/extrair-reserva', (req, res) => {
     '   - Ferry, balsa, barco, cruzeiro fluvial: subtipo=\"ferry\". ' +
     '   - Locação/aluguel de carro (cliente retira e devolve): subtipo=\"locacao\". ' +
     '   Para transfer/trem/onibus/ferry preencha: transferOrigem, transferDestino, transferData, transferHora, transferPax, transferOp, transferVeiculo, transferConf, transferValor. ' +
+    '   IDA E VOLTA: se o documento contiver mais de um trecho ponto-a-ponto (ex: um bilhete de ida e outro de retorno, ou trechos A->B e B->A), trate como UMA unica reserva e preencha tambem os campos de volta: ' +
+    '   transferVoltaOrigem, transferVoltaDestino, transferVoltaData, transferVoltaHora, transferVoltaHoraChegada, transferVoltaOp, transferVoltaConf, transferVoltaCategoria. ' +
+    '   Os trechos podem ser de operadoras, embarcacoes, navios, vouchers ou fornecedores DIFERENTES — isso nao impede que sejam ida e volta da mesma reserva. ' +
+    '   O trecho cronologicamente anterior e a ida; o posterior (ou o que retorna ao ponto de partida) e a volta. ' +
+    '   transferValor deve ser o valor TOTAL da reserva, somando ida, volta e todos os passageiros. ' +
+    '   Se houver apenas um sentido, deixe todos os campos transferVolta* vazios. ' +
     '   Para locacao preencha: locadora, carroCat, retLocal, devLocal, retData, devData, carroConf, carroValor. ' +
     '7) Para passeio/atividade, use tipo=\"passeio\" e preencha passeio*. ' +
     '8) SEGURO VIAGEM: bilhete de seguro viagem, apólice, certificado ou voucher de assistência internacional ' +
@@ -2096,7 +2034,7 @@ app.post('/ia/extrair-reserva', (req, res) => {
       return s;
     }
     if (Array.isArray(d.trechos)) d.trechos.forEach(t => { if (t) t.data = fix(t.data); });
-    ['checkin', 'checkout', 'transferData', 'retData', 'devData', 'passeioData', 'dataIda', 'dataVolta', 'seguroInicio', 'seguroFim']
+    ['checkin', 'checkout', 'transferData', 'transferVoltaData', 'retData', 'devData', 'passeioData', 'dataIda', 'dataVolta', 'seguroInicio', 'seguroFim']
       .forEach(k => { if (d[k]) d[k] = fix(d[k]); });
     return d;
   }
@@ -2199,7 +2137,7 @@ app.post('/ia/extrair-reserva', (req, res) => {
 
   const bodyPayload = JSON.stringify({
     model: 'claude-sonnet-4-6',
-    max_tokens: 1024,
+    max_tokens: 2048,
     messages: [{ role: 'user', content: [contentBlock, { type: 'text', text: prompt }] }]
   });
 
