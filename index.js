@@ -700,6 +700,7 @@ async function atualizarHistoricoTransferencia(item) {
   );
 }
 const PASSAGENS_PATH          = 'passagens.json';
+const PASSAGENS_INDEX_PATH    = 'passagens-historico-index.json';
 const MAX_OFERTAS_APROVADAS   = 100;
 const MAX_DIAS_PASSAGENS      = 180;
 const MEMBROS_PATH            = 'membros.json';
@@ -987,9 +988,10 @@ app.post('/passagens/registrar', async (req, res) => {
     const atual = await ghGetJson(PASSAGENS_PATH, { items: [] });
     let items = Array.isArray(atual.data.items) ? atual.data.items : [];
 
-    // Remove passagens com mais de 180 dias
-    const corteMs = Date.now() - MAX_DIAS_PASSAGENS * 24 * 60 * 60 * 1000;
-    items = items.filter(p => new Date(p.enviadoEm).getTime() >= corteMs);
+    // NAO deletar aqui. A rotacao para os shards semestrais
+    // (passagens-historico-{ANO}-S{1|2}.json) e feita por arquivar-passagens.js,
+    // que grava o shard ANTES de remover da janela quente. Filtrar por data neste
+    // ponto ja causou perda silenciosa do backfill historico da planilha.
 
     // Calcula stats de histórico 180 dias ANTES de inserir a nova entrada
     // Chave de agrupamento: origem|destino|programa|cabine (igual ao painel)
@@ -1033,11 +1035,42 @@ app.post('/passagens/registrar', async (req, res) => {
 // ── Listar passagens (para consulta do gerador) ───────────────────────────────
 app.get('/passagens/listar', async (req, res) => {
   try {
+    const todos = req.query.todos === '1' || req.query.todos === 'true';
+    const desde = (req.query.desde || '').trim();   // YYYY-MM-DD
+
     const atual = await ghGetJson(PASSAGENS_PATH, { items: [] });
-    const corteMs = Date.now() - MAX_DIAS_PASSAGENS * 24 * 60 * 60 * 1000;
-    const items = (atual.data.items || []).filter(p => new Date(p.enviadoEm).getTime() >= corteMs);
+    let items = Array.isArray(atual.data.items) ? atual.data.items : [];
+
+    // Sem parametro: comportamento historico preservado (janela de 180 dias).
+    // Painel, mapa de emissoes e gerador seguem recebendo exatamente o mesmo payload.
+    if (!todos && !desde) {
+      const corteMs = Date.now() - MAX_DIAS_PASSAGENS * 24 * 60 * 60 * 1000;
+      items = items.filter(p => new Date(p.enviadoEm).getTime() >= corteMs);
+      res.setHeader('Content-Type', 'application/json');
+      return res.json({ atualizadoEm: atual.data.atualizadoEm || null, items });
+    }
+
+    // Com ?todos=1 ou ?desde=YYYY-MM-DD: agrega os shards semestrais do historico.
+    const idx = await ghGetJson(PASSAGENS_INDEX_PATH, { shards: [] });
+    const shards = Array.isArray(idx.data.shards) ? idx.data.shards : [];
+    const relevantes = desde
+      ? shards.filter(s => !s.ate || s.ate >= desde)
+      : shards;
+
+    for (const s of relevantes) {
+      try {
+        const sh = await ghGetJson(s.arquivo, { items: [] });
+        if (Array.isArray(sh.data.items)) items = items.concat(sh.data.items);
+      } catch (e) {
+        console.warn(`[passagens/listar] shard ${s.arquivo} indisponivel: ${e.message}`);
+      }
+    }
+
+    if (desde) items = items.filter(p => String(p.enviadoEm).slice(0, 10) >= desde);
+    items.sort((a, b) => String(b.enviadoEm).localeCompare(String(a.enviadoEm)));
+
     res.setHeader('Content-Type', 'application/json');
-    res.json({ atualizadoEm: atual.data.atualizadoEm || null, items });
+    res.json({ atualizadoEm: atual.data.atualizadoEm || null, total: items.length, items });
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }
