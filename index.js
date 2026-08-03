@@ -700,6 +700,7 @@ async function atualizarHistoricoTransferencia(item) {
   );
 }
 const { normalizarDatas, resumirDatas } = require('./passagens-datas.js');
+const { escopoRota } = require('./passagens-escopo.js');
 
 const PASSAGENS_PATH          = 'passagens.json';
 const PASSAGENS_INDEX_PATH    = 'passagens-historico-index.json';
@@ -1082,17 +1083,19 @@ app.get('/passagens/listar', async (req, res) => {
 });
 
 // ── Comportamento de disponibilidade ──────────────────────────────────────────
-// Perfil de antecedencia (dias entre a busca e a data do voo) por rota, programa,
-// cia e cabine. Base: passagens.json + shards semestrais do historico.
+// Perfil de antecedencia (dias entre a busca e a data do voo).
+// Base: passagens.json + shards semestrais do historico.
 //
 // GET /passagens/comportamento
 //   ?origem= &destino= &programa= &cia= &cabine=   filtros (todos opcionais)
-//   ?antecedencia=N    classifica uma oferta especifica dentro da distribuicao
+//   ?escopo=nacional|internacional  (se omitido, deduzido de origem+destino)
+//   ?antecedencia=N    classifica uma oferta especifica dentro de cada nivel
 //   ?precisao=dia      (default) descarta registros com granularidade so de mes
 //   ?desde=YYYY-MM-DD  limita a janela historica
 //
-// Responde com o nivel de agregacao efetivamente usado — se a rota exata nao tem
-// amostra suficiente, cai para niveis mais amplos em cascata.
+// Devolve TODOS os niveis aplicaveis com amostra suficiente, do mais especifico
+// ao mais amplo — a rota exata e a combinacao cia+programa+cabine+escopo contam
+// historias diferentes e as duas interessam na hora de aprovar um alerta.
 
 const COMPORTAMENTO_TTL_MS = 30 * 60 * 1000;
 let comportamentoCache = { pontos: null, ts: 0 };
@@ -1102,7 +1105,7 @@ const MIN_PONTOS    = 60;   // pares (registro x data disponivel)
 
 function chaveTexto(v) {
   return String(v == null ? '' : v)
-    .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
 }
 
 // Carrega a base inteira (quente + shards) e converte em pontos de antecedencia.
@@ -1139,6 +1142,7 @@ async function carregarPontosComportamento() {
         programa: chaveTexto(p.programa),
         cia: chaveTexto(p.cia),
         cabine: chaveTexto(p.cabine),
+        escopo: escopoRota(p.origem, p.destino),
         snap: String(p.enviadoEm).slice(0, 10),
         precisao: r.precisao,
       };
@@ -1163,7 +1167,6 @@ function percentil(ordenado, q) {
 function estatisticas(valores) {
   const v = [...valores].sort((a, b) => a - b);
   const n = v.length;
-  const soma = v.reduce((a, b) => a + b, 0);
   return {
     pontos: n,
     min: v[0],
@@ -1173,9 +1176,42 @@ function estatisticas(valores) {
     p75: percentil(v, 0.75),
     p90: percentil(v, 0.90),
     max: v[n - 1],
-    media: Math.round(soma / n),
+    media: Math.round(v.reduce((a, b) => a + b, 0) / n),
   };
 }
+
+function classificar(valores, alvo) {
+  if (!Number.isFinite(alvo)) return null;
+  const abaixo = valores.filter(v => v < alvo).length;
+  const pct = Math.round(100 * abaixo / valores.length);
+  let leitura;
+  if (pct <= 10)      leitura = 'muito abaixo do usual — janela curta e atipica';
+  else if (pct <= 25) leitura = 'abaixo do usual';
+  else if (pct <= 75) leitura = 'dentro do padrao';
+  else if (pct <= 90) leitura = 'acima do usual';
+  else                leitura = 'muito acima do usual — liberacao antecipada atipica';
+  return { antecedencia: alvo, percentil: pct, leitura };
+}
+
+// Niveis de agregacao, do mais especifico ao mais amplo.
+// Um nivel so e avaliado se TODOS os campos que ele usa foram informados.
+const NIVEIS_COMPORTAMENTO = [
+  { nome: 'rota_completa',             campos: ['origem', 'destino', 'programa', 'cia', 'cabine'] },
+  { nome: 'rota_programa_cabine',      campos: ['origem', 'destino', 'programa', 'cabine'] },
+  { nome: 'rota_programa',             campos: ['origem', 'destino', 'programa'] },
+  { nome: 'rota',                      campos: ['origem', 'destino'] },
+  // Combinacoes cia + programa + cabine dentro do escopo (nacional/internacional):
+  // "todo voo Azul emitido em Azul Fidelidade, internacional, executiva"
+  { nome: 'cia_programa_cabine_escopo', campos: ['cia', 'programa', 'cabine', 'escopo'] },
+  { nome: 'cia_programa_escopo',        campos: ['cia', 'programa', 'escopo'] },
+  { nome: 'programa_cabine_escopo',     campos: ['programa', 'cabine', 'escopo'] },
+  { nome: 'cia_cabine_escopo',          campos: ['cia', 'cabine', 'escopo'] },
+  { nome: 'programa_escopo',            campos: ['programa', 'escopo'] },
+  { nome: 'programa_cabine',            campos: ['programa', 'cabine'] },
+  { nome: 'programa',                   campos: ['programa'] },
+  { nome: 'escopo_cabine',              campos: ['escopo', 'cabine'] },
+  { nome: 'geral',                      campos: [] },
+];
 
 app.get('/passagens/comportamento', async (req, res) => {
   try {
@@ -1185,7 +1221,17 @@ app.get('/passagens/comportamento', async (req, res) => {
       programa: chaveTexto(req.query.programa),
       cia: chaveTexto(req.query.cia),
       cabine: chaveTexto(req.query.cabine),
+      escopo: chaveTexto(req.query.escopo),
     };
+
+    // Escopo deduzido da rota quando nao informado explicitamente
+    if (!f.escopo && req.query.origem && req.query.destino) {
+      f.escopo = escopoRota(req.query.origem, req.query.destino);
+    }
+    if (f.escopo && f.escopo !== 'nacional' && f.escopo !== 'internacional') {
+      return res.status(400).json({ ok: false, erro: "escopo deve ser 'nacional' ou 'internacional'" });
+    }
+
     const desde = (req.query.desde || '').trim();
     const soDia = (req.query.precisao || 'dia') === 'dia';
     const alvo = req.query.antecedencia != null && req.query.antecedencia !== ''
@@ -1195,78 +1241,54 @@ app.get('/passagens/comportamento', async (req, res) => {
     if (soDia) base = base.filter(p => p.precisao === 'dia');
     if (desde) base = base.filter(p => p.snap >= desde);
 
-    // Cascata: do mais especifico ao mais amplo. Para no primeiro nivel com amostra.
-    const niveis = [
-      { nome: 'rota_completa',   campos: ['origem', 'destino', 'programa', 'cia', 'cabine'] },
-      { nome: 'rota_programa',   campos: ['origem', 'destino', 'programa'] },
-      { nome: 'rota',            campos: ['origem', 'destino'] },
-      { nome: 'programa_cabine', campos: ['programa', 'cabine'] },
-      { nome: 'cia_cabine',      campos: ['cia', 'cabine'] },
-      { nome: 'programa',        campos: ['programa'] },
-      { nome: 'geral',           campos: [] },
-    ];
+    const faixas = [[0,30],[31,60],[61,90],[91,120],[121,180],[181,240],[241,300],[301,400]];
+    const niveis = [];
+    const descartados = [];
 
-    let escolhido = null;
-    const tentativas = [];
-
-    for (const nivel of niveis) {
-      // Nivel so e aplicavel se todos os campos que ele usa foram informados
+    for (const nivel of NIVEIS_COMPORTAMENTO) {
       if (nivel.campos.some(c => !f[c])) continue;
 
       const sel = base.filter(p => nivel.campos.every(c => p[c] === f[c]));
-      const registros = new Set(sel.map(p => `${p.origem}|${p.destino}|${p.programa}|${p.cabine}|${p.snap}`)).size;
-      tentativas.push({ nivel: nivel.nome, registros, pontos: sel.length });
+      const registros = new Set(
+        sel.map(p => `${p.origem}|${p.destino}|${p.programa}|${p.cabine}|${p.snap}`)
+      ).size;
 
-      if (registros >= MIN_REGISTROS && sel.length >= MIN_PONTOS) {
-        escolhido = { nivel: nivel.nome, campos: nivel.campos, sel, registros };
-        break;
+      if (registros < MIN_REGISTROS || sel.length < MIN_PONTOS) {
+        descartados.push({ nivel: nivel.nome, registros, pontos: sel.length, motivo: 'amostra_insuficiente' });
+        continue;
       }
-    }
 
-    if (!escolhido) {
-      return res.json({
-        ok: false, motivo: 'amostra_insuficiente',
-        minimos: { registros: MIN_REGISTROS, pontos: MIN_PONTOS },
-        tentativas,
+      const valores = sel.map(p => p.ant);
+      niveis.push({
+        nivel: nivel.nome,
+        agregadoPor: nivel.campos,
+        registros,
+        ...estatisticas(valores),
+        histograma: faixas.map(([a, b]) => {
+          const n = valores.filter(v => v >= a && v <= b).length;
+          return { de: a, ate: b, n, pct: Number((100 * n / valores.length).toFixed(1)) };
+        }),
+        classificacao: classificar(valores, alvo),
       });
     }
 
-    const valores = escolhido.sel.map(p => p.ant);
-    const stats = estatisticas(valores);
-
-    // Histograma por faixa, para leitura visual da distribuicao
-    const faixas = [[0,30],[31,60],[61,90],[91,120],[121,180],[181,240],[241,300],[301,400]];
-    const histograma = faixas.map(([a, b]) => {
-      const n = valores.filter(v => v >= a && v <= b).length;
-      return { de: a, ate: b, n, pct: Number((100 * n / valores.length).toFixed(1)) };
-    });
-
-    // Classificacao de uma oferta especifica dentro da distribuicao
-    let classificacao = null;
-    if (Number.isFinite(alvo)) {
-      const abaixo = valores.filter(v => v < alvo).length;
-      const pct = Math.round(100 * abaixo / valores.length);
-      let leitura;
-      if (pct <= 10)      leitura = 'muito abaixo do usual — janela curta e atipica';
-      else if (pct <= 25) leitura = 'abaixo do usual';
-      else if (pct <= 75) leitura = 'dentro do padrao';
-      else if (pct <= 90) leitura = 'acima do usual';
-      else                leitura = 'muito acima do usual — liberacao antecipada atipica';
-      classificacao = { antecedencia: alvo, percentil: pct, leitura };
+    if (!niveis.length) {
+      return res.json({
+        ok: false, motivo: 'amostra_insuficiente',
+        minimos: { registros: MIN_REGISTROS, pontos: MIN_PONTOS },
+        filtro: f, descartados,
+      });
     }
 
     res.set('Cache-Control', 'no-store');
     res.json({
       ok: true,
-      nivel: escolhido.nivel,
-      agregadoPor: escolhido.campos,
       filtro: f,
       precisao: soDia ? 'dia' : 'todas',
-      registros: escolhido.registros,
-      ...stats,
-      histograma,
-      classificacao,
-      tentativas,
+      // principal = nivel mais especifico com amostra; os demais servem de contexto
+      principal: niveis[0].nivel,
+      niveis,
+      descartados,
     });
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
