@@ -2595,19 +2595,19 @@ function montarMsgAlertaConcierge(al, dados) {
   const linhas = [];
 
   if (alvo === 'lembrete') {
-    linhas.push('⏰ *Lembrete agendado*', '');
+    linhas.push('*Lembrete agendado*', '');
     linhas.push(al.textoLembrete || al.demandaTitulo || al.atividadeTitulo || 'Lembrete');
     if (al.dataLembrete) {
       linhas.push(`*Programado para:* ${fmtDataBRAlerta(al.dataLembrete)}${al.horaLembrete ? ' às ' + al.horaLembrete : ''}`);
     }
   } else if (alvo === 'transferencia') {
-    linhas.push('🔔 *Oportunidade para uma demanda*', '');
+    linhas.push('*Oportunidade para uma demanda*', '');
     linhas.push(`*Transferência bonificada:* ${d.origem || al.origem || 'Qualquer origem'} → ${d.destino || al.destino || '—'}`);
     linhas.push(`*Bônus:* ${d.bonus}% (mínimo configurado: ${al.bonusMin}%)`);
     if (d.prazo) linhas.push(`*Prazo:* ${d.prazo}`);
     if (d.titulo) linhas.push(`*Oferta:* ${d.titulo}`);
   } else {
-    linhas.push('🔔 *Oportunidade para uma demanda*', '');
+    linhas.push('*Oportunidade para uma demanda*', '');
     linhas.push(`*Compra bonificada:* ${al.parceiro} · ${al.programa}`);
     linhas.push(`*Pontuação atual:* ${d.pts} pts/R$ (mínimo configurado: ${al.minPts})`);
   }
