@@ -9228,7 +9228,7 @@ async function compCarregarFaixa(orig, dest, programa, cabineFiltro) {
 
     // 2) Comparativo: as demais companhias desta mesma rota, para dar contexto.
     try {
-      const rp = await fetch(`${CDV_PROXY_PASS}/passagens/panorama?par=${encodeURIComponent(orig + '|' + dest)}&minRegistros=2&minPontos=8&t=${Date.now()}`);
+      const rp = await fetch(`${CDV_PROXY_PASS}/passagens/panorama?par=${encodeURIComponent(orig + '|' + dest)}&minRegistros=1&minPontos=1&t=${Date.now()}`);
       const dp = await rp.json();
       if (req !== _compFaixaReq) return;
       if (dp.ok && dp.combos && dp.combos.length) {
@@ -9245,25 +9245,33 @@ async function compCarregarFaixa(orig, dest, programa, cabineFiltro) {
   }
 }
 
+// Rotulos dos niveis de agregacao. Antes tres niveis diferentes compartilhavam
+// o texto "esta rota, neste programa", o que fazia parecer linha repetida.
+// t = titulo curto; s = o que exatamente entra naquele recorte.
 const COMP_ROTULO_NIVEL = {
-  rota_completa: 'esta rota, neste programa',
-  rota_programa_cabine: 'esta rota, neste programa',
-  rota_programa: 'esta rota, neste programa',
-  rota: 'todos os programas nesta rota',
-  cia_programa_cabine_escopo: 'este programa/companhia no geral',
-  cia_programa_escopo: 'este programa/companhia no geral',
-  programa_cabine_escopo: 'este programa no geral',
-  cia_cabine_escopo: 'esta companhia no geral',
-  programa_escopo: 'este programa no geral',
-  programa_cabine: 'este programa no geral',
-  programa: 'este programa no geral',
-  escopo_cabine: 'todas as rotas deste tipo',
-  geral: 'média de toda a base',
+  rota_completa:              { t: 'Esta rota, neste programa',  s: 'só nesta companhia' },
+  rota_programa_cabine:       { t: 'Esta rota, neste programa',  s: 'qualquer companhia, mesma cabine' },
+  rota_programa:              { t: 'Esta rota, neste programa',  s: 'qualquer companhia ou cabine' },
+  rota:                       { t: 'Esta rota',                  s: 'somando todos os programas' },
+  cia_programa_cabine_escopo: { t: 'Este programa nesta companhia', s: 'todas as rotas do mesmo tipo' },
+  cia_programa_escopo:        { t: 'Este programa nesta companhia', s: 'todas as rotas e cabines' },
+  programa_cabine_escopo:     { t: 'Este programa no geral',     s: 'todas as companhias e rotas' },
+  cia_cabine_escopo:          { t: 'Esta companhia no geral',    s: 'todos os programas e rotas' },
+  programa_escopo:            { t: 'Este programa no geral',     s: 'todas as rotas do mesmo tipo' },
+  programa_cabine:            { t: 'Este programa no geral',     s: 'nacionais e internacionais' },
+  programa:                   { t: 'Este programa no geral',     s: 'toda a base' },
+  escopo_cabine:              { t: 'Todas as rotas deste tipo',  s: 'qualquer programa' },
+  geral:                      { t: 'Média de toda a base',       s: 'referência ampla' },
 };
+
+// O modal tem fundo escuro fixo (#1a2035), mas as variaveis de tema seguem o
+// modo claro/escuro do painel — no tema claro var(--text) e escuro e o texto
+// sumia. Dentro desta coluna as cores sao explicitas.
+const CFX = { txt: '#eef1f8', mut: '#9aa6c2', mut2: '#6f7c9b', trilho: 'rgba(255,255,255,.08)', linha: 'rgba(255,255,255,.12)' };
 
 function compBarra(n, teto, cor) {
   const esq = 100 * n.p10 / teto, larg = Math.max(100 * (n.p90 - n.p10) / teto, 1), med = 100 * n.mediana / teto;
-  return `<div style="position:relative;height:8px;background:var(--card);border-radius:4px;overflow:hidden;margin:5px 0 3px">
+  return `<div style="position:relative;height:8px;background:${CFX.trilho};border-radius:4px;overflow:hidden;margin:5px 0 3px">
       <i style="position:absolute;left:${esq.toFixed(1)}%;width:${larg.toFixed(1)}%;height:100%;background:${cor}33;border-radius:4px"></i>
       <b style="position:absolute;left:${med.toFixed(1)}%;top:-2px;width:2.5px;height:12px;background:${cor};border-radius:2px"></b>
     </div>`;
@@ -9273,54 +9281,66 @@ function compRenderFaixa(d) {
   const box = document.getElementById('mapa-modal-comp');
   if (!box) return;
   if (!d || ((!d.niveis || !d.niveis.length) && (!d.combos || !d.combos.length))) {
-    box.innerHTML = '<div style="font-size:11px;color:var(--muted2);line-height:1.6">Ainda não há histórico suficiente desta rota para estimar quando a disponibilidade costuma abrir.</div>';
+    box.innerHTML = `<div style="font-size:11px;color:${CFX.mut2};line-height:1.6">Ainda não há histórico suficiente desta rota para estimar quando a disponibilidade costuma abrir.</div>`;
     return;
   }
 
   const cab = s => String(s || '').replace('Economica', 'Econômica');
-  const titulo = '<div style="font-size:10px;font-weight:800;letter-spacing:.6px;color:var(--muted2);text-transform:uppercase;margin-bottom:3px">Quando costuma abrir</div>'
-    + '<div style="font-size:10.5px;color:var(--muted);margin-bottom:10px;line-height:1.5">Dias de antecedência entre a pesquisa e o voo. Histórico completo, não só os 180 dias do mapa.</div>';
+  let html = `<div style="font-size:10px;font-weight:800;letter-spacing:.6px;color:${CFX.mut2};text-transform:uppercase;margin-bottom:3px">Quando costuma abrir</div>
+    <div style="font-size:10.5px;color:${CFX.mut};margin-bottom:12px;line-height:1.5">Dias de antecedência entre a pesquisa e o voo. Histórico completo, não só os 180 dias do mapa.</div>`;
 
-  let html = titulo;
+  // Niveis com estatisticas identicas sao redundantes na tela: quando o recorte
+  // mais amplo nao acrescenta nenhum registro, ele repete o mesmo numero e da a
+  // impressao de linha duplicada. Mantem-se apenas o mais especifico.
+  let niveis = (d.niveis || []).filter((n, i, arr) =>
+    !arr.slice(0, i).some(a => a.mediana === n.mediana && a.p10 === n.p10 && a.p90 === n.p90 && a.registros === n.registros));
 
-  if (d.niveis && d.niveis.length) {
-    const teto = Math.max(120, ...d.niveis.map(n => n.p90));
-    html += d.niveis.map((n, i) => {
-      const cor = i === 0 ? '#ff585e' : '#60a5fa';
-      return `<div style="margin-top:${i ? 11 : 0}px">
-        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
-          <span style="font-size:10.5px;font-weight:${i === 0 ? 800 : 600};color:${i === 0 ? 'var(--text)' : 'var(--muted)'};line-height:1.3">${compEsc(COMP_ROTULO_NIVEL[n.nivel] || n.nivel)}</span>
-          <span style="font-size:13px;font-weight:900;color:${cor};white-space:nowrap">${n.mediana}d</span>
+  if (niveis.length) {
+    const teto = Math.max(120, ...niveis.map(n => n.p90));
+    html += niveis.map((n, i) => {
+      const cor = i === 0 ? '#ff585e' : '#7aa7f0';
+      const rot = COMP_ROTULO_NIVEL[n.nivel] || { t: n.nivel, s: '' };
+      return `<div style="margin-top:${i ? 13 : 0}px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+          <div style="min-width:0">
+            <div style="font-size:11px;font-weight:${i === 0 ? 800 : 700};color:${i === 0 ? CFX.txt : CFX.mut};line-height:1.35">${compEsc(rot.t)}</div>
+            ${rot.s ? `<div style="font-size:9px;color:${CFX.mut2};margin-top:1px">${compEsc(rot.s)}</div>` : ''}
+          </div>
+          <span style="font-size:14px;font-weight:900;color:${cor};white-space:nowrap;line-height:1.2">${n.mediana}d</span>
         </div>
         ${compBarra(n, teto, cor)}
-        <div style="font-size:9.5px;color:var(--muted2)">normalmente entre ${n.p10} e ${n.p90} dias · ${n.registros} pesquisas</div>
+        <div style="font-size:9.5px;color:${CFX.mut2}">normalmente entre ${n.p10} e ${n.p90} dias · ${n.registros} pesquisas</div>
       </div>`;
     }).join('');
   }
 
-  // Comparativo com as outras companhias da rota — e o que responde
-  // "sera que outro operador abre antes?" sem precisar fechar o modal.
+  // Comparativo com as outras companhias da rota. Limiar de 1 para nao ocultar
+  // operador que existe na rota (Copa/Azul pelo Mundo em SP-Cancun tinha 1
+  // pesquisa e sumia); os de base fraca vem marcados em vez de escondidos.
   if (d.combos && d.combos.length) {
     const teto = Math.max(120, ...d.combos.map(c => c.p90));
-    html += `<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border-ctrl)">
-      <div style="font-size:10px;font-weight:800;letter-spacing:.6px;color:var(--muted2);text-transform:uppercase;margin-bottom:8px">Outras opções nesta rota</div>`;
+    html += `<div style="margin-top:18px;padding-top:13px;border-top:1px solid ${CFX.linha}">
+      <div style="font-size:10px;font-weight:800;letter-spacing:.6px;color:${CFX.mut2};text-transform:uppercase">Companhias que já abriram esta rota</div>
+      <div style="font-size:9.5px;color:${CFX.mut2};margin:3px 0 9px;line-height:1.5">Antecedência típica de cada operador, para comparar.</div>`;
     html += d.combos.map(c => {
       const atual = d.programa && compEsc(c.programa) === compEsc(d.programa);
+      const fraca = c.registros < 3 || c.pontos < 20;
       const exec = /exec/i.test(c.cabine || '');
-      const cor = atual ? '#ff585e' : (exec ? '#60a5fa' : '#34d399');
+      const cor = atual ? '#ff585e' : (exec ? '#7aa7f0' : '#4ade80');
       const esq = 100 * c.p10 / teto, larg = Math.max(100 * (c.p90 - c.p10) / teto, 1), med = 100 * c.mediana / teto;
-      return `<div style="margin-bottom:9px;${atual ? 'opacity:1' : 'opacity:.82'}">
-        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:6px">
+      return `<div style="margin-bottom:11px;${fraca && !atual ? 'opacity:.62' : ''}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">
           <div style="min-width:0">
-            <div style="font-size:11px;font-weight:${atual ? 900 : 700};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${compEsc(c.cia)}${atual ? ' <span style="font-size:8.5px;color:#ff585e">◄ atual</span>' : ''}</div>
-            <div style="font-size:9px;color:var(--muted2)">${compEsc(c.programa)} · ${compEsc(cab(c.cabine))}</div>
+            <div style="font-size:11.5px;font-weight:${atual ? 900 : 700};color:${CFX.txt};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${compEsc(c.cia)}${atual ? ' <span style="font-size:8.5px;color:#ff585e;font-weight:800">◄ aberto</span>' : ''}</div>
+            <div style="font-size:9px;color:${CFX.mut2};margin-top:1px">${compEsc(c.programa)} · ${compEsc(cab(c.cabine))}</div>
           </div>
-          <span style="font-size:11.5px;font-weight:900;color:${cor};white-space:nowrap">${c.mediana}d</span>
+          <span style="font-size:12px;font-weight:900;color:${cor};white-space:nowrap">${c.mediana}d</span>
         </div>
-        <div style="position:relative;height:6px;background:var(--card);border-radius:3px;overflow:hidden;margin-top:4px">
+        <div style="position:relative;height:6px;background:${CFX.trilho};border-radius:3px;overflow:hidden;margin-top:4px">
           <i style="position:absolute;left:${esq.toFixed(1)}%;width:${larg.toFixed(1)}%;height:100%;background:${cor}44;border-radius:3px"></i>
           <b style="position:absolute;left:${med.toFixed(1)}%;top:-1px;width:2px;height:8px;background:${cor};border-radius:1px"></b>
         </div>
+        <div style="font-size:9px;color:${CFX.mut2};margin-top:3px">${c.p10}–${c.p90} dias · ${c.registros} pesquisa${c.registros !== 1 ? 's' : ''}${fraca ? ' · <span style="color:#f0a742">base pequena</span>' : ''}</div>
       </div>`;
     }).join('');
     html += '</div>';
