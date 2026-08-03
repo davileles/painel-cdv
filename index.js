@@ -594,18 +594,22 @@ async function ghGetJson(filePath, fallback) {
   const data = await res.json();
   if (!res.ok) return { data: fallback, sha: null };
   // Arquivo >1MB: GitHub retorna encoding:'none' e content vazio.
-  // Buscar pela própria Contents API com Accept:raw (funciona em repo privado,
-  // ao contrário de raw.githubusercontent.com, que exige repo público).
+  // Buscar via git/blobs pelo SHA, e nao repetindo o GET na Contents API:
+  // um segundo GET pode cair numa versao diferente da que forneceu o SHA
+  // (passagens.json sofre escrita concorrente), e o PUT seguinte usaria um SHA
+  // que nao corresponde ao conteudo lido. O blob e imutavel e casa com o SHA.
   if (data.encoding === 'none' || !data.content) {
     const sha = data.sha || null;
+    if (!sha) return { data: fallback, sha: null };
     try {
-      const rawHeaders = { ...ghHeaders(true), 'Accept': 'application/vnd.github.raw' };
-      const rawRes = await fetch(apiBase, { compress: false, headers: rawHeaders });
-      if (!rawRes.ok) return { data: fallback, sha };
-      const parsed = JSON.parse(await rawRes.text());
+      const blobUrl = `https://api.github.com/repos/${repoDoArquivo(filePath)}/git/blobs/${sha}`;
+      const blobRes = await fetch(blobUrl, { compress: false, headers: ghHeaders(true) });
+      if (!blobRes.ok) return { data: fallback, sha };
+      const blob = await blobRes.json();
+      const parsed = JSON.parse(Buffer.from(blob.content, 'base64').toString('utf8'));
       return { data: parsed, sha };
     } catch (e) {
-      console.error(`[ghGetJson raw] ${filePath}:`, e.message);
+      console.error(`[ghGetJson blob] ${filePath}:`, e.message);
       return { data: fallback, sha };
     }
   }
