@@ -1,8 +1,8 @@
 {
   "_meta": {
     "descricao": "Hash do conteúdo das fontes por cartão. Se o hash não mudou, o coletor não chama a IA.",
-    "atualizado_em": "2026-07-31",
-    "total": 59
+    "atualizado_em": "2026-08-03",
+    "total": 66
   },
   "cartoes": {
     "brb-visa-dux": {
@@ -169,7 +169,7 @@
       "em": "2026-07-31"
     },
     "nubank-ultravioleta": {
-      "hash": "2bbe93d05a2c354b",
+      "hash": "bffa1490baebe143",
       "urls": [
         "https://nubank.com.br/ultravioleta/cartao-black",
         "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta",
@@ -177,7 +177,7 @@
         "https://nubank.com.br/ultravioleta/beneficios",
         "https://nubank.com.br/ultravioleta/cartao-black/pontos-cashback"
       ],
-      "em": "2026-07-31"
+      "em": "2026-08-03"
     },
     "porto-bank-mastercard-black": {
       "hash": "8cf16fe57eb55be9",
@@ -219,7 +219,7 @@
       "em": "2026-07-31"
     },
     "sicoob-mastercard-black-merit": {
-      "hash": "f6b13aa5a9f89720",
+      "hash": "672c34cdaf42e512",
       "urls": [
         "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf",
         "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
@@ -228,10 +228,10 @@
         "https://www.sicoob.com.br/web/sicoobagrorural/mastercard-black-pf",
         "https://www.sicoob.com.br/documents/37087630/37302699/Cartoes+de+Credito+Diferenciados+PF+por+Valor+Anuidade.pdf/9dd0f9de-d1c5-0d93-e2c0-70af51d042b0?t=1631885857192&download=true"
       ],
-      "em": "2026-07-31"
+      "em": "2026-08-03"
     },
     "sicoob-mastercard-black-zenith": {
-      "hash": "29d156d96ea5dced",
+      "hash": "53e731e24db6f388",
       "urls": [
         "https://www.sicoob.com.br/web/sicoob/mastercard-zenith",
         "https://www.sicoob.com.br/web/sicoob/coopera",
@@ -240,10 +240,10 @@
         "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/282563279",
         "https://www.sicoob.com.br/zenith/desbloqueio"
       ],
-      "em": "2026-07-31"
+      "em": "2026-08-03"
     },
     "sicoob-visa-infinite-zenith": {
-      "hash": "0babb9008af1da0a",
+      "hash": "f35f64f097eb8ab5",
       "urls": [
         "https://www.sicoob.com.br/web/sicoob/visa-zenith",
         "https://www.sicoob.com.br/web/sicoob/coopera",
@@ -252,7 +252,7 @@
         "https://www.sicoob.com.br/web/sicoobcentralscrs/noticias/-/asset_publisher/xAioIawpOI5S/content/id/279728567",
         "https://www.sicoob.com.br/documents/2204538/138978214/Tabela+de+Tarifas+nov-2025.pdf/9b3d5594-06cf-9814-0a93-193e5584f598?t=1763141556627"
       ],
-      "em": "2026-07-31"
+      "em": "2026-08-03"
     },
     "sicredi-mastercard-black": {
       "hash": "b76bc2ff6aab649b",
@@ -492,6 +492,63 @@
         "https://soliciteseucartao.bradesco/home/cartoes/cartao-visa-signature"
       ],
       "em": "2026-07-31"
+    },
+    "banescard-visa-infinite-absoluto": {
+      "hash": "964c7df52ac0169a",
+      "urls": [
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/banestes-lanca-campanha-e-novo-cartao-alta-renda.html"
+      ],
+      "em": "2026-08-03"
+    },
+    "bradesco-amex-the-centurion": {
+      "hash": "caa2f1ccd454044f",
+      "urls": [
+        "https://www.americanexpress.com/pt-br/network/cartoes-credito/bradesco/",
+        "https://www.americanexpress.com/pt-br/network/beneficios/viagem/salasvips.html/"
+      ],
+      "em": "2026-08-03"
+    },
+    "btg-mastercard-world-legend-ultrablue": {
+      "hash": "c9bfb18121c3bf10",
+      "urls": [
+        "https://conteudo.btgpactual.com/cartao-ultrablue",
+        "https://banking.btgpactual.com/assets/files/comparativo-cartoes-btg-pactual.pdf",
+        "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/world-legend-mastercard.html",
+        "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf"
+      ],
+      "em": "2026-08-03"
+    },
+    "c6-graphene": {
+      "hash": "3ffc03a4e6d9ba1f",
+      "urls": [
+        "https://www.c6bank.com.br/cartao-c6-carbon-mastercard-black/",
+        "https://www.c6bank.com.br/programa-de-pontos-atomos/"
+      ],
+      "em": "2026-08-03"
+    },
+    "itau-personnalite-mastercard-legend": {
+      "hash": "396a3ff0dabfa001",
+      "urls": [
+        "https://www.itau.com.br/media/dam/m/4bfc86db141c01be/original/11-05-2026-itau-private-world-legend-mastercard-comeca-a-ser-disponibilizado-para-os-clientes.pdf",
+        "https://www.itau.com.br/media/dam/m/a91191a69542df8/original/20-10-2025-itau-unibanco-tera-o-cartao-world-legend-mastercard-em-seu-portfolio.pdf"
+      ],
+      "em": "2026-08-03"
+    },
+    "itau-personnalite-mastercard-the-one": {
+      "hash": "20bf500881077ac6",
+      "urls": [
+        "https://cloud.sfmc.itau.com.br/itau_personnalite_m_the_one",
+        "https://www.itau.com.br/content/dam/itau/varejo/pontos-e-cashback/pdf/regulamento-pontos-e-cashback-itau.pdf"
+      ],
+      "em": "2026-08-03"
+    },
+    "itau-private-mastercard-legend": {
+      "hash": "396a3ff0dabfa001",
+      "urls": [
+        "https://www.itau.com.br/media/dam/m/4bfc86db141c01be/original/11-05-2026-itau-private-world-legend-mastercard-comeca-a-ser-disponibilizado-para-os-clientes.pdf",
+        "https://www.itau.com.br/media/dam/m/a91191a69542df8/original/20-10-2025-itau-unibanco-tera-o-cartao-world-legend-mastercard-em-seu-portfolio.pdf"
+      ],
+      "em": "2026-08-03"
     }
   }
 }
