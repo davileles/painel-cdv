@@ -1147,6 +1147,7 @@ async function carregarPontosComportamento() {
   }
 
   const pontos = [];
+  const brutos = [];
   // grafia canonica para exibicao (a chave e normalizada; a UI mostra o original)
   const rotulos = new Map();
   // variante para cia: agrupa por chaveCia mas guarda a grafia original
@@ -1177,31 +1178,55 @@ async function carregarPontosComportamento() {
       console.warn(`[comportamento] ${arq} indisponivel: ${e.message}`);
       continue;
     }
-    for (const p of (dados.data.items || [])) {
-      const r = normalizarDatas(p.datas_ida, p.enviadoEm);
-      if (r.status !== 'ok') continue;
-      const ref = new Date(String(p.enviadoEm).slice(0, 10));
-      if (!Number.isFinite(ref.getTime())) continue;
-      const registro = {
-        origem: chaveTexto(p.origem),
-        destino: chaveTexto(p.destino),
-        programa: registrarRotulo(p.programa),
-        cia: registrarRotuloCia(p.cia),
-        cabine: registrarRotulo(p.cabine),
-        escopo: escopoRota(p.origem, p.destino),
-        snap: String(p.enviadoEm).slice(0, 10),
-        precisao: r.precisao,
-      };
-      for (const d of r.datas) {
-        const ant = Math.round((new Date(d) - ref) / 86400000);
-        if (ant >= 0 && ant <= 800) pontos.push({ ...registro, ant });
-      }
+    for (const p of (dados.data.items || [])) brutos.push(p);
+  }
+
+  // ── Deduplicacao de observacoes repetidas ────────────────────────────────
+  // O radar roda varias vezes por dia e re-registra a mesma oferta a cada
+  // execucao (ate 4x no mesmo dia). Sao observacoes genuinas, mas para a
+  // estatistica cada oferta deve pesar uma vez: senao uma oferta que sobrevive
+  // o dia inteiro conta varias vezes e a distribuicao pende para ofertas
+  // duradouras. Mantem-se a PRIMEIRA ocorrencia do dia, que e a que responde
+  // "quando essa disponibilidade apareceu".
+  // Os registros originais seguem intactos no arquivo — isto e so leitura.
+  brutos.sort((a, b) => String(a.enviadoEm).localeCompare(String(b.enviadoEm)));
+  const vistos = new Set();
+  const unicos = [];
+  for (const p of brutos) {
+    const k = [
+      chaveTexto(p.origem), chaveTexto(p.destino), chaveTexto(p.programa),
+      chaveCia(p.cia), chaveTexto(p.cabine), p.pontos, String(p.enviadoEm).slice(0, 10),
+    ].join('|');
+    if (vistos.has(k)) continue;
+    vistos.add(k);
+    unicos.push(p);
+  }
+  const repetidos = brutos.length - unicos.length;
+
+  for (const p of unicos) {
+    const r = normalizarDatas(p.datas_ida, p.enviadoEm);
+    if (r.status !== 'ok') continue;
+    const ref = new Date(String(p.enviadoEm).slice(0, 10));
+    if (!Number.isFinite(ref.getTime())) continue;
+    const registro = {
+      origem: chaveTexto(p.origem),
+      destino: chaveTexto(p.destino),
+      programa: registrarRotulo(p.programa),
+      cia: registrarRotuloCia(p.cia),
+      cabine: registrarRotulo(p.cabine),
+      escopo: escopoRota(p.origem, p.destino),
+      snap: String(p.enviadoEm).slice(0, 10),
+      precisao: r.precisao,
+    };
+    for (const d of r.datas) {
+      const ant = Math.round((new Date(d) - ref) / 86400000);
+      if (ant >= 0 && ant <= 800) pontos.push({ ...registro, ant });
     }
   }
 
   comportamentoCache = { pontos, ts: Date.now() };
   ROTULOS = rotulos;
-  console.log(`[comportamento] base carregada: ${pontos.length} pontos de ${arquivos.length} arquivo(s)`);
+  console.log(`[comportamento] base carregada: ${pontos.length} pontos | ${unicos.length} registros unicos (${repetidos} observacoes repetidas descartadas) de ${arquivos.length} arquivo(s)`);
   return pontos;
 }
 
