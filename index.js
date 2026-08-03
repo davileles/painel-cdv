@@ -1117,9 +1117,19 @@ let comportamentoCache = { pontos: null, ts: 0 };
 const MIN_REGISTROS = 5;    // snapshots distintos
 const MIN_PONTOS    = 60;   // pares (registro x data disponivel)
 
+// Sufixos comerciais que nao distinguem operador: "Turkish" e "Turkish Airlines"
+// sao a mesma companhia e precisam cair no mesmo grupo, senao a mesma rota
+// aparece duas vezes na analise com amostras partidas ao meio.
+const SUFIXOS_CIA = /\s+(airways|airlines|air lines|linhas aereas|aereas|airline)$/;
+
 function chaveTexto(v) {
   return String(v == null ? '' : v)
     .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+// Chave especifica de companhia: normaliza e remove sufixo comercial.
+function chaveCia(v) {
+  return chaveTexto(v).replace(SUFIXOS_CIA, '').trim();
 }
 
 // Carrega a base inteira (quente + shards) e converte em pontos de antecedencia.
@@ -1139,6 +1149,16 @@ async function carregarPontosComportamento() {
   const pontos = [];
   // grafia canonica para exibicao (a chave e normalizada; a UI mostra o original)
   const rotulos = new Map();
+  // variante para cia: agrupa por chaveCia mas guarda a grafia original
+  const registrarRotuloCia = (valor) => {
+    const k = chaveCia(valor);
+    if (!k) return k;
+    if (!rotulos.get(k)) rotulos.set(k, new Map());
+    const m = rotulos.get(k);
+    m.set(valor, (m.get(valor) || 0) + 1);
+    return k;
+  };
+
   const registrarRotulo = (valor) => {
     const k = chaveTexto(valor);
     if (!k) return k;
@@ -1166,7 +1186,7 @@ async function carregarPontosComportamento() {
         origem: chaveTexto(p.origem),
         destino: chaveTexto(p.destino),
         programa: registrarRotulo(p.programa),
-        cia: registrarRotulo(p.cia),
+        cia: registrarRotuloCia(p.cia),
         cabine: registrarRotulo(p.cabine),
         escopo: escopoRota(p.origem, p.destino),
         snap: String(p.enviadoEm).slice(0, 10),
@@ -1246,7 +1266,7 @@ app.get('/passagens/comportamento', async (req, res) => {
       origem: chaveTexto(req.query.origem),
       destino: chaveTexto(req.query.destino),
       programa: chaveTexto(req.query.programa),
-      cia: chaveTexto(req.query.cia),
+      cia: chaveCia(req.query.cia),
       cabine: chaveTexto(req.query.cabine),
       escopo: chaveTexto(req.query.escopo),
     };
@@ -1340,6 +1360,10 @@ app.get('/passagens/panorama', async (req, res) => {
     const fEscopo = chaveTexto(req.query.escopo);
     const fDestino = chaveTexto(req.query.destino);
     const fOrigem = chaveTexto(req.query.origem);
+    // ?par=Origem|Destino — casa as DUAS direcoes. O mapa trata a rota como par
+    // nao ordenado (combina orig->dest e dest->orig), entao filtrar so um sentido
+    // cortaria metade da amostra.
+    const par = String(req.query.par || '').split('|').map(chaveTexto).filter(Boolean);
     const minReg = Number(req.query.minRegistros) || MIN_REGISTROS;
     const minPts = Number(req.query.minPontos) || MIN_PONTOS;
 
@@ -1349,6 +1373,10 @@ app.get('/passagens/panorama', async (req, res) => {
     if (fEscopo) base = base.filter(p => p.escopo === fEscopo);
     if (fDestino) base = base.filter(p => p.destino === fDestino);
     if (fOrigem) base = base.filter(p => p.origem === fOrigem);
+    if (par.length === 2) {
+      const [a, b] = par;
+      base = base.filter(p => (p.origem === a && p.destino === b) || (p.origem === b && p.destino === a));
+    }
 
     const grupos = new Map();
     for (const p of base) {
@@ -1389,7 +1417,7 @@ app.get('/passagens/panorama', async (req, res) => {
     res.json({
       ok: true,
       precisao: soDia ? 'dia' : 'todas',
-      filtro: { escopo: fEscopo || null, destino: fDestino || null, origem: fOrigem || null },
+      filtro: { escopo: fEscopo || null, destino: fDestino || null, origem: fOrigem || null, par: par.length === 2 ? par : null },
       minimos: { registros: minReg, pontos: minPts },
       total: combos.length,
       combos,
