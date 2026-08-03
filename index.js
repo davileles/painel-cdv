@@ -699,6 +699,8 @@ async function atualizarHistoricoTransferencia(item) {
     `chore: atualiza historico de transferencias (${chave})`
   );
 }
+const { normalizarDatas, resumirDatas } = require('./passagens-datas.js');
+
 const PASSAGENS_PATH          = 'passagens.json';
 const PASSAGENS_INDEX_PATH    = 'passagens-historico-index.json';
 const MAX_OFERTAS_APROVADAS   = 100;
@@ -1013,7 +1015,7 @@ app.post('/passagens/registrar', async (req, res) => {
     }
 
     if (apenasConsulta) {
-      return res.json({ ok: true, id: null, apenasConsulta: true, hist180: hist180Stats });
+      return res.json({ ok: true, id: null, apenasConsulta: true, hist180: hist180Stats, ida: resumirDatas(datas_ida, agora) });
     }
 
     // Adiciona nova passagem no início
@@ -1026,7 +1028,10 @@ app.post('/passagens/registrar', async (req, res) => {
       `chore: registra passagem ${origem} → ${destino} (${programa} ${pontos} pts)`
     );
 
-    res.json({ ok: true, id, hist180: hist180Stats });
+    // Antecedencia calculada na hora e devolvida ao gerador. NAO e persistida:
+    // gravar as datas normalizadas triplicaria passagens.json (1,17 -> 3,48 MB)
+    // e o valor e 100% derivavel de datas_ida via normalizarDatas().
+    res.json({ ok: true, id, hist180: hist180Stats, ida: resumirDatas(datas_ida, agora) });
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }
