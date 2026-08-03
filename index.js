@@ -2596,36 +2596,36 @@ function montarMsgAlertaConcierge(al, dados) {
 
   if (alvo === 'lembrete') {
     linhas.push('⏰ *Lembrete agendado*', '');
-    linhas.push(`📌 ${al.textoLembrete || al.demandaTitulo || al.atividadeTitulo || 'Lembrete'}`);
+    linhas.push(al.textoLembrete || al.demandaTitulo || al.atividadeTitulo || 'Lembrete');
     if (al.dataLembrete) {
-      linhas.push(`🗓️ *Programado para:* ${fmtDataBRAlerta(al.dataLembrete)}${al.horaLembrete ? ' às ' + al.horaLembrete : ''}`);
+      linhas.push(`*Programado para:* ${fmtDataBRAlerta(al.dataLembrete)}${al.horaLembrete ? ' às ' + al.horaLembrete : ''}`);
     }
   } else if (alvo === 'transferencia') {
     linhas.push('🔔 *Oportunidade para uma demanda*', '');
-    linhas.push(`🔄 *Transferência bonificada:* ${d.origem || al.origem || 'Qualquer origem'} → ${d.destino || al.destino || '—'}`);
-    linhas.push(`📊 *Bônus:* ${d.bonus}% (mínimo configurado: ${al.bonusMin}%)`);
-    if (d.prazo) linhas.push(`⏳ *Prazo:* ${d.prazo}`);
-    if (d.titulo) linhas.push(`📰 ${d.titulo}`);
+    linhas.push(`*Transferência bonificada:* ${d.origem || al.origem || 'Qualquer origem'} → ${d.destino || al.destino || '—'}`);
+    linhas.push(`*Bônus:* ${d.bonus}% (mínimo configurado: ${al.bonusMin}%)`);
+    if (d.prazo) linhas.push(`*Prazo:* ${d.prazo}`);
+    if (d.titulo) linhas.push(`*Oferta:* ${d.titulo}`);
   } else {
     linhas.push('🔔 *Oportunidade para uma demanda*', '');
-    linhas.push(`🛍️ *Compra bonificada:* ${al.parceiro} · ${al.programa}`);
-    linhas.push(`📊 *Pontuação atual:* ${d.pts} pts/R$ (mínimo configurado: ${al.minPts})`);
+    linhas.push(`*Compra bonificada:* ${al.parceiro} · ${al.programa}`);
+    linhas.push(`*Pontuação atual:* ${d.pts} pts/R$ (mínimo configurado: ${al.minPts})`);
   }
 
   // Contexto do vinculo: demanda e/ou atividade de viagem (campos opcionais)
   const ctx = [];
-  if (al.demandaNumero) ctx.push(`📋 *Demanda:* #${String(al.demandaNumero).padStart(3, '0')}${al.demandaTitulo ? ' — ' + al.demandaTitulo : ''}`);
-  if (al.clientes) ctx.push(`👤 *Cliente:* ${al.clientes}`);
-  if (al.viagemNome) ctx.push(`🗓️ *Viagem:* ${al.viagemNome}`);
-  if (al.atividadeTitulo || al.atividadeNome) ctx.push(`📌 *Atividade:* ${al.atividadeTitulo || al.atividadeNome}`);
-  if (al.atividadeTitulo && al.atividadeNome) ctx.push(`🧾 *Tipo:* ${al.atividadeNome}`);
-  if (al.atividadeDescricao) ctx.push(`📝 *Detalhes:* ${al.atividadeDescricao}`);
+  if (al.demandaNumero) ctx.push(`*Demanda:* #${String(al.demandaNumero).padStart(3, '0')}${al.demandaTitulo ? ' — ' + al.demandaTitulo : ''}`);
+  if (al.clientes) ctx.push(`*Cliente:* ${al.clientes}`);
+  if (al.viagemNome) ctx.push(`*Viagem:* ${al.viagemNome}`);
+  if (al.atividadeTitulo || al.atividadeNome) ctx.push(`*Atividade:* ${al.atividadeTitulo || al.atividadeNome}`);
+  if (al.atividadeTitulo && al.atividadeNome) ctx.push(`*Tipo:* ${al.atividadeNome}`);
+  if (al.atividadeDescricao) ctx.push(`*Detalhes:* ${al.atividadeDescricao}`);
   if (ctx.length) { linhas.push(''); ctx.forEach((l) => linhas.push(l)); }
 
   linhas.push('');
   linhas.push(alvo === 'lembrete'
-    ? '✅ Hora de executar essa tarefa.'
-    : '💡 Essa oferta atende a uma necessidade do cliente — vale avaliar agora.');
+    ? 'Hora de executar essa tarefa.'
+    : 'Essa oferta atende a uma necessidade do cliente — vale avaliar agora.');
   return linhas.join('\n');
 }
 
