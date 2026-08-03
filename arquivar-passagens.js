@@ -69,12 +69,19 @@ async function ghGet(path, fallback) {
   if (meta.encoding === 'base64' && meta.content) {
     texto = Buffer.from(meta.content, 'base64').toString('utf8');
   } else {
-    const raw = await fetch(
-      `https://raw.githubusercontent.com/${REPO}/main/${path}?t=${Date.now()}`,
+    // Arquivo >1MB: a Contents API devolve encoding:'none' sem conteudo.
+    // NAO usar raw.githubusercontent.com aqui — e servido por CDN e ja devolveu
+    // versao anterior a um commit recem-feito, fazendo o log reportar
+    // "2292 -> 2292" quando a rotacao de fato havia ocorrido.
+    // git/blobs le pelo SHA: sem cache e com a garantia de que o conteudo
+    // corresponde exatamente ao SHA que sera usado no PUT.
+    const blob = await fetch(
+      `https://api.github.com/repos/${REPO}/git/blobs/${meta.sha}`,
       { headers: HEADERS }
     );
-    if (!raw.ok) throw new Error(`RAW ${path}: HTTP ${raw.status}`);
-    texto = await raw.text();
+    if (!blob.ok) throw new Error(`BLOB ${path}: HTTP ${blob.status}`);
+    const bj = await blob.json();
+    texto = Buffer.from(bj.content, 'base64').toString('utf8');
   }
 
   let data;
