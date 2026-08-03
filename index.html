@@ -9214,15 +9214,32 @@ async function compCarregarFaixa(orig, dest) {
   if (_compFaixaCache[chave] !== undefined) return compRenderFaixa(_compFaixaCache[chave], orig, dest);
 
   box.style.display = 'block';
-  box.innerHTML = '<div style="font-size:11px;color:var(--muted2)">Calculando janela tipica…</div>';
+  box.innerHTML = '<div style="font-size:11px;color:var(--muted2)">Calculando janela típica…</div>';
 
   try {
-    const u = `${CDV_PROXY_PASS}/passagens/comportamento?origem=${encodeURIComponent(orig)}&destino=${encodeURIComponent(dest)}&t=${Date.now()}`;
-    const r = await fetch(u);
-    const d = await r.json();
+    // Quebra por companhia + programa + cabine NESTA rota. Antes esta chamada ia
+    // para /comportamento so com origem e destino, o que misturava todos os
+    // programas num numero so — e o comportamento varia muito entre eles.
+    // Limiares baixos: o recorte por rota tem naturalmente pouca amostra.
+    const uPan = `${CDV_PROXY_PASS}/passagens/panorama?par=${encodeURIComponent(orig + '|' + dest)}&minRegistros=2&minPontos=8&t=${Date.now()}`;
+    const rp = await fetch(uPan);
+    const dp = await rp.json();
     if (req !== _compFaixaReq) return;
-    _compFaixaCache[chave] = d.ok ? d : null;
-    compRenderFaixa(_compFaixaCache[chave], orig, dest);
+
+    let dados = null;
+    if (dp.ok && dp.combos && dp.combos.length) {
+      dados = { tipo: 'rota', combos: dp.combos.sort((a, b) => a.mediana - b.mediana) };
+    } else {
+      // Sem amostra por programa nesta rota: cai para o agregado, deixando
+      // explicito na interface que o numero e de todos os programas juntos.
+      const uC = `${CDV_PROXY_PASS}/passagens/comportamento?origem=${encodeURIComponent(orig)}&destino=${encodeURIComponent(dest)}&t=${Date.now()}`;
+      const rc = await fetch(uC);
+      const dc = await rc.json();
+      if (req !== _compFaixaReq) return;
+      if (dc.ok && dc.niveis && dc.niveis.length) dados = { tipo: 'agregado', niveis: dc.niveis.slice(0, 2) };
+    }
+    _compFaixaCache[chave] = dados;
+    compRenderFaixa(dados, orig, dest);
   } catch (e) {
     if (req !== _compFaixaReq) return;
     box.style.display = 'none';
@@ -9233,7 +9250,7 @@ const COMP_ROTULO_NIVEL = {
   rota_completa: 'esta rota, neste programa',
   rota_programa_cabine: 'esta rota, neste programa',
   rota_programa: 'esta rota, neste programa',
-  rota: 'esta rota',
+  rota: 'todos os programas nesta rota',
   cia_programa_cabine_escopo: 'este programa/companhia no geral',
   cia_programa_escopo: 'este programa/companhia no geral',
   programa_cabine_escopo: 'este programa no geral',
@@ -9242,7 +9259,7 @@ const COMP_ROTULO_NIVEL = {
   programa_cabine: 'este programa no geral',
   programa: 'este programa no geral',
   escopo_cabine: 'todas as rotas deste tipo',
-  geral: 'toda a base',
+  geral: 'média de toda a base',
 };
 
 function compBarra(n, teto, cor) {
@@ -9256,25 +9273,53 @@ function compBarra(n, teto, cor) {
 function compRenderFaixa(d, orig, dest) {
   const box = document.getElementById('map-comp-faixa');
   if (!box) return;
-  if (!d || !d.niveis || !d.niveis.length) { box.style.display = 'none'; return; }
+  if (!d) { box.style.display = 'none'; return; }
 
-  const teto = Math.max(360, ...d.niveis.map(n => n.p90));
-  const html = d.niveis.slice(0, 3).map((n, i) => {
-    const cor = i === 0 ? '#ff585e' : '#60a5fa';
-    return `<div style="margin-top:${i ? 9 : 6}px">
-      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
-        <span style="font-size:11px;font-weight:${i === 0 ? 800 : 600};color:${i === 0 ? 'var(--text)' : 'var(--muted)'}">${compEsc(COMP_ROTULO_NIVEL[n.nivel] || n.nivel)}</span>
-        <span style="font-size:12px;font-weight:900;color:${cor};white-space:nowrap">${n.mediana} dias</span>
-      </div>
-      ${compBarra(n, teto, cor)}
-      <div style="font-size:9.5px;color:var(--muted2)">normalmente entre ${n.p10} e ${n.p90} dias · ${n.registros} pesquisas</div>
-    </div>`;
-  }).join('');
+  const cab = s => String(s || '').replace('Economica', 'Econômica');
+  let corpo = '', rodape = '';
+
+  if (d.tipo === 'rota') {
+    const teto = Math.max(120, ...d.combos.map(c => c.p90));
+    corpo = d.combos.map((c, i) => {
+      const exec = /exec/i.test(c.cabine || '');
+      const cor = exec ? '#60a5fa' : '#34d399';
+      return `<div style="margin-top:${i ? 10 : 7}px;padding-top:${i ? 10 : 0}px;${i ? 'border-top:1px solid var(--border-ctrl)' : ''}">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+          <div style="min-width:0">
+            <div style="font-size:12px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${compEsc(c.cia)}</div>
+            <div style="font-size:9.5px;color:var(--muted)">${compEsc(c.programa)} · ${compEsc(cab(c.cabine))}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:14px;font-weight:900;color:${cor};line-height:1">${c.mediana}</div>
+            <div style="font-size:9px;color:var(--muted)">dias</div>
+          </div>
+        </div>
+        ${compBarra(c, teto, cor)}
+        <div style="font-size:9.5px;color:var(--muted2)">normalmente entre ${c.p10} e ${c.p90} dias · ${c.registros} pesquisas</div>
+      </div>`;
+    }).join('');
+    rodape = 'Cada linha é uma companhia nesta rota. O número é a antecedência típica com que a disponibilidade aparece.';
+  } else {
+    const teto = Math.max(120, ...d.niveis.map(n => n.p90));
+    corpo = d.niveis.map((n, i) => {
+      const cor = i === 0 ? '#ff585e' : '#60a5fa';
+      return `<div style="margin-top:${i ? 10 : 7}px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+          <span style="font-size:11px;font-weight:${i === 0 ? 800 : 600};color:${i === 0 ? 'var(--text)' : 'var(--muted)'}">${compEsc(COMP_ROTULO_NIVEL[n.nivel] || n.nivel)}</span>
+          <span style="font-size:12px;font-weight:900;color:${cor};white-space:nowrap">${n.mediana} dias</span>
+        </div>
+        ${compBarra(n, teto, cor)}
+        <div style="font-size:9.5px;color:var(--muted2)">normalmente entre ${n.p10} e ${n.p90} dias · ${n.registros} pesquisas</div>
+      </div>`;
+    }).join('');
+    rodape = 'Amostra insuficiente para separar por companhia nesta rota — os números abaixo somam todos os programas.';
+  }
 
   box.style.display = 'block';
   box.innerHTML = `<div style="font-size:10px;font-weight:800;letter-spacing:.6px;color:var(--muted2);text-transform:uppercase;margin-bottom:2px">Quando costuma abrir</div>
-    <div style="font-size:10.5px;color:var(--muted);margin-bottom:4px">Dias de antecedência entre a pesquisa e o voo. O valor em destaque é o típico.</div>
-    ${html}`;
+    <div style="font-size:10.5px;color:var(--muted);margin-bottom:2px">${compEsc(rodape)}</div>
+    ${corpo}
+    <div style="font-size:9px;color:var(--muted2);margin-top:9px;opacity:.8">Histórico completo (19 meses), não só os 180 dias do mapa.</div>`;
 }
 
 // ── Panorama global ────────────────────────────────────────────────────────
