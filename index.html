@@ -9372,7 +9372,12 @@ async function compCarregarPanorama() {
 function compRenderPanorama() {
   const w = document.getElementById('comp-wrap');
   if (!w || !_compPanorama) return;
-  const linhas = _compPanorama.filter(c => c.escopo === _compEscopo).sort((a, b) => a.mediana - b.mediana);
+  // Ordem alfabetica por companhia (convencao de UI do CDV), desempatando por
+  // programa e cabine para as linhas da mesma cia ficarem agrupadas e estaveis.
+  const linhas = _compPanorama.filter(c => c.escopo === _compEscopo).sort((a, b) =>
+    String(a.cia || '').localeCompare(String(b.cia || ''), 'pt-BR') ||
+    String(a.programa || '').localeCompare(String(b.programa || ''), 'pt-BR') ||
+    String(a.cabine || '').localeCompare(String(b.cabine || ''), 'pt-BR'));
   if (!linhas.length) { w.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">Sem amostra suficiente neste recorte.</div>'; return; }
 
   const teto = Math.ceil(Math.max(...linhas.map(c => c.p90)) / 30) * 30 || 360;
