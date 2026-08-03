@@ -60,13 +60,45 @@ header{background:var(--surface);border-bottom:3px solid var(--accent);padding:1
 @keyframes ring{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.05;transform:scale(1.4)}}
 .pin-body{border-radius:50%;display:flex;align-items:center;justify-content:center;border:2.5px solid rgba(255,255,255,.45);box-shadow:0 3px 14px rgba(0,0,0,.55);transition:transform .15s}
 .pin-outer:hover .pin-body{transform:scale(1.15)}
+.btn-pan{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;margin-left:auto}
+.btn-pan:hover{border-color:var(--accent);color:var(--accent)}
+.modal-wide{max-width:760px}
+.pan-head{padding:22px 24px 12px;border-bottom:1px solid var(--border)}
+.pan-titulo{font-size:18px;font-weight:900;letter-spacing:-.4px}
+.pan-sub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5}
+.pan-tabs{display:flex;gap:6px;padding:12px 24px 0}
+.pan-tab{background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.pan-tab.on{background:rgba(255,88,94,.15);border-color:var(--accent);color:var(--accent)}
+.pan-wrap{padding:14px 24px 24px;overflow-x:auto}
+table.pan{width:100%;border-collapse:collapse;font-size:12px}
+table.pan th{text-align:right;font-size:9px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted2);font-weight:700;padding:0 6px 8px;white-space:nowrap}
+table.pan th:first-child,table.pan td:first-child{text-align:left}
+table.pan td{padding:7px 6px;border-top:1px solid var(--border);text-align:right;white-space:nowrap}
+table.pan tr:hover td{background:rgba(255,255,255,.03)}
+.pan-prog{font-weight:700}
+.pan-cia{color:var(--muted);font-size:11px}
+.pan-cab{font-size:10px;font-weight:700;border-radius:5px;padding:2px 6px}
+.cab-eco{background:rgba(52,211,153,.15);color:var(--green)}
+.cab-exec{background:rgba(96,165,250,.15);color:var(--blue)}
+.pan-med{font-weight:800;color:var(--text)}
+.pan-n{color:var(--muted2);font-size:11px}
+.barra{position:relative;height:7px;background:var(--card);border-radius:4px;min-width:120px;overflow:hidden}
+.barra i{position:absolute;top:0;height:100%;background:rgba(96,165,250,.35);border-radius:4px}
+.barra b{position:absolute;top:-2px;width:2.5px;height:11px;background:var(--accent);border-radius:2px}
+.pan-vazio{color:var(--muted);font-size:12px;padding:20px 0;text-align:center}
+.m-comp{margin:6px 20px 16px}
+.comp-item{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 11px;margin-bottom:5px}
+.comp-nome{flex:1;font-size:12px;font-weight:600}
+.comp-val{font-size:12px;font-weight:800}
+.comp-faixa{font-size:10px;color:var(--muted2)}
 </style>
 </head>
 <body>
 <header><div><div class="logo">Clube do <em>Viajante</em></div><div class="tagline">Mapa de Emissoes por Milhas</div></div><div id="badge">Carregando...</div></header>
-<div class="filtros"><input id="f-origem" placeholder="Origem..." oninput="render()"><input id="f-destino" placeholder="Destino..." oninput="render()"><select id="f-prog" onchange="render()"><option value="">Todos os programas</option></select><select id="f-cabine" onchange="render()"><option value="">Todas as cabines</option><option value="Economica">Economica</option><option value="Executiva">Executiva</option></select></div>
+<div class="filtros"><input id="f-origem" placeholder="Origem..." oninput="render()"><input id="f-destino" placeholder="Destino..." oninput="render()"><select id="f-prog" onchange="render()"><option value="">Todos os programas</option></select><select id="f-cabine" onchange="render()"><option value="">Todas as cabines</option><option value="Economica">Economica</option><option value="Executiva">Executiva</option></select><button class="btn-pan" onclick="abrirPanorama()">&#128200; Comportamento</button></div>
 <div id="map"></div>
-<div class="overlay" id="overlay" onclick="if(event.target===this)fechar()"><div class="modal"><button class="m-close" onclick="fechar()">&#10005;</button><div class="m-hero"><span class="m-flag" id="m-flag"></span><div class="m-dest" id="m-dest"></div><div class="m-pais" id="m-pais"></div></div><div class="m-best" id="m-best" style="display:none"><div class="m-best-label">Melhor opcao</div><div class="m-best-prog" id="m-best-prog"></div><div class="m-best-pts" id="m-best-pts"></div></div><div class="m-section" id="m-progs-wrap" style="display:none"><div class="m-section-title">Por programa</div><div class="prog-list" id="m-progs"></div></div><div class="m-rec" id="m-rec" style="display:none"><div class="rec-badge">&#9889; Ultima emissao</div><div class="rec-rota" id="m-rec-rota"></div><div class="rec-pts" id="m-rec-pts"></div></div></div></div>
+<div class="overlay" id="overlay" onclick="if(event.target===this)fechar()"><div class="modal"><button class="m-close" onclick="fechar()">&#10005;</button><div class="m-hero"><span class="m-flag" id="m-flag"></span><div class="m-dest" id="m-dest"></div><div class="m-pais" id="m-pais"></div></div><div class="m-best" id="m-best" style="display:none"><div class="m-best-label">Melhor opcao</div><div class="m-best-prog" id="m-best-prog"></div><div class="m-best-pts" id="m-best-pts"></div></div><div class="m-section" id="m-progs-wrap" style="display:none"><div class="m-section-title">Por programa</div><div class="prog-list" id="m-progs"></div></div><div class="m-section" id="m-comp-wrap" style="display:none"><div class="m-section-title">Quando costuma abrir</div><div class="m-comp" id="m-comp"></div></div><div class="m-rec" id="m-rec" style="display:none"><div class="rec-badge">&#9889; Ultima emissao</div><div class="rec-rota" id="m-rec-rota"></div><div class="rec-pts" id="m-rec-pts"></div></div></div></div>
+<div class="overlay" id="ov-pan" onclick="if(event.target===this)fecharPanorama()"><div class="modal modal-wide"><button class="m-close" onclick="fecharPanorama()">&#10005;</button><div class="pan-head"><div class="pan-titulo">Comportamento de disponibilidade</div><div class="pan-sub">Antecedencia tipica entre a pesquisa e a data do voo, por companhia, programa e cabine. Barra azul = faixa dos 80% centrais (p10 a p90); marca vermelha = mediana.</div></div><div class="pan-tabs"><button class="pan-tab on" id="tab-int" onclick="setEscopoPan('internacional')">Internacional</button><button class="pan-tab" id="tab-nac" onclick="setEscopoPan('nacional')">Nacional</button></div><div class="pan-wrap" id="pan-wrap"><div class="pan-vazio">Carregando...</div></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 var TABELA={"Belo Horizonte": [-19.9167, -43.9345, "BR", "Brasil"], "Brasilia": [-15.7801, -47.9292, "BR", "Brasil"], "Campinas": [-22.9099, -47.0626, "BR", "Brasil"], "Campo Grande": [-20.4697, -54.6201, "BR", "Brasil"], "Cuiaba": [-15.5961, -56.0967, "BR", "Brasil"], "Curitiba": [-25.4284, -49.2733, "BR", "Brasil"], "Fernando de Noronha": [-3.8519, -32.4231, "BR", "Brasil"], "Florianopolis": [-27.5954, -48.548, "BR", "Brasil"], "Fortaleza": [-3.7172, -38.5432, "BR", "Brasil"], "Foz do Iguacu": [-25.5951, -54.5857, "BR", "Brasil"], "Goiania": [-16.6869, -49.2648, "BR", "Brasil"], "Ilheus": [-14.7956, -39.0335, "BR", "Brasil"], "Joinville": [-26.3045, -48.8456, "BR", "Brasil"], "Londrina": [-23.3045, -51.1696, "BR", "Brasil"], "Maceio": [-9.6658, -35.735, "BR", "Brasil"], "Natal": [-5.7945, -35.211, "BR", "Brasil"], "Navegantes": [-26.8996, -48.6513, "BR", "Brasil"], "Palmas": [-10.2491, -48.3243, "BR", "Brasil"], "Porto Alegre": [-30.0277, -51.2287, "BR", "Brasil"], "Recife": [-8.0578, -34.8829, "BR", "Brasil"], "Ribeirao Preto": [-21.1699, -47.81, "BR", "Brasil"], "Rio de Janeiro": [-22.9068, -43.1729, "BR", "Brasil"], "Salvador": [-12.9714, -38.5014, "BR", "Brasil"], "Sao Paulo": [-23.5505, -46.6333, "BR", "Brasil"], "Teresina": [-5.0892, -42.8019, "BR", "Brasil"], "Uberlandia": [-18.9186, -48.2772, "BR", "Brasil"], "Vitoria": [-20.3155, -40.3128, "BR", "Brasil"], "Assuncao": [-25.2867, -57.647, "PY", "Paraguai"], "Bogota": [4.711, -74.0721, "CO", "Colombia"], "Buenos Aires": [-34.6037, -58.3816, "AR", "Argentina"], "Cartagena": [10.3997, -75.5144, "CO", "Colombia"], "Lima": [-12.0464, -77.0428, "PE", "Peru"], "Montevideu": [-34.9011, -56.1645, "UY", "Uruguai"], "Santa Cruz de la Sierra": [-17.7834, -63.1821, "BO", "Bolivia"], "Santiago": [-33.4489, -70.6693, "CL", "Chile"], "Boston": [42.3601, -71.0589, "US", "EUA"], "Cancun": [21.1619, -86.8515, "MX", "Mexico"], "Chicago": [41.8781, -87.6298, "US", "EUA"], "Fort Lauderdale": [26.1224, -80.1373, "US", "EUA"], "Houston": [29.7604, -95.3698, "US", "EUA"], "Miami": [25.7617, -80.1918, "US", "EUA"], "Nova York": [40.7128, -74.006, "US", "EUA"], "Orlando": [28.5383, -81.3792, "US", "EUA"], "Punta Cana": [18.5601, -68.3725, "DO", "Rep. Dominicana"], "San Jose": [9.9281, -84.0907, "CR", "Costa Rica"], "Washington": [38.9072, -77.0369, "US", "EUA"], "Amsterda": [52.3676, 4.9041, "NL", "Paises Baixos"], "Barcelona": [41.3851, 2.1734, "ES", "Espanha"], "Frankfurt": [50.1109, 8.6821, "DE", "Alemanha"], "Lisboa": [38.7223, -9.1393, "PT", "Portugal"], "Londres": [51.5074, -0.1278, "GB", "Reino Unido"], "Madrid": [40.4168, -3.7038, "ES", "Espanha"], "Milao": [45.4654, 9.1859, "IT", "Italia"], "Paris": [48.8566, 2.3522, "FR", "Franca"], "Porto": [41.1579, -8.6291, "PT", "Portugal"], "Roma": [41.9028, 12.4964, "IT", "Italia"], "Zurique": [47.3769, 8.5417, "CH", "Suica"], "Abu Dhabi": [24.4539, 54.3773, "AE", "Emirados Arabes"], "Cidade do Cabo": [-33.9249, 18.4241, "ZA", "Africa do Sul"], "Dubai": [25.2048, 55.2708, "AE", "Emirados Arabes"], "Joanesburgo": [-26.2041, 28.0473, "ZA", "Africa do Sul"]};
@@ -80,7 +112,65 @@ function tempoAtras(iso){if(!iso)return'';var h=Math.floor((Date.now()-new Date(
 var passagens=[],mapa=null,camada=null;
 function initMapa(){mapa=L.map('map',{center:[15,10],zoom:2,minZoom:2,maxZoom:8,attributionControl:false});L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(mapa);camada=L.layerGroup().addTo(mapa);}
 function render(){var fp=document.getElementById('f-prog').value||'';var fc=(document.getElementById('f-cabine').value||'').toLowerCase();var fo=(document.getElementById('f-origem').value||'').toLowerCase().trim();var fd=(document.getElementById('f-destino').value||'').toLowerCase().trim();var ps=passagens.filter(function(p){if(fp&&p.programa!==fp)return false;if(fc&&(p.cabine||'').toLowerCase().indexOf(fc)<0)return false;if(fo&&(p.origem||'').toLowerCase().indexOf(fo)<0)return false;if(fd&&(p.destino||'').toLowerCase().indexOf(fd)<0)return false;return true;});var grupos={};ps.forEach(function(p){if(!p.destino)return;if(!grupos[p.destino])grupos[p.destino]=[];grupos[p.destino].push(p);});camada.clearLayers();var nd=0;Object.keys(grupos).forEach(function(dest){var info=lookup(dest);if(!info)return;nd++;var lat=info[0],lon=info[1],cod=info[2];var items=grupos[dest],qtd=items.length;var minPts=Infinity;items.forEach(function(p){if(p.pontos>0&&p.pontos<minPts)minPts=p.pontos;});var freq={};items.forEach(function(p){freq[p.programa]=(freq[p.programa]||0)+1;});var prog=Object.keys(freq).sort(function(a,b){return freq[b]-freq[a];})[0];var cor=corProg(prog),flag=FLAGS[cod]||'&#9992;&#65039;';var sz=Math.min(52,Math.max(30,30+Math.sqrt(qtd)*4));var icon=L.divIcon({className:'pin-outer',html:'<div class="pin-ring" style="background:'+cor+';inset:-8px"></div><div class="pin-body" style="width:'+sz+'px;height:'+sz+'px;background:'+cor+';font-size:'+Math.round(sz*.42)+'px">'+flag+'</div>',iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]});var mk=L.marker([lat,lon],{icon:icon});mk.bindTooltip('<span class="tt-nome">'+dest+'</span>'+(minPts<Infinity?'<span class="tt-pts">'+minPts.toLocaleString('pt-BR')+' pts min.</span>':'')+'<span class="tt-qtd">'+qtd+' emissa'+(qtd>1?'oes':'o')+'</span>',{sticky:true,offset:[14,0]});mk.on('click',function(){abrirModal(dest,items,info);});camada.addLayer(mk);});document.getElementById('badge').textContent=nd+' destino'+(nd!==1?'s':'')+' \u00b7 '+ps.length+' emissa'+(ps.length!==1?'oes':'o');}
-function abrirModal(dest,items,info){var cod=info[2],pais=info[3];document.getElementById('m-flag').innerHTML=FLAGS[cod]||'&#9992;&#65039;';document.getElementById('m-dest').textContent=dest;document.getElementById('m-pais').textContent=pais+' \u00b7 '+items.length+' emissa'+(items.length>1?'oes':'o');var pp={};items.forEach(function(p){var pg=p.programa||'Outros';if(!pp[pg])pp[pg]={eco:Infinity,exec:Infinity,rec:null};var pts=p.pontos||0;if(!pts)return;var cab=(p.cabine||'').toLowerCase();if(cab.indexOf('exec')>=0){if(pts<pp[pg].exec)pp[pg].exec=pts;}else{if(pts<pp[pg].eco)pp[pg].eco=pts;}if(!pp[pg].rec||new Date(p.enviadoEm)>new Date(pp[pg].rec.enviadoEm))pp[pg].rec=p;});var sorted=Object.keys(pp).sort(function(a,b){var pa=pp[a].eco<Infinity?pp[a].eco:pp[a].exec;var pb=pp[b].eco<Infinity?pp[b].eco:pp[b].exec;return pa-pb;});var mb=document.getElementById('m-best');if(sorted.length){var bp=sorted[0],bd=pp[bp],min=bd.eco<Infinity?bd.eco:bd.exec;var el=document.getElementById('m-best-prog');el.textContent=bp;el.style.color=corProg(bp);document.getElementById('m-best-pts').textContent='A partir de '+min.toLocaleString('pt-BR')+' pontos';mb.style.display='block';}else mb.style.display='none';var pw=document.getElementById('m-progs-wrap');if(sorted.length){document.getElementById('m-progs').innerHTML=sorted.map(function(pg){var d=pp[pg],eco=fmtPts(d.eco),exec=fmtPts(d.exec);return'<div class="prog-item"><span class="prog-dot" style="background:'+corProg(pg)+'"></span><span class="prog-nome">'+pg+'</span><div class="prog-pts-wrap">'+(eco?'<span class="pts-eco">'+eco+'</span>':'<span class="pts-na">-</span>')+(exec?'<span class="pts-exec">'+exec+'</span>':'<span class="pts-na">-</span>')+'</div></div>';}).join('');pw.style.display='block';}else pw.style.display='none';var rec=items.filter(function(p){return p.pontos>0&&p.fonte!=='alerta_rejeitado';}).sort(function(a,b){return new Date(b.enviadoEm||0)-new Date(a.enviadoEm||0);})[0];var rm=document.getElementById('m-rec');if(rec){var q=tempoAtras(rec.enviadoEm);document.getElementById('m-rec-rota').textContent=(rec.origem||'')+(rec.origem&&rec.destino?' \u2192 ':'')+( rec.destino||'');document.getElementById('m-rec-pts').innerHTML=rec.pontos.toLocaleString('pt-BR')+'<span>'+(rec.programa||'')+(q?' \u00b7 '+q:'')+'</span>';rm.style.display='block';}else rm.style.display='none';document.getElementById('overlay').classList.add('open');}
+function abrirModal(dest,items,info){var cod=info[2],pais=info[3];document.getElementById('m-flag').innerHTML=FLAGS[cod]||'&#9992;&#65039;';document.getElementById('m-dest').textContent=dest;carregarCompDestino(dest);document.getElementById('m-pais').textContent=pais+' \u00b7 '+items.length+' emissa'+(items.length>1?'oes':'o');var pp={};items.forEach(function(p){var pg=p.programa||'Outros';if(!pp[pg])pp[pg]={eco:Infinity,exec:Infinity,rec:null};var pts=p.pontos||0;if(!pts)return;var cab=(p.cabine||'').toLowerCase();if(cab.indexOf('exec')>=0){if(pts<pp[pg].exec)pp[pg].exec=pts;}else{if(pts<pp[pg].eco)pp[pg].eco=pts;}if(!pp[pg].rec||new Date(p.enviadoEm)>new Date(pp[pg].rec.enviadoEm))pp[pg].rec=p;});var sorted=Object.keys(pp).sort(function(a,b){var pa=pp[a].eco<Infinity?pp[a].eco:pp[a].exec;var pb=pp[b].eco<Infinity?pp[b].eco:pp[b].exec;return pa-pb;});var mb=document.getElementById('m-best');if(sorted.length){var bp=sorted[0],bd=pp[bp],min=bd.eco<Infinity?bd.eco:bd.exec;var el=document.getElementById('m-best-prog');el.textContent=bp;el.style.color=corProg(bp);document.getElementById('m-best-pts').textContent='A partir de '+min.toLocaleString('pt-BR')+' pontos';mb.style.display='block';}else mb.style.display='none';var pw=document.getElementById('m-progs-wrap');if(sorted.length){document.getElementById('m-progs').innerHTML=sorted.map(function(pg){var d=pp[pg],eco=fmtPts(d.eco),exec=fmtPts(d.exec);return'<div class="prog-item"><span class="prog-dot" style="background:'+corProg(pg)+'"></span><span class="prog-nome">'+pg+'</span><div class="prog-pts-wrap">'+(eco?'<span class="pts-eco">'+eco+'</span>':'<span class="pts-na">-</span>')+(exec?'<span class="pts-exec">'+exec+'</span>':'<span class="pts-na">-</span>')+'</div></div>';}).join('');pw.style.display='block';}else pw.style.display='none';var rec=items.filter(function(p){return p.pontos>0&&p.fonte!=='alerta_rejeitado';}).sort(function(a,b){return new Date(b.enviadoEm||0)-new Date(a.enviadoEm||0);})[0];var rm=document.getElementById('m-rec');if(rec){var q=tempoAtras(rec.enviadoEm);document.getElementById('m-rec-rota').textContent=(rec.origem||'')+(rec.origem&&rec.destino?' \u2192 ':'')+( rec.destino||'');document.getElementById('m-rec-pts').innerHTML=rec.pontos.toLocaleString('pt-BR')+'<span>'+(rec.programa||'')+(q?' \u00b7 '+q:'')+'</span>';rm.style.display='block';}else rm.style.display='none';document.getElementById('overlay').classList.add('open');}
+var PROXY='https://cdv-proxy-production.up.railway.app';
+var panorama=null,panEscopo='internacional',panCarregando=false;
+function fmtDias(n){return n==null?'—':n+'d';}
+function abrirPanorama(){document.getElementById('ov-pan').classList.add('open');carregarPanorama();}
+function fecharPanorama(){document.getElementById('ov-pan').classList.remove('open');}
+function setEscopoPan(e){panEscopo=e;document.getElementById('tab-int').classList.toggle('on',e==='internacional');document.getElementById('tab-nac').classList.toggle('on',e==='nacional');renderPanorama();}
+async function carregarPanorama(){
+  if(panorama||panCarregando)return renderPanorama();
+  panCarregando=true;
+  try{
+    var r=await fetch(PROXY+'/passagens/panorama?t='+Date.now());
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    var d=await r.json();
+    panorama=(d.combos||[]);
+  }catch(e){
+    document.getElementById('pan-wrap').innerHTML='<div class="pan-vazio">Nao foi possivel carregar: '+e.message+'</div>';
+    panCarregando=false;return;
+  }
+  panCarregando=false;renderPanorama();
+}
+function renderPanorama(){
+  var w=document.getElementById('pan-wrap');
+  if(!panorama)return;
+  var linhas=panorama.filter(function(c){return c.escopo===panEscopo;});
+  if(!linhas.length){w.innerHTML='<div class="pan-vazio">Sem amostra suficiente neste recorte.</div>';return;}
+  // escala comum para as barras, para permitir comparacao visual entre linhas
+  var teto=Math.max.apply(null,linhas.map(function(c){return c.p90;}));
+  teto=Math.ceil(teto/30)*30||360;
+  var html='<table class="pan"><thead><tr><th>Programa / companhia</th><th>Cabine</th><th>p10</th><th>Mediana</th><th>p90</th><th style="text-align:left;padding-left:14px">Faixa tipica</th><th>Amostra</th></tr></thead><tbody>';
+  linhas.sort(function(a,b){return a.mediana-b.mediana;});
+  linhas.forEach(function(c){
+    var esq=100*c.p10/teto,larg=100*(c.p90-c.p10)/teto,med=100*c.mediana/teto;
+    var cab=(c.cabine||'').toLowerCase().indexOf('exec')>=0?'cab-exec':'cab-eco';
+    html+='<tr><td><span class="pan-prog">'+esc(c.programa)+'</span><br><span class="pan-cia">'+esc(c.cia)+'</span></td>'+
+      '<td><span class="pan-cab '+cab+'">'+esc(c.cabine)+'</span></td>'+
+      '<td>'+fmtDias(c.p10)+'</td><td class="pan-med">'+fmtDias(c.mediana)+'</td><td>'+fmtDias(c.p90)+'</td>'+
+      '<td style="padding-left:14px"><div class="barra"><i style="left:'+esq.toFixed(1)+'%;width:'+Math.max(larg,1).toFixed(1)+'%"></i><b style="left:'+med.toFixed(1)+'%"></b></div></td>'+
+      '<td class="pan-n">'+c.registros+' pesq.<br>'+c.pontos.toLocaleString('pt-BR')+' datas</td></tr>';
+  });
+  html+='</tbody></table><div class="pan-sub" style="margin-top:14px">Escala das barras: 0 a '+teto+' dias. Apenas combinacoes com pelo menos 5 pesquisas e 60 datas aparecem aqui.</div>';
+  w.innerHTML=html;
+}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(ch){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch];});}
+async function carregarCompDestino(dest){
+  var wrap=document.getElementById('m-comp-wrap'),box=document.getElementById('m-comp');
+  wrap.style.display='block';box.innerHTML='<div class="comp-faixa">Carregando...</div>';
+  try{
+    var r=await fetch(PROXY+'/passagens/panorama?destino='+encodeURIComponent(dest)+'&minRegistros=3&minPontos=20&t='+Date.now());
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    var d=await r.json(),cs=(d.combos||[]).sort(function(a,b){return a.mediana-b.mediana;});
+    if(!cs.length){wrap.style.display='none';return;}
+    box.innerHTML=cs.slice(0,6).map(function(c){
+      return '<div class="comp-item"><span class="prog-dot" style="background:'+corProg(c.programa)+'"></span>'+
+        '<div class="comp-nome">'+esc(c.programa)+'<div class="comp-faixa">'+esc(c.cia)+' &middot; '+esc(c.cabine)+' &middot; '+c.registros+' pesq.</div></div>'+
+        '<div style="text-align:right"><div class="comp-val">'+c.mediana+' dias</div><div class="comp-faixa">'+c.p10+' a '+c.p90+'</div></div></div>';
+    }).join('');
+  }catch(e){wrap.style.display='none';}
+}
 function fechar(){document.getElementById('overlay').classList.remove('open');}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')fechar();});
 (async function(){try{initMapa();var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},20000);var r=await fetch('https://cdv-proxy-production.up.railway.app/passagens/listar?t='+Date.now(),{signal:ctrl.signal});if(!r.ok)throw new Error('HTTP '+r.status);var data=await r.json();passagens=data.items||[];var progs=[...new Set(passagens.map(function(p){return p.programa;}).filter(Boolean))].sort();var sel=document.getElementById('f-prog');sel.innerHTML='<option value="">Todos os programas</option>'+progs.map(function(p){return'<option value="'+p+'">'+p+'</option>';}).join('');render();setTimeout(function(){try{var b=camada.getBounds();if(b.isValid())mapa.fitBounds(b,{padding:[50,50],maxZoom:5});}catch(e){}},400);}catch(e){document.getElementById('badge').textContent='Erro: '+e.message;initMapa();}})();
