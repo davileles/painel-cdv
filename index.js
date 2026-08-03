@@ -1098,6 +1098,16 @@ app.get('/passagens/listar', async (req, res) => {
 // historias diferentes e as duas interessam na hora de aprovar um alerta.
 
 const COMPORTAMENTO_TTL_MS = 30 * 60 * 1000;
+let ROTULOS = new Map();
+
+// Devolve a grafia mais frequente para uma chave normalizada ("latam pass" -> "LATAM Pass")
+function rotuloDe(chave) {
+  const m = ROTULOS.get(chave);
+  if (!m || !m.size) return chave;
+  let melhor = null, freq = -1;
+  for (const [txt, n] of m) if (n > freq) { melhor = txt; freq = n; }
+  return melhor;
+}
 let comportamentoCache = { pontos: null, ts: 0 };
 
 const MIN_REGISTROS = 5;    // snapshots distintos
@@ -1123,6 +1133,18 @@ async function carregarPontosComportamento() {
   }
 
   const pontos = [];
+  // grafia canonica para exibicao (a chave e normalizada; a UI mostra o original)
+  const rotulos = new Map();
+  const registrarRotulo = (valor) => {
+    const k = chaveTexto(valor);
+    if (!k) return k;
+    const atual = rotulos.get(k);
+    if (!atual) rotulos.set(k, new Map());
+    const m = rotulos.get(k);
+    m.set(valor, (m.get(valor) || 0) + 1);
+    return k;
+  };
+
   for (const arq of arquivos) {
     let dados;
     try {
@@ -1139,9 +1161,9 @@ async function carregarPontosComportamento() {
       const registro = {
         origem: chaveTexto(p.origem),
         destino: chaveTexto(p.destino),
-        programa: chaveTexto(p.programa),
-        cia: chaveTexto(p.cia),
-        cabine: chaveTexto(p.cabine),
+        programa: registrarRotulo(p.programa),
+        cia: registrarRotulo(p.cia),
+        cabine: registrarRotulo(p.cabine),
         escopo: escopoRota(p.origem, p.destino),
         snap: String(p.enviadoEm).slice(0, 10),
         precisao: r.precisao,
@@ -1154,6 +1176,7 @@ async function carregarPontosComportamento() {
   }
 
   comportamentoCache = { pontos, ts: Date.now() };
+  ROTULOS = rotulos;
   console.log(`[comportamento] base carregada: ${pontos.length} pontos de ${arquivos.length} arquivo(s)`);
   return pontos;
 }
@@ -1289,6 +1312,83 @@ app.get('/passagens/comportamento', async (req, res) => {
       principal: niveis[0].nivel,
       niveis,
       descartados,
+    });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// ── Panorama de comportamento ─────────────────────────────────────────────────
+// Tabela agregada de todas as combinacoes cia + programa + cabine + escopo com
+// amostra suficiente. Payload pequeno (~40 linhas), pensado para o mapa de
+// emissoes carregar de uma vez em vez de fazer N chamadas a /comportamento.
+//
+// GET /passagens/panorama
+//   ?escopo=nacional|internacional   filtra o recorte
+//   ?destino= &origem=               restringe a uma cidade (usado no modal do mapa)
+//   ?precisao=dia (default) &desde=YYYY-MM-DD
+//   ?minRegistros= &minPontos=       limiares de amostra (default 5 / 60)
+
+app.get('/passagens/panorama', async (req, res) => {
+  try {
+    const soDia = (req.query.precisao || 'dia') === 'dia';
+    const desde = (req.query.desde || '').trim();
+    const fEscopo = chaveTexto(req.query.escopo);
+    const fDestino = chaveTexto(req.query.destino);
+    const fOrigem = chaveTexto(req.query.origem);
+    const minReg = Number(req.query.minRegistros) || MIN_REGISTROS;
+    const minPts = Number(req.query.minPontos) || MIN_PONTOS;
+
+    let base = await carregarPontosComportamento();
+    if (soDia) base = base.filter(p => p.precisao === 'dia');
+    if (desde) base = base.filter(p => p.snap >= desde);
+    if (fEscopo) base = base.filter(p => p.escopo === fEscopo);
+    if (fDestino) base = base.filter(p => p.destino === fDestino);
+    if (fOrigem) base = base.filter(p => p.origem === fOrigem);
+
+    const grupos = new Map();
+    for (const p of base) {
+      const k = `${p.cia}|${p.programa}|${p.cabine}|${p.escopo}`;
+      let g = grupos.get(k);
+      if (!g) {
+        g = { cia: p.cia, programa: p.programa, cabine: p.cabine, escopo: p.escopo, vals: [], regs: new Set() };
+        grupos.set(k, g);
+      }
+      g.vals.push(p.ant);
+      g.regs.add(`${p.origem}|${p.destino}|${p.snap}`);
+    }
+
+    const combos = [];
+    for (const g of grupos.values()) {
+      if (g.regs.size < minReg || g.vals.length < minPts) continue;
+      // Registros antigos do backfill sem programa/cia nao dizem nada sobre
+      // comportamento de programa — ficam de fora do panorama.
+      if (!g.programa || !g.cia) continue;
+      combos.push({
+        cia: rotuloDe(g.cia),
+        programa: rotuloDe(g.programa),
+        cabine: rotuloDe(g.cabine),
+        escopo: g.escopo,
+        registros: g.regs.size,
+        ...estatisticas(g.vals),
+      });
+    }
+
+    // Ordena por escopo, depois programa, depois cabine — a lista e lida como tabela
+    combos.sort((a, b) =>
+      a.escopo.localeCompare(b.escopo) ||
+      a.programa.localeCompare(b.programa) ||
+      a.cabine.localeCompare(b.cabine) ||
+      a.cia.localeCompare(b.cia));
+
+    res.set('Cache-Control', 'no-store');
+    res.json({
+      ok: true,
+      precisao: soDia ? 'dia' : 'todas',
+      filtro: { escopo: fEscopo || null, destino: fDestino || null, origem: fOrigem || null },
+      minimos: { registros: minReg, pontos: minPts },
+      total: combos.length,
+      combos,
     });
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
