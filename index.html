@@ -9267,13 +9267,13 @@ function compRenderFaixa(d, orig, dest) {
         <span style="font-size:12px;font-weight:900;color:${cor};white-space:nowrap">${n.mediana} dias</span>
       </div>
       ${compBarra(n, teto, cor)}
-      <div style="font-size:9.5px;color:var(--muted2)">80% entre ${n.p10} e ${n.p90} dias · ${n.registros} pesquisas</div>
+      <div style="font-size:9.5px;color:var(--muted2)">normalmente entre ${n.p10} e ${n.p90} dias · ${n.registros} pesquisas</div>
     </div>`;
   }).join('');
 
   box.style.display = 'block';
   box.innerHTML = `<div style="font-size:10px;font-weight:800;letter-spacing:.6px;color:var(--muted2);text-transform:uppercase;margin-bottom:2px">Quando costuma abrir</div>
-    <div style="font-size:10.5px;color:var(--muted);margin-bottom:4px">Antecedência entre a pesquisa e a data do voo — histórico completo</div>
+    <div style="font-size:10.5px;color:var(--muted);margin-bottom:4px">Dias de antecedência entre a pesquisa e o voo. O valor em destaque é o típico.</div>
     ${html}`;
 }
 
@@ -9327,11 +9327,16 @@ function compRenderPanorama() {
   const th = 'text-align:right;font-size:9px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted2);font-weight:800;padding:0 6px 8px;white-space:nowrap';
   const td = 'padding:8px 6px;border-top:1px solid var(--border-ctrl);text-align:right;white-space:nowrap;font-size:11.5px';
 
+  const sub = 'display:block;font-size:8.5px;font-weight:600;color:var(--muted2);opacity:.75;text-transform:none;letter-spacing:0;margin-top:2px';
   w.innerHTML = `<table style="width:100%;border-collapse:collapse">
     <thead><tr>
-      <th style="${th};text-align:left">Programa / companhia</th>
-      <th style="${th}">Cabine</th><th style="${th}">p10</th><th style="${th}">Mediana</th><th style="${th}">p90</th>
-      <th style="${th};text-align:left;padding-left:14px">Faixa típica</th><th style="${th}">Amostra</th>
+      <th style="${th};text-align:left">Companhia / programa</th>
+      <th style="${th}">Cabine</th>
+      <th style="${th}" title="p10 — 10% das datas encontradas estão mais perto do voo que isso">Mais perto<span style="${sub}">10% abaixo</span></th>
+      <th style="${th}" title="Mediana (p50) — metade das datas fica abaixo, metade acima">Típico<span style="${sub}">mediana</span></th>
+      <th style="${th}" title="p90 — 10% das datas encontradas estão mais longe do voo que isso">Mais longe<span style="${sub}">10% acima</span></th>
+      <th style="${th};text-align:left;padding-left:14px">Faixa comum<span style="${sub}">onde caem 8 de cada 10</span></th>
+      <th style="${th}">Amostra</th>
     </tr></thead><tbody>
     ${linhas.map(c => {
       const exec = /exec/i.test(c.cabine || '');
@@ -9339,8 +9344,8 @@ function compRenderPanorama() {
       const esq = 100 * c.p10 / teto, larg = Math.max(100 * (c.p90 - c.p10) / teto, 1), med = 100 * c.mediana / teto;
       return `<tr>
         <td style="${td};text-align:left">
-          <div style="font-weight:800">${compEsc(c.programa)}</div>
-          <div style="font-size:10px;color:var(--muted)">${compEsc(c.cia)}</div>
+          <div style="font-weight:900;font-size:12.5px">${compEsc(c.cia)}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:1px">${compEsc(c.programa)}</div>
         </td>
         <td style="${td}"><span style="font-size:9.5px;font-weight:800;border-radius:5px;padding:2px 6px;background:${cor}26;color:${cor}">${compEsc((c.cabine || '').replace('Economica', 'Econômica'))}</span></td>
         <td style="${td};color:var(--muted)">${c.p10}d</td>
@@ -9356,9 +9361,16 @@ function compRenderPanorama() {
       </tr>`;
     }).join('')}
     </tbody></table>
-    <div style="font-size:10px;color:var(--muted2);margin-top:12px;line-height:1.6">
-      Escala das barras: 0 a ${teto} dias. A faixa azul/verde cobre os 80% centrais (p10 a p90) e a marca vermelha é a mediana.
-      Só aparecem combinações com pelo menos 5 pesquisas e 60 datas registradas.
+    <div style="margin-top:16px;background:var(--card);border:1px solid var(--border-ctrl);border-radius:12px;padding:12px 14px">
+      <div style="font-size:10px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted2);margin-bottom:7px">Como ler</div>
+      <div style="font-size:10.5px;color:var(--muted);line-height:1.75">
+        Cada número é a <b style="color:var(--text)">antecedência</b>: quantos dias faltavam para o voo quando a disponibilidade foi encontrada.<br>
+        <b style="color:var(--text)">Típico</b> é o valor do meio — metade das datas fica abaixo dele, metade acima. É o mais representativo.<br>
+        <b style="color:var(--text)">Mais perto</b> e <b style="color:var(--text)">mais longe</b> marcam os extremos comuns: só 1 em cada 10 datas aparece antes do primeiro ou depois do segundo.<br>
+        A <b style="color:var(--text)">faixa comum</b> é o intervalo entre esses dois — cobre 8 de cada 10 casos. Barra estreita significa comportamento previsível; barra larga, imprevisível.<br>
+        Na barra, o traço vermelho é o valor típico. Escala de 0 a ${teto} dias, igual para todas as linhas.<br>
+        <span style="color:var(--muted2)">Em estatística esses valores se chamam p10, mediana (p50) e p90. Só entram combinações com no mínimo 5 pesquisas e 60 datas.</span>
+      </div>
     </div>`;
 }
 
