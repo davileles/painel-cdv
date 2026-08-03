@@ -1081,6 +1081,198 @@ app.get('/passagens/listar', async (req, res) => {
   }
 });
 
+// ── Comportamento de disponibilidade ──────────────────────────────────────────
+// Perfil de antecedencia (dias entre a busca e a data do voo) por rota, programa,
+// cia e cabine. Base: passagens.json + shards semestrais do historico.
+//
+// GET /passagens/comportamento
+//   ?origem= &destino= &programa= &cia= &cabine=   filtros (todos opcionais)
+//   ?antecedencia=N    classifica uma oferta especifica dentro da distribuicao
+//   ?precisao=dia      (default) descarta registros com granularidade so de mes
+//   ?desde=YYYY-MM-DD  limita a janela historica
+//
+// Responde com o nivel de agregacao efetivamente usado — se a rota exata nao tem
+// amostra suficiente, cai para niveis mais amplos em cascata.
+
+const COMPORTAMENTO_TTL_MS = 30 * 60 * 1000;
+let comportamentoCache = { pontos: null, ts: 0 };
+
+const MIN_REGISTROS = 5;    // snapshots distintos
+const MIN_PONTOS    = 60;   // pares (registro x data disponivel)
+
+function chaveTexto(v) {
+  return String(v == null ? '' : v)
+    .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
+
+// Carrega a base inteira (quente + shards) e converte em pontos de antecedencia.
+async function carregarPontosComportamento() {
+  if (comportamentoCache.pontos && (Date.now() - comportamentoCache.ts) < COMPORTAMENTO_TTL_MS) {
+    return comportamentoCache.pontos;
+  }
+
+  const arquivos = [PASSAGENS_PATH];
+  try {
+    const idx = await ghGetJson(PASSAGENS_INDEX_PATH, { shards: [] });
+    for (const s of (idx.data.shards || [])) if (s.arquivo) arquivos.push(s.arquivo);
+  } catch (e) {
+    console.warn(`[comportamento] index indisponivel: ${e.message}`);
+  }
+
+  const pontos = [];
+  for (const arq of arquivos) {
+    let dados;
+    try {
+      dados = await ghGetJson(arq, { items: [] });
+    } catch (e) {
+      console.warn(`[comportamento] ${arq} indisponivel: ${e.message}`);
+      continue;
+    }
+    for (const p of (dados.data.items || [])) {
+      const r = normalizarDatas(p.datas_ida, p.enviadoEm);
+      if (r.status !== 'ok') continue;
+      const ref = new Date(String(p.enviadoEm).slice(0, 10));
+      if (!Number.isFinite(ref.getTime())) continue;
+      const registro = {
+        origem: chaveTexto(p.origem),
+        destino: chaveTexto(p.destino),
+        programa: chaveTexto(p.programa),
+        cia: chaveTexto(p.cia),
+        cabine: chaveTexto(p.cabine),
+        snap: String(p.enviadoEm).slice(0, 10),
+        precisao: r.precisao,
+      };
+      for (const d of r.datas) {
+        const ant = Math.round((new Date(d) - ref) / 86400000);
+        if (ant >= 0 && ant <= 800) pontos.push({ ...registro, ant });
+      }
+    }
+  }
+
+  comportamentoCache = { pontos, ts: Date.now() };
+  console.log(`[comportamento] base carregada: ${pontos.length} pontos de ${arquivos.length} arquivo(s)`);
+  return pontos;
+}
+
+function percentil(ordenado, q) {
+  if (!ordenado.length) return null;
+  const i = Math.min(ordenado.length - 1, Math.max(0, Math.floor(ordenado.length * q)));
+  return ordenado[i];
+}
+
+function estatisticas(valores) {
+  const v = [...valores].sort((a, b) => a - b);
+  const n = v.length;
+  const soma = v.reduce((a, b) => a + b, 0);
+  return {
+    pontos: n,
+    min: v[0],
+    p10: percentil(v, 0.10),
+    p25: percentil(v, 0.25),
+    mediana: percentil(v, 0.50),
+    p75: percentil(v, 0.75),
+    p90: percentil(v, 0.90),
+    max: v[n - 1],
+    media: Math.round(soma / n),
+  };
+}
+
+app.get('/passagens/comportamento', async (req, res) => {
+  try {
+    const f = {
+      origem: chaveTexto(req.query.origem),
+      destino: chaveTexto(req.query.destino),
+      programa: chaveTexto(req.query.programa),
+      cia: chaveTexto(req.query.cia),
+      cabine: chaveTexto(req.query.cabine),
+    };
+    const desde = (req.query.desde || '').trim();
+    const soDia = (req.query.precisao || 'dia') === 'dia';
+    const alvo = req.query.antecedencia != null && req.query.antecedencia !== ''
+      ? Number(req.query.antecedencia) : null;
+
+    let base = await carregarPontosComportamento();
+    if (soDia) base = base.filter(p => p.precisao === 'dia');
+    if (desde) base = base.filter(p => p.snap >= desde);
+
+    // Cascata: do mais especifico ao mais amplo. Para no primeiro nivel com amostra.
+    const niveis = [
+      { nome: 'rota_completa',   campos: ['origem', 'destino', 'programa', 'cia', 'cabine'] },
+      { nome: 'rota_programa',   campos: ['origem', 'destino', 'programa'] },
+      { nome: 'rota',            campos: ['origem', 'destino'] },
+      { nome: 'programa_cabine', campos: ['programa', 'cabine'] },
+      { nome: 'cia_cabine',      campos: ['cia', 'cabine'] },
+      { nome: 'programa',        campos: ['programa'] },
+      { nome: 'geral',           campos: [] },
+    ];
+
+    let escolhido = null;
+    const tentativas = [];
+
+    for (const nivel of niveis) {
+      // Nivel so e aplicavel se todos os campos que ele usa foram informados
+      if (nivel.campos.some(c => !f[c])) continue;
+
+      const sel = base.filter(p => nivel.campos.every(c => p[c] === f[c]));
+      const registros = new Set(sel.map(p => `${p.origem}|${p.destino}|${p.programa}|${p.cabine}|${p.snap}`)).size;
+      tentativas.push({ nivel: nivel.nome, registros, pontos: sel.length });
+
+      if (registros >= MIN_REGISTROS && sel.length >= MIN_PONTOS) {
+        escolhido = { nivel: nivel.nome, campos: nivel.campos, sel, registros };
+        break;
+      }
+    }
+
+    if (!escolhido) {
+      return res.json({
+        ok: false, motivo: 'amostra_insuficiente',
+        minimos: { registros: MIN_REGISTROS, pontos: MIN_PONTOS },
+        tentativas,
+      });
+    }
+
+    const valores = escolhido.sel.map(p => p.ant);
+    const stats = estatisticas(valores);
+
+    // Histograma por faixa, para leitura visual da distribuicao
+    const faixas = [[0,30],[31,60],[61,90],[91,120],[121,180],[181,240],[241,300],[301,400]];
+    const histograma = faixas.map(([a, b]) => {
+      const n = valores.filter(v => v >= a && v <= b).length;
+      return { de: a, ate: b, n, pct: Number((100 * n / valores.length).toFixed(1)) };
+    });
+
+    // Classificacao de uma oferta especifica dentro da distribuicao
+    let classificacao = null;
+    if (Number.isFinite(alvo)) {
+      const abaixo = valores.filter(v => v < alvo).length;
+      const pct = Math.round(100 * abaixo / valores.length);
+      let leitura;
+      if (pct <= 10)      leitura = 'muito abaixo do usual — janela curta e atipica';
+      else if (pct <= 25) leitura = 'abaixo do usual';
+      else if (pct <= 75) leitura = 'dentro do padrao';
+      else if (pct <= 90) leitura = 'acima do usual';
+      else                leitura = 'muito acima do usual — liberacao antecipada atipica';
+      classificacao = { antecedencia: alvo, percentil: pct, leitura };
+    }
+
+    res.set('Cache-Control', 'no-store');
+    res.json({
+      ok: true,
+      nivel: escolhido.nivel,
+      agregadoPor: escolhido.campos,
+      filtro: f,
+      precisao: soDia ? 'dia' : 'todas',
+      registros: escolhido.registros,
+      ...stats,
+      histograma,
+      classificacao,
+      tentativas,
+    });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
 // ── Excluir passagem ──────────────────────────────────────────────────────────
 app.post('/passagens/excluir', async (req, res) => {
   const { id } = req.body || {};
