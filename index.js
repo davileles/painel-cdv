@@ -1960,20 +1960,41 @@ app.post('/assinaturas/salvar', async (req, res) => {
 app.post('/ia/extrair-reserva', (req, res) => {
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
   const { mediaType, base64, isPdf, isHtml, texto, tipoCampos } = req.body;
-  console.log('[ia/extrair-reserva] recebido. isPdf:', isPdf, 'isHtml:', !!isHtml, 'mediaType:', mediaType,
-              'base64 len:', (base64||'').length, 'texto len:', (texto||'').length);
 
   if (!ANTHROPIC_API_KEY) {
     return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY não configurada no servidor.' });
   }
-  const textoDoc = (typeof texto === 'string' ? texto : '').trim();
-  if (!textoDoc && (!base64 || !mediaType)) {
+
+  // Normaliza a entrada para uma lista de documentos.
+  // Aceita o formato antigo (base64/mediaType/isPdf/texto no corpo) e o novo
+  // documentos: [{ base64, mediaType, isPdf, texto, nome }, ...] — todos da MESMA reserva.
+  const fontes = (Array.isArray(req.body.documentos) && req.body.documentos.length)
+    ? req.body.documentos
+    : [{ base64, mediaType, isPdf, isHtml, texto }];
+
+  const docs = [];
+  for (const f of fontes) {
+    if (!f) continue;
+    const t = (typeof f.texto === 'string' ? f.texto : '').trim();
+    if (t) { docs.push({ kind: 'texto', texto: t.slice(0, 60000), nome: f.nome || '' }); continue; }
+    if (f.base64 && f.mediaType) {
+      docs.push({ kind: f.isPdf ? 'pdf' : 'imagem', base64: f.base64, mediaType: f.mediaType, nome: f.nome || '' });
+    }
+  }
+
+  if (!docs.length) {
     return res.status(400).json({ ok: false, erro: 'Informe base64 + mediaType (imagem/PDF) ou texto (HTML).' });
   }
 
+  const multiDoc = docs.length > 1;
+  console.log('[ia/extrair-reserva] recebido.', docs.length, 'documento(s):',
+              docs.map(d => d.kind + (d.nome ? ':' + d.nome : '')).join(', '));
+
   const prompt =
     'Você é um assistente de extração de dados de documentos de viagem. ' +
-    'Analise este documento (' + (textoDoc ? 'texto extraído de um arquivo HTML' : (isPdf ? 'PDF' : 'imagem')) + ') de ' + (tipoCampos || 'reserva de viagem') + '. ' +
+    (multiDoc
+      ? 'Foram enviados ' + docs.length + ' documentos que pertencem a UMA MESMA reserva de ' + (tipoCampos || 'reserva de viagem') + ' (ex: bilhete de ida e bilhete de volta, um bilhete por passageiro, voucher + comprovante de pagamento). Analise TODOS eles em conjunto e consolide tudo em UM UNICO JSON. '
+      : 'Analise este documento (' + (docs[0].kind === 'texto' ? 'texto extraído de um arquivo HTML' : (docs[0].kind === 'pdf' ? 'PDF' : 'imagem')) + ') de ' + (tipoCampos || 'reserva de viagem') + '. ') +
     'Extraia os dados REAIS do documento e retorne SOMENTE um JSON válido (sem markdown). ' +
     'Use exatamente esta estrutura JSON (substitua pelos valores reais): ' +
     '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","cabine":"cabine exata","cia":"companhia aerea"}],"pnr":"","pax":0,"programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","subtipo":"transfer","transferOrigem":"","transferDestino":"","transferData":"","transferHora":"","transferPax":"","transferOp":"","transferVeiculo":"","transferConf":"","transferValor":"","transferVoltaOrigem":"","transferVoltaDestino":"","transferVoltaData":"","transferVoltaHora":"","transferVoltaHoraChegada":"","transferVoltaOp":"","transferVoltaConf":"","transferVoltaCategoria":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","seguradora":"","seguroPlano":"","seguroApolice":"","seguroCartao":"","seguroInicio":"","seguroFim":"","seguroModalidade":"","seguroDias":"","seguroTerritorio":"","seguroCobertura":"","seguroPax":"","seguroValor":"","seguroEmergencia":"","obs":""} ' +
@@ -2016,7 +2037,17 @@ app.post('/ia/extrair-reserva', (req, res) => {
     '   Nunca classifique um bilhete de seguro viagem como voo, hotel, carro ou passeio. ' +
     '9) DATAS: se o documento não informar o ano de alguma data, use o ano atual (' + new Date().getFullYear() + '). ' +
     '   Toda data deve sair completa no formato YYYY-MM-DD — nunca retorne data sem ano. ' +
-    '10) Retorne SOMENTE o JSON, sem explicações.';
+    '10) Retorne SOMENTE o JSON, sem explicações.' +
+    (multiDoc
+      ? ' 11) MULTIPLOS DOCUMENTOS DA MESMA RESERVA: nunca gere um JSON por documento — consolide todos em um so. ' +
+        'trechos[] deve conter os segmentos de TODOS os documentos, ordenados cronologicamente (data + hora de partida); ' +
+        'se um documento cobre a ida e outro a volta, os trechos de ambos entram no mesmo array. ' +
+        'pax = passageiros DISTINTOS por nome considerando todos os documentos juntos — a mesma pessoa repetida em documentos diferentes conta uma unica vez. ' +
+        'milhasTotal = soma das milhas de todos os documentos. ' +
+        'Campos monetarios (valor, hotelValor, transferValor, carroValor, passeioValor, seguroValor) = soma total de todos os documentos. ' +
+        'Campos de identificacao (pnr, hotelConf, transferConf, carroConf, passeioConf, seguroApolice): se os documentos trouxerem codigos diferentes, junte-os separados por virgula. ' +
+        'Para os demais campos, se houver divergencia entre documentos, use o valor do documento mais completo e ignore campos vazios.'
+      : '');
 
   // Completa o ano atual em datas que a IA retornou sem ano (ex: "12/03", "03-12", "--03-12")
   function normalizarAnoDatas(d) {
@@ -2129,16 +2160,29 @@ app.post('/ia/extrair-reserva', (req, res) => {
     return d;
   }
 
-  const contentBlock = textoDoc
-    ? { type: 'text', text: 'CONTEÚDO DO DOCUMENTO (texto extraído de arquivo HTML):\n"""\n' + textoDoc.slice(0, 60000) + '\n"""' }
-    : isPdf
-      ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } }
-      : { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } };
+  const contentBlocks = [];
+  docs.forEach((d, i) => {
+    const rotulo = 'DOCUMENTO ' + (i + 1) + ' de ' + docs.length + (d.nome ? ' — ' + d.nome : '');
+    if (d.kind === 'texto') {
+      contentBlocks.push({
+        type: 'text',
+        text: (multiDoc ? rotulo + ' (texto extraído de arquivo HTML):' : 'CONTEÚDO DO DOCUMENTO (texto extraído de arquivo HTML):')
+              + '\n"""\n' + d.texto + '\n"""'
+      });
+      return;
+    }
+    if (multiDoc) contentBlocks.push({ type: 'text', text: rotulo + ':' });
+    if (d.kind === 'pdf') {
+      contentBlocks.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: d.base64 } });
+    } else {
+      contentBlocks.push({ type: 'image', source: { type: 'base64', media_type: d.mediaType, data: d.base64 } });
+    }
+  });
 
   const bodyPayload = JSON.stringify({
     model: 'claude-sonnet-4-6',
-    max_tokens: 2048,
-    messages: [{ role: 'user', content: [contentBlock, { type: 'text', text: prompt }] }]
+    max_tokens: multiDoc ? 4096 : 2048,
+    messages: [{ role: 'user', content: contentBlocks.concat([{ type: 'text', text: prompt }]) }]
   });
 
   const https = require('https');
@@ -2182,9 +2226,10 @@ app.post('/ia/extrair-reserva', (req, res) => {
     return res.json({ ok: false, erro: e.message });
   });
 
-  apiReq.setTimeout(55000, () => {
+  const timeoutMs = multiDoc ? 110000 : 55000;
+  apiReq.setTimeout(timeoutMs, () => {
     apiReq.destroy();
-    return res.json({ ok: false, erro: 'Timeout (>55s) ao chamar API Anthropic.' });
+    return res.json({ ok: false, erro: 'Timeout (>' + Math.round(timeoutMs / 1000) + 's) ao chamar API Anthropic.' });
   });
 
   apiReq.write(bodyPayload);
