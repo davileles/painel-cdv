@@ -4631,9 +4631,11 @@ function renderModalRows(p, links={}, resolvido=false){
     const cursorStyle=loading?'not-allowed':hasLink?'pointer':'default';
     const opacityStyle=loading?'0.6':'1';
     const info=padrao[pid];
-    const padraoHtml=info
-      ? `<div style="font-size:9px;color:#f59e0b;margin-top:3px">📊 Sobe a cada ~${info.frequenciaDias} dias. Possível próxima alta: ${formatarDataCurtaBR(info.proximaEstimadaData)}</div>`
-      : '';
+    const padraoHtml=!info
+      ? ''
+      : info.atrasada
+      ? `<div style="font-size:9px;color:#fbbf24;font-weight:700;margin-top:3px">⏰ Atrasada — sobe a cada ~${info.frequenciaDias} dias · era esperada em ${formatarDataCurtaBR(info.esperadaEmData)}</div>`
+      : `<div style="font-size:9px;color:#f59e0b;margin-top:3px">📊 Sobe a cada ~${info.frequenciaDias} dias. Possível próxima alta: ${formatarDataCurtaBR(info.proximaEstimadaData)}</div>`;
     return `<a class="modal-row ${isBest?'best':''} ${loading?'loading':''}" 
       ${linkAttr}
       style="text-decoration:none;color:inherit;cursor:${cursorStyle};opacity:${opacityStyle}">
@@ -4658,14 +4660,23 @@ function renderModalRows(p, links={}, resolvido=false){
 // Calcula, por programa, a frequência de altas de pontuação de um parceiro
 // usando SOMENTE os últimos 12 meses do historico.json — janela deliberadamente
 // curta pra não capturar mudança de comportamento de longo prazo do parceiro.
+function isoDataLocal(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 function calcularPadraoAltas(p) {
   const partnerKey = p.name.toLowerCase().trim();
-  const hojeStr = new Date().toISOString().split('T')[0];
-  const corteDate = new Date();
+  const agora = new Date();
+  // Data LOCAL, nao UTC: toISOString() jogava o "hoje" pro dia seguinte a
+  // partir das 21h no horario de Brasilia, contaminando o corte e a
+  // comparacao de atraso.
+  const hojeStr = isoDataLocal(agora);
+  const corteDate = new Date(agora);
   corteDate.setMonth(corteDate.getMonth() - 12);
-  const corte = corteDate.toISOString().split('T')[0];
+  const corte = isoDataLocal(corteDate);
 
   const datas = Object.keys(historico).filter(d => d >= corte && d <= hojeStr).sort();
+  const hojeDate = new Date(hojeStr + 'T00:00:00');
 
   const resultado = {};
   for (const progId of Object.keys(p.programs)) {
@@ -4677,6 +4688,18 @@ function calcularPadraoAltas(p) {
       const pts = progV != null ? (typeof progV === 'object' ? progV.pts : progV) : null;
       if (pts != null) serie.push({ data: d, pts });
     }
+
+    // Ancora a serie no valor ATUAL exibido no card. O historico.json e
+    // commitado pela GitHub Action de hora em hora, entao uma alta recem
+    // ocorrida so entrava na serie no ciclo seguinte — e a "proxima alta"
+    // saia calculada em cima da alta anterior, gerando data ja vencida.
+    const atualV = p.programs[progId];
+    const ptsAtual = atualV != null ? (typeof atualV === 'object' ? atualV.pts : atualV) : null;
+    if (ptsAtual != null) {
+      if (serie.length && serie[serie.length - 1].data === hojeStr) serie[serie.length - 1].pts = ptsAtual;
+      else serie.push({ data: hojeStr, pts: ptsAtual });
+    }
+
     const altas = [];
     for (let i = 1; i < serie.length; i++) {
       if (serie[i].pts > serie[i - 1].pts) altas.push(serie[i].data);
@@ -4691,12 +4714,23 @@ function calcularPadraoAltas(p) {
     const diasDesde = Math.round((new Date() - ultimaAlta) / 86400000);
     const proximaEstimada = new Date(ultimaAlta.getTime() + mediaGap * 86400000);
 
+    // Se a projecao caiu no passado, o parceiro esta atrasado em relacao ao
+    // proprio padrao: guarda a data esperada e avanca em multiplos da
+    // frequencia ate cair no futuro, em vez de exibir data vencida.
+    const esperadaEm = new Date(proximaEstimada.getTime());
+    const atrasada = proximaEstimada <= hojeDate;
+    if (atrasada && mediaGap > 0) {
+      while (proximaEstimada <= hojeDate) proximaEstimada.setTime(proximaEstimada.getTime() + mediaGap * 86400000);
+    }
+
     resultado[progId] = {
       frequenciaDias: mediaGap,
       qtdAltas: altas.length,
       ultimaAltaData: altas[altas.length - 1],
       diasDesdeUltimaAlta: diasDesde,
-      proximaEstimadaData: proximaEstimada.toISOString().split('T')[0],
+      atrasada,
+      esperadaEmData: isoDataLocal(esperadaEm),
+      proximaEstimadaData: isoDataLocal(proximaEstimada),
     };
   }
   return resultado;
