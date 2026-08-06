@@ -2989,6 +2989,35 @@ app.post('/concierge/lembretes/checar', async (req, res) => {
 setInterval(() => { checarLembretes().catch(() => {}); }, 10 * 60 * 1000);
 setTimeout(() => { checarLembretes().catch(() => {}); }, 60 * 1000);
 
+// Dispatcher: dispara a Action lembrete-voo do concierge a cada 30 min via
+// workflow_dispatch. Motivo: o cron do GitHub roda com atraso de 2-3h (e as
+// vezes cancela jobs), o que ja fez o alerta de check-in (janela 24h→20h)
+// perder a janela. O ledger msgs-enviadas.json deduplica, entao rodar em
+// paralelo com o cron do GitHub nao gera envio duplicado.
+// Requer que o GITHUB_TOKEN tenha permissao Actions:write em davileles/concierge.
+async function dispararLembreteVoo() {
+  if (!GITHUB_TOKEN) return;
+  try {
+    const r = await fetch('https://api.github.com/repos/davileles/concierge/actions/workflows/lembrete-voo.yml/dispatches', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'cdv-proxy'
+      },
+      body: JSON.stringify({ ref: 'main' })
+    });
+    if (r.status !== 204) {
+      console.error('[lembrete-voo dispatch] falhou:', r.status, (await r.text()).slice(0, 200));
+    }
+  } catch (e) {
+    console.error('[lembrete-voo dispatch] erro:', e.message);
+  }
+}
+setInterval(() => { dispararLembreteVoo(); }, 30 * 60 * 1000);
+setTimeout(() => { dispararLembreteVoo(); }, 90 * 1000);
+
 // POST /concierge/alerta/disparar — usado pelo coletar.js (alvo=compra_bonificada)
 app.post('/concierge/alerta/disparar', async (req, res) => {
   const { id, pts } = req.body || {};
