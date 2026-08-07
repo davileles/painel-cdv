@@ -324,9 +324,11 @@ function parseMeliuz(html, slug) {
 
   const mNome = html.match(/<h1>([^<]+)<\/h1>/);
   const mLink = html.match(/data-redirect-url="([^"]+)"/);
+  const mPid  = html.match(/partnerId\s*=\s*(\d+)/);
 
   return {
     slug,
+    partnerId: mPid ? parseInt(mPid[1], 10) : null,
     temCashback: true,
     pts: parseFloat(num.replace(',', '.')),
     ate,
@@ -338,6 +340,64 @@ function parseMeliuz(html, slug) {
     link: 'https://www.meliuz.com.br/desconto/' + slug,
     linkAtivar: (mLink && mLink[1]) || null,
   };
+}
+
+// A página SSR mostra a taxa base (ex: Accor 3%), mas o navegador, após a
+// hidratação, chama api-seo.meliuz.com.br/partners/cashback-offers e exibe a
+// taxa promocional/turbinada (ex: 15%). O token é anônimo — vem de
+// www.meliuz.com.br/oauth/client-seo-v2, sem login. O CloudFront do api-seo
+// bloqueia parte dos IPs de datacenter, mas o egress do Railway passa.
+// Se qualquer etapa falhar, a taxa SSR continua valendo (fallback silencioso).
+let meliuzTokenCache = { token: null, expira: 0 };
+async function meliuzTokenAnonimo() {
+  if (meliuzTokenCache.token && Date.now() < meliuzTokenCache.expira) return meliuzTokenCache.token;
+  try {
+    const r = await fetch('https://www.meliuz.com.br/oauth/client-seo-v2', {
+      headers: { 'User-Agent': MELIUZ_UA, 'Accept': 'application/json' },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!r.ok) return null;
+    const j = await r.json();
+    const tok = j && j.data;
+    if (tok) meliuzTokenCache = { token: tok, expira: Date.now() + 30 * 60 * 1000 };
+    return tok || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function meliuzTaxasAoVivo(out) {
+  const ids = out.filter(o => o.partnerId).map(o => o.partnerId);
+  if (!ids.length) return false;
+  const tok = await meliuzTokenAnonimo();
+  if (!tok) return false;
+  const r = await fetch(`https://api-seo.meliuz.com.br/partners/cashback-offers?ids=${ids.join(',')}`, {
+    headers: {
+      'Authorization': `Bearer ${tok}`,
+      'User-Agent': MELIUZ_UA,
+      'Accept': 'application/json',
+      'Origin': 'https://www.meliuz.com.br',
+      'Referer': 'https://www.meliuz.com.br/',
+    },
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!r.ok) return false;
+  const j = await r.json();
+  const porId = new Map((j.data || []).map(o => [o.partner_id, o]));
+  const PCT = new Set(['percent', 'percentage']);
+  for (const o of out) {
+    const off = o.partnerId && porId.get(o.partnerId);
+    if (!off || !PCT.has(off.type)) continue; // taxa em R$ fixo: mantém SSR
+    const novo = parseFloat(off.value);
+    if (!Number.isFinite(novo) || novo <= 0) continue;
+    if (o.pts !== null && novo !== o.pts) o.taxaBase = o.pts; // referência: taxa pública SSR
+    o.pts = novo;
+    o.temCashback = true;
+    o.promocional = !!off.promotional;
+    if (off.cashback_category) o.ate = true; // varia por categoria → "até X%"
+    if (off.previous && PCT.has(off.previous.type)) o.era = parseFloat(off.previous.value);
+  }
+  return true;
 }
 
 app.get('/meliuz/cashback', async (req, res) => {
@@ -366,7 +426,18 @@ app.get('/meliuz/cashback', async (req, res) => {
     }));
     out.push(...lote);
   }
-  res.json({ geradoEm: new Date().toISOString(), lojas: out });
+
+  // Sobrepõe as taxas SSR com as taxas ao vivo (promocionais/turbinadas) da
+  // api-seo. `apiLive` indica se o merge funcionou — se false, os valores são
+  // apenas os do HTML público.
+  let apiLive = false;
+  try {
+    apiLive = await meliuzTaxasAoVivo(out);
+  } catch (e) {
+    console.error('[Méliuz] cashback-offers falhou:', e.message);
+  }
+
+  res.json({ geradoEm: new Date().toISOString(), apiLive, lojas: out });
 });
 
 // ── Cashback TopCashback (UK e US) ────────────────────────────────────────────
@@ -1555,18 +1626,7 @@ app.post('/membros/verificar-codigo', (req, res) => {
 // ── ADMIN OTP: acesso restrito (TSP + Concierge) ─────────────────────────────
 // Allowlist fixa — independente de membros.json. Para liberar novos acessos,
 // basta adicionar o e-mail (minúsculo) no array abaixo.
-// ADMIN_EMAILS      → acesso a TODOS os painéis (TSP + Concierge)
-// ADMIN_EMAILS_APP  → acesso restrito a um painel específico
 const ADMIN_EMAILS = ['davileles@gmail.com'];
-const ADMIN_EMAILS_APP = {
-  tsp:       [],
-  concierge: ['felipetruta1@gmail.com']
-};
-function adminAutorizado(email, appKey) {
-  if (ADMIN_EMAILS.includes(email)) return true;
-  if (appKey && ADMIN_EMAILS_APP[appKey]) return ADMIN_EMAILS_APP[appKey].includes(email);
-  return Object.values(ADMIN_EMAILS_APP).some(l => l.includes(email));
-}
 const adminOtpStore = new Map();
 
 const ADMIN_APPS = {
@@ -1579,7 +1639,7 @@ app.post('/admin/enviar-codigo', async (req, res) => {
   const email = (body.email || '').toLowerCase().trim();
   const app_  = ADMIN_APPS[body.app] || ADMIN_APPS.concierge;
   if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
-  if (!adminAutorizado(email, ADMIN_APPS[body.app] ? body.app : null)) return res.json({ ok: false, motivo: 'nao_autorizado' });
+  if (!ADMIN_EMAILS.includes(email)) return res.json({ ok: false, motivo: 'nao_autorizado' });
 
   const codigo = gerarCodigo();
   adminOtpStore.set(email, { codigo, expira: Date.now() + OTP_TTL });
@@ -1620,7 +1680,7 @@ app.post('/admin/verificar-codigo', (req, res) => {
   const email  = (body.email || '').toLowerCase().trim();
   const codigo = (body.codigo || '').trim();
   if (!email || !codigo) return res.status(400).json({ ok: false, erro: 'E-mail e código obrigatórios' });
-  if (!adminAutorizado(email, ADMIN_APPS[body.app] ? body.app : null)) return res.json({ ok: false, motivo: 'nao_autorizado' });
+  if (!ADMIN_EMAILS.includes(email)) return res.json({ ok: false, motivo: 'nao_autorizado' });
 
   const entrada = adminOtpStore.get(email);
   if (!entrada) return res.json({ ok: false, motivo: 'nao_encontrado' });
