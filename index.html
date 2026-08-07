@@ -23,6 +23,7 @@
     --cdv-navy:#262e42;--cdv-coral:#ff585e;
     --cat-clube:#fbbf24;--cat-trans:#60a5fa;--cat-compra:#34d399;--cat-bonif:#a78bfa;--cat-cart:#ff585e;--cat-geral:#98a8cc;
     --amber:#fbbf24;--purple:#a78bfa;--orange-fire:#fb923c;
+    --modal-best-hover:#1f1f38;
   }
   /* ── Tema Claro ─────────────────────────────────────────────────────────── */
   [data-theme="light"] {
@@ -40,6 +41,7 @@
     --latam-dim:rgba(220,38,38,0.10);
     --cat-clube:#d97706;--cat-trans:#2563eb;--cat-compra:#16a34a;--cat-bonif:#7c3aed;--cat-cart:#ff585e;--cat-geral:#5a6a8a;
     --amber:#d97706;--purple:#7c3aed;--orange-fire:#ea580c;
+    --modal-best-hover:#ffeef0;
   }
   [data-theme="light"] body { background:var(--bg); }
   [data-theme="light"] header { box-shadow:0 2px 8px rgba(26,32,53,0.07); }
@@ -254,7 +256,7 @@
   #hist-chart{height:200px!important}
   .modal-row{background:var(--card);border:1px solid var(--border-ctrl);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;transition:border-color .15s,background .15s}
   .modal-row:hover{background:var(--card);border-color:var(--muted)}
-  .modal-row.best:hover{border-color:var(--cdv-coral);background:#1f1f38}
+  .modal-row.best:hover{border-color:var(--cdv-coral);background:var(--modal-best-hover)}
   .modal-row.best{border-color:var(--cdv-coral)}
   .modal-prog{display:flex;align-items:center;gap:8px}
   .modal-prog-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
