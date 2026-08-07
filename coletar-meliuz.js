@@ -393,6 +393,32 @@ async function main() {
   const nomesPorChave = Object.fromEntries(lojas.map(l => [l.chave, l.nome]));
   console.log(`[Méliuz] ${lojas.length} lojas no catálogo`);
 
+  // 2b. Saúde do token de usuário (taxas promocionais/turbinadas).
+  // Sem ele, o comparador cai para a taxa pública (SSR) e perde as taxas
+  // turbinadas — que são justamente as ofertas que interessam. Avisa o operador
+  // no grupo quando o refresh falhar ou o token sumir, para trocar o
+  // MELIUZ_MZSYNC_R no Railway. Nunca aborta a coleta por causa disso.
+  try {
+    const st = await fetchDirect(`${PROXY_URL}/meliuz/token-status`, 15000);
+    if (!st.temAccess || st.ultimoRefreshErro) {
+      await alertarOperador('Token de usuário do Méliuz caiu', [
+        st.temAccess ? '⚠️ Access token presente, mas a última renovação falhou.'
+                     : '❌ Sem access token — o comparador está usando só a taxa pública.',
+        st.ultimoRefreshErro ? `Erro: ${st.ultimoRefreshErro}` : '',
+        st.temRefresh ? '' : '❌ Refresh token (mzsync-r) ausente ou não configurado.',
+        '',
+        'Sem o token, as taxas turbinadas (ex: Accor 15%) não são capturadas —',
+        'só a taxa pública menor. Extraia o cookie mzsync-r do Méliuz logado e',
+        'atualize a variável MELIUZ_MZSYNC_R no Railway (redeploy do proxy).',
+      ]);
+      console.warn('[Méliuz] Token de usuário degradado:', st.ultimoRefreshErro || 'sem access');
+    } else {
+      console.log(`[Méliuz] Token de usuário OK (access expira ${st.accessExpiraEm || '?'}).`);
+    }
+  } catch (e) {
+    console.warn('[Méliuz] Não foi possível checar token-status:', e.message);
+  }
+
   // 3. Consulta o proxy em lotes
   const resultados = [];
   for (let i = 0; i < lojas.length; i += LOTE) {
