@@ -375,7 +375,6 @@ async function meliuzTokenAnonimo() {
 // depender de reescrever a env a cada renovação.
 //   MELIUZ_MZSYNC   — access token inicial (opcional; serve até o 1º refresh)
 //   MELIUZ_MZSYNC_R — refresh token (obrigatório para renovação automática)
-const MELIUZ_CLIENT_ID = 'meliuz-client-seo-production';
 let meliuzUserCache = {
   access: (process.env.MELIUZ_MZSYNC || '').trim() || null,
   refresh: (process.env.MELIUZ_MZSYNC_R || '').trim() || null,
@@ -398,7 +397,11 @@ async function meliuzRenovarAccess() {
     return null;
   }
   try {
-    const r = await fetch('https://api-seo.meliuz.com.br/oauth/token', {
+    // Endpoint dedicado do client-seo: /oauth/refresh-token, body só com o
+    // refresh_token (sem client_id/secret). Espelha exatamente o fluxo do
+    // bundle logado do Méliuz. Resposta em data.accessToken/data.refreshToken,
+    // com rotação do refresh (o novo vale ~90 dias).
+    const r = await fetch('https://api-seo.meliuz.com.br/oauth/refresh-token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -407,11 +410,7 @@ async function meliuzRenovarAccess() {
         'Origin': 'https://www.meliuz.com.br',
         'Referer': 'https://www.meliuz.com.br/',
       },
-      body: JSON.stringify({
-        grant_type: 'refresh_token',
-        client_id: MELIUZ_CLIENT_ID,
-        refresh_token: meliuzUserCache.refresh,
-      }),
+      body: JSON.stringify({ refresh_token: meliuzUserCache.refresh }),
       signal: AbortSignal.timeout(15000),
     });
     if (!r.ok) {
@@ -420,9 +419,9 @@ async function meliuzRenovarAccess() {
       return null;
     }
     const j = await r.json();
-    // A API pode devolver camelCase (accessToken) ou snake (access_token).
-    const novoAccess  = j.accessToken  || j.access_token  || (j.data && (j.data.accessToken  || j.data.access_token));
-    const novoRefresh = j.refreshToken || j.refresh_token || (j.data && (j.data.refreshToken || j.data.refresh_token));
+    const d = j.data || j; // resposta oficial vem em data.*
+    const novoAccess  = d.accessToken  || d.access_token;
+    const novoRefresh = d.refreshToken || d.refresh_token;
     if (!novoAccess) {
       meliuzUserCache.ultimoRefreshErro = 'resposta_sem_access_token';
       return null;
