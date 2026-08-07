@@ -22,33 +22,35 @@ jobs:
         run: node coletar.js
       - name: Coletar cashbacks Inter Gift Cards
         run: node coletar-inter.js
-      # Méliuz é scraping de ~240 páginas por rodada — roda só 2x/dia (09h e 18h UTC)
-      # para não martelar o site. continue-on-error garante que uma falha aqui
-      # nunca derruba o commit da coleta Comparemania/Inter feita acima.
-      - name: Coletar cashbacks Méliuz
+      # Méliuz e TopCashback são scraping pesado — rodam 2x/dia, nas janelas de
+      # 09h e 18h UTC. Janela tolerante (09–12h e 18–21h) porque o cron do GitHub
+      # atrasa e a run "das 09h" costuma começar depois das 10h — antes disso a
+      # checagem exata de hora fazia a coleta ser pulada. O arquivo de estado
+      # cashback-intl-estado.txt (YYYY-MM-DD-janela) garante 1 execução por janela.
+      # continue-on-error garante que uma falha aqui nunca derruba o commit da
+      # coleta Comparemania/Inter feita acima.
+      - name: Coletar cashbacks Méliuz e TopCashback (UK e US)
         continue-on-error: true
         run: |
           HORA=$(date -u +'%H')
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$HORA" = "09" ] || [ "$HORA" = "18" ]; then
+          HOJE=$(date -u +'%Y-%m-%d')
+          JANELA=""
+          if [ "$HORA" -ge 9 ] && [ "$HORA" -le 12 ]; then JANELA="09"; fi
+          if [ "$HORA" -ge 18 ] && [ "$HORA" -le 21 ]; then JANELA="18"; fi
+          MARCA="$HOJE-$JANELA"
+          ULTIMA=$(cat cashback-intl-estado.txt 2>/dev/null || echo "")
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || { [ -n "$JANELA" ] && [ "$MARCA" != "$ULTIMA" ]; }; then
             node coletar-meliuz.js
-          else
-            echo "Fora da janela do Méliuz (09h/18h UTC) — pulando."
-          fi
-      # TopCashback: catálogo curado (poucas lojas), mesma janela do Méliuz.
-      - name: Coletar cashbacks TopCashback (UK e US)
-        continue-on-error: true
-        run: |
-          HORA=$(date -u +'%H')
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$HORA" = "09" ] || [ "$HORA" = "18" ]; then
             node coletar-topcashback.js
+            echo "$MARCA" > cashback-intl-estado.txt
           else
-            echo "Fora da janela do TopCashback (09h/18h UTC) — pulando."
+            echo "Fora da janela do Méliuz/TopCashback ou janela já coletada ($ULTIMA) — pulando."
           fi
       - name: Salvar arquivos
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add historico.json alertas.json variacoes-notificadas.json ofertas-pendentes.json ofertas.json meliuz-lojas.json topcashback-lojas.json
+          git add historico.json alertas.json variacoes-notificadas.json ofertas-pendentes.json ofertas.json meliuz-lojas.json topcashback-lojas.json cashback-intl-estado.txt
           git diff --staged --quiet || git commit -m "chore: atualiza histórico $(date -u +'%Y-%m-%d %H:%M')"
           git pull --rebase origin main
           git push
