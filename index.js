@@ -368,9 +368,9 @@ async function meliuzTokenAnonimo() {
 
 async function meliuzTaxasAoVivo(out) {
   const ids = out.filter(o => o.partnerId).map(o => o.partnerId);
-  if (!ids.length) return false;
+  if (!ids.length) return { ok: false, status: 'sem_partner_ids' };
   const tok = await meliuzTokenAnonimo();
-  if (!tok) return false;
+  if (!tok) return { ok: false, status: 'token_falhou' };
   const r = await fetch(`https://api-seo.meliuz.com.br/partners/cashback-offers?ids=${ids.join(',')}`, {
     headers: {
       'Authorization': `Bearer ${tok}`,
@@ -381,7 +381,10 @@ async function meliuzTaxasAoVivo(out) {
     },
     signal: AbortSignal.timeout(15000),
   });
-  if (!r.ok) return false;
+  if (!r.ok) {
+    const corpo = await r.text().catch(() => '');
+    return { ok: false, status: `http_${r.status}`, corpo: corpo.slice(0, 200) };
+  }
   const j = await r.json();
   const porId = new Map((j.data || []).map(o => [o.partner_id, o]));
   const PCT = new Set(['percent', 'percentage']);
@@ -397,7 +400,7 @@ async function meliuzTaxasAoVivo(out) {
     if (off.cashback_category) o.ate = true; // varia por categoria → "até X%"
     if (off.previous && PCT.has(off.previous.type)) o.era = parseFloat(off.previous.value);
   }
-  return true;
+  return { ok: true, status: 'ok', recebidos: (j.data || []).length };
 }
 
 app.get('/meliuz/cashback', async (req, res) => {
@@ -430,14 +433,15 @@ app.get('/meliuz/cashback', async (req, res) => {
   // Sobrepõe as taxas SSR com as taxas ao vivo (promocionais/turbinadas) da
   // api-seo. `apiLive` indica se o merge funcionou — se false, os valores são
   // apenas os do HTML público.
-  let apiLive = false;
+  let live = { ok: false, status: 'nao_executado' };
   try {
-    apiLive = await meliuzTaxasAoVivo(out);
+    live = await meliuzTaxasAoVivo(out);
   } catch (e) {
     console.error('[Méliuz] cashback-offers falhou:', e.message);
+    live = { ok: false, status: 'excecao', erro: e.message };
   }
 
-  res.json({ geradoEm: new Date().toISOString(), apiLive, lojas: out });
+  res.json({ geradoEm: new Date().toISOString(), apiLive: live.ok, apiLiveStatus: live, lojas: out });
 });
 
 // ── Cashback TopCashback (UK e US) ────────────────────────────────────────────
