@@ -908,7 +908,27 @@ async function main() {
   // 5. Detecta variações positivas e gera ofertas pendentes por programa
   await gerarOfertasVariacao(snapshot, historico, hoje);
 
-  // 6. Salva snapshot no histórico (sobrescreve o dia se já existir)
+  // 6. Salva snapshot no histórico.
+  // Merge com o snapshot já existente do dia: o Comparemania é fonte de verdade
+  // apenas para os programas em PROGRAMS (livelo/esfera/azul). Programas gravados
+  // por outros coletores (inter, meliuz, tcbuk, tcbus) são preservados — sem isso,
+  // a run horária apagava os dados do Méliuz/TopCashback coletados às 09h/18h.
+  const progsComparemania = new Set(PROGRAMS.map(p => p.id));
+  const snapExistente = historico[hoje] || {};
+  for (const [chave, dados] of Object.entries(snapExistente)) {
+    for (const [pid, val] of Object.entries(dados.programs || {})) {
+      if (progsComparemania.has(pid)) continue;
+      if (!snapshot[chave]) snapshot[chave] = { programs: {} };
+      if (!snapshot[chave].programs) snapshot[chave].programs = {};
+      snapshot[chave].programs[pid] = val;
+    }
+    for (const [pid, link] of Object.entries(dados.links || {})) {
+      if (progsComparemania.has(pid)) continue;
+      if (!snapshot[chave]) continue;
+      if (!snapshot[chave].links) snapshot[chave].links = {};
+      snapshot[chave].links[pid] = link;
+    }
+  }
   historico[hoje] = snapshot;
 
   // Remove dias com mais de 365 dias (mantém ~1 ano rolante)
