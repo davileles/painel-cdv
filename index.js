@@ -366,11 +366,28 @@ async function meliuzTokenAnonimo() {
   }
 }
 
+// Decodifica o exp de um JWT sem validar assinatura — só para telemetria.
+function jwtExpiraEm(tok) {
+  try {
+    const p = JSON.parse(Buffer.from(String(tok).split('.')[1], 'base64').toString());
+    return p.exp ? new Date(p.exp * 1000).toISOString() : null;
+  } catch (e) {
+    return null;
+  }
+}
+
 async function meliuzTaxasAoVivo(out) {
   const ids = out.filter(o => o.partnerId).map(o => o.partnerId);
   if (!ids.length) return { ok: false, status: 'sem_partner_ids' };
-  const tok = await meliuzTokenAnonimo();
+  // O cashback-offers exige token de USUÁRIO (cookie mzsync do site logado) —
+  // o token anônimo do client-seo retorna 401. O token do usuário vem da env
+  // MELIUZ_MZSYNC no Railway; quando expirar, o status abaixo avisa e o
+  // comparador segue com a taxa SSR (pública) até o token ser renovado.
+  const tokUser = (process.env.MELIUZ_MZSYNC || '').trim() || null;
+  const tok = tokUser || await meliuzTokenAnonimo();
   if (!tok) return { ok: false, status: 'token_falhou' };
+  const fonteToken = tokUser ? 'usuario' : 'anonimo';
+  const expiraEm = jwtExpiraEm(tok);
   const r = await fetch(`https://api-seo.meliuz.com.br/partners/cashback-offers?ids=${ids.join(',')}`, {
     headers: {
       'Authorization': `Bearer ${tok}`,
@@ -383,7 +400,10 @@ async function meliuzTaxasAoVivo(out) {
   });
   if (!r.ok) {
     const corpo = await r.text().catch(() => '');
-    return { ok: false, status: `http_${r.status}`, corpo: corpo.slice(0, 200) };
+    const status = (r.status === 401 && fonteToken === 'usuario')
+      ? 'token_usuario_invalido_ou_expirado'
+      : `http_${r.status}`;
+    return { ok: false, status, fonteToken, expiraEm, corpo: corpo.slice(0, 200) };
   }
   const j = await r.json();
   const porId = new Map((j.data || []).map(o => [o.partner_id, o]));
@@ -400,7 +420,7 @@ async function meliuzTaxasAoVivo(out) {
     if (off.cashback_category) o.ate = true; // varia por categoria → "até X%"
     if (off.previous && PCT.has(off.previous.type)) o.era = parseFloat(off.previous.value);
   }
-  return { ok: true, status: 'ok', recebidos: (j.data || []).length };
+  return { ok: true, status: 'ok', fonteToken, expiraEm, recebidos: (j.data || []).length };
 }
 
 app.get('/meliuz/cashback', async (req, res) => {
