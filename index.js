@@ -366,6 +366,94 @@ async function meliuzTokenAnonimo() {
   }
 }
 
+// ── Token de usuário (cashback promocional/turbinado) ─────────────────────────
+// O cashback-offers exige token de usuário. O access token (mzsync) dura ~11h,
+// então renovamos sozinhos usando o refresh token (mzsync-r), que vive semanas.
+// Fluxo espelha o do bundle do Méliuz: POST /oauth/token com grant_type
+// refresh_token e client_id do client-seo (sem client_secret). O refresh token
+// pode rotacionar a cada uso — guardamos o mais recente em memória para não
+// depender de reescrever a env a cada renovação.
+//   MELIUZ_MZSYNC   — access token inicial (opcional; serve até o 1º refresh)
+//   MELIUZ_MZSYNC_R — refresh token (obrigatório para renovação automática)
+const MELIUZ_CLIENT_ID = 'meliuz-client-seo-production';
+let meliuzUserCache = {
+  access: (process.env.MELIUZ_MZSYNC || '').trim() || null,
+  refresh: (process.env.MELIUZ_MZSYNC_R || '').trim() || null,
+  accessExpira: 0, // epoch ms; 0 = desconhecido, força validação pelo exp do JWT
+  ultimoRefreshErro: null,
+};
+
+function jwtExp(tok) {
+  try {
+    const p = JSON.parse(Buffer.from(String(tok).split('.')[1], 'base64').toString());
+    return p.exp ? p.exp * 1000 : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function meliuzRenovarAccess() {
+  if (!meliuzUserCache.refresh) {
+    meliuzUserCache.ultimoRefreshErro = 'sem_refresh_token';
+    return null;
+  }
+  try {
+    const r = await fetch('https://api-seo.meliuz.com.br/oauth/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': MELIUZ_UA,
+        'Accept': 'application/json',
+        'Origin': 'https://www.meliuz.com.br',
+        'Referer': 'https://www.meliuz.com.br/',
+      },
+      body: JSON.stringify({
+        grant_type: 'refresh_token',
+        client_id: MELIUZ_CLIENT_ID,
+        refresh_token: meliuzUserCache.refresh,
+      }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!r.ok) {
+      const corpo = await r.text().catch(() => '');
+      meliuzUserCache.ultimoRefreshErro = `http_${r.status}: ${corpo.slice(0, 150)}`;
+      return null;
+    }
+    const j = await r.json();
+    // A API pode devolver camelCase (accessToken) ou snake (access_token).
+    const novoAccess  = j.accessToken  || j.access_token  || (j.data && (j.data.accessToken  || j.data.access_token));
+    const novoRefresh = j.refreshToken || j.refresh_token || (j.data && (j.data.refreshToken || j.data.refresh_token));
+    if (!novoAccess) {
+      meliuzUserCache.ultimoRefreshErro = 'resposta_sem_access_token';
+      return null;
+    }
+    meliuzUserCache.access = novoAccess;
+    if (novoRefresh) meliuzUserCache.refresh = novoRefresh; // rotação
+    const exp = jwtExp(novoAccess);
+    meliuzUserCache.accessExpira = exp || (Date.now() + 10 * 60 * 60 * 1000);
+    meliuzUserCache.ultimoRefreshErro = null;
+    return novoAccess;
+  } catch (e) {
+    meliuzUserCache.ultimoRefreshErro = 'excecao: ' + e.message;
+    return null;
+  }
+}
+
+// Retorna um access token de usuário válido, renovando se estiver perto de expirar.
+async function meliuzTokenUsuario() {
+  const MARGEM = 5 * 60 * 1000; // renova 5 min antes de expirar
+  const exp = meliuzUserCache.accessExpira || jwtExp(meliuzUserCache.access) || 0;
+  if (meliuzUserCache.access && exp && Date.now() < exp - MARGEM) {
+    return meliuzUserCache.access;
+  }
+  // Access ausente ou perto de expirar → tenta renovar via refresh.
+  const renovado = await meliuzRenovarAccess();
+  if (renovado) return renovado;
+  // Refresh falhou: se ainda houver um access não totalmente expirado, usa ele.
+  if (meliuzUserCache.access && exp && Date.now() < exp) return meliuzUserCache.access;
+  return null;
+}
+
 // Decodifica o exp de um JWT sem validar assinatura — só para telemetria.
 function jwtExpiraEm(tok) {
   try {
@@ -383,9 +471,9 @@ async function meliuzTaxasAoVivo(out) {
   // o token anônimo do client-seo retorna 401. O token do usuário vem da env
   // MELIUZ_MZSYNC no Railway; quando expirar, o status abaixo avisa e o
   // comparador segue com a taxa SSR (pública) até o token ser renovado.
-  const tokUser = (process.env.MELIUZ_MZSYNC || '').trim() || null;
+  const tokUser = await meliuzTokenUsuario();
   const tok = tokUser || await meliuzTokenAnonimo();
-  if (!tok) return { ok: false, status: 'token_falhou' };
+  if (!tok) return { ok: false, status: 'token_falhou', refreshErro: meliuzUserCache.ultimoRefreshErro };
   const fonteToken = tokUser ? 'usuario' : 'anonimo';
   const expiraEm = jwtExpiraEm(tok);
   const r = await fetch(`https://api-seo.meliuz.com.br/partners/cashback-offers?ids=${ids.join(',')}`, {
@@ -421,6 +509,19 @@ async function meliuzTaxasAoVivo(out) {
     if (off.previous && PCT.has(off.previous.type)) o.era = parseFloat(off.previous.value);
   }
   return { ok: true, status: 'ok', fonteToken, expiraEm, recebidos: (j.data || []).length };
+}
+
+// Diagnóstico do estado do token de usuário (sem expor os tokens em si).
+function meliuzEstadoToken() {
+  const expAccess = meliuzUserCache.accessExpira || jwtExp(meliuzUserCache.access) || null;
+  const expRefresh = jwtExp(meliuzUserCache.refresh);
+  return {
+    temAccess: !!meliuzUserCache.access,
+    temRefresh: !!meliuzUserCache.refresh,
+    accessExpiraEm: expAccess ? new Date(expAccess).toISOString() : null,
+    refreshExpiraEm: expRefresh ? new Date(expRefresh).toISOString() : null,
+    ultimoRefreshErro: meliuzUserCache.ultimoRefreshErro,
+  };
 }
 
 app.get('/meliuz/cashback', async (req, res) => {
@@ -462,6 +563,13 @@ app.get('/meliuz/cashback', async (req, res) => {
   }
 
   res.json({ geradoEm: new Date().toISOString(), apiLive: live.ok, apiLiveStatus: live, lojas: out });
+});
+
+// Diagnóstico do token de usuário do Méliuz — mostra validade do access/refresh
+// e o último erro de renovação, sem expor os tokens. Útil para saber quando o
+// refresh token (mzsync-r) precisa ser trocado no Railway.
+app.get('/meliuz/token-status', (req, res) => {
+  res.json(meliuzEstadoToken());
 });
 
 // ── Cashback TopCashback (UK e US) ────────────────────────────────────────────
