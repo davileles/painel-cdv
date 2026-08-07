@@ -572,6 +572,19 @@ app.get('/meliuz/token-status', (req, res) => {
   res.json(meliuzEstadoToken());
 });
 
+// Força uma renovação do access token via refresh — para validar o fluxo sem
+// esperar o access expirar. Retorna o estado antes/depois (sem expor tokens).
+app.get('/meliuz/token-refresh', async (req, res) => {
+  const antes = meliuzEstadoToken().accessExpiraEm;
+  const novo = await meliuzRenovarAccess();
+  res.json({
+    renovou: !!novo,
+    accessExpiraAntes: antes,
+    accessExpiraDepois: meliuzEstadoToken().accessExpiraEm,
+    ultimoRefreshErro: meliuzUserCache.ultimoRefreshErro,
+  });
+});
+
 // ── Cashback TopCashback (UK e US) ────────────────────────────────────────────
 // Mesma abordagem do Méliuz: não há API pública, o cashback vem do HTML SSR da
 // página de cada loja. O TopCashback publica uma ou mais faixas por loja
@@ -1758,18 +1771,7 @@ app.post('/membros/verificar-codigo', (req, res) => {
 // ── ADMIN OTP: acesso restrito (TSP + Concierge) ─────────────────────────────
 // Allowlist fixa — independente de membros.json. Para liberar novos acessos,
 // basta adicionar o e-mail (minúsculo) no array abaixo.
-// ADMIN_EMAILS      → acesso a TODOS os painéis (TSP + Concierge)
-// ADMIN_EMAILS_APP  → acesso restrito a um painel específico
 const ADMIN_EMAILS = ['davileles@gmail.com'];
-const ADMIN_EMAILS_APP = {
-  tsp:       [],
-  concierge: ['felipetruta1@gmail.com']
-};
-function adminAutorizado(email, appKey) {
-  if (ADMIN_EMAILS.includes(email)) return true;
-  if (appKey && ADMIN_EMAILS_APP[appKey]) return ADMIN_EMAILS_APP[appKey].includes(email);
-  return Object.values(ADMIN_EMAILS_APP).some(l => l.includes(email));
-}
 const adminOtpStore = new Map();
 
 const ADMIN_APPS = {
@@ -1782,7 +1784,7 @@ app.post('/admin/enviar-codigo', async (req, res) => {
   const email = (body.email || '').toLowerCase().trim();
   const app_  = ADMIN_APPS[body.app] || ADMIN_APPS.concierge;
   if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
-  if (!adminAutorizado(email, ADMIN_APPS[body.app] ? body.app : null)) return res.json({ ok: false, motivo: 'nao_autorizado' });
+  if (!ADMIN_EMAILS.includes(email)) return res.json({ ok: false, motivo: 'nao_autorizado' });
 
   const codigo = gerarCodigo();
   adminOtpStore.set(email, { codigo, expira: Date.now() + OTP_TTL });
@@ -1823,7 +1825,7 @@ app.post('/admin/verificar-codigo', (req, res) => {
   const email  = (body.email || '').toLowerCase().trim();
   const codigo = (body.codigo || '').trim();
   if (!email || !codigo) return res.status(400).json({ ok: false, erro: 'E-mail e código obrigatórios' });
-  if (!adminAutorizado(email, ADMIN_APPS[body.app] ? body.app : null)) return res.json({ ok: false, motivo: 'nao_autorizado' });
+  if (!ADMIN_EMAILS.includes(email)) return res.json({ ok: false, motivo: 'nao_autorizado' });
 
   const entrada = adminOtpStore.get(email);
   if (!entrada) return res.json({ ok: false, motivo: 'nao_encontrado' });
