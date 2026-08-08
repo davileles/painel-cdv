@@ -99,7 +99,7 @@ const CLIQUES_FLUSH_MS = 10 * 60 * 1000;
 const LINKS_FALLBACK = 'https://davileles.com/clube-do-viajante/';
 const PREVIEW_BOT_RE = /whatsapp|facebookexternalhit|telegrambot|twitterbot|slackbot|discordbot|linkedinbot|skypeuripreview|bingbot|googlebot/i;
 
-const RESERVADOS_IR = new Set(['ir', 'ir-stats', 'ping', 'health', 'fetch', 'parceiros', 'bandeiras']);
+const RESERVADOS_IR = new Set(['ir', 'ir-stats', 'g', 'gg', 'ping', 'health', 'fetch', 'parceiros', 'bandeiras']);
 
 let linksCache = { data: null, ts: 0 };
 
@@ -277,6 +277,319 @@ app.get('/ir-stats', async (req, res) => {
 // Força a gravação imediata do buffer (útil para testar sem esperar 10min)
 app.post('/ir-stats/flush', async (req, res) => {
   try { await flushCliques(); res.json({ ok: true }); }
+  catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
+
+// ══ DISTRIBUIDOR DE ENTRADAS EM GRUPOS ═══════════════════════════════════════
+// Um link (/g/<slug>) que reveza entre varios grupos de WhatsApp. Usado em
+// trafego pago: um unico criativo alimenta N grupos sem link manual por grupo.
+//
+// O clique NUNCA toca GitHub nem Baileys — tudo resolve em memoria. A contagem
+// real de membros vem de um worker de fundo; o ponteiro e os cliques sao
+// gravados por flush periodico, como o contador do /ir.
+const GG_FILE          = 'grupos-links.json';
+const GG_BAILEYS       = process.env.BAILEYS_URL || 'https://baileys-server-production-ebfe.up.railway.app';
+const GG_SYNC_MS       = 4 * 60 * 1000;
+const GG_FLUSH_MS      = 2 * 60 * 1000;
+const GG_LIMITE_PADRAO = 1010;
+const GG_TETO_WA       = 1024;   // limite duro de um grupo de WhatsApp
+
+let ggEstado = null;
+let ggCarregado = false;
+let ggDirty = false;
+
+async function ggCarregar() {
+  if (ggCarregado && ggEstado) return ggEstado;
+  const { data } = await ghGetJson(GG_FILE, { links: {} });
+  ggEstado = (data && typeof data === 'object' && data.links) ? data : { links: {} };
+  ggCarregado = true;
+  return ggEstado;
+}
+
+async function ggSalvar(msg) {
+  if (!ggEstado) return;
+  const { sha } = await ghGetJson(GG_FILE, { links: {} });   // SHA sempre fresco
+  ggEstado.atualizadoEm = new Date().toISOString();
+  await ghPutJson(GG_FILE, ggEstado, sha, msg || 'chore: distribuidor de grupos');
+  ggDirty = false;
+}
+
+// Ocupacao = contagem real da ultima sincronizacao + cliques desde entao.
+// Sem esse "entradas", entre duas sincronizacoes de 4 min poderiam entrar
+// centenas de pessoas num grupo que ja estava perto do teto.
+function ggOcupacao(g) {
+  return (g.membros == null ? 0 : g.membros) + (g.entradas || 0);
+}
+
+function ggLimite(link) {
+  return Math.min(Number(link.limite) || GG_LIMITE_PADRAO, GG_TETO_WA);
+}
+
+function ggElegiveis(link) {
+  const lim = ggLimite(link);
+  return (link.grupos || []).filter(g => g.ativo !== false && g.convite && ggOcupacao(g) < lim);
+}
+
+function ggEscolher(link) {
+  const eleg = ggElegiveis(link);
+  if (!eleg.length) return null;
+  if (link.modo === 'sequencial') return eleg[0];            // enche um, depois o proximo
+  if (link.modo === 'aleatorio')  return eleg[Math.floor(Math.random() * eleg.length)];
+  const p = Number.isFinite(link.ponteiro) ? link.ponteiro : 0;   // rodizio (padrao)
+  link.ponteiro = (p + 1) % 1000000;
+  return eleg[p % eleg.length];
+}
+
+function ggEsc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Preview do WhatsApp: o bot NAO pode consumir uma vaga do rodizio, senao o
+// contador infla so de colar o link. Ele recebe OG estatico; o humano cai no
+// mesmo endereco com ?e=1 e passa pelo fluxo normal.
+function ggPaginaPreview(link, slug) {
+  const titulo = link.ogTitulo || link.nome || 'Entre no grupo';
+  const desc   = link.ogDesc   || 'Toque para entrar no grupo do WhatsApp.';
+  const destino = '/g/' + encodeURIComponent(slug) + '?e=1';
+  return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>' + ggEsc(titulo) + '</title>' +
+    '<meta property="og:title" content="' + ggEsc(titulo) + '">' +
+    '<meta property="og:description" content="' + ggEsc(desc) + '">' +
+    (link.ogImagem ? '<meta property="og:image" content="' + ggEsc(link.ogImagem) + '">' : '') +
+    '<meta property="og:type" content="website">' +
+    '<meta name="robots" content="noindex,nofollow">' +
+    '</head><body style="font-family:system-ui;text-align:center;padding:40px">' +
+    '<p>Redirecionando…</p><a href="' + ggEsc(destino) + '">Entrar no grupo</a>' +
+    '<script>location.replace(' + JSON.stringify(destino) + ');</scr' + 'ipt>' +
+    '</body></html>';
+}
+
+async function ggHandle(req, res, slug) {
+  let est;
+  try { est = await ggCarregar(); } catch (e) { est = ggEstado || { links: {} }; }
+  const link = est.links[slug];
+  if (!link) return res.redirect(302, LINKS_FALLBACK);
+  if (link.ativo === false) return res.redirect(302, link.fallback || LINKS_FALLBACK);
+
+  const ua = req.headers['user-agent'] || '';
+  if (PREVIEW_BOT_RE.test(ua) && req.query.e !== '1') {
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    return res.status(200).send(ggPaginaPreview(link, slug));
+  }
+
+  const g = ggEscolher(link);
+  // Todos cheios ou sem convite: manda para o fallback do link em vez de 404.
+  if (!g) return res.redirect(302, link.fallback || LINKS_FALLBACK);
+
+  g.entradas = (g.entradas || 0) + 1;
+  g.cliques  = (g.cliques  || 0) + 1;
+  link.cliques = (link.cliques || 0) + 1;
+  const origem = String(req.query.o || 'direto').slice(0, 40).replace(/[^\w.\-]/g, '') || 'direto';
+  link.origens = link.origens || {};
+  link.origens[origem] = (link.origens[origem] || 0) + 1;
+  link.ultimoClique = new Date().toISOString();
+  ggDirty = true;
+
+  res.set('Cache-Control', 'no-store');
+  return res.redirect(302, g.convite);
+}
+
+// Pergunta ao Baileys a contagem real de cada grupo e zera a estimativa local.
+async function ggSincronizar(slugFiltro) {
+  const est = await ggCarregar();
+  const jids = new Set();
+  for (const [slug, link] of Object.entries(est.links)) {
+    if (slugFiltro && slug !== slugFiltro) continue;
+    for (const g of (link.grupos || [])) if (g.jid) jids.add(g.jid);
+  }
+  if (!jids.size) return { ok: true, atualizados: 0 };
+
+  let mapa = {};
+  try {
+    const url = GG_BAILEYS + '/grupos/info?jids=' + encodeURIComponent([...jids].join(','));
+    const r = await fetch(url, { signal: AbortSignal.timeout(30000) });
+    const d = await r.json();
+    if (!d.ok) return { ok: false, erro: d.erro || 'baileys recusou', atualizados: 0 };
+    for (const g of (d.grupos || [])) mapa[g.jid] = g;
+  } catch (e) {
+    return { ok: false, erro: 'baileys indisponivel: ' + e.message, atualizados: 0 };
+  }
+
+  const agora = new Date().toISOString();
+  let n = 0;
+  for (const [slug, link] of Object.entries(est.links)) {
+    if (slugFiltro && slug !== slugFiltro) continue;
+    for (const g of (link.grupos || [])) {
+      const info = mapa[g.jid];
+      if (!info || info.membros == null) { g.erro = (info && info.erro) || 'sem resposta'; continue; }
+      g.nome     = info.nome || g.nome;
+      g.membros  = info.membros;
+      g.entradas = 0;                 // a contagem real ja absorveu quem entrou
+      g.souAdmin = info.souAdmin;
+      g.sincronizadoEm = agora;
+      g.erro = null;
+      n++;
+    }
+  }
+  ggDirty = true;
+  return { ok: true, atualizados: n };
+}
+
+async function ggBuscarConvite(jid) {
+  const r = await fetch(GG_BAILEYS + '/grupos/convite?jid=' + encodeURIComponent(jid),
+    { signal: AbortSignal.timeout(20000) });
+  const d = await r.json();
+  if (!d.ok) throw new Error(d.erro || 'falha ao obter convite');
+  return d.url;
+}
+
+const ggSyncTimer = setInterval(() => {
+  ggSincronizar().catch(e => console.error('[gg sync]', e.message));
+}, GG_SYNC_MS);
+if (ggSyncTimer.unref) ggSyncTimer.unref();
+
+const ggFlushTimer = setInterval(() => {
+  if (ggDirty) ggSalvar('chore: distribuidor — flush de cliques').catch(e => console.error('[gg flush]', e.message));
+}, GG_FLUSH_MS);
+if (ggFlushTimer.unref) ggFlushTimer.unref();
+
+// ── Redirect publico ─────────────────────────────────────────────────────────
+app.get(/^\/g\/([a-zA-Z0-9\-_]{1,40})$/, (req, res) =>
+  ggHandle(req, res, String(req.params[0] || '').toLowerCase()));
+
+// ── Gestao ───────────────────────────────────────────────────────────────────
+app.get('/gg/links', async (req, res) => {
+  try {
+    const est = await ggCarregar();
+    const links = Object.entries(est.links).map(([slug, l]) => ({
+      slug,
+      nome: l.nome || slug,
+      modo: l.modo || 'igual',
+      limite: ggLimite(l),
+      ativo: l.ativo !== false,
+      fallback: l.fallback || '',
+      cliques: l.cliques || 0,
+      origens: l.origens || {},
+      ultimoClique: l.ultimoClique || null,
+      criadoEm: l.criadoEm || null,
+      disponiveis: ggElegiveis(l).length,
+      grupos: (l.grupos || []).map(g => ({
+        jid: g.jid, nome: g.nome || null, convite: g.convite || '',
+        ativo: g.ativo !== false, membros: g.membros == null ? null : g.membros,
+        entradas: g.entradas || 0, ocupacao: ggOcupacao(g), cliques: g.cliques || 0,
+        souAdmin: g.souAdmin === undefined ? null : g.souAdmin,
+        sincronizadoEm: g.sincronizadoEm || null, erro: g.erro || null,
+        cheio: ggOcupacao(g) >= ggLimite(l),
+      })),
+    })).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    res.json({ ok: true, total: links.length, links, atualizadoEm: est.atualizadoEm || null });
+  } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
+// Upsert por slug. Grupos novos ganham o convite na hora; os que ja existiam
+// preservam contagem, cliques e convite ja obtido.
+app.post('/gg/links', async (req, res) => {
+  const b = req.body || {};
+  const slug = String(b.slug || '').trim().toLowerCase();
+  if (!/^[a-z0-9\-_]{1,40}$/.test(slug)) {
+    return res.status(400).json({ ok: false, erro: 'slug invalido (use a-z, 0-9, - e _)' });
+  }
+  if (RESERVADOS_IR.has(slug)) return res.status(400).json({ ok: false, erro: 'slug reservado' });
+  try {
+    const est = await ggCarregar();
+    const atual = est.links[slug] || { criadoEm: new Date().toISOString(), ponteiro: 0, cliques: 0, origens: {} };
+    const antigos = new Map((atual.grupos || []).map(g => [g.jid, g]));
+
+    const grupos = [];
+    const avisos = [];
+    for (const item of (Array.isArray(b.grupos) ? b.grupos : [])) {
+      const jid = String(item.jid || '').trim();
+      if (!jid.endsWith('@g.us')) continue;
+      const velho = antigos.get(jid) || {};
+      const g = {
+        jid,
+        nome: item.nome || velho.nome || null,
+        convite: velho.convite || '',
+        ativo: item.ativo !== false,
+        membros: velho.membros == null ? null : velho.membros,
+        entradas: velho.entradas || 0,
+        cliques: velho.cliques || 0,
+        souAdmin: velho.souAdmin,
+        sincronizadoEm: velho.sincronizadoEm || null,
+        erro: velho.erro || null,
+      };
+      if (!g.convite) {
+        try { g.convite = await ggBuscarConvite(jid); g.erro = null; }
+        catch (e) { g.erro = e.message; avisos.push((g.nome || jid) + ': ' + e.message); }
+      }
+      grupos.push(g);
+    }
+
+    est.links[slug] = Object.assign(atual, {
+      nome: String(b.nome || atual.nome || slug).slice(0, 80),
+      modo: ['igual', 'sequencial', 'aleatorio'].includes(b.modo) ? b.modo : (atual.modo || 'igual'),
+      limite: Math.min(Math.max(Number(b.limite) || GG_LIMITE_PADRAO, 1), GG_TETO_WA),
+      ativo: b.ativo !== false,
+      fallback: String(b.fallback || atual.fallback || '').slice(0, 300),
+      ogTitulo: String(b.ogTitulo || atual.ogTitulo || '').slice(0, 120),
+      ogDesc: String(b.ogDesc || atual.ogDesc || '').slice(0, 200),
+      grupos,
+    });
+
+    await ggSincronizar(slug).catch(() => {});
+    await ggSalvar('chore: distribuidor — salva link ' + slug);
+    res.json({ ok: true, slug, avisos });
+  } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
+app.post('/gg/links/excluir', async (req, res) => {
+  const slug = String((req.body || {}).slug || '').trim().toLowerCase();
+  if (!slug) return res.status(400).json({ ok: false, erro: 'informe slug' });
+  try {
+    const est = await ggCarregar();
+    if (!est.links[slug]) return res.status(404).json({ ok: false, erro: 'slug nao encontrado' });
+    delete est.links[slug];
+    await ggSalvar('chore: distribuidor — remove link ' + slug);
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
+// Renova o convite de um grupo (usar quando o link for revogado no WhatsApp)
+app.post('/gg/convite', async (req, res) => {
+  const b = req.body || {};
+  const slug = String(b.slug || '').trim().toLowerCase();
+  const jid  = String(b.jid || '').trim();
+  try {
+    const est = await ggCarregar();
+    const link = est.links[slug];
+    if (!link) return res.status(404).json({ ok: false, erro: 'slug nao encontrado' });
+    const g = (link.grupos || []).find(x => x.jid === jid);
+    if (!g) return res.status(404).json({ ok: false, erro: 'grupo nao esta neste link' });
+    const r = await fetch(GG_BAILEYS + '/grupos/convite?refresh=1&jid=' + encodeURIComponent(jid),
+      { signal: AbortSignal.timeout(20000) });
+    const d = await r.json();
+    if (!d.ok) { g.erro = d.erro; ggDirty = true; return res.status(502).json({ ok: false, erro: d.erro }); }
+    g.convite = d.url; g.erro = null;
+    await ggSalvar('chore: distribuidor — renova convite ' + slug);
+    res.json({ ok: true, url: d.url });
+  } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
+app.post('/gg/sync', async (req, res) => {
+  const slug = String((req.body || {}).slug || '').trim().toLowerCase() || null;
+  try {
+    const r = await ggSincronizar(slug);
+    if (ggDirty) await ggSalvar('chore: distribuidor — sincroniza contagens');
+    res.json(r);
+  } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
+app.post('/gg/flush', async (req, res) => {
+  try { await ggSalvar('chore: distribuidor — flush manual'); res.json({ ok: true }); }
   catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
 });
 
