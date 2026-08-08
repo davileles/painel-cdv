@@ -468,7 +468,7 @@ if (ggFlushTimer.unref) ggFlushTimer.unref();
 const GG_HOSTS = new Set(String(process.env.GG_HOSTS ||
   'grupo.tudosobrepromos.com,ir.tudosobrepromos.com')
   .split(',').map(s => s.trim().toLowerCase()).filter(Boolean));
-const GG_HOME = process.env.GG_HOME || 'https://davileles.github.io/tudo-sobre-promos/';
+const GG_HOME = process.env.GG_HOME || 'https://tudosobrepromos.com/';
 
 app.use(async (req, res, next) => {
   if (!GG_HOSTS.has(String(req.hostname || '').toLowerCase())) return next();
