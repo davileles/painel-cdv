@@ -609,6 +609,22 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
       }
 
       const maxPts6m = Math.max(v.ptsNow, ...(pts6m.length > 0 ? pts6m : [v.ptsBefore]));
+
+      // Recorde histórico: compara a pontuação atual com o MAIOR valor já
+      // registrado em todo o historico.json (excluindo o snapshot de hoje).
+      // Usa a série completa, e não a janela de 6 meses, para que "recorde"
+      // signifique de fato recorde e não apenas máximo do semestre.
+      const ptsHistTotal = [];
+      for (const d of datasHistorico) {
+        if (d === hoje) continue;
+        const snapH = historico[d] || {};
+        const dadosH = snapH[parceiroKey] || {};
+        const progH = (dadosH.programs || {})[progId];
+        const ptsH = progH ? (typeof progH === 'object' ? progH.pts : progH) : null;
+        if (ptsH != null) ptsHistTotal.push(ptsH);
+      }
+      const maxHistAnterior = ptsHistTotal.length > 0 ? Math.max(...ptsHistTotal) : v.ptsBefore;
+      const isRecorde = v.ptsNow > maxHistAnterior;
       const mediaPts6m = pts6m.length > 0
         ? Math.round(pts6m.reduce((a, b) => a + b, 0) / pts6m.length * 10) / 10
         : v.ptsBefore;
@@ -633,7 +649,10 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
       // Titulo no formato padrao do gerador CDV
       const moedaT1 = v.dollar ? 'US$' : 'R$';
       const moedaLabelT1 = v.dollar ? 'dólar' : 'real';
-      const tituloT1 = v.ptsNow + ' pontos por ' + moedaLabelT1 + ' entre ' + v.parceiro + ' e ' + progName;
+      const tituloBaseT1 = v.ptsNow + ' pontos por ' + moedaLabelT1 + ' entre ' + v.parceiro + ' e ' + progName;
+      const tituloT1 = isRecorde
+        ? '\u{1F525} ' + tituloBaseT1 + ' - RECORDE DE PONTUA\u00c7\u00c3O'
+        : tituloBaseT1;
 
       // Resumo: chamada + dados de pontuação logo abaixo
       const linhasResumoT1 = [
@@ -641,7 +660,9 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
         '',
         '* Pontuação anterior: ' + v.ptsBefore + ' pts/' + moedaT1,
         '* Pontuação atual: ' + v.ptsNow + ' pts/' + moedaT1 + ' (+' + v.delta + ')',
-        '* Maior pontuação (últimos 6 meses): ' + maxPts6m + ' pts/' + moedaT1,
+        (isRecorde
+          ? '* Recorde anterior: ' + maxHistAnterior + ' pts/' + moedaT1
+          : '* Maior pontuação (últimos 6 meses): ' + maxPts6m + ' pts/' + moedaT1),
         '* Média (últimos 6 meses): ' + mediaPts6m + ' pts/' + moedaT1,
       ];
       if (padraoAltasT1 && padraoAltasT1.frequenciaDias && padraoAltasT1.proximaEstimadaData) {
@@ -694,6 +715,8 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
           pontuacaoAnterior: v.ptsBefore,
           mediaHistorica6m: mediaPts6m,
           maximoHistorico6m: maxPts6m,
+          maximoHistoricoAnterior: maxHistAnterior,
+          recorde: isRecorde,
           amostras6m: pts6m.length,
           classificacao: classificacaoT1,
           moeda: moedaT1,
