@@ -458,7 +458,112 @@ function calcularFrequenciaAltas(historico, parceiroKey, progId, hoje, pontosHoj
 // (montagem de mensagem e enfileiramento: ver mensagem-radar.js)
 
 // ── Gera ofertas pendentes para variações positivas de pontuação ──────────────
-async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
+// ── Validade de campanha (Livelo) ────────────────────────────────────────────
+// A Livelo publica, em HTML estático e sem login, um JSON embutido com todos os
+// parceiros e, para os que estão em campanha promocional, as datas de início e
+// fim (`dateStart` / `dateEnd`). É a única das cinco fontes que expõe isso:
+// Esfera não publica vigência em lugar nenhum, e Azul/Smiles/LATAM bloqueiam
+// acesso automatizado (WAF/403) ou exigem sessão autenticada. Por isso o campo
+// de prazo só é preenchido em ofertas Livelo — nos demais programas continua
+// vazio, como antes.
+const LIVELO_PARCEIROS_URL = 'https://www.livelo.com.br/juntar-pontos/todos-os-parceiros';
+const VALIDADES_FILE = path.join(__dirname, 'validades-livelo.json');
+
+// Chave de casamento entre o nome do parceiro no Comparemania e o nome na Livelo.
+// Remove acentos, pontuação e espaços; "C&A" e "CEA" convergem para "cea".
+function chaveParceiroValidade(nome) {
+  return String(nome || '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/&/g, ' e ')
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+// Parceiros cujo nome difere entre as duas fontes (chave Livelo → chave Comparemania).
+const LIVELO_ALIAS_CHAVE = {
+  bibi:               'bibicalcados',
+  pontofrio:          'ponto',
+  hertzinternacional: 'hertz',
+};
+
+function parseDataLivelo(s) {
+  const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? `${m[1]}-${m[2]}-${m[3]}` : null;
+}
+
+// "2026-08-09" → "09/08/2026" (formato que o gerador espera no campo `prazo`)
+function isoParaPrazoBr(iso) {
+  const m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : '';
+}
+
+function parseValidadesLivelo(html) {
+  const out = {};
+  const re = /"id":"([A-Z0-9]{2,5})","image":"[^"]*","name":"([^"]+)"[\s\S]{0,600}?"parity":\{([\s\S]{0,3500}?)"categoryParities"/g;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    const id = m[1], nome = m[2], bloco = m[3];
+    const campo = (k) => {
+      const mm = bloco.match(new RegExp('"' + k + '":"?([^",]*)"?'));
+      return mm ? mm[1] : null;
+    };
+    // Só interessam campanhas promocionais: no estado normal (BAU) não há data.
+    if (campo('activeCampaign') !== 'PROMOTION') continue;
+    const dateEnd = parseDataLivelo(campo('dateEnd'));
+    if (!dateEnd) continue;
+
+    const chaveBase = chaveParceiroValidade(nome);
+    const chave = LIVELO_ALIAS_CHAVE[chaveBase] || chaveBase;
+    out[chave] = {
+      id,
+      nome,
+      dateStart: parseDataLivelo(campo('dateStart')),
+      dateEnd,
+      parity:    parseFloat(campo('parity')) || null,
+      parityBau: parseFloat(campo('parityBau')) || null,
+    };
+  }
+  return out;
+}
+
+async function coletarValidadesLivelo() {
+  try {
+    const html = await fetchDirect(LIVELO_PARCEIROS_URL, 30000);
+    const validades = parseValidadesLivelo(html);
+    const total = Object.keys(validades).length;
+    if (total === 0) {
+      console.warn('[Validade] Nenhuma campanha encontrada na Livelo — layout pode ter mudado.');
+      return {};
+    }
+    fs.writeFileSync(VALIDADES_FILE, JSON.stringify(
+      { coletadoEm: new Date().toISOString(), items: validades }, null, 2
+    ));
+    console.log(`[Validade] ${total} campanha(s) Livelo com data de encerramento.`);
+    return validades;
+  } catch (e) {
+    // Falha aqui nunca derruba a coleta: sem validade, a oferta sai como antes.
+    console.warn('[Validade] Falha ao coletar validades da Livelo:', e.message);
+    return {};
+  }
+}
+
+// Retorna a data de encerramento (ISO) da campanha de um parceiro, ou null.
+// Só devolve algo quando a pontuação da Livelo confere com a que o Comparemania
+// reportou — se divergirem, é sinal de que a leitura se refere a outra campanha
+// e nesse caso é melhor não exibir prazo nenhum do que exibir um prazo errado.
+function validadeDoParceiro(validadesLivelo, progId, nomeParceiro, ptsNow) {
+  if (progId !== 'livelo' || !validadesLivelo) return null;
+  const chave = chaveParceiroValidade(nomeParceiro);
+  const v = validadesLivelo[chave];
+  if (!v || !v.dateEnd) return null;
+  if (v.parity != null && ptsNow != null && Number(v.parity) !== Number(ptsNow)) {
+    console.log(`[Validade] ${nomeParceiro}: pontuação divergente (Livelo ${v.parity} x Comparemania ${ptsNow}) — prazo omitido.`);
+    return null;
+  }
+  return v.dateEnd;
+}
+
+async function gerarOfertasVariacao(snapshotAtual, historico, hoje, validadesLivelo) {
   // Compara sempre com o snapshot do dia ANTERIOR (não com coleta anterior do mesmo dia)
   const datasOrdenadas = Object.keys(historico)
     .filter(d => d !== hoje)
@@ -548,7 +653,9 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
     // Gera descrição linha a linha
     const linhas = variacoes.map(v => {
       const moeda = v.dollar ? 'US$' : 'R$';
-      return `🛍️ ${v.parceiro} — ${v.ptsBefore} → ${v.ptsNow} pts/${moeda} (+${v.delta})`;
+      const fim = validadeDoParceiro(validadesLivelo, progId, v.parceiro, v.ptsNow);
+      const ateTxt = fim ? ` (até ${isoParaPrazoBr(fim).slice(0, 5)})` : '';
+      return `🛍️ ${v.parceiro} — ${v.ptsBefore} → ${v.ptsNow} pts/${moeda} (+${v.delta})${ateTxt}`;
     }).join('\n');
 
     const titulo = `${count} parceiro${count > 1 ? 's tiveram' : ' teve'} aumento de pontuação com ${progName}`;
@@ -669,6 +776,17 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
         const [, mmProxT1, ddProxT1] = padraoAltasT1.proximaEstimadaData.split('-');
         linhasResumoT1.push('* Sobe a cada ~' + padraoAltasT1.frequenciaDias + ' dias. Possível próxima alta: ' + ddProxT1 + '/' + mmProxT1);
       }
+
+      // Validade oficial da campanha — só existe para Livelo (ver comentário em
+      // coletarValidadesLivelo). Vira o campo `prazo` da oferta, que o gerador
+      // já renderiza como "📆 PRAZO DD/MM/AAAA" na mensagem do WhatsApp.
+      const fimCampanhaT1 = validadeDoParceiro(validadesLivelo, progId, v.parceiro, v.ptsNow);
+      const prazoT1 = fimCampanhaT1 ? isoParaPrazoBr(fimCampanhaT1) : '';
+      if (prazoT1) {
+        linhasResumoT1.push(fimCampanhaT1 === hoje
+          ? '* Campanha encerra hoje (' + prazoT1.slice(0, 5) + ')'
+          : '* Campanha válida até ' + prazoT1.slice(0, 5));
+      }
       const resumoT1 = linhasResumoT1.join('\n');
 
       // Link direto: busca no historico consolidado (campo links salvo via /parceiros/resolver-links).
@@ -694,9 +812,9 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
         descricao: '',
         programa:  progName,
         bonus:     '',
-        prazo:     '',
         categoria: 'compra_bonificada',
         loja:      v.parceiro,
+        prazo:     prazoT1,
         cupom:     '',
         link:      linkT1,
         importante: '',
@@ -723,6 +841,7 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje) {
           dataDeteccao: new Date().toISOString().slice(0, 10),
           frequenciaDias: padraoAltasT1 ? padraoAltasT1.frequenciaDias : null,
           proximaEstimadaData: padraoAltasT1 ? padraoAltasT1.proximaEstimadaData : null,
+          fimCampanha: fimCampanhaT1 || null,
         },
       };
 
@@ -929,7 +1048,11 @@ async function main() {
 
 
   // 5. Detecta variações positivas e gera ofertas pendentes por programa
-  await gerarOfertasVariacao(snapshot, historico, hoje);
+  // Validades de campanha da Livelo — coletadas antes das ofertas de variação
+  // para que as mensagens já saiam com o prazo de encerramento preenchido.
+  const validadesLivelo = await coletarValidadesLivelo();
+
+  await gerarOfertasVariacao(snapshot, historico, hoje, validadesLivelo);
 
   // 6. Salva snapshot no histórico.
   // Merge com o snapshot já existente do dia: o Comparemania é fonte de verdade
