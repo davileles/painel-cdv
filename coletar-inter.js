@@ -246,6 +246,15 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
       .filter(v => v != null);
 
     const maxPts6m = Math.max(v.ptsAgora, ...(pts6m.length ? pts6m : [v.ptsAntes]));
+
+    // Recorde histórico: compara com o MAIOR cashback já registrado em todo o
+    // historico.json (excluindo o snapshot de hoje), não só na janela de 6 meses.
+    const ptsHistTotal = Object.entries(historico)
+      .filter(([d]) => d !== hoje)
+      .map(([, snap]) => snap[v.chave]?.programs?.inter?.pts)
+      .filter(x => x != null);
+    const maxHistAnterior = ptsHistTotal.length ? Math.max(...ptsHistTotal) : v.ptsAntes;
+    const isRecorde = v.ptsAgora > maxHistAnterior;
     const mediaPts6m = pts6m.length
       ? Math.round(pts6m.reduce((a, b) => a + b, 0) / pts6m.length * 10) / 10
       : v.ptsAntes;
@@ -262,14 +271,19 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
     // cálculo do modal do Comparador, usando 12 meses de historico.json.
     const padraoAltasT1 = calcularFrequenciaAltas(historico, v.chave, hoje, v.ptsAgora);
 
-    const tituloT1 = `${v.ptsAgora}% de cashback em ${v.nome} no Shopping Inter`;
+    const tituloBaseT1 = `${v.ptsAgora}% de cashback em ${v.nome} no Shopping Inter`;
+    const tituloT1 = isRecorde
+      ? `\u{1F525} ${tituloBaseT1} - RECORDE DE CASHBACK`
+      : tituloBaseT1;
 
     const linhasResumoT1 = [
       `${v.nome} aumentou o cashback no Shopping Inter.`,
       '',
       `* Cashback anterior: ${v.ptsAntes}%`,
       `* Cashback atual: ${v.ptsAgora}% (+${v.delta}%)`,
-      `* Maior cashback (últimos 6 meses): ${maxPts6m}%`,
+      isRecorde
+        ? `* Recorde anterior: ${maxHistAnterior}%`
+        : `* Maior cashback (últimos 6 meses): ${maxPts6m}%`,
       `* Média (últimos 6 meses): ${mediaPts6m}%`,
     ];
     if (padraoAltasT1 && padraoAltasT1.frequenciaDias && padraoAltasT1.proximaEstimadaData) {
@@ -307,6 +321,8 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
         pontuacaoAnterior: v.ptsAntes,
         mediaHistorica6m: mediaPts6m,
         maximoHistorico6m: maxPts6m,
+        maximoHistoricoAnterior: maxHistAnterior,
+        recorde: isRecorde,
         amostras6m: pts6m.length,
         classificacao: classificacaoT1,
         moeda: '%',
