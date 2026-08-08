@@ -13,6 +13,10 @@ const GITHUB_REPO = process.env.GITHUB_REPO || 'davileles/cdv-compras-bonificada
 // Enquanto GITHUB_REPO_DADOS não estiver definido no Railway, tudo continua
 // lendo/escrevendo em GITHUB_REPO — comportamento idêntico ao atual.
 const GITHUB_REPO_DADOS = process.env.GITHUB_REPO_DADOS || GITHUB_REPO;
+// Dados do Tudo Sobre Promos vivem em repo privado proprio. Regra por PREFIXO
+// de path (tsp/...), nao por lista de nomes: qualquer arquivo novo do TSP cai
+// no lugar certo sem precisar editar codigo.
+const GITHUB_REPO_TSP = process.env.GITHUB_REPO_TSP || 'davileles/cdv-tsp-dados';
 // FASE 1 — arquivos tocados APENAS pelo proxy. Migração sem efeito colateral.
 const ARQUIVOS_SENSIVEIS = new Set([
   'membros.json',
@@ -33,6 +37,7 @@ const ARQUIVOS_SENSIVEIS = new Set([
 // Aceita tanto 'membros.json' quanto a variante dev 'membros-dev.json'
 function repoDoArquivo(filePath) {
   const base = String(filePath || '').replace(/-dev\.json$/, '.json');
+  if (base.startsWith('tsp/')) return GITHUB_REPO_TSP;
   return ARQUIVOS_SENSIVEIS.has(base) ? GITHUB_REPO_DADOS : GITHUB_REPO;
 }
 
@@ -288,7 +293,7 @@ app.post('/ir-stats/flush', async (req, res) => {
 // O clique NUNCA toca GitHub nem Baileys — tudo resolve em memoria. A contagem
 // real de membros vem de um worker de fundo; o ponteiro e os cliques sao
 // gravados por flush periodico, como o contador do /ir.
-const GG_FILE          = 'grupos-links.json';
+const GG_FILE          = 'tsp/grupos-links.json';
 const GG_BAILEYS       = process.env.BAILEYS_URL || 'https://baileys-server-production-ebfe.up.railway.app';
 const GG_SYNC_MS       = 4 * 60 * 1000;
 const GG_FLUSH_MS      = 2 * 60 * 1000;
@@ -458,8 +463,35 @@ const ggFlushTimer = setInterval(() => {
 if (ggFlushTimer.unref) ggFlushTimer.unref();
 
 // ── Redirect publico ─────────────────────────────────────────────────────────
+// Dominio proprio do TSP: <host>/<slug> sem o /g/, para o link caber no anuncio.
+// Aponte um CNAME do subdominio para este servico no Railway.
+const GG_HOSTS = new Set(String(process.env.GG_HOSTS ||
+  'grupo.tudosobrepromos.com,ir.tudosobrepromos.com')
+  .split(',').map(s => s.trim().toLowerCase()).filter(Boolean));
+const GG_HOME = process.env.GG_HOME || 'https://davileles.github.io/tudo-sobre-promos/';
+
+app.use(async (req, res, next) => {
+  if (!GG_HOSTS.has(String(req.hostname || '').toLowerCase())) return next();
+  if (req.path === '/' || req.path === '') return res.redirect(302, GG_HOME);
+  const m = req.path.match(/^\/([a-zA-Z0-9\-_]{1,40})$/);
+  if (!m) return next();
+  const slug = m[1].toLowerCase();
+  if (RESERVADOS_IR.has(slug)) return next();   // /ping, /health etc seguem funcionando
+  let est;
+  try { est = await ggCarregar(); } catch (e) { est = ggEstado || { links: {} }; }
+  if (!est.links[slug]) return res.redirect(302, GG_HOME);
+  return ggHandle(req, res, slug);
+});
+
 app.get(/^\/g\/([a-zA-Z0-9\-_]{1,40})$/, (req, res) =>
   ggHandle(req, res, String(req.params[0] || '').toLowerCase()));
+
+// Base publica que o painel de gestao exibe/copia. Sai do GG_HOSTS para nao
+// existir URL hardcoded no front quando o dominio mudar.
+function ggBase() {
+  const h = [...GG_HOSTS][0];
+  return h ? 'https://' + h + '/' : 'https://cdv-proxy-production.up.railway.app/g/';
+}
 
 // ── Gestao ───────────────────────────────────────────────────────────────────
 app.get('/gg/links', async (req, res) => {
@@ -486,7 +518,7 @@ app.get('/gg/links', async (req, res) => {
         cheio: ggOcupacao(g) >= ggLimite(l),
       })),
     })).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
-    res.json({ ok: true, total: links.length, links, atualizadoEm: est.atualizadoEm || null });
+    res.json({ ok: true, total: links.length, links, base: ggBase(), atualizadoEm: est.atualizadoEm || null });
   } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
 });
 
