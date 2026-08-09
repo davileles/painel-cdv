@@ -1,0 +1,66 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# guardas-lib.yml — workflow REUTILIZAVEL dos guardas de repositorio.
+#
+# Nao roda sozinho: e chamado pelo .github/workflows/guardas.yml de cada
+# repositorio do ecossistema (via `uses: davileles/painel-cdv/...@main`).
+# Assim a logica vive em UM lugar so e todos os repositorios herdam correcoes.
+#
+# O script de verdade e scripts/guardas.mjs neste mesmo repositorio.
+# ═══════════════════════════════════════════════════════════════════════════
+name: Guardas (biblioteca)
+
+on:
+  workflow_call:
+    inputs:
+      base_sha:
+        description: 'Commit anterior ao push (github.event.before)'
+        required: false
+        type: string
+        default: ''
+      head_sha:
+        description: 'Commit atual'
+        required: false
+        type: string
+        default: ''
+      limiar:
+        description: 'Remocao liquida de linhas que dispara o alarme'
+        required: false
+        type: number
+        default: 150
+      so_aviso:
+        description: 'true = reporta os problemas mas nao falha o job'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  guardas:
+    runs-on: ubuntu-latest
+    steps:
+      # fetch-depth: 0 e obrigatorio — o guarda de regressao compara o push
+      # com o commit anterior, e um checkout raso nao tem esse commit.
+      - name: Checkout do repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Buscar o script de guardas (painel-cdv)
+        uses: actions/checkout@v4
+        with:
+          repository: davileles/painel-cdv
+          path: .guardas-lib
+          sparse-checkout: scripts
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Rodar guardas
+        env:
+          ALVO: ${{ github.workspace }}
+          BASE_SHA: ${{ inputs.base_sha }}
+          HEAD_SHA: ${{ inputs.head_sha || github.sha }}
+          LIMIAR: ${{ inputs.limiar }}
+          SO_AVISO: ${{ inputs.so_aviso && '1' || '0' }}
+        run: node .guardas-lib/scripts/guardas.mjs
