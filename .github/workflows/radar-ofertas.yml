@@ -5,6 +5,12 @@ on:
     - cron: '0 */3 * * *'   # a cada 3 horas
   workflow_dispatch: {}      # permite rodar manualmente pela aba Actions
 
+# Serializa execucoes deste workflow: duas rodadas simultaneas gravando o
+# mesmo JSON via API produzem lost update (a segunda sobrescreve a primeira).
+concurrency:
+  group: radar-ofertas
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
