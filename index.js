@@ -2235,6 +2235,12 @@ app.post('/admin/verificar-codigo', async (req, res) => {
   adminOtpStore.delete(email);
   // Token de operador so no painel TSP — identifica o tenant no baileys-server.
   const tenantToken = appKey === 'tsp' ? assinarTokenTenant(email) : null;
+  // Trava: um OPERADOR sem token cairia na operacao padrao dentro do
+  // baileys-server (sem token = raiz). Se o segredo nao esta configurado,
+  // melhor recusar o login dele do que deixa-lo operar dados alheios.
+  if (operadorTsp && !tenantToken) {
+    return res.status(500).json({ ok: false, erro: 'TSP_TENANT_SECRET nao configurado no proxy — login de operador bloqueado por seguranca.' });
+  }
   res.json({ ok: true, acesso: true, email, ...(tenantToken ? { tenantToken } : {}) });
 });
 
