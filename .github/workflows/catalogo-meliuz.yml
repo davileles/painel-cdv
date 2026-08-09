@@ -3,6 +3,12 @@ on:
   schedule:
     - cron: '0 8 * * 1'   # toda segunda-feira às 05h (horário de Brasília / UTC-3)
   workflow_dispatch:
+
+# Serializa execucoes deste workflow: duas rodadas simultaneas gravando o
+# mesmo JSON via API produzem lost update (a segunda sobrescreve a primeira).
+concurrency:
+  group: catalogo-meliuz
+  cancel-in-progress: false
 jobs:
   catalogo:
     runs-on: ubuntu-latest
