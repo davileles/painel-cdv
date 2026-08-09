@@ -39,6 +39,12 @@ on:
 permissions:
   contents: write
 
+# Serializa execucoes deste workflow: duas rodadas simultaneas gravando o
+# mesmo JSON via API produzem lost update (a segunda sobrescreve a primeira).
+concurrency:
+  group: coletar-cartoes
+  cancel-in-progress: false
+
 jobs:
   cartoes:
     runs-on: ubuntu-latest
