@@ -1,0 +1,301 @@
+{
+  "limiarRemocao": 150,
+  "arquivos": {
+    "index.js": {
+      "minLinhas": 5320,
+      "obrigatorio": [
+        "app.delete('/catalogo-cartoes/:slug'",
+        "app.delete('/concierge/alerta'",
+        "app.delete('/concierge/arquivo/:reservaId/:idx'",
+        "app.delete('/roteiros/doc-upload'",
+        "app.get('/assinaturas/listar'",
+        "app.get('/bandeiras'",
+        "app.get('/cartoes/listar'",
+        "app.get('/catalogo-cartoes'",
+        "app.get('/catalogo-cartoes/:slug'",
+        "app.get('/concierge/alertas'",
+        "app.get('/concierge/arquivo/:reservaId'",
+        "app.get('/concierge/cfg'",
+        "app.get('/concierge/demandas'",
+        "app.get('/concierge/modelos'",
+        "app.get('/concierge/msgs-enviadas'",
+        "app.get('/concierge/portal'",
+        "app.get('/concierge/reservas'",
+        "app.get('/concierge/viagens'",
+        "app.get('/fetch'",
+        "app.get('/fetch-oferta'",
+        "app.get('/gg/links'",
+        "app.get('/health'",
+        "app.get('/inter/gift-cards'",
+        "app.get('/ir-stats'",
+        "app.get('/lounges/aeroportos'",
+        "app.get('/lounges/buscar'",
+        "app.get('/lounges/sala'",
+        "app.get('/meliuz/cashback'",
+        "app.get('/meliuz/token-refresh'",
+        "app.get('/meliuz/token-status'",
+        "app.get('/membros/tema'",
+        "app.get('/membros/verificar'",
+        "app.get('/milhas/listar'",
+        "app.get('/ofertas/pendentes'",
+        "app.get('/parceiros'",
+        "app.get('/parceiros/testar-fetch'",
+        "app.get('/passagens/comportamento'",
+        "app.get('/passagens/listar'",
+        "app.get('/passagens/panorama'",
+        "app.get('/perfis/listar'",
+        "app.get('/ping'",
+        "app.get('/roteiros/doc-upload'",
+        "app.get('/roteiros/publicar'",
+        "app.get('/topcashback/cashback'",
+        "app.post('/admin/enviar-codigo'",
+        "app.post('/admin/verificar-codigo'",
+        "app.post('/alerta'",
+        "app.post('/alertas/operador'",
+        "app.post('/assinaturas/salvar'",
+        "app.post('/cartoes/salvar'",
+        "app.post('/catalogo-cartoes'",
+        "app.post('/catalogo-cartoes/analisar'",
+        "app.post('/catalogo-cartoes/extrair'",
+        "app.post('/concierge/alerta'",
+        "app.post('/concierge/alerta/disparar'",
+        "app.post('/concierge/arquivo'",
+        "app.post('/concierge/cfg'",
+        "app.post('/concierge/demandas'",
+        "app.post('/concierge/lembretes/checar'",
+        "app.post('/concierge/modelos'",
+        "app.post('/concierge/msgs-enviadas'",
+        "app.post('/concierge/reservas'",
+        "app.post('/concierge/viagens'",
+        "app.post('/gg/convite'",
+        "app.post('/gg/flush'",
+        "app.post('/gg/links'",
+        "app.post('/gg/links/excluir'",
+        "app.post('/gg/sync'",
+        "app.post('/ia/extrair-reserva'",
+        "app.post('/ia/reclamacao'",
+        "app.post('/ia/roteiro-chat'",
+        "app.post('/ia/roteiro-extrair'",
+        "app.post('/ir-stats/flush'",
+        "app.post('/membros/enviar-codigo'",
+        "app.post('/membros/tema'",
+        "app.post('/membros/verificar-codigo'",
+        "app.post('/milhas/excluir'",
+        "app.post('/milhas/salvar'",
+        "app.post('/ofertas/aprovar'",
+        "app.post('/ofertas/enviar'",
+        "app.post('/ofertas/publicar'",
+        "app.post('/ofertas/rejeitar'",
+        "app.post('/parceiros/resolver-links'",
+        "app.post('/passagens/excluir'",
+        "app.post('/passagens/registrar'",
+        "app.post('/perfis/salvar'",
+        "app.post('/roteiros/doc-meta'",
+        "app.post('/roteiros/doc-upload'",
+        "app.post('/roteiros/publicar'",
+        "app.post('/webhook/hubla-membros'"
+      ]
+    },
+    "index.html": {
+      "minLinhas": 9111,
+      "obrigatorio": [
+        "async function alternarTema(",
+        "async function assCarregar(",
+        "async function assProcessarPendentes(",
+        "async function assSalvarRemoto(",
+        "async function calcAccorBuscarCotacao(",
+        "async function carregarHistorico(",
+        "async function carregarTema(",
+        "async function cartaoCarregar(",
+        "async function cartaoSalvarRemoto(",
+        "async function compCarregarFaixa(",
+        "async function compCarregarPanorama(",
+        "async function ctAbrirFicha(",
+        "async function ctDetalhe(",
+        "async function ctExtrairFila(",
+        "async function ctExtrairUm(",
+        "async function ctGerarAnalise(",
+        "async function ctGerarTodas(",
+        "async function ctGravar(",
+        "async function ctInit(",
+        "async function ctJson(",
+        "async function ctManterAcordado(",
+        "async function ctRenderComparacao(",
+        "async function ctRetomarFila(",
+        "async function ctRodarFila(",
+        "async function ctSalvar("
+      ]
+    },
+    "coletar.js": {
+      "minLinhas": 964,
+      "obrigatorio": [
+        "async function coletarValidadesLivelo",
+        "async function dispararAlerta",
+        "async function fetchDirect",
+        "async function gerarOfertasVariacao",
+        "async function main",
+        "async function resolvePartnerLink",
+        "async function resolveRedirectLink",
+        "function calcularFrequenciaAltas",
+        "function chaveParceiroValidade",
+        "function decodeEntities",
+        "function extractPts",
+        "function isoParaPrazoBr",
+        "function normalizarNomeParceiro",
+        "function normalizeHeading",
+        "function parseComparemaniaPts"
+      ]
+    },
+    "coletar-radar.js": {
+      "minLinhas": 436,
+      "obrigatorio": [
+        "async function fetchViaProxy",
+        "async function main",
+        "async function reescreverComIA",
+        "function categorizeFallback",
+        "function decodeEntities",
+        "function extractArticleText",
+        "function extractLinkCandidates",
+        "function idFromLink",
+        "function linkValido",
+        "function parseRSS",
+        "function resolverLinkFallback",
+        "function stripTags",
+        "function stripUtm"
+      ]
+    },
+    "coletar-cartoes.js": {
+      "minLinhas": 767,
+      "obrigatorio": [
+        "async function baixar",
+        "async function coletarFontes",
+        "async function diagnostico",
+        "async function extrairComIA",
+        "async function main",
+        "function carregarManuais",
+        "function detectarConflitos",
+        "function diasDesde",
+        "function ehBandeira",
+        "function ehOficial",
+        "function htmlParaTexto",
+        "function lerManual",
+        "function mesclar",
+        "function normalizarUrl",
+        "function numero"
+      ]
+    },
+    "coletar-inter.js": {
+      "minLinhas": 403,
+      "obrigatorio": [
+        "async function fetchDirect",
+        "async function gerarOfertasVariacao",
+        "async function main",
+        "function calcularFrequenciaAltas",
+        "function hashId",
+        "function nomeExibicao",
+        "function normalizarChave"
+      ]
+    },
+    "coletar-meliuz.js": {
+      "minLinhas": 443,
+      "obrigatorio": [
+        "async function fetchDirect",
+        "async function gerarOfertasVariacao",
+        "async function main",
+        "function calcularFrequenciaAltas",
+        "function fmtPct",
+        "function hashId",
+        "function nomeExibicao"
+      ]
+    },
+    "coletar-topcashback.js": {
+      "minLinhas": 413,
+      "obrigatorio": [
+        "async function fetchDirect",
+        "async function gerarOfertasVariacao",
+        "async function main",
+        "function calcularFrequenciaAltas",
+        "function fmtPct",
+        "function hashId",
+        "function nomeExibicao"
+      ]
+    },
+    "resumo-diario.js": {
+      "minLinhas": 344,
+      "obrigatorio": [
+        "async function condensarOfertasComIA",
+        "async function enviar",
+        "async function main",
+        "async function montarResumoOfertas",
+        "async function postEnviar",
+        "function agendar20hSP",
+        "function diaSP",
+        "function fallbackOfertas",
+        "function fmtPrazoCurto",
+        "function hojeDDMM",
+        "function hojeSP",
+        "function montarResumoEmissoes",
+        "function parsePrazo"
+      ]
+    },
+    "mensagem-radar.js": {
+      "minLinhas": 164,
+      "obrigatorio": [
+        "async function enfileirarOfertaWhatsApp",
+        "async function publicarOfertas",
+        "function agruparCondicoes",
+        "function compactarLinhasTeto",
+        "function montarMensagemRadar",
+        "function stripEmojis"
+      ]
+    },
+    "arquivar-passagens.js": {
+      "minLinhas": 220,
+      "obrigatorio": [
+        "async function ghGet",
+        "async function ghPut",
+        "async function ghPutComRetry",
+        "async function main",
+        "function chave",
+        "function shardDe"
+      ]
+    },
+    "passagens-datas.js": {
+      "minLinhas": 241,
+      "obrigatorio": [
+        "function anoDe",
+        "function anoImplicito",
+        "function expandirDias",
+        "function iso",
+        "function mesDe",
+        "function normalizarDatas",
+        "function resumirDatas",
+        "function semAcento"
+      ]
+    },
+    "passagens-escopo.js": {
+      "minLinhas": 51,
+      "obrigatorio": [
+        "function carregarCidadesBR",
+        "function chave",
+        "function ehBrasileira",
+        "function escopoRota"
+      ]
+    },
+    "alerta-operador.js": {
+      "minLinhas": 88,
+      "obrigatorio": [
+        "async function alertarOperador",
+        "function detectarQuedas"
+      ]
+    },
+    "catalogo-meliuz.js": {
+      "minLinhas": 112,
+      "obrigatorio": [
+        "async function fetchDirect",
+        "async function main",
+        "function norm"
+      ]
+    }
+  }
+}
