@@ -445,9 +445,10 @@ async function ggSincronizar(slugFiltro) {
   return { ok: true, atualizados: n };
 }
 
-async function ggBuscarConvite(jid) {
+async function ggBuscarConvite(jid, tokenOperador) {
   const r = await fetch(GG_BAILEYS + '/grupos/convite?jid=' + encodeURIComponent(jid),
-    { signal: AbortSignal.timeout(20000) });
+    { headers: tokenOperador ? { 'X-TSP-Token': tokenOperador } : {},
+      signal: AbortSignal.timeout(20000) });
   const d = await r.json();
   if (!d.ok) throw new Error(d.erro || 'falha ao obter convite');
   return d.url;
@@ -497,8 +498,12 @@ function ggBase() {
 // ── Gestao ───────────────────────────────────────────────────────────────────
 app.get('/gg/links', async (req, res) => {
   try {
+    const tid = await tenantDaReqGg(req);
+    if (!tid) return res.status(401).json({ ok:false, erro:'sessao invalida — faca login novamente' });
     const est = await ggCarregar();
-    const links = Object.entries(est.links).map(([slug, l]) => ({
+    const links = Object.entries(est.links)
+      .filter(([, l]) => (l.tenant || 'tsp') === tid)
+      .map(([slug, l]) => ({
       slug,
       nome: l.nome || slug,
       modo: l.modo || 'igual',
@@ -533,8 +538,16 @@ app.post('/gg/links', async (req, res) => {
   }
   if (RESERVADOS_IR.has(slug)) return res.status(400).json({ ok: false, erro: 'slug reservado' });
   try {
+    const tid = await tenantDaReqGg(req);
+    if (!tid) return res.status(401).json({ ok:false, erro:'sessao invalida — faca login novamente' });
     const est = await ggCarregar();
-    const atual = est.links[slug] || { criadoEm: new Date().toISOString(), ponteiro: 0, cliques: 0, origens: {} };
+    // Slug e global (a URL publica /g/<slug> nao tem operador): um operador nao
+    // pode assumir o slug de outro.
+    if (est.links[slug] && (est.links[slug].tenant || 'tsp') !== tid) {
+      return res.status(409).json({ ok:false, erro:'slug ja em uso por outra operacao — escolha outro' });
+    }
+    const atual = est.links[slug] || { criadoEm: new Date().toISOString(), ponteiro: 0, cliques: 0, origens: {}, tenant: tid };
+    atual.tenant = atual.tenant || tid;
     const antigos = new Map((atual.grupos || []).map(g => [g.jid, g]));
 
     const grupos = [];
@@ -556,7 +569,7 @@ app.post('/gg/links', async (req, res) => {
         erro: velho.erro || null,
       };
       if (!g.convite) {
-        try { g.convite = await ggBuscarConvite(jid); g.erro = null; }
+        try { g.convite = await ggBuscarConvite(jid, req.headers['x-tsp-token']); g.erro = null; }
         catch (e) { g.erro = e.message; avisos.push((g.nome || jid) + ': ' + e.message); }
       }
       grupos.push(g);
@@ -583,8 +596,12 @@ app.post('/gg/links/excluir', async (req, res) => {
   const slug = String((req.body || {}).slug || '').trim().toLowerCase();
   if (!slug) return res.status(400).json({ ok: false, erro: 'informe slug' });
   try {
+    const tid = await tenantDaReqGg(req);
+    if (!tid) return res.status(401).json({ ok:false, erro:'sessao invalida — faca login novamente' });
     const est = await ggCarregar();
-    if (!est.links[slug]) return res.status(404).json({ ok: false, erro: 'slug nao encontrado' });
+    if (!est.links[slug] || (est.links[slug].tenant || 'tsp') !== tid) {
+      return res.status(404).json({ ok: false, erro: 'slug nao encontrado' });
+    }
     delete est.links[slug];
     await ggSalvar('chore: distribuidor — remove link ' + slug);
     res.json({ ok: true });
@@ -597,13 +614,16 @@ app.post('/gg/convite', async (req, res) => {
   const slug = String(b.slug || '').trim().toLowerCase();
   const jid  = String(b.jid || '').trim();
   try {
+    const tid = await tenantDaReqGg(req);
+    if (!tid) return res.status(401).json({ ok:false, erro:'sessao invalida — faca login novamente' });
     const est = await ggCarregar();
     const link = est.links[slug];
-    if (!link) return res.status(404).json({ ok: false, erro: 'slug nao encontrado' });
+    if (!link || (link.tenant || 'tsp') !== tid) return res.status(404).json({ ok: false, erro: 'slug nao encontrado' });
     const g = (link.grupos || []).find(x => x.jid === jid);
     if (!g) return res.status(404).json({ ok: false, erro: 'grupo nao esta neste link' });
     const r = await fetch(GG_BAILEYS + '/grupos/convite?refresh=1&jid=' + encodeURIComponent(jid),
-      { signal: AbortSignal.timeout(20000) });
+      { headers: req.headers['x-tsp-token'] ? { 'X-TSP-Token': req.headers['x-tsp-token'] } : {},
+        signal: AbortSignal.timeout(20000) });
     const d = await r.json();
     if (!d.ok) { g.erro = d.erro; ggDirty = true; return res.status(502).json({ ok: false, erro: d.erro }); }
     g.convite = d.url; g.erro = null;
@@ -2124,7 +2144,7 @@ const ADMIN_EMAILS = ['davileles@gmail.com'];
 // O registro de operadores mora em cdv-tsp-dados/tsp/tenants.json (mantido
 // pelo baileys-server). O login do painel TSP aceita os e-mails de la, com
 // cache curto para nao bater no GitHub a cada OTP.
-let _tenantsCache = { emails: [], ts: 0 };
+let _tenantsCache = { emails: [], porEmail: {}, ts: 0 };
 async function emailsDosTenantsTsp() {
   if (Date.now() - _tenantsCache.ts < 5 * 60 * 1000) return _tenantsCache.emails;
   try {
@@ -2138,7 +2158,12 @@ async function emailsDosTenantsTsp() {
         if (t.ativo === false) continue;
         for (const e of (t.emails || [])) emails.push(String(e).toLowerCase().trim());
       }
-      _tenantsCache = { emails: [...new Set(emails)], ts: Date.now() };
+      const porEmail = {};
+      for (const t of (reg.tenants || [])) {
+        if (t.ativo === false) continue;
+        for (const e of (t.emails || [])) porEmail[String(e).toLowerCase().trim()] = String(t.id || '').toLowerCase();
+      }
+      _tenantsCache = { emails: [...new Set(emails)], porEmail, ts: Date.now() };
     }
   } catch (e) { console.log('[ADMIN] Falha ao ler tenants.json:', e.message); }
   return _tenantsCache.emails;
@@ -2146,6 +2171,36 @@ async function emailsDosTenantsTsp() {
 
 // Token de sessao do operador: HMAC com segredo compartilhado com o
 // baileys-server (env TSP_TENANT_SECRET nos DOIS servicos). 7 dias.
+// Verificacao do token (mesmo formato que o baileys-server valida).
+function verificarTokenTenant(bruto) {
+  const secret = process.env.TSP_TENANT_SECRET || '';
+  const tk = String(bruto || '').trim();
+  if (!secret || !tk) return null;
+  const ponto = tk.lastIndexOf('.');
+  if (ponto < 1) return null;
+  const payload = tk.slice(0, ponto), assinatura = tk.slice(ponto + 1);
+  const esperada = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+  try {
+    if (!crypto.timingSafeEqual(Buffer.from(assinatura, 'hex'), Buffer.from(esperada, 'hex'))) return null;
+  } catch { return null; }
+  try {
+    const d = JSON.parse(Buffer.from(payload, 'base64url').toString('utf-8'));
+    if (!d.email || !d.exp || Date.now() > d.exp) return null;
+    return { email: String(d.email).toLowerCase(), exp: d.exp };
+  } catch { return null; }
+}
+
+// Operador da requisicao no distribuidor: sem token = operacao padrao ('tsp');
+// token invalido = null (o endpoint devolve 401, nunca cai na padrao).
+async function tenantDaReqGg(req) {
+  const bruto = req.headers['x-tsp-token'] || '';
+  if (!bruto) return 'tsp';
+  const tk = verificarTokenTenant(bruto);
+  if (!tk) return null;
+  await emailsDosTenantsTsp();   // garante cache do mapa
+  return _tenantsCache.porEmail[tk.email] || null;
+}
+
 function assinarTokenTenant(email) {
   const secret = process.env.TSP_TENANT_SECRET || '';
   if (!secret) return null;
