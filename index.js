@@ -1,6 +1,7 @@
 // CDV Proxy — redeploy 2026-07-12 env-dev
 const express = require('express');
 const fetch = require('node-fetch');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -2118,6 +2119,42 @@ app.post('/membros/verificar-codigo', (req, res) => {
 // ADMIN_EMAILS      → acesso a TODOS os painéis (TSP + Concierge)
 // ADMIN_EMAILS_APP  → acesso restrito a um painel específico
 const ADMIN_EMAILS = ['davileles@gmail.com'];
+
+// ── Operadores do TSP hospedado (fase 2.5) ───────────────────────────────────
+// O registro de operadores mora em cdv-tsp-dados/tsp/tenants.json (mantido
+// pelo baileys-server). O login do painel TSP aceita os e-mails de la, com
+// cache curto para nao bater no GitHub a cada OTP.
+let _tenantsCache = { emails: [], ts: 0 };
+async function emailsDosTenantsTsp() {
+  if (Date.now() - _tenantsCache.ts < 5 * 60 * 1000) return _tenantsCache.emails;
+  try {
+    const r = await fetch('https://api.github.com/repos/davileles/cdv-tsp-dados/contents/tsp/tenants.json', {
+      headers: { 'Authorization': 'Bearer ' + process.env.GITHUB_TOKEN, 'Accept': 'application/vnd.github.raw' },
+    });
+    if (r.ok) {
+      const reg = await r.json();
+      const emails = [];
+      for (const t of (reg.tenants || [])) {
+        if (t.ativo === false) continue;
+        for (const e of (t.emails || [])) emails.push(String(e).toLowerCase().trim());
+      }
+      _tenantsCache = { emails: [...new Set(emails)], ts: Date.now() };
+    }
+  } catch (e) { console.log('[ADMIN] Falha ao ler tenants.json:', e.message); }
+  return _tenantsCache.emails;
+}
+
+// Token de sessao do operador: HMAC com segredo compartilhado com o
+// baileys-server (env TSP_TENANT_SECRET nos DOIS servicos). 7 dias.
+function assinarTokenTenant(email) {
+  const secret = process.env.TSP_TENANT_SECRET || '';
+  if (!secret) return null;
+  const payload = Buffer.from(JSON.stringify({
+    email: String(email).toLowerCase(), exp: Date.now() + 7 * 24 * 3600 * 1000,
+  })).toString('base64url');
+  const assinatura = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+  return payload + '.' + assinatura;
+}
 const ADMIN_EMAILS_APP = {
   tsp:       [],
   concierge: ['felipetruta1@gmail.com']
@@ -2139,7 +2176,10 @@ app.post('/admin/enviar-codigo', async (req, res) => {
   const email = (body.email || '').toLowerCase().trim();
   const app_  = ADMIN_APPS[body.app] || ADMIN_APPS.concierge;
   if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
-  if (!adminAutorizado(email, ADMIN_APPS[body.app] ? body.app : null)) return res.json({ ok: false, motivo: 'nao_autorizado' });
+  const appKey_ = ADMIN_APPS[body.app] ? body.app : null;
+  const podeEntrar = adminAutorizado(email, appKey_)
+    || (appKey_ === 'tsp' && (await emailsDosTenantsTsp()).includes(email));
+  if (!podeEntrar) return res.json({ ok: false, motivo: 'nao_autorizado' });
 
   const codigo = gerarCodigo();
   adminOtpStore.set(email, { codigo, expira: Date.now() + OTP_TTL });
@@ -2175,12 +2215,17 @@ app.post('/admin/enviar-codigo', async (req, res) => {
   }
 });
 
-app.post('/admin/verificar-codigo', (req, res) => {
+app.post('/admin/verificar-codigo', async (req, res) => {
   const body   = req.body || {};
   const email  = (body.email || '').toLowerCase().trim();
   const codigo = (body.codigo || '').trim();
   if (!email || !codigo) return res.status(400).json({ ok: false, erro: 'E-mail e código obrigatórios' });
-  if (!adminAutorizado(email, ADMIN_APPS[body.app] ? body.app : null)) return res.json({ ok: false, motivo: 'nao_autorizado' });
+  const appKey = ADMIN_APPS[body.app] ? body.app : null;
+  const autorizado = adminAutorizado(email, appKey);
+  // Painel TSP: operadores do registro tambem entram (fase 2.5).
+  const operadorTsp = !autorizado && appKey === 'tsp'
+    ? (await emailsDosTenantsTsp()).includes(email) : false;
+  if (!autorizado && !operadorTsp) return res.json({ ok: false, motivo: 'nao_autorizado' });
 
   const entrada = adminOtpStore.get(email);
   if (!entrada) return res.json({ ok: false, motivo: 'nao_encontrado' });
@@ -2188,7 +2233,9 @@ app.post('/admin/verificar-codigo', (req, res) => {
   if (entrada.codigo !== codigo) return res.json({ ok: false, motivo: 'invalido' });
 
   adminOtpStore.delete(email);
-  res.json({ ok: true, acesso: true, email });
+  // Token de operador so no painel TSP — identifica o tenant no baileys-server.
+  const tenantToken = appKey === 'tsp' ? assinarTokenTenant(email) : null;
+  res.json({ ok: true, acesso: true, email, ...(tenantToken ? { tenantToken } : {}) });
 });
 
 // ── Membros: verificar acesso por e-mail ─────────────────────────────────────
