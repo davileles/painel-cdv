@@ -9,6 +9,17 @@ Resolve os problemas recorrentes do fluxo manual:
   - SHA sempre buscado imediatamente antes do PUT
   - re-tentativa automatica em 409 (commits de background: crons, registros)
   - verificacao pos-commit lendo o blob do commit criado
+  - guarda de remocao: aborta se o resultado apagar muito codigo sem aviso
+  - guarda de superficie: respeita .github/superficie.json do repositorio
+
+POR QUE O GUARDA DE REMOCAO EXISTE
+  Em 09/08/2026 o commit 8bf01d9c no baileys-server tinha mensagem "feat:" e
+  removia 463 linhas: apagou a integracao Awin inteira. Causa: a edicao foi
+  feita numa copia local do server.js baixada horas antes, e o SHA do PUT foi
+  buscado fresco — o GitHub aceitou sem 409, porque o SHA fresco diz "estou
+  ciente da versao atual". Este script ja e imune a isso (rele o arquivo a
+  cada tentativa e aplica a transformacao sobre o conteudo fresco), mas o
+  guarda pega tambem o caso de um --script mal escrito.
 
 Uso (replace literal):
   python3 cdv_commit.py --repo painel-cdv --path passagens.json \
@@ -135,6 +146,50 @@ def diff(antes, depois, path):
     return "\n".join(d[:60]) + ("\n... (truncado)" if len(d) > 60 else "")
 
 
+def superficie_do_repo(repo, path, token):
+    """Marcadores declarados para este arquivo em .github/superficie.json."""
+    try:
+        _, txt = ler_arquivo(repo, ".github/superficie.json", token)
+        cfg = json.loads(txt)
+    except SystemExit:
+        return {}
+    except Exception:
+        return {}
+    return (cfg.get("arquivos") or {}).get(path) or {}
+
+
+def checar_guardas(args, antes, depois, token):
+    """Barra o PUT quando o resultado apaga o que nao deveria."""
+    erros = []
+
+    # a) marcadores passados na linha de comando
+    for g in args.guard:
+        if g not in depois:
+            erros.append(f"marcador ausente no resultado: {g!r}")
+
+    # b) contrato versionado do repositorio — mesma fonte que o CI usa
+    regras = superficie_do_repo(args.repo, args.path, token)
+    for marca in regras.get("obrigatorio", []):
+        if marca in antes and marca not in depois:
+            erros.append(f"superficie.json: o marcador {marca!r} existia e sumiu")
+    minimo = regras.get("minLinhas")
+    if minimo and len(depois.split("\n")) < minimo:
+        erros.append(f"superficie.json: arquivo ficou com "
+                     f"{len(depois.split(chr(10)))} linhas (minimo {minimo})")
+
+    # c) volume: remocao liquida grande sem autorizacao explicita
+    liquido = len(antes.split("\n")) - len(depois.split("\n"))
+    if liquido >= args.max_remocao and not args.permitir_remocao:
+        erros.append(
+            f"remocao liquida de {liquido} linhas (limite {args.max_remocao}).\n"
+            f"  Se e intencional, repita com --permitir-remocao.\n"
+            f"  Se nao e, a transformacao provavelmente rodou sobre a base errada."
+        )
+
+    if erros:
+        raise RuntimeError("\n".join("  - " + e for e in erros))
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--repo", required=True)
@@ -147,6 +202,12 @@ def main():
     p.add_argument("--branch", default="main")
     p.add_argument("--retries", type=int, default=3)
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--guard", action="append", default=[],
+                   help="texto que DEVE existir no resultado (repetivel)")
+    p.add_argument("--max-remocao", type=int, default=150,
+                   help="remocao liquida de linhas que aborta o commit")
+    p.add_argument("--permitir-remocao", action="store_true",
+                   help="autoriza remocao acima de --max-remocao")
     args = p.parse_args()
 
     if not args.script and (args.old is None or args.new is None):
@@ -168,6 +229,12 @@ def main():
             print(f"[validacao] {validar(args.path, depois)}")
         except Exception as e:
             die(f"validacao falhou, PUT NAO executado:\n{e}")
+
+        # 3b. guardas de conteudo — rodam ANTES do PUT
+        try:
+            checar_guardas(args, antes, depois, token)
+        except Exception as e:
+            die(f"guarda bloqueou o commit, PUT NAO executado:\n{e}")
 
         print(f"[diff]\n{diff(antes, depois, args.path)}\n")
 
