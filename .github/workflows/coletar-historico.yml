@@ -3,6 +3,12 @@ on:
   schedule:
     - cron: '0 9-23 * * *'   # de hora em hora, das 06h às 20h (horário de Brasília / UTC-3)
   workflow_dispatch:
+
+# Serializa execucoes deste workflow: duas rodadas simultaneas gravando o
+# mesmo JSON via API produzem lost update (a segunda sobrescreve a primeira).
+concurrency:
+  group: coletar-historico
+  cancel-in-progress: false
 jobs:
   coletar:
     runs-on: ubuntu-latest
