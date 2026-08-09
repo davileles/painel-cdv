@@ -1,0 +1,42 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# guardas.yml — rede de protecao contra commits que quebram ou apagam codigo.
+#
+# A logica vive aqui mesmo: .github/workflows/guardas-lib.yml + scripts/guardas.mjs.
+# Os demais repositorios do ecossistema chamam aquele workflow remotamente.
+#
+# O que os guardas verificam:
+#   1) sintaxe    — node --check em .js e nos <script> inline de .html
+#   2) superficie — marcadores declarados em .github/superficie.json nao podem
+#                   sumir (endpoints, funcoes, tamanho minimo)
+#   3) regressao  — commit que apaga muito mais do que acrescenta, sem dizer
+#                   isso na mensagem, e barrado
+#
+# Para autorizar uma remocao grande de propósito, cite na mensagem do commit:
+# refactor / remove / limpeza / cleanup / revert / [grande]
+# ═══════════════════════════════════════════════════════════════════════════
+name: Guardas
+
+on:
+  push:
+    paths:
+      - '**.js'
+      - '**.mjs'
+      - '**.cjs'
+      - '**.html'
+      - '.github/superficie.json'
+  pull_request:
+    branches: [main]
+    paths:
+      - '**.js'
+      - '**.mjs'
+      - '**.cjs'
+      - '**.html'
+      - '.github/superficie.json'
+  workflow_dispatch:
+
+jobs:
+  guardas:
+    uses: ./.github/workflows/guardas-lib.yml
+    with:
+      base_sha: ${{ github.event.before }}
+      head_sha: ${{ github.sha }}
