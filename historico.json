@@ -356176,7 +356176,25 @@
           "pts": 13,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-beleza-na-web"
+          "slug": "cupom-beleza-na-web",
+          "categorias": [
+            {
+              "categoria": "Maquiagem",
+              "pts": 13,
+              "principal": false
+            },
+            {
+              "categoria": "Cabelos",
+              "pts": 10,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
         }
       },
       "links": {
@@ -356460,7 +356478,25 @@
           "pts": 20,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-decolarcom"
+          "slug": "cupom-decolarcom",
+          "categorias": [
+            {
+              "categoria": "Seguros",
+              "pts": 20,
+              "principal": false
+            },
+            {
+              "categoria": "Pacotes",
+              "pts": 3,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1
         }
       },
       "links": {
@@ -357325,7 +357361,20 @@
           "pts": 8,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-casas-bahia"
+          "slug": "cupom-casas-bahia",
+          "categorias": [
+            {
+              "categoria": "Eletrodomésticos - Vendidos e Entregues por Casas Bahia e Eletrodomésticos - Vendido e Entregue por outras lojas",
+              "pts": 8,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 2,
+              "principal": true
+            }
+          ],
+          "ptsBase": 2
         }
       },
       "links": {
@@ -357373,7 +357422,7 @@
           "dollar": false
         },
         "azul": {
-          "pts": 1,
+          "pts": 20,
           "dollar": false
         },
         "latam": {
@@ -357384,7 +357433,25 @@
           "pts": 12,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-magazine-luiza"
+          "slug": "cupom-magazine-luiza",
+          "categorias": [
+            {
+              "categoria": "Tablets, iPads e E-reader vendidos e entregues por Magalu",
+              "pts": 12,
+              "principal": false
+            },
+            {
+              "categoria": "Produtos vendidos e entregues por Magalu",
+              "pts": 8,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 5
         }
       },
       "links": {
@@ -357406,7 +357473,7 @@
           "dollar": false
         },
         "azul": {
-          "pts": 2,
+          "pts": 17,
           "dollar": false
         },
         "latam": {
@@ -357490,7 +357557,20 @@
           "pts": 10,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-hering"
+          "slug": "cupom-hering",
+          "categorias": [
+            {
+              "categoria": "Jaqueta Puffer",
+              "pts": 10,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 8,
+              "principal": true
+            }
+          ],
+          "ptsBase": 8
         }
       },
       "links": {
@@ -357808,7 +357888,7 @@
           "slug": "centauro-1652"
         },
         "meliuz": {
-          "pts": 4,
+          "pts": 15,
           "dollar": false,
           "ate": false,
           "slug": "cupom-centauro"
@@ -357961,7 +358041,20 @@
           "pts": 2.5,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-fast-shop"
+          "slug": "cupom-fast-shop",
+          "categorias": [
+            {
+              "categoria": "Produtos Apple",
+              "pts": 2.5,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1
         }
       },
       "links": {
@@ -357982,7 +358075,20 @@
           "pts": 20,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-fila"
+          "slug": "cupom-fila",
+          "categorias": [
+            {
+              "categoria": "Tênis Speedrocker Skyfoam",
+              "pts": 20,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 4,
+              "principal": true
+            }
+          ],
+          "ptsBase": 4
         }
       },
       "links": {
@@ -358127,7 +358233,35 @@
           "pts": 2.5,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-desconto-mercado-livre"
+          "slug": "cupom-desconto-mercado-livre",
+          "categorias": [
+            {
+              "categoria": "Categoria Beleza e Cuidado Pessoal",
+              "pts": 2.5,
+              "principal": false
+            },
+            {
+              "categoria": "Categoria Esportes e Fitness",
+              "pts": 2.5,
+              "principal": false
+            },
+            {
+              "categoria": "Categoria Moda",
+              "pts": 2.5,
+              "principal": false
+            },
+            {
+              "categoria": "Categoria Saúde e Suplementos",
+              "pts": 2.5,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1.5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1.5
         }
       },
       "links": {
@@ -358210,7 +358344,20 @@
           "pts": 7,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-netshoes"
+          "slug": "cupom-netshoes",
+          "categorias": [
+            {
+              "categoria": "Todos os produtos vendidos e entregues por Netshoes",
+              "pts": 7,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
         }
       },
       "links": {
@@ -358526,7 +358673,20 @@
           "pts": 20,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-umbro"
+          "slug": "cupom-umbro",
+          "categorias": [
+            {
+              "categoria": "Chuteira Pro 5",
+              "pts": 20,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 4,
+              "principal": true
+            }
+          ],
+          "ptsBase": 4
         }
       },
       "links": {
@@ -359962,7 +360122,35 @@
           "pts": 15,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-multilaser"
+          "slug": "cupom-multilaser",
+          "categorias": [
+            {
+              "categoria": "Ferramentas e Esporte e Lazer",
+              "pts": 15,
+              "principal": false
+            },
+            {
+              "categoria": "Telas",
+              "pts": 13,
+              "principal": false
+            },
+            {
+              "categoria": "Linha Gamer",
+              "pts": 12,
+              "principal": false
+            },
+            {
+              "categoria": "Notebooks",
+              "pts": 11,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 5
         }
       },
       "links": {
@@ -360207,10 +360395,28 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 4,
+          "pts": 7,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-cobasi"
+          "slug": "cupom-cobasi",
+          "categorias": [
+            {
+              "categoria": "Clientes que nunca compraram em Cobasi e Clientes que nunca compraram no App da Cobasi",
+              "pts": 7,
+              "principal": false
+            },
+            {
+              "categoria": "Clientes que já compraram em Cobasi e Cliente que já compraram no App da Cobasi",
+              "pts": 5,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 2,
+              "principal": true
+            }
+          ],
+          "ptsBase": 2
         }
       },
       "links": {
@@ -360537,7 +360743,20 @@
           "pts": 12,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-mascavo"
+          "slug": "cupom-mascavo",
+          "categorias": [
+            {
+              "categoria": "Pincéis, Blush e Corretivo",
+              "pts": 12,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 10,
+              "principal": true
+            }
+          ],
+          "ptsBase": 10
         }
       },
       "links": {
@@ -360829,7 +361048,20 @@
           "pts": 5,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-dell"
+          "slug": "cupom-dell",
+          "categorias": [
+            {
+              "categoria": "Primeira compra em Dell",
+              "pts": 5,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
         }
       },
       "links": {
