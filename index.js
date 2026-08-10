@@ -678,6 +678,30 @@ app.get('/inter/gift-cards', async (req, res) => {
 // Recebe até 20 slugs por chamada e devolve JSON já parseado.
 const MELIUZ_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
 
+// Quebra do cashback por categoria ("Mostrar cashback por categoria"). Vem no
+// mesmo HTML SSR, num <nav> oculto — nenhuma requisicao extra. So existe quando
+// a loja tem taxa segmentada (ex: Decolar 20% Seguros / 3% Pacotes / 1% resto).
+// O <strong data-main> marca a taxa das "Demais categorias", ou seja, a taxa
+// base que vale para o restante do site.
+function parseMeliuzCategorias(html) {
+  const nav = html.match(/<nav class="hero-sec__cashback-category"[^>]*>([\s\S]*?)<\/nav>/);
+  if (!nav) return null;
+  const out = [];
+  for (const li of (nav[1].match(/<li>[\s\S]*?<\/li>/g) || [])) {
+    const mNomeCat = li.match(/<span>([\s\S]*?)<\/span>/);
+    const mValCat  = li.match(/<strong([^>]*)>([\s\S]*?)<\/strong>/);
+    if (!mNomeCat || !mValCat) continue;
+    const pct = (mValCat[2].match(/([0-9]+(?:[.,][0-9]+)?)\s*%/) || [])[1];
+    if (!pct) continue;
+    out.push({
+      categoria: mNomeCat[1].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim(),
+      pts: parseFloat(pct.replace(',', '.')),
+      principal: /data-main/.test(mValCat[1]),
+    });
+  }
+  return out.length ? out : null;
+}
+
 function parseMeliuz(html, slug) {
   if (!/data-has-cashback="true"/.test(html)) return { slug, temCashback: false, pts: null };
 
@@ -692,6 +716,8 @@ function parseMeliuz(html, slug) {
   const mNome = html.match(/<h1>([^<]+)<\/h1>/);
   const mLink = html.match(/data-redirect-url="([^"]+)"/);
   const mPid  = html.match(/partnerId\s*=\s*(\d+)/);
+  const cats = parseMeliuzCategorias(html);
+  const catPrincipal = cats ? (cats.find(c => c.principal) || null) : null;
 
   return {
     slug,
@@ -700,6 +726,11 @@ function parseMeliuz(html, slug) {
     pts: parseFloat(num.replace(',', '.')),
     ate,
     era: (mOff && mOff[2]) ? parseFloat(mOff[2].replace(',', '.')) : null,
+    // `categorias` e a quebra do SSR; `ptsBase` e a taxa "Demais categorias".
+    // Quando existem, `pts` (que pode vir sobreposto pela api-seo) representa a
+    // MAIOR categoria, nao a taxa geral da loja.
+    categorias: cats,
+    ptsBase: catPrincipal ? catPrincipal.pts : null,
     nome: mNome ? mNome[1].trim() : slug,
     // `link` é a página pública da loja — é o que vai para o grupo e para o modal.
     // O data-redirect-url (/redirecionar2/oferta/ID) exige login no Méliuz e por
