@@ -783,7 +783,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   <button class="main-tab" data-tab="calculadoras" id="tab-btn-calculadoras">🧮 Calculadoras</button>
   <button class="main-tab" data-tab="reclamacoes" id="tab-btn-reclamacoes">⚖️ Reclamações</button>
   <button class="main-tab" data-tab="roteiros" id="tab-btn-roteiros">🗺️ Roteiros</button>
-  <button class="main-tab" data-tab="cartoes" id="tab-btn-cartoes" style="display:none">💳 Cartões</button>
+  <button class="main-tab" data-tab="cartoes" id="tab-btn-cartoes">💳 Cartões</button>
 </div>
 <div id="shell-main">
 
@@ -7524,10 +7524,8 @@ function mostrarPainel(sessao) {
   // Aba Gestão de Milhas disponível para todos os membros
   const tabMilhas = document.querySelector('.main-tab[data-tab="milhas"]');
   if (tabMilhas) tabMilhas.style.display = '';
-  // Calculadoras disponível para todos os assinantes
-  // Aba Salas VIP — só para devs
-  // Aba Cartões — restrita a DEV_EMAILS
-  mostrarAba('tab-btn-cartoes');
+  // Calculadoras, Salas VIP e Cartões disponíveis para todos os assinantes
+  // (a sub-aba Admin do Comparador de Cartões continua restrita — ver ctInit())
   // Renderiza aba Início ao carregar (garante que nome apareça imediatamente)
   switchTab('inicio');
 }
