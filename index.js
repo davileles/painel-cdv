@@ -23,7 +23,8 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'membros.json',
   'perfis.json',
   'cartoes.json',
-  'assinaturas.json'
+  'assinaturas.json',
+  'desejos.json'
 ]);
 // NÃO migrar (verificado): 'passagens.json' é catálogo de ofertas
 // (cia/origem/destino/pontos) — sem dado pessoal. 'historico.json',
@@ -2053,6 +2054,117 @@ app.post('/passagens/excluir', async (req, res) => {
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  DESEJOS DE COMPRA (assistente de compras no WhatsApp)
+//  desejos.json vive no repo PRIVADO de dados (contém telefone).
+//  Escrita é item-a-item (upsert por id) e não substituição do array inteiro,
+//  porque o assistente grava em paralelo com edições feitas no painel.
+// ══════════════════════════════════════════════════════════════════════════════
+const DESEJOS_PATH = 'desejos.json';
+const DESEJO_STATUS = new Set(['aberto', 'pausado', 'atendido', 'cancelado']);
+
+function normalizarTelefone(t) {
+  return String(t || '').replace(/\D+/g, '');
+}
+
+function normalizarDesejo(d, anterior) {
+  const agora = new Date().toISOString();
+  const base = anterior || {};
+  const tel = normalizarTelefone(d.telefone != null ? d.telefone : base.telefone);
+  return {
+    id: base.id || d.id || 'DSJ-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
+    telefone: tel,
+    nome: (d.nome != null ? d.nome : base.nome || '').trim(),
+    produto: (d.produto != null ? d.produto : base.produto || '').trim(),
+    termos: Array.isArray(d.termos) ? d.termos.map(s => String(s).toLowerCase().trim()).filter(Boolean)
+          : (Array.isArray(base.termos) ? base.termos : []),
+    categoria: (d.categoria != null ? d.categoria : base.categoria || '').trim(),
+    lojas: Array.isArray(d.lojas) ? d.lojas.filter(Boolean) : (Array.isArray(base.lojas) ? base.lojas : []),
+    precoAlvo: d.precoAlvo != null ? Number(d.precoAlvo) || null : (base.precoAlvo ?? null),
+    precoMax:  d.precoMax  != null ? Number(d.precoMax)  || null : (base.precoMax  ?? null),
+    prazo: (d.prazo != null ? d.prazo : base.prazo || '') || '',
+    obs: (d.obs != null ? d.obs : base.obs || '').trim(),
+    status: DESEJO_STATUS.has(d.status) ? d.status : (base.status || 'aberto'),
+    origem: base.origem || d.origem || 'painel',
+    avisos: Array.isArray(base.avisos) ? base.avisos : [],
+    criadoEm: base.criadoEm || agora,
+    atualizadoEm: agora
+  };
+}
+
+// GET /compras/desejos?telefone=...&status=aberto
+app.get('/compras/desejos', async (req, res) => {
+  try {
+    const { data } = await ghGetJsonDev(DESEJOS_PATH, [], res.locals.isDevMode);
+    let itens = Array.isArray(data) ? data : [];
+    const tel = normalizarTelefone(req.query.telefone);
+    if (tel) itens = itens.filter(d => normalizarTelefone(d.telefone) === tel);
+    const st = (req.query.status || '').trim();
+    if (st) itens = itens.filter(d => (d.status || 'aberto') === st);
+    itens.sort((a, b) => String(b.atualizadoEm || '').localeCompare(String(a.atualizadoEm || '')));
+    res.json({ ok: true, total: itens.length, data: itens });
+  } catch (e) {
+    console.error('[compras/desejos GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// POST /compras/desejos — cria (sem id) ou atualiza (com id) UM desejo
+app.post('/compras/desejos', async (req, res) => {
+  const body = req.body || {};
+  if (!body.id && !normalizarTelefone(body.telefone)) {
+    return res.status(400).json({ ok: false, erro: 'telefone obrigatório' });
+  }
+  if (!body.id && !String(body.produto || '').trim()) {
+    return res.status(400).json({ ok: false, erro: 'produto obrigatório' });
+  }
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    try {
+      const { data, sha } = await ghGetJsonDev(DESEJOS_PATH, [], res.locals.isDevMode);
+      const lista = Array.isArray(data) ? data : [];
+      const i = body.id ? lista.findIndex(d => d.id === body.id) : -1;
+      if (body.id && i === -1) return res.status(404).json({ ok: false, erro: 'desejo não encontrado' });
+      const item = normalizarDesejo(body, i >= 0 ? lista[i] : null);
+      if (i >= 0) lista[i] = item; else lista.unshift(item);
+      await ghPutJsonDev(DESEJOS_PATH, lista, sha,
+        (i >= 0 ? 'chore: atualiza desejo ' : 'chore: novo desejo ') + item.id + ' [skip ci]',
+        res.locals.isDevMode);
+      return res.json({ ok: true, data: item });
+    } catch (e) {
+      if (/409|422|sha|conflict|expected|does not match/i.test(e.message) && tentativa < 2) continue;
+      console.error('[compras/desejos POST]', e.message);
+      return res.status(500).json({ ok: false, erro: e.message });
+    }
+  }
+});
+
+// POST /compras/desejos/aviso — registra que a pessoa já foi avisada desta oferta
+// (ledger anti-duplicata, mesmo papel do msgs-enviadas.json no concierge)
+app.post('/compras/desejos/aviso', async (req, res) => {
+  const { id, ofertaId, canal } = req.body || {};
+  if (!id || !ofertaId) return res.status(400).json({ ok: false, erro: 'id e ofertaId obrigatórios' });
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    try {
+      const { data, sha } = await ghGetJsonDev(DESEJOS_PATH, [], res.locals.isDevMode);
+      const lista = Array.isArray(data) ? data : [];
+      const i = lista.findIndex(d => d.id === id);
+      if (i === -1) return res.status(404).json({ ok: false, erro: 'desejo não encontrado' });
+      lista[i].avisos = Array.isArray(lista[i].avisos) ? lista[i].avisos : [];
+      if (lista[i].avisos.some(a => a.ofertaId === ofertaId)) {
+        return res.json({ ok: true, jaAvisado: true });
+      }
+      lista[i].avisos.push({ ofertaId, canal: canal || 'whatsapp', em: new Date().toISOString() });
+      lista[i].atualizadoEm = new Date().toISOString();
+      await ghPutJsonDev(DESEJOS_PATH, lista, sha, 'chore: aviso ' + id + ' [skip ci]', res.locals.isDevMode);
+      return res.json({ ok: true, jaAvisado: false });
+    } catch (e) {
+      if (/409|422|sha|conflict|expected|does not match/i.test(e.message) && tentativa < 2) continue;
+      console.error('[compras/desejos/aviso]', e.message);
+      return res.status(500).json({ ok: false, erro: e.message });
+    }
   }
 });
 
