@@ -18,6 +18,18 @@ const MAX_OFERTAS_APROVADAS = 100;   // mesmo teto usado pelo proxy em /ofertas/
 // Kill switch sem redeploy: basta setar AUTO_PUBLICAR_VARIACOES=false no workflow
 // para tudo voltar a cair na aba "Aprovar Ofertas".
 const AUTO_PUBLICAR         = process.env.AUTO_PUBLICAR_VARIACOES !== 'false';
+
+// Retry no ENFILEIRAMENTO. O radarWorker do baileys-server ja tem retry 3x no
+// envio, mas ate 10/08/2026 uma unica falha transitoria aqui mandava a oferta
+// direto para a aprovacao manual. Foi o que aconteceu no run das 10:20 UTC:
+// o baileys ficou ~20s fora do ar (502 do edge do Railway) e 10 ofertas cairam
+// na aba, mesmo com o servico voltando logo em seguida.
+const ENVIO_TENTATIVAS  = 3;
+const ENVIO_BACKOFF_MS  = [5000, 20000]; // espera antes da 2a e da 3a tentativa
+
+const { alertarOperador } = require('./alerta-operador');
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // ── Montagem da mensagem de WhatsApp ─────────────────────────────────────────
 // PORTE FIEL de gerador-cdv/index.html (stripEmojis / compactarLinhasTeto /
 // agruparCondicoes / montarMensagemRadar). Se uma das duas mudar, a outra
@@ -109,29 +121,57 @@ function montarMensagemRadar(o) {
   return msg;
 }
 
-// Enfileira a oferta na filaRadar do baileys-server (3 min entre mensagens).
-// Nunca lanca: devolve { ok: false, erro } para que a oferta caia na fila
-// manual em vez de sumir.
-async function enfileirarOfertaWhatsApp(oferta) {
-  const mensagem = montarMensagemRadar(oferta);
+// Uma tentativa de POST /ofertas/enviar. Nunca lanca: devolve {ok:false, erro,
+// transitorio} para o chamador decidir se insiste. `transitorio` cobre falha de
+// rede/timeout, 5xx (servico reiniciando) e 429 — casos em que repetir resolve.
+// 400 (mensagem/grupo invalido) e definitivo: insistir so gasta tempo do Action.
+async function postEnviarOferta(id, mensagem) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), 25000);
   try {
     const res = await fetch(`${CDV_PROXY}/ofertas/enviar`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: oferta.id, mensagem, grupo: GRUPO_OFERTA }),
+      body: JSON.stringify({ id, mensagem, grupo: GRUPO_OFERTA }),
       signal: ctrl.signal,
     });
     let d = {};
     try { d = await res.json(); } catch (e) { /* resposta nao-JSON */ }
     if (res.ok && d.ok) return { ok: true, posicao: d.posicao, minutos: d.minutos };
-    return { ok: false, erro: d.erro || d.error || `status ${res.status}` };
+    return {
+      ok: false,
+      erro: d.erro || d.error || `status ${res.status}`,
+      transitorio: res.status >= 500 || res.status === 429,
+    };
   } catch (e) {
-    return { ok: false, erro: e.message };
+    // Rede, DNS ou timeout — sempre vale repetir.
+    return { ok: false, erro: e.message, transitorio: true };
   } finally {
     clearTimeout(t);
   }
+}
+
+// Enfileira a oferta na filaRadar do baileys-server (3 min entre mensagens).
+// Nunca lanca: devolve { ok: false, erro } para que a oferta caia na fila
+// manual em vez de sumir. Repete ate ENVIO_TENTATIVAS vezes quando o erro e
+// transitorio; `semRetry` corta o retry quando o chamador ja constatou que o
+// servico esta fora (ver circuit breaker em publicarOfertas).
+async function enfileirarOfertaWhatsApp(oferta, opcoes = {}) {
+  const mensagem = montarMensagemRadar(oferta);
+  const maxTentativas = opcoes.semRetry ? 1 : ENVIO_TENTATIVAS;
+  let ultimo = { ok: false, erro: 'nao executado', transitorio: true };
+
+  for (let tentativa = 1; tentativa <= maxTentativas; tentativa++) {
+    ultimo = await postEnviarOferta(oferta.id, mensagem);
+    if (ultimo.ok) return ultimo;
+    if (!ultimo.transitorio) return ultimo;
+    if (tentativa < maxTentativas) {
+      const espera = ENVIO_BACKOFF_MS[tentativa - 1] || ENVIO_BACKOFF_MS[ENVIO_BACKOFF_MS.length - 1];
+      console.warn(`[Radar] Tentativa ${tentativa}/${maxTentativas} falhou (${ultimo.erro}) — repetindo em ${espera / 1000}s.`);
+      await sleep(espera);
+    }
+  }
+  return ultimo;
 }
 
 // ── Publicacao automatica ────────────────────────────────────────────────────
@@ -153,8 +193,14 @@ async function publicarOfertas(novasOfertas, tag) {
     return { publicadas, naoPublicadas };
   }
 
+  // Circuit breaker: se uma oferta esgotou todas as tentativas, o servico esta
+  // fora de verdade — as seguintes vao direto para a fila manual, sem gastar
+  // mais 25s de timeout cada uma no Action.
+  let servicoFora = false;
+  let primeiroErro = null;
+
   for (const oferta of novasOfertas) {
-    const envio = await enfileirarOfertaWhatsApp(oferta);
+    const envio = await enfileirarOfertaWhatsApp(oferta, { semRetry: servicoFora });
     if (envio.ok) {
       publicadas.push({
         ...oferta,
@@ -164,8 +210,26 @@ async function publicarOfertas(novasOfertas, tag) {
       console.log(`${prefixo} ✓ Enfileirada: "${oferta.titulo}" (posicao ${envio.posicao}, ~${envio.minutos} min)`);
     } else {
       naoPublicadas.push(oferta);
+      if (!primeiroErro) primeiroErro = envio.erro;
+      if (envio.transitorio) servicoFora = true;
       console.warn(`${prefixo} ✗ Falha ao enfileirar "${oferta.titulo}": ${envio.erro} — vai para aprovacao manual.`);
     }
+  }
+
+  // Avisa o operador no grupo interno. Sem isso, a unica pista de que algo caiu
+  // na aba "Aprovar Ofertas" era o log do Action — que ninguem le em tempo real.
+  if (naoPublicadas.length) {
+    const titulos = naoPublicadas.slice(0, 10).map((o) => `- ${o.titulo}`);
+    if (naoPublicadas.length > titulos.length) {
+      titulos.push(`- ...e mais ${naoPublicadas.length - titulos.length} oferta(s)`);
+    }
+    await alertarOperador(`${naoPublicadas.length} oferta(s) de ${tag || 'variacao'} nao foram enviadas`, [
+      `Motivo: ${primeiroErro || 'desconhecido'}`,
+      servicoFora ? 'Envio automatico interrompido apos as tentativas se esgotarem — provavel indisponibilidade do baileys-server.' : '',
+      'Ofertas que ficaram para aprovacao manual:',
+      ...titulos,
+      'Estao em ofertas-pendentes.json — aba "Aprovar Ofertas" do painel.',
+    ]);
   }
 
   return { publicadas, naoPublicadas };
@@ -181,6 +245,7 @@ module.exports = {
   compactarLinhasTeto,
   agruparCondicoes,
   montarMensagemRadar,
+  postEnviarOferta,
   enfileirarOfertaWhatsApp,
   publicarOfertas,
 };
