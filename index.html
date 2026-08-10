@@ -2418,6 +2418,32 @@ function ctLinha(rot, a, b, icone){
   '</tr>';
 }
 
+// Cartoes de companhia aerea (Smiles/GOL, Azul Fidelidade, LATAM Pass): os pontos
+// sao creditados direto no programa da cia — nao passam por Livelo/Esfera. O unico
+// destino de transferencia disponivel para esses programas e o Accor (ALL).
+var CT_PROGS_AEREOS = [
+  ['Smiles (GOL)',    /\b(smiles)\b/],
+  ['Azul Fidelidade', /\b(azul|tudoazul)\b/],
+  ['LATAM Pass',      /\b(latam)\b/]
+];
+function ctProgramaAereo(c){
+  if (!c) return null;
+  var txt = ctNorm((c.nome || '') + ' ' + (c.programa_proprio || ''));
+  for (var i = 0; i < CT_PROGS_AEREOS.length; i++){
+    if (CT_PROGS_AEREOS[i][1].test(txt)) return CT_PROGS_AEREOS[i][0];
+  }
+  return null;
+}
+function ctTransfHtml(c){
+  var aereo = ctProgramaAereo(c);
+  if (aereo){
+    return 'Accor (ALL)' +
+      '<br><span style="opacity:.65;font-size:11.5px">Pontos creditados direto no ' + ctEsc(aereo) +
+      ' — não há transferência para outros programas; o único destino disponível é o Accor Live Limitless (ALL).</span>';
+  }
+  return (c.transfere_para || []).slice().sort().join(', ') || null;
+}
+
 function ctCampos(c){
   if (!c) return {};
   var anu = c.anuidade ? ctFmtMoeda(c.anuidade) +
@@ -2438,7 +2464,7 @@ function ctCampos(c){
                   return '<div style="margin:2px 0">'+s.programa+(s.regra ? '<br><span style="opacity:.65">'+s.regra+'</span>' : '')+'</div>';
                 }).join('') || null,
     programa  : c.programa_proprio,
-    transf    : (c.transfere_para||[]).slice().sort().join(', ') || null,
+    transf    : ctTransfHtml(c),
     validade  : c.validade_pontos
   };
 }
@@ -2660,12 +2686,16 @@ var CT_FAMILIAS = [
 ];
 
 function ctFamiliasTransf(c){
-  var alvo = (c.transfere_para||[]).map(ctNorm).join(' | ');
-  if (!alvo) return [];
   var out = [];
-  CT_FAMILIAS.forEach(function(f){
-    if (f[1].some(function(k){ return alvo.indexOf(ctNorm(k)) >= 0; })) out.push(f[0]);
-  });
+  // Cartoes de cia aerea: o unico destino de transferencia e o Accor (ALL)
+  if (ctProgramaAereo(c)) out.push('Accor ALL');
+  var alvo = (c.transfere_para||[]).map(ctNorm).join(' | ');
+  if (alvo){
+    CT_FAMILIAS.forEach(function(f){
+      if (out.indexOf(f[0]) >= 0) return;
+      if (f[1].some(function(k){ return alvo.indexOf(ctNorm(k)) >= 0; })) out.push(f[0]);
+    });
+  }
   return out;
 }
 
