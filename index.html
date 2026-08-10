@@ -2434,12 +2434,55 @@ function ctProgramaAereo(c){
   }
   return null;
 }
+// Destinos de transferencia curados por emissor. Vale para os cartoes do banco que
+// NAO sao co-branded de cia aerea (esses caem na regra CT_PROGS_AEREOS acima).
+var CT_TRANSF_EMISSOR = {
+  'santander': {
+    texto: 'Azul Fidelidade, Smiles, LATAM Pass, Accor (ALL) e diversas companhias aéreas internacionais',
+    nota: 'Destaque: parceria com o Iberia Plus na paridade 2:1 — a cada 2 pontos, 1 Avios.',
+    familias: ['Azul Fidelidade', 'Smiles (GOL)', 'LATAM Pass', 'Accor ALL', 'Iberia Plus']
+  },
+  'bradesco': {
+    texto: 'Azul Fidelidade, Smiles, LATAM Pass, Accor (ALL) e diversas companhias aéreas internacionais',
+    familias: ['Azul Fidelidade', 'Smiles (GOL)', 'LATAM Pass', 'Accor ALL']
+  },
+  'banco do brasil': {
+    texto: 'Azul Fidelidade, Smiles, LATAM Pass, Accor (ALL) e diversas companhias aéreas internacionais',
+    familias: ['Azul Fidelidade', 'Smiles (GOL)', 'LATAM Pass', 'Accor ALL']
+  },
+  'c6 bank': {
+    texto: 'Smiles, Azul Fidelidade, LATAM Pass, TAP Miles&Go e Livelo',
+    familias: ['Smiles (GOL)', 'Azul Fidelidade', 'LATAM Pass', 'TAP Miles&Go', 'Livelo']
+  },
+  'btg pactual': {
+    texto: 'Azul Fidelidade, Smiles, LATAM Pass e Livelo',
+    familias: ['Azul Fidelidade', 'Smiles (GOL)', 'LATAM Pass', 'Livelo']
+  },
+  'brb': {
+    texto: 'Smiles, Azul Fidelidade, LATAM Pass, Accor (ALL) e Livelo',
+    familias: ['Smiles (GOL)', 'Azul Fidelidade', 'LATAM Pass', 'Accor ALL', 'Livelo']
+  }
+};
+// Co-branded de outras cias (AAdvantage, TAP): pontuam direto no programa da cia,
+// entao nao herdam a regra do emissor — seguem com o dado do catalogo.
+var CT_COBRAND_OUTROS = /\b(aadvantage|american airlines|tap|miles&go)\b/;
+function ctRegraEmissor(c){
+  if (!c || ctProgramaAereo(c)) return null;   // co-branded aereo tem regra propria
+  if (CT_COBRAND_OUTROS.test(ctNorm((c.nome||'') + ' ' + (c.programa_proprio||'')))) return null;
+  return CT_TRANSF_EMISSOR[ctNorm(c.emissor)] || null;
+}
+
 function ctTransfHtml(c){
   var aereo = ctProgramaAereo(c);
   if (aereo){
     return 'Accor (ALL)' +
       '<br><span style="opacity:.65;font-size:11.5px">Pontos creditados direto no ' + ctEsc(aereo) +
       ' — não há transferência para outros programas; o único destino disponível é o Accor Live Limitless (ALL).</span>';
+  }
+  var reg = ctRegraEmissor(c);
+  if (reg){
+    return ctEsc(reg.texto) +
+      (reg.nota ? '<br><span style="opacity:.65;font-size:11.5px">' + ctEsc(reg.nota) + '</span>' : '');
   }
   return (c.transfere_para || []).slice().sort().join(', ') || null;
 }
@@ -2689,6 +2732,8 @@ function ctFamiliasTransf(c){
   var out = [];
   // Cartoes de cia aerea: o unico destino de transferencia e o Accor (ALL)
   if (ctProgramaAereo(c)) out.push('Accor ALL');
+  var reg = ctRegraEmissor(c);
+  if (reg) (reg.familias||[]).forEach(function(f){ if (out.indexOf(f) < 0) out.push(f); });
   var alvo = (c.transfere_para||[]).map(ctNorm).join(' | ');
   if (alvo){
     CT_FAMILIAS.forEach(function(f){
