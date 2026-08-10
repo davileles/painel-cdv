@@ -178,6 +178,8 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje, nomesPorChave) {
       ptsAgora: ptsHoje,
       delta: Math.round((ptsHoje - ptsAntes) * 100) / 100,
       ate: !!progHoje.ate,
+      categorias: Array.isArray(progHoje.categorias) ? progHoje.categorias : null,
+      ptsBase: progHoje.ptsBase != null ? progHoje.ptsBase : null,
       link: dadosHoje.links?.meliuz || 'https://www.meliuz.com.br/desconto',
     });
 
@@ -282,6 +284,17 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje, nomesPorChave) {
       `* Maior cashback (últimos 6 meses): ${fmtPct(maxPts6m)}%`,
       `* Média (últimos 6 meses): ${fmtPct(mediaPts6m)}%`,
     ];
+
+    // Quando o cashback e segmentado, o numero do titulo vale so para a maior
+    // categoria — a quebra abaixo evita que a mensagem pareca valer para o site
+    // inteiro. Sem emojis de proposito (o stripEmojis do mensagem-radar.js
+    // removeria, mas o texto tambem aparece no Radar do painel).
+    if (Array.isArray(v.categorias) && v.categorias.length) {
+      linhasResumoT1.push('', 'Cashback por categoria:');
+      for (const c of v.categorias) {
+        linhasResumoT1.push(`- ${c.categoria}: ${fmtPct(c.pts)}%`);
+      }
+    }
     if (padraoAltasT1 && padraoAltasT1.frequenciaDias && padraoAltasT1.proximaEstimadaData) {
       const [, mmProxT1, ddProxT1] = padraoAltasT1.proximaEstimadaData.split('-');
       linhasResumoT1.push(`* Sobe a cada ~${padraoAltasT1.frequenciaDias} dias. Possível próxima alta: ${ddProxT1}/${mmProxT1}`);
@@ -323,6 +336,8 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje, nomesPorChave) {
         dataDeteccao: hoje,
         frequenciaDias: padraoAltasT1 ? padraoAltasT1.frequenciaDias : null,
         proximaEstimadaData: padraoAltasT1 ? padraoAltasT1.proximaEstimadaData : null,
+        categorias: v.categorias || null,
+        ptsBase: v.ptsBase,
       },
     });
 
@@ -469,6 +484,14 @@ async function main() {
       ate: !!l.ate,
       slug: l.slug,
     };
+
+    // Quebra por categoria (quando a loja tem taxa segmentada). Vem do mesmo
+    // HTML SSR que o proxy ja baixa — nenhuma chamada extra. `pts` continua
+    // sendo a MAIOR taxa; `ptsBase` e a taxa das "Demais categorias".
+    if (Array.isArray(l.categorias) && l.categorias.length) {
+      snapHoje[chave].programs.meliuz.categorias = l.categorias;
+      if (l.ptsBase != null) snapHoje[chave].programs.meliuz.ptsBase = l.ptsBase;
+    }
 
     if (!snapHoje[chave].links) snapHoje[chave].links = {};
     snapHoje[chave].links.meliuz = l.link || `https://www.meliuz.com.br/desconto/${l.slug}`;
