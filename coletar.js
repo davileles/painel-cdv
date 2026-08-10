@@ -499,12 +499,48 @@ function isoParaPrazoBr(iso) {
   return m ? `${m[3]}/${m[2]}/${m[1]}` : '';
 }
 
+// O legalTerms vem com HTML escapado (\u003cp\u003e...) e as vezes com BOM/nbsp.
+// Devolve texto corrido pronto para virar item de "Condicoes" na mensagem.
+function limparLegalTerms(raw) {
+  if (!raw) return '';
+  const txt = String(raw)
+    .replace(/\\\\u003c/gi, '<').replace(/\\\\u003e/gi, '>')
+    .replace(/\\u003c/gi, '<').replace(/\\u003e/gi, '>')
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<\/p>/gi, ' ')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\\"/g, '"')
+    .replace(/\\[nrt]/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/[\u200b\ufeff]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  // Descarta boilerplate sem informacao ("Consulte o regulamento. Imagens
+  // ilustrativas."): so aproveita textos longos e que citam algum numero —
+  // data, pontuacao, valor minimo. Sem isso a mensagem ganharia ruido.
+  if (txt.length < 60 || !/\d/.test(txt)) return '';
+  return txt.length > 400 ? txt.slice(0, 397).trimEnd() + '...' : txt;
+}
+
+// "ELETRODOMÉSTICOS" → "Eletrodomésticos"
+function titulizarCategoria(nome) {
+  return String(nome || '').trim().toLocaleLowerCase('pt-BR')
+    .replace(/(^|[\s\-/])([\p{L}])/gu, (_, sep, letra) => sep + letra.toLocaleUpperCase('pt-BR'));
+}
+
 function parseValidadesLivelo(html) {
   const out = {};
-  const re = /"id":"([A-Z0-9]{2,5})","image":"[^"]*","name":"([^"]+)"[\s\S]{0,600}?"parity":\{([\s\S]{0,3500}?)"categoryParities"/g;
+  // O `categoryParities` delimita o ESCOPO da campanha (ex: Casas Bahia — 4
+  // pts/R$ so em eletrodomesticos, moveis e eletroportateis). Diferente do
+  // Meliuz, todas as categorias vem com o MESMO valor: nao e segmentacao de
+  // taxa, e a lista do que participa. A quebra completa ("3 pts nos demais, 1
+  // pt no marketplace") so existe no `legalTerms`, em texto livre — por isso os
+  // dois campos sao capturados juntos.
+  const re = /"id":"([A-Z0-9]{2,5})","image":"[^"]*","name":"([^"]+)"[\s\S]{0,600}?"parity":\{([\s\S]{0,3500}?)"categoryParities":(\[[\s\S]{0,2000}?\])/g;
   let m;
   while ((m = re.exec(html)) !== null) {
-    const id = m[1], nome = m[2], bloco = m[3];
+    const id = m[1], nome = m[2], bloco = m[3], catsRaw = m[4];
     const campo = (k) => {
       const mm = bloco.match(new RegExp('"' + k + '":"?([^",]*)"?'));
       return mm ? mm[1] : null;
@@ -521,11 +557,28 @@ function parseValidadesLivelo(html) {
     const dateEnd = parseDataLivelo(campo('dateEnd'));
     if (!dateEnd) continue;
 
+    // Categorias participantes. Parse tolerante: se o JSON vier fora do formato
+    // esperado, segue sem categorias em vez de derrubar a coleta inteira.
+    let categorias = [];
+    try {
+      const arr = JSON.parse(catsRaw);
+      if (Array.isArray(arr)) {
+        categorias = arr
+          .map(c => ({ nome: titulizarCategoria(c && c.name), pts: Number(c && c.parity) || null }))
+          .filter(c => c.nome);
+      }
+    } catch (e) { /* formato inesperado — segue sem categorias */ }
+
+    const mLegal = bloco.match(/"legalTerms":"([\s\S]*?)","separator"/);
+    const legalTerms = limparLegalTerms(mLegal ? mLegal[1] : '');
+
     const chaveBase = chaveParceiroValidade(nome);
     const chave = LIVELO_ALIAS_CHAVE[chaveBase] || chaveBase;
     out[chave] = {
       id,
       nome,
+      categorias: categorias.length ? categorias : null,
+      legalTerms: legalTerms || null,
       dateStart: parseDataLivelo(campo('dateStart')),
       dateEnd,
       parity:     parseFloat(campo('parity')) || null,
@@ -565,7 +618,7 @@ async function coletarValidadesLivelo() {
 // Só devolve algo quando a pontuação da Livelo confere com a que o Comparemania
 // reportou — se divergirem, é sinal de que a leitura se refere a outra campanha
 // e nesse caso é melhor não exibir prazo nenhum do que exibir um prazo errado.
-function validadeDoParceiro(validadesLivelo, progId, nomeParceiro, ptsNow) {
+function campanhaDoParceiro(validadesLivelo, progId, nomeParceiro, ptsNow) {
   if (progId !== 'livelo' || !validadesLivelo) return null;
   const chave = chaveParceiroValidade(nomeParceiro);
   const v = validadesLivelo[chave];
@@ -582,7 +635,13 @@ function validadeDoParceiro(validadesLivelo, progId, nomeParceiro, ptsNow) {
     console.log(`[Validade] ${nomeParceiro}: pontuação divergente (Livelo ${paridades.join('/')} x Comparemania ${ptsNow}) — prazo omitido.`);
     return null;
   }
-  return v.dateEnd;
+  return v;
+}
+
+// Compatibilidade: a oferta agrupada só precisa da data de encerramento.
+function validadeDoParceiro(validadesLivelo, progId, nomeParceiro, ptsNow) {
+  const v = campanhaDoParceiro(validadesLivelo, progId, nomeParceiro, ptsNow);
+  return v ? v.dateEnd : null;
 }
 
 async function gerarOfertasVariacao(snapshotAtual, historico, hoje, validadesLivelo) {
@@ -802,8 +861,16 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje, validadesLiv
       // Validade oficial da campanha — só existe para Livelo (ver comentário em
       // coletarValidadesLivelo). Vira o campo `prazo` da oferta, que o gerador
       // já renderiza como "📆 PRAZO DD/MM/AAAA" na mensagem do WhatsApp.
-      const fimCampanhaT1 = validadeDoParceiro(validadesLivelo, progId, v.parceiro, v.ptsNow);
+      const campanhaT1 = campanhaDoParceiro(validadesLivelo, progId, v.parceiro, v.ptsNow);
+      const fimCampanhaT1 = campanhaT1 ? campanhaT1.dateEnd : null;
       const prazoT1 = fimCampanhaT1 ? isoParaPrazoBr(fimCampanhaT1) : '';
+      // Escopo da campanha: quando a Livelo publica categoryParities, a
+      // pontuação do título vale só nessas categorias — sem esta linha a
+      // mensagem dá a entender que vale na loja inteira.
+      const categoriasT1 = campanhaT1 && campanhaT1.categorias ? campanhaT1.categorias : null;
+      if (categoriasT1) {
+        linhasResumoT1.push('* Vale para: ' + categoriasT1.map(c => c.nome).join(', '));
+      }
       if (prazoT1) {
         linhasResumoT1.push(fimCampanhaT1 === hoje
           ? '* Campanha encerra hoje (' + prazoT1.slice(0, 5) + ')'
@@ -842,7 +909,10 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje, validadesLiv
         importante: '',
         milheiro:  '',
         tetoTransferencia: '',
-        restricoes: [],
+        // Texto oficial da campanha (legalTerms da Livelo). É onde vive a quebra
+        // completa que o categoryParities não traz — "3 pts nos demais produtos,
+        // 1 pt no marketplace". Vira o bloco *Condições* da mensagem.
+        restricoes: campanhaT1 && campanhaT1.legalTerms ? [campanhaT1.legalTerms] : [],
         publicadoEm: new Date().toISOString(),
         tipoVariacao: true,
         tier1: true,
@@ -864,6 +934,7 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje, validadesLiv
           frequenciaDias: padraoAltasT1 ? padraoAltasT1.frequenciaDias : null,
           proximaEstimadaData: padraoAltasT1 ? padraoAltasT1.proximaEstimadaData : null,
           fimCampanha: fimCampanhaT1 || null,
+          categorias: categoriasT1,
         },
       };
 
