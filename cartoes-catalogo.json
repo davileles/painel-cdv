@@ -6522,16 +6522,20 @@
         "valor": 20000,
         "regra": "Mensalidade gratuita ao atingir gasto de R$ 20 mil por fatura."
       },
-      "renda_minima": null,
+      "renda_minima": 20000,
       "requisito_acesso": null,
       "adicionais_gratis": 5,
       "pontos": {
-        "nacional": null,
+        "nacional": 3,
         "internacional": 3.5,
         "unidade": "pts/USD",
-        "observacao": "Pontuação de até 3,5 pontos por dólar gasto."
+        "observacao": "3 pontos por dólar em compras nacionais — sobe para 4,5 pontos por dólar para assinantes do Clube TudoAzul. Até 3,5 pontos por dólar em compras internacionais."
       },
-      "cashback": null,
+      "cashback": {
+        "percentual": 0,
+        "regra": "Não oferece cashback",
+        "observacao": "Não oferece cashback"
+      },
       "programa_proprio": "Azul Fidelidade (TudoAzul) — nível Diamante automático",
       "transfere_para": [
         "Azul Fidelidade (TudoAzul)"
@@ -6541,7 +6545,7 @@
       "validade_pontos": "Indeterminada (condicional: uso mínimo de 1x a cada 12 meses)",
       "salas_vip": [
         {
-          "programa": "LoungeKey",
+          "programa": "Dragon Pass",
           "regra": "2 acessos gratuitos por ano."
         },
         {
@@ -6564,11 +6568,11 @@
         }
       ],
       "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-      "nota_curadoria": "A anuidade não tem valor explícito informado, apenas a condição de isenção ao gastar R$ 20 mil por fatura, o que pode ser um ponto de atenção para o assessor confirmar diretamente com o banco. O cartão oferece bom potencial de pontos por dólar gasto e acesso a salas VIP, mas faltam dados sobre renda mínima, cashback e transferência de pontos, que não constam na fonte oficial consultada.",
+      "nota_curadoria": "A anuidade não tem valor explícito informado, apenas a condição de isenção ao gastar R$ 20 mil por fatura, o que pode ser um ponto de atenção para o assessor confirmar diretamente com o banco. O cartão oferece bom potencial de pontos por dólar gasto e acesso a salas VIP, mas faltam dados sobre renda mínima, cashback e transferência de pontos, que não constam na fonte oficial consultada. Curadoria do operador (10/08/2026): pontuação nacional de 3 pts/US$ (4,5 para assinantes do Clube TudoAzul), sem cashback, renda estimada em R$ 20 mil e 2 acessos anuais via Dragon Pass (substitui o registro anterior de LoungeKey).",
       "procedencia": {
         "isencao": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "pontos": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
-        "salas_vip": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
+        "pontos": "planilha:curadoria-operador",
+        "salas_vip": "planilha:curadoria-operador",
         "anuidade": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
         "anuidade_parcelas": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
         "adicionais_gratis": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
@@ -6576,17 +6580,17 @@
         "programa_proprio": "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
         "validade_pontos": "https://www.itau.com.br/cartoes/escolha/formulario/tudoazul-itaucard-20-internacional-visa.html",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "planilha:cartoes-premium-comparativo.xlsx"
+        "iof": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:curadoria-operador",
+        "renda_minima": "planilha:curadoria-operador"
       },
       "fontes": [
         "https://www.itau.com.br/cartoes/escolha/formulario/azul-skyline.html",
         "https://www.itau.com.br/cartoes/beneficios/programa-fidelidade-azul",
         "https://www.itau.com.br/cartoes/escolha/formulario/tudoazul-itaucard-20-internacional-visa.html"
       ],
-      "verificado_em": "2026-07-31",
+      "verificado_em": "2026-08-10",
       "campos_pendentes": [
-        "cashback",
-        "renda_minima",
         "requisito_acesso"
       ],
       "campos_rejeitados": [],
@@ -6621,18 +6625,19 @@
         "valor": 20000,
         "regra": "Isenção total da parcela mensal de R$100 quando os gastos da fatura (titular + adicionais) somam R$20 mil ou mais no mês; se atingir R$10 mil ou mais, mas menos que R$20 mil, o desconto é de 50% na anuidade daquele mês."
       },
-      "renda_minima": null,
+      "renda_minima": 20000,
       "requisito_acesso": null,
       "adicionais_gratis": 5,
       "pontos": {
         "nacional": 3,
         "internacional": 3.5,
         "unidade": "pts/USD",
-        "observacao": "Pontos não expiram. Membros do Clube TudoAzul acumulam de forma promocional 4,5 pontos por dólar em compras nacionais e 5,25 em compras internacionais."
+        "observacao": "3 pontos por dólar em compras nacionais — sobe para 4,5 pontos por dólar para assinantes do Clube TudoAzul. Internacional: 3,5 pontos por dólar (5,25 para assinantes do Clube). Pontos não expiram."
       },
       "cashback": {
         "percentual": 0,
-        "regra": "0%"
+        "regra": "Não oferece cashback",
+        "observacao": "Não oferece cashback"
       },
       "programa_proprio": "TudoAzul",
       "transfere_para": [],
@@ -6641,8 +6646,8 @@
       "validade_pontos": "Não expiram",
       "salas_vip": [
         {
-          "programa": "LoungeKey",
-          "regra": "2 acessos anuais a salas VIP distribuídas pelo mundo."
+          "programa": "Dragon Pass",
+          "regra": "2 acessos gratuitos por ano."
         },
         {
           "programa": "Espaço Azul",
@@ -6680,25 +6685,25 @@
         }
       ],
       "link_solicitacao": "https://www.voeazul.com.br/br/pt/programa-fidelidade",
-      "nota_curadoria": "A isenção da anuidade depende de gasto mensal elevado (R$20 mil para isenção total, R$10 mil para 50% de desconto), o que pode ser uma pegadinha para clientes com gasto médio menor. Os pontos não expiram e a pontuação sobe bastante para membros do Clube TudoAzul, mas não há confirmação oficial sobre renda mínima exigida ou parceiros de transferência de pontos. Benefícios de viagem (companion pass, upgrade de cabine, salas VIP) são fortes, mas dependem de acúmulo de pontos e disponibilidade de poltronas.",
+      "nota_curadoria": "A isenção da anuidade depende de gasto mensal elevado (R$20 mil para isenção total, R$10 mil para 50% de desconto), o que pode ser uma pegadinha para clientes com gasto médio menor. Os pontos não expiram e a pontuação sobe bastante para membros do Clube TudoAzul, mas não há confirmação oficial sobre renda mínima exigida ou parceiros de transferência de pontos. Benefícios de viagem (companion pass, upgrade de cabine, salas VIP) são fortes, mas dependem de acúmulo de pontos e disponibilidade de poltronas. Curadoria do operador (10/08/2026): pontuação nacional de 3 pts/US$ (4,5 para assinantes do Clube TudoAzul), sem cashback, renda estimada em R$ 20 mil e 2 acessos anuais via Dragon Pass (substitui o registro anterior de LoungeKey).",
       "procedencia": {
         "anuidade": "https://www.itau.com.br/cartoes/escolha/g/azul-visa-infinite/",
         "anuidade_parcelas": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
         "isencao": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
         "adicionais_gratis": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
-        "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
+        "pontos": "planilha:curadoria-operador",
         "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
-        "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html",
+        "salas_vip": "planilha:curadoria-operador",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
         "iof": "planilha:cartoes-premium-comparativo.xlsx",
-        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "cashback": "planilha:curadoria-operador",
+        "renda_minima": "planilha:curadoria-operador"
       },
       "fontes": [
         "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/azul-itaucard-visa-infinite.html"
       ],
-      "verificado_em": "2026-07-31",
+      "verificado_em": "2026-08-10",
       "campos_pendentes": [
-        "renda_minima",
         "requisito_acesso",
         "transfere_para"
       ],
