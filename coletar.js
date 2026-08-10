@@ -484,6 +484,8 @@ const LIVELO_ALIAS_CHAVE = {
   bibi:               'bibicalcados',
   pontofrio:          'ponto',
   hertzinternacional: 'hertz',
+  magalu:             'magazineluiza',
+  oboticario:         'boticario',
 };
 
 function parseDataLivelo(s) {
@@ -507,8 +509,15 @@ function parseValidadesLivelo(html) {
       const mm = bloco.match(new RegExp('"' + k + '":"?([^",]*)"?'));
       return mm ? mm[1] : null;
     };
-    // Só interessam campanhas promocionais: no estado normal (BAU) não há data.
-    if (campo('activeCampaign') !== 'PROMOTION') continue;
+    // Só interessam campanhas promocionais: no estado normal (BAU/CLUB) não há
+    // data. Além de PROMOTION (campanha aberta a todos), a Livelo usa
+    // PROMOTION_CLUB (pontuação maior para assinantes do Clube Livelo) e
+    // PROMOTION_ONLY_CLUB (campanha exclusiva do Clube). As três trazem
+    // dateStart/dateEnd e, somadas, representam quase metade das campanhas
+    // datadas publicadas no site — considerar só PROMOTION deixava de fora
+    // parceiros Tier 1 como Beleza na Web, Hoteis.com, Insider Store e Petlove.
+    const campanha = campo('activeCampaign') || '';
+    if (!campanha.startsWith('PROMOTION')) continue;
     const dateEnd = parseDataLivelo(campo('dateEnd'));
     if (!dateEnd) continue;
 
@@ -519,8 +528,10 @@ function parseValidadesLivelo(html) {
       nome,
       dateStart: parseDataLivelo(campo('dateStart')),
       dateEnd,
-      parity:    parseFloat(campo('parity')) || null,
-      parityBau: parseFloat(campo('parityBau')) || null,
+      parity:     parseFloat(campo('parity')) || null,
+      parityClub: parseFloat(campo('parityClub')) || null,
+      parityBau:  parseFloat(campo('parityBau')) || null,
+      campanha,
     };
   }
   return out;
@@ -538,7 +549,10 @@ async function coletarValidadesLivelo() {
     fs.writeFileSync(VALIDADES_FILE, JSON.stringify(
       { coletadoEm: new Date().toISOString(), items: validades }, null, 2
     ));
-    console.log(`[Validade] ${total} campanha(s) Livelo com data de encerramento.`);
+    const porTipo = {};
+    for (const v of Object.values(validades)) porTipo[v.campanha] = (porTipo[v.campanha] || 0) + 1;
+    const resumoTipos = Object.entries(porTipo).map(([k, n]) => `${k}: ${n}`).join(', ');
+    console.log(`[Validade] ${total} campanha(s) Livelo com data de encerramento (${resumoTipos}).`);
     return validades;
   } catch (e) {
     // Falha aqui nunca derruba a coleta: sem validade, a oferta sai como antes.
@@ -556,8 +570,16 @@ function validadeDoParceiro(validadesLivelo, progId, nomeParceiro, ptsNow) {
   const chave = chaveParceiroValidade(nomeParceiro);
   const v = validadesLivelo[chave];
   if (!v || !v.dateEnd) return null;
-  if (v.parity != null && ptsNow != null && Number(v.parity) !== Number(ptsNow)) {
-    console.log(`[Validade] ${nomeParceiro}: pontuação divergente (Livelo ${v.parity} x Comparemania ${ptsNow}) — prazo omitido.`);
+  // O Comparemania publica sempre a MAIOR pontuação da campanha ("até X pontos
+  // por real"), que em campanha de clube é a parityClub e não a parity geral.
+  // Por isso qualquer uma das duas confirma que as duas fontes estão olhando
+  // para a mesma campanha. Compara arredondado porque extractPts() arredonda
+  // (4,5 pts/R$ vira 5).
+  const paridades = [v.parity, v.parityClub].filter(p => p != null);
+  const confere = ptsNow == null || paridades.length === 0 ||
+    paridades.some(p => Math.round(Number(p)) === Math.round(Number(ptsNow)));
+  if (!confere) {
+    console.log(`[Validade] ${nomeParceiro}: pontuação divergente (Livelo ${paridades.join('/')} x Comparemania ${ptsNow}) — prazo omitido.`);
     return null;
   }
   return v.dateEnd;
