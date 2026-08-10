@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-08-10T13:17:26.961Z",
+  "coletadoEm": "2026-08-10T15:02:35.322Z",
   "items": {
     "adcos": {
       "id": "SPA",
@@ -201,10 +201,10 @@
       "legalTerms": "Campanha válida em 10/08/2026. Ganhe 10 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo e 8 pontos por real demais clientes. Pontuação válida na primeira e quarta mensalidade. Consulte o regulamento.",
       "dateStart": "2026-08-10",
       "dateEnd": "2026-08-10",
-      "parity": 9,
+      "parity": 8,
       "parityClub": 10,
       "parityBau": 8,
-      "campanha": "PROMOTION_CLUB"
+      "campanha": "PROMOTION_ONLY_CLUB"
     },
     "coffeemais": {
       "id": "CFF",
@@ -403,6 +403,18 @@
       "parityBau": 2,
       "campanha": "PROMOTION_CLUB"
     },
+    "foreverliss": {
+      "id": "LSS",
+      "nome": "Forever Liss",
+      "categorias": null,
+      "legalTerms": "Campanha válida em 10/08/2026. Ganhe 10 pontos por real gasto exclusivo para assinantes Clube Livelo e 8 pontos por real para demais clientes. Consulte o regulamento.",
+      "dateStart": "2026-08-10",
+      "dateEnd": "2026-08-10",
+      "parity": 8,
+      "parityClub": 10,
+      "parityBau": 1,
+      "campanha": "PROMOTION_CLUB"
+    },
     "fossil": {
       "id": "SCS",
       "nome": "Fóssil",
@@ -473,6 +485,18 @@
       "parity": 8,
       "parityClub": 10,
       "parityBau": 2,
+      "campanha": "PROMOTION_CLUB"
+    },
+    "klabinforyou": {
+      "id": "KLB",
+      "nome": "Klabin ForYou",
+      "categorias": null,
+      "legalTerms": "Campanha válida em 10/08/2026. Ganhe 10 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo e 8 pontos por real demais clientes. Consulte o regulamento.",
+      "dateStart": "2026-08-10",
+      "dateEnd": "2026-08-10",
+      "parity": 8,
+      "parityClub": 10,
+      "parityBau": 1,
       "campanha": "PROMOTION_CLUB"
     },
     "lelis": {
@@ -792,10 +816,10 @@
       "id": "SPR",
       "nome": "Sephora",
       "categorias": null,
-      "legalTerms": "Campanha válida de 10 a 11/08/2026. Ganhe 10 pontos por real gasto exclusivo para assinantes do Clube Livelo e 08 pontos por real para demais clientes. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "legalTerms": "Campanha válida de 10 a 11/08/2026. Ganhe 10 pontos por real gasto exclusivo para assinantes do Clube Livelo e 6 pontos por real para demais clientes. Utilize o cupom LIVELO. Consulte o regulamento.",
       "dateStart": "2026-08-10",
       "dateEnd": "2026-08-11",
-      "parity": 8,
+      "parity": 6,
       "parityClub": 10,
       "parityBau": 1,
       "campanha": "PROMOTION_CLUB"
