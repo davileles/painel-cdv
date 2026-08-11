@@ -6210,6 +6210,29 @@ app.get('/campanhas/ativa', async (req, res) => {
   }
 });
 
+// O painel manda o arquivo inteiro, a partir do que ele carregou quando abriu.
+// Se o worker enviou mensagens nesse meio-tempo, salvar do painel devolveria os
+// contatos para 'fila' e eles receberiam a mensagem DE NOVO. Os campos de
+// execucao sao sempre do servidor: o painel edita config, mensagens e publico,
+// nunca status. Casa por id + telefone para nao herdar status de outra pessoa
+// quando o publico e reimportado.
+function preservarStatusContatos(remoto, novo) {
+  const CAMPOS = ['status', 'enviadoEm', 'respondidoEm', 'followupEm', 'erro', 'tentativasEnvio'];
+  const idx = new Map();
+  (remoto.campanhas || []).forEach(c =>
+    (c.contatos || []).forEach(ct => idx.set(c.id + '|' + ct.id + '|' + ct.telefone, ct)));
+  let preservados = 0;
+  (novo.campanhas || []).forEach(c =>
+    (c.contatos || []).forEach(ct => {
+      const r = idx.get(c.id + '|' + ct.id + '|' + ct.telefone);
+      if (!r) return;
+      CAMPOS.forEach(k => { ct[k] = r[k]; });
+      preservados++;
+    }));
+  if (preservados) console.log(`[campanhas] ${preservados} status de contato preservado(s)`);
+  return novo;
+}
+
 // POST /campanhas — grava o arquivo inteiro (edicao pelo painel)
 app.post('/campanhas', async (req, res) => {
   if (!opAutorizado(req, res)) return;
@@ -6222,13 +6245,16 @@ app.post('/campanhas', async (req, res) => {
   if (data.campanhas.filter(c => c.status === 'ativa').length > 1) {
     return res.status(400).json({ ok: false, erro: 'so pode haver uma campanha ativa por vez' });
   }
-  try {
-    const { sha } = await lerCampanhas();
-    await ghPutJson(CAMPANHAS_PATH, data, sha, 'chore: atualiza campanhas');
-    res.json({ ok: true });
-  } catch (e) {
-    console.error('[campanhas POST]', e.message);
-    res.status(500).json({ ok: false, erro: e.message });
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    try {
+      const { data: remoto, sha } = await lerCampanhas();
+      await ghPutJson(CAMPANHAS_PATH, preservarStatusContatos(remoto, data), sha, 'chore: atualiza campanhas');
+      return res.json({ ok: true });
+    } catch (e) {
+      if (/409|sha|conflict/i.test(e.message) && tentativa < 2) continue;
+      console.error('[campanhas POST]', e.message);
+      return res.status(500).json({ ok: false, erro: e.message });
+    }
   }
 });
 
