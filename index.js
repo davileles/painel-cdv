@@ -24,7 +24,10 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'perfis.json',
   'cartoes.json',
   'assinaturas.json',
-  'desejos.json'
+  'desejos.json',
+  // Base das campanhas de WhatsApp: nome, telefone e e-mail de gente real.
+  // Nunca pode viver no painel-cdv, que e publico por servir o GitHub Pages.
+  'campanhas.json'
 ]);
 // NÃO migrar (verificado): 'passagens.json' é catálogo de ofertas
 // (cia/origem/destino/pontos) — sem dado pessoal. 'historico.json',
@@ -71,7 +74,7 @@ app.use(express.json({ limit: '20mb' }));
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env, X-CDV-Op');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
@@ -6123,6 +6126,163 @@ app.post('/afiliados/comissoes', async (req, res) => {
       console.error('[afiliados/comissoes POST]', e.message);
       return res.status(500).json({ ok: false, erro: e.message });
     }
+  }
+});
+
+
+// ── CAMPANHAS DE WHATSAPP ────────────────────────────────────────────────────
+// campanhas.json fica no repo PRIVADO de dados (ver ARQUIVOS_SENSIVEIS). O
+// gerador-cdv nao tem login e o CORS aqui e aberto, entao toda rota deste bloco
+// exige o header X-CDV-Op com o valor de CAMPANHAS_KEY. Sem a variavel definida
+// no Railway as rotas respondem 503 — falha fechada, de proposito: melhor o
+// modulo nao subir do que servir 53 telefones para quem descobrir a URL.
+const CAMPANHAS_PATH  = 'campanhas.json';
+const CAMPANHAS_VAZIO = { versao: 2, campanhas: [] };
+
+function hashOp(v) {
+  return crypto.createHash('sha256').update(String(v || '')).digest();
+}
+// Comparacao de tamanho fixo: timingSafeEqual joga excecao com buffers de
+// tamanhos diferentes, entao compara-se o hash, nao o segredo cru.
+function opAutorizado(req, res) {
+  const chave = process.env.CAMPANHAS_KEY || '';
+  if (!chave) {
+    res.status(503).json({ ok: false, erro: 'CAMPANHAS_KEY nao configurada no Railway' });
+    return false;
+  }
+  const enviado = req.headers['x-cdv-op'] || '';
+  if (!crypto.timingSafeEqual(hashOp(enviado), hashOp(chave))) {
+    res.status(401).json({ ok: false, erro: 'nao autorizado' });
+    return false;
+  }
+  return true;
+}
+
+async function lerCampanhas() {
+  const { data, sha } = await ghGetJson(CAMPANHAS_PATH, CAMPANHAS_VAZIO);
+  const base = (data && Array.isArray(data.campanhas)) ? data : CAMPANHAS_VAZIO;
+  return { data: base, sha };
+}
+
+// Le, aplica a mutacao e grava. Em 409 (SHA vencido por escrita concorrente)
+// refaz a leitura e reaplica — o worker grava a cada envio e o painel tambem
+// salva, entao a corrida e real.
+async function mutarCampanhas(msg, fn) {
+  let ultimoErro = null;
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    const { data, sha } = await lerCampanhas();
+    const resultado = fn(data);
+    if (resultado && resultado.abortar) return resultado;
+    try {
+      await ghPutJson(CAMPANHAS_PATH, data, sha, msg);
+      return resultado || { ok: true };
+    } catch (e) {
+      ultimoErro = e;
+      if (/409|sha|conflict/i.test(e.message) && tentativa < 2) continue;
+      throw e;
+    }
+  }
+  throw ultimoErro || new Error('falha ao gravar campanhas.json');
+}
+
+// GET /campanhas — arquivo inteiro, para o painel
+app.get('/campanhas', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const { data } = await lerCampanhas();
+    res.json({ ok: true, data });
+  } catch (e) {
+    console.error('[campanhas GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// GET /campanhas/ativa — o que o worker do baileys puxa a cada ciclo
+app.get('/campanhas/ativa', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const { data } = await lerCampanhas();
+    const ativa = data.campanhas.find(c => c.status === 'ativa') || null;
+    res.json({ ok: true, campanha: ativa });
+  } catch (e) {
+    console.error('[campanhas/ativa GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// POST /campanhas — grava o arquivo inteiro (edicao pelo painel)
+app.post('/campanhas', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const { data } = req.body || {};
+  if (!data || !Array.isArray(data.campanhas)) {
+    return res.status(400).json({ ok: false, erro: 'data.campanhas deve ser um array' });
+  }
+  // Duas campanhas ativas significariam dois disparos concorrentes pelo mesmo
+  // numero. Barra aqui, nao so na interface.
+  if (data.campanhas.filter(c => c.status === 'ativa').length > 1) {
+    return res.status(400).json({ ok: false, erro: 'so pode haver uma campanha ativa por vez' });
+  }
+  try {
+    const { sha } = await lerCampanhas();
+    await ghPutJson(CAMPANHAS_PATH, data, sha, 'chore: atualiza campanhas');
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('[campanhas POST]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// POST /campanhas/status — iniciar, pausar, retomar, concluir
+app.post('/campanhas/status', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const { campanhaId, status } = req.body || {};
+  const VALIDOS = ['rascunho', 'ativa', 'pausada', 'concluida'];
+  if (!campanhaId || !VALIDOS.includes(status)) {
+    return res.status(400).json({ ok: false, erro: 'campanhaId e status (' + VALIDOS.join('|') + ') obrigatorios' });
+  }
+  try {
+    const r = await mutarCampanhas('chore: campanha ' + campanhaId + ' -> ' + status, (d) => {
+      const alvo = d.campanhas.find(c => c.id === campanhaId);
+      if (!alvo) return { abortar: true, erro: 'campanha nao encontrada' };
+      // Ativar uma pausa todas as outras: um socket, um disparo.
+      if (status === 'ativa') {
+        d.campanhas.forEach(c => { if (c.id !== campanhaId && c.status === 'ativa') c.status = 'pausada'; });
+      }
+      alvo.status = status;
+      return { ok: true, status };
+    });
+    if (r.abortar) return res.status(404).json({ ok: false, erro: r.erro });
+    res.json(r);
+  } catch (e) {
+    console.error('[campanhas/status POST]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// POST /campanhas/contato — escrita cirurgica de um contato so.
+// O worker chama isto apos cada envio. Mandar o array inteiro de volta a cada
+// envio abriria lost update com o painel aberto do outro lado.
+app.post('/campanhas/contato', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const { campanhaId, contatoId, patch } = req.body || {};
+  if (!campanhaId || !contatoId || !patch || typeof patch !== 'object') {
+    return res.status(400).json({ ok: false, erro: 'campanhaId, contatoId e patch obrigatorios' });
+  }
+  const CAMPOS = ['status', 'enviadoEm', 'respondidoEm', 'followupEm', 'erro', 'tentativasEnvio', 'obs'];
+  try {
+    const r = await mutarCampanhas('chore: contato ' + contatoId + ' (' + campanhaId + ')', (d) => {
+      const camp = d.campanhas.find(c => c.id === campanhaId);
+      if (!camp) return { abortar: true, erro: 'campanha nao encontrada' };
+      const ct = (camp.contatos || []).find(x => x.id === contatoId);
+      if (!ct) return { abortar: true, erro: 'contato nao encontrado' };
+      CAMPOS.forEach(k => { if (k in patch) ct[k] = patch[k]; });
+      return { ok: true, contato: ct };
+    });
+    if (r.abortar) return res.status(404).json({ ok: false, erro: r.erro });
+    res.json(r);
+  } catch (e) {
+    console.error('[campanhas/contato POST]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
   }
 });
 
