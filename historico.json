@@ -362347,7 +362347,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 8,
+          "pts": 1,
           "dollar": false
         },
         "meliuz": {
@@ -362781,23 +362781,10 @@
           "slug": "casas-bahia-1858"
         },
         "meliuz": {
-          "pts": 8,
+          "pts": 2,
           "dollar": false,
-          "ate": true,
-          "slug": "cupom-casas-bahia",
-          "categorias": [
-            {
-              "categoria": "TVs e Vídeo - Vendidos e Entregues por Casas Bahia",
-              "pts": 8,
-              "principal": false
-            },
-            {
-              "categoria": "Demais categorias",
-              "pts": 2,
-              "principal": true
-            }
-          ],
-          "ptsBase": 2
+          "ate": false,
+          "slug": "cupom-casas-bahia"
         }
       },
       "links": {
@@ -365166,7 +365153,7 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 3.5,
+          "pts": 8,
           "dollar": false,
           "ate": false,
           "slug": "cupom-liz"
@@ -365721,14 +365708,6 @@
         }
       }
     },
-    "concha y toro": {
-      "programs": {
-        "esfera": {
-          "pts": 13,
-          "dollar": false
-        }
-      }
-    },
     "mac cosméticos": {
       "programs": {
         "esfera": {
@@ -365933,6 +365912,14 @@
         }
       }
     },
+    "concha y toro": {
+      "programs": {
+        "esfera": {
+          "pts": 2,
+          "dollar": false
+        }
+      }
+    },
     "decor colors": {
       "programs": {
         "esfera": {
@@ -365957,10 +365944,23 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 3,
+          "pts": 8,
           "dollar": false,
-          "ate": false,
-          "slug": "emma"
+          "ate": true,
+          "slug": "emma",
+          "categorias": [
+            {
+              "categoria": "Colchões: Linhas Diamond Cooling e Premium Hybrid 2.0",
+              "pts": 8,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
         }
       },
       "links": {
