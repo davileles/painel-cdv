@@ -6287,6 +6287,79 @@ app.post('/campanhas/contato', async (req, res) => {
 });
 
 
+// ── MIDIA DAS CAMPANHAS ──────────────────────────────────────────────────────
+// As imagens dos blocos NAO vao em base64 dentro do campanhas.json: o arquivo e
+// reescrito a cada envio (53 gravacoes por campanha) e carregar 300KB de imagem
+// junto incharia o historico do repo sem necessidade. Ficam soltas em
+// campanhas-midia/, no mesmo repo privado, e o bloco guarda so o nome.
+const CAMPANHAS_MIDIA_DIR = 'campanhas-midia';
+const CAMPANHAS_MIDIA_MAX = 3 * 1024 * 1024;
+const MIMES_MIDIA = { png:'image/png', jpg:'image/jpeg', jpeg:'image/jpeg', webp:'image/webp' };
+
+function nomeMidiaSeguro(nome) {
+  const limpo = String(nome || '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9._-]/g, '-').replace(/-+/g, '-');
+  return /^[a-z0-9][a-z0-9._-]{0,80}\.(png|jpe?g|webp)$/.test(limpo) ? limpo : null;
+}
+
+// POST /campanhas/midia — body { arquivo, base64 }
+app.post('/campanhas/midia', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const { arquivo, base64 } = req.body || {};
+  const nome = nomeMidiaSeguro(arquivo);
+  if (!nome) return res.status(400).json({ ok: false, erro: 'nome de arquivo invalido (use .png, .jpg ou .webp)' });
+  const cru = String(base64 || '').replace(/^data:[^;]+;base64,/, '');
+  if (!cru) return res.status(400).json({ ok: false, erro: 'base64 vazio' });
+  if (Buffer.from(cru, 'base64').length > CAMPANHAS_MIDIA_MAX) {
+    return res.status(413).json({ ok: false, erro: 'imagem acima de 3MB' });
+  }
+  const url = `https://api.github.com/repos/${GITHUB_REPO_DADOS}/contents/${CAMPANHAS_MIDIA_DIR}/${nome}`;
+  try {
+    // SHA fresco imediatamente antes do PUT — o arquivo pode ja existir
+    const atual = await fetch(url, { compress: false, headers: ghHeaders(true) });
+    const sha = atual.ok ? (await atual.json()).sha : null;
+    const body = { message: `chore: midia de campanha ${nome}`, content: cru };
+    if (sha) body.sha = sha;
+    const r = await fetch(url, { compress: false, method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      throw new Error(err.message || `status ${r.status}`);
+    }
+    res.json({ ok: true, arquivo: nome });
+  } catch (e) {
+    console.error('[campanhas/midia POST]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// GET /campanhas/midia/:arquivo — o worker do baileys busca o buffer daqui
+app.get('/campanhas/midia/:arquivo', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const nome = nomeMidiaSeguro(req.params.arquivo);
+  if (!nome) return res.status(400).json({ ok: false, erro: 'nome de arquivo invalido' });
+  const url = `https://api.github.com/repos/${GITHUB_REPO_DADOS}/contents/${CAMPANHAS_MIDIA_DIR}/${nome}`;
+  try {
+    const r = await fetch(url, { compress: false, headers: ghHeaders(true) });
+    if (r.status === 404) return res.status(404).json({ ok: false, erro: 'midia nao encontrada' });
+    const d = await r.json();
+    let b64 = d.content ? String(d.content).replace(/\n/g, '') : '';
+    // Arquivo grande volta com encoding:'none' — cai no blob, imutavel e casado com o SHA
+    if (!b64 && d.sha) {
+      const blob = await fetch(`https://api.github.com/repos/${GITHUB_REPO_DADOS}/git/blobs/${d.sha}`,
+        { compress: false, headers: ghHeaders(true) });
+      if (blob.ok) b64 = String((await blob.json()).content || '').replace(/\n/g, '');
+    }
+    if (!b64) return res.status(500).json({ ok: false, erro: 'conteudo vazio' });
+    const ext = nome.split('.').pop();
+    res.json({ ok: true, arquivo: nome, mime: MIMES_MIDIA[ext] || 'image/png', base64: b64 });
+  } catch (e) {
+    console.error('[campanhas/midia GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+
 // Qualquer excecao nao tratada vira JSON, nunca a pagina HTML do Express.
 // Sem isso o front recebe '<' e a causa real se perde.
 app.use((err, req, res, next) => {
