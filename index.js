@@ -6010,6 +6010,92 @@ Use vigencia_ate (AAAA-MM-DD) quando algum beneficio for promocional com prazo.`
 
 // ══════════════════════════════════════════════════════════════════════════════
 
+
+// ── Comissões de afiliados (TSP) ──────────────────────────────────────────────
+// Dados coletados diariamente por tudo-sobre-promos/coletar-comissoes.js às 20h
+// SP nas três plataformas (Amazon Associados, Mercado Livre, Shopee).
+// Substitui a leitura da aba "Comissionamento" do Apps Script no painel.html.
+//
+// Formato do arquivo: { atualizadoEm, dias: { "YYYY-MM-DD": { amazon|ml|shopee:
+// { cliques, vendas, comissao, vendasRev?, comissaoRev? } | null } } }
+//
+// `vendas`/`comissao` são a FOTO do dia (congelada). `vendasRev`/`comissaoRev`
+// só aparecem quando a plataforma revisou o número depois — ML e Shopee revisam
+// nos dois sentidos, Amazon não revisa. O front escolhe qual usar.
+const COMISSOES_FILE = 'tsp/comissoes-afiliados.json';
+const PLATAFORMAS_AFILIADOS = ['amazon', 'ml', 'shopee'];
+
+// GET /afiliados/comissoes?de=YYYY-MM-DD&ate=YYYY-MM-DD&plataforma=ml
+// Sem parâmetros devolve tudo. `de`/`ate` são inclusivos.
+app.get('/afiliados/comissoes', async (req, res) => {
+  try {
+    const { data } = await ghGetJson(COMISSOES_FILE, { dias: {} });
+    const dias = data.dias || {};
+    const { de, ate, plataforma } = req.query;
+
+    const valida = (d) => /^\d{4}-\d{2}-\d{2}$/.test(d || '');
+    if ((de && !valida(de)) || (ate && !valida(ate))) {
+      return res.status(400).json({ ok: false, erro: 'de/ate devem estar em YYYY-MM-DD' });
+    }
+    if (plataforma && !PLATAFORMAS_AFILIADOS.includes(plataforma)) {
+      return res.status(400).json({ ok: false, erro: `plataforma deve ser uma de: ${PLATAFORMAS_AFILIADOS.join(', ')}` });
+    }
+
+    const saida = {};
+    for (const dia of Object.keys(dias).sort()) {
+      if (de && dia < de) continue;
+      if (ate && dia > ate) continue;
+      saida[dia] = plataforma ? { [plataforma]: dias[dia]?.[plataforma] ?? null } : dias[dia];
+    }
+
+    res.json({ ok: true, atualizadoEm: data.atualizadoEm || null, total: Object.keys(saida).length, dias: saida });
+  } catch (e) {
+    console.error('[afiliados/comissoes GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// POST /afiliados/comissoes  { data, plataforma, cliques, vendas, comissao }
+// Correção manual pontual. A coleta automática NÃO passa por aqui — ela escreve
+// direto no GitHub — então este endpoint sempre sobrescreve a foto, que é o que
+// se espera de uma correção feita à mão.
+app.post('/afiliados/comissoes', async (req, res) => {
+  const { data: dia, plataforma, cliques, vendas, comissao } = req.body || {};
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dia || '')) {
+    return res.status(400).json({ ok: false, erro: 'data obrigatória em YYYY-MM-DD' });
+  }
+  if (!PLATAFORMAS_AFILIADOS.includes(plataforma)) {
+    return res.status(400).json({ ok: false, erro: `plataforma deve ser uma de: ${PLATAFORMAS_AFILIADOS.join(', ')}` });
+  }
+  const numOuNulo = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
+  const valores = { cliques: numOuNulo(cliques), vendas: numOuNulo(vendas), comissao: numOuNulo(comissao) };
+  if (Object.values(valores).some((v) => v !== null && !Number.isFinite(v))) {
+    return res.status(400).json({ ok: false, erro: 'cliques/vendas/comissao devem ser numéricos ou nulos' });
+  }
+
+  // 409 = outra escrita venceu a corrida. O coletor grava no mesmo arquivo às
+  // 20h; sem retry uma correção feita nesse minuto se perderia.
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    try {
+      const { data: arquivo, sha } = await ghGetJson(COMISSOES_FILE, { dias: {} });
+      arquivo.dias = arquivo.dias || {};
+      arquivo.dias[dia] = arquivo.dias[dia] || {};
+      arquivo.dias[dia][plataforma] = valores;
+      arquivo.dias = Object.fromEntries(Object.keys(arquivo.dias).sort().map((k) => [k, arquivo.dias[k]]));
+      arquivo.atualizadoEm = new Date().toISOString();
+
+      await ghPutJson(COMISSOES_FILE, arquivo, sha, `chore: correção manual ${plataforma} ${dia}`);
+      return res.json({ ok: true, dia, plataforma, valores });
+    } catch (e) {
+      if (/409|sha/i.test(e.message) && tentativa < 2) continue;
+      console.error('[afiliados/comissoes POST]', e.message);
+      return res.status(500).json({ ok: false, erro: e.message });
+    }
+  }
+});
+
+
 // Qualquer excecao nao tratada vira JSON, nunca a pagina HTML do Express.
 // Sem isso o front recebe '<' e a causa real se perde.
 app.use((err, req, res, next) => {
