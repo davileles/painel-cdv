@@ -6270,6 +6270,12 @@ app.post('/campanhas/status', async (req, res) => {
     const r = await mutarCampanhas('chore: campanha ' + campanhaId + ' -> ' + status, (d) => {
       const alvo = d.campanhas.find(c => c.id === campanhaId);
       if (!alvo) return { abortar: true, erro: 'campanha nao encontrada' };
+      // Ativar sem ninguem na fila deixa o worker girando a vazio e da ao
+      // operador a impressao de que disparou. Barra no servidor tambem: o
+      // painel pode estar com uma copia velha do publico em memoria.
+      if (status === 'ativa' && !(alvo.contatos || []).some(c => c.status === 'fila')) {
+        return { abortar: true, status: 409, erro: 'campanha sem contatos na fila' };
+      }
       // Ativar uma pausa todas as outras: um socket, um disparo.
       if (status === 'ativa') {
         d.campanhas.forEach(c => { if (c.id !== campanhaId && c.status === 'ativa') c.status = 'pausada'; });
@@ -6277,7 +6283,7 @@ app.post('/campanhas/status', async (req, res) => {
       alvo.status = status;
       return { ok: true, status };
     });
-    if (r.abortar) return res.status(404).json({ ok: false, erro: r.erro });
+    if (r.abortar) return res.status(r.status || 404).json({ ok: false, erro: r.erro });
     res.json(r);
   } catch (e) {
     console.error('[campanhas/status POST]', e.message);
