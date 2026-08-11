@@ -2819,11 +2819,17 @@ app.post('/ia/extrair-reserva', (req, res) => {
       : 'Analise este documento (' + (docs[0].kind === 'texto' ? 'texto extraído de um arquivo HTML' : (docs[0].kind === 'pdf' ? 'PDF' : 'imagem')) + ') de ' + (tipoCampos || 'reserva de viagem') + '. ') +
     'Extraia os dados REAIS do documento e retorne SOMENTE um JSON válido (sem markdown). ' +
     'Use exatamente esta estrutura JSON (substitua pelos valores reais): ' +
-    '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","cabine":"cabine exata","cia":"companhia aerea"}],"pnr":"","pax":0,"programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","subtipo":"transfer","transferOrigem":"","transferDestino":"","transferData":"","transferHora":"","transferPax":"","transferOp":"","transferVeiculo":"","transferConf":"","transferValor":"","transferVoltaOrigem":"","transferVoltaDestino":"","transferVoltaData":"","transferVoltaHora":"","transferVoltaHoraChegada":"","transferVoltaOp":"","transferVoltaConf":"","transferVoltaCategoria":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","seguradora":"","seguroPlano":"","seguroApolice":"","seguroCartao":"","seguroInicio":"","seguroFim":"","seguroModalidade":"","seguroDias":"","seguroTerritorio":"","seguroCobertura":"","seguroPax":"","seguroValor":"","seguroEmergencia":"","obs":""} ' +
+    '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","cabine":"cabine exata","cia":"companhia aerea"}],"pnr":"","pax":0,"passageiros":["NOME DO PASSAGEIRO EXATAMENTE COMO IMPRESSO"],"programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","subtipo":"transfer","transferOrigem":"","transferDestino":"","transferData":"","transferHora":"","transferPax":"","transferOp":"","transferVeiculo":"","transferConf":"","transferValor":"","transferVoltaOrigem":"","transferVoltaDestino":"","transferVoltaData":"","transferVoltaHora":"","transferVoltaHoraChegada":"","transferVoltaOp":"","transferVoltaConf":"","transferVoltaCategoria":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","seguradora":"","seguroPlano":"","seguroApolice":"","seguroCartao":"","seguroInicio":"","seguroFim":"","seguroModalidade":"","seguroDias":"","seguroTerritorio":"","seguroCobertura":"","seguroPax":"","seguroValor":"","seguroEmergencia":"","obs":""} ' +
     'REGRAS: ' +
     '1) trechos[]: um objeto por segmento de voo na ordem do itinerário. ' +
     '2) Em cada trecho, cia = nome da companhia aérea operadora (ex: LATAM, Azul, Gol, TAP, KLM). ' +
     '3) pax = total de passageiros DISTINTOS listados por nome no documento. Se a mesma pessoa aparecer em bilhetes separados (ex: um bilhete de ida e outro de volta, ou um bilhete por passageiro), conte cada pessoa uma unica vez. ' +
+    '3.1) passageiros = array com o nome de CADA passageiro distinto, na ordem em que aparecem no documento. ' +
+    'Copie o nome LETRA POR LETRA como esta impresso no bilhete: mantenha a ordem em que aparece (SOBRENOME/NOME ou NOME SOBRENOME), ' +
+    'abreviacoes, iniciais, nomes do meio ausentes, titulos (MR, MRS, MS, MSTR, CHD), sufixos e a grafia sem acentos quando for assim que aparece. ' +
+    'NAO corrija, NAO complete, NAO reordene, NAO acentue e NAO altere maiusculas/minusculas — o objetivo e reproduzir exatamente o nome usado na emissao, ' +
+    'porque e esse nome que sera exigido no check-in. Se a mesma pessoa aparecer com grafias diferentes em documentos distintos, use a grafia do bilhete que contem o localizador. ' +
+    'passageiros deve ter o mesmo tamanho de pax. Se nenhum nome estiver legivel no documento, retorne passageiros como array vazio. ' +
     '4) milhasTotal = total bruto de milhas do documento inteiro, sem dividir. ' +
     '5) Para hotel, preencha os campos hotel* e trechos=[]. ' +
     '6) Para qualquer transporte terrestre ou aquático: use tipo=\"carro\" e defina subtipo conforme abaixo. ' +
@@ -2889,6 +2895,31 @@ app.post('/ia/extrair-reserva', (req, res) => {
     if (Array.isArray(d.trechos)) d.trechos.forEach(t => { if (t) t.data = fix(t.data); });
     ['checkin', 'checkout', 'transferData', 'transferVoltaData', 'retData', 'devData', 'passeioData', 'dataIda', 'dataVolta', 'seguroInicio', 'seguroFim']
       .forEach(k => { if (d[k]) d[k] = fix(d[k]); });
+    return d;
+  }
+
+  // Normaliza a lista de passageiros: aceita array de strings ou de objetos
+  // ({nome:...}), limpa espacos duplicados, remove duplicados (case-insensitive)
+  // preservando a grafia original e sincroniza pax com a quantidade de nomes.
+  function normalizarPassageiros(d) {
+    const bruto = d.passageiros;
+    if (!Array.isArray(bruto)) { if (bruto !== undefined) delete d.passageiros; return d; }
+    const vistos = new Set();
+    const nomes = [];
+    for (const item of bruto) {
+      let nome = '';
+      if (typeof item === 'string') nome = item;
+      else if (item && typeof item === 'object') nome = item.nome || item.name || item.passageiro || '';
+      nome = String(nome).replace(/\s+/g, ' ').trim();
+      if (!nome) continue;
+      if (/EXATAMENTE COMO IMPRESSO/i.test(nome)) continue;   // placeholder do proprio prompt
+      const chave = nome.toUpperCase();
+      if (vistos.has(chave)) continue;
+      vistos.add(chave);
+      nomes.push(nome);
+    }
+    d.passageiros = nomes;
+    if (nomes.length) d.pax = nomes.length;
     return d;
   }
 
@@ -3032,7 +3063,7 @@ app.post('/ia/extrair-reserva', (req, res) => {
         const textoClean = texto.replace(/```json|```/g, '').trim();
         try {
           const dadosRaw = JSON.parse(textoClean);
-          const dadosProcessados = processarTrechos(normalizarAnoDatas(dadosRaw));
+          const dadosProcessados = processarTrechos(normalizarPassageiros(normalizarAnoDatas(dadosRaw)));
           return res.json({ ok: true, texto: JSON.stringify(dadosProcessados) });
         } catch(e) {
           return res.json({ ok: true, texto: textoClean });
