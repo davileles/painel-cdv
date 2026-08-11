@@ -6291,6 +6291,37 @@ app.post('/campanhas/status', async (req, res) => {
   }
 });
 
+// POST /campanhas/excluir — remove uma campanha inteira
+// Nao ha lixeira: o historico de envio da campanha vai junto. Por isso exige o
+// nome digitado por extenso e recusa campanha ativa — pausar antes e obrigatorio,
+// senao o worker seguiria disparando contra um objeto que sumiu do arquivo.
+app.post('/campanhas/excluir', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const { campanhaId, confirmacao } = req.body || {};
+  if (!campanhaId) return res.status(400).json({ ok: false, erro: 'campanhaId obrigatorio' });
+  try {
+    const r = await mutarCampanhas('chore: exclui campanha ' + campanhaId, (d) => {
+      const i = d.campanhas.findIndex(c => c.id === campanhaId);
+      if (i < 0) return { abortar: true, erro: 'campanha nao encontrada' };
+      const alvo = d.campanhas[i];
+      if (alvo.status === 'ativa') {
+        return { abortar: true, status: 409, erro: 'pause a campanha antes de excluir' };
+      }
+      if (String(confirmacao || '').trim() !== String(alvo.nome || '').trim()) {
+        return { abortar: true, status: 400, erro: 'confirmacao nao confere com o nome da campanha' };
+      }
+      const enviados = (alvo.contatos || []).filter(c => c.status !== 'fila').length;
+      d.campanhas.splice(i, 1);
+      return { ok: true, excluida: campanhaId, contatosPerdidos: (alvo.contatos || []).length, historicoPerdido: enviados };
+    });
+    if (r.abortar) return res.status(r.status || 404).json({ ok: false, erro: r.erro });
+    res.json(r);
+  } catch (e) {
+    console.error('[campanhas/excluir POST]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 // POST /campanhas/contato — escrita cirurgica de um contato so.
 // O worker chama isto apos cada envio. Mandar o array inteiro de volta a cada
 // envio abriria lost update com o painel aberto do outro lado.
