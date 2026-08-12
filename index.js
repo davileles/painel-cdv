@@ -6071,6 +6071,38 @@ const TSP_PLANILHA_ABAS = ['comissionamento', 'trafego'];
 const TSP_PLANILHA_TTL = 5 * 60 * 1000;
 const _tspPlanilhaCache = new Map(); // aba -> { csv, em }
 
+// O /exec responde 302 para script.googleusercontent.com. Deixar o node-fetch
+// seguir sozinho devolve, a partir do IP do Railway, uma pagina de erro 404 do
+// Google — o mesmo pedido feito com cabecalhos de navegador na URL final volta
+// 200. Entao o salto e dado a mao: le o Location e refaz o GET como browser.
+const TSP_CABECALHO_BROWSER = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+  'Accept': 'text/csv,text/plain,text/html;q=0.9,*/*;q=0.8',
+  'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.7',
+  'Cache-Control': 'no-cache',
+};
+
+async function buscarCsvAppsScript(aba) {
+  let url = `${TSP_APPS_SCRIPT}?sheet=${encodeURIComponent(aba)}`;
+  for (let salto = 0; salto < 4; salto++) {
+    const r = await fetch(url, {
+      redirect: 'manual',
+      headers: TSP_CABECALHO_BROWSER,
+      timeout: 25000,
+    });
+    if (r.status >= 300 && r.status < 400) {
+      const destino = r.headers.get('location');
+      if (!destino) throw new Error(`Apps Script devolveu ${r.status} sem Location`);
+      url = new URL(destino, url).toString();
+      continue;
+    }
+    const corpo = await r.text();
+    if (!r.ok) throw new Error(`Apps Script respondeu ${r.status}`);
+    return corpo;
+  }
+  throw new Error('Apps Script encadeou redirects demais');
+}
+
 // GET /tsp/planilha?sheet=comissionamento|trafego[&recarregar=1]
 // Devolve o CSV cru, do mesmo jeito que o Apps Script devolve.
 app.get('/tsp/planilha', async (req, res) => {
@@ -6087,15 +6119,7 @@ app.get('/tsp/planilha', async (req, res) => {
   }
 
   try {
-    const r = await fetch(`${TSP_APPS_SCRIPT}?sheet=${encodeURIComponent(aba)}`, {
-      redirect: 'follow',
-      headers: { 'User-Agent': 'cdv-proxy' },
-      timeout: 25000
-    });
-    const csv = await r.text();
-    if (!r.ok) {
-      return res.status(502).json({ ok: false, erro: `Apps Script respondeu ${r.status}`, corpo: csv.slice(0, 300) });
-    }
+    const csv = await buscarCsvAppsScript(aba);
     if (csv.length < 10 || /not found/i.test(csv)) {
       return res.status(502).json({ ok: false, erro: `Aba nao encontrada na planilha: ${aba}` });
     }
@@ -6104,7 +6128,8 @@ app.get('/tsp/planilha', async (req, res) => {
     res.setHeader('X-Cdv-Cache', 'miss');
     res.send(csv);
   } catch (e) {
-    // Rede/Google fora do ar: servir a ultima copia e melhor que quebrar a aba.
+    // Google fora do ar ou recusando o salto: servir a ultima copia e melhor que
+    // quebrar a aba. Vale para qualquer falha, inclusive 404 no conteudo.
     if (cache) {
       res.setHeader('Content-Type', 'text/csv; charset=utf-8');
       res.setHeader('X-Cdv-Cache', 'stale');
