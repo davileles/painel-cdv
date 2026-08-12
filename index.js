@@ -6059,6 +6059,62 @@ Use vigencia_ate (AAAA-MM-DD) quando algum beneficio for promocional com prazo.`
 const COMISSOES_FILE = 'tsp/comissoes-afiliados.json';
 const PLATAFORMAS_AFILIADOS = ['amazon', 'ml', 'shopee'];
 
+// ── Planilha de resultados do TSP (Google Apps Script) ───────────────────────
+// O painel de gestao lia o Apps Script direto do navegador. Quando o Chrome
+// esta logado em mais de uma conta Google, o script.google.com redireciona
+// para /u/N/macros/... e a resposta volta 404 — e daí o "Erro: HTTP 404" ao
+// abrir a aba Comissao. Buscando pelo servidor nao ha cookie de conta Google,
+// redirect de usuario nem CORS: a mesma URL responde 200 sempre.
+const TSP_APPS_SCRIPT = process.env.TSP_APPS_SCRIPT ||
+  'https://script.google.com/macros/s/AKfycbz4GZg6RMDJuSQmx2naQDMDgMhVZnZ7WKilvm5HbcZ6fsv2lvZexqL4sGr7_3r92e_L/exec';
+const TSP_PLANILHA_ABAS = ['comissionamento', 'trafego'];
+const TSP_PLANILHA_TTL = 5 * 60 * 1000;
+const _tspPlanilhaCache = new Map(); // aba -> { csv, em }
+
+// GET /tsp/planilha?sheet=comissionamento|trafego[&recarregar=1]
+// Devolve o CSV cru, do mesmo jeito que o Apps Script devolve.
+app.get('/tsp/planilha', async (req, res) => {
+  const aba = String(req.query.sheet || '').toLowerCase().trim();
+  if (!TSP_PLANILHA_ABAS.includes(aba)) {
+    return res.status(400).json({ ok: false, erro: `sheet deve ser uma de: ${TSP_PLANILHA_ABAS.join(', ')}` });
+  }
+
+  const cache = _tspPlanilhaCache.get(aba);
+  if (req.query.recarregar !== '1' && cache && (Date.now() - cache.em) < TSP_PLANILHA_TTL) {
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('X-Cdv-Cache', 'hit');
+    return res.send(cache.csv);
+  }
+
+  try {
+    const r = await fetch(`${TSP_APPS_SCRIPT}?sheet=${encodeURIComponent(aba)}`, {
+      redirect: 'follow',
+      headers: { 'User-Agent': 'cdv-proxy' },
+      timeout: 25000
+    });
+    const csv = await r.text();
+    if (!r.ok) {
+      return res.status(502).json({ ok: false, erro: `Apps Script respondeu ${r.status}`, corpo: csv.slice(0, 300) });
+    }
+    if (csv.length < 10 || /not found/i.test(csv)) {
+      return res.status(502).json({ ok: false, erro: `Aba nao encontrada na planilha: ${aba}` });
+    }
+    _tspPlanilhaCache.set(aba, { csv, em: Date.now() });
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('X-Cdv-Cache', 'miss');
+    res.send(csv);
+  } catch (e) {
+    // Rede/Google fora do ar: servir a ultima copia e melhor que quebrar a aba.
+    if (cache) {
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('X-Cdv-Cache', 'stale');
+      return res.send(cache.csv);
+    }
+    console.error('[tsp/planilha]', e.message);
+    res.status(502).json({ ok: false, erro: e.message });
+  }
+});
+
 // GET /afiliados/comissoes?de=YYYY-MM-DD&ate=YYYY-MM-DD&plataforma=ml
 // Sem parâmetros devolve tudo. `de`/`ate` são inclusivos.
 app.get('/afiliados/comissoes', async (req, res) => {
