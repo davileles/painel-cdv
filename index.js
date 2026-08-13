@@ -3512,8 +3512,12 @@ function perfilNormalizado(p) {
                    })).filter(x => x.programa),
     outrosProgramas: t(p.outrosProgramas),
     senhas: {
+      // `inferida`: senha deduzida de um padrao, nao informada explicitamente
+      // pelo cliente para aquele programa. A tela sinaliza para nao ser tratada
+      // como certeza — quem confirmar em uso apaga a marca.
       itens:  (Array.isArray(senhas.itens) ? senhas.itens : []).map(x => ({
-                programa: t(x.programa), senha: t(x.senha), rotulo: t(x.rotulo)
+                programa: t(x.programa), senha: t(x.senha), rotulo: t(x.rotulo),
+                inferida: x.inferida === true
               })).filter(x => x.programa && x.senha),
       outros: t(senhas.outros),
       bruto:  t(senhas.bruto)
