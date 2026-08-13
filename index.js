@@ -3099,6 +3099,13 @@ const CONCIERGE_REPO = 'davileles/concierge';
 // Mora no repo PRIVADO de dados — o repo `concierge` e publico (serve o Pages).
 const CONCIERGE_DADOS_REPO  = GITHUB_REPO_TSP;
 const CONCIERGE_CLIENTES    = 'concierge/clientes.json';
+// Perfil: fidelidade, saldos, senhas, cartoes e preferencias. Separado do
+// cadastro porque lembrete-voo.js e /concierge/portal leem a base cadastral a
+// cada execucao e nao tem por que carregar senha e saldo de pontos junto.
+const CONCIERGE_PERFIL      = 'concierge/clientes-perfil.json';
+// Cadastros vindos do formulario publico, aguardando aprovacao no painel.
+// Nunca entram direto na base: form aberto na internet nao escreve em producao.
+const CONCIERGE_PENDENTES   = 'concierge/clientes-pendentes.json';
 
 async function getConciergeFile(filename, repo) {
   const repoAlvo = repo || CONCIERGE_REPO;
@@ -3322,6 +3329,8 @@ function clienteNormalizado(c) {
     email:         t(c.email),
     cpf:           t(c.cpf),
     nasc:          t(c.nasc),
+    passaporte:    t(c.passaporte),
+    passaporteVal: t(c.passaporteVal),
     logradouro:    t(c.logradouro),
     numero:        t(c.numero),
     complemento:   t(c.complemento),
@@ -3348,6 +3357,215 @@ async function lerClientesConcierge() {
     throw e;
   }
 }
+
+// Converte o campo livre "Senha dos programas de fidelidade" em pares
+// { programa, senha }. Os clientes escreveram em pelo menos quatro formatos:
+//   "Livelo (abc) Esfera (123)"        — parenteses, separados por espaco/virgula
+//   "Latam: abc\nEsfera: 123"          — dois pontos, uma por linha
+//   "Latam e Azul : senha abc"         — um valor para varios programas
+//   "Vaf@986417, Smiles (9864)"        — senha solta, sem programa
+// O texto original NUNCA e descartado: vai em `bruto`, e o que nao casar com
+// nenhum padrao fica em `outros`. Perder senha de cliente nao e opcao.
+
+const PROGRAMAS_FIDELIDADE = [
+  ['Livelo',            ['livelo']],
+  ['Esfera',            ['esfera']],
+  ['Smiles',            ['smiles', 'smile', 'gol', 'gol smiles']],
+  ['Azul Fidelidade',   ['azul', 'azul fidelidade', 'azul fidelidade e viagens', 'tudoazul']],
+  ['LATAM Pass',        ['latam', 'latam pass', 'latampass', 'multiplus']],
+  ['Iberia Plus',       ['iberia', 'ibéria', 'iberia plus']],
+  ['Executive Club',    ['executive club', 'british', 'british airways', 'avios']],
+  ['Privilege Club',    ['privilege club', 'qatar', 'qatar airways']],
+  ['AAdvantage',        ['aadvantage', 'american', 'american airlines', 'aa']],
+  ['ALL Accor',         ['all accor', 'accor', 'le club accor', 'all acoor', 'all']],
+  ['KM de Vantagens',   ['km de vantagens', 'km vantagens', 'ipiranga']],
+  ['Petrobras Premmia', ['petrobras', 'premmia', 'petrobras premmia']],
+  ['Shell Box',         ['shell', 'shell box', 'shellbox']],
+  ['Itaú',              ['itau', 'itaú', 'iupp']],
+  ['TAP Miles&Go',      ['tap', 'tapmilles', 'tap miles', 'miles&go', 'milesandgo']],
+  ['Dragon Pass',       ['dragonpass', 'dragon pass']],
+  ['Priority Pass',     ['priority pass', 'prioritypass']],
+  ['Delta SkyMiles',    ['delta', 'skymiles']],
+  ['United MileagePlus',['united', 'mileageplus']],
+  ['Flying Blue',       ['flying blue', 'flyingblue', 'air france', 'klm']],
+  ['Méliuz',            ['meliuz', 'méliuz']],
+  ['Rentcars',          ['rentcars', 'rent cars']],
+  ['Azul Viagens',      ['azul viagens']],
+];
+
+function _normTxtPrograma(s) {
+  return String(s == null ? '' : s)
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+// Casa o rotulo escrito pelo cliente com um programa canonico. Exige que o
+// alias apareca como palavra inteira: 'aa' nao pode casar dentro de 'accor'.
+function programaCanonico(rotulo) {
+  const t = _normTxtPrograma(rotulo).replace(/^[\s,;.&]+|[\s,;.:]+$/g, '');
+  if (!t) return null;
+  let melhor = null;
+  for (const [nome, aliases] of PROGRAMAS_FIDELIDADE) {
+    for (const a of aliases) {
+      const re = new RegExp('(^|[^a-z0-9])' + a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '($|[^a-z0-9])');
+      if (re.test(t) && (!melhor || a.length > melhor.peso)) melhor = { nome, peso: a.length };
+    }
+  }
+  return melhor ? melhor.nome : null;
+}
+
+// "Latam e Azul", "Latam/Azul" — um valor para varios programas.
+function programasDoRotulo(rotulo) {
+  const partes = String(rotulo).split(/\s+e\s+|\s*\/\s*|\s*&\s*/i);
+  const achados = [];
+  for (const p of partes) {
+    const c = programaCanonico(p);
+    if (c && achados.indexOf(c) === -1) achados.push(c);
+  }
+  if (achados.length) return achados;
+  const c = programaCanonico(rotulo);
+  return c ? [c] : [];
+}
+
+function limparSenha(s) {
+  return String(s == null ? '' : s).trim().replace(/^senha\s*:?\s*/i, '').replace(/[,;]+$/, '').trim();
+}
+
+function parseSenhas(texto) {
+  const bruto = String(texto == null ? '' : texto).trim();
+  if (!bruto) return { itens: [], outros: '', bruto: '' };
+
+  const itens = [];
+  const vistos = new Set();
+  const push = (programa, senha, rotulo) => {
+    const s = limparSenha(senha);
+    if (!programa || !s) return;
+    const chave = programa + '|' + s;
+    if (vistos.has(chave)) return;
+    vistos.add(chave);
+    const r = String(rotulo || '').trim().replace(/^[\s,;.]+|[\s,;.:]+$/g, '');
+    itens.push({ programa, senha: s, rotulo: (r && _normTxtPrograma(r) !== _normTxtPrograma(programa)) ? r : '' });
+  };
+
+  let resto = bruto;
+
+  // 1) Padrao "Rotulo (senha)" — o mais comum. Consome do resto o que casar.
+  resto = resto.replace(/([^(),;\n]{1,60}?)\s*\(+\s*([^()]{1,120}?)\s*\)+/g, (m, rotulo, senha) => {
+    const progs = programasDoRotulo(rotulo);
+    if (!progs.length) return m; // rotulo irreconhecivel: devolve ao resto
+    progs.forEach(p => push(p, senha, rotulo));
+    return ' ';
+  });
+
+  // 2) Padrao "Rotulo: senha", uma por linha ou separado por virgula.
+  const linhas = resto.split(/[\n\r]+/);
+  const sobra = [];
+  for (const linha of linhas) {
+    if (!linha.trim()) continue;
+    // so quebra por virgula se cada pedaco tiver seu proprio ':'
+    const pedacos = linha.split(',').every(p => p.includes(':')) ? linha.split(',') : [linha];
+    for (const pedaco of pedacos) {
+      const m = pedaco.match(/^\s*([^:]{1,60}?)\s*:\s*(.+)$/);
+      if (m) {
+        const progs = programasDoRotulo(m[1]);
+        if (progs.length) { progs.forEach(p => push(p, m[2], m[1])); continue; }
+      }
+      if (pedaco.trim()) sobra.push(pedaco.trim());
+    }
+  }
+
+  // 3) O que sobrou vai inteiro para `outros` — visivel na tela, nunca perdido.
+  const outros = sobra.join(' ').replace(/\s{2,}/g, ' ').replace(/^[\s,;.]+|[\s,;.]+$/g, '').trim();
+
+  itens.sort((a, b) => a.programa.localeCompare(b.programa, 'pt-BR'));
+  return { itens, outros, bruto };
+}
+
+
+// ── CONCIERGE: Perfil do cliente (fidelidade, cartoes, preferencias) ────
+
+// Colunas fixas da planilha legado. Nao vao para o cfg.json porque a planilha
+// esta congelada: o formulario proprio a substitui e ninguem mais mexe nela.
+const PLAN_TEM_PROGRAMA = {
+  R: 'Livelo', S: 'Esfera', T: 'Azul Fidelidade', U: 'LATAM Pass', V: 'Smiles',
+  W: 'Iberia Plus', X: 'Executive Club', Y: 'Privilege Club', Z: 'AAdvantage',
+  AA: 'ALL Accor', AB: 'KM de Vantagens', AC: 'Petrobras Premmia', AD: 'Shell Box'
+};
+const PLAN_PONTOS = {
+  AR: 'Livelo', AS: 'Esfera', AT: 'Azul Fidelidade', AU: 'Smiles', AV: 'LATAM Pass',
+  AW: 'Iberia Plus', AX: 'Executive Club', AY: 'Privilege Club', AZ: 'AAdvantage',
+  BA: 'ALL Accor', BF: 'Itaú'
+};
+const PLAN_CARTOES = ['AF', 'AG', 'AH', 'AI', 'AJ'];
+
+function perfilNormalizado(p) {
+  const t = (v) => String(v == null ? '' : v).trim();
+  const senhas = p.senhas || {};
+  return {
+    id:            t(p.id),
+    nome:          t(p.nome),
+    criarContas:   t(p.criarContas),
+    programas:     (Array.isArray(p.programas) ? p.programas : []).map(x => ({
+                     programa: t(x.programa),
+                     tem:      x.tem === true,
+                     pontos:   Number.isFinite(Number(x.pontos)) && t(x.pontos) !== '' ? Number(x.pontos) : null
+                   })).filter(x => x.programa),
+    outrosProgramas: t(p.outrosProgramas),
+    senhas: {
+      itens:  (Array.isArray(senhas.itens) ? senhas.itens : []).map(x => ({
+                programa: t(x.programa), senha: t(x.senha), rotulo: t(x.rotulo)
+              })).filter(x => x.programa && x.senha),
+      outros: t(senhas.outros),
+      bruto:  t(senhas.bruto)
+    },
+    cartoes:       (Array.isArray(p.cartoes) ? p.cartoes : []).map(t).filter(Boolean),
+    cartaoVirtual: t(p.cartaoVirtual),
+    objetivos:     t(p.objetivos),
+    estilo:        t(p.estilo),
+    consentimento: t(p.consentimento),
+    respondidoEm:  t(p.respondidoEm),
+    atualizadoEm:  t(p.atualizadoEm) || new Date().toISOString()
+  };
+}
+
+async function lerArquivoConcierge(path) {
+  try {
+    const { content, sha } = await getConciergeFile(path, CONCIERGE_DADOS_REPO);
+    return { lista: Array.isArray(content) ? content : [], sha };
+  } catch(e) {
+    if (/404|Not Found|Unexpected token/i.test(e.message)) return { lista: [], sha: null };
+    throw e;
+  }
+}
+
+// GET /concierge/clientes-perfil
+app.get('/concierge/clientes-perfil', async (req, res) => {
+  try {
+    const { lista } = await lerArquivoConcierge(CONCIERGE_PERFIL);
+    res.json({ ok: true, data: lista });
+  } catch(e) {
+    console.error('[concierge/clientes-perfil GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// POST /concierge/clientes-perfil
+app.post('/concierge/clientes-perfil', async (req, res) => {
+  const { data } = req.body;
+  if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
+  const lista = data.filter(p => p && String(p.id || '').trim()).map(perfilNormalizado);
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    try {
+      const { sha } = await lerArquivoConcierge(CONCIERGE_PERFIL);
+      await putConciergeFile(CONCIERGE_PERFIL, lista, sha, CONCIERGE_DADOS_REPO);
+      return res.json({ ok: true, total: lista.length });
+    } catch(e) {
+      if (e.status === 409 && tentativa < 2) continue;
+      console.error('[concierge/clientes-perfil POST]', e.message);
+      return res.status(500).json({ ok: false, erro: e.message });
+    }
+  }
+});
 
 // GET /concierge/clientes
 app.get('/concierge/clientes', async (req, res) => {
@@ -3433,6 +3651,8 @@ app.post('/concierge/clientes/importar', async (req, res) => {
       senhas:        cel(row, cfg.colSenhas),
       acompanhantes: cel(row, cfg.colAcompanhantes),
       grupo:         cel(row, cfg.colGrupo),
+      passaporte:    cel(row, 'G'),
+      passaporteVal: cel(row, 'BB'),
       ativo:         ativoSim.indexOf(cel(row, cfg.colAtivo || 'P').toLowerCase()) !== -1,
       origem:        'planilha',
       atualizadoEm:  agora
@@ -3440,18 +3660,227 @@ app.post('/concierge/clientes/importar', async (req, res) => {
 
     if (!lista.length) return res.status(422).json({ ok: false, erro: 'planilha retornou 0 clientes com nome — importacao abortada para nao zerar a base' });
 
+    // Perfil: mesma passada pela planilha, arquivo separado. O indice do array
+    // e o mesmo do cadastro, entao `id` casa os dois lados sem heuristica.
+    const num = (v) => {
+      const t = String(v == null ? '' : v).replace(/[^\d-]/g, '');
+      return t === '' ? null : Number(t);
+    };
+    const perfis = d.rows.map((row, i) => {
+      const nome = titulo(row[colIdx(cfg.colNome)]);
+      if (!nome) return null;
+      const programas = [];
+      const porNome = {};
+      for (const [col, prog] of Object.entries(PLAN_TEM_PROGRAMA)) {
+        porNome[prog] = { programa: prog, tem: /^tenho$/i.test(cel(row, col)), pontos: null };
+        programas.push(porNome[prog]);
+      }
+      for (const [col, prog] of Object.entries(PLAN_PONTOS)) {
+        if (!porNome[prog]) { porNome[prog] = { programa: prog, tem: false, pontos: null }; programas.push(porNome[prog]); }
+        porNome[prog].pontos = num(row[colIdx(col)]);
+      }
+      // Saldo informado implica cadastro, mesmo que o cliente nao tenha marcado.
+      for (const pr of programas) if (pr.pontos !== null && pr.pontos > 0) pr.tem = true;
+      programas.sort((a, b) => a.programa.localeCompare(b.programa, 'pt-BR'));
+
+      return perfilNormalizado({
+        id:              'cli-' + i,
+        nome:            nome,
+        criarContas:     cel(row, 'Q'),
+        programas:       programas,
+        outrosProgramas: cel(row, 'BG'),
+        senhas:          parseSenhas(cel(row, cfg.colSenhas || 'AE')),
+        cartoes:         PLAN_CARTOES.map(c => cel(row, c)).filter(Boolean),
+        cartaoVirtual:   cel(row, 'AK'),
+        objetivos:       cel(row, 'BC'),
+        estilo:          cel(row, 'BD'),
+        consentimento:   cel(row, 'B'),
+        respondidoEm:    cel(row, 'A'),
+        atualizadoEm:    agora
+      });
+    }).filter(Boolean);
+
     for (let tentativa = 0; tentativa < 3; tentativa++) {
       try {
         const { sha } = await lerClientesConcierge();
         await putConciergeFile(CONCIERGE_CLIENTES, lista, sha, CONCIERGE_DADOS_REPO);
-        return res.json({ ok: true, total: lista.length });
+        break;
+      } catch(e) {
+        if (e.status === 409 && tentativa < 2) continue;
+        throw e;
+      }
+    }
+    for (let tentativa = 0; tentativa < 3; tentativa++) {
+      try {
+        const { sha } = await lerArquivoConcierge(CONCIERGE_PERFIL);
+        await putConciergeFile(CONCIERGE_PERFIL, perfis, sha, CONCIERGE_DADOS_REPO);
+        break;
+      } catch(e) {
+        if (e.status === 409 && tentativa < 2) continue;
+        throw e;
+      }
+    }
+    return res.json({ ok: true, total: lista.length, perfis: perfis.length,
+                      senhas: perfis.reduce((n, p) => n + p.senhas.itens.length, 0) });
+  } catch(e) {
+    console.error('[concierge/clientes/importar]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// ── CONCIERGE: Cadastro publico (formulario proprio) ───────────────────
+// Substitui o Google Forms. O endpoint e aberto — qualquer um na internet pode
+// chamar — entao NUNCA escreve na base de producao: grava em
+// clientes-pendentes.json, que so vira cliente depois de aprovacao no painel.
+// Protecoes: honeypot, limite de tamanho, minimo de campos e teto por IP/hora.
+
+const _cadastroIPs = new Map(); // ip → [timestamps]
+const CADASTRO_TETO_HORA = 5;
+
+function cadastroLiberado(ip) {
+  const agora = Date.now();
+  const janela = agora - 3600000;
+  const hist = (_cadastroIPs.get(ip) || []).filter(t => t > janela);
+  if (hist.length >= CADASTRO_TETO_HORA) { _cadastroIPs.set(ip, hist); return false; }
+  hist.push(agora);
+  _cadastroIPs.set(ip, hist);
+  // Poda preguicosa: sem isso o Map cresce sem limite ate o proximo restart.
+  if (_cadastroIPs.size > 5000) {
+    for (const [k, v] of _cadastroIPs) if (!v.some(t => t > janela)) _cadastroIPs.delete(k);
+  }
+  return true;
+}
+
+const soDigitos = (v) => String(v == null ? '' : v).replace(/\D/g, '');
+
+function cpfValido(cpf) {
+  const t = soDigitos(cpf);
+  if (t.length !== 11 || /^(\d)\1{10}$/.test(t)) return false;
+  for (const corte of [9, 10]) {
+    let soma = 0;
+    for (let i = 0; i < corte; i++) soma += Number(t[i]) * (corte + 1 - i);
+    let dv = (soma * 10) % 11;
+    if (dv === 10) dv = 0;
+    if (dv !== Number(t[corte])) return false;
+  }
+  return true;
+}
+
+// POST /concierge/cadastro — recebe o formulario publico
+app.post('/concierge/cadastro', async (req, res) => {
+  try {
+    const ip = String(req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
+    if (!cadastroLiberado(ip)) return res.status(429).json({ ok: false, erro: 'Muitas tentativas. Tente novamente em uma hora.' });
+
+    const b = req.body || {};
+    // Honeypot: campo escondido por CSS. Humano nunca preenche; bot preenche tudo.
+    // Responde 200 de propriedade para o bot achar que funcionou e ir embora.
+    if (String(b.website || '').trim()) return res.json({ ok: true });
+
+    if (JSON.stringify(b).length > 60000) return res.status(413).json({ ok: false, erro: 'Formulario grande demais.' });
+    if (b.consentimento !== true) return res.status(400).json({ ok: false, erro: 'E necessario aceitar o tratamento dos dados (LGPD).' });
+
+    const t = (v) => String(v == null ? '' : v).trim().slice(0, 500);
+    const nome = t(b.nome);
+    if (nome.split(/\s+/).length < 2) return res.status(400).json({ ok: false, erro: 'Informe o nome completo.' });
+    if (soDigitos(b.tel).length < 10)  return res.status(400).json({ ok: false, erro: 'Telefone invalido — inclua o DDD.' });
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(t(b.email))) return res.status(400).json({ ok: false, erro: 'E-mail invalido.' });
+    if (!cpfValido(b.cpf)) return res.status(400).json({ ok: false, erro: 'CPF invalido.' });
+
+    const agora = new Date().toISOString();
+    const id = 'pend-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
+
+    const cadastro = clienteNormalizado({
+      id, nome,
+      tel: soDigitos(b.tel), email: t(b.email).toLowerCase(), cpf: soDigitos(b.cpf),
+      nasc: t(b.nasc), passaporte: t(b.passaporte), passaporteVal: t(b.passaporteVal),
+      logradouro: t(b.logradouro), numero: t(b.numero), complemento: t(b.complemento),
+      cep: soDigitos(b.cep), bairro: t(b.bairro), cidade: t(b.cidade), estado: t(b.estado),
+      acompanhantes: t(b.acompanhantes), grupo: '', ativo: false,
+      origem: 'formulario', atualizadoEm: agora
+    });
+
+    const senhasItens = (Array.isArray(b.senhas) ? b.senhas : [])
+      .map(x => ({ programa: t(x.programa), senha: t(x.senha), rotulo: '' }))
+      .filter(x => x.programa && x.senha);
+
+    const perfil = perfilNormalizado({
+      id, nome,
+      criarContas:     t(b.criarContas),
+      programas:       (Array.isArray(b.programas) ? b.programas : []).map(x => ({
+                         programa: t(x.programa), tem: x.tem === true,
+                         pontos: x.pontos === '' || x.pontos == null ? null : Number(soDigitos(x.pontos))
+                       })).filter(x => x.programa),
+      outrosProgramas: t(b.outrosProgramas),
+      senhas:          { itens: senhasItens, outros: t(b.senhasOutros), bruto: '' },
+      cartoes:         (Array.isArray(b.cartoes) ? b.cartoes : []).map(t).filter(Boolean),
+      cartaoVirtual:   '',
+      objetivos:       t(b.objetivos),
+      estilo:          t(b.estilo),
+      consentimento:   'Aceito',
+      respondidoEm:    agora,
+      atualizadoEm:    agora
+    });
+
+    for (let tentativa = 0; tentativa < 3; tentativa++) {
+      try {
+        const { lista, sha } = await lerArquivoConcierge(CONCIERGE_PENDENTES);
+        lista.push({ id, recebidoEm: agora, ip, cadastro, perfil });
+        await putConciergeFile(CONCIERGE_PENDENTES, lista, sha, CONCIERGE_DADOS_REPO);
+        return res.json({ ok: true, id });
       } catch(e) {
         if (e.status === 409 && tentativa < 2) continue;
         throw e;
       }
     }
   } catch(e) {
-    console.error('[concierge/clientes/importar]', e.message);
+    console.error('[concierge/cadastro]', e.message);
+    res.status(500).json({ ok: false, erro: 'Nao foi possivel registrar agora. Tente novamente em instantes.' });
+  }
+});
+
+// GET /concierge/pendentes — fila de aprovacao (painel)
+app.get('/concierge/pendentes', async (req, res) => {
+  try {
+    const { lista } = await lerArquivoConcierge(CONCIERGE_PENDENTES);
+    res.json({ ok: true, data: lista });
+  } catch(e) {
+    console.error('[concierge/pendentes GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// POST /concierge/pendentes/aprovar { id, acao: 'aprovar'|'descartar' }
+app.post('/concierge/pendentes/aprovar', async (req, res) => {
+  const { id, acao } = req.body || {};
+  if (!id) return res.status(400).json({ ok: false, erro: 'id obrigatorio' });
+  try {
+    const { lista: pend, sha: shaPend } = await lerArquivoConcierge(CONCIERGE_PENDENTES);
+    const idx = pend.findIndex(p => p && p.id === id);
+    if (idx === -1) return res.status(404).json({ ok: false, erro: 'cadastro pendente nao encontrado' });
+    const item = pend[idx];
+
+    if (acao !== 'descartar') {
+      const { lista: clientes, sha: shaCli } = await lerClientesConcierge();
+      const { lista: perfis,   sha: shaPer } = await lerArquivoConcierge(CONCIERGE_PERFIL);
+      // id definitivo: 'cli-<n>' seguindo a numeracao ja usada pela base.
+      let n = 0;
+      for (const c of clientes) {
+        const m = String(c.id || '').match(/^cli-(\d+)$/);
+        if (m) n = Math.max(n, Number(m[1]) + 1);
+      }
+      const novoId = 'cli-' + n;
+      clientes.push(clienteNormalizado(Object.assign({}, item.cadastro, { id: novoId })));
+      perfis.push(perfilNormalizado(Object.assign({}, item.perfil, { id: novoId })));
+      await putConciergeFile(CONCIERGE_CLIENTES, clientes, shaCli, CONCIERGE_DADOS_REPO);
+      await putConciergeFile(CONCIERGE_PERFIL,   perfis,   shaPer, CONCIERGE_DADOS_REPO);
+    }
+
+    pend.splice(idx, 1);
+    await putConciergeFile(CONCIERGE_PENDENTES, pend, shaPend, CONCIERGE_DADOS_REPO);
+    res.json({ ok: true });
+  } catch(e) {
+    console.error('[concierge/pendentes/aprovar]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
