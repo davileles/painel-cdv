@@ -374515,7 +374515,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 4,
+          "pts": 1,
           "dollar": false
         },
         "smiles": {
@@ -374554,7 +374554,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 5,
+          "pts": 2,
           "dollar": false
         },
         "smiles": {
@@ -374810,7 +374810,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 1,
+          "pts": 5,
           "dollar": false
         },
         "smiles": {
@@ -375451,7 +375451,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 2,
+          "pts": 5,
           "dollar": false
         },
         "inter": {
@@ -377617,6 +377617,36 @@
         }
       }
     },
+    "mascavo": {
+      "programs": {
+        "esfera": {
+          "pts": 5,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 12,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-mascavo",
+          "categorias": [
+            {
+              "categoria": "Pincéis, Blush e Corretivo",
+              "pts": 12,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 10,
+              "principal": true
+            }
+          ],
+          "ptsBase": 10
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-mascavo"
+      }
+    },
     "elens": {
       "programs": {
         "esfera": {
@@ -378557,36 +378587,6 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-magicfeet"
-      }
-    },
-    "mascavo": {
-      "programs": {
-        "esfera": {
-          "pts": 1,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 12,
-          "dollar": false,
-          "ate": true,
-          "slug": "cupom-mascavo",
-          "categorias": [
-            {
-              "categoria": "Pincéis, Blush e Corretivo",
-              "pts": 12,
-              "principal": false
-            },
-            {
-              "categoria": "Demais categorias",
-              "pts": 10,
-              "principal": true
-            }
-          ],
-          "ptsBase": 10
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-mascavo"
       }
     },
     "mundos infinitos": {
