@@ -1,8 +1,22 @@
 {
-  "geradoEm": "2026-08-10T17:25:12.743Z",
+  "geradoEm": "2026-08-13T16:44:48.468Z",
   "descricao": "Histórico de ofertas de transferência bonificada entre programas, usado para comparar novas ofertas do Radar com o padrão histórico (bônus médio e frequência). Dois tipos de registro: origem específica→destino específica, ou origem 'Todos' (quando a campanha vale para todos/quase todos os bancos parceiros)→destino específica. Nomes de origem/destino alinhados às listas fixas usadas no dropdown do gerador-cdv (2026-07-18). Backfill adicional (113 registros) importado da planilha histórica do Davi em 2026-07-18, cobrindo 02/01 a 30/06/2026.",
   "regrasDedup": "Duas ofertas com a mesma chave origem→destino e o MESMO prazo de encerramento são consideradas a mesma campanha (ex: reenvio/lembrete) e não geram novo registro — apenas anexam o ofertaId ao registro existente. Prazo diferente = campanha nova = novo registro.",
   "items": [
+    {
+      "chave": "itau→smiles",
+      "origem": "Itaú",
+      "destino": "Smiles",
+      "origemTipo": "especifica",
+      "bonusMax": 80,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-08-13",
+      "prazo": "",
+      "ofertaIds": [
+        "b5w5vy"
+      ],
+      "observacao": ""
+    },
     {
       "chave": "itau→latam_pass",
       "origem": "Itaú",
