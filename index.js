@@ -3095,14 +3095,19 @@ app.post('/ia/extrair-reserva', (req, res) => {
 // ── CONCIERGE: Reservas e Viagens ──────────────────────────────
 
 const CONCIERGE_REPO = 'davileles/concierge';
+// Base de clientes do concierge: CPF, endereco, nascimento e o campo `senhas`.
+// Mora no repo PRIVADO de dados — o repo `concierge` e publico (serve o Pages).
+const CONCIERGE_DADOS_REPO  = GITHUB_REPO_TSP;
+const CONCIERGE_CLIENTES    = 'concierge/clientes.json';
 
-async function getConciergeFile(filename) {
+async function getConciergeFile(filename, repo) {
+  const repoAlvo = repo || CONCIERGE_REPO;
   return new Promise((resolve, reject) => {
     const https = require('https');
     // Primeiro buscar SHA via API normal
     const optsMeta = {
       hostname: 'api.github.com',
-      path: `/repos/${CONCIERGE_REPO}/contents/${filename}`,
+      path: `/repos/${repoAlvo}/contents/${filename}`,
       headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'User-Agent': 'cdv-proxy', 'Accept': 'application/vnd.github+json' }
     };
     https.get(optsMeta, (resMeta) => {
@@ -3121,7 +3126,7 @@ async function getConciergeFile(filename) {
           // (não usa raw.githubusercontent.com, que quebra se o repo for privado)
           const optsRaw = {
             hostname: 'api.github.com',
-            path: `/repos/${CONCIERGE_REPO}/contents/${filename}`,
+            path: `/repos/${repoAlvo}/contents/${filename}`,
             headers: {
               'Authorization': `token ${GITHUB_TOKEN}`,
               'User-Agent': 'cdv-proxy',
@@ -3144,7 +3149,8 @@ async function getConciergeFile(filename) {
   });
 }
 
-async function putConciergeFile(filename, content, sha) {
+async function putConciergeFile(filename, content, sha, repo) {
+  const repoAlvo = repo || CONCIERGE_REPO;
   return new Promise((resolve, reject) => {
     const https = require('https');
     const body = JSON.stringify({
@@ -3154,7 +3160,7 @@ async function putConciergeFile(filename, content, sha) {
     });
     const options = {
       hostname: 'api.github.com',
-      path: `/repos/${CONCIERGE_REPO}/contents/${filename}`,
+      path: `/repos/${repoAlvo}/contents/${filename}`,
       method: 'PUT',
       headers: {
         'Authorization': `token ${GITHUB_TOKEN}`,
@@ -3298,40 +3304,176 @@ app.post('/concierge/demandas', async (req, res) => {
   }
 });
 
+// ── CONCIERGE: Base de clientes ────────────────────────────────────────
+// Antes a base vinha do Apps Script (planilha do Google Forms) em TRES pontos:
+// painel, lembrete-voo.js e /concierge/portal. O /exec nunca serve JSON direto —
+// responde 302 para script.googleusercontent.com/macros/echo?user_content_key=…,
+// e essa key e de uso praticamente unico: cache do browser, chamadas concorrentes
+// ou deploy revalidado devolvem 404. Pior, as paginas de erro do Apps Script nao
+// mandam CORS, entao aba renomeada chegava ao front indistinguivel de queda de
+// rede. Agora a fonte da verdade e um JSON versionado no repo privado.
+
+function clienteNormalizado(c) {
+  const t = (v) => String(v == null ? '' : v).trim();
+  return {
+    id:            t(c.id),
+    nome:          t(c.nome),
+    tel:           t(c.tel),
+    email:         t(c.email),
+    cpf:           t(c.cpf),
+    nasc:          t(c.nasc),
+    logradouro:    t(c.logradouro),
+    numero:        t(c.numero),
+    complemento:   t(c.complemento),
+    cep:           t(c.cep),
+    bairro:        t(c.bairro),
+    cidade:        t(c.cidade),
+    estado:        t(c.estado),
+    senhas:        t(c.senhas),
+    acompanhantes: t(c.acompanhantes),
+    grupo:         t(c.grupo),
+    ativo:         c.ativo === true,
+    origem:        t(c.origem) || 'planilha',
+    atualizadoEm:  t(c.atualizadoEm) || new Date().toISOString()
+  };
+}
+
+async function lerClientesConcierge() {
+  try {
+    const { content, sha } = await getConciergeFile(CONCIERGE_CLIENTES, CONCIERGE_DADOS_REPO);
+    return { lista: Array.isArray(content) ? content : [], sha };
+  } catch(e) {
+    // 404 na primeira execucao (arquivo ainda nao existe) nao e erro: base vazia.
+    if (/404|Not Found|Unexpected token/i.test(e.message)) return { lista: [], sha: null };
+    throw e;
+  }
+}
+
+// GET /concierge/clientes
+app.get('/concierge/clientes', async (req, res) => {
+  try {
+    const { lista } = await lerClientesConcierge();
+    res.json({ ok: true, data: lista });
+  } catch(e) {
+    console.error('[concierge/clientes GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// POST /concierge/clientes — salva a base inteira (read-modify-write do painel)
+app.post('/concierge/clientes', async (req, res) => {
+  const { data } = req.body;
+  if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
+  const lista = data.filter(c => c && String(c.nome || '').trim()).map(clienteNormalizado);
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    try {
+      const { sha } = await lerClientesConcierge();
+      await putConciergeFile(CONCIERGE_CLIENTES, lista, sha, CONCIERGE_DADOS_REPO);
+      return res.json({ ok: true, total: lista.length });
+    } catch(e) {
+      // 409 = SHA desatualizado (escrita concorrente venceu a corrida) — refaz com SHA fresco
+      if (e.status === 409 && tentativa < 2) continue;
+      console.error('[concierge/clientes POST]', e.message);
+      return res.status(500).json({ ok: false, erro: e.message });
+    }
+  }
+});
+
+// POST /concierge/clientes/importar — migracao pontual a partir da planilha.
+// Roda no Railway, nao no browser: sem CORS, sem cache do Chrome, sem a corrida
+// da user_content_key. Le o mapa de colunas do cfg.json e grava o JSON normalizado.
+app.post('/concierge/clientes/importar', async (req, res) => {
+  try {
+    const { content: cfg } = await getConciergeFile('cfg.json');
+    if (!cfg || !cfg.url) return res.status(400).json({ ok: false, erro: 'cfg.url (Apps Script) nao configurado' });
+
+    const aba  = req.body && req.body.aba  ? req.body.aba  : (cfg.aba  || 'Clientes');
+    const url  = cfg.url + '?aba=' + encodeURIComponent(aba) + '&linha=' + encodeURIComponent(cfg.linha || 2) + '&_ts=' + Date.now();
+
+    let d = null, ultimoErro = '';
+    for (let tentativa = 0; tentativa < 3 && !d; tentativa++) {
+      try {
+        const r = await fetch(url, { redirect: 'follow' });
+        const txt = await r.text();
+        if (!r.ok) { ultimoErro = 'HTTP ' + r.status + ' no Apps Script'; continue; }
+        try { d = JSON.parse(txt); }
+        catch(_) { ultimoErro = 'Apps Script devolveu HTML em vez de JSON — aba "' + aba + '" inexistente, deploy antigo ou sem permissao'; }
+      } catch(eNet) { ultimoErro = eNet.message; }
+    }
+    if (!d) return res.status(502).json({ ok: false, erro: ultimoErro || 'sem resposta do Apps Script' });
+    if (!d.ok || !Array.isArray(d.rows)) return res.status(502).json({ ok: false, erro: 'Apps Script respondeu sem o campo "rows"' });
+
+    const colIdx = (letra) => {
+      const t = String(letra || 'A').toUpperCase().trim();
+      let r = 0;
+      for (let i = 0; i < t.length; i++) r = r * 26 + (t.charCodeAt(i) - 64);
+      return r - 1;
+    };
+    const cel = (row, letra) => String(row[colIdx(letra)] == null ? '' : row[colIdx(letra)]).trim();
+    // Mesmo toTitleCase(slice 0,3) do painel: as reservas ja gravadas usam essa forma.
+    const titulo = (v) => String(v || '').trim().split(/\s+/).slice(0, 3)
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+    const ativoSim = ['sim','s','x','1','true','ativo','ativa','ok','yes','y','verdadeiro'];
+
+    const agora = new Date().toISOString();
+    const lista = d.rows.map((row, i) => clienteNormalizado({
+      id:            'cli-' + i,
+      nome:          titulo(row[colIdx(cfg.colNome)]),
+      tel:           cel(row, cfg.colTel),
+      email:         cel(row, cfg.colEmail),
+      cpf:           cel(row, cfg.colCpf),
+      nasc:          cel(row, cfg.colNasc),
+      logradouro:    cel(row, cfg.colLogradouro),
+      numero:        cel(row, cfg.colNumero),
+      complemento:   cel(row, cfg.colComplemento),
+      cep:           cel(row, cfg.colCep),
+      bairro:        cel(row, cfg.colBairro),
+      cidade:        cel(row, cfg.colCidade),
+      estado:        cel(row, cfg.colEstado),
+      senhas:        cel(row, cfg.colSenhas),
+      acompanhantes: cel(row, cfg.colAcompanhantes),
+      grupo:         cel(row, cfg.colGrupo),
+      ativo:         ativoSim.indexOf(cel(row, cfg.colAtivo || 'P').toLowerCase()) !== -1,
+      origem:        'planilha',
+      atualizadoEm:  agora
+    })).filter(c => c.nome);
+
+    if (!lista.length) return res.status(422).json({ ok: false, erro: 'planilha retornou 0 clientes com nome — importacao abortada para nao zerar a base' });
+
+    for (let tentativa = 0; tentativa < 3; tentativa++) {
+      try {
+        const { sha } = await lerClientesConcierge();
+        await putConciergeFile(CONCIERGE_CLIENTES, lista, sha, CONCIERGE_DADOS_REPO);
+        return res.json({ ok: true, total: lista.length });
+      } catch(e) {
+        if (e.status === 409 && tentativa < 2) continue;
+        throw e;
+      }
+    }
+  } catch(e) {
+    console.error('[concierge/clientes/importar]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 // GET /concierge/portal?email=x — dados do cliente para o portal de acompanhamento
 app.get('/concierge/portal', async (req, res) => {
   const email = (req.query.email || '').toLowerCase().trim();
   if (!email) return res.status(400).json({ ok: false, erro: 'email obrigatório' });
 
   try {
-    // 1. Buscar cfg para obter URL do Apps Script e configuração de colunas
+    // 1. Base de clientes: JSON no repo privado (antes vinha do Apps Script, que
+    //    quebrava com 404 da user_content_key e derrubava o portal junto).
     const CONCIERGE_REPO = 'davileles/concierge';
     const ghHeaders = { 'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json' };
 
-    const cfgRes = await fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/cfg.json`, { compress: false, headers: ghHeaders });
-    const cfgData = await cfgRes.json();
-    const cfg = JSON.parse(Buffer.from(cfgData.content, 'base64').toString('utf8'));
+    const { lista: baseClientes } = await lerClientesConcierge();
 
-    if (!cfg.url) return res.status(400).json({ ok: false, erro: 'Apps Script não configurado' });
-
-    // 2. Buscar clientes do Apps Script
-    const sheetUrl = cfg.url + '?aba=' + encodeURIComponent(cfg.aba || 'Clientes') + '&linha=' + (cfg.linha || 2);
-    const sheetRes = await fetch(sheetUrl);
-    const sheetData = await sheetRes.json();
-
-    function colIdx(letra) {
-      const s = (letra || 'A').toUpperCase().trim();
-      let r = 0;
-      for (let i = 0; i < s.length; i++) r = r * 26 + (s.charCodeAt(i) - 64);
-      return r - 1;
-    }
-
-    const rows = sheetData.rows || [];
-    // Encontrar clientes cujo e-mail corresponde
-    const clientesMatch = rows
-      .map(row => ({
-        nome: String(row[colIdx(cfg.colNome)] || '').trim(),
-        email: String(row[colIdx(cfg.colEmail)] || '').trim().toLowerCase(),
+    // 2. Encontrar clientes cujo e-mail corresponde
+    const clientesMatch = baseClientes
+      .map(c => ({
+        nome: String(c.nome || '').trim(),
+        email: String(c.email || '').trim().toLowerCase(),
       }))
       .filter(c => c.email === email && c.nome);
 
