@@ -1,9 +1,47 @@
 {
   "descricao": "Catálogo manual do TopCashback. Diferente do Méliuz, aqui não há cruzamento automático: são poucas lojas, escolhidas por relevância para o CDV. Para adicionar uma loja, inclua o slug da URL (https://www.topcashback.co.uk/<slug>/ ou https://www.topcashback.com/<slug>/) e a chave usada no historico.json.",
   "lojas": [
-    { "programa": "tcbuk", "pais": "uk", "slug": "all-accor-live-limitless",     "nome": "ALL Accor", "chave": "all accor" },
-    { "programa": "tcbuk", "pais": "uk", "slug": "viator-a-tripadvisor-company", "nome": "Viator",    "chave": "viator" },
-    { "programa": "tcbus", "pais": "us", "slug": "accorhotels",                  "nome": "ALL Accor", "chave": "all accor" },
-    { "programa": "tcbus", "pais": "us", "slug": "viator",                       "nome": "Viator",    "chave": "viator" }
+    {
+      "programa": "tcbuk",
+      "pais": "uk",
+      "slug": "all-accor-live-limitless",
+      "nome": "ALL Accor",
+      "chave": "all accor"
+    },
+    {
+      "programa": "tcbuk",
+      "pais": "uk",
+      "slug": "viator-a-tripadvisor-company",
+      "nome": "Viator",
+      "chave": "viator"
+    },
+    {
+      "programa": "tcbus",
+      "pais": "us",
+      "slug": "accorhotels",
+      "nome": "ALL Accor",
+      "chave": "all accor"
+    },
+    {
+      "programa": "tcbus",
+      "pais": "us",
+      "slug": "viator",
+      "nome": "Viator",
+      "chave": "viator"
+    },
+    {
+      "programa": "tcbuk",
+      "pais": "uk",
+      "slug": "getyourguide",
+      "nome": "GetYourGuide",
+      "chave": "getyourguide"
+    },
+    {
+      "programa": "tcbus",
+      "pais": "us",
+      "slug": "getyourguide",
+      "nome": "GetYourGuide",
+      "chave": "getyourguide"
+    }
   ]
 }
