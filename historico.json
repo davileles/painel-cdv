@@ -380886,7 +380886,7 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 4,
+          "pts": 7,
           "dollar": false,
           "ate": false,
           "slug": "cupom-hoteiscom"
@@ -383594,7 +383594,7 @@
           "slug": "pague-menos-172"
         },
         "meliuz": {
-          "pts": 5,
+          "pts": 6,
           "dollar": false,
           "ate": false,
           "slug": "cupom-pague-menos"
@@ -386902,6 +386902,42 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-viator",
         "tcbuk": "https://www.topcashback.co.uk/viator-a-tripadvisor-company/",
         "tcbus": "https://www.topcashback.com/viator/"
+      }
+    },
+    "getyourguide": {
+      "programs": {
+        "tcbuk": {
+          "pts": 7.35,
+          "dollar": false,
+          "ate": false,
+          "slug": "getyourguide",
+          "pais": "uk",
+          "categorias": [
+            {
+              "grupo": "GetYourGuide",
+              "nome": "Online Purchase",
+              "pct": 7.35
+            }
+          ]
+        },
+        "tcbus": {
+          "pts": 12,
+          "dollar": false,
+          "ate": false,
+          "slug": "getyourguide",
+          "pais": "us",
+          "categorias": [
+            {
+              "grupo": "GetYourGuide",
+              "nome": "Online Purchase",
+              "pct": 12
+            }
+          ]
+        }
+      },
+      "links": {
+        "tcbuk": "https://www.topcashback.co.uk/getyourguide/",
+        "tcbus": "https://www.topcashback.com/getyourguide/"
       }
     }
   }
