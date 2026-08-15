@@ -398,6 +398,15 @@ async function ggHandle(req, res, slug) {
   g.entradas = (g.entradas || 0) + 1;
   g.cliques  = (g.cliques  || 0) + 1;
   link.cliques = (link.cliques || 0) + 1;
+  // Historico diario por link (dia no fuso de SP; Brasil sem horario de verao,
+  // entao -03:00 fixo e seguro). Mantem no maximo ~400 dias para o JSON nao crescer sem fim.
+  const diaSP = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  link.cliquesDia = link.cliquesDia || {};
+  if (!link.cliquesDia[diaSP]) {
+    const dias = Object.keys(link.cliquesDia).sort();
+    while (dias.length >= 400) delete link.cliquesDia[dias.shift()];
+  }
+  link.cliquesDia[diaSP] = (link.cliquesDia[diaSP] || 0) + 1;
   const origem = String(req.query.o || 'direto').slice(0, 40).replace(/[^\w.\-]/g, '') || 'direto';
   link.origens = link.origens || {};
   link.origens[origem] = (link.origens[origem] || 0) + 1;
@@ -515,6 +524,7 @@ app.get('/gg/links', async (req, res) => {
       ativo: l.ativo !== false,
       fallback: l.fallback || '',
       cliques: l.cliques || 0,
+      cliquesDia: l.cliquesDia || {},
       origens: l.origens || {},
       ultimoClique: l.ultimoClique || null,
       criadoEm: l.criadoEm || null,
