@@ -27,7 +27,9 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'desejos.json',
   // Base das campanhas de WhatsApp: nome, telefone e e-mail de gente real.
   // Nunca pode viver no painel-cdv, que e publico por servir o GitHub Pages.
-  'campanhas.json'
+  'campanhas.json',
+  // Indice de roteiros por membro (e-mail + slug): dado pessoal, repo privado.
+  'roteiros-membros.json'
 ]);
 // NÃO migrar (verificado): 'passagens.json' é catálogo de ofertas
 // (cia/origem/destino/pontos) — sem dado pessoal. 'historico.json',
@@ -4562,8 +4564,12 @@ function injetarOpenGraph(html, slug, capaUrl, D) {
 //  - Faz commit do HTML em davileles/roteiros/{slug}/index.html
 //  - Se viagemId fornecido, atualiza viagem no concierge com slugRoteiro + urlRoteiro
 // ══════════════════════════════════════════════════════════════════
+// Indice privado { email, slug, titulo, url, criadoEm, atualizadoEm } — vive no
+// repo de dados (ARQUIVOS_SENSIVEIS) porque associa e-mail de membro a roteiro.
+const ROTEIROS_MEMBROS_PATH = 'roteiros-membros.json';
+
 app.post('/roteiros/publicar', async (req, res) => {
-  const { slug, html, htmlBase64, viagemId } = req.body || {};
+  const { slug, html, htmlBase64, viagemId, email, titulo } = req.body || {};
 
   if (!slug) return res.status(400).json({ ok: false, erro: 'slug obrigatório' });
 
@@ -4639,6 +4645,29 @@ app.post('/roteiros/publicar', async (req, res) => {
       }
     }
 
+    // 4. Registrar/atualizar no indice de roteiros por membro (best-effort:
+    //    falha aqui nunca quebra o publish — o HTML ja foi commitado)
+    if (email) {
+      try {
+        const idx = await ghGetJson(ROTEIROS_MEMBROS_PATH, []);
+        const lista = Array.isArray(idx.data) ? idx.data : [];
+        const agora = new Date().toISOString();
+        const emailNorm = String(email).toLowerCase().trim();
+        const pos = lista.findIndex(r => r && r.slug === slug);
+        if (pos !== -1) {
+          if (titulo) lista[pos].titulo = titulo;
+          if (!lista[pos].email) lista[pos].email = emailNorm;
+          lista[pos].url = url;
+          lista[pos].atualizadoEm = agora;
+        } else {
+          lista.push({ email: emailNorm, slug, titulo: titulo || slug, url, criadoEm: agora, atualizadoEm: agora });
+        }
+        await ghPutJson(ROTEIROS_MEMBROS_PATH, lista, idx.sha, `roteiros-membros: ${slug}`);
+      } catch(e) {
+        console.warn('[roteiros/publicar] Aviso: nao registrou indice de membro:', e.message);
+      }
+    }
+
     res.json({ ok: true, url, slug, viagemAtualizada: !!viagemId });
 
   } catch(e) {
@@ -4666,6 +4695,53 @@ app.get('/roteiros/publicar', async (req, res) => {
       res.json({ ok: true, existe: false });
     }
   } catch(e) {
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+
+// GET /roteiros/meus?email= — lista roteiros publicados pelo membro (indice privado)
+app.get('/roteiros/meus', async (req, res) => {
+  const email = String(req.query.email || '').toLowerCase().trim();
+  if (!email) return res.status(400).json({ ok: false, erro: 'email obrigatório' });
+  try {
+    const { data } = await ghGetJson(ROTEIROS_MEMBROS_PATH, []);
+    const lista = (Array.isArray(data) ? data : [])
+      .filter(r => r && String(r.email || '').toLowerCase().trim() === email)
+      .sort((a, b) => String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || '')));
+    res.json({
+      ok: true,
+      roteiros: lista.map(r => ({ slug: r.slug, titulo: r.titulo, url: r.url, criadoEm: r.criadoEm, atualizadoEm: r.atualizadoEm }))
+    });
+  } catch(e) {
+    console.error('[roteiros/meus]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// GET /roteiros/dados?slug= — devolve o ROTEIRO_DATA de um roteiro publicado
+// (usa extrairRoteiroData sobre o HTML commitado em davileles/roteiros)
+app.get('/roteiros/dados', async (req, res) => {
+  const slug = String(req.query.slug || '').trim();
+  if (!slug || !/^[a-z0-9-]+$/.test(slug)) return res.status(400).json({ ok: false, erro: 'slug inválido' });
+  const ROTEIROS_REPO = 'davileles/roteiros';
+  try {
+    // Accept:raw cobre arquivos >1MB (Contents API normal devolve encoding:none)
+    const r = await fetch(`https://api.github.com/repos/${ROTEIROS_REPO}/contents/${slug}/index.html`, {
+      headers: {
+        'Authorization': `token ${GITHUB_TOKEN}`,
+        'User-Agent': 'cdv-proxy',
+        'Accept': 'application/vnd.github.raw'
+      }
+    });
+    if (r.status === 404) return res.json({ ok: false, erro: 'Roteiro não encontrado.' });
+    if (!r.ok) throw new Error(`GitHub GET falhou (${r.status})`);
+    const html = await r.text();
+    const dados = extrairRoteiroData(html);
+    if (!dados) return res.json({ ok: false, erro: 'Este roteiro não possui dados estruturados (formato antigo).' });
+    res.json({ ok: true, dados });
+  } catch(e) {
+    console.error('[roteiros/dados]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
@@ -5632,7 +5708,7 @@ app.post('/ia/roteiro-chat', (req, res) => {
     return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY não configurada no servidor.' });
   }
 
-  const { messages } = req.body || {};
+  const { messages, modo } = req.body || {};
   if (!Array.isArray(messages) || !messages.length) {
     return res.status(400).json({ ok: false, erro: 'Campo obrigatório: messages (array não vazio).' });
   }
@@ -5717,10 +5793,22 @@ FINALIZAÇÃO — quando terminar TODOS os dias:
 2. Apresente tabela de custos: Dia | Data | Motivo | Valor por pessoa em R$
 3. Encerre agradecendo e desejando uma ótima viagem. NÃO ofereça publicar, gerar HTML/PDF ou enviar o roteiro — isso não faz parte desta conversa.`;
 
+  // Modo ajuste: o membro reabriu um roteiro ja publicado (a primeira mensagem
+  // do assistente na conversa contem o roteiro completo, reidratado do HTML).
+  const promptAjuste = `
+
+MODO AJUSTE — o membro já possui um roteiro pronto e publicado; a primeira mensagem do assistente nesta conversa contém esse roteiro completo.
+- IGNORE o fluxo de perguntas 1-11: não refaça o onboarding, não pergunte destino/datas/etc. do zero.
+- Sua tarefa agora é aplicar os ajustes que o membro pedir, mantendo intacto tudo que ele não pediu para mudar.
+- Ao aplicar um ajuste, reapresente APENAS os dias alterados, seguindo exatamente a ESTRUTURA OBRIGATÓRIA de cada dia definida acima.
+- Se o ajuste afetar dados gerais (hotel, datas, voos, viajantes), explique brevemente o impacto e reapresente os dias afetados.
+- Se precisar de alguma informação para executar o ajuste (ex: novo horário de voo), pergunte apenas o necessário, uma pergunta por vez.
+- Ao final de cada resposta com ajustes pergunte: "Quer ajustar mais alguma coisa? Quando estiver tudo certo, é só clicar em 🔄 Atualizar link do roteiro."`;
+
   const bodyPayload = JSON.stringify({
     model: 'claude-sonnet-4-6',
     max_tokens: 4096,
-    system: systemPrompt,
+    system: modo === 'ajuste' ? systemPrompt + promptAjuste : systemPrompt,
     messages: historico
   });
 
@@ -5818,6 +5906,7 @@ REGRAS:
 - "visaoGeral" deve ter entre 4 e 6 cards com os principais dados da viagem (destino, datas, viajantes, orcamento, ritmo, tipo de viagem).
 - Se algum campo opcional nao tiver informacao suficiente na conversa, retorne string vazia "" ou array vazio [], nunca invente.
 - "dias" deve conter TODOS os dias que apareceram na conversa, na ordem correta, numerados a partir de 1.
+- Se um mesmo dia aparecer mais de uma vez na conversa (versao original e versao ajustada depois), use SEMPRE a versao mais recente — a que aparece por ultimo.
 - Responda apenas com o JSON puro, comecando em { e terminando em }.`;
 
   const bodyPayload = JSON.stringify({
