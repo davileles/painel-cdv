@@ -1495,6 +1495,15 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   .rot-header{margin-bottom:14px}
   .rot-title{font-size:13px;font-weight:800;color:var(--cdv-coral);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
   .rot-sub{font-size:12px;color:var(--muted);line-height:1.6}
+  .rot-meus{display:none;margin-bottom:12px}
+  .rot-meus-title{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+  .rot-meus-cards{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .rot-meus-card{flex:0 0 auto;max-width:240px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;transition:border-color .15s}
+  .rot-meus-card:hover{border-color:var(--cdv-coral)}
+  .rot-meus-card-titulo{font-size:12px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+  .rot-meus-card-data{font-size:10px;color:var(--muted)}
+  .rot-meus-card-link{font-size:10px;color:var(--cdv-coral);font-weight:700;text-decoration:none}
+  .rot-meus-card-link:hover{text-decoration:underline}
   .rot-chat-box{flex:1;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
   .rot-msg{max-width:88%;font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word;border-radius:12px;padding:11px 14px}
   .rot-table-wrap{white-space:normal;overflow-x:auto;margin:8px 0;border:1px solid var(--border);border-radius:8px;-webkit-overflow-scrolling:touch}
@@ -1547,6 +1556,11 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
     <p class="rot-sub">Converse comigo sobre a viagem — vou perguntando os detalhes um de cada vez e monto o roteiro dia a dia com você.</p>
   </div>
 
+  <div class="rot-meus" id="rot-meus">
+    <div class="rot-meus-title">📂 Meus roteiros — clique em um para abrir e ajustar</div>
+    <div class="rot-meus-cards" id="rot-meus-cards"></div>
+  </div>
+
   <div id="rot-chat-box" class="rot-chat-box"></div>
 
   <p id="rot-erro" class="rot-fb"></p>
@@ -1588,6 +1602,11 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   var rotSlugAtual = null;
   var rotTituloAtual = null;
   var rotImagemAtual = null;
+  var rotModoAjuste = false; // true quando um roteiro publicado foi reaberto para edição
+
+  function rotGetEmail(){
+    try { var s = JSON.parse(localStorage.getItem('cdv_auth') || 'null'); return (s && s.email) || null; } catch(e){ return null; }
+  }
 
   function rotScrollBottom(){
     var box = document.getElementById('rot-chat-box');
@@ -1727,6 +1746,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
     rotSlugAtual = null;
     rotTituloAtual = null;
     rotImagemAtual = null;
+    rotModoAjuste = false;
     document.getElementById('rot-publish-row').style.display = 'none';
     document.getElementById('rot-publish-result').innerHTML = '';
     document.getElementById('rot-publish-btn').textContent = '🔗 Gerar link do roteiro';
@@ -1764,7 +1784,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
       var resp = await fetch('https://cdv-proxy-production.up.railway.app/ia/roteiro-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: rotHistorico })
+        body: JSON.stringify({ messages: rotHistorico, modo: rotModoAjuste ? 'ajuste' : undefined })
       });
       var dados = await resp.json();
       rotEsconderTyping();
@@ -1783,6 +1803,110 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
       input.focus();
     }
   }
+  // ── Meus roteiros: lista, reabertura e modo ajuste ─────────────────────────
+  async function rotCarregarMeus(){
+    var email = rotGetEmail();
+    if (!email) return;
+    try {
+      var resp = await fetch('https://cdv-proxy-production.up.railway.app/roteiros/meus?email=' + encodeURIComponent(email));
+      var dados = await resp.json();
+      if (!dados.ok || !dados.roteiros || !dados.roteiros.length) return;
+      var cards = document.getElementById('rot-meus-cards');
+      cards.innerHTML = '';
+      dados.roteiros.forEach(function(r){
+        var card = document.createElement('div');
+        card.className = 'rot-meus-card';
+        var t = document.createElement('div');
+        t.className = 'rot-meus-card-titulo';
+        t.textContent = r.titulo || r.slug;
+        var d = document.createElement('div');
+        d.className = 'rot-meus-card-data';
+        var quando = (r.atualizadoEm || r.criadoEm || '').slice(0, 10).split('-').reverse().join('/');
+        d.textContent = quando ? ('Atualizado em ' + quando + ' · ') : '';
+        var a = document.createElement('a');
+        a.className = 'rot-meus-card-link';
+        a.href = r.url; a.target = '_blank'; a.rel = 'noopener';
+        a.textContent = 'ver página';
+        a.onclick = function(ev){ ev.stopPropagation(); };
+        d.appendChild(a);
+        card.appendChild(t);
+        card.appendChild(d);
+        card.onclick = function(){ rotAbrirRoteiro(r); };
+        cards.appendChild(card);
+      });
+      document.getElementById('rot-meus').style.display = 'block';
+    } catch(e){ /* silencioso: a faixa simplesmente não aparece */ }
+  }
+
+  // Converte o ROTEIRO_DATA publicado de volta para o formato de texto que o
+  // próprio assistente produz — assim o chat "acorda" já conhecendo o roteiro
+  // e o /ia/roteiro-extrair reconhece a estrutura na hora de republicar.
+  function rotDadosParaTexto(D){
+    var partes = [];
+    (D.dias || []).forEach(function(dia){
+      var L = [];
+      L.push('📅 **DIA ' + (dia.num || '') + ' – ' + (dia.data || '') + ' | ' + (dia.titulo || '') + '**');
+      if (dia.resumo)  { L.push(''); L.push('📋 **RESUMO**'); L.push(dia.resumo); }
+      if (dia.energia) { L.push(''); L.push('🔋 **NÍVEL DE ENERGIA:** ' + dia.energia); }
+      if (dia.atividades && dia.atividades.length) {
+        L.push(''); L.push('🚶 **ITINERÁRIO**');
+        dia.atividades.forEach(function(a){
+          L.push('');
+          L.push('**' + (a.horario || '') + ' | ' + (a.nome || '') + '**');
+          if (a.descricao) L.push('- ' + a.descricao);
+          if (a.dica)      L.push('- 💡 Dica: ' + a.dica);
+        });
+      }
+      if (dia.deslocamentos && dia.deslocamentos.length) {
+        L.push(''); L.push('🧭 **DESLOCAMENTOS**');
+        dia.deslocamentos.forEach(function(x){ L.push('- ' + x); });
+      }
+      if (dia.custos && dia.custos.length) {
+        L.push(''); L.push('💰 **CUSTOS ESTIMADOS (por pessoa)**');
+        dia.custos.forEach(function(cu){ L.push('- ' + (cu.label || '') + ': ' + (cu.valor || '')); });
+        if (dia.custoTotal) L.push('- Total estimado do dia: ' + dia.custoTotal);
+      }
+      partes.push(L.join('\n'));
+    });
+    return partes.join('\n\n');
+  }
+
+  async function rotAbrirRoteiro(r){
+    if (rotHistorico.length > 1 && !confirm('Abrir este roteiro vai substituir a conversa atual. Continuar?')) return;
+    var erroEl = document.getElementById('rot-erro');
+    erroEl.textContent = '⏳ Carregando roteiro…';
+    erroEl.style.color = 'var(--muted)';
+    try {
+      var resp = await fetch('https://cdv-proxy-production.up.railway.app/roteiros/dados?slug=' + encodeURIComponent(r.slug));
+      var dados = await resp.json();
+      if (!dados.ok) throw new Error(dados.erro || 'Erro ao carregar o roteiro');
+      var D = dados.dados || {};
+      var titulo = r.titulo || D.titulo || 'Meu roteiro';
+      var abertura = 'Aqui está o seu roteiro atual de **' + titulo + '** 🗺️\n\n' + rotDadosParaTexto(D)
+        + '\n\nMe diga o que você quer ajustar — trocar uma atração, mudar horários, adicionar informações de voo, incluir ou remover um dia… Quando estiver tudo certo, é só clicar em 🔄 Atualizar link do roteiro: eu atualizo a mesma página e o link que você já compartilhou continua valendo.';
+
+      rotHistorico = [{ role: 'assistant', content: abertura }];
+      document.getElementById('rot-chat-box').innerHTML = '';
+      rotRenderMsg('assistant', abertura);
+      document.getElementById('rot-input').value = '';
+      rotAjustarAlturaInput();
+
+      rotModoAjuste = true;
+      rotSlugAtual = r.slug;
+      rotTituloAtual = titulo;
+      rotImagemAtual = D.heroImage || '';
+      document.getElementById('rot-publish-result').innerHTML = '';
+      document.getElementById('rot-publish-btn').textContent = '🔄 Atualizar link do roteiro';
+      document.getElementById('rot-publish-row').style.display = 'flex';
+      erroEl.textContent = '';
+      erroEl.style.color = '';
+    } catch(e){
+      erroEl.textContent = 'Erro ao abrir o roteiro: ' + e.message;
+      erroEl.style.color = '';
+    }
+  }
+  window.rotCarregarMeus = rotCarregarMeus;
+
   // ── Publicação do roteiro em link público (davileles/roteiros via proxy) ──
   function rotContarTabelas(texto){
     var linhas = texto.split('\n');
@@ -1918,7 +2042,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
       var resp = await fetch('https://cdv-proxy-production.up.railway.app/roteiros/publicar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug: slug, html: html })
+        body: JSON.stringify({ slug: slug, html: html, email: rotGetEmail(), titulo: titulo })
       });
       var dadosPub = await resp.json();
       if (!dadosPub.ok) throw new Error(dadosPub.erro || 'Erro ao publicar');
@@ -1927,6 +2051,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
       var resEl = document.getElementById('rot-publish-result');
       resEl.innerHTML = '✅ Roteiro publicado! <a class="rot-publish-link" href="' + dadosPub.url + '" target="_blank" rel="noopener">' + dadosPub.url + '</a>';
       document.getElementById('rot-publish-btn').textContent = '🔄 Atualizar link do roteiro';
+      rotCarregarMeus();
     } catch (e) {
       alert('Erro ao publicar roteiro: ' + e.message);
     } finally {
@@ -1948,6 +2073,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
       }
     });
     rotIniciar();
+    rotCarregarMeus();
   });
 })();
 </script>
@@ -5895,6 +6021,7 @@ function switchTab(tab){
   if(tab==='lounges')      lvCarregarAeroportos();
   if(tab==='calculadoras') calcAccorInit();
   if(tab==='cartoes')      ctInit();
+  if(tab==='roteiros' && window.rotCarregarMeus) window.rotCarregarMeus();
   if (window.matchMedia('(max-width:900px)').matches) toggleSidebar(false);
   try{localStorage.setItem('cdv_active_tab', tab);}catch(e){}
 }
