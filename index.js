@@ -311,9 +311,22 @@ let ggEstado = null;
 let ggCarregado = false;
 let ggDirty = false;
 
+// ghGetJson devolve o fallback tanto em 404 quanto em QUALQUER falha de leitura
+// (rate limit, 5xx do GitHub). Um sentinela proprio torna "nao consegui ler"
+// distinguivel de "arquivo legitimamente vazio" — a confusao entre os dois foi
+// o que apagou os links do distribuidor.
+const GG_FALHA_LEITURA = { __falhaLeitura: true };
+
 async function ggCarregar() {
   if (ggCarregado && ggEstado) return ggEstado;
-  const { data } = await ghGetJson(GG_FILE, { links: {} });
+  const { data } = await ghGetJson(GG_FILE, GG_FALHA_LEITURA);
+  // Leitura falhou: NAO marca ggCarregado, para a proxima chamada tentar de novo.
+  // Antes, uma indisponibilidade momentanea do GitHub travava ggEstado={links:{}}
+  // ate o restart seguinte, e o flush periodico gravava esse vazio por cima dos
+  // links reais.
+  if (data === GG_FALHA_LEITURA) {
+    throw new Error('nao foi possivel ler ' + GG_FILE + ' no GitHub');
+  }
   ggEstado = (data && typeof data === 'object' && data.links) ? data : { links: {} };
   ggCarregado = true;
   return ggEstado;
@@ -321,7 +334,25 @@ async function ggCarregar() {
 
 async function ggSalvar(msg) {
   if (!ggEstado) return;
-  const { sha } = await ghGetJson(GG_FILE, { links: {} });   // SHA sempre fresco
+  const { data: remoto, sha } = await ghGetJson(GG_FILE, GG_FALHA_LEITURA);   // SHA sempre fresco
+  if (remoto === GG_FALHA_LEITURA) {
+    throw new Error('leitura de ' + GG_FILE + ' falhou — gravacao abortada');
+  }
+
+  // Guarda anti-destruicao: um estado local vazio nunca substitui um arquivo que
+  // ainda tem links. Se isso acontecer, quem esta furado e o estado local —
+  // adota o remoto como verdade em vez de propagar o vazio.
+  const nLocal  = Object.keys((ggEstado && ggEstado.links) || {}).length;
+  const nRemoto = Object.keys((remoto && remoto.links) || {}).length;
+  if (nLocal === 0 && nRemoto > 0) {
+    console.error('[gg] gravacao ABORTADA: memoria vazia sobrescreveria ' +
+                  nRemoto + ' link(s). Recarregando do GitHub.');
+    ggEstado = remoto;
+    ggCarregado = true;
+    ggDirty = false;
+    return;
+  }
+
   ggEstado.atualizadoEm = new Date().toISOString();
   await ghPutJson(GG_FILE, ggEstado, sha, msg || 'chore: distribuidor de grupos');
   ggDirty = false;
