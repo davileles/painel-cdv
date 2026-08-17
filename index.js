@@ -307,6 +307,24 @@ const GG_FLUSH_MS      = 2 * 60 * 1000;
 const GG_LIMITE_PADRAO = 1010;
 const GG_TETO_WA       = 1024;   // limite duro de um grupo de WhatsApp
 
+// Convites de emergencia. Vivem em env var — fora do GitHub — justamente para
+// continuarem acessiveis quando o GitHub e que esta fora do ar. Trafego pago nao
+// pode cair na home: sem estado, o clique vai direto para um grupo real.
+// Formato: GG_EMERGENCIA=https://chat.whatsapp.com/AAA,https://chat.whatsapp.com/BBB
+const GG_EMERGENCIA = String(process.env.GG_EMERGENCIA || '')
+  .split(',').map(s => s.trim())
+  .filter(s => /^https:\/\/chat\.whatsapp\.com\/[A-Za-z0-9]+$/.test(s));
+let ggEmergIdx = 0;
+
+// Rodizio entre os convites de emergencia: empilhar toda a degradacao num grupo
+// so estouraria o teto de 1024 do WhatsApp e o convite pararia de funcionar.
+function ggConviteEmergencia() {
+  if (!GG_EMERGENCIA.length) return null;
+  const url = GG_EMERGENCIA[ggEmergIdx % GG_EMERGENCIA.length];
+  ggEmergIdx = (ggEmergIdx + 1) % 1000000;
+  return url;
+}
+
 let ggEstado = null;
 let ggCarregado = false;
 let ggDirty = false;
@@ -411,10 +429,21 @@ function ggPaginaPreview(link, slug) {
     '</body></html>';
 }
 
-async function ggHandle(req, res, slug) {
+async function ggHandle(req, res, slug, leituraFalhou) {
   let est;
-  try { est = await ggCarregar(); } catch (e) { est = ggEstado || { links: {} }; }
+  try { est = await ggCarregar(); }
+  catch (e) { est = ggEstado || { links: {} }; leituraFalhou = true; }
   const link = est.links[slug];
+
+  // Degradacao: sem estado nao da para saber se o slug existe nem quais grupos
+  // ele tem. Manda para um grupo real em vez de queimar o clique pago na home.
+  if (leituraFalhou && !link) {
+    const emerg = ggConviteEmergencia();
+    if (emerg) {
+      res.set('Cache-Control', 'no-store');
+      return res.redirect(302, emerg);
+    }
+  }
   if (!link) return res.redirect(302, LINKS_FALLBACK);
   if (link.ativo === false) return res.redirect(302, link.fallback || LINKS_FALLBACK);
 
@@ -425,8 +454,17 @@ async function ggHandle(req, res, slug) {
   }
 
   const g = ggEscolher(link);
-  // Todos cheios ou sem convite: manda para o fallback do link em vez de 404.
-  if (!g) return res.redirect(302, link.fallback || LINKS_FALLBACK);
+  // Todos cheios ou sem convite. Ordem: fallback proprio do link (escolha
+  // explicita do operador) > grupo de emergencia > fallback global.
+  if (!g) {
+    if (link.fallback) return res.redirect(302, link.fallback);
+    const emerg = ggConviteEmergencia();
+    if (emerg) {
+      res.set('Cache-Control', 'no-store');
+      return res.redirect(302, emerg);
+    }
+    return res.redirect(302, LINKS_FALLBACK);
+  }
 
   g.entradas = (g.entradas || 0) + 1;
   g.cliques  = (g.cliques  || 0) + 1;
@@ -525,10 +563,13 @@ app.use(async (req, res, next) => {
   if (!m) return next();
   const slug = m[1].toLowerCase();
   if (RESERVADOS_IR.has(slug)) return next();   // /ping, /health etc seguem funcionando
-  let est;
-  try { est = await ggCarregar(); } catch (e) { est = ggEstado || { links: {} }; }
-  if (!est.links[slug]) return res.redirect(302, GG_HOME);
-  return ggHandle(req, res, slug);
+  let est, falhou = false;
+  try { est = await ggCarregar(); }
+  catch (e) { est = ggEstado || { links: {} }; falhou = true; }
+  // Slug desconhecido com leitura OK = slug realmente inexistente -> home.
+  // Se a leitura falhou, quem decide e o ggHandle (cai na emergencia).
+  if (!falhou && !est.links[slug]) return res.redirect(302, GG_HOME);
+  return ggHandle(req, res, slug, falhou);
 });
 
 app.get(/^\/g\/([a-zA-Z0-9\-_]{1,40})$/, (req, res) =>
@@ -686,6 +727,27 @@ app.post('/gg/sync', async (req, res) => {
     if (ggDirty) await ggSalvar('chore: distribuidor — sincroniza contagens');
     res.json(r);
   } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
+// Diagnostico do distribuidor: diz se o estado esta carregado, quantos links
+// existem e se a emergencia esta armada. Serve para monitorar degradacao sem
+// precisar abrir o painel.
+app.get('/gg/saude', async (req, res) => {
+  let leituraOk = true, erro = null, nLinks = 0;
+  try {
+    const est = await ggCarregar();
+    nLinks = Object.keys(est.links || {}).length;
+  } catch (e) { leituraOk = false; erro = e.message; }
+  res.json({
+    ok: leituraOk && nLinks > 0,
+    leituraOk,
+    erro,
+    estadoCarregado: ggCarregado,
+    links: nLinks,
+    pendenteGravacao: ggDirty,
+    emergenciaConfigurada: GG_EMERGENCIA.length,
+    atualizadoEm: (ggEstado && ggEstado.atualizadoEm) || null,
+  });
 });
 
 app.post('/gg/flush', async (req, res) => {
