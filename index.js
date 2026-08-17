@@ -6717,6 +6717,53 @@ app.get('/afiliados/comissoes', async (req, res) => {
   }
 });
 
+// GET /afiliados/descobertas?loja=&tipo=&q=&limite=
+// Produtos que o publico comprou e que NAO sao disparo nosso: venda indireta
+// (entrou pelo link e levou outra coisa) ou item ainda fora da base. Alimenta a
+// aba Descobertas do painel de gestao. So leitura: quem grava e o coletor.
+const DESCOBERTAS_FILE = 'tsp/vendas-descobertas.json';
+
+app.get('/afiliados/descobertas', async (req, res) => {
+  try {
+    const { data } = await ghGetJson(DESCOBERTAS_FILE, { itens: [] });
+    let itens = Array.isArray(data.itens) ? data.itens : [];
+
+    const { loja, tipo, q } = req.query;
+    if (loja) itens = itens.filter((x) => String(x.loja || '').toLowerCase() === String(loja).toLowerCase());
+    if (tipo) itens = itens.filter((x) => String(x.tipo || '') === String(tipo));
+    if (q) {
+      const termo = String(q).toLowerCase();
+      itens = itens.filter((x) => (String(x.nome || '') + ' ' + String(x.categoria || '')).toLowerCase().includes(termo));
+    }
+
+    // Agregado por categoria: e a leitura que responde "o que vender depois".
+    const categorias = {};
+    for (const x of itens) {
+      const k = x.categoria || '(sem categoria)';
+      const g = (categorias[k] = categorias[k] || { produtos: 0, unidades: 0, vendas: 0, comissao: 0 });
+      g.produtos += 1;
+      g.unidades += Number(x.unidades) || 0;
+      g.vendas = Math.round((g.vendas + (Number(x.vendas) || 0)) * 100) / 100;
+      g.comissao = Math.round((g.comissao + (Number(x.comissao) || 0)) * 100) / 100;
+    }
+
+    const limite = Math.min(parseInt(req.query.limite, 10) || 500, 2000);
+    res.json({
+      ok: true,
+      atualizadoEm: data.atualizadoEm || null,
+      janela: data.janela || null,
+      totais: data.totais || null,
+      porLoja: data.porLoja || null,
+      categorias,
+      total: itens.length,
+      itens: itens.slice(0, limite),
+    });
+  } catch (e) {
+    console.error('[afiliados/descobertas GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 // POST /afiliados/comissoes  { data, plataforma, cliques, vendas, comissao }
 // Correção manual pontual. A coleta automática NÃO passa por aqui — ela escreve
 // direto no GitHub — então este endpoint sempre sobrescreve a foto, que é o que
