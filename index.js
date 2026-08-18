@@ -6861,6 +6861,145 @@ app.get('/afiliados/descobertas', async (req, res) => {
   }
 });
 
+// ── Rastreio de links divulgados (TSP) ──────────────────────────────────────
+// GET /afiliados/rastreio?de=&ate=&loja=&q=&limite=
+// Cruza o ledger de atribuicoes (tsp/rastreio.json — o que foi disparado, em que
+// dia e com qual ref: tag da Amazon, subId do ML/Shopee, clickRef da Awin) com o
+// resultado por produto (tsp/desempenho-produtos.json — cliques, pedidos, venda
+// e comissao que o coletor diario conseguiu casar com aquela ref).
+//
+// Recorte de data: o filtro de/ate vale para o DISPARO. O resultado devolvido em
+// cada item e o acumulado que o coletor consolidou para o produto, nao o recorte
+// do periodo — a serie diaria (dias) so existe a partir de 2026-08-15 e nem toda
+// loja publica clique por dia. `serie` devolve o que ha de diario para o grafico.
+//
+// So leitura: o ledger e escrito pelo baileys-server no disparo e o desempenho
+// por tudo-sobre-promos/desempenho.js na coleta das 01h30 e 20h.
+const RASTREIO_FILE   = 'tsp/rastreio.json';
+const DESEMPENHO_FILE = 'tsp/desempenho-produtos.json';
+
+// Mesma chave de desempenho.js — mudar aqui sem mudar la quebra o cruzamento.
+function chaveProdutoTsp(loja, asin) {
+  return String(loja || '').toLowerCase().replace(/[^a-z]/g, '') + ':' + asin;
+}
+
+app.get('/afiliados/rastreio', async (req, res) => {
+  try {
+    const [rast, desemp] = await Promise.all([
+      ghGetJson(RASTREIO_FILE, { atribuicoes: [], pool: [] }),
+      ghGetJson(DESEMPENHO_FILE, { produtos: {}, dias: {} }),
+    ]);
+    const atribuicoes = Array.isArray(rast.data.atribuicoes) ? rast.data.atribuicoes : [];
+    const produtos = desemp.data.produtos || {};
+    const dias = desemp.data.dias || {};
+
+    const { de, ate, loja, q } = req.query;
+    let base = atribuicoes;
+    if (de)  base = base.filter((a) => String(a.data || '') >= String(de));
+    if (ate) base = base.filter((a) => String(a.data || '') <= String(ate));
+    if (loja) base = base.filter((a) => String(a.loja || '').toLowerCase() === String(loja).toLowerCase());
+    if (q) {
+      const t = String(q).toLowerCase();
+      base = base.filter((a) => (String(a.nome || '') + ' ' + String(a.ref || '') + ' ' + String(a.asin || ''))
+        .toLowerCase().includes(t));
+    }
+
+    // Um produto pode ter sido disparado mais de uma vez, cada disparo com sua
+    // ref. Agrupar por produto e o que permite ler "quanto rendeu o que mandei".
+    const mapa = new Map();
+    for (const a of base) {
+      const chave = chaveProdutoTsp(a.loja, a.asin);
+      const it = mapa.get(chave) || {
+        chave, loja: a.loja || '', asin: a.asin || '', nome: a.nome || '',
+        refs: [], disparos: 0, primeiroDisparo: '', ultimoDisparo: '', preco: null, datas: [],
+      };
+      it.disparos += 1;
+      if (a.ref && !it.refs.includes(a.ref)) it.refs.push(a.ref);
+      if (a.data && !it.datas.includes(a.data)) it.datas.push(a.data);
+      if (!it.primeiroDisparo || (a.data || '') < it.primeiroDisparo) it.primeiroDisparo = a.data || '';
+      if (!it.ultimoDisparo || (a.data || '') >= it.ultimoDisparo) {
+        it.ultimoDisparo = a.data || '';
+        if (a.nome) it.nome = a.nome;               // o nome mais recente e o que vale
+        if (a.preco != null) it.preco = Number(a.preco) || null;
+      }
+      mapa.set(chave, it);
+    }
+
+    const itens = [...mapa.values()].map((it) => {
+      const d = produtos[it.chave] || null;
+      const cliques  = Number(d && d.cliques)  || 0;
+      const pedidos  = Number(d && d.pedidos)  || 0;
+      const vendas   = Math.round((Number(d && d.vendas)   || 0) * 100) / 100;
+      const comissao = Math.round((Number(d && d.comissao) || 0) * 100) / 100;
+      it.datas.sort();
+      return {
+        ...it,
+        cliques, pedidos, vendas, comissao,
+        // Conversao so faz sentido onde a loja publica clique por ref: Amazon e
+        // Shopee. ML e Awin entram com pedido/comissao e clique 0 — mostrar 0%
+        // ali seria mentira, entao vai null e o painel escreve "—".
+        conversao: cliques > 0 ? Math.round((pedidos / cliques) * 1000) / 10 : null,
+        comissaoPorDisparo: it.disparos > 0 ? Math.round((comissao / it.disparos) * 100) / 100 : 0,
+        temRetorno: Boolean(cliques || pedidos || vendas || comissao),
+      };
+    });
+
+    const ordem = String(req.query.ordem || 'comissao');
+    itens.sort((a, b) => (Number(b[ordem]) || 0) - (Number(a[ordem]) || 0)
+      || String(b.ultimoDisparo).localeCompare(String(a.ultimoDisparo)));
+
+    // Serie diaria: so os produtos que sobreviveram ao filtro, para o grafico
+    // bater com a lista.
+    const serie = {};
+    for (const dia of Object.keys(dias)) {
+      if (de && dia < String(de)) continue;
+      if (ate && dia > String(ate)) continue;
+      for (const [chave, v] of Object.entries(dias[dia] || {})) {
+        if (!mapa.has(chave)) continue;
+        const s = (serie[dia] = serie[dia] || { cliques: 0, pedidos: 0, vendas: 0, comissao: 0 });
+        s.cliques  += Number(v.cliques)  || 0;
+        s.pedidos  += Number(v.pedidos)  || 0;
+        s.vendas   = Math.round((s.vendas   + (Number(v.vendas)   || 0)) * 100) / 100;
+        s.comissao = Math.round((s.comissao + (Number(v.comissao) || 0)) * 100) / 100;
+      }
+    }
+
+    const porLoja = {};
+    const totais = { produtos: 0, disparos: 0, cliques: 0, pedidos: 0, vendas: 0, comissao: 0, semRetorno: 0 };
+    for (const x of itens) {
+      const k = x.loja || 'Sem loja';
+      const g = (porLoja[k] = porLoja[k] || { produtos: 0, disparos: 0, cliques: 0, pedidos: 0, vendas: 0, comissao: 0 });
+      g.produtos += 1; g.disparos += x.disparos; g.cliques += x.cliques; g.pedidos += x.pedidos;
+      g.vendas = Math.round((g.vendas + x.vendas) * 100) / 100;
+      g.comissao = Math.round((g.comissao + x.comissao) * 100) / 100;
+      totais.produtos += 1; totais.disparos += x.disparos; totais.cliques += x.cliques; totais.pedidos += x.pedidos;
+      totais.vendas = Math.round((totais.vendas + x.vendas) * 100) / 100;
+      totais.comissao = Math.round((totais.comissao + x.comissao) * 100) / 100;
+      if (!x.temRetorno) totais.semRetorno += 1;
+    }
+
+    // Lojas do periodo inteiro (sem o filtro de loja) para o select nao perder
+    // opcao depois que o usuario escolhe uma.
+    const lojas = [...new Set(atribuicoes.map((a) => a.loja).filter(Boolean))]
+      .sort((a, b) => String(a).localeCompare(String(b), 'pt-BR'));
+
+    const limite = Math.min(parseInt(req.query.limite, 10) || 500, 3000);
+    res.json({
+      ok: true,
+      atualizadoEm: rast.data.atualizadoEm || null,
+      desempenhoAtualizadoEm: desemp.data.atualizadoEm || null,
+      poolTamanho: Array.isArray(rast.data.pool) ? rast.data.pool.length : 0,
+      atribuicoesTotal: atribuicoes.length,
+      lojas, totais, porLoja, serie,
+      total: itens.length,
+      itens: itens.slice(0, limite),
+    });
+  } catch (e) {
+    console.error('[afiliados/rastreio GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 // POST /afiliados/comissoes  { data, plataforma, cliques, vendas, comissao }
 // Correção manual pontual. A coleta automática NÃO passa por aqui — ela escreve
 // direto no GitHub — então este endpoint sempre sobrescreve a foto, que é o que
