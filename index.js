@@ -1680,7 +1680,7 @@ app.post('/passagens/registrar', async (req, res) => {
   // apenasConsulta: true → calcula e devolve hist180 SEM gravar em passagens.json.
   // Usado pelo baileys-server para montar o rodapé de histórico da mensagem
   // enquanto a emissão ainda está pendente de aprovação.
-  const { origem, destino, cia, programa, pontos, cabine, datas_ida, datas_volta, fonte, apenasConsulta } = req.body || {};
+  const { origem, destino, cia, programa, pontos, cabine, datas_ida, datas_volta, fonte, auto, apenasConsulta } = req.body || {};
 
   if (!origem || !destino || !programa || !pontos) {
     return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: origem, destino, programa, pontos' });
@@ -1711,6 +1711,10 @@ app.post('/passagens/registrar', async (req, res) => {
       fonte:       fonte || 'emissao',
       enviadoEm:   agora,
     };
+    // Marca só quando verdadeiro: passagens.json ja passa de 1 MB e gravar
+    // "auto:false" em todo registro inflaria o arquivo sem ganho nenhum.
+    // Ausencia do campo = envio por aprovacao manual (retrocompativel).
+    if (auto === true || auto === 'true' || auto === 1) novaPassagem.auto = true;
 
     // Lê passagens existentes
     const atual = await ghGetJson(PASSAGENS_PATH, { items: [] });
