@@ -17,7 +17,14 @@ const GITHUB_REPO_DADOS = process.env.GITHUB_REPO_DADOS || GITHUB_REPO;
 // Dados do Tudo Sobre Promos vivem em repo privado proprio. Regra por PREFIXO
 // de path (tsp/...), nao por lista de nomes: qualquer arquivo novo do TSP cai
 // no lugar certo sem precisar editar codigo.
-const GITHUB_REPO_TSP = process.env.GITHUB_REPO_TSP || 'davileles/cdv-tsp-dados';
+// O repo de dados foi renomeado de `cdv-tsp-dados` para `dados`. O GitHub
+// responde 301 no nome antigo — fetch segue o redirect, https.get NAO. Para nao
+// depender disso (nem da env do Railway estar atualizada), o nome legado e
+// normalizado aqui, num unico ponto.
+const GITHUB_REPO_TSP = (function () {
+  const v = String(process.env.GITHUB_REPO_TSP || '').trim() || 'davileles/dados';
+  return v === 'davileles/cdv-tsp-dados' ? 'davileles/dados' : v;
+})();
 // FASE 1 — arquivos tocados APENAS pelo proxy. Migração sem efeito colateral.
 const ARQUIVOS_SENSIVEIS = new Set([
   'membros.json',
@@ -2396,14 +2403,14 @@ app.post('/membros/verificar-codigo', (req, res) => {
 const ADMIN_EMAILS = ['davileles@gmail.com'];
 
 // ── Operadores do TSP hospedado (fase 2.5) ───────────────────────────────────
-// O registro de operadores mora em cdv-tsp-dados/tsp/tenants.json (mantido
+// O registro de operadores mora em <repo de dados>/tsp/tenants.json (mantido
 // pelo baileys-server). O login do painel TSP aceita os e-mails de la, com
 // cache curto para nao bater no GitHub a cada OTP.
 let _tenantsCache = { emails: [], porEmail: {}, ts: 0 };
 async function emailsDosTenantsTsp() {
   if (Date.now() - _tenantsCache.ts < 5 * 60 * 1000) return _tenantsCache.emails;
   try {
-    const r = await fetch('https://api.github.com/repos/davileles/cdv-tsp-dados/contents/tsp/tenants.json', {
+    const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO_TSP}/contents/tsp/tenants.json`, {
       headers: { 'Authorization': 'Bearer ' + process.env.GITHUB_TOKEN, 'Accept': 'application/vnd.github.raw' },
     });
     if (r.ok) {
@@ -3216,92 +3223,79 @@ const CONCIERGE_PERFIL      = 'concierge/clientes-perfil.json';
 // Nunca entram direto na base: form aberto na internet nao escreve em producao.
 const CONCIERGE_PENDENTES   = 'concierge/clientes-pendentes.json';
 
+// Usa fetch (e nao https.get): repo renomeado devolve 301 e o https.get nao
+// segue redirect — o corpo do 301 e JSON valido, entao o parse passava e o
+// arquivo chegava como `{message:'Moved Permanently'}`, virando lista vazia sem
+// nenhum erro no log. Falha agora e falha explicita, com status.
 async function getConciergeFile(filename, repo) {
   const repoAlvo = repo || CONCIERGE_REPO;
-  return new Promise((resolve, reject) => {
-    const https = require('https');
-    // Primeiro buscar SHA via API normal
-    const optsMeta = {
-      hostname: 'api.github.com',
-      path: `/repos/${repoAlvo}/contents/${filename}`,
-      headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'User-Agent': 'cdv-proxy', 'Accept': 'application/vnd.github+json' }
-    };
-    https.get(optsMeta, (resMeta) => {
-      let rawMeta = '';
-      resMeta.on('data', d => rawMeta += d);
-      resMeta.on('end', () => {
-        try {
-          const meta = JSON.parse(rawMeta);
-          const fileSha = meta.sha;
-          // Se arquivo pequeno e tem content, usar diretamente
-          if (meta.content && meta.encoding === 'base64') {
-            const content = JSON.parse(Buffer.from(meta.content.replace(/\n/g,''), 'base64').toString('utf-8'));
-            return resolve({ content, sha: fileSha });
-          }
-          // Arquivo grande (>1MB): Contents API com Accept:raw
-          // (não usa raw.githubusercontent.com, que quebra se o repo for privado)
-          const optsRaw = {
-            hostname: 'api.github.com',
-            path: `/repos/${repoAlvo}/contents/${filename}`,
-            headers: {
-              'Authorization': `token ${GITHUB_TOKEN}`,
-              'User-Agent': 'cdv-proxy',
-              'Accept': 'application/vnd.github.raw'
-            }
-          };
-          https.get(optsRaw, (resRaw) => {
-            let rawData = '';
-            resRaw.on('data', d => rawData += d);
-            resRaw.on('end', () => {
-              try {
-                const content = JSON.parse(rawData);
-                resolve({ content, sha: fileSha });
-              } catch(e) { reject(e); }
-            });
-          }).on('error', reject);
-        } catch(e) { reject(e); }
-      });
-    }).on('error', reject);
+  const url = `https://api.github.com/repos/${repoAlvo}/contents/${filename}`;
+  const headers = {
+    'Authorization': `token ${GITHUB_TOKEN}`,
+    'User-Agent': 'cdv-proxy',
+    'Accept': 'application/vnd.github+json'
+  };
+
+  const resMeta = await fetch(url, { headers, redirect: 'follow' });
+  if (!resMeta.ok) {
+    const err = new Error(`GitHub GET ${repoAlvo}/${filename} falhou (status ${resMeta.status})`);
+    err.status = resMeta.status;
+    throw err;
+  }
+  const meta = await resMeta.json();
+  const fileSha = meta.sha;
+
+  // Arquivo pequeno: a propria resposta ja traz o conteudo em base64.
+  if (meta.content && meta.encoding === 'base64') {
+    const content = JSON.parse(Buffer.from(meta.content.replace(/\n/g, ''), 'base64').toString('utf-8'));
+    return { content, sha: fileSha };
+  }
+
+  // Arquivo grande (>1MB): Contents API com Accept:raw
+  // (não usa raw.githubusercontent.com, que quebra se o repo for privado)
+  const resRaw = await fetch(url, {
+    headers: { ...headers, 'Accept': 'application/vnd.github.raw' },
+    redirect: 'follow'
   });
+  if (!resRaw.ok) {
+    const err = new Error(`GitHub GET raw ${repoAlvo}/${filename} falhou (status ${resRaw.status})`);
+    err.status = resRaw.status;
+    throw err;
+  }
+  const content = JSON.parse(await resRaw.text());
+  return { content, sha: fileSha };
 }
 
+// Escrita com redirect tratado na mao: em PUT o redirect automatico do fetch
+// nao e confiavel (301 pode virar GET), entao segue-se o Location uma unica vez.
 async function putConciergeFile(filename, content, sha, repo) {
   const repoAlvo = repo || CONCIERGE_REPO;
-  return new Promise((resolve, reject) => {
-    const https = require('https');
-    const body = JSON.stringify({
-      message: `update: ${filename}`,
-      content: Buffer.from(JSON.stringify(content, null, 2)).toString('base64'),
-      sha
-    });
-    const options = {
-      hostname: 'api.github.com',
-      path: `/repos/${repoAlvo}/contents/${filename}`,
-      method: 'PUT',
-      headers: {
-        'Authorization': `token ${GITHUB_TOKEN}`,
-        'User-Agent': 'cdv-proxy',
-        'Accept': 'application/vnd.github+json',
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(body)
-      }
-    };
-    const req = https.request(options, (res) => {
-      let raw = '';
-      res.on('data', d => raw += d);
-      res.on('end', () => {
-        let parsed;
-        try { parsed = JSON.parse(raw); } catch(e) { return reject(new Error('Resposta inválida do GitHub')); }
-        if (res.statusCode >= 200 && res.statusCode < 300) return resolve(parsed);
-        const err = new Error(parsed.message || `GitHub PUT falhou (status ${res.statusCode})`);
-        err.status = res.statusCode;
-        reject(err);
-      });
-    });
-    req.on('error', reject);
-    req.write(body);
-    req.end();
+  const body = JSON.stringify({
+    message: `update: ${filename}`,
+    content: Buffer.from(JSON.stringify(content, null, 2)).toString('base64'),
+    sha
   });
+  const headers = {
+    'Authorization': `token ${GITHUB_TOKEN}`,
+    'User-Agent': 'cdv-proxy',
+    'Accept': 'application/vnd.github+json',
+    'Content-Type': 'application/json'
+  };
+
+  let url = `https://api.github.com/repos/${repoAlvo}/contents/${filename}`;
+  let res = await fetch(url, { method: 'PUT', headers, body, redirect: 'manual' });
+  if ([301, 302, 307, 308].includes(res.status)) {
+    const destino = res.headers.get('location');
+    if (destino) res = await fetch(destino, { method: 'PUT', headers, body, redirect: 'manual' });
+  }
+
+  const raw = await res.text();
+  let parsed;
+  try { parsed = JSON.parse(raw); } catch (e) { throw new Error('Resposta inválida do GitHub'); }
+  if (res.ok) return parsed;
+  const err = new Error(parsed.message || `GitHub PUT falhou (status ${res.status})`);
+  err.status = res.status;
+  throw err;
 }
 
 // Preserva as marcas de envio automático gravadas pelo lembrete-voo.js.
@@ -3459,10 +3453,12 @@ function clienteNormalizado(c) {
 async function lerClientesConcierge() {
   try {
     const { content, sha } = await getConciergeFile(CONCIERGE_CLIENTES, CONCIERGE_DADOS_REPO);
-    return { lista: Array.isArray(content) ? content : [], sha };
+    if (!Array.isArray(content)) throw new Error('clientes.json nao veio como array');
+    return { lista: content, sha };
   } catch(e) {
     // 404 na primeira execucao (arquivo ainda nao existe) nao e erro: base vazia.
-    if (/404|Not Found|Unexpected token/i.test(e.message)) return { lista: [], sha: null };
+    // Qualquer outra falha SOBE: base sumir da tela em silencio ja custou caro.
+    if (e.status === 404 || /\b404\b|Not Found/i.test(e.message)) return { lista: [], sha: null };
     throw e;
   }
 }
@@ -3644,9 +3640,10 @@ function perfilNormalizado(p) {
 async function lerArquivoConcierge(path) {
   try {
     const { content, sha } = await getConciergeFile(path, CONCIERGE_DADOS_REPO);
-    return { lista: Array.isArray(content) ? content : [], sha };
+    if (!Array.isArray(content)) throw new Error(path + ' nao veio como array');
+    return { lista: content, sha };
   } catch(e) {
-    if (/404|Not Found|Unexpected token/i.test(e.message)) return { lista: [], sha: null };
+    if (e.status === 404 || /\b404\b|Not Found/i.test(e.message)) return { lista: [], sha: null };
     throw e;
   }
 }
