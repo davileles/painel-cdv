@@ -183,27 +183,27 @@ select.srt { padding:11px 13px; font-size:13.5px; font-weight:600; }
 .comp-toggle-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
 
 /* ── GRID + CARD DO COMPARADOR ──────────────────────────────────────────── */
-.grid { grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; padding:18px 24px 48px; }
+.grid { grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; padding:16px 24px 48px; }
 .card {
-  background:var(--surface); border:1px solid var(--border); border-radius:16px;
-  padding:20px; gap:12px; box-shadow:var(--shadow-1);
+  background:var(--surface); border:1px solid var(--border); border-radius:13px;
+  padding:14px; gap:8px; box-shadow:var(--shadow-1);
 }
 .card:hover { transform:translateY(-2px); box-shadow:var(--shadow-2); }
 .card::before { display:none; }
-.pname { font-size:16px; font-weight:700; line-height:1.3; }
-.card-foot { font-size:12.5px; font-weight:600; color:var(--muted2); text-transform:none; letter-spacing:0; }
+.pname { font-size:13.5px; font-weight:700; line-height:1.35; }
+.card-foot { font-size:11px; font-weight:600; color:var(--muted2); text-transform:none; letter-spacing:0; }
 .fire-badge {
-  font-size:12px; font-weight:700; background:var(--amber-tint); color:var(--amber);
-  border:none; border-radius:999px; padding:4px 10px;
+  font-size:10.5px; font-weight:700; background:var(--amber-tint); color:var(--amber);
+  border:none; border-radius:999px; padding:3px 8px;
 }
 /* o "vencedor" deixa de ser uma faixa de 3px e passa a ser um painel */
 .pts-row {
-  background:var(--card); border:1px solid var(--border); border-radius:12px;
-  padding:13px 15px; gap:6px; margin:2px 0;
+  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  padding:9px 11px; gap:5px; margin:1px 0;
 }
-.pts-val { font-size:32px; font-weight:800; letter-spacing:-1px; }
-.pts-lbl { font-size:13px; font-weight:600; color:var(--muted); }
-.pts-ate { font-size:12px; font-weight:600; color:var(--muted2); margin:0; }
+.pts-val { font-size:24px; font-weight:800; letter-spacing:-.7px; }
+.pts-lbl { font-size:11.5px; font-weight:600; color:var(--muted); }
+.pts-ate { font-size:11px; font-weight:600; color:var(--muted2); margin:0; }
 .winner-livelo .pts-val { color:var(--livelo-ink); }
 .winner-esfera .pts-val { color:var(--esfera-ink); }
 .winner-smiles .pts-val { color:var(--smiles-ink); }
@@ -215,8 +215,8 @@ select.srt { padding:11px 13px; font-size:13.5px; font-weight:600; }
 .winner-tcbus  .pts-val { color:var(--tcbus-ink); }
 .winner-both   .pts-val { color:var(--coral-ink); }
 
-.prog-badges { gap:6px; }
-.pbdg { font-size:12px; font-weight:700; border-radius:999px; padding:4px 10px; border:none !important; }
+.prog-badges { gap:5px; }
+.pbdg { font-size:11px; font-weight:700; border-radius:999px; padding:3px 7px; border:none !important; }
 .pbdg-livelo { background:var(--livelo-dim); color:var(--livelo-ink); }
 .pbdg-esfera { background:var(--esfera-dim); color:var(--esfera-ink); }
 .pbdg-smiles { background:var(--smiles-dim); color:var(--smiles-ink); }
@@ -226,7 +226,7 @@ select.srt { padding:11px 13px; font-size:13.5px; font-weight:600; }
 .pbdg-meliuz { background:var(--meliuz-dim); color:var(--meliuz-ink); }
 .pbdg-tcbuk  { background:var(--tcbuk-dim);  color:var(--tcbuk-ink); }
 .pbdg-tcbus  { background:var(--tcbus-dim);  color:var(--tcbus-ink); }
-.tag-dollar { background:var(--dollar-dim); border:none; color:var(--dollar); font-size:12px; font-weight:700; border-radius:8px; padding:4px 10px; }
+.tag-dollar { background:var(--dollar-dim); border:none; color:var(--dollar); font-size:11px; font-weight:700; border-radius:7px; padding:3px 7px; }
 .transf-late-badge { background:var(--amber-tint); color:var(--amber); border:none; }
 .transf-active-badge { background:var(--green-tint); color:var(--green); border:none; }
 
@@ -534,15 +534,17 @@ select.srt { padding:11px 13px; font-size:13.5px; font-weight:600; }
   :root { --stick-top:56px; }
   header { padding:10px 14px; }
   .controls, .prog-bar, .cat-bar, .stats, .radar-search-wrap, .passagens-controls, .lv-search-wrap { padding-left:16px; padding-right:16px; }
-  .grid, .lv-cards-grid { padding:16px; gap:12px; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); }
+  .grid { padding:16px; gap:10px; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); }
+  .lv-cards-grid { padding:16px; gap:12px; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); }
   .rot-wrap { height:auto; min-height:0; padding-bottom:24px; }
   .rot-chat-box { min-height:420px; }
 }
 @media(max-width:600px) {
-  .grid, .lv-cards-grid { grid-template-columns:1fr; }
+  .grid { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+  .lv-cards-grid { grid-template-columns:1fr; }
   input[type=text] { width:100%; }
-  .card { padding:18px; }
-  .pts-val { font-size:30px; }
+  .card { padding:12px; }
+  .pts-val { font-size:22px; }
   .pass-rota { font-size:19px !important; }
   .milhas-kpi-val { font-size:24px !important; }
   .calcs-grid { grid-template-columns:1fr; padding:16px 14px 40px; }
