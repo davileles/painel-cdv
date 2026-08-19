@@ -630,6 +630,8 @@
 /* === /MAPA DE EMISSÕES === */
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="cdv-redesign.css">
+<script defer src="cdv-redesign.js"></script>
 </head>
 <body>
 
@@ -7667,7 +7669,7 @@ async function carregarTema(email) {
   try {
     const res = await fetch(CDV_PROXY_AUTH + '/membros/tema?email=' + encodeURIComponent(email));
     const data = await res.json();
-    if (data.ok) _aplicarTema(data.tema || 'dark');
+    if (data.ok) _aplicarTema(data.tema || 'light');
   } catch (e) {
     console.warn('[CDV tema] Não foi possível carregar preferência de tema', e);
   }
