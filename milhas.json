@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-08-19T10:29:32.405Z",
+  "atualizadoEm": "2026-08-19T10:30:22.417Z",
   "registros": [
     {
       "id": "1783549764743_qbqy",
@@ -5386,6 +5386,34 @@
       "qtde": 7275,
       "custo": 0,
       "obs": "Itau black."
+    },
+    {
+      "id": "1787135419215_deb",
+      "email": "acsrego@gmail.com",
+      "data": "2026-08-19",
+      "tipo": "debito",
+      "operacao": "transferencia",
+      "subcat": "transferido",
+      "programa": "outros",
+      "qtde": 7275,
+      "custo": 0,
+      "modalidade": "pontos",
+      "obs": "Transferência para LATAM Pass (+25% bônus) | Pode ser que receba mais 1000 pontos"
+    },
+    {
+      "id": "1787135419215_cred",
+      "email": "acsrego@gmail.com",
+      "data": "2026-08-19",
+      "tipo": "credito",
+      "operacao": "transferencia",
+      "subcat": "trans_bon",
+      "programa": "latam",
+      "qtde": 9094,
+      "custo": 0,
+      "custoHerdadoFIFO": 0,
+      "milheiroHerdado": 0,
+      "modalidade": "pontos",
+      "obs": "Recebido de Outros (+25% bônus) | Pode ser que receba mais 1000 pontos | Pontos sem custo rastreado na origem"
     }
   ]
 }
