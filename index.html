@@ -9637,13 +9637,20 @@ function faixaMarcador(teto, altura) {
 }
 
 // Pilula compacta de chance, usada nas linhas de nivel e de combo.
+function faixaAviso(c) {
+  const t = compAvisoColeta(c);
+  if (!t) return '';
+  return `<div style="display:flex;gap:5px;margin-top:4px;font-size:8.5px;color:#f0a742;line-height:1.35">
+    <span>⚠</span><span style="opacity:.92">${compEsc(t)}</span></div>`;
+}
+
 function faixaPilula(c) {
   if (_compDias === null) return '';
   const ch = compChance(c, _compDias);
   const l = compLeitura(ch.pct, compDentroDaFaixa(c, _compDias));
   return `<div style="display:flex;align-items:center;gap:6px;margin-top:4px">
     <span style="font-size:10px;font-weight:900;color:${l.c};background:${l.c}1f;border-radius:5px;padding:1.5px 6px;white-space:nowrap">${ch.pct}% · ${l.t}</span>
-    <span style="font-size:8.5px;color:${CFX.mut2};line-height:1.3">${compEsc(compFase(_compDias, ch.picoDia))}</span>
+    <span style="font-size:8.5px;color:${CFX.mut2};line-height:1.3">${compEsc(compFase(_compDias, ch.picoDia, ch.picos))}</span>
   </div>`;
 }
 
@@ -9688,6 +9695,7 @@ function faixaRenderConteudo() {
           ${faixaMarcador(teto, 14)}
         </div>
         <div style="font-size:9.5px;color:${CFX.mut2}">normalmente entre ${n.p10} e ${n.p90} dias · ${n.registros} pesquisas</div>
+        ${faixaAviso(n)}
         ${faixaPilula(n)}
       </div>`;
     }).join('');
@@ -9729,6 +9737,7 @@ function faixaRenderConteudo() {
           ${faixaMarcador(teto, 11)}
         </div>
         <div style="font-size:9px;color:${CFX.mut2};margin-top:3px">${c.p10}–${c.p90} dias · ${c.registros} pesquisa${c.registros !== 1 ? 's' : ''}${fraca ? ' · <span style="color:#f0a742">base pequena</span>' : ''}</div>
+        ${faixaAviso(c)}
         ${faixaPilula(c)}
       </div>`;
     }).join('');
@@ -9738,6 +9747,8 @@ function faixaRenderConteudo() {
   if (_compDias !== null) {
     html += `<div style="margin-top:14px;padding-top:11px;border-top:1px solid ${CFX.linha};font-size:9.5px;color:${CFX.mut2};line-height:1.6">
       O percentual compara a frequência histórica de aberturas a ${_compDias} dias com o melhor momento de cada linha. É indicador de <b style="color:${CFX.mut}">timing</b>, não de assento garantido.
+      Quando a curva tem duas faixas boas separadas por um vale, a segunda janela é apontada ao lado do percentual — como a antecedência só diminui, uma janela com menos dias que a sua ainda está por vir.
+      <span style="color:#f0a742">⚠</span> marca linhas cujas pesquisas se concentram em poucos meses: ali o desenho tende a refletir a temporada do destino.
     </div>`;
   }
 
@@ -9797,6 +9808,27 @@ const _compCurvaCache = new WeakMap();
 
 // Constroi f(dias) -> 0..1 a partir da distribuicao real. Fallback triangular
 // mantem a regua util enquanto o proxy nao for redeployado com o campo `dens`.
+// Maximos locais relevantes da curva suavizada. Existem distribuicoes de duas
+// corcovas — SP-Amsterda tem uma faixa boa perto de 70 dias e outra perto de
+// 200, com um vale no meio — e so o pico global nao descreve isso: a 150 dias
+// a tela dizia "passou do ponto tipico" quando na verdade ha uma segunda
+// janela ADIANTE, ja que a antecedencia so diminui com o tempo.
+// Exige 55% do pico global e separacao de 3 bins para nao promover serrilhado
+// a "janela".
+function compPicos(sm, bin, pico) {
+  const out = [];
+  for (let i = 0; i < sm.length; i++) {
+    if (sm[i] < pico * 0.55) continue;
+    if ((sm[i - 1] || 0) > sm[i] || (sm[i + 1] || 0) > sm[i]) continue;
+    if (out.length && i - out[out.length - 1].i < 3) {
+      if (sm[i] > sm[out[out.length - 1].i]) out[out.length - 1] = { i };
+      continue;
+    }
+    out.push({ i });
+  }
+  return out.map(o => o.i * bin + Math.round(bin / 2));
+}
+
 function compCurva(c) {
   if (_compCurvaCache.has(c)) return _compCurvaCache.get(c);
   let curva;
@@ -9826,6 +9858,7 @@ function compCurva(c) {
         }
         return 100 * acc / total;
       },
+      picos: compPicos(sm, bin, pico),
     };
   } else {
     const a = c.p10, m = c.mediana, b = c.p90;
@@ -9833,6 +9866,7 @@ function compCurva(c) {
     curva = {
       aprox: true,
       picoDia: m,
+      picos: [m],
       rel: dias => {
         if (dias <= lo || dias >= hi) return 0;
         return dias <= m ? (dias - lo) / ((m - lo) || 1) : (hi - dias) / ((hi - m) || 1);
@@ -9847,7 +9881,8 @@ function compCurva(c) {
 function compChance(c, dias) {
   const cv = compCurva(c);
   const pct = Math.round(100 * Math.max(0, Math.min(1, cv.rel(dias))));
-  return { pct, picoDia: cv.picoDia, aprox: cv.aprox, share: cv.share ? cv.share(dias) : null };
+  return { pct, picoDia: cv.picoDia, picos: cv.picos || [], aprox: cv.aprox,
+           share: cv.share ? cv.share(dias) : null };
 }
 
 // `dentro` = o ponto marcado cai no intervalo p10-p90 desenhado na barra.
@@ -9871,10 +9906,41 @@ function compDentroDaFaixa(c, dias) {
 // A antecedencia so diminui com o tempo: chance baixa ANTES do pico significa
 // "espere", chance baixa DEPOIS do pico significa "perdeu a janela". Sao
 // conselhos opostos e a tela precisa separar os dois.
-function compFase(dias, picoDia) {
+function compFase(dias, picoDia, picos) {
   const d = dias - picoDia;
-  if (Math.abs(d) <= 10) return 'no ponto típico';
-  return d > 0 ? `ainda faltam ${d}d até o ponto típico` : `passou do ponto típico há ${-d}d`;
+  // "faltam X dias" e ambiguo — X de antecedencia ou X de calendario? Dizer a
+  // antecedencia do pico entre parenteses resolve, ja que as duas grandezas
+  // convivem na mesma frase.
+  const base = Math.abs(d) <= 10
+    ? 'no ponto típico'
+    : (d > 0 ? `o ponto típico (${picoDia}d) chega em ${d} dias`
+             : `passou do ponto típico (${picoDia}d) há ${-d} dias`);
+
+  // "Adiante" = antecedencia MENOR, porque o voo se aproxima. Um pico a 83
+  // dias e alcancavel por quem esta hoje a 150; um pico a 250 ja ficou para
+  // tras. O proprio pico global fica de fora: repeti-lo aqui duplicava a
+  // mesma informacao com numeros diferentes na mesma linha.
+  if (Array.isArray(picos) && picos.length > 1) {
+    const adiante = picos
+      .filter(v => v < dias - 10 && Math.abs(v - picoDia) > 10)
+      .sort((a, b) => b - a)[0];
+    if (adiante !== undefined) {
+      return `${base} · outra janela a ${adiante}d, daqui a ${dias - adiante} dias`;
+    }
+  }
+  return base;
+}
+
+// Aviso de amostra concentrada no tempo. Ver dispersaoColeta() no proxy: com a
+// data de pesquisa quase fixa, a curva de antecedencia e o calendario de datas
+// de ida deslocado, e o que parece "janela de abertura" pode ser so a alta e a
+// baixa temporada do destino.
+function compAvisoColeta(c) {
+  const k = c && c.coleta;
+  if (!k || !k.vaoMeses || k.vaoMeses > 3) return null;
+  const fmt = iso => { const [a, m] = String(iso).split('-'); return `${['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][Number(m)-1]}/${a.slice(2)}`; };
+  const janela = k.de.slice(0, 7) === k.ate.slice(0, 7) ? fmt(k.de) : `${fmt(k.de)}–${fmt(k.ate)}`;
+  return `coleta concentrada em ${janela}: o desenho pode refletir a temporada do destino, não a antecedência`;
 }
 
 // Markup unico da regua. O panorama usa a versao larga; a coluna do modal de
@@ -10033,7 +10099,11 @@ function compRenderPanorama() {
       if (dias !== null) {
         const b = blocoChance(c, false);
         topoDir = b.html;
-        rodape = `<div style="font-size:9px;color:var(--muted2);margin-top:5px;line-height:1.4">${compEsc(compFase(dias, b.ch.picoDia))}${b.ch.share !== null ? ` · ${b.ch.share.toFixed(0)}% da base nesta faixa` : ''}</div>`;
+        rodape = `<div style="font-size:9px;color:var(--muted2);margin-top:5px;line-height:1.4">${compEsc(compFase(dias, b.ch.picoDia, b.ch.picos))}${b.ch.share !== null ? ` · ${b.ch.share.toFixed(0)}% da base nesta faixa` : ''}</div>`;
+      }
+      const avisoC = compAvisoColeta(c);
+      if (avisoC) {
+        rodape += `<div style="display:flex;gap:5px;margin-top:4px;font-size:9px;color:#c2810f;line-height:1.4"><span>⚠</span><span>${compEsc(avisoC)}</span></div>`;
       }
       return `<div style="background:var(--surface);border:1px solid var(--border-ctrl);border-radius:12px;padding:11px 13px">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
@@ -10066,7 +10136,7 @@ function compRenderPanorama() {
         const b = blocoChance(c, true);
         colChance = `<td style="${td};text-align:center;padding-left:10px">
           ${b.html}
-          <div style="font-size:8px;color:var(--muted2);margin-top:1px;white-space:normal;line-height:1.3;max-width:96px">${compEsc(compFase(dias, b.ch.picoDia))}${b.ch.share !== null ? ` · ${b.ch.share.toFixed(0)}% da base aqui` : ''}</div>
+          <div style="font-size:8px;color:var(--muted2);margin-top:1px;white-space:normal;line-height:1.3;max-width:110px">${compEsc(compFase(dias, b.ch.picoDia, b.ch.picos))}${b.ch.share !== null ? ` · ${b.ch.share.toFixed(0)}% da base aqui` : ''}</div>
         </td>`;
       }
       return `<tr>
@@ -10080,7 +10150,7 @@ function compRenderPanorama() {
         <td style="${td};font-weight:900">${c.mediana}d</td>
         <td style="${td};color:var(--muted)">${c.p90}d</td>
         <td style="${td};padding-left:14px"><div style="min-width:120px">${barra(c, cor, 14)}</div></td>
-        <td style="${td};font-size:10px;color:var(--muted2)">${c.registros} pesq.<br>${(c.pontos || 0).toLocaleString('pt-BR')} datas</td>
+        <td style="${td};font-size:10px;color:var(--muted2)">${c.registros} pesq.<br>${(c.pontos || 0).toLocaleString('pt-BR')} datas${compAvisoColeta(c) ? `<br><span title="${compEsc(compAvisoColeta(c))}" style="color:#c2810f;font-weight:800">⚠ coleta curta</span>` : ''}</td>
       </tr>`;
     }).join('');
 
@@ -10109,6 +10179,7 @@ function compRenderPanorama() {
         A <b style="color:var(--text)">faixa comum</b> vai do ponto em que só 1 em cada 10 datas aparece antes até aquele em que só 1 em cada 10 aparece depois — cobre 8 de cada 10 casos. Barra estreita significa comportamento previsível; barra larga, imprevisível.<br>
         Na barra, o traço vermelho é o valor típico${dias !== null ? '; o traço branco é onde você está hoje' : ''}. Escala de 0 a ${teto} dias, igual para todas as linhas.<br>
         ${dias !== null ? `<b style="color:var(--text)">Chance</b> compara a frequência histórica de aberturas a ${dias} dias com o melhor momento daquela combinação: 100% é o pico dela, 0% é uma faixa onde ela praticamente nunca abriu. É um indicador de <b style="color:var(--text)">timing</b>, não de assento garantido — diz se vale caçar agora, não se vai achar.<br>${aproximado ? '<span style="color:#f0a742">Parte das linhas está usando estimativa aproximada pelos percentis: o proxy ainda não devolveu a distribuição completa.</span><br>' : ''}` : ''}
+<span style="color:#c2810f">⚠ coleta curta</span> aparece quando todas as pesquisas daquela linha caem em até 3 meses. Nesse caso a data da pesquisa é quase fixa, e a curva acaba desenhando o calendário de datas de ida — a temporada do destino — em vez do comportamento de abertura. Trate o número como indício, não como padrão.<br>
         <span style="color:var(--muted2)">Em estatística esses valores se chamam p10, mediana (p50) e p90. Só entram combinações com no mínimo 5 pesquisas e 60 datas.</span>
       </div>
     </div>`;
