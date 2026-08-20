@@ -9507,17 +9507,42 @@ const COMP_ROTULO_NIVEL = {
 // sumia. Dentro desta coluna as cores sao explicitas.
 const CFX = { txt: '#eef1f8', mut: '#9aa6c2', mut2: '#6f7c9b', trilho: 'rgba(255,255,255,.08)', linha: 'rgba(255,255,255,.12)' };
 
-function compBarra(n, teto, cor) {
-  const esq = 100 * n.p10 / teto, larg = Math.max(100 * (n.p90 - n.p10) / teto, 1), med = 100 * n.mediana / teto;
-  return `<div style="position:relative;height:8px;background:${CFX.trilho};border-radius:4px;overflow:hidden;margin:5px 0 3px">
-      <i style="position:absolute;left:${esq.toFixed(1)}%;width:${larg.toFixed(1)}%;height:100%;background:${cor}33;border-radius:4px"></i>
-      <b style="position:absolute;left:${med.toFixed(1)}%;top:-2px;width:2.5px;height:12px;background:${cor};border-radius:2px"></b>
-    </div>`;
-}
+// A coluna esquerda do modal de rota tem a mesma regua do panorama, ligada ao
+// mesmo _compDias. Aqui o recorte e mais estreito (a rota clicada), entao a
+// chance responde a pergunta certa: "para ESTE trecho, a N dias, vale caçar?".
+let _faixaUltimo = null;
 
 function compRenderFaixa(d) {
+  _faixaUltimo = d;
   const box = document.getElementById('mapa-modal-comp');
   if (!box) return;
+  box.innerHTML = `<div style="margin-bottom:14px">${compReguaHTML(true)}</div><div id="faixa-conteudo"></div>`;
+  compSyncControles();
+  faixaRenderConteudo();
+}
+
+// Marcador da regua sobre uma barra de faixa. Recebe o teto da escala local.
+function faixaMarcador(teto, altura) {
+  if (_compDias === null) return '';
+  const pos = Math.max(0, Math.min(100, 100 * _compDias / teto));
+  return `<u title="Você está aqui: ${_compDias} dias" style="position:absolute;left:${pos.toFixed(1)}%;top:-3px;width:2px;height:${altura}px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.6);border-radius:1px;text-decoration:none"></u>`;
+}
+
+// Pilula compacta de chance, usada nas linhas de nivel e de combo.
+function faixaPilula(c) {
+  if (_compDias === null) return '';
+  const ch = compChance(c, _compDias);
+  const l = compLeitura(ch.pct);
+  return `<div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+    <span style="font-size:10px;font-weight:900;color:${l.c};background:${l.c}1f;border-radius:5px;padding:1.5px 6px;white-space:nowrap">${ch.pct}% · ${l.t}</span>
+    <span style="font-size:8.5px;color:${CFX.mut2};line-height:1.3">${compEsc(compFase(_compDias, ch.picoDia))}</span>
+  </div>`;
+}
+
+function faixaRenderConteudo() {
+  const box = document.getElementById('faixa-conteudo');
+  if (!box) return;
+  const d = _faixaUltimo;
   if (!d || ((!d.niveis || !d.niveis.length) && (!d.combos || !d.combos.length))) {
     box.innerHTML = `<div style="font-size:11px;color:${CFX.mut2};line-height:1.6">Ainda não há histórico suficiente desta rota para estimar quando a disponibilidade costuma abrir.</div>`;
     return;
@@ -9534,10 +9559,11 @@ function compRenderFaixa(d) {
     !arr.slice(0, i).some(a => a.mediana === n.mediana && a.p10 === n.p10 && a.p90 === n.p90 && a.registros === n.registros));
 
   if (niveis.length) {
-    const teto = Math.max(120, ...niveis.map(n => n.p90));
+    const teto = Math.max(120, ...niveis.map(n => n.p90), _compDias === null ? 0 : _compDias);
     html += niveis.map((n, i) => {
       const cor = i === 0 ? '#ff585e' : '#7aa7f0';
       const rot = COMP_ROTULO_NIVEL[n.nivel] || { t: n.nivel, s: '' };
+      const esq = 100 * n.p10 / teto, larg = Math.max(100 * (n.p90 - n.p10) / teto, 1), med = 100 * n.mediana / teto;
       return `<div style="margin-top:${i ? 13 : 0}px">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
           <div style="min-width:0">
@@ -9546,8 +9572,15 @@ function compRenderFaixa(d) {
           </div>
           <span style="font-size:14px;font-weight:900;color:${cor};white-space:nowrap;line-height:1.2">${n.mediana}d</span>
         </div>
-        ${compBarra(n, teto, cor)}
+        <div style="position:relative;height:8px;background:${CFX.trilho};border-radius:4px;overflow:visible;margin:5px 0 3px">
+          <div style="position:absolute;inset:0;border-radius:4px;overflow:hidden">
+            <i style="position:absolute;left:${esq.toFixed(1)}%;width:${larg.toFixed(1)}%;height:100%;background:${cor}33;border-radius:4px"></i>
+            <b style="position:absolute;left:${med.toFixed(1)}%;top:-2px;width:2.5px;height:12px;background:${cor};border-radius:2px"></b>
+          </div>
+          ${faixaMarcador(teto, 14)}
+        </div>
         <div style="font-size:9.5px;color:${CFX.mut2}">normalmente entre ${n.p10} e ${n.p90} dias · ${n.registros} pesquisas</div>
+        ${faixaPilula(n)}
       </div>`;
     }).join('');
   }
@@ -9556,11 +9589,17 @@ function compRenderFaixa(d) {
   // operador que existe na rota (Copa/Azul pelo Mundo em SP-Cancun tinha 1
   // pesquisa e sumia); os de base fraca vem marcados em vez de escondidos.
   if (d.combos && d.combos.length) {
-    const teto = Math.max(120, ...d.combos.map(c => c.p90));
+    const teto = Math.max(120, ...d.combos.map(c => c.p90), _compDias === null ? 0 : _compDias);
+    // Com a regua ligada a lista responde "quem abre mais nesse ponto", entao
+    // ordena por chance; sem regua mantem a ordem por mediana.
+    const combos = _compDias === null
+      ? d.combos
+      : [...d.combos].sort((a, b) => compChance(b, _compDias).pct - compChance(a, _compDias).pct || a.mediana - b.mediana);
+
     html += `<div style="margin-top:18px;padding-top:13px;border-top:1px solid ${CFX.linha}">
       <div style="font-size:10px;font-weight:800;letter-spacing:.6px;color:${CFX.mut2};text-transform:uppercase">Companhias que já abriram esta rota</div>
-      <div style="font-size:9.5px;color:${CFX.mut2};margin:3px 0 9px;line-height:1.5">Antecedência típica de cada operador, para comparar.</div>`;
-    html += d.combos.map(c => {
+      <div style="font-size:9.5px;color:${CFX.mut2};margin:3px 0 9px;line-height:1.5">${_compDias === null ? 'Antecedência típica de cada operador, para comparar.' : `Ordenadas pela chance a ${_compDias} dias do voo.`}</div>`;
+    html += combos.map(c => {
       const atual = d.programa && compEsc(c.programa) === compEsc(d.programa);
       const fraca = c.registros < 3 || c.pontos < 20;
       const exec = /exec/i.test(c.cabine || '');
@@ -9574,14 +9613,24 @@ function compRenderFaixa(d) {
           </div>
           <span style="font-size:12px;font-weight:900;color:${cor};white-space:nowrap">${c.mediana}d</span>
         </div>
-        <div style="position:relative;height:6px;background:${CFX.trilho};border-radius:3px;overflow:hidden;margin-top:4px">
-          <i style="position:absolute;left:${esq.toFixed(1)}%;width:${larg.toFixed(1)}%;height:100%;background:${cor}44;border-radius:3px"></i>
-          <b style="position:absolute;left:${med.toFixed(1)}%;top:-1px;width:2px;height:8px;background:${cor};border-radius:1px"></b>
+        <div style="position:relative;height:6px;background:${CFX.trilho};border-radius:3px;overflow:visible;margin-top:4px">
+          <div style="position:absolute;inset:0;border-radius:3px;overflow:hidden">
+            <i style="position:absolute;left:${esq.toFixed(1)}%;width:${larg.toFixed(1)}%;height:100%;background:${cor}44;border-radius:3px"></i>
+            <b style="position:absolute;left:${med.toFixed(1)}%;top:-1px;width:2px;height:8px;background:${cor};border-radius:1px"></b>
+          </div>
+          ${faixaMarcador(teto, 11)}
         </div>
         <div style="font-size:9px;color:${CFX.mut2};margin-top:3px">${c.p10}–${c.p90} dias · ${c.registros} pesquisa${c.registros !== 1 ? 's' : ''}${fraca ? ' · <span style="color:#f0a742">base pequena</span>' : ''}</div>
+        ${faixaPilula(c)}
       </div>`;
     }).join('');
     html += '</div>';
+  }
+
+  if (_compDias !== null) {
+    html += `<div style="margin-top:14px;padding-top:11px;border-top:1px solid ${CFX.linha};font-size:9.5px;color:${CFX.mut2};line-height:1.6">
+      O percentual compara a frequência histórica de aberturas a ${_compDias} dias com o melhor momento de cada linha. É indicador de <b style="color:${CFX.mut}">timing</b>, não de assento garantido.
+    </div>`;
   }
 
   box.innerHTML = html;
@@ -9591,6 +9640,8 @@ function compRenderFaixa(d) {
 function compAbrirPanorama() {
   const ov = document.getElementById('comp-overlay');
   if (ov) ov.style.display = 'flex';
+  const host = document.getElementById('comp-regua-host');
+  if (host) { host.innerHTML = compReguaHTML(false); compSyncControles(); }
   compCarregarPanorama();
 }
 function compFecharPanorama() {
@@ -9708,31 +9759,69 @@ function compFase(dias, picoDia) {
   return d > 0 ? `ainda faltam ${d}d até o ponto típico` : `passou do ponto típico há ${-d}d`;
 }
 
+// Markup unico da regua. O panorama usa a versao larga; a coluna do modal de
+// rota (≈345px) usa a compacta, com os controles empilhados. Os controles sao
+// identificados por CLASSE, nao por id: as duas telas podem estar montadas ao
+// mesmo tempo e precisam refletir o mesmo valor.
+function compReguaHTML(compacto) {
+  const cx = compacto;
+  return `<div class="js-regua" style="background:${cx ? 'rgba(255,255,255,.04)' : 'var(--card)'};border:1px solid ${cx ? 'rgba(255,255,255,.10)' : 'var(--border-ctrl)'};border-radius:${cx ? 12 : 14}px;padding:${cx ? '11px 12px' : '13px 15px'}">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
+      <div style="font-size:${cx ? 9.5 : 11}px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;color:${cx ? CFX.mut2 : 'var(--muted2)'}">Régua de chance</div>
+      ${cx ? '' : '<div style="font-size:10.5px;color:var(--muted);flex:1;min-width:180px;line-height:1.5">Marque a que distância você está do voo e veja quanto cada combinação costuma render nesse ponto.</div>'}
+      <button class="js-regua-off" onclick="compSetDias(null)" style="display:${_compDias === null ? 'none' : ''};margin-left:auto;background:transparent;border:1px solid ${cx ? 'rgba(255,255,255,.14)' : 'var(--border-ctrl)'};color:${cx ? CFX.mut : 'var(--muted)'};border-radius:16px;padding:3px 10px;font-size:9.5px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif">limpar</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:${cx ? 8 : 12}px;flex-wrap:wrap">
+      <input class="js-regua-range" type="range" min="0" max="400" step="5" value="${_compDias === null ? 180 : Math.min(400, _compDias)}"
+             oninput="compSetDias(this.value)"
+             style="flex:1;min-width:${cx ? 120 : 200}px;accent-color:#ff585e;height:22px;cursor:pointer">
+      <div style="display:flex;align-items:center;gap:4px">
+        <input class="js-regua-num" type="number" min="0" max="800" step="1" placeholder="—" value="${_compDias === null ? '' : _compDias}"
+               oninput="compSetDias(this.value)"
+               style="width:60px;background:${cx ? 'rgba(0,0,0,.25)' : 'var(--surface)'};border:1px solid ${cx ? 'rgba(255,255,255,.14)' : 'var(--border-ctrl)'};border-radius:9px;padding:5px 7px;font-size:12px;font-weight:900;color:${cx ? CFX.txt : 'var(--text)'};text-align:center;font-family:'Montserrat',sans-serif">
+        <span style="font-size:10.5px;color:${cx ? CFX.mut : 'var(--muted)'};font-weight:700">dias</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <span style="font-size:10px">🛫</span>
+        <input class="js-regua-data" type="date" onchange="compDiasPorData(this.value)"
+               style="background:${cx ? 'rgba(0,0,0,.25)' : 'var(--surface)'};border:1px solid ${cx ? 'rgba(255,255,255,.14)' : 'var(--border-ctrl)'};border-radius:9px;padding:4px 7px;font-size:10.5px;color:${cx ? CFX.txt : 'var(--text)'};font-family:'Montserrat',sans-serif">
+      </div>
+    </div>
+    <div class="js-regua-msg" style="font-size:10px;color:${cx ? CFX.mut2 : 'var(--muted2)'};margin-top:7px;line-height:1.5;display:${_compDias === null ? 'none' : ''}"></div>
+  </div>`;
+}
+
+// Espelha o estado em todos os conjuntos de controles montados. O elemento com
+// foco fica de fora: reescrever o value de quem esta sendo arrastado/digitado
+// trava o slider e joga o cursor para o fim do campo numerico.
+function compSyncControles() {
+  const ativo = document.activeElement;
+  const txt = _compDias === null ? '' : String(_compDias);
+  document.querySelectorAll('.js-regua-range').forEach(el => {
+    if (el !== ativo && _compDias !== null) el.value = Math.min(400, _compDias);
+  });
+  document.querySelectorAll('.js-regua-num').forEach(el => { if (el !== ativo) el.value = txt; });
+  document.querySelectorAll('.js-regua-off').forEach(el => { el.style.display = _compDias === null ? 'none' : ''; });
+  if (_compDias === null) document.querySelectorAll('.js-regua-data').forEach(el => { if (el !== ativo) el.value = ''; });
+  document.querySelectorAll('.js-regua-msg').forEach(el => {
+    if (_compDias === null) { el.style.display = 'none'; el.innerHTML = ''; return; }
+    const alvo = new Date(Date.now() + _compDias * 86400000);
+    el.style.display = '';
+    el.innerHTML = `Marcado em <b>${_compDias} dias</b> de antecedência — voo por volta de <b>${alvo.toLocaleDateString('pt-BR')}</b>.`;
+  });
+}
+
 function compSetDias(v) {
   if (v === null || v === '' || v === undefined) {
     _compDias = null;
   } else {
-    const n = Math.max(0, Math.min(800, Math.round(Number(v))));
+    const n = Math.round(Number(v));
     if (!Number.isFinite(n)) return;
-    _compDias = n;
+    _compDias = Math.max(0, Math.min(800, n));
   }
-  const rg = document.getElementById('comp-regua-range');
-  const nu = document.getElementById('comp-regua-num');
-  const off = document.getElementById('comp-regua-off');
-  const msg = document.getElementById('comp-regua-msg');
-  if (rg && _compDias !== null) rg.value = Math.min(400, _compDias);
-  if (nu) nu.value = _compDias === null ? '' : _compDias;
-  if (off) off.style.display = _compDias === null ? 'none' : '';
-  if (msg) {
-    if (_compDias === null) { msg.style.display = 'none'; msg.innerHTML = ''; }
-    else {
-      const alvo = new Date(Date.now() + _compDias * 86400000);
-      msg.style.display = '';
-      msg.innerHTML = `Marcado em <b style="color:var(--text)">${_compDias} dias</b> de antecedência — voo por volta de <b style="color:var(--text)">${alvo.toLocaleDateString('pt-BR')}</b>. A tabela reordena pelo índice de chance.`;
-    }
-  }
-  if (_compDias === null) { const dt = document.getElementById('comp-regua-data'); if (dt) dt.value = ''; }
+  compSyncControles();
   compRenderPanorama();
+  faixaRenderConteudo();
 }
 
 function compDiasPorData(iso) {
@@ -9742,8 +9831,9 @@ function compDiasPorData(iso) {
   if (!Number.isFinite(alvo.getTime())) return;
   const dias = Math.round((alvo - hoje) / 86400000);
   if (dias < 0) {
-    const msg = document.getElementById('comp-regua-msg');
-    if (msg) { msg.style.display = ''; msg.innerHTML = '<span style="color:#f0a742">Essa data já passou.</span>'; }
+    document.querySelectorAll('.js-regua-msg').forEach(el => {
+      el.style.display = ''; el.innerHTML = '<span style="color:#f0a742">Essa data já passou.</span>';
+    });
     return;
   }
   compSetDias(dias);
@@ -10053,32 +10143,7 @@ function mapaRenderAll() {
       <button id="comp-tab-int" onclick="compSetEscopo('internacional')" style="background:rgba(255,88,94,.15);border:1px solid #ff585e;color:#ff585e;border-radius:20px;padding:6px 14px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif">Internacional</button>
       <button id="comp-tab-nac" onclick="compSetEscopo('nacional')" style="background:var(--card);border:1px solid var(--border-ctrl);color:var(--muted);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif">Nacional</button>
     </div>
-    <div style="padding:14px 24px 0">
-      <div style="background:var(--card);border:1px solid var(--border-ctrl);border-radius:14px;padding:13px 15px">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
-          <div style="font-size:11px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;color:var(--muted2)">Régua de chance</div>
-          <div style="font-size:10.5px;color:var(--muted);flex:1;min-width:180px;line-height:1.5">Marque a que distância você está do voo e veja quanto cada combinação costuma render nesse ponto.</div>
-          <button id="comp-regua-off" onclick="compSetDias(null)" style="display:none;background:transparent;border:1px solid var(--border-ctrl);color:var(--muted);border-radius:16px;padding:4px 11px;font-size:10px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif">limpar</button>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-          <input id="comp-regua-range" type="range" min="0" max="400" step="5" value="180"
-                 oninput="compSetDias(this.value)"
-                 style="flex:1;min-width:200px;accent-color:#ff585e;height:22px;cursor:pointer">
-          <div style="display:flex;align-items:center;gap:5px">
-            <input id="comp-regua-num" type="number" min="0" max="800" step="1" placeholder="—"
-                   oninput="compSetDias(this.value)"
-                   style="width:66px;background:var(--surface);border:1px solid var(--border-ctrl);border-radius:9px;padding:6px 8px;font-size:12.5px;font-weight:900;color:var(--text);text-align:center;font-family:'Montserrat',sans-serif">
-            <span style="font-size:11px;color:var(--muted);font-weight:700">dias</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:5px">
-            <span style="font-size:10.5px;color:var(--muted2);font-weight:700">🛫</span>
-            <input id="comp-regua-data" type="date" onchange="compDiasPorData(this.value)"
-                   style="background:var(--surface);border:1px solid var(--border-ctrl);border-radius:9px;padding:5px 8px;font-size:11px;color:var(--text);font-family:'Montserrat',sans-serif">
-          </div>
-        </div>
-        <div id="comp-regua-msg" style="font-size:10.5px;color:var(--muted2);margin-top:8px;line-height:1.5;display:none"></div>
-      </div>
-    </div>
+    <div id="comp-regua-host" style="padding:14px 24px 0"></div>
     <div id="comp-wrap" style="padding:14px 24px 24px;overflow-x:auto">
       <div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">Carregando…</div>
     </div>
