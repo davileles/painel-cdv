@@ -9627,55 +9627,225 @@ async function compCarregarPanorama() {
   compRenderPanorama();
 }
 
+// ── Regua de chance por antecedencia ───────────────────────────────────────
+// A tabela responde "quando costuma abrir". A regua responde a pergunta que
+// vem depois: "estou a N dias do voo — vale caçar agora?". O indice NAO e
+// probabilidade de emitir (isso dependeria de assento, trecho e sorte); e a
+// densidade historica daquela antecedencia comparada ao pico da combinacao.
+// 100 = e exatamente quando aquela cia/programa/cabine mais abre.
+let _compDias = null;              // null = regua desligada
+const _compCurvaCache = new WeakMap();
+
+// Constroi f(dias) -> 0..1 a partir da distribuicao real. Fallback triangular
+// mantem a regua util enquanto o proxy nao for redeployado com o campo `dens`.
+function compCurva(c) {
+  if (_compCurvaCache.has(c)) return _compCurvaCache.get(c);
+  let curva;
+
+  if (Array.isArray(c.dens) && c.dens.length) {
+    const bin = c.bin || 15, d = c.dens;
+    // Bins de 15 dias com amostra pequena serrilham muito; kernel triangular
+    // 1-2-1 tira o ruido sem deslocar o pico.
+    const sm = d.map((_, i) => ((d[i - 1] || 0) + 2 * d[i] + (d[i + 1] || 0)) / 4);
+    const pico = Math.max(...sm) || 1;
+    const total = d.reduce((a, b) => a + b, 0) || 1;
+    const iPico = sm.indexOf(Math.max(...sm));
+    curva = {
+      aprox: false,
+      picoDia: iPico * bin + Math.round(bin / 2),
+      rel: dias => {
+        const i = Math.floor(Math.max(0, dias) / bin);
+        return i >= sm.length ? 0 : sm[i] / pico;
+      },
+      // fatia do historico que caiu na vizinhanca do ponto marcado
+      share: (dias, raio) => {
+        raio = raio || 15;
+        let acc = 0;
+        for (let i = 0; i < d.length; i++) {
+          const ini = i * bin, fim = ini + bin - 1;
+          if (fim >= dias - raio && ini <= dias + raio) acc += d[i];
+        }
+        return 100 * acc / total;
+      },
+    };
+  } else {
+    const a = c.p10, m = c.mediana, b = c.p90;
+    const lo = Math.max(0, a - (m - a)), hi = b + (b - m);
+    curva = {
+      aprox: true,
+      picoDia: m,
+      rel: dias => {
+        if (dias <= lo || dias >= hi) return 0;
+        return dias <= m ? (dias - lo) / ((m - lo) || 1) : (hi - dias) / ((hi - m) || 1);
+      },
+      share: null,
+    };
+  }
+  _compCurvaCache.set(c, curva);
+  return curva;
+}
+
+function compChance(c, dias) {
+  const cv = compCurva(c);
+  const pct = Math.round(100 * Math.max(0, Math.min(1, cv.rel(dias))));
+  return { pct, picoDia: cv.picoDia, aprox: cv.aprox, share: cv.share ? cv.share(dias) : null };
+}
+
+function compLeitura(pct) {
+  if (pct >= 80) return { t: 'Janela quente', c: '#22c55e' };
+  if (pct >= 55) return { t: 'Boa chance',    c: '#4ade80' };
+  if (pct >= 30) return { t: 'Moderada',      c: '#f0a742' };
+  if (pct >= 12) return { t: 'Baixa',         c: '#f97316' };
+  return { t: 'Fora da janela', c: '#ef4444' };
+}
+
+// A antecedencia so diminui com o tempo: chance baixa ANTES do pico significa
+// "espere", chance baixa DEPOIS do pico significa "perdeu a janela". Sao
+// conselhos opostos e a tela precisa separar os dois.
+function compFase(dias, picoDia) {
+  const d = dias - picoDia;
+  if (Math.abs(d) <= 10) return 'no ponto típico';
+  return d > 0 ? `ainda faltam ${d}d até o ponto típico` : `passou do ponto típico há ${-d}d`;
+}
+
+function compSetDias(v) {
+  if (v === null || v === '' || v === undefined) {
+    _compDias = null;
+  } else {
+    const n = Math.max(0, Math.min(800, Math.round(Number(v))));
+    if (!Number.isFinite(n)) return;
+    _compDias = n;
+  }
+  const rg = document.getElementById('comp-regua-range');
+  const nu = document.getElementById('comp-regua-num');
+  const off = document.getElementById('comp-regua-off');
+  const msg = document.getElementById('comp-regua-msg');
+  if (rg && _compDias !== null) rg.value = Math.min(400, _compDias);
+  if (nu) nu.value = _compDias === null ? '' : _compDias;
+  if (off) off.style.display = _compDias === null ? 'none' : '';
+  if (msg) {
+    if (_compDias === null) { msg.style.display = 'none'; msg.innerHTML = ''; }
+    else {
+      const alvo = new Date(Date.now() + _compDias * 86400000);
+      msg.style.display = '';
+      msg.innerHTML = `Marcado em <b style="color:var(--text)">${_compDias} dias</b> de antecedência — voo por volta de <b style="color:var(--text)">${alvo.toLocaleDateString('pt-BR')}</b>. A tabela reordena pelo índice de chance.`;
+    }
+  }
+  if (_compDias === null) { const dt = document.getElementById('comp-regua-data'); if (dt) dt.value = ''; }
+  compRenderPanorama();
+}
+
+function compDiasPorData(iso) {
+  if (!iso) return;
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const alvo = new Date(iso + 'T00:00:00');
+  if (!Number.isFinite(alvo.getTime())) return;
+  const dias = Math.round((alvo - hoje) / 86400000);
+  if (dias < 0) {
+    const msg = document.getElementById('comp-regua-msg');
+    if (msg) { msg.style.display = ''; msg.innerHTML = '<span style="color:#f0a742">Essa data já passou.</span>'; }
+    return;
+  }
+  compSetDias(dias);
+}
+
 function compRenderPanorama() {
   const w = document.getElementById('comp-wrap');
   if (!w || !_compPanorama) return;
+  const dias = _compDias;
+
   // Ordem alfabetica por companhia (convencao de UI do CDV), desempatando por
-  // programa e cabine para as linhas da mesma cia ficarem agrupadas e estaveis.
-  const linhas = _compPanorama.filter(c => c.escopo === _compEscopo).sort((a, b) =>
-    String(a.cia || '').localeCompare(String(b.cia || ''), 'pt-BR') ||
-    String(a.programa || '').localeCompare(String(b.programa || ''), 'pt-BR') ||
-    String(a.cabine || '').localeCompare(String(b.cabine || ''), 'pt-BR'));
+  // programa e cabine. Com a regua ligada a pergunta muda — "onde tenho mais
+  // chance AGORA" — entao a ordem passa a ser pelo indice, decrescente.
+  let linhas = _compPanorama.filter(c => c.escopo === _compEscopo);
+  if (dias === null) {
+    linhas = linhas.sort((a, b) =>
+      String(a.cia || '').localeCompare(String(b.cia || ''), 'pt-BR') ||
+      String(a.programa || '').localeCompare(String(b.programa || ''), 'pt-BR') ||
+      String(a.cabine || '').localeCompare(String(b.cabine || ''), 'pt-BR'));
+  } else {
+    linhas = linhas.map(c => ({ c, ch: compChance(c, dias) }))
+      .sort((x, y) => y.ch.pct - x.ch.pct ||
+        String(x.c.cia || '').localeCompare(String(y.c.cia || ''), 'pt-BR'))
+      .map(o => o.c);
+  }
   if (!linhas.length) { w.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">Sem amostra suficiente neste recorte.</div>'; return; }
 
   const teto = Math.ceil(Math.max(...linhas.map(c => c.p90)) / 30) * 30 || 360;
   const th = 'text-align:right;font-size:9px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted2);font-weight:800;padding:0 6px 8px;white-space:nowrap';
   const td = 'padding:8px 6px;border-top:1px solid var(--border-ctrl);text-align:right;white-space:nowrap;font-size:11.5px';
-
   const sub = 'display:block;font-size:8.5px;font-weight:600;color:var(--muted2);opacity:.75;text-transform:none;letter-spacing:0;margin-top:2px';
+
+  // Marcador da regua sobre a barra de faixa comum. Fora da escala ele gruda
+  // na borda com seta, em vez de sumir e dar a impressao de que nao existe.
+  const marcador = () => {
+    if (dias === null) return '';
+    const foraDir = dias > teto;
+    const pos = Math.max(0, Math.min(100, 100 * dias / teto));
+    return `<u title="Você está aqui: ${dias} dias" style="position:absolute;left:${pos.toFixed(1)}%;top:-3px;width:2px;height:14px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.55);border-radius:1px;text-decoration:none">${foraDir ? '<i style="position:absolute;left:-9px;top:1px;font-size:8px;color:#fff;font-style:normal">▸</i>' : ''}</u>`;
+  };
+
+  let aproximado = false;
+
+  const corpo = linhas.map(c => {
+    const exec = /exec/i.test(c.cabine || '');
+    const cor = exec ? '#60a5fa' : '#34d399';
+    const esq = 100 * c.p10 / teto, larg = Math.max(100 * (c.p90 - c.p10) / teto, 1), med = 100 * c.mediana / teto;
+
+    let colChance = '';
+    if (dias !== null) {
+      const ch = compChance(c, dias);
+      if (ch.aprox) aproximado = true;
+      const l = compLeitura(ch.pct);
+      colChance = `<td style="${td};text-align:center;padding-left:10px">
+        <div style="display:inline-block;min-width:74px">
+          <div style="font-size:15px;font-weight:900;color:${l.c};line-height:1.1">${ch.pct}<span style="font-size:9px;font-weight:800;opacity:.8">%</span></div>
+          <div style="height:4px;background:var(--card);border-radius:2px;overflow:hidden;margin:3px 0 2px">
+            <i style="display:block;height:100%;width:${ch.pct}%;background:${l.c};border-radius:2px"></i>
+          </div>
+          <div style="font-size:8.5px;font-weight:800;color:${l.c}">${l.t}</div>
+          <div style="font-size:8px;color:var(--muted2);margin-top:1px;white-space:normal;line-height:1.3">${compEsc(compFase(dias, ch.picoDia))}${ch.share !== null ? ` · ${ch.share.toFixed(0)}% da base aqui` : ''}</div>
+        </div>
+      </td>`;
+    }
+
+    return `<tr>
+      <td style="${td};text-align:left">
+        <div style="font-weight:900;font-size:12.5px">${compEsc(c.cia)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:1px">${compEsc(c.programa)}</div>
+      </td>
+      <td style="${td}"><span style="font-size:9.5px;font-weight:800;border-radius:5px;padding:2px 6px;background:${cor}26;color:${cor}">${compEsc((c.cabine || '').replace('Economica', 'Econômica'))}</span></td>
+      ${colChance}
+      <td style="${td};color:var(--muted)">${c.p10}d</td>
+      <td style="${td};font-weight:900">${c.mediana}d</td>
+      <td style="${td};color:var(--muted)">${c.p90}d</td>
+      <td style="${td};padding-left:14px">
+        <div style="position:relative;height:8px;min-width:120px;background:var(--card);border-radius:4px;overflow:visible">
+          <div style="position:absolute;inset:0;border-radius:4px;overflow:hidden">
+            <i style="position:absolute;left:${esq.toFixed(1)}%;width:${larg.toFixed(1)}%;height:100%;background:${cor}44;border-radius:4px"></i>
+            <b style="position:absolute;left:${med.toFixed(1)}%;top:-2px;width:2.5px;height:12px;background:#ff585e;border-radius:2px"></b>
+          </div>
+          ${marcador()}
+        </div>
+      </td>
+      <td style="${td};font-size:10px;color:var(--muted2)">${c.registros} pesq.<br>${(c.pontos || 0).toLocaleString('pt-BR')} datas</td>
+    </tr>`;
+  }).join('');
+
+  const thChance = dias === null ? '' :
+    `<th style="${th};text-align:center;padding-left:10px" title="Densidade histórica desta antecedência comparada ao melhor momento da combinação">Chance<span style="${sub}">a ${dias} dias</span></th>`;
+
   w.innerHTML = `<table style="width:100%;border-collapse:collapse">
     <thead><tr>
       <th style="${th};text-align:left">Companhia / programa</th>
       <th style="${th}">Cabine</th>
+      ${thChance}
       <th style="${th}" title="p10 — 10% das datas encontradas estão mais perto do voo que isso">Mais perto<span style="${sub}">10% abaixo</span></th>
       <th style="${th}" title="Mediana (p50) — metade das datas fica abaixo, metade acima">Típico<span style="${sub}">mediana</span></th>
       <th style="${th}" title="p90 — 10% das datas encontradas estão mais longe do voo que isso">Mais longe<span style="${sub}">10% acima</span></th>
       <th style="${th};text-align:left;padding-left:14px">Faixa comum<span style="${sub}">onde caem 8 de cada 10</span></th>
       <th style="${th}">Amostra</th>
-    </tr></thead><tbody>
-    ${linhas.map(c => {
-      const exec = /exec/i.test(c.cabine || '');
-      const cor = exec ? '#60a5fa' : '#34d399';
-      const esq = 100 * c.p10 / teto, larg = Math.max(100 * (c.p90 - c.p10) / teto, 1), med = 100 * c.mediana / teto;
-      return `<tr>
-        <td style="${td};text-align:left">
-          <div style="font-weight:900;font-size:12.5px">${compEsc(c.cia)}</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:1px">${compEsc(c.programa)}</div>
-        </td>
-        <td style="${td}"><span style="font-size:9.5px;font-weight:800;border-radius:5px;padding:2px 6px;background:${cor}26;color:${cor}">${compEsc((c.cabine || '').replace('Economica', 'Econômica'))}</span></td>
-        <td style="${td};color:var(--muted)">${c.p10}d</td>
-        <td style="${td};font-weight:900">${c.mediana}d</td>
-        <td style="${td};color:var(--muted)">${c.p90}d</td>
-        <td style="${td};padding-left:14px">
-          <div style="position:relative;height:8px;min-width:120px;background:var(--card);border-radius:4px;overflow:hidden">
-            <i style="position:absolute;left:${esq.toFixed(1)}%;width:${larg.toFixed(1)}%;height:100%;background:${cor}44;border-radius:4px"></i>
-            <b style="position:absolute;left:${med.toFixed(1)}%;top:-2px;width:2.5px;height:12px;background:#ff585e;border-radius:2px"></b>
-          </div>
-        </td>
-        <td style="${td};font-size:10px;color:var(--muted2)">${c.registros} pesq.<br>${(c.pontos || 0).toLocaleString('pt-BR')} datas</td>
-      </tr>`;
-    }).join('')}
-    </tbody></table>
+    </tr></thead><tbody>${corpo}</tbody></table>
     <div style="margin-top:16px;background:var(--card);border:1px solid var(--border-ctrl);border-radius:12px;padding:12px 14px">
       <div style="font-size:10px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted2);margin-bottom:7px">Como ler</div>
       <div style="font-size:10.5px;color:var(--muted);line-height:1.75">
@@ -9683,7 +9853,8 @@ function compRenderPanorama() {
         <b style="color:var(--text)">Típico</b> é o valor do meio — metade das datas fica abaixo dele, metade acima. É o mais representativo.<br>
         <b style="color:var(--text)">Mais perto</b> e <b style="color:var(--text)">mais longe</b> marcam os extremos comuns: só 1 em cada 10 datas aparece antes do primeiro ou depois do segundo.<br>
         A <b style="color:var(--text)">faixa comum</b> é o intervalo entre esses dois — cobre 8 de cada 10 casos. Barra estreita significa comportamento previsível; barra larga, imprevisível.<br>
-        Na barra, o traço vermelho é o valor típico. Escala de 0 a ${teto} dias, igual para todas as linhas.<br>
+        Na barra, o traço vermelho é o valor típico${dias !== null ? '; o traço branco é onde você está hoje' : ''}. Escala de 0 a ${teto} dias, igual para todas as linhas.<br>
+        ${dias !== null ? `<b style="color:var(--text)">Chance</b> compara a frequência histórica de aberturas a ${dias} dias com o melhor momento daquela combinação: 100% é o pico dela, 0% é uma faixa onde ela praticamente nunca abriu. É um indicador de <b style="color:var(--text)">timing</b>, não de assento garantido — diz se vale caçar agora, não se vai achar.<br>${aproximado ? '<span style="color:#f0a742">Parte das linhas está usando estimativa aproximada pelos percentis: o proxy ainda não foi redeployado com a distribuição completa.</span><br>' : ''}` : ''}
         <span style="color:var(--muted2)">Em estatística esses valores se chamam p10, mediana (p50) e p90. Só entram combinações com no mínimo 5 pesquisas e 60 datas.</span>
       </div>
     </div>`;
@@ -9881,6 +10052,32 @@ function mapaRenderAll() {
     <div style="display:flex;gap:6px;padding:12px 24px 0">
       <button id="comp-tab-int" onclick="compSetEscopo('internacional')" style="background:rgba(255,88,94,.15);border:1px solid #ff585e;color:#ff585e;border-radius:20px;padding:6px 14px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif">Internacional</button>
       <button id="comp-tab-nac" onclick="compSetEscopo('nacional')" style="background:var(--card);border:1px solid var(--border-ctrl);color:var(--muted);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif">Nacional</button>
+    </div>
+    <div style="padding:14px 24px 0">
+      <div style="background:var(--card);border:1px solid var(--border-ctrl);border-radius:14px;padding:13px 15px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
+          <div style="font-size:11px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;color:var(--muted2)">Régua de chance</div>
+          <div style="font-size:10.5px;color:var(--muted);flex:1;min-width:180px;line-height:1.5">Marque a que distância você está do voo e veja quanto cada combinação costuma render nesse ponto.</div>
+          <button id="comp-regua-off" onclick="compSetDias(null)" style="display:none;background:transparent;border:1px solid var(--border-ctrl);color:var(--muted);border-radius:16px;padding:4px 11px;font-size:10px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif">limpar</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <input id="comp-regua-range" type="range" min="0" max="400" step="5" value="180"
+                 oninput="compSetDias(this.value)"
+                 style="flex:1;min-width:200px;accent-color:#ff585e;height:22px;cursor:pointer">
+          <div style="display:flex;align-items:center;gap:5px">
+            <input id="comp-regua-num" type="number" min="0" max="800" step="1" placeholder="—"
+                   oninput="compSetDias(this.value)"
+                   style="width:66px;background:var(--surface);border:1px solid var(--border-ctrl);border-radius:9px;padding:6px 8px;font-size:12.5px;font-weight:900;color:var(--text);text-align:center;font-family:'Montserrat',sans-serif">
+            <span style="font-size:11px;color:var(--muted);font-weight:700">dias</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <span style="font-size:10.5px;color:var(--muted2);font-weight:700">🛫</span>
+            <input id="comp-regua-data" type="date" onchange="compDiasPorData(this.value)"
+                   style="background:var(--surface);border:1px solid var(--border-ctrl);border-radius:9px;padding:5px 8px;font-size:11px;color:var(--text);font-family:'Montserrat',sans-serif">
+          </div>
+        </div>
+        <div id="comp-regua-msg" style="font-size:10.5px;color:var(--muted2);margin-top:8px;line-height:1.5;display:none"></div>
+      </div>
     </div>
     <div id="comp-wrap" style="padding:14px 24px 24px;overflow-x:auto">
       <div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">Carregando…</div>
