@@ -611,9 +611,17 @@
   .mapa-header{padding:12px 14px 10px!important}
   .mapa-header > div:first-child{order:1;flex:1 1 100%}
   #map-stats{order:2;margin-left:0!important}
-  .mapa-modal-cols{flex-direction:column!important}
-  .mapa-modal-cols>div{width:100%!important;border-right:none!important}
-  .mapa-modal-cols>div:first-child{border-bottom:1px solid var(--border-ctrl)}
+  .mapa-modal-cols{flex-direction:column!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch}
+  .mapa-modal-cols>div{width:100%!important;border-right:none!important;flex:none!important;overflow:visible!important}
+  .mapa-modal-cols>div:first-child{border-bottom:1px solid rgba(255,255,255,.12)}
+  #mapa-pass-modal-overlay{padding:0!important;align-items:flex-end!important}
+  #mapa-pass-modal-overlay > div{max-height:92vh!important;border-radius:16px 16px 0 0!important}
+  #comp-overlay{padding:0!important;align-items:flex-end!important}
+  #comp-overlay > div{max-height:92vh!important;border-radius:16px 16px 0 0!important}
+  #comp-wrap{padding:14px 16px 28px!important}
+  #comp-regua-host{padding:14px 16px 0!important}
+  #comp-overlay .comp-esc{padding:18px 16px 10px!important}
+  #comp-overlay .comp-tabs{padding:12px 16px 0!important}
   .mapa-busca-wrap{order:3;flex:1 1 auto;min-width:0}
   .mapa-busca-wrap input{width:100%!important}
   .mapa-header > button{order:4;flex:0 0 auto}
@@ -4000,7 +4008,7 @@ async function ctSalvar(i){
     <!-- COLUNA ESQUERDA: Mapa -->
     <div class="mapa-col-svg" style="flex:0 0 58%;min-width:0;padding:14px 12px 14px 24px;display:flex;flex-direction:column;gap:10px">
       <div style="position:relative;background:#111827;border:1px solid var(--border);border-radius:14px;overflow:hidden;flex:1">
-        <svg id="cdv-map-svg" viewBox="0 40 1000 357" style="display:block;width:100%;height:100%;min-height:360px;cursor:grab;user-select:none"></svg>
+        <svg id="cdv-map-svg" viewBox="0 40 1000 357" style="display:block;width:100%;height:100%;min-height:360px;cursor:grab;user-select:none;touch-action:none"></svg>
         <!-- Zoom controls -->
         <div style="position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:5px">
           <button onclick="mapaZoom(1.4)" style="width:28px;height:28px;border-radius:8px;background:#262e42;border:1px solid var(--border-ctrl);color:var(--text);font-size:15px;font-weight:800;cursor:pointer;line-height:1" onmouseover="this.style.borderColor='#ff585e'" onmouseout="this.style.borderColor='var(--border-ctrl)'">＋</button>
@@ -4013,7 +4021,7 @@ async function ctSalvar(i){
         <div style="position:absolute;left:10px;bottom:8px;display:flex;gap:10px;font-size:9px;font-weight:700;color:var(--muted2);background:rgba(26,33,53,.85);padding:3px 8px;border-radius:6px">
           <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#ff585e;margin-right:3px;vertical-align:middle"></span>origem</span>
           <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#fbbf24;margin-right:3px;vertical-align:middle"></span>destino</span>
-          <span>scroll=zoom · arrastar=mover</span>
+          <span id="map-legenda-gesto">scroll=zoom · arrastar=mover</span>
         </div>
       </div>
     </div>
@@ -8916,6 +8924,10 @@ async function mapaInit() {
   mapaRenderAll();
   mapaAttachEvents();
 
+  // "scroll=zoom" nao existe no celular; o texto tem que descrever o gesto real.
+  const legenda = document.getElementById('map-legenda-gesto');
+  if (legenda && mapaToque()) legenda.textContent = 'pinça=zoom · arrastar=mover';
+
   // Filtro: apenas últimos 180 dias
   function mapaFiltrar180(items) {
     const cutoff = new Date();
@@ -8947,6 +8959,36 @@ async function mapaInit() {
 }
 
 // ── EVENTOS ─────────────────────────────────────────────
+// Ponteiro grosso = dedo. Nao basta olhar a largura: um tablet largo tambem
+// precisa de alvo maior.
+function mapaToque() {
+  return window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
+}
+
+// Raio de alvo em unidades de viewBox equivalente a ~11px reais de tela.
+let _mapaCityPos = {}, _mapaCityCounts = {};
+
+// No celular o ponto de uma cidade tem ~1,4px de raio na tela — menor que a
+// area de contato de um dedo. Em vez de aumentar o alvo de cada ponto (o que
+// faz alvos vizinhos se sobreporem e o desempate virar ordem de desenho), o
+// toque procura a cidade MAIS PROXIMA do dedo dentro de um raio de tolerancia.
+// Empate entre cidades quase coincidentes vai para a de maior volume.
+function mapaCandidatasToque(clientX, clientY) {
+  const svg = document.getElementById('cdv-map-svg');
+  if (!svg) return null;
+  const [x, y] = mapaPontoSVG(clientX, clientY);
+  const tol = 15 * mapaEscalaSVG()[0];        // ~15px reais de tolerancia
+  const dentro = [];
+  for (const n of Object.keys(_mapaCityCounts || {})) {
+    const p = _mapaCityPos[n];
+    if (!p) continue;
+    const d = Math.hypot(p.x - x, p.y - y);
+    if (d <= tol) dentro.push({ nome: n, d });
+  }
+  dentro.sort((a, b) => a.d - b.d);
+  return { x, y, dentro };
+}
+
 function mapaAttachEvents() {
   const svg = document.getElementById('cdv-map-svg');
   if (!svg || svg.dataset.evBound) return;
@@ -8977,9 +9019,9 @@ function mapaAttachEvents() {
     _dragFrame = requestAnimationFrame(() => {
       _dragFrame = null;
       if (!mapaDrag) return;
-      const r = svg.getBoundingClientRect();
-      const dx = (e.clientX - mapaDrag.sx) / r.width  * mapaDrag.vb.w;
-      const dy = (e.clientY - mapaDrag.sy) / r.height * (mapaDrag.vb.w * 0.357);
+      const [ex, ey] = mapaEscalaSVG();
+      const dx = (e.clientX - mapaDrag.sx) * ex;
+      const dy = (e.clientY - mapaDrag.sy) * ey;
       if (Math.abs(e.clientX-mapaDrag.sx)+Math.abs(e.clientY-mapaDrag.sy) > 3) mapaDrag.moved = true;
       const h = mapaDrag.vb.w * 0.357;
       mapaVB = {
@@ -8993,19 +9035,39 @@ function mapaAttachEvents() {
   svg.addEventListener('mouseup',    () => { mapaDrag = null; if(_dragFrame){cancelAnimationFrame(_dragFrame);_dragFrame=null;} svg.style.cursor='grab'; });
   svg.addEventListener('mouseleave', () => { mapaDrag = null; if(_dragFrame){cancelAnimationFrame(_dragFrame);_dragFrame=null;} svg.style.cursor='grab'; });
 
-  // Touch
+  // Touch — 1 dedo move, 2 dedos dao zoom. Sem o pinch o unico zoom no celular
+  // eram os botoes +/-, e o mapa mundi inteiro em 340px e ilegivel sem zoom.
+  let _pinch = null;
+  const _dist = t => Math.hypot(t[0].clientX-t[1].clientX, t[0].clientY-t[1].clientY);
   svg.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+      mapaDrag = null;
+      _pinch = { d: _dist(e.touches), w: mapaVB.w };
+      return;
+    }
     if (e.touches.length !== 1) return;
+    _pinch = null;
     const t = e.touches[0];
     mapaDrag = {sx: t.clientX, sy: t.clientY, vb: {...mapaVB}, moved: false};
   }, {passive:true});
   svg.addEventListener('touchmove', e => {
+    if (_pinch && e.touches.length === 2) {
+      e.preventDefault();
+      const d = _dist(e.touches);
+      if (!_pinch.d) return;
+      const alvo = Math.max(60, Math.min(1000, _pinch.w * _pinch.d / d));
+      const [px, py] = mapaPontoSVG(
+        (e.touches[0].clientX + e.touches[1].clientX)/2,
+        (e.touches[0].clientY + e.touches[1].clientY)/2);
+      mapaZoomAt(mapaVB.w / alvo, px, py);
+      return;
+    }
     if (!mapaDrag || e.touches.length !== 1) return;
     e.preventDefault();
     const t = e.touches[0];
-    const r = svg.getBoundingClientRect();
-    const dx = (t.clientX-mapaDrag.sx)/r.width*mapaDrag.vb.w;
-    const dy = (t.clientY-mapaDrag.sy)/r.height*(mapaDrag.vb.w*0.357);
+    const [ex, ey] = mapaEscalaSVG();
+    const dx = (t.clientX-mapaDrag.sx)*ex;
+    const dy = (t.clientY-mapaDrag.sy)*ey;
     if (Math.abs(t.clientX-mapaDrag.sx)+Math.abs(t.clientY-mapaDrag.sy)>3) mapaDrag.moved=true;
     const h = mapaDrag.vb.w*0.357;
     mapaVB = {
@@ -9016,14 +9078,53 @@ function mapaAttachEvents() {
     mapaUpdateViewBox();
     mapaDrag.sx=t.clientX; mapaDrag.sy=t.clientY; mapaDrag.vb={...mapaVB};
   }, {passive:false});
-  svg.addEventListener('touchend', ()=>{ mapaDrag=null; });
+  svg.addEventListener('touchend', e => {
+    const arrastou = mapaDrag && mapaDrag.moved;
+    mapaDrag = null;
+    if (e.touches.length < 2) _pinch = null;
+    if (arrastou || _pinch) return;
+    const t = e.changedTouches && e.changedTouches[0];
+    if (!t) return;
+    if (t.target && t.target.tagName === 'circle') return;  // acertou em cheio
+    const c = mapaCandidatasToque(t.clientX, t.clientY);
+    if (!c || !c.dentro.length) return;
+    if (c.dentro.length === 1) { mapaClick(c.dentro[0].nome); return; }
+    // Varias cidades sob o dedo: no zoom mundial, São Paulo e Rio ficam a ~3px
+    // uma da outra num celular — escolher qualquer uma delas seria chute. O
+    // toque aproxima naquele ponto ate que os pontos se separem, como um
+    // cluster de mapa. A lista lateral e a busca continuam sendo o caminho
+    // direto para quem ja sabe a cidade.
+    mapaZoomAt(2, c.x, c.y);
+  });
 }
 
 // ── ZOOM / PAN ──────────────────────────────────────────
+function mapaPontoSVG(clientX, clientY) {
+  const svg = document.getElementById('cdv-map-svg');
+  if (!svg || !svg.getScreenCTM) return [500, 200];
+  const m = svg.getScreenCTM();
+  if (!m) return [500, 200];
+  const inv = m.inverse();
+  const pt = svg.createSVGPoint();
+  pt.x = clientX; pt.y = clientY;
+  const r = pt.matrixTransform(inv);
+  return [r.x, r.y];
+}
+
+// Unidades de viewBox por pixel de tela, nos dois eixos (com "meet" sao iguais,
+// mas ler da matriz evita depender disso).
+function mapaEscalaSVG() {
+  const svg = document.getElementById('cdv-map-svg');
+  const m = svg && svg.getScreenCTM && svg.getScreenCTM();
+  if (!m || !m.a || !m.d) {
+    const r = svg ? svg.getBoundingClientRect() : { width: 340, height: 280 };
+    return [mapaVB.w / (r.width || 340), (mapaVB.w * 0.357) / (r.height || 280)];
+  }
+  return [1 / m.a, 1 / m.d];
+}
+
 function mapaSvgPoint(e) {
-  const svg = document.getElementById('cdv-map-svg'); if(!svg) return [500,200];
-  const r = svg.getBoundingClientRect();
-  return [mapaVB.x+(e.clientX-r.left)/r.width*mapaVB.w, mapaVB.y+(e.clientY-r.top)/r.height*(mapaVB.w*0.357)];
+  return mapaPontoSVG(e.clientX, e.clientY);
 }
 function mapaZoomAt(f, px, py) {
   const w = Math.min(1000, Math.max(60, mapaVB.w/f));
@@ -9176,6 +9277,8 @@ function mapaRenderSVG() {
   }
   const cityPos = {};
   Object.values(MAPA_COORDS).forEach(([n,lat,lon])=>{ if(!cityPos[n]){const[x,y]=mapaProj(lat,lon);cityPos[n]={x,y};} });
+  _mapaCityPos = cityPos;
+  _mapaCityCounts = counts;
   const orig = mapaOrigem, dest = mapaDestino;
   const destsOf = orig ? mapaGetDestsOf(orig) : {};
 
@@ -9228,7 +9331,12 @@ function mapaRenderSVG() {
   const origensForDest = (!orig && dest) ? mapaGetOrigensFor(dest) : {};
 
   // Cidades + labels
-  for (const n of Object.keys(counts)) {
+  // Desenha do menor para o maior volume: onde dois pontos se sobrepoem (São
+  // Paulo e Campinas ficam a ~1px no zoom mundial), quem recebe o clique e o
+  // que esta por cima — e esse deve ser o de maior relevancia, nao o que caiu
+  // por acaso depois na ordem do objeto.
+  const cidadesOrdenadas = Object.keys(counts).sort((a, b) => (counts[a] || 0) - (counts[b] || 0));
+  for (const n of cidadesOrdenadas) {
     const p = cityPos[n], cnt = counts[n]; if(!p) continue;
     const isO=n===orig, isD=n===dest;
     let isRel = false;
@@ -9516,7 +9624,7 @@ function compRenderFaixa(d) {
   _faixaUltimo = d;
   const box = document.getElementById('mapa-modal-comp');
   if (!box) return;
-  box.innerHTML = `<div style="margin-bottom:14px">${compReguaHTML(true)}</div><div id="faixa-conteudo"></div>`;
+  box.innerHTML = `<div style="margin-bottom:14px">${compReguaHTML(true, true)}</div><div id="faixa-conteudo"></div>`;
   compSyncControles();
   faixaRenderConteudo();
 }
@@ -9532,7 +9640,7 @@ function faixaMarcador(teto, altura) {
 function faixaPilula(c) {
   if (_compDias === null) return '';
   const ch = compChance(c, _compDias);
-  const l = compLeitura(ch.pct);
+  const l = compLeitura(ch.pct, compDentroDaFaixa(c, _compDias));
   return `<div style="display:flex;align-items:center;gap:6px;margin-top:4px">
     <span style="font-size:10px;font-weight:900;color:${l.c};background:${l.c}1f;border-radius:5px;padding:1.5px 6px;white-space:nowrap">${ch.pct}% · ${l.t}</span>
     <span style="font-size:8.5px;color:${CFX.mut2};line-height:1.3">${compEsc(compFase(_compDias, ch.picoDia))}</span>
@@ -9641,7 +9749,7 @@ function compAbrirPanorama() {
   const ov = document.getElementById('comp-overlay');
   if (ov) ov.style.display = 'flex';
   const host = document.getElementById('comp-regua-host');
-  if (host) { host.innerHTML = compReguaHTML(false); compSyncControles(); }
+  if (host) { host.innerHTML = compReguaHTML(compEhMobile(), false); compSyncControles(); }
   compCarregarPanorama();
 }
 function compFecharPanorama() {
@@ -9742,12 +9850,22 @@ function compChance(c, dias) {
   return { pct, picoDia: cv.picoDia, aprox: cv.aprox, share: cv.share ? cv.share(dias) : null };
 }
 
-function compLeitura(pct) {
+// `dentro` = o ponto marcado cai no intervalo p10-p90 desenhado na barra.
+// Sem isso a tela se contradizia: uma distribuicao concentrada perto de 300
+// dias mostrava "Fora da janela" para 180 dias enquanto a barra logo acima
+// exibia 180 confortavelmente dentro da faixa comum de 43 a 317.
+function compLeitura(pct, dentro) {
   if (pct >= 80) return { t: 'Janela quente', c: '#22c55e' };
   if (pct >= 55) return { t: 'Boa chance',    c: '#4ade80' };
   if (pct >= 30) return { t: 'Moderada',      c: '#f0a742' };
   if (pct >= 12) return { t: 'Baixa',         c: '#f97316' };
-  return { t: 'Fora da janela', c: '#ef4444' };
+  return dentro
+    ? { t: 'Pouco frequente', c: '#f97316' }
+    : { t: 'Fora da janela',  c: '#ef4444' };
+}
+
+function compDentroDaFaixa(c, dias) {
+  return dias >= c.p10 && dias <= c.p90;
 }
 
 // A antecedencia so diminui com o tempo: chance baixa ANTES do pico significa
@@ -9763,13 +9881,14 @@ function compFase(dias, picoDia) {
 // rota (≈345px) usa a compacta, com os controles empilhados. Os controles sao
 // identificados por CLASSE, nao por id: as duas telas podem estar montadas ao
 // mesmo tempo e precisam refletir o mesmo valor.
-function compReguaHTML(compacto) {
-  const cx = compacto;
-  return `<div class="js-regua" style="background:${cx ? 'rgba(255,255,255,.04)' : 'var(--card)'};border:1px solid ${cx ? 'rgba(255,255,255,.10)' : 'var(--border-ctrl)'};border-radius:${cx ? 12 : 14}px;padding:${cx ? '11px 12px' : '13px 15px'}">
+function compReguaHTML(denso, escuro) {
+  const cx = denso;
+  const esc = escuro;
+  return `<div class="js-regua" style="background:${esc ? 'rgba(255,255,255,.04)' : 'var(--card)'};border:1px solid ${esc ? 'rgba(255,255,255,.10)' : 'var(--border-ctrl)'};border-radius:${cx ? 12 : 14}px;padding:${cx ? '11px 12px' : '13px 15px'}">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
-      <div style="font-size:${cx ? 9.5 : 11}px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;color:${cx ? CFX.mut2 : 'var(--muted2)'}">Régua de chance</div>
+      <div style="font-size:${cx ? 9.5 : 11}px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;color:${esc ? CFX.mut2 : 'var(--muted2)'}">Régua de chance</div>
       ${cx ? '' : '<div style="font-size:10.5px;color:var(--muted);flex:1;min-width:180px;line-height:1.5">Marque a que distância você está do voo e veja quanto cada combinação costuma render nesse ponto.</div>'}
-      <button class="js-regua-off" onclick="compSetDias(null)" style="display:${_compDias === null ? 'none' : ''};margin-left:auto;background:transparent;border:1px solid ${cx ? 'rgba(255,255,255,.14)' : 'var(--border-ctrl)'};color:${cx ? CFX.mut : 'var(--muted)'};border-radius:16px;padding:3px 10px;font-size:9.5px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif">limpar</button>
+      <button class="js-regua-off" onclick="compSetDias(null)" style="display:${_compDias === null ? 'none' : ''};margin-left:auto;background:transparent;border:1px solid ${esc ? 'rgba(255,255,255,.14)' : 'var(--border-ctrl)'};color:${esc ? CFX.mut : 'var(--muted)'};border-radius:16px;padding:3px 10px;font-size:9.5px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif">limpar</button>
     </div>
     <div style="display:flex;align-items:center;gap:${cx ? 8 : 12}px;flex-wrap:wrap">
       <input class="js-regua-range" type="range" min="0" max="400" step="5" value="${_compDias === null ? 180 : Math.min(400, _compDias)}"
@@ -9778,16 +9897,16 @@ function compReguaHTML(compacto) {
       <div style="display:flex;align-items:center;gap:4px">
         <input class="js-regua-num" type="number" min="0" max="800" step="1" placeholder="—" value="${_compDias === null ? '' : _compDias}"
                oninput="compSetDias(this.value)"
-               style="width:60px;background:${cx ? 'rgba(0,0,0,.25)' : 'var(--surface)'};border:1px solid ${cx ? 'rgba(255,255,255,.14)' : 'var(--border-ctrl)'};border-radius:9px;padding:5px 7px;font-size:12px;font-weight:900;color:${cx ? CFX.txt : 'var(--text)'};text-align:center;font-family:'Montserrat',sans-serif">
-        <span style="font-size:10.5px;color:${cx ? CFX.mut : 'var(--muted)'};font-weight:700">dias</span>
+               style="width:60px;background:${esc ? 'rgba(0,0,0,.25)' : 'var(--surface)'};border:1px solid ${esc ? 'rgba(255,255,255,.14)' : 'var(--border-ctrl)'};border-radius:9px;padding:5px 7px;font-size:12px;font-weight:900;color:${esc ? CFX.txt : 'var(--text)'};text-align:center;font-family:'Montserrat',sans-serif">
+        <span style="font-size:10.5px;color:${esc ? CFX.mut : 'var(--muted)'};font-weight:700">dias</span>
       </div>
       <div style="display:flex;align-items:center;gap:4px">
         <span style="font-size:10px">🛫</span>
         <input class="js-regua-data" type="date" onchange="compDiasPorData(this.value)"
-               style="background:${cx ? 'rgba(0,0,0,.25)' : 'var(--surface)'};border:1px solid ${cx ? 'rgba(255,255,255,.14)' : 'var(--border-ctrl)'};border-radius:9px;padding:4px 7px;font-size:10.5px;color:${cx ? CFX.txt : 'var(--text)'};font-family:'Montserrat',sans-serif">
+               style="background:${esc ? 'rgba(0,0,0,.25)' : 'var(--surface)'};border:1px solid ${esc ? 'rgba(255,255,255,.14)' : 'var(--border-ctrl)'};border-radius:9px;padding:4px 7px;font-size:10.5px;color:${esc ? CFX.txt : 'var(--text)'};font-family:'Montserrat',sans-serif">
       </div>
     </div>
-    <div class="js-regua-msg" style="font-size:10px;color:${cx ? CFX.mut2 : 'var(--muted2)'};margin-top:7px;line-height:1.5;display:${_compDias === null ? 'none' : ''}"></div>
+    <div class="js-regua-msg" style="font-size:10px;color:${esc ? CFX.mut2 : 'var(--muted2)'};margin-top:7px;line-height:1.5;display:${_compDias === null ? 'none' : ''}"></div>
   </div>`;
 }
 
@@ -9839,6 +9958,11 @@ function compDiasPorData(iso) {
   compSetDias(dias);
 }
 
+// Em telas estreitas a tabela de 8 colunas exigia 830px de rolagem horizontal
+// dentro de 348px de viewport — legivel so aos pedacos. Abaixo de 700px o mesmo
+// conteudo vira cartoes empilhados, sem scroll lateral nenhum.
+function compEhMobile() { return window.innerWidth <= 700; }
+
 function compRenderPanorama() {
   const w = document.getElementById('comp-wrap');
   if (!w || !_compPanorama) return;
@@ -9861,94 +9985,145 @@ function compRenderPanorama() {
   }
   if (!linhas.length) { w.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">Sem amostra suficiente neste recorte.</div>'; return; }
 
-  const teto = Math.ceil(Math.max(...linhas.map(c => c.p90)) / 30) * 30 || 360;
-  const th = 'text-align:right;font-size:9px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted2);font-weight:800;padding:0 6px 8px;white-space:nowrap';
-  const td = 'padding:8px 6px;border-top:1px solid var(--border-ctrl);text-align:right;white-space:nowrap;font-size:11.5px';
-  const sub = 'display:block;font-size:8.5px;font-weight:600;color:var(--muted2);opacity:.75;text-transform:none;letter-spacing:0;margin-top:2px';
-
-  // Marcador da regua sobre a barra de faixa comum. Fora da escala ele gruda
-  // na borda com seta, em vez de sumir e dar a impressao de que nao existe.
-  const marcador = () => {
-    if (dias === null) return '';
-    const foraDir = dias > teto;
-    const pos = Math.max(0, Math.min(100, 100 * dias / teto));
-    return `<u title="Você está aqui: ${dias} dias" style="position:absolute;left:${pos.toFixed(1)}%;top:-3px;width:2px;height:14px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.55);border-radius:1px;text-decoration:none">${foraDir ? '<i style="position:absolute;left:-9px;top:1px;font-size:8px;color:#fff;font-style:normal">▸</i>' : ''}</u>`;
-  };
-
+  const teto = Math.max(
+    Math.ceil(Math.max(...linhas.map(c => c.p90)) / 30) * 30 || 360,
+    dias === null ? 0 : dias);
   let aproximado = false;
 
-  const corpo = linhas.map(c => {
-    const exec = /exec/i.test(c.cabine || '');
-    const cor = exec ? '#60a5fa' : '#34d399';
+  // Marcador da regua sobre a barra. Fora da escala ele gruda na borda com
+  // seta, em vez de sumir e dar a impressao de que nao existe.
+  const marcador = (altura) => {
+    if (dias === null) return '';
+    const pos = Math.max(0, Math.min(100, 100 * dias / teto));
+    return `<u title="Você está aqui: ${dias} dias" style="position:absolute;left:${pos.toFixed(1)}%;top:-3px;width:2px;height:${altura}px;background:var(--text);box-shadow:0 0 0 1.5px var(--surface);border-radius:1px;text-decoration:none"></u>`;
+  };
+
+  const barra = (c, cor, altura) => {
     const esq = 100 * c.p10 / teto, larg = Math.max(100 * (c.p90 - c.p10) / teto, 1), med = 100 * c.mediana / teto;
+    return `<div style="position:relative;height:8px;background:var(--card);border-radius:4px;overflow:visible">
+      <div style="position:absolute;inset:0;border-radius:4px;overflow:hidden">
+        <i style="position:absolute;left:${esq.toFixed(1)}%;width:${larg.toFixed(1)}%;height:100%;background:${cor}44;border-radius:4px"></i>
+        <b style="position:absolute;left:${med.toFixed(1)}%;top:-2px;width:2.5px;height:12px;background:#ff585e;border-radius:2px"></b>
+      </div>
+      ${marcador(altura)}
+    </div>`;
+  };
 
-    let colChance = '';
-    if (dias !== null) {
-      const ch = compChance(c, dias);
-      if (ch.aprox) aproximado = true;
-      const l = compLeitura(ch.pct);
-      colChance = `<td style="${td};text-align:center;padding-left:10px">
-        <div style="display:inline-block;min-width:74px">
-          <div style="font-size:15px;font-weight:900;color:${l.c};line-height:1.1">${ch.pct}<span style="font-size:9px;font-weight:800;opacity:.8">%</span></div>
-          <div style="height:4px;background:var(--card);border-radius:2px;overflow:hidden;margin:3px 0 2px">
-            <i style="display:block;height:100%;width:${ch.pct}%;background:${l.c};border-radius:2px"></i>
+  const blocoChance = (c, grande) => {
+    const ch = compChance(c, dias);
+    if (ch.aprox) aproximado = true;
+    const l = compLeitura(ch.pct, compDentroDaFaixa(c, dias));
+    return { ch, l, html: `<div style="display:inline-block;min-width:${grande ? 74 : 62}px;text-align:center">
+      <div style="font-size:${grande ? 15 : 14}px;font-weight:900;color:${l.c};line-height:1.1">${ch.pct}<span style="font-size:9px;font-weight:800;opacity:.8">%</span></div>
+      <div style="height:4px;background:var(--card);border-radius:2px;overflow:hidden;margin:3px 0 2px">
+        <i style="display:block;height:100%;width:${ch.pct}%;background:${l.c};border-radius:2px"></i>
+      </div>
+      <div style="font-size:8.5px;font-weight:800;color:${l.c}">${l.t}</div>
+    </div>` };
+  };
+
+  let corpoHtml;
+
+  if (compEhMobile()) {
+    // ── Cartoes ──────────────────────────────────────────────────────────────
+    corpoHtml = `<div style="display:flex;flex-direction:column;gap:9px">` + linhas.map(c => {
+      const exec = /exec/i.test(c.cabine || '');
+      const cor = exec ? '#60a5fa' : '#34d399';
+      let topoDir = '', rodape = '';
+      if (dias !== null) {
+        const b = blocoChance(c, false);
+        topoDir = b.html;
+        rodape = `<div style="font-size:9px;color:var(--muted2);margin-top:5px;line-height:1.4">${compEsc(compFase(dias, b.ch.picoDia))}${b.ch.share !== null ? ` · ${b.ch.share.toFixed(0)}% da base nesta faixa` : ''}</div>`;
+      }
+      return `<div style="background:var(--surface);border:1px solid var(--border-ctrl);border-radius:12px;padding:11px 13px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+          <div style="min-width:0;flex:1">
+            <div style="font-weight:900;font-size:13px;line-height:1.25">${compEsc(c.cia)}</div>
+            <div style="font-size:10.5px;color:var(--muted);margin-top:2px">${compEsc(c.programa)}</div>
+            <span style="display:inline-block;margin-top:5px;font-size:9.5px;font-weight:800;border-radius:5px;padding:2px 6px;background:${cor}26;color:${cor}">${compEsc((c.cabine || '').replace('Economica', 'Econômica'))}</span>
           </div>
-          <div style="font-size:8.5px;font-weight:800;color:${l.c}">${l.t}</div>
-          <div style="font-size:8px;color:var(--muted2);margin-top:1px;white-space:normal;line-height:1.3">${compEsc(compFase(dias, ch.picoDia))}${ch.share !== null ? ` · ${ch.share.toFixed(0)}% da base aqui` : ''}</div>
+          ${topoDir}
         </div>
-      </td>`;
-    }
-
-    return `<tr>
-      <td style="${td};text-align:left">
-        <div style="font-weight:900;font-size:12.5px">${compEsc(c.cia)}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:1px">${compEsc(c.programa)}</div>
-      </td>
-      <td style="${td}"><span style="font-size:9.5px;font-weight:800;border-radius:5px;padding:2px 6px;background:${cor}26;color:${cor}">${compEsc((c.cabine || '').replace('Economica', 'Econômica'))}</span></td>
-      ${colChance}
-      <td style="${td};color:var(--muted)">${c.p10}d</td>
-      <td style="${td};font-weight:900">${c.mediana}d</td>
-      <td style="${td};color:var(--muted)">${c.p90}d</td>
-      <td style="${td};padding-left:14px">
-        <div style="position:relative;height:8px;min-width:120px;background:var(--card);border-radius:4px;overflow:visible">
-          <div style="position:absolute;inset:0;border-radius:4px;overflow:hidden">
-            <i style="position:absolute;left:${esq.toFixed(1)}%;width:${larg.toFixed(1)}%;height:100%;background:${cor}44;border-radius:4px"></i>
-            <b style="position:absolute;left:${med.toFixed(1)}%;top:-2px;width:2.5px;height:12px;background:#ff585e;border-radius:2px"></b>
-          </div>
-          ${marcador()}
+        <div style="margin-top:10px">${barra(c, cor, 14)}</div>
+        <div style="display:flex;justify-content:space-between;gap:8px;font-size:9.5px;color:var(--muted2);margin-top:5px">
+          <span>faixa <b style="color:var(--muted)">${c.p10}–${c.p90}d</b> · típico <b style="color:var(--text)">${c.mediana}d</b></span>
+          <span>${c.registros} pesq.</span>
         </div>
-      </td>
-      <td style="${td};font-size:10px;color:var(--muted2)">${c.registros} pesq.<br>${(c.pontos || 0).toLocaleString('pt-BR')} datas</td>
-    </tr>`;
-  }).join('');
+        ${rodape}
+      </div>`;
+    }).join('') + '</div>';
+  } else {
+    // ── Tabela ───────────────────────────────────────────────────────────────
+    const th = 'text-align:right;font-size:9px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted2);font-weight:800;padding:0 6px 8px;white-space:nowrap';
+    const td = 'padding:8px 6px;border-top:1px solid var(--border-ctrl);text-align:right;white-space:nowrap;font-size:11.5px';
+    const sub = 'display:block;font-size:8.5px;font-weight:600;color:var(--muted2);opacity:.75;text-transform:none;letter-spacing:0;margin-top:2px';
 
-  const thChance = dias === null ? '' :
-    `<th style="${th};text-align:center;padding-left:10px" title="Densidade histórica desta antecedência comparada ao melhor momento da combinação">Chance<span style="${sub}">a ${dias} dias</span></th>`;
+    const corpo = linhas.map(c => {
+      const exec = /exec/i.test(c.cabine || '');
+      const cor = exec ? '#60a5fa' : '#34d399';
+      let colChance = '';
+      if (dias !== null) {
+        const b = blocoChance(c, true);
+        colChance = `<td style="${td};text-align:center;padding-left:10px">
+          ${b.html}
+          <div style="font-size:8px;color:var(--muted2);margin-top:1px;white-space:normal;line-height:1.3;max-width:96px">${compEsc(compFase(dias, b.ch.picoDia))}${b.ch.share !== null ? ` · ${b.ch.share.toFixed(0)}% da base aqui` : ''}</div>
+        </td>`;
+      }
+      return `<tr>
+        <td style="${td};text-align:left">
+          <div style="font-weight:900;font-size:12.5px">${compEsc(c.cia)}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:1px">${compEsc(c.programa)}</div>
+        </td>
+        <td style="${td}"><span style="font-size:9.5px;font-weight:800;border-radius:5px;padding:2px 6px;background:${cor}26;color:${cor}">${compEsc((c.cabine || '').replace('Economica', 'Econômica'))}</span></td>
+        ${colChance}
+        <td style="${td};color:var(--muted)">${c.p10}d</td>
+        <td style="${td};font-weight:900">${c.mediana}d</td>
+        <td style="${td};color:var(--muted)">${c.p90}d</td>
+        <td style="${td};padding-left:14px"><div style="min-width:120px">${barra(c, cor, 14)}</div></td>
+        <td style="${td};font-size:10px;color:var(--muted2)">${c.registros} pesq.<br>${(c.pontos || 0).toLocaleString('pt-BR')} datas</td>
+      </tr>`;
+    }).join('');
 
-  w.innerHTML = `<table style="width:100%;border-collapse:collapse">
-    <thead><tr>
-      <th style="${th};text-align:left">Companhia / programa</th>
-      <th style="${th}">Cabine</th>
-      ${thChance}
-      <th style="${th}" title="p10 — 10% das datas encontradas estão mais perto do voo que isso">Mais perto<span style="${sub}">10% abaixo</span></th>
-      <th style="${th}" title="Mediana (p50) — metade das datas fica abaixo, metade acima">Típico<span style="${sub}">mediana</span></th>
-      <th style="${th}" title="p90 — 10% das datas encontradas estão mais longe do voo que isso">Mais longe<span style="${sub}">10% acima</span></th>
-      <th style="${th};text-align:left;padding-left:14px">Faixa comum<span style="${sub}">onde caem 8 de cada 10</span></th>
-      <th style="${th}">Amostra</th>
-    </tr></thead><tbody>${corpo}</tbody></table>
+    const thChance = dias === null ? '' :
+      `<th style="${th};text-align:center;padding-left:10px" title="Densidade histórica desta antecedência comparada ao melhor momento da combinação">Chance<span style="${sub}">a ${dias} dias</span></th>`;
+
+    corpoHtml = `<table style="width:100%;border-collapse:collapse">
+      <thead><tr>
+        <th style="${th};text-align:left">Companhia / programa</th>
+        <th style="${th}">Cabine</th>
+        ${thChance}
+        <th style="${th}" title="p10 — 10% das datas encontradas estão mais perto do voo que isso">Mais perto<span style="${sub}">10% abaixo</span></th>
+        <th style="${th}" title="Mediana (p50) — metade das datas fica abaixo, metade acima">Típico<span style="${sub}">mediana</span></th>
+        <th style="${th}" title="p90 — 10% das datas encontradas estão mais longe do voo que isso">Mais longe<span style="${sub}">10% acima</span></th>
+        <th style="${th};text-align:left;padding-left:14px">Faixa comum<span style="${sub}">onde caem 8 de cada 10</span></th>
+        <th style="${th}">Amostra</th>
+      </tr></thead><tbody>${corpo}</tbody></table>`;
+  }
+
+  w.innerHTML = corpoHtml + `
     <div style="margin-top:16px;background:var(--card);border:1px solid var(--border-ctrl);border-radius:12px;padding:12px 14px">
       <div style="font-size:10px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted2);margin-bottom:7px">Como ler</div>
       <div style="font-size:10.5px;color:var(--muted);line-height:1.75">
         Cada número é a <b style="color:var(--text)">antecedência</b>: quantos dias faltavam para o voo quando a disponibilidade foi encontrada.<br>
         <b style="color:var(--text)">Típico</b> é o valor do meio — metade das datas fica abaixo dele, metade acima. É o mais representativo.<br>
-        <b style="color:var(--text)">Mais perto</b> e <b style="color:var(--text)">mais longe</b> marcam os extremos comuns: só 1 em cada 10 datas aparece antes do primeiro ou depois do segundo.<br>
-        A <b style="color:var(--text)">faixa comum</b> é o intervalo entre esses dois — cobre 8 de cada 10 casos. Barra estreita significa comportamento previsível; barra larga, imprevisível.<br>
+        A <b style="color:var(--text)">faixa comum</b> vai do ponto em que só 1 em cada 10 datas aparece antes até aquele em que só 1 em cada 10 aparece depois — cobre 8 de cada 10 casos. Barra estreita significa comportamento previsível; barra larga, imprevisível.<br>
         Na barra, o traço vermelho é o valor típico${dias !== null ? '; o traço branco é onde você está hoje' : ''}. Escala de 0 a ${teto} dias, igual para todas as linhas.<br>
-        ${dias !== null ? `<b style="color:var(--text)">Chance</b> compara a frequência histórica de aberturas a ${dias} dias com o melhor momento daquela combinação: 100% é o pico dela, 0% é uma faixa onde ela praticamente nunca abriu. É um indicador de <b style="color:var(--text)">timing</b>, não de assento garantido — diz se vale caçar agora, não se vai achar.<br>${aproximado ? '<span style="color:#f0a742">Parte das linhas está usando estimativa aproximada pelos percentis: o proxy ainda não foi redeployado com a distribuição completa.</span><br>' : ''}` : ''}
+        ${dias !== null ? `<b style="color:var(--text)">Chance</b> compara a frequência histórica de aberturas a ${dias} dias com o melhor momento daquela combinação: 100% é o pico dela, 0% é uma faixa onde ela praticamente nunca abriu. É um indicador de <b style="color:var(--text)">timing</b>, não de assento garantido — diz se vale caçar agora, não se vai achar.<br>${aproximado ? '<span style="color:#f0a742">Parte das linhas está usando estimativa aproximada pelos percentis: o proxy ainda não devolveu a distribuição completa.</span><br>' : ''}` : ''}
         <span style="color:var(--muted2)">Em estatística esses valores se chamam p10, mediana (p50) e p90. Só entram combinações com no mínimo 5 pesquisas e 60 datas.</span>
       </div>
     </div>`;
 }
+
+// Girar o aparelho cruza o limite de 700px: sem isto o painel ficaria preso no
+// formato da orientacao em que foi aberto.
+let _compResizeT = null;
+window.addEventListener('resize', () => {
+  const ov = document.getElementById('comp-overlay');
+  const aberto = ov && ov.style.display === 'flex';
+  if (!aberto && !document.getElementById('faixa-conteudo')) return;
+  clearTimeout(_compResizeT);
+  _compResizeT = setTimeout(() => { if (aberto) compRenderPanorama(); faixaRenderConteudo(); }, 180);
+});
 
 // ── Modal de passagens por programa/rota ───────────────────────────────────
 function mapaAbrirPassagensModal(rotaKey, programa, cabineFiltro) {
@@ -9980,16 +10155,16 @@ function mapaAbrirPassagensModal(rotaKey, programa, cabineFiltro) {
     const cabine = (it.cabine||'').replace('Economica','Econômica');
     const dataCap = it.enviadoEm ? fmtData(it.enviadoEm) : '—';
     const dirLabel = (it.origem !== origK) ? `<span style="font-size:9px;color:var(--muted2)"> (volta)</span>` : '';
-    return `<div style="background:var(--card);border:1px solid var(--border-ctrl);border-radius:10px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+    return `<div style="background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.10);border-radius:10px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px">
       <div>
-        <div style="font-size:13px;font-weight:800">${it.origem} → ${it.destino}${dirLabel}</div>
-        <div style="font-size:10px;color:var(--muted2);margin-top:2px">✈️ ${it.cia||'—'} · ${cabine}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">Captado em ${dataCap}</div>
+        <div style="font-size:13px;font-weight:800;color:#eef1f8">${it.origem} → ${it.destino}${dirLabel}</div>
+        <div style="font-size:10px;color:#6f7c9b;margin-top:2px">✈️ ${it.cia||'—'} · ${cabine}</div>
+        <div style="font-size:10px;color:#9aa6c2;margin-top:2px">Captado em ${dataCap}</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
         <div style="font-size:20px;font-weight:900;color:${color};line-height:1">${fmt(it.pontos||0)}</div>
-        <div style="font-size:9px;color:var(--muted)">pts</div>
-        ${custoFmt ? '<div style="font-size:10px;color:var(--muted2);margin-top:2px">≈ '+custoFmt+'</div>' : ''}
+        <div style="font-size:9px;color:#9aa6c2">pts</div>
+        ${custoFmt ? '<div style="font-size:10px;color:#6f7c9b;margin-top:2px">≈ '+custoFmt+'</div>' : ''}
       </div>
     </div>`;
   }).join('');
@@ -10003,25 +10178,25 @@ function mapaAbrirPassagensModal(rotaKey, programa, cabineFiltro) {
     ov.addEventListener('click', e => { if(e.target===ov) ov.style.display='none'; });
     document.body.appendChild(ov);
   }
-  ov.innerHTML = `<div style="background:#1a2035;border:1px solid var(--border-ctrl);border-radius:16px;max-width:900px;width:100%;max-height:84vh;overflow:hidden;position:relative;display:flex;flex-direction:column">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;border-bottom:1px solid var(--border-ctrl);flex-shrink:0">
+  ov.innerHTML = `<div style="background:#1a2035;border:1px solid rgba(255,255,255,.14);border-radius:16px;max-width:900px;width:100%;max-height:84vh;overflow:hidden;position:relative;display:flex;flex-direction:column">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;border-bottom:1px solid rgba(255,255,255,.12);flex-shrink:0">
       <div>
         <div style="display:flex;align-items:center;gap:8px">
           <span style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0"></span>
-          <span style="font-size:15px;font-weight:900">${programa}</span>
+          <span style="font-size:15px;font-weight:900;color:#eef1f8">${programa}</span>
         </div>
-        <div style="font-size:12px;color:var(--muted);margin-top:4px">${origK} ⇄ ${destK}${cabineLabel ? ' · '+cabineLabel : ''}${cpm ? ' · R$ '+cpm+'/1.000 pts' : ''}</div>
+        <div style="font-size:12px;color:#9aa6c2;margin-top:4px">${origK} ⇄ ${destK}${cabineLabel ? ' · '+cabineLabel : ''}${cpm ? ' · R$ '+cpm+'/1.000 pts' : ''}</div>
       </div>
-      <button onclick="document.getElementById('mapa-pass-modal-overlay').style.display='none'" style="background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;padding:4px">✕</button>
+      <button onclick="document.getElementById('mapa-pass-modal-overlay').style.display='none'" style="background:transparent;border:none;color:#9aa6c2;font-size:20px;cursor:pointer;line-height:1;padding:4px">✕</button>
     </div>
     <div class="mapa-modal-cols" style="display:flex;gap:0;flex:1;min-height:0">
-      <div class="cdv-scroll" style="width:44%;min-width:0;overflow-y:auto;padding:16px 18px;border-right:1px solid var(--border-ctrl)">
+      <div class="cdv-scroll" style="width:44%;min-width:0;overflow-y:auto;padding:16px 18px;border-right:1px solid rgba(255,255,255,.12)">
         <div id="mapa-modal-comp"><div style="font-size:11px;color:var(--muted2)">Calculando janela típica…</div></div>
       </div>
       <div class="cdv-scroll" style="flex:1;min-width:0;overflow-y:auto;padding:16px 18px">
-        ${items.length ? `<div style="font-size:10px;color:var(--muted);margin-bottom:10px">${items.length} registro${items.length!==1?'s':''} · ordenados por pontos</div>` : ''}
+        ${items.length ? `<div style="font-size:10px;color:#9aa6c2;margin-bottom:10px">${items.length} registro${items.length!==1?'s':''} · ordenados por pontos</div>` : ''}
         <div style="display:flex;flex-direction:column;gap:8px">
-          ${rows || '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Nenhum registro encontrado.</div>'}
+          ${rows || '<div style="color:#9aa6c2;font-size:13px;text-align:center;padding:20px">Nenhum registro encontrado.</div>'}
         </div>
       </div>
     </div>
@@ -10135,11 +10310,11 @@ function mapaRenderAll() {
 <div id="comp-overlay" onclick="if(event.target===this)compFecharPanorama()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)">
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:820px;max-height:88vh;overflow-y:auto;position:relative">
     <button onclick="compFecharPanorama()" style="position:absolute;top:14px;right:14px;background:var(--card);border:none;color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:14px">&#10005;</button>
-    <div style="padding:22px 24px 12px;border-bottom:1px solid var(--border)">
+    <div class="comp-esc" style="padding:22px 24px 12px;border-bottom:1px solid var(--border)">
       <div style="font-size:17px;font-weight:900;letter-spacing:-.3px">Comportamento de disponibilidade</div>
       <div style="font-size:11px;color:var(--muted);margin-top:5px;line-height:1.6">Antecedência típica entre a pesquisa e a data do voo, por companhia, programa e cabine.<br>Base: histórico completo de emissões, não apenas os últimos 180 dias exibidos no mapa.</div>
     </div>
-    <div style="display:flex;gap:6px;padding:12px 24px 0">
+    <div class="comp-tabs" style="display:flex;gap:6px;padding:12px 24px 0">
       <button id="comp-tab-int" onclick="compSetEscopo('internacional')" style="background:rgba(255,88,94,.15);border:1px solid #ff585e;color:#ff585e;border-radius:20px;padding:6px 14px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif">Internacional</button>
       <button id="comp-tab-nac" onclick="compSetEscopo('nacional')" style="background:var(--card);border:1px solid var(--border-ctrl);color:var(--muted);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Montserrat',sans-serif">Nacional</button>
     </div>
