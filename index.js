@@ -2009,6 +2009,34 @@ function densidade(valores) {
   return { bin: DENS_BIN, dens };
 }
 
+// ── Dispersao da coleta ──────────────────────────────────────────────────────
+// A antecedencia e (data do voo - data da pesquisa). Se todas as pesquisas de
+// um recorte cairam no mesmo periodo, a data da pesquisa fica praticamente
+// fixa e a distribuicao de antecedencia vira apenas o calendario de datas de
+// ida deslocado — ou seja, sazonalidade do destino disfarcada de comportamento
+// de abertura. SP-Amsterda/Smiles e o caso limite: 58 pesquisas, todas em
+// jul-ago/2026, produzindo um "vale" em 120-180 dias que na verdade e o mes de
+// janeiro ter pouca disponibilidade. Sem esta medida a UI nao tem como avisar.
+function dispersaoColeta(snaps) {
+  const meses = new Set(), dias = new Set();
+  let min = null, max = null;
+  for (const s of snaps) {
+    if (!s) continue;
+    dias.add(s);
+    meses.add(s.slice(0, 7));
+    if (min === null || s < min) min = s;
+    if (max === null || s > max) max = s;
+  }
+  if (!meses.size) return { coleta: null };
+  // Vao em meses inteiros entre a primeira e a ultima pesquisa. Contar meses
+  // distintos nao serve: 2 pesquisas em jan e 1 em dez dariam "2 meses" para
+  // uma janela de quase um ano.
+  const [ay, am] = min.slice(0, 7).split('-').map(Number);
+  const [by, bm] = max.slice(0, 7).split('-').map(Number);
+  const vao = (by - ay) * 12 + (bm - am) + 1;
+  return { coleta: { de: min, ate: max, meses: meses.size, vaoMeses: vao, dias: dias.size } };
+}
+
 function classificar(valores, alvo) {
   if (!Number.isFinite(alvo)) return null;
   const abaixo = valores.filter(v => v < alvo).length;
@@ -2094,6 +2122,7 @@ app.get('/passagens/comportamento', async (req, res) => {
         registros,
         ...estatisticas(valores),
         ...densidade(valores),
+        ...dispersaoColeta(sel.map(p => p.snap)),
         histograma: faixas.map(([a, b]) => {
           const n = valores.filter(v => v >= a && v <= b).length;
           return { de: a, ate: b, n, pct: Number((100 * n / valores.length).toFixed(1)) };
@@ -2166,11 +2195,12 @@ app.get('/passagens/panorama', async (req, res) => {
       const k = `${p.cia}|${p.programa}|${p.cabine}|${p.escopo}`;
       let g = grupos.get(k);
       if (!g) {
-        g = { cia: p.cia, programa: p.programa, cabine: p.cabine, escopo: p.escopo, vals: [], regs: new Set() };
+        g = { cia: p.cia, programa: p.programa, cabine: p.cabine, escopo: p.escopo, vals: [], regs: new Set(), snaps: new Set() };
         grupos.set(k, g);
       }
       g.vals.push(p.ant);
       g.regs.add(`${p.origem}|${p.destino}|${p.snap}`);
+      g.snaps.add(p.snap);
     }
 
     const combos = [];
@@ -2187,6 +2217,7 @@ app.get('/passagens/panorama', async (req, res) => {
         registros: g.regs.size,
         ...estatisticas(g.vals),
         ...densidade(g.vals),
+        ...dispersaoColeta(g.snaps),
       });
     }
 
