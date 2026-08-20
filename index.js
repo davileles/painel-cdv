@@ -1990,6 +1990,25 @@ function estatisticas(valores) {
   };
 }
 
+// ── Distribuicao compacta (regua de chance) ───────────────────────────────────
+// Percentis dizem onde fica o miolo da amostra, mas nao mostram o FORMATO da
+// curva. Para responder "estou a 180 dias do voo, esse e um bom momento?" e
+// preciso saber a densidade naquele ponto especifico — nao basta saber que a
+// mediana e 150. Bins de 15 dias ate 405 = 27 numeros por combinacao, payload
+// desprezivel perto do ganho de leitura no mapa.
+const DENS_BIN = 15;
+const DENS_TETO = 405;
+
+function densidade(valores) {
+  const n = Math.ceil(DENS_TETO / DENS_BIN);
+  const dens = new Array(n).fill(0);
+  for (const v of valores) {
+    if (!Number.isFinite(v) || v < 0) continue;
+    dens[Math.min(n - 1, Math.floor(v / DENS_BIN))]++;
+  }
+  return { bin: DENS_BIN, dens };
+}
+
 function classificar(valores, alvo) {
   if (!Number.isFinite(alvo)) return null;
   const abaixo = valores.filter(v => v < alvo).length;
@@ -2074,6 +2093,7 @@ app.get('/passagens/comportamento', async (req, res) => {
         agregadoPor: nivel.campos,
         registros,
         ...estatisticas(valores),
+        ...densidade(valores),
         histograma: faixas.map(([a, b]) => {
           const n = valores.filter(v => v >= a && v <= b).length;
           return { de: a, ate: b, n, pct: Number((100 * n / valores.length).toFixed(1)) };
@@ -2166,6 +2186,7 @@ app.get('/passagens/panorama', async (req, res) => {
         escopo: g.escopo,
         registros: g.regs.size,
         ...estatisticas(g.vals),
+        ...densidade(g.vals),
       });
     }
 
