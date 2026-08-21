@@ -2081,9 +2081,18 @@ app.get('/passagens/comportamento', async (req, res) => {
       escopo: chaveTexto(req.query.escopo),
     };
 
+    // ?par=Origem|Destino — casa os DOIS sentidos, como ja fazia /panorama.
+    // O mapa trata a rota como par nao ordenado, entao filtrar uma direcao so
+    // descartava metade da amostra e podia zerar os recortes especificos:
+    // Sao Paulo->Joanesburgo tinha 23 registros em LATAM Pass economica,
+    // Joanesburgo->Sao Paulo tinha zero, e o modal abria no sentido sem dados.
+    const par = String(req.query.par || '').split('|').map(chaveTexto).filter(Boolean);
+    const bidir = par.length === 2;
+    if (bidir) { f.origem = par[0]; f.destino = par[1]; }
+
     // Escopo deduzido da rota quando nao informado explicitamente
-    if (!f.escopo && req.query.origem && req.query.destino) {
-      f.escopo = escopoRota(req.query.origem, req.query.destino);
+    if (!f.escopo && f.origem && f.destino) {
+      f.escopo = escopoRota(bidir ? par[0] : req.query.origem, bidir ? par[1] : req.query.destino);
     }
     if (f.escopo && f.escopo !== 'nacional' && f.escopo !== 'internacional') {
       return res.status(400).json({ ok: false, erro: "escopo deve ser 'nacional' ou 'internacional'" });
@@ -2098,6 +2107,16 @@ app.get('/passagens/comportamento', async (req, res) => {
     if (soDia) base = base.filter(p => p.precisao === 'dia');
     if (desde) base = base.filter(p => p.snap >= desde);
 
+    // Com ?par, a volta e reescrita no sentido canonico para que os niveis que
+    // agregam por origem/destino a enxerguem. O sentido original fica em _volta
+    // para nao fundir ida e volta do mesmo snapshot num registro so.
+    if (bidir) {
+      const [a, b] = par;
+      base = base
+        .filter(p => (p.origem === a && p.destino === b) || (p.origem === b && p.destino === a))
+        .map(p => (p.origem === a ? p : { ...p, origem: a, destino: b, _volta: true }));
+    }
+
     const faixas = [[0,30],[31,60],[61,90],[91,120],[121,180],[181,240],[241,300],[301,400]];
     const niveis = [];
     const descartados = [];
@@ -2107,7 +2126,7 @@ app.get('/passagens/comportamento', async (req, res) => {
 
       const sel = base.filter(p => nivel.campos.every(c => p[c] === f[c]));
       const registros = new Set(
-        sel.map(p => `${p.origem}|${p.destino}|${p.programa}|${p.cabine}|${p.snap}`)
+        sel.map(p => `${p.origem}|${p.destino}|${p.programa}|${p.cabine}|${p.snap}${p._volta ? '|v' : ''}`)
       ).size;
 
       if (registros < MIN_REGISTROS || sel.length < MIN_PONTOS) {
