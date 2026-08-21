@@ -423672,27 +423672,6 @@
         }
       }
     },
-    "estoque": {
-      "programs": {
-        "livelo": {
-          "pts": 1,
-          "dollar": false
-        },
-        "azul": {
-          "pts": 1,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 9,
-          "dollar": false,
-          "ate": false,
-          "slug": "estoque"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/estoque"
-      }
-    },
     "euro": {
       "programs": {
         "livelo": {
@@ -423849,10 +423828,28 @@
           "slug": "kabum-4131"
         },
         "meliuz": {
-          "pts": 1,
+          "pts": 12,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-kabum"
+          "ate": true,
+          "slug": "cupom-kabum",
+          "categorias": [
+            {
+              "categoria": "Eletroportáteis KaBuM!, Periféricos KaBuM!, Eletroportáteis produzidos, vendidos e entregues por KaBuM! e Periféricos produzidos, vendidos e entregues por KaBuM!",
+              "pts": 12,
+              "principal": false
+            },
+            {
+              "categoria": "Computadores KaBuM!, Computadores produzidos, vendidos e entregues por KaBuM!, PC KaBuM!, Monitores KaBuM!, Notebooks KaBuM!, Monitores produzidos, vendidos e entregues por KaBuM!, PC produzidos, vendidos e entregues por KaBuM! e Notebook produzidos, vendidos e entregues por KaBuM!",
+              "pts": 7,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1
         }
       },
       "links": {
@@ -425844,6 +425841,23 @@
         }
       }
     },
+    "estoque": {
+      "programs": {
+        "azul": {
+          "pts": 1,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 9,
+          "dollar": false,
+          "ate": false,
+          "slug": "estoque"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/estoque"
+      }
+    },
     "black&decker": {
       "programs": {
         "latam": {
@@ -426413,10 +426427,17 @@
           "pts": 3,
           "dollar": false,
           "slug": "tokstok-1657"
+        },
+        "meliuz": {
+          "pts": 1.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-tok-stok"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/tokstok-1657"
+        "inter": "https://shopping.inter.co/gift-card/tokstok-1657",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-tok-stok"
       }
     },
     "abbraccio": {
