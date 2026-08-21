@@ -571,7 +571,13 @@ const GG_HOSTS = new Set(String(process.env.GG_HOSTS ||
   'ir.ticapromos.com.br,grupo.ticapromos.com.br,' +
   'grupo.tudosobrepromos.com,ir.tudosobrepromos.com')
   .split(',').map(s => s.trim().toLowerCase()).filter(Boolean));
-const GG_HOME = process.env.GG_HOME || 'https://tudosobrepromos.com/';
+// Fallback de quem chega sem slug ou com slug morto: vai para a LANDING, nao
+// para o site publico. Quem cai aqui estava tentando entrar num grupo — um
+// link de anuncio truncado, um slug desativado — e a landing e a unica pagina
+// com o CTA que essa pessoa procurava. O ?o=fallback separa esse trafego em
+// origens{} no grupos-links.json; sem ele nao da para saber quanto clique
+// esta se perdendo por link quebrado.
+const GG_HOME = process.env.GG_HOME || 'https://grupos.ticapromos.com.br/?o=fallback';
 
 app.use(async (req, res, next) => {
   if (!GG_HOSTS.has(String(req.hostname || '').toLowerCase())) return next();
