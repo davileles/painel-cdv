@@ -558,9 +558,18 @@ if (ggFlushTimer.unref) ggFlushTimer.unref();
 // ── Redirect publico ─────────────────────────────────────────────────────────
 // Dominio proprio do TSP: <host>/<slug> sem o /g/, para o link caber no anuncio.
 // Aponte um CNAME do subdominio para este servico no Railway.
+//
+// A ORDEM IMPORTA: ggBase() usa o primeiro host da lista, e e ele que o painel
+// exibe e copia. Por isso o dominio novo vem primeiro. Os hosts antigos ficam
+// na lista de proposito — todo anuncio ja em circulacao aponta para eles, e
+// tirar um daqui derruba o link no meio da campanha, nao no proximo deploy.
+//
+// grupo.* e ir.* convivem porque a landing usava 'grupo' e o distribuidor
+// passou a 'ir': uma letra de diferenca entre dois destinos distintos era
+// convite a colar o link errado no anuncio.
 const GG_HOSTS = new Set(String(process.env.GG_HOSTS ||
-  'grupo.tudosobrepromos.com,ir.tudosobrepromos.com,' +
-  'grupo.ticapromos.com.br,ir.ticapromos.com.br')
+  'ir.ticapromos.com.br,grupo.ticapromos.com.br,' +
+  'grupo.tudosobrepromos.com,ir.tudosobrepromos.com')
   .split(',').map(s => s.trim().toLowerCase()).filter(Boolean));
 const GG_HOME = process.env.GG_HOME || 'https://tudosobrepromos.com/';
 
