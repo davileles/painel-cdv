@@ -9565,7 +9565,9 @@ async function compCarregarFaixa(orig, dest, programa, cabineFiltro, cia) {
     // A cia entra no filtro porque o nivel "rota_completa" (mesma companhia,
     // mesma cabine) so e calculado pelo proxy quando TODOS os campos dele foram
     // informados — sem cia esse recorte era simplesmente pulado.
-    const base = `${CDV_PROXY_PASS}/passagens/comportamento?origem=${encodeURIComponent(orig)}&destino=${encodeURIComponent(dest)}`
+    // ?par em vez de origem/destino: o mapa abre o modal com a rota no sentido
+    // do clique, e a base pode ter a amostra so no sentido contrario.
+    const base = `${CDV_PROXY_PASS}/passagens/comportamento?par=${encodeURIComponent(orig + '|' + dest)}`
       + (programa ? `&programa=${encodeURIComponent(programa)}` : '')
       + (cabQ ? `&cabine=${encodeURIComponent(cabQ)}` : '')
       + (cia ? `&cia=${encodeURIComponent(cia)}` : '');
