@@ -14,7 +14,7 @@ const GITHUB_REPO = process.env.GITHUB_REPO || 'davileles/cdv-compras-bonificada
 // Enquanto GITHUB_REPO_DADOS não estiver definido no Railway, tudo continua
 // lendo/escrevendo em GITHUB_REPO — comportamento idêntico ao atual.
 const GITHUB_REPO_DADOS = process.env.GITHUB_REPO_DADOS || GITHUB_REPO;
-// Dados do Tudo Sobre Promos vivem em repo privado proprio. Regra por PREFIXO
+// Dados do Tica Promos vivem em repo privado proprio. Regra por PREFIXO
 // de path (tsp/...), nao por lista de nomes: qualquer arquivo novo do TSP cai
 // no lugar certo sem precisar editar codigo.
 // O repo de dados foi renomeado de `cdv-tsp-dados` para `dados`. O GitHub
@@ -559,7 +559,8 @@ if (ggFlushTimer.unref) ggFlushTimer.unref();
 // Dominio proprio do TSP: <host>/<slug> sem o /g/, para o link caber no anuncio.
 // Aponte um CNAME do subdominio para este servico no Railway.
 const GG_HOSTS = new Set(String(process.env.GG_HOSTS ||
-  'grupo.tudosobrepromos.com,ir.tudosobrepromos.com')
+  'grupo.tudosobrepromos.com,ir.tudosobrepromos.com,' +
+  'grupo.ticapromos.com.br,ir.ticapromos.com.br')
   .split(',').map(s => s.trim().toLowerCase()).filter(Boolean));
 const GG_HOME = process.env.GG_HOME || 'https://tudosobrepromos.com/';
 
@@ -2561,7 +2562,7 @@ function adminAutorizado(email, appKey) {
 const adminOtpStore = new Map();
 
 const ADMIN_APPS = {
-  tsp:       { nome: 'Tudo Sobre Promos', cor: '#ffa500', from: 'Tudo Sobre Promos <noreply@clubedoviajante.com.br>' },
+  tsp:       { nome: 'Tica Promos',       cor: '#FA5150', from: 'Tica Promos <noreply@clubedoviajante.com.br>' },
   concierge: { nome: 'Travel Concierge',  cor: '#126eff', from: 'Travel Concierge <noreply@clubedoviajante.com.br>' }
 };
 
