@@ -9641,7 +9641,11 @@ function compRenderFaixa(d) {
   _faixaUltimo = d;
   const box = document.getElementById('mapa-modal-comp');
   if (!box) return;
-  box.innerHTML = `<div style="margin-bottom:14px">${compReguaHTML(true, true)}</div><div id="faixa-conteudo"></div>`;
+  // A regua fica presa no topo da coluna: sem isso, arrastar o slider empurrava
+  // o segundo recorte para fora da area visivel e so dava para acompanhar a
+  // reacao do primeiro grafico. As margens negativas compensam o padding do
+  // scroller para a faixa cobrir a largura toda ao grudar.
+  box.innerHTML = `<div style="position:sticky;top:-16px;z-index:3;background:#1a2035;padding:16px 18px 11px;margin:-16px -18px 11px">${compReguaHTML(true, true)}</div><div id="faixa-conteudo"></div>`;
   compSyncControles();
   faixaRenderConteudo();
 }
@@ -9675,7 +9679,7 @@ function faixaHistograma(n, cor) {
   if (!total) return '';   // recorte sem nenhuma data na janela visivel
   const max = Math.max(...vis);
 
-  const H = 58;
+  const H = 46;
   const iPico = vis.indexOf(max);
   const iAtual = _compDias === null ? -1 : Math.floor(_compDias / bin);
   const janela = vis.length * bin;
@@ -9699,10 +9703,10 @@ function faixaHistograma(n, cor) {
     return `<span style="position:absolute;left:${(100 * m / janela).toFixed(1)}%;transform:translateX(${tx});font-size:8px;color:${CFX.mut2}">${m}d</span>`;
   }).join('');
 
-  return `<div style="margin-top:7px">
+  return `<div style="margin-top:6px">
     <div style="position:relative;display:flex;align-items:flex-end;gap:1px;height:${H}px;border-bottom:1px solid ${CFX.linha}">${cols}${regua}</div>
-    <div style="position:relative;height:11px;margin-top:3px">${eixo}</div>
-    <div style="font-size:8.5px;color:${CFX.mut2};line-height:1.4;margin-top:2px">${total} data${total !== 1 ? 's' : ''} empilhada${total !== 1 ? 's' : ''} em blocos de ${bin} dias · concentração maior entre ${iPico * bin} e ${iPico * bin + bin - 1} dias</div>
+    <div style="position:relative;height:10px;margin-top:2px">${eixo}</div>
+    <div style="font-size:8.5px;color:${CFX.mut2};line-height:1.35;margin-top:1px">${total.toLocaleString('pt-BR')} datas em blocos de ${bin}d · pico ${iPico * bin}–${iPico * bin + bin - 1}d</div>
   </div>`;
 }
 
@@ -9710,9 +9714,9 @@ function faixaPilula(c) {
   if (_compDias === null) return '';
   const ch = compChance(c, _compDias);
   const l = compLeitura(ch.pct, compDentroDaFaixa(c, _compDias));
-  return `<div style="display:flex;align-items:center;gap:6px;margin-top:4px">
-    <span style="font-size:10px;font-weight:900;color:${l.c};background:${l.c}1f;border-radius:5px;padding:1.5px 6px;white-space:nowrap">${ch.pct}% · ${l.t}</span>
-    <span style="font-size:8.5px;color:${CFX.mut2};line-height:1.3">${compEsc(compFase(_compDias, ch.picoDia, ch.picos))}</span>
+  return `<div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+    <span style="font-size:9.5px;font-weight:900;color:${l.c};background:${l.c}1f;border-radius:5px;padding:1px 6px;white-space:nowrap;flex-shrink:0">${ch.pct}% · ${l.t}</span>
+    <span style="font-size:8.5px;color:${CFX.mut2};line-height:1.3;min-width:0">${compEsc(compFase(_compDias, ch.picoDia, ch.picos))}</span>
   </div>`;
 }
 
@@ -9743,18 +9747,23 @@ function faixaRenderConteudo() {
 
   if (niveis.length) {
     const teto = Math.max(120, ...niveis.map(n => n.p90), _compDias === null ? 0 : _compDias);
-    html += `<div style="font-size:10px;font-weight:800;letter-spacing:.6px;color:${CFX.mut2};text-transform:uppercase;margin-bottom:3px">Quando costuma abrir</div>
-      <div style="font-size:10.5px;color:${CFX.mut};margin-bottom:12px;line-height:1.5">Dias de antecedência entre a pesquisa e o voo. Histórico completo, não só os 180 dias do mapa.</div>`;
+    // Os dois recortes compartilham o mesmo titulo ("Esta rota, neste
+    // programa"): repeti-lo em cada bloco gastava uma linha a toa. Vai uma vez
+    // no cabecalho e cada bloco fica identificado so pelo que o diferencia.
+    const rotulos = niveis.map(n => COMP_ROTULO_NIVEL[n.nivel] || { t: n.nivel, s: '' });
+    const tituloComum = rotulos.length && rotulos.every(r => r.t === rotulos[0].t) ? rotulos[0].t : '';
+    html += `<div style="font-size:10px;font-weight:800;letter-spacing:.6px;color:${CFX.mut2};text-transform:uppercase;margin-bottom:2px">Quando costuma abrir${tituloComum ? ' · ' + compEsc(tituloComum) : ''}</div>
+      <div style="font-size:10px;color:${CFX.mut};margin-bottom:10px;line-height:1.45">Dias de antecedência entre a pesquisa e o voo · histórico completo.</div>`;
     html += niveis.map((n, i) => {
       const cor = i === 0 ? '#ff585e' : '#7aa7f0';
-      const rot = COMP_ROTULO_NIVEL[n.nivel] || { t: n.nivel, s: '' };
-      const sub = rot.s + (n._unica ? ' · única operadora com histórico aqui' : '');
+      const rot = rotulos[i];
+      const titulo = (tituloComum ? (rot.s || rot.t) : rot.t) + (n._unica ? ' · única operadora aqui' : '');
       const esq = 100 * n.p10 / teto, larg = Math.max(100 * (n.p90 - n.p10) / teto, 1), med = 100 * n.mediana / teto;
-      return `<div style="margin-top:${i ? 16 : 0}px">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-          <div style="min-width:0">
-            <div style="font-size:11px;font-weight:${i === 0 ? 800 : 700};color:${i === 0 ? CFX.txt : CFX.mut};line-height:1.35">${compEsc(rot.t)}</div>
-            ${sub ? `<div style="font-size:9px;color:${CFX.mut2};margin-top:1px">${compEsc(sub)}</div>` : ''}
+      return `<div style="margin-top:${i ? 14 : 0}px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <div style="min-width:0;display:flex;align-items:center;gap:6px">
+            <i style="width:7px;height:7px;border-radius:2px;background:${cor};flex-shrink:0"></i>
+            <span style="font-size:10.5px;font-weight:800;color:${i === 0 ? CFX.txt : CFX.mut};line-height:1.3">${compEsc(titulo)}</span>
           </div>
           <span style="font-size:14px;font-weight:900;color:${cor};white-space:nowrap;line-height:1.2">${n.mediana}d</span>
         </div>
@@ -9765,7 +9774,7 @@ function faixaRenderConteudo() {
           </div>
           ${faixaMarcador(teto, 14)}
         </div>
-        <div style="font-size:9.5px;color:${CFX.mut2}">normalmente entre ${n.p10} e ${n.p90} dias · ${n.registros} pesquisas</div>
+        <div style="font-size:9px;color:${CFX.mut2}">normalmente ${n.p10}–${n.p90} dias · ${n.registros} pesquisas</div>
         ${faixaHistograma(n, cor)}
         ${faixaPilula(n)}
       </div>`;
