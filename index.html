@@ -9636,14 +9636,6 @@ function faixaMarcador(teto, altura) {
   return `<u title="Você está aqui: ${_compDias} dias" style="position:absolute;left:${pos.toFixed(1)}%;top:-3px;width:2px;height:${altura}px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.6);border-radius:1px;text-decoration:none"></u>`;
 }
 
-// Pilula compacta de chance, usada nas linhas de nivel e de combo.
-function faixaAviso(c) {
-  const t = compAvisoColeta(c);
-  if (!t) return '';
-  return `<div style="display:flex;gap:5px;margin-top:4px;font-size:8.5px;color:#f0a742;line-height:1.35">
-    <span>⚠</span><span style="opacity:.92">${compEsc(t)}</span></div>`;
-}
-
 function faixaPilula(c) {
   if (_compDias === null) return '';
   const ch = compChance(c, _compDias);
@@ -9695,7 +9687,6 @@ function faixaRenderConteudo() {
           ${faixaMarcador(teto, 14)}
         </div>
         <div style="font-size:9.5px;color:${CFX.mut2}">normalmente entre ${n.p10} e ${n.p90} dias · ${n.registros} pesquisas</div>
-        ${faixaAviso(n)}
         ${faixaPilula(n)}
       </div>`;
     }).join('');
@@ -9737,7 +9728,6 @@ function faixaRenderConteudo() {
           ${faixaMarcador(teto, 11)}
         </div>
         <div style="font-size:9px;color:${CFX.mut2};margin-top:3px">${c.p10}–${c.p90} dias · ${c.registros} pesquisa${c.registros !== 1 ? 's' : ''}${fraca ? ' · <span style="color:#f0a742">base pequena</span>' : ''}</div>
-        ${faixaAviso(c)}
         ${faixaPilula(c)}
       </div>`;
     }).join('');
@@ -9748,7 +9738,6 @@ function faixaRenderConteudo() {
     html += `<div style="margin-top:14px;padding-top:11px;border-top:1px solid ${CFX.linha};font-size:9.5px;color:${CFX.mut2};line-height:1.6">
       O percentual compara a frequência histórica de aberturas a ${_compDias} dias com o melhor momento de cada linha. É indicador de <b style="color:${CFX.mut}">timing</b>, não de assento garantido.
       Quando a curva tem duas faixas boas separadas por um vale, a segunda janela é apontada ao lado do percentual — como a antecedência só diminui, uma janela com menos dias que a sua ainda está por vir.
-      <span style="color:#f0a742">⚠</span> marca linhas cujas pesquisas se concentram em poucos meses: ali o desenho tende a refletir a temporada do destino.
     </div>`;
   }
 
@@ -9931,18 +9920,6 @@ function compFase(dias, picoDia, picos) {
   return base;
 }
 
-// Aviso de amostra concentrada no tempo. Ver dispersaoColeta() no proxy: com a
-// data de pesquisa quase fixa, a curva de antecedencia e o calendario de datas
-// de ida deslocado, e o que parece "janela de abertura" pode ser so a alta e a
-// baixa temporada do destino.
-function compAvisoColeta(c) {
-  const k = c && c.coleta;
-  if (!k || !k.vaoMeses || k.vaoMeses > 3) return null;
-  const fmt = iso => { const [a, m] = String(iso).split('-'); return `${['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][Number(m)-1]}/${a.slice(2)}`; };
-  const janela = k.de.slice(0, 7) === k.ate.slice(0, 7) ? fmt(k.de) : `${fmt(k.de)}–${fmt(k.ate)}`;
-  return `coleta concentrada em ${janela}: o desenho pode refletir a temporada do destino, não a antecedência`;
-}
-
 // Markup unico da regua. O panorama usa a versao larga; a coluna do modal de
 // rota (≈345px) usa a compacta, com os controles empilhados. Os controles sao
 // identificados por CLASSE, nao por id: as duas telas podem estar montadas ao
@@ -10101,10 +10078,6 @@ function compRenderPanorama() {
         topoDir = b.html;
         rodape = `<div style="font-size:9px;color:var(--muted2);margin-top:5px;line-height:1.4">${compEsc(compFase(dias, b.ch.picoDia, b.ch.picos))}${b.ch.share !== null ? ` · ${b.ch.share.toFixed(0)}% da base nesta faixa` : ''}</div>`;
       }
-      const avisoC = compAvisoColeta(c);
-      if (avisoC) {
-        rodape += `<div style="display:flex;gap:5px;margin-top:4px;font-size:9px;color:#c2810f;line-height:1.4"><span>⚠</span><span>${compEsc(avisoC)}</span></div>`;
-      }
       return `<div style="background:var(--surface);border:1px solid var(--border-ctrl);border-radius:12px;padding:11px 13px">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
           <div style="min-width:0;flex:1">
@@ -10150,7 +10123,7 @@ function compRenderPanorama() {
         <td style="${td};font-weight:900">${c.mediana}d</td>
         <td style="${td};color:var(--muted)">${c.p90}d</td>
         <td style="${td};padding-left:14px"><div style="min-width:120px">${barra(c, cor, 14)}</div></td>
-        <td style="${td};font-size:10px;color:var(--muted2)">${c.registros} pesq.<br>${(c.pontos || 0).toLocaleString('pt-BR')} datas${compAvisoColeta(c) ? `<br><span title="${compEsc(compAvisoColeta(c))}" style="color:#c2810f;font-weight:800">⚠ coleta curta</span>` : ''}</td>
+        <td style="${td};font-size:10px;color:var(--muted2)">${c.registros} pesq.<br>${(c.pontos || 0).toLocaleString('pt-BR')} datas</td>
       </tr>`;
     }).join('');
 
@@ -10179,7 +10152,6 @@ function compRenderPanorama() {
         A <b style="color:var(--text)">faixa comum</b> vai do ponto em que só 1 em cada 10 datas aparece antes até aquele em que só 1 em cada 10 aparece depois — cobre 8 de cada 10 casos. Barra estreita significa comportamento previsível; barra larga, imprevisível.<br>
         Na barra, o traço vermelho é o valor típico${dias !== null ? '; o traço branco é onde você está hoje' : ''}. Escala de 0 a ${teto} dias, igual para todas as linhas.<br>
         ${dias !== null ? `<b style="color:var(--text)">Chance</b> compara a frequência histórica de aberturas a ${dias} dias com o melhor momento daquela combinação: 100% é o pico dela, 0% é uma faixa onde ela praticamente nunca abriu. É um indicador de <b style="color:var(--text)">timing</b>, não de assento garantido — diz se vale caçar agora, não se vai achar.<br>${aproximado ? '<span style="color:#f0a742">Parte das linhas está usando estimativa aproximada pelos percentis: o proxy ainda não devolveu a distribuição completa.</span><br>' : ''}` : ''}
-<span style="color:#c2810f">⚠ coleta curta</span> aparece quando todas as pesquisas daquela linha caem em até 3 meses. Nesse caso a data da pesquisa é quase fixa, e a curva acaba desenhando o calendário de datas de ida — a temporada do destino — em vez do comportamento de abertura. Trate o número como indício, não como padrão.<br>
         <span style="color:var(--muted2)">Em estatística esses valores se chamam p10, mediana (p50) e p90. Só entram combinações com no mínimo 5 pesquisas e 60 datas.</span>
       </div>
     </div>`;
