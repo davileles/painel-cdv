@@ -773,6 +773,39 @@ app.get('/gg/saude', async (req, res) => {
   });
 });
 
+// Lista os grupos ATIVOS de todos os links, para o baileys-server verificar se
+// os convites ainda estao vivos. Protegido pelo mesmo X-CDV-Op das campanhas:
+// a lista expoe jid e link de convite dos grupos, que e material de invasao
+// para quem descobrir a URL.
+//
+// Existe porque /gg/saude so responde se o ESTADO carregou — um convite
+// revogado no WhatsApp deixa o link no ar, o distribuidor entrega normalmente
+// e a pessoa cai num 'link redefinido'. Do lado do servidor nada parece
+// errado, e a fatia da campanha que caiu naquele grupo se perde em silencio.
+app.get('/gg/grupos-ativos', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const est = await ggCarregar();
+    const grupos = [];
+    for (const [slug, l] of Object.entries(est.links || {})) {
+      if (l.ativo === false) continue;
+      for (const g of (l.grupos || [])) {
+        if (g.ativo === false) continue;
+        if (!g.jid) continue;
+        grupos.push({
+          slug,
+          jid: g.jid,
+          nome: g.nome || null,
+          convite: g.convite || '',
+          tenant: l.tenant || 'tsp',
+          cliques: g.cliques || 0,
+        });
+      }
+    }
+    res.json({ ok: true, total: grupos.length, grupos });
+  } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
 app.post('/gg/flush', async (req, res) => {
   try { await ggSalvar('chore: distribuidor — flush manual'); res.json({ ok: true }); }
   catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
