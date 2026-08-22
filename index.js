@@ -1879,6 +1879,9 @@ app.get('/passagens/listar', async (req, res) => {
 //
 // GET /passagens/comportamento
 //   ?origem= &destino= &programa= &cia= &cabine=   filtros (todos opcionais)
+//   ?minRegistros= &minPontos=   limiares de amostra (default 5 / 60), iguais aos
+//     do /panorama. Recortes abaixo dos limiares PADRAO continuam saindo, mas
+//     marcados com fraca:true — cabe a UI sinalizar em vez de esconder.
 //   ?escopo=nacional|internacional  (se omitido, deduzido de origem+destino)
 //   ?antecedencia=N    classifica uma oferta especifica dentro de cada nivel
 //   ?precisao=dia      (default) descarta registros com granularidade so de mes
@@ -2151,6 +2154,11 @@ app.get('/passagens/comportamento', async (req, res) => {
     const soDia = (req.query.precisao || 'dia') === 'dia';
     const alvo = req.query.antecedencia != null && req.query.antecedencia !== ''
       ? Number(req.query.antecedencia) : null;
+    // Limiares configuraveis, como ja acontecia no /panorama. Sem isso o modal
+    // do mapa perdia os recortes exatos da rota por poucos pontos (SP-Santiago
+    // Turkish/Executiva: 51 pontos contra o minimo 60) e ficava sem histograma.
+    const minReg = Number(req.query.minRegistros) || MIN_REGISTROS;
+    const minPts = Number(req.query.minPontos) || MIN_PONTOS;
 
     let base = await carregarPontosComportamento();
     if (soDia) base = base.filter(p => p.precisao === 'dia');
@@ -2178,7 +2186,7 @@ app.get('/passagens/comportamento', async (req, res) => {
         sel.map(p => `${p.origem}|${p.destino}|${p.programa}|${p.cabine}|${p.snap}${p._volta ? '|v' : ''}`)
       ).size;
 
-      if (registros < MIN_REGISTROS || sel.length < MIN_PONTOS) {
+      if (registros < minReg || sel.length < minPts) {
         descartados.push({ nivel: nivel.nome, registros, pontos: sel.length, motivo: 'amostra_insuficiente' });
         continue;
       }
@@ -2188,6 +2196,10 @@ app.get('/passagens/comportamento', async (req, res) => {
         nivel: nivel.nome,
         agregadoPor: nivel.campos,
         registros,
+        pontos: sel.length,
+        // Passou pelos limiares pedidos, mas nao pelos padroes: a UI mostra o
+        // recorte com aviso em vez de omitir.
+        fraca: registros < MIN_REGISTROS || sel.length < MIN_PONTOS,
         ...estatisticas(valores),
         ...densidade(valores),
         ...dispersaoColeta(sel.map(p => p.snap)),
@@ -2202,7 +2214,7 @@ app.get('/passagens/comportamento', async (req, res) => {
     if (!niveis.length) {
       return res.json({
         ok: false, motivo: 'amostra_insuficiente',
-        minimos: { registros: MIN_REGISTROS, pontos: MIN_PONTOS },
+        minimos: { registros: minReg, pontos: minPts },
         filtro: f, descartados,
       });
     }
