@@ -9567,7 +9567,14 @@ async function compCarregarFaixa(orig, dest, programa, cabineFiltro, cia) {
     // informados — sem cia esse recorte era simplesmente pulado.
     // ?par em vez de origem/destino: o mapa abre o modal com a rota no sentido
     // do clique, e a base pode ter a amostra so no sentido contrario.
+    // minRegistros/minPontos baixos: os limiares padrao do proxy (5/60) sao
+    // calibrados para o panorama global e reprovavam recortes de rota por
+    // margem minima — SP-Santiago em Turkish/Executiva tinha 17 registros e 51
+    // pontos, perdia os dois recortes exatos por 9 pontos e ficava sem o
+    // histograma. O proxy devolve fraca:true quando abaixo do padrao e a UI
+    // avisa, em vez de esconder.
     const base = `${CDV_PROXY_PASS}/passagens/comportamento?par=${encodeURIComponent(orig + '|' + dest)}`
+      + `&minRegistros=2&minPontos=8`
       + (programa ? `&programa=${encodeURIComponent(programa)}` : '')
       + (cabQ ? `&cabine=${encodeURIComponent(cabQ)}` : '')
       + (cia ? `&cia=${encodeURIComponent(cia)}` : '');
@@ -9577,13 +9584,15 @@ async function compCarregarFaixa(orig, dest, programa, cabineFiltro, cia) {
 
     let dados = null;
     if (d.ok && d.niveis && d.niveis.length) {
-      // So os dois recortes que respondem a pergunta da tela; os niveis amplos
-      // (programa no geral, toda a base) descreviam outra rota que nao a
-      // clicada e confundiam a leitura.
-      const uteis = d.niveis
-        .filter(n => COMP_NIVEIS_FAIXA.includes(n.nivel))
-        .sort((a, b) => COMP_NIVEIS_FAIXA.indexOf(a.nivel) - COMP_NIVEIS_FAIXA.indexOf(b.nivel));
-      dados = { tipo: 'niveis', niveis: uteis, programa, cabQ, cia };
+      // So recortes da rota clicada; os niveis amplos de programa/base inteira
+      // descrevem outra coisa e confundiam a leitura. Primeiro os exatos;
+      // se a rota nao tiver historico para eles, os imediatamente mais amplos.
+      const pega = ordem => d.niveis
+        .filter(n => ordem.includes(n.nivel))
+        .sort((a, b) => ordem.indexOf(a.nivel) - ordem.indexOf(b.nivel));
+      let uteis = pega(COMP_NIVEIS_FAIXA);
+      if (!uteis.length) uteis = pega(COMP_NIVEIS_FALLBACK).slice(0, 2);
+      if (uteis.length) dados = { tipo: 'niveis', niveis: uteis, programa, cabQ, cia };
     }
 
     // 2) Comparativo: as demais companhias desta mesma rota, para dar contexto.
@@ -9594,6 +9603,27 @@ async function compCarregarFaixa(orig, dest, programa, cabineFiltro, cia) {
       if (dp.ok && dp.combos && dp.combos.length) {
         dados = dados || { tipo: 'niveis', niveis: [], programa, cabQ, cia };
         dados.combos = dp.combos.sort((a, b) => a.mediana - b.mediana);
+        // Ultimo degrau da cascata: se nem os niveis amplos vieram, o combo do
+        // panorama traz os mesmos campos (p10/mediana/p90 + dens) para o
+        // recorte exato da oferta clicada. Como a lista de companhias so
+        // aparece quando ha combos, com isso o bloco de cima — e o histograma —
+        // nunca mais fica vazio enquanto houver qualquer historico da rota.
+        if (!dados.niveis.length) {
+          const igual = (a, b) => compEsc(a || '') === compEsc(b || '');
+          const alvo = dp.combos.find(k =>
+              (!programa || igual(k.programa, programa)) &&
+              (!cia || igual(k.cia, cia)) &&
+              (!cabQ || igual(k.cabine, cabQ)))
+            || [...dp.combos].sort((a, b) => b.pontos - a.pontos)[0];
+          if (alvo && Number.isFinite(alvo.mediana)) {
+            dados.niveis = [Object.assign({}, alvo, {
+              nivel: 'rota_completa',
+              fraca: true,
+              _unica: false,
+              _sintetico: true,
+            })];
+          }
+        }
       }
     } catch (e) { /* comparativo e opcional */ }
 
@@ -9610,6 +9640,13 @@ async function compCarregarFaixa(orig, dest, programa, cabineFiltro, cia) {
 // t = titulo curto; s = o que exatamente entra naquele recorte.
 // Ordem de exibicao dos dois unicos recortes mostrados na coluna do modal.
 const COMP_NIVEIS_FAIXA = ['rota_programa_cabine', 'rota_completa'];
+// Cascata de fallback: rotas com historico curto nao produzem os recortes
+// exatos acima nem com limiar minimo (ex.: programa que abriu a rota uma vez
+// so). Sem isso o bloco "Quando costuma abrir" — e com ele o histograma —
+// simplesmente sumia e a coluna abria direto na lista de companhias. Aqui a
+// pergunta continua sendo respondida, num recorte mais amplo e rotulado como
+// tal.
+const COMP_NIVEIS_FALLBACK = ['rota_programa', 'rota'];
 
 const COMP_ROTULO_NIVEL = {
   rota_completa:              { t: 'Esta rota, neste programa',  s: 'mesma companhia, mesma cabine' },
@@ -9740,8 +9777,8 @@ function faixaRenderConteudo() {
   if (niveis.length === 2) {
     const [a, b] = niveis;
     if (a.registros === b.registros && a.pontos === b.pontos && a.mediana === b.mediana && a.p10 === b.p10 && a.p90 === b.p90) {
-      const so = COMP_NIVEIS_FAIXA.indexOf('rota_completa') === 1 ? b : a;
-      niveis = [Object.assign({}, so, { _unica: true })];
+      // Mantem o recorte mais especifico dos dois (o ultimo da ordem exibida).
+      niveis = [Object.assign({}, b, { _unica: true })];
     }
   }
 
@@ -9763,7 +9800,7 @@ function faixaRenderConteudo() {
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
           <div style="min-width:0;display:flex;align-items:center;gap:6px">
             <i style="width:7px;height:7px;border-radius:2px;background:${cor};flex-shrink:0"></i>
-            <span style="font-size:10.5px;font-weight:800;color:${i === 0 ? CFX.txt : CFX.mut};line-height:1.3">${compEsc(titulo)}</span>
+            <span style="font-size:10.5px;font-weight:800;color:${i === 0 ? CFX.txt : CFX.mut};line-height:1.3">${compEsc(titulo)}${n.fraca ? ' <span style="font-size:8.5px;color:#f0a742;font-weight:800">base pequena</span>' : ''}</span>
           </div>
           <span style="font-size:14px;font-weight:900;color:${cor};white-space:nowrap;line-height:1.2">${n.mediana}d</span>
         </div>
