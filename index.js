@@ -3076,7 +3076,7 @@ app.post('/ia/extrair-reserva', (req, res) => {
       : 'Analise este documento (' + (docs[0].kind === 'texto' ? 'texto extraído de um arquivo HTML' : (docs[0].kind === 'pdf' ? 'PDF' : 'imagem')) + ') de ' + (tipoCampos || 'reserva de viagem') + '. ') +
     'Extraia os dados REAIS do documento e retorne SOMENTE um JSON válido (sem markdown). ' +
     'Use exatamente esta estrutura JSON (substitua pelos valores reais): ' +
-    '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","cabine":"cabine exata","cia":"companhia aerea"}],"pnr":"","pax":0,"passageiros":["NOME DO PASSAGEIRO EXATAMENTE COMO IMPRESSO"],"programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","subtipo":"transfer","transferOrigem":"","transferDestino":"","transferData":"","transferHora":"","transferPax":"","transferOp":"","transferVeiculo":"","transferConf":"","transferValor":"","transferVoltaOrigem":"","transferVoltaDestino":"","transferVoltaData":"","transferVoltaHora":"","transferVoltaHoraChegada":"","transferVoltaOp":"","transferVoltaConf":"","transferVoltaCategoria":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","seguradora":"","seguroPlano":"","seguroApolice":"","seguroCartao":"","seguroInicio":"","seguroFim":"","seguroModalidade":"","seguroDias":"","seguroTerritorio":"","seguroCobertura":"","seguroPax":"","seguroValor":"","seguroEmergencia":"","obs":""} ' +
+    '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","dataChegada":"YYYY-MM-DD","cabine":"cabine exata","cia":"companhia aerea"}],"pnr":"","pax":0,"passageiros":["NOME DO PASSAGEIRO EXATAMENTE COMO IMPRESSO"],"programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","subtipo":"transfer","transferOrigem":"","transferDestino":"","transferData":"","transferHora":"","transferPax":"","transferOp":"","transferVeiculo":"","transferConf":"","transferValor":"","transferVoltaOrigem":"","transferVoltaDestino":"","transferVoltaData":"","transferVoltaHora":"","transferVoltaHoraChegada":"","transferVoltaOp":"","transferVoltaConf":"","transferVoltaCategoria":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","seguradora":"","seguroPlano":"","seguroApolice":"","seguroCartao":"","seguroInicio":"","seguroFim":"","seguroModalidade":"","seguroDias":"","seguroTerritorio":"","seguroCobertura":"","seguroPax":"","seguroValor":"","seguroEmergencia":"","obs":""} ' +
     'REGRAS: ' +
     '1) trechos[]: um objeto por segmento de voo na ordem do itinerário. ' +
     '2) Em cada trecho, cia = nome da companhia aérea operadora (ex: LATAM, Azul, Gol, TAP, KLM). ' +
@@ -3122,6 +3122,13 @@ app.post('/ia/extrair-reserva', (req, res) => {
     '   Nunca classifique um bilhete de seguro viagem como voo, hotel, carro ou passeio. ' +
     '9) DATAS: se o documento não informar o ano de alguma data, use o ano atual (' + new Date().getFullYear() + '). ' +
     '   Toda data deve sair completa no formato YYYY-MM-DD — nunca retorne data sem ano. ' +
+    '9.1) DATA DE CHEGADA DE CADA TRECHO (campo dataChegada): e a data em que o voo POUSA. ' +
+    '   Se o documento informar explicitamente a data de chegada, use-a. ' +
+    '   Se NAO informar, deduza pelo horario: quando horaChegada for MENOR que horaPartida o voo cruza a meia-noite, entao dataChegada = data da partida + 1 dia ' +
+    '   (ex: partida 21/09 as 19:00 e chegada as 08:00 -> dataChegada = 22/09). ' +
+    '   Quando horaChegada for MAIOR OU IGUAL a horaPartida, dataChegada = a MESMA data da partida ' +
+    '   (ex: partida 21/09 as 10:40 e chegada as 16:05 -> dataChegada = 21/09). ' +
+    '   Se o documento trouxer indicador de dias (ex: \"08:00+1\" ou \"+2\"), some exatamente os dias indicados. ' +
     '10) Retorne SOMENTE o JSON, sem explicações.' +
     (multiDoc
       ? ' 11) MULTIPLOS DOCUMENTOS DA MESMA RESERVA: nunca gere um JSON por documento — consolide todos em um so. ' +
@@ -3149,8 +3156,8 @@ app.post('/ia/extrair-reserva', (req, res) => {
       if (m) return anoAtual + '-' + m[1] + '-' + m[2];
       return s;
     }
-    if (Array.isArray(d.trechos)) d.trechos.forEach(t => { if (t) t.data = fix(t.data); });
-    ['checkin', 'checkout', 'transferData', 'transferVoltaData', 'retData', 'devData', 'passeioData', 'dataIda', 'dataVolta', 'seguroInicio', 'seguroFim']
+    if (Array.isArray(d.trechos)) d.trechos.forEach(t => { if (t) { t.data = fix(t.data); if (t.dataChegada) t.dataChegada = fix(t.dataChegada); } });
+    ['checkin', 'checkout', 'transferData', 'transferVoltaData', 'retData', 'devData', 'passeioData', 'dataIda', 'dataVolta', 'dataChegadaIda', 'dataChegadaVolta', 'seguroInicio', 'seguroFim']
       .forEach(k => { if (d[k]) d[k] = fix(d[k]); });
     return d;
   }
@@ -3212,6 +3219,30 @@ app.post('/ia/extrair-reserva', (req, res) => {
       return 'Econômica';
     }
 
+    // ── Data de chegada de um trecho ──────────────────────────────────────
+    // Usa dataChegada informada no documento quando existir; senao deduz pelo
+    // horario: se a hora de chegada for menor que a de partida, o voo cruzou a
+    // meia-noite e pousa no dia seguinte.
+    function somarDias(iso, n) {
+      if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso || '';
+      const dt = new Date(iso + 'T12:00:00Z');
+      dt.setUTCDate(dt.getUTCDate() + n);
+      return dt.toISOString().slice(0, 10);
+    }
+    function minutosDeHora(h) {
+      const m = /^(\d{1,2}):(\d{2})/.exec(String(h || '').trim());
+      if (!m) return null;
+      return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+    }
+    function dataChegadaTrecho(t) {
+      if (!t || !t.data) return '';
+      if (t.dataChegada && /^\d{4}-\d{2}-\d{2}$/.test(t.dataChegada)) return t.dataChegada;
+      const p = minutosDeHora(t.horaPartida);
+      const c = minutosDeHora(t.horaChegada);
+      if (p === null || c === null) return t.data;
+      return c < p ? somarDias(t.data, 1) : t.data;
+    }
+
     // Separar trechos de ida e volta
     // Ida: sequência do início; volta: quando destino de um trecho = origem do primeiro
     const origem0 = (d.trechos[0].origem||'').toUpperCase();
@@ -3239,6 +3270,8 @@ app.post('/ia/extrair-reserva', (req, res) => {
     d.dataIda = primeiro.data;
     d.horaPartida = primeiro.horaPartida;
     d.horaChegada = ultimo.horaChegada;
+    d.dataChegadaIda = dataChegadaTrecho(ultimo) ||
+      dataChegadaTrecho({ data: d.dataIda, horaPartida: d.horaPartida, horaChegada: d.horaChegada });
     d.nvooIda = trechosIda.map(t => t.nvoo).filter(Boolean).join(', ');
     d.classe = cabineToClasse(primeiro.cabine);
     if (!d.ciaIda) d.ciaIda = trechosIda.map(t => t.cia).filter(Boolean)[0] || '';
@@ -3255,6 +3288,8 @@ app.post('/ia/extrair-reserva', (req, res) => {
       d.dataVolta = primeiroV.data;
       d.horaPartidaVolta = primeiroV.horaPartida;
       d.horaChegadaVolta = ultimoV.horaChegada;
+      d.dataChegadaVolta = dataChegadaTrecho(ultimoV) ||
+        dataChegadaTrecho({ data: d.dataVolta, horaPartida: d.horaPartidaVolta, horaChegada: d.horaChegadaVolta });
       d.nvooVolta = trechosVolta.map(t => t.nvoo).filter(Boolean).join(', ');
       d.ciaVolta = d.ciaVolta || d.ciaIda;
       if (trechosVolta.length > 1) {
