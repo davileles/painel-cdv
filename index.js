@@ -4006,38 +4006,99 @@ app.get('/concierge/pendentes', async (req, res) => {
   }
 });
 
+// Locks em memoria: dois cliques no botao "Aprovar" chegavam como duas
+// requisicoes paralelas, cada uma lendo a base antes de a outra gravar — e o
+// mesmo cadastro virava dois clientes. O lock derruba a segunda na porta.
+const _pendentesEmCurso = new Set();
+
+// PUT com releitura e retry em 409/422. `montar` recebe a lista fresca do
+// GitHub e devolve a lista a gravar (ou null quando nao ha nada a fazer).
+async function putConciergeRetry(path, montar, tentativas = 3) {
+  let ultimoErro;
+  for (let i = 0; i < tentativas; i++) {
+    const { lista, sha } = await lerArquivoConcierge(path);
+    const nova = montar(lista);
+    if (nova === null) return null;
+    try {
+      return await putConciergeFile(path, nova, sha, CONCIERGE_DADOS_REPO);
+    } catch (e) {
+      ultimoErro = e;
+      if ((e.status === 409 || e.status === 422) && i < tentativas - 1) {
+        await new Promise(r => setTimeout(r, 300 * (i + 1)));
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw ultimoErro;
+}
+
 // POST /concierge/pendentes/aprovar { id, acao: 'aprovar'|'descartar' }
 app.post('/concierge/pendentes/aprovar', async (req, res) => {
   const { id, acao } = req.body || {};
   if (!id) return res.status(400).json({ ok: false, erro: 'id obrigatorio' });
+  // Clique repetido enquanto o primeiro ainda roda: recusa em vez de duplicar.
+  if (_pendentesEmCurso.has(id)) {
+    return res.status(409).json({ ok: false, erro: 'Este cadastro ja esta sendo processado. Aguarde.' });
+  }
+  _pendentesEmCurso.add(id);
   try {
-    const { lista: pend, sha: shaPend } = await lerArquivoConcierge(CONCIERGE_PENDENTES);
-    const idx = pend.findIndex(p => p && p.id === id);
-    if (idx === -1) return res.status(404).json({ ok: false, erro: 'cadastro pendente nao encontrado' });
-    const item = pend[idx];
+    const { lista: pend } = await lerArquivoConcierge(CONCIERGE_PENDENTES);
+    const item = pend.find(p => p && p.id === id);
+    if (!item) return res.status(404).json({ ok: false, erro: 'cadastro pendente nao encontrado' });
+
+    let novoId = null;
+    let jaExistia = false;
 
     if (acao !== 'descartar') {
-      const { lista: clientes, sha: shaCli } = await lerClientesConcierge();
-      const { lista: perfis,   sha: shaPer } = await lerArquivoConcierge(CONCIERGE_PERFIL);
-      // id definitivo: 'cli-<n>' seguindo a numeracao ja usada pela base.
-      let n = 0;
-      for (const c of clientes) {
-        const m = String(c.id || '').match(/^cli-(\d+)$/);
-        if (m) n = Math.max(n, Number(m[1]) + 1);
+      const cad       = item.cadastro || {};
+      const cpfNovo   = soDigitos(cad.cpf);
+      const emailNovo = String(cad.email || '').toLowerCase().trim();
+
+      await putConciergeRetry(CONCIERGE_CLIENTES, (clientes) => {
+        // Idempotencia: se o cadastro ja entrou na base — por clique repetido ou
+        // porque o PUT da fila falhou depois de o cliente ter sido gravado — nao
+        // cria outro registro. CPF e email sao a chave natural do formulario.
+        const existente = clientes.find(x => x && (
+          (cpfNovo   && soDigitos(x.cpf) === cpfNovo) ||
+          (emailNovo && String(x.email || '').toLowerCase().trim() === emailNovo)
+        ));
+        if (existente) { novoId = existente.id; jaExistia = true; return null; }
+        let n = 0;
+        for (const x of clientes) {
+          const m = String(x.id || '').match(/^cli-(\d+)$/);
+          if (m) n = Math.max(n, Number(m[1]) + 1);
+        }
+        novoId = 'cli-' + n;
+        clientes.push(clienteNormalizado(Object.assign({}, cad, { id: novoId })));
+        return clientes;
+      });
+
+      if (!jaExistia) {
+        await putConciergeRetry(CONCIERGE_PERFIL, (perfis) => {
+          if (perfis.some(x => x && x.id === novoId)) return null;
+          perfis.push(perfilNormalizado(Object.assign({}, item.perfil, { id: novoId })));
+          return perfis;
+        });
       }
-      const novoId = 'cli-' + n;
-      clientes.push(clienteNormalizado(Object.assign({}, item.cadastro, { id: novoId })));
-      perfis.push(perfilNormalizado(Object.assign({}, item.perfil, { id: novoId })));
-      await putConciergeFile(CONCIERGE_CLIENTES, clientes, shaCli, CONCIERGE_DADOS_REPO);
-      await putConciergeFile(CONCIERGE_PERFIL,   perfis,   shaPer, CONCIERGE_DADOS_REPO);
     }
 
-    pend.splice(idx, 1);
-    await putConciergeFile(CONCIERGE_PENDENTES, pend, shaPend, CONCIERGE_DADOS_REPO);
-    res.json({ ok: true });
+    // A fila so e alterada no fim, com releitura: o formulario publico pode ter
+    // gravado outro cadastro enquanto os PUTs acima rodavam, e o SHA lido la em
+    // cima ja estaria velho (era exatamente essa a falha silenciosa do fluxo).
+    await putConciergeRetry(CONCIERGE_PENDENTES, (lista) => {
+      const k = lista.findIndex(p => p && p.id === id);
+      if (k === -1) return null;
+      lista.splice(k, 1);
+      return lista;
+    });
+
+    res.json({ ok: true, id: novoId, jaExistia });
   } catch(e) {
     console.error('[concierge/pendentes/aprovar]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
+  } finally {
+    _pendentesEmCurso.delete(id);
   }
 });
 
