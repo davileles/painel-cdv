@@ -8929,11 +8929,17 @@ async function mapaInit() {
   if (legenda && mapaToque()) legenda.textContent = 'pinça=zoom · arrastar=mover';
 
   // Filtro: apenas últimos 180 dias
+  // Fontes que NAO entram no mapa. Blocklist (nao allowlist): o mapa vive de
+  // 'coleta' e 'planilha' tanto quanto de 'alerta'/'emissao' — so o alerta que
+  // o operador rejeitou fica de fora, senao ele pode definir a "melhor opcao"
+  // de uma rota com um preco que ninguem aprovou.
+  const MAPA_FONTES_BLOQUEADAS = new Set(['alerta_rejeitado']);
   function mapaFiltrar180(items) {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 180);
     const cutoffStr = cutoff.toISOString().slice(0,10);
-    return items.filter(p => (p.enviadoEm || '') >= cutoffStr);
+    return items.filter(p => (p.enviadoEm || '') >= cutoffStr
+                          && !MAPA_FONTES_BLOQUEADAS.has(p.fonte));
   }
 
   // 3. Reutilizar passagensData se já carregado
