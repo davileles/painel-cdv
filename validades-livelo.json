@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-08-25T15:47:17.495Z",
+  "coletadoEm": "2026-08-25T16:41:08.983Z",
   "items": {
     "acer": {
       "id": "ACE",
@@ -384,6 +384,30 @@
       "parityClub": 6,
       "parityBau": 2,
       "campanha": "PROMOTION"
+    },
+    "foco": {
+      "id": "FOC",
+      "nome": "Foco",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 25 a 26/08/2026. 5 pontos por real gasto para membros Clube Livelo e 3 pontos por real gasto para demais clientes. Válido para o site todo. Consulte condições, imagem ilustrativa.",
+      "dateStart": "2026-08-25",
+      "dateEnd": "2026-08-26",
+      "parity": 3,
+      "parityClub": 5,
+      "parityBau": 2,
+      "campanha": "PROMOTION_CLUB"
+    },
+    "foreverliss": {
+      "id": "LSS",
+      "nome": "Forever Liss",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 25 a 26/08/2026. Ganhe 10 pontos por real gasto, exclusivo para assinantes do Clube Livelo e 8 pontos por real demais clientes. Utilize o cupom LIVELO. Consulte o regulamento",
+      "dateStart": "2026-08-25",
+      "dateEnd": "2026-08-26",
+      "parity": 8,
+      "parityClub": 10,
+      "parityBau": 2,
+      "campanha": "PROMOTION_CLUB"
     },
     "fossil": {
       "id": "SCS",
