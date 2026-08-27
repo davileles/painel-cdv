@@ -4601,11 +4601,26 @@ function injetarProgramasCashback(){
   const progsCashback = PROGRAMS.filter(p=>p.cashback);
   if(!progsCashback.length || !Object.keys(historico).length) return;
 
-  // Pega snapshot mais recente
-  const dataAtual = Object.keys(historico).sort().at(-1);
-  const snap = historico[dataAtual] || {};
+  // Méliuz e TopCashback são coletados só 2x/dia (janelas 09h/18h UTC no workflow
+  // coletar-historico.yml), enquanto Comparemania e Inter rodam de hora em hora.
+  // Se o snapshot do dia for criado antes da janela (ex.: run noturna atrasada que
+  // cruza a virada do dia em America/Sao_Paulo), o último snapshot não tem esses
+  // programas e todos os parceiros deles sumiam do comparador. Por isso cada
+  // programa usa o snapshot mais recente que o contenha, dentro de 7 dias.
+  const datasDesc = Object.keys(historico).sort().reverse().slice(0, 7);
+  const snapshotDoPrograma = pid => {
+    for(const d of datasDesc){
+      const s = historico[d] || {};
+      for(const dados of Object.values(s)){
+        if(dados.programs?.[pid]) return s;
+      }
+    }
+    return null;
+  };
 
   for(const prog of progsCashback){
+    const snap = snapshotDoPrograma(prog.id);
+    if(!snap) continue;
     for(const [chave, dados] of Object.entries(snap)){
       const progData = dados.programs?.[prog.id];
       if(!progData) continue;
