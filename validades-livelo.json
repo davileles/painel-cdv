@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-08-27T04:25:51.721Z",
+  "coletadoEm": "2026-08-27T19:41:31.272Z",
   "items": {
     "adcos": {
       "id": "SPA",
@@ -71,6 +71,18 @@
       "parity": 30,
       "parityClub": 30,
       "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
+    "cea": {
+      "id": "CEA",
+      "nome": "CEA",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 27 a 31/08/2026. Ganhe 7 pontos por real gasto em itens selecionados e 2 pontos por real demais produtos. Não é válido para Cartão presente, Telefonia e Smartwatch. Consulte regulamento.",
+      "dateStart": "2026-08-27",
+      "dateEnd": "2026-08-31",
+      "parity": 4,
+      "parityClub": 4,
+      "parityBau": 2,
       "campanha": "PROMOTION"
     },
     "carrefourmercado": {
@@ -287,6 +299,18 @@
       "parity": 10,
       "parityClub": 10,
       "parityBau": 3,
+      "campanha": "PROMOTION"
+    },
+    "portoservico": {
+      "id": "PTO",
+      "nome": "Porto Serviço",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 27 a 31/08/2026. Ganhe 10 pontos a cada real gasto. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-08-27",
+      "dateEnd": "2026-08-31",
+      "parity": 10,
+      "parityClub": 10,
+      "parityBau": 5,
       "campanha": "PROMOTION"
     },
     "probiotica": {
