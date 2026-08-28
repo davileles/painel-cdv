@@ -4633,6 +4633,184 @@ app.post('/concierge/lembretes/checar', async (req, res) => {
 setInterval(() => { checarLembretes().catch(() => {}); }, 10 * 60 * 1000);
 setTimeout(() => { checarLembretes().catch(() => {}); }, 60 * 1000);
 
+// ══════════════════════════════════════════════════════════════════
+//  MENSAGENS AGENDADAS (aba Mensagens -> Disparar do concierge)
+//  Vivem em davileles/concierge/agendamentos.json. Diferente dos alertas
+//  de oportunidade, aqui o grupo destino VAI gravado no agendamento: quem
+//  agenda ja escolheu na tela o grupo do cliente ou o da equipe, e o texto
+//  ja vem final (variaveis do modelo resolvidas no front). O proxy nao
+//  reprocessa nada — so entrega no horario marcado.
+//  Item enviado nao some na hora: vira status 'enviado' para aparecer no
+//  historico da tela e e limpo do arquivo depois de AGENDA_RETENCAO_DIAS.
+//  Falha de envio NAO consome o agendamento: continua pendente e tenta de
+//  novo no ciclo seguinte, ate AGENDA_MAX_TENTATIVAS (ai vira 'erro').
+// ══════════════════════════════════════════════════════════════════
+const AGENDAMENTOS_FILE     = 'agendamentos.json';
+const AGENDA_RETENCAO_DIAS  = 7;
+const AGENDA_MAX_TENTATIVAS = 5;
+
+// Mesmo criterio do tsLembrete(): -03:00 fixo (Brasil nao tem mais horario de verao)
+function tsAgendamento(ag) {
+  if (!ag || !ag.data) return null;
+  const hora = /^\d{2}:\d{2}$/.test(ag.hora || '') ? ag.hora : '09:00';
+  const t = new Date(`${ag.data}T${hora}:00-03:00`).getTime();
+  return isNaN(t) ? null : t;
+}
+
+async function lerAgendamentos() {
+  try {
+    const { content, sha } = await getConciergeFile(AGENDAMENTOS_FILE);
+    return { agendamentos: Array.isArray(content) ? content : [], sha };
+  } catch (e) {
+    return { agendamentos: [], sha: null };
+  }
+}
+
+// POST /concierge/agendamento — cria (ou reagenda, se vier id) uma mensagem
+app.post('/concierge/agendamento', async (req, res) => {
+  const b = req.body || {};
+  const grupo    = String(b.grupo || '').trim();
+  const mensagem = String(b.mensagem || '').trim();
+  const data     = String(b.data || '').trim();
+  const hora     = /^\d{2}:\d{2}$/.test(b.hora || '') ? b.hora : '09:00';
+
+  if (!grupo)    return res.status(400).json({ ok: false, erro: 'Grupo de destino obrigatório' });
+  if (!mensagem) return res.status(400).json({ ok: false, erro: 'Mensagem vazia' });
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) return res.status(400).json({ ok: false, erro: 'Data inválida (use YYYY-MM-DD)' });
+
+  const ts = tsAgendamento({ data, hora });
+  if (ts === null) return res.status(400).json({ ok: false, erro: 'Data/hora inválida' });
+  // Tolerancia de 1 min: agendar para "daqui a pouco" nao pode virar erro por
+  // causa do relogio do navegador estar alguns segundos adiantado.
+  if (ts < Date.now() - 60000) return res.status(400).json({ ok: false, erro: 'Esse horário já passou' });
+
+  try {
+    const { agendamentos, sha } = await lerAgendamentos();
+    const id = b.id || ('AGD-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
+    const novo = {
+      id,
+      grupo,
+      mensagem,
+      data,
+      hora,
+      destino:     b.destino === 'equipe' ? 'equipe' : 'cliente',
+      clienteNome: b.clienteNome || '',
+      modeloNome:  b.modeloNome  || '',
+      reservaId:   b.reservaId   || '',
+      status:      'pendente',
+      criadoEm:    new Date().toISOString()
+    };
+    const idx = agendamentos.findIndex((a) => a.id === id);
+    if (idx >= 0) agendamentos[idx] = { ...agendamentos[idx], ...novo, criadoEm: agendamentos[idx].criadoEm || novo.criadoEm, atualizadoEm: new Date().toISOString(), tentativas: 0, erro: '' };
+    else agendamentos.push(novo);
+
+    await putConciergeFile(AGENDAMENTOS_FILE, agendamentos, sha);
+    res.json({ ok: true, id, quando: new Date(ts).toISOString() });
+  } catch (e) {
+    console.error('[concierge/agendamento POST]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// GET /concierge/agendamentos — lista completa (a tela separa pendente/enviado)
+app.get('/concierge/agendamentos', async (req, res) => {
+  const { agendamentos } = await lerAgendamentos();
+  res.json({ ok: true, data: agendamentos });
+});
+
+// DELETE /concierge/agendamento — cancela por id
+app.delete('/concierge/agendamento', async (req, res) => {
+  const id = (req.body && req.body.id) || req.query.id;
+  if (!id) return res.status(400).json({ ok: false, erro: 'id obrigatório' });
+  try {
+    const { agendamentos, sha } = await lerAgendamentos();
+    const restantes = agendamentos.filter((a) => a.id !== id);
+    if (restantes.length === agendamentos.length) return res.status(404).json({ ok: false, erro: 'Agendamento não encontrado' });
+    await putConciergeFile(AGENDAMENTOS_FILE, restantes, sha);
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('[concierge/agendamento DELETE]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+let _agendaRodando = false;
+
+async function checarAgendamentos() {
+  if (_agendaRodando) return { ok: true, pulado: 'execução anterior em andamento' };
+  _agendaRodando = true;
+  const enviados = [], falhas = [];
+  try {
+    const { agendamentos, sha } = await lerAgendamentos();
+    const agora = Date.now();
+    let mudou = false;
+
+    const vencidos = agendamentos.filter((ag) => {
+      if ((ag.status || 'pendente') !== 'pendente') return false;
+      const ts = tsAgendamento(ag);
+      return ts !== null && ts <= agora;
+    });
+
+    // Sequencial: o Baileys serializa o socket do WhatsApp, disparar em
+    // paralelo so aumenta a chance de erro e de parecer robo.
+    for (const ag of vencidos) {
+      try {
+        const rw = await fetch(`${BAILEYS_URL}/enviar`, {
+          compress: false,
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ grupo: ag.grupo, mensagem: ag.mensagem })
+        });
+        const dw = await rw.json().catch(() => ({}));
+        if (!rw.ok || !(dw.ok || dw.success || dw.status === 'sent')) {
+          throw new Error(dw.erro || dw.error || dw.message || `Baileys respondeu ${rw.status}`);
+        }
+        ag.status    = 'enviado';
+        ag.enviadoEm = new Date().toISOString();
+        ag.erro      = '';
+        enviados.push(ag.id);
+      } catch (e) {
+        ag.tentativas      = (ag.tentativas || 0) + 1;
+        ag.erro            = e.message;
+        ag.ultimaTentativa = new Date().toISOString();
+        if (ag.tentativas >= AGENDA_MAX_TENTATIVAS) ag.status = 'erro';
+        falhas.push({ id: ag.id, erro: e.message });
+      }
+      mudou = true;
+    }
+
+    // Limpeza: enviados antigos saem do arquivo (os com erro ficam ate serem
+    // cancelados na tela, senao a falha passa despercebida)
+    const limite = agora - AGENDA_RETENCAO_DIAS * 86400000;
+    const restantes = agendamentos.filter((ag) => {
+      if ((ag.status || 'pendente') !== 'enviado') return true;
+      return new Date(ag.enviadoEm || ag.criadoEm || 0).getTime() > limite;
+    });
+    if (restantes.length !== agendamentos.length) mudou = true;
+
+    if (mudou) await putConciergeFile(AGENDAMENTOS_FILE, restantes, sha);
+    if (enviados.length || falhas.length) {
+      console.log(`[agendamentos] enviados=${enviados.length} falhas=${falhas.length}`);
+    }
+    return { ok: true, enviados, falhas };
+  } catch (e) {
+    console.error('[agendamentos] erro:', e.message);
+    return { ok: false, erro: e.message };
+  } finally {
+    _agendaRodando = false;
+  }
+}
+
+// POST /concierge/agendamentos/checar — disparo manual/backup
+app.post('/concierge/agendamentos/checar', async (req, res) => {
+  res.json(await checarAgendamentos());
+});
+
+// Worker interno: 5 min. Mensagem para cliente pede mais pontualidade que o
+// lembrete interno (10 min), e o custo e so 1 GET no GitHub por ciclo.
+setInterval(() => { checarAgendamentos().catch(() => {}); }, 5 * 60 * 1000);
+setTimeout(() => { checarAgendamentos().catch(() => {}); }, 75 * 1000);
+
 // Dispatcher: dispara a Action lembrete-voo do concierge a cada 30 min via
 // workflow_dispatch. Motivo: o cron do GitHub roda com atraso de 2-3h (e as
 // vezes cancela jobs), o que ja fez o alerta de check-in (janela 24h→20h)
