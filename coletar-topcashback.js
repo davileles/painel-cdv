@@ -45,6 +45,7 @@ const PARCEIROS_TIER1_TCB = new Set([
   'all accor',
   'viator',
   'getyourguide',
+  'omio',
 ]);
 
 // ── HTTP helper ───────────────────────────────────────────────────────────────
