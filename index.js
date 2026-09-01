@@ -1732,6 +1732,58 @@ function normalizarCia(cia) {
 }
 
 // fonte: 'emissao' | 'alerta'
+// ── REFERENCIA DO GATE DE AUTO-ENVIO (metodo assimetrico) ────────────────────
+// A media 180d descreve a rota, mas nao serve para AUTORIZAR o proximo
+// auto-envio: registro que so foi publicado porque estava abaixo do teto passa
+// a elevar o proprio teto, e o criterio vira circular (catraca inflacionaria).
+//
+// Elegibilidade de cada registro para a referencia, em ordem cronologica:
+//   - aprovado na fila (sem `auto`)          -> conta (houve decisao humana)
+//   - auto-enviado <= referencia vigente     -> conta (informacao independente)
+//   - auto-enviado  > referencia vigente     -> NAO conta (passou por causa do teto)
+// O registro entra normalmente em passagens.json e no bloco MIN./MEDIA da
+// mensagem; a exclusao vale apenas para o calculo do teto seguinte.
+//
+// Sem 3 elegiveis a referencia nao e confiavel: devolve base 'completa' e o
+// baileys cai no comportamento atual (media do pool inteiro). O pior caso desta
+// funcao e, portanto, identico ao gate que ja roda hoje.
+const GATE_MIN_ELEGIVEIS = 3;
+
+function medianaPts(arr) {
+  const a = arr.slice().sort((x, y) => x - y);
+  const n = a.length;
+  if (!n) return 0;
+  return n % 2 ? a[(n - 1) / 2] : Math.round((a[n / 2 - 1] + a[n / 2]) / 2);
+}
+
+function refGateAssimetrica(hist180, mediaPts) {
+  // hist180 vem na ordem de passagens.json (mais recente primeiro): a decisao
+  // de elegibilidade e cronologica, entao percorre do mais antigo para o novo.
+  const cronologico = hist180
+    .slice()
+    .sort((a, b) => new Date(a.enviadoEm).getTime() - new Date(b.enviadoEm).getTime());
+
+  const elegiveis = [];
+  for (const p of cronologico) {
+    const pts = Number(p.pontos) || 0;
+    if (pts <= 0) continue;
+    if (p.auto !== true) { elegiveis.push(pts); continue; }
+    // sem base suficiente ainda nao ha teto de quem desconfiar: o registro conta
+    if (elegiveis.length < GATE_MIN_ELEGIVEIS) { elegiveis.push(pts); continue; }
+    if (pts <= medianaPts(elegiveis)) elegiveis.push(pts);
+  }
+
+  if (elegiveis.length < GATE_MIN_ELEGIVEIS) {
+    return { refGate: mediaPts, countGate: hist180.length, baseGate: 'completa' };
+  }
+  return {
+    refGate: medianaPts(elegiveis),
+    countGate: elegiveis.length,
+    baseGate: 'assimetrica',
+    descartadosGate: hist180.length - elegiveis.length,
+  };
+}
+
 app.post('/passagens/registrar', async (req, res) => {
   // apenasConsulta: true → calcula e devolve hist180 SEM gravar em passagens.json.
   // Usado pelo baileys-server para montar o rodapé de histórico da mensagem
@@ -1804,6 +1856,7 @@ app.post('/passagens/registrar', async (req, res) => {
       const mediaPts  = Math.round(pontosArr.reduce((a, b) => a + b, 0) / pontosArr.length);
       const isMin     = Number(pontos) <= minPts;
       hist180Stats = { minPts, mediaPts, count: hist180.length, isMin };
+      Object.assign(hist180Stats, refGateAssimetrica(hist180, mediaPts));
     }
 
     if (apenasConsulta) {
