@@ -31,11 +31,36 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node coletar-radar.js
 
+      # Mesmo tratamento do coletar-historico.yml: ofertas-pendentes.json é
+      # escrito também pelo proxy (aprovar/rejeitar), então `pull --rebase`
+      # conflitava e jogava fora a coleta inteira. reconciliar-estado.js une
+      # as listas por id e a de IDs processados por conjunto.
       - name: Commit arquivos atualizados
         run: |
+          set -euo pipefail
+          ARQS="ofertas-pendentes.json ofertas-processados.json"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add ofertas-pendentes.json ofertas-processados.json
-          git diff --staged --quiet || git commit -m "chore: atualiza radar e histórico de IDs [skip ci]"
-          git pull --rebase origin main
-          git push
+
+          mkdir -p /tmp/coleta
+          for f in $ARQS; do [ -f "$f" ] && cp "$f" /tmp/coleta/ || true; done
+
+          for tent in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            node reconciliar-estado.js /tmp/coleta
+            for f in $ARQS; do [ -f "$f" ] && git add "$f" || true; done
+            if git diff --staged --quiet; then
+              echo "Nada mudou em relação ao remoto — nada a commitar."
+              exit 0
+            fi
+            git commit -m "chore: atualiza radar e histórico de IDs [skip ci]"
+            if git push; then
+              echo "✓ Radar salvo na tentativa $tent."
+              exit 0
+            fi
+            echo "Push rejeitado (remoto mudou durante o commit). Nova tentativa em ${tent}0s..."
+            sleep "${tent}0"
+          done
+          echo "::error::Não consegui salvar o radar após 5 tentativas."
+          exit 1
