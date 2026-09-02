@@ -1,17 +1,41 @@
 {
-  "coletadoEm": "2026-09-01T23:53:03.437Z",
+  "coletadoEm": "2026-09-02T13:25:56.132Z",
   "items": {
+    "bobo": {
+      "id": "RBO",
+      "nome": "BO.BÔ",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 02 a 04/09/2026. Ganhe 6 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo e 3 pontos por real demais clientes. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-02",
+      "dateEnd": "2026-09-04",
+      "parity": 3,
+      "parityClub": 6,
+      "parityBau": 3,
+      "campanha": "PROMOTION_ONLY_CLUB"
+    },
     "belezanaweb": {
       "id": "BLZ",
       "nome": "Beleza na web",
       "categorias": null,
-      "legalTerms": "Campanha válida em 01/09/2026. Ganhe 7 pontos por real gasto em compras via App Beleza na Web e 2 pontos por real nas demais compras. Consulte o regulamento.",
-      "dateStart": "2026-09-01",
-      "dateEnd": "2026-09-01",
-      "parity": 7,
-      "parityClub": 7,
+      "legalTerms": "Campanha válida em 02/09/2026. Ganhe 8 pontos por real gasto em produtos das marcas O Boticário, Eudora, Truss, Quem Disse Berenice, Oui e Vult e 5 pontos por real nos demais produtos, válido para vendidos e entregues por Beleza na Web. Consulte o regulamento.",
+      "dateStart": "2026-09-02",
+      "dateEnd": "2026-09-02",
+      "parity": 8,
+      "parityClub": 10,
       "parityBau": 2,
-      "campanha": "PROMOTION"
+      "campanha": "PROMOTION_CLUB"
+    },
+    "bibicalcados": {
+      "id": "BBB",
+      "nome": "Bibi",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 02 a 08/09/2026. Ganhe 6 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo e 5 pontos por real demais clientes. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-02",
+      "dateEnd": "2026-09-08",
+      "parity": 5,
+      "parityClub": 6,
+      "parityBau": 1,
+      "campanha": "PROMOTION_CLUB"
     },
     "bradescoconsorcios": {
       "id": "BCS",
@@ -53,13 +77,13 @@
       "id": "CTS",
       "nome": "Carters",
       "categorias": null,
-      "legalTerms": "Campanha válida de 31/08/2026 a 01/09/2026. Ganhe 5 pontos a cada real gasto. Utilize o cupom LIVELO. Consulte regulamento.",
-      "dateStart": "2026-08-31",
-      "dateEnd": "2026-09-01",
+      "legalTerms": "Campanha válida DE 02 a 04/09/2026. Ganhe 7 pontos por real gasto, exclusivo para assinantes do Clube Livelo e 5 pontos por real gasto demais clientes. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-02",
+      "dateEnd": "2026-09-04",
       "parity": 5,
-      "parityClub": 5,
+      "parityClub": 7,
       "parityBau": 3,
-      "campanha": "PROMOTION"
+      "campanha": "PROMOTION_CLUB"
     },
     "ciclicsegurocelular": {
       "id": "CEL",
@@ -143,6 +167,18 @@
       "parity": 2,
       "parityClub": 5,
       "parityBau": 2,
+      "campanha": "PROMOTION_ONLY_CLUB"
+    },
+    "individual": {
+      "id": "IND",
+      "nome": "Individual",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 02 a 04/09/2026. Ganhe 6 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo e 1 ponto por real demais clientes. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-02",
+      "dateEnd": "2026-09-04",
+      "parity": 1,
+      "parityClub": 6,
+      "parityBau": 1,
       "campanha": "PROMOTION_ONLY_CLUB"
     },
     "mercadolivre": {
@@ -233,6 +269,18 @@
       "parityClub": 15,
       "parityBau": 5,
       "campanha": "PROMOTION"
+    },
+    "riachuelo": {
+      "id": "RCH",
+      "nome": "Riachuelo",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 02 a 04/09/2026. Ganhe 7 pontos por real gasto, exclusivo para assinantes do Clube Livelo e 5 pontos por real demais clientes. Utilize o cupom LIVELO. Não válido para categorias de eletrônicos, eletroportáteis, beleza e produtos que não são vendidos e entregues por Riachuelo. Consulte o regulamento.",
+      "dateStart": "2026-09-02",
+      "dateEnd": "2026-09-04",
+      "parity": 5,
+      "parityClub": 7,
+      "parityBau": 3,
+      "campanha": "PROMOTION_CLUB"
     },
     "samsclub": {
       "id": "WMB",
