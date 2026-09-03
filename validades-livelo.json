@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-09-03T20:02:45.164Z",
+  "coletadoEm": "2026-09-03T21:02:56.857Z",
   "items": {
     "bobo": {
       "id": "RBO",
@@ -401,6 +401,18 @@
       "parityClub": 14,
       "parityBau": 10,
       "campanha": "PROMOTION_CLUB"
+    },
+    "universalassistanceseguroviagem": {
+      "id": "AST",
+      "nome": "Universal Assistance – Seguro Viagem",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 03 a 14/09/2026. Ganhe 12 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo e 6 pontos por real demais clientes na contratação do seguro viagem. Consulte o tregulamento.",
+      "dateStart": "2026-09-03",
+      "dateEnd": "2026-09-14",
+      "parity": 6,
+      "parityClub": 12,
+      "parityBau": 6,
+      "campanha": "PROMOTION_ONLY_CLUB"
     }
   }
 }
