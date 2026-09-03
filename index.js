@@ -4086,6 +4086,92 @@ async function putConciergeRetry(path, montar, tentativas = 3) {
   throw ultimoErro;
 }
 
+// Formulario costuma vir em CAIXA ALTA. Só reformata nesse caso — nome ja
+// digitado com capitalizacao propria e preservado como veio.
+const NOME_MINUSCULAS = new Set(['de','da','do','das','dos','e','di','du','del','van','von','y']);
+function nomeApresentavel(v) {
+  const s = String(v == null ? '' : v).trim();
+  if (!s || s !== s.toUpperCase()) return s;
+  return s.toLowerCase().split(/\s+/).map((p, i) =>
+    i > 0 && NOME_MINUSCULAS.has(p) ? p : p.charAt(0).toUpperCase() + p.slice(1)
+  ).join(' ');
+}
+
+// Merge de cadastro reaprovado. O formulario e a fonte mais recente, mas so
+// sobrescreve campo que veio preenchido — o resto do registro fica intacto.
+// `id`, `grupo` e `ativo` sao gestao interna (o formulario nunca os traz).
+function mesclarCliente(antigo, novo) {
+  const t = (v) => String(v == null ? '' : v).trim();
+  const out = Object.assign({}, antigo);
+  for (const campo of ['tel','email','cpf','nasc','passaporte','passaporteVal',
+                       'logradouro','numero','complemento','cep','bairro','cidade',
+                       'estado','senhas','acompanhantes','origem']) {
+    if (t(novo[campo])) out[campo] = t(novo[campo]);
+  }
+  // Nome so troca quando o novo e ao menos tao completo quanto o atual: a base
+  // antiga veio truncada da planilha, mas nao vale perder um nome inteiro para
+  // um formulario preenchido pela metade.
+  const nomeNovo = t(novo.nome), nomeAtual = t(antigo.nome);
+  if (nomeNovo && nomeNovo.split(/\s+/).length >= nomeAtual.split(/\s+/).length) {
+    out.nome = nomeApresentavel(nomeNovo);
+  }
+  out.id           = t(antigo.id);
+  out.grupo        = t(antigo.grupo);
+  out.ativo        = antigo.ativo === true;
+  out.atualizadoEm = new Date().toISOString();
+  return clienteNormalizado(out);
+}
+
+// Idem para o perfil: programas casam por nome, senhas pelo par (programa,
+// senha). Nada do que ja estava gravado e descartado — o formulario soma.
+function mesclarPerfil(antigo, novo) {
+  const t = (v) => String(v == null ? '' : v).trim();
+  const a = perfilNormalizado(antigo || {});
+  const n = perfilNormalizado(novo   || {});
+
+  const programas = a.programas.map(x => Object.assign({}, x));
+  for (const p of n.programas) {
+    const k = programas.findIndex(x => x.programa === p.programa);
+    if (k === -1) { programas.push(p); continue; }
+    programas[k] = {
+      programa: p.programa,
+      tem:      p.tem === true || programas[k].tem === true,
+      pontos:   p.pontos != null ? p.pontos : programas[k].pontos
+    };
+  }
+
+  // Rotulo ("Gol", "Le Club Accor") existe so na base antiga; o formulario nao
+  // pergunta. Preserva por programa em vez de deixar cair.
+  const rotulos = new Map(a.senhas.itens.filter(x => x.rotulo).map(x => [x.programa, x.rotulo]));
+  const chave = (x) => x.programa + '\u0000' + x.senha;
+  const itens = n.senhas.itens.map(x => Object.assign({}, x, { rotulo: x.rotulo || rotulos.get(x.programa) || '' }));
+  const vistos = new Set(itens.map(chave));
+  for (const x of a.senhas.itens) {
+    if (!vistos.has(chave(x))) { itens.push(x); vistos.add(chave(x)); }
+  }
+
+  const escolher = (campo) => t(n[campo]) || t(a[campo]);
+  return perfilNormalizado({
+    id:              t(a.id) || t(n.id),
+    nome:            escolher('nome'),
+    criarContas:     escolher('criarContas'),
+    programas,
+    outrosProgramas: escolher('outrosProgramas'),
+    senhas: {
+      itens,
+      outros: t(n.senhas.outros) || t(a.senhas.outros),
+      bruto:  t(n.senhas.bruto)  || t(a.senhas.bruto)
+    },
+    cartoes:         n.cartoes.length ? n.cartoes : a.cartoes,
+    cartaoVirtual:   escolher('cartaoVirtual'),
+    objetivos:       escolher('objetivos'),
+    estilo:          escolher('estilo'),
+    consentimento:   escolher('consentimento'),
+    respondidoEm:    escolher('respondidoEm'),
+    atualizadoEm:    new Date().toISOString()
+  });
+}
+
 // POST /concierge/pendentes/aprovar { id, acao: 'aprovar'|'descartar' }
 app.post('/concierge/pendentes/aprovar', async (req, res) => {
   const { id, acao } = req.body || {};
@@ -4112,11 +4198,19 @@ app.post('/concierge/pendentes/aprovar', async (req, res) => {
         // Idempotencia: se o cadastro ja entrou na base — por clique repetido ou
         // porque o PUT da fila falhou depois de o cliente ter sido gravado — nao
         // cria outro registro. CPF e email sao a chave natural do formulario.
-        const existente = clientes.find(x => x && (
+        // ATENCAO: aqui havia `return null` e o formulario inteiro ia embora
+        // junto com o item da fila sempre que o cliente ja existia (perdeu o
+        // cadastro da cli-3 em 03/09/2026). Agora mescla em vez de descartar.
+        const k = clientes.findIndex(x => x && (
           (cpfNovo   && soDigitos(x.cpf) === cpfNovo) ||
           (emailNovo && String(x.email || '').toLowerCase().trim() === emailNovo)
         ));
-        if (existente) { novoId = existente.id; jaExistia = true; return null; }
+        if (k !== -1) {
+          novoId = clientes[k].id;
+          jaExistia = true;
+          clientes[k] = mesclarCliente(clientes[k], cad);
+          return clientes;
+        }
         let n = 0;
         for (const x of clientes) {
           const m = String(x.id || '').match(/^cli-(\d+)$/);
@@ -4127,13 +4221,14 @@ app.post('/concierge/pendentes/aprovar', async (req, res) => {
         return clientes;
       });
 
-      if (!jaExistia) {
-        await putConciergeRetry(CONCIERGE_PERFIL, (perfis) => {
-          if (perfis.some(x => x && x.id === novoId)) return null;
-          perfis.push(perfilNormalizado(Object.assign({}, item.perfil, { id: novoId })));
-          return perfis;
-        });
-      }
+      // O perfil segue o mesmo caminho: cria se nao existe, mescla se existe.
+      // Reaprovar o mesmo item duas vezes e inofensivo — o merge e idempotente.
+      await putConciergeRetry(CONCIERGE_PERFIL, (perfis) => {
+        const k = perfis.findIndex(x => x && x.id === novoId);
+        if (k === -1) perfis.push(perfilNormalizado(Object.assign({}, item.perfil, { id: novoId })));
+        else          perfis[k] = Object.assign(mesclarPerfil(perfis[k], item.perfil), { id: novoId });
+        return perfis;
+      });
     }
 
     // A fila so e alterada no fim, com releitura: o formulario publico pode ter
