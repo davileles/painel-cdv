@@ -394,9 +394,52 @@ function ggLimite(link) {
   return Math.min(Number(link.limite) || GG_LIMITE_PADRAO, GG_TETO_WA);
 }
 
+// ── VALIDACAO DE CONVITE ──────────────────────────────────────────────────────
+// ggSincronizar so confere a CONTAGEM de membros: um convite revogado no
+// WhatsApp continua com souAdmin=true, erro=null e membros atualizado, e o
+// distribuidor segue mandando trafego para um link morto. Em modo sequencial o
+// primeiro grupo da fila recebe 100% dos cliques — foi assim que o slug
+// "groups" queimou campanha inteira apontando para um convite invalido.
+//
+// A checagem e o proprio comportamento do chat.whatsapp.com: convite vivo
+// devolve og:title com o nome do grupo; convite morto devolve og:title vazio.
+const GG_CONVITE_TTL_MS   = 6 * 60 * 60 * 1000;   // revalida cada convite a cada 6h
+const GG_VALIDA_POR_CICLO = 5;                    // teto de checagens por ciclo de sync
+const GG_UA_BROWSER = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ' +
+  'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+
+function ggCodigoConvite(url) {
+  const m = /^https:\/\/chat\.whatsapp\.com\/([A-Za-z0-9]{10,})/.exec(String(url || ''));
+  return m ? m[1] : null;
+}
+
+// true = vivo, false = morto, null = INCONCLUSIVO.
+// O null e o ponto central: timeout, 5xx, bloqueio por IP de datacenter ou HTML
+// fora do formato esperado nao provam nada sobre o convite. Tratar duvida como
+// "morto" tiraria todos os grupos do rodizio de uma vez.
+async function ggConviteVivo(url) {
+  const cod = ggCodigoConvite(url);
+  if (!cod) return null;
+  try {
+    const r = await fetch('https://chat.whatsapp.com/' + cod, {
+      headers: { 'User-Agent': GG_UA_BROWSER, 'Accept-Language': 'pt-BR,pt;q=0.9' },
+      redirect: 'follow',
+      signal: AbortSignal.timeout(15000),
+    });
+    if (r.status !== 200) return null;
+    const html = await r.text();
+    const m = /<meta property="og:title" content="([^"]*)"/i.exec(html);
+    if (!m) return null;
+    return m[1].trim() !== '';
+  } catch (e) {
+    return null;
+  }
+}
+
 function ggElegiveis(link) {
   const lim = ggLimite(link);
-  return (link.grupos || []).filter(g => g.ativo !== false && g.convite && ggOcupacao(g) < lim);
+  return (link.grupos || []).filter(g => g.ativo !== false && g.convite &&
+    g.conviteMorto !== true && ggOcupacao(g) < lim);
 }
 
 function ggEscolher(link) {
@@ -536,8 +579,9 @@ async function ggSincronizar(slugFiltro) {
   return { ok: true, atualizados: n };
 }
 
-async function ggBuscarConvite(jid, tokenOperador) {
-  const r = await fetch(GG_BAILEYS + '/grupos/convite?jid=' + encodeURIComponent(jid),
+async function ggBuscarConvite(jid, tokenOperador, refresh) {
+  const r = await fetch(GG_BAILEYS + '/grupos/convite?' + (refresh ? 'refresh=1&' : '') +
+    'jid=' + encodeURIComponent(jid),
     { headers: tokenOperador ? { 'X-TSP-Token': tokenOperador } : {},
       signal: AbortSignal.timeout(20000) });
   const d = await r.json();
@@ -545,8 +589,86 @@ async function ggBuscarConvite(jid, tokenOperador) {
   return d.url;
 }
 
+// Revalida convites em lotes pequenos e tenta AUTO-RENOVAR o que estiver morto
+// antes de tirar o grupo de circulacao — na maioria das vezes o link so foi
+// redefinido no app e o Baileys consegue um novo na hora.
+async function ggValidarConvites(est, slugFiltro, opcoes) {
+  const forcar = !!(opcoes && opcoes.forcar);
+  const teto   = (opcoes && opcoes.max) || GG_VALIDA_POR_CICLO;
+  const agora  = Date.now();
+
+  const fila = [];
+  for (const [slug, link] of Object.entries(est.links)) {
+    if (slugFiltro && slug !== slugFiltro) continue;
+    if (link.ativo === false) continue;
+    for (const g of (link.grupos || [])) {
+      if (!g.convite || g.ativo === false) continue;
+      const ultimo = Date.parse(g.conviteChecadoEm || '') || 0;
+      if (!forcar && (agora - ultimo) < GG_CONVITE_TTL_MS) continue;
+      fila.push({ g, ultimo });
+    }
+  }
+  if (!fila.length) return { checados: 0, mortos: 0, renovados: 0, inconclusivos: 0 };
+
+  // Um mesmo grupo pode estar em varios slugs: checar o objeto duas vezes no
+  // mesmo ciclo gasta o teto a toa.
+  const vistos = new Set();
+  const lote = fila
+    .sort((a, b) => a.ultimo - b.ultimo)
+    .filter(it => { if (vistos.has(it.g)) return false; vistos.add(it.g); return true; })
+    .slice(0, teto);
+
+  const veredito = [];
+  for (const it of lote) veredito.push([it.g, await ggConviteVivo(it.g.convite)]);
+
+  // Guarda anti-falso-positivo: um lote inteiro dando "morto" quase sempre
+  // significa que quem esta bloqueado somos nos, nao que todos os grupos
+  // morreram no mesmo intervalo. Nesse caso nao marca nada.
+  const conclusivos = veredito.filter(([, v]) => v !== null);
+  const mortos = conclusivos.filter(([, v]) => v === false);
+  if (conclusivos.length >= 3 && mortos.length === conclusivos.length) {
+    console.error('[gg] validacao ABORTADA: ' + conclusivos.length +
+      ' de ' + conclusivos.length + ' convites deram morto — provavel bloqueio do WhatsApp.');
+    return { checados: 0, mortos: 0, renovados: 0,
+             inconclusivos: veredito.length - conclusivos.length, abortado: true };
+  }
+
+  const agoraIso = new Date().toISOString();
+  let nMortos = 0, nRenov = 0, nInconcl = 0, nCheck = 0;
+  for (const [g, vivo] of veredito) {
+    if (vivo === null) { nInconcl++; continue; }        // duvida: nao mexe em nada
+    g.conviteChecadoEm = agoraIso;
+    nCheck++;
+    if (vivo === true) { g.conviteMorto = false; g.conviteErro = null; continue; }
+
+    let novo = null;
+    try { novo = await ggBuscarConvite(g.jid, null, true); }
+    catch (e) { g.conviteErro = e.message; }
+
+    if (novo && (await ggConviteVivo(novo)) === true) {
+      g.convite = novo; g.conviteMorto = false; g.conviteErro = null; nRenov++;
+      console.log('[gg] convite renovado automaticamente: ' + (g.nome || g.jid) + ' -> ' + novo);
+    } else {
+      g.conviteMorto = true;
+      g.conviteErro = g.conviteErro || 'convite nao resolve e a renovacao nao produziu um link valido';
+      nMortos++;
+      console.error('[gg] convite MORTO, grupo fora do rodizio: ' + (g.nome || g.jid));
+    }
+  }
+  if (nCheck) ggDirty = true;
+  return { checados: nCheck, mortos: nMortos, renovados: nRenov, inconclusivos: nInconcl };
+}
+
+async function ggValidarConvitesJob(slugFiltro, opcoes) {
+  const est = await ggCarregar();
+  return ggValidarConvites(est, slugFiltro, opcoes);
+}
+
 const ggSyncTimer = setInterval(() => {
   ggSincronizar().catch(e => console.error('[gg sync]', e.message));
+  // Independente do sync: o Baileys pode estar fora e o convite continuar
+  // precisando de checagem — sao duas falhas diferentes.
+  ggValidarConvitesJob().catch(e => console.error('[gg convites]', e.message));
 }, GG_SYNC_MS);
 if (ggSyncTimer.unref) ggSyncTimer.unref();
 
@@ -633,6 +755,9 @@ app.get('/gg/links', async (req, res) => {
         souAdmin: g.souAdmin === undefined ? null : g.souAdmin,
         sincronizadoEm: g.sincronizadoEm || null, erro: g.erro || null,
         cheio: ggOcupacao(g) >= ggLimite(l),
+        conviteMorto: g.conviteMorto === true,
+        conviteChecadoEm: g.conviteChecadoEm || null,
+        conviteErro: g.conviteErro || null,
       })),
     })).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
     res.json({ ok: true, total: links.length, links, base: ggBase(), atualizadoEm: est.atualizadoEm || null });
@@ -749,6 +874,18 @@ app.post('/gg/sync', async (req, res) => {
     const r = await ggSincronizar(slug);
     if (ggDirty) await ggSalvar('chore: distribuidor — sincroniza contagens');
     res.json(r);
+  } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
+// Forca a checagem dos convites agora, ignorando o TTL de 6h. Use depois de
+// mexer nos links dentro do WhatsApp.
+app.post('/gg/validar', async (req, res) => {
+  const b = req.body || {};
+  const slug = String(b.slug || '').trim().toLowerCase() || null;
+  try {
+    const r = await ggValidarConvitesJob(slug, { forcar: true, max: 50 });
+    if (ggDirty) await ggSalvar('chore: distribuidor — valida convites');
+    res.json(Object.assign({ ok: true }, r));
   } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
 });
 
