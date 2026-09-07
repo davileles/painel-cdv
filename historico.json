@@ -520210,7 +520210,7 @@
           "dollar": false
         },
         "azul": {
-          "pts": 1,
+          "pts": 15,
           "dollar": false
         },
         "latam": {
@@ -520218,10 +520218,23 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 2,
+          "pts": 8,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-magazine-luiza"
+          "ate": true,
+          "slug": "cupom-magazine-luiza",
+          "categorias": [
+            {
+              "categoria": "Produtos vendidos e entregues por Magalu",
+              "pts": 8,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 5
         }
       },
       "links": {
