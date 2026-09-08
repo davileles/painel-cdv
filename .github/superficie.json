@@ -225,6 +225,7 @@
       "obrigatorio": [
         "async function condensarOfertasComIA",
         "async function enviar",
+        "async function jaAgendadoHoje",
         "async function main",
         "async function montarResumoOfertas",
         "async function postEnviar",
@@ -234,6 +235,7 @@
         "function fmtPrazoCurto",
         "function hojeDDMM",
         "function hojeSP",
+        "function horaSP",
         "function montarResumoEmissoes",
         "function parsePrazo"
       ]

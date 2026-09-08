@@ -42,6 +42,21 @@ function hojeDDMM() {
 function agendar20hSP() {
   return new Date(`${hojeSP()}T20:00:00-03:00`).toISOString();
 }
+function horaSP() {
+  return Number(new Date().toLocaleString('en-GB', {
+    timeZone: 'America/Sao_Paulo', hour: '2-digit', hourCycle: 'h23',
+  }));
+}
+
+// ── Guarda de janela ─────────────────────────────────────────────────────────
+// O cron do Actions nesta conta degradou e chega 2h+ atrasado (o run agendado
+// para 21:00 UTC saiu 23:23 UTC = 20:23 SP). Como agendar20hSP() sempre devolve
+// 20h de HOJE, um run tardio cria um agendamento no PASSADO — e o worker do
+// Baileys dispara `dispararEm <= agora` no tick seguinte, ou seja, na hora.
+// Resultado observado em 02, 03, 04 e 07/09: resumo às 20h (disparo do
+// agenda-actions, 18h05 SP) e o mesmo resumo de novo às ~20h20 (cron atrasado).
+// Passou das 19h SP, o resumo do dia ou já foi agendado ou já saiu: abortar.
+const LIMITE_HORA_SP = Number(process.env.RESUMO_LIMITE_HORA || 19);
 
 const MESES = {
   janeiro: 1, fevereiro: 2, 'março': 3, marco: 3, abril: 4, maio: 5, junho: 6,
@@ -337,6 +352,26 @@ async function postEnviar(mensagem, grupo, agendarEm) {
   return d;
 }
 
+// Idempotencia: se ja existe agendamento AGUARDANDO para este grupo com
+// disparo hoje, outro run do mesmo dia ja fez o trabalho. Cobre o caso das duas
+// fontes (agenda-actions do Railway + cron do Actions) rodarem ambas antes das
+// 19h, quando a guarda de janela nao pega. Falha de rede na consulta nao
+// bloqueia o envio: perder o resumo e pior do que arriscar a duplicata, que a
+// guarda de janela ja torna rara.
+async function jaAgendadoHoje(grupo) {
+  try {
+    const r = await fetch(`${BAILEYS}/agendamentos`, { signal: AbortSignal.timeout(15000) });
+    if (!r.ok) return false;
+    const d = await r.json();
+    const hoje = hojeSP();
+    return (d.agendamentos || []).some((a) =>
+      a.grupo === grupo && a.status === 'aguardando' && diaSP(a.dispararEm) === hoje);
+  } catch (e) {
+    console.warn(`[Resumo] Nao consegui checar agendamentos existentes (${e.message}) — seguindo com o envio.`);
+    return false;
+  }
+}
+
 // Retorna true se enviou/agendou, false se esgotou as tentativas.
 // Nunca lanca: uma falha em um grupo nao pode cancelar o outro.
 async function enviar(mensagem, grupo) {
@@ -364,14 +399,29 @@ async function enviar(mensagem, grupo) {
 }
 
 async function main() {
+  const h = horaSP();
+  if (h >= LIMITE_HORA_SP && !DRY_RUN && !process.env.RESUMO_FORCAR) {
+    console.log(`[Resumo] ${h}h SP — fora da janela (limite ${LIMITE_HORA_SP}h). `
+      + 'Provavel run atrasado do cron: o resumo do dia ja foi agendado. Abortando sem enviar.');
+    return;
+  }
   console.log(`[Resumo] Dia ${hojeSP()} — montando resumos...`);
 
   const msgOfertas = await montarResumoOfertas();
   const msgEmissoes = montarResumoEmissoes();
 
+  const alvos = [];
+  if (msgOfertas)  alvos.push(['cdv_ofertas', msgOfertas]);
+  if (msgEmissoes) alvos.push(['cdv_emissao', msgEmissoes]);
+
   const resultados = [];
-  if (msgOfertas)  resultados.push(await enviar(msgOfertas, 'cdv_ofertas'));
-  if (msgEmissoes) resultados.push(await enviar(msgEmissoes, 'cdv_emissao'));
+  for (const [grupo, mensagem] of alvos) {
+    if (!DRY_RUN && await jaAgendadoHoje(grupo)) {
+      console.log(`[Resumo] ${grupo}: ja existe agendamento de hoje aguardando — pulando (idempotencia).`);
+      continue;
+    }
+    resultados.push(await enviar(mensagem, grupo));
+  }
 
   if (!resultados.length) {
     console.log('[Resumo] Nada a enviar hoje.');

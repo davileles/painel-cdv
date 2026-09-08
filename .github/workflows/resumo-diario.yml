@@ -2,7 +2,17 @@ name: Resumo Diário — Ofertas e Emissões (20h)
 
 on:
   schedule:
-    - cron: '0 21 * * 1-5'  # 21:00 UTC seg-sex = 18:00 SP; folga p/ atraso do Actions antes do agendamento das 20h SP
+    # FALLBACK apenas. A execucao real e disparada pelo baileys-server no
+    # Railway (agenda-actions.js, job 'resumo-diario', 18h05 SP) via
+    # workflow_dispatch. O cron desta conta degradou e chega 2h+ atrasado:
+    # em 02, 03, 04 e 07/09 o run agendado para 21:00 UTC saiu entre 22:56 e
+    # 23:23 UTC (~20h20 SP), DEPOIS do disparo do Railway — e como
+    # resumo-diario.js agenda sempre para as 20h de hoje, o agendamento nascia
+    # no passado e o Baileys o disparava na hora: resumo duplicado no grupo.
+    # A protecao agora esta no proprio script (guarda de janela LIMITE_HORA_SP
+    # + idempotencia via GET /agendamentos), entao este cron pode continuar
+    # existindo sem risco: se chegar atrasado, o run aborta sem enviar.
+    - cron: '0 21 * * 1-5'  # 21:00 UTC seg-sex = 18:00 SP
   workflow_dispatch: {}     # permite rodar manualmente pela aba Actions
 
 # Serializa execucoes deste workflow: duas rodadas simultaneas gravando o
