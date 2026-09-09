@@ -25,6 +25,10 @@ const GITHUB_REPO_TSP = (function () {
   const v = String(process.env.GITHUB_REPO_TSP || '').trim() || 'davileles/dados';
   return v === 'davileles/cdv-tsp-dados' ? 'davileles/dados' : v;
 })();
+// Contas do Edificio Castanheiras: dado pessoal de moradores (nome, apto,
+// pagamentos). Vive no mesmo repo PRIVADO, sob o prefixo castanheiras/.
+const GITHUB_REPO_CASTANHEIRAS = GITHUB_REPO_TSP;
+
 // FASE 1 — arquivos tocados APENAS pelo proxy. Migração sem efeito colateral.
 const ARQUIVOS_SENSIVEIS = new Set([
   'membros.json',
@@ -52,6 +56,7 @@ const ARQUIVOS_SENSIVEIS = new Set([
 function repoDoArquivo(filePath) {
   const base = String(filePath || '').replace(/-dev\.json$/, '.json');
   if (base.startsWith('tsp/')) return GITHUB_REPO_TSP;
+  if (base.startsWith('castanheiras/')) return GITHUB_REPO_CASTANHEIRAS;
   return ARQUIVOS_SENSIVEIS.has(base) ? GITHUB_REPO_DADOS : GITHUB_REPO;
 }
 
@@ -8024,6 +8029,98 @@ app.get('/campanhas/midia/:arquivo', async (req, res) => {
   } catch (e) {
     console.error('[campanhas/midia GET]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+
+// ── Edifício Castanheiras (contas do condomínio) ─────────────────────────────
+// O app (davileles.github.io/castanheiras) é estático e público, então não pode
+// carregar token nenhum. Antes cada pessoa colava um PAT no navegador; agora o
+// acesso é por e-mail: quem está em `acessos` no arquivo de dados entra direto,
+// e só o proxy fala com a API do GitHub.
+const CASTANHEIRAS_PATH = 'castanheiras/dados.json';
+const CASTANHEIRAS_BASE = {
+  moradores: [],
+  categorias: [],
+  regras: [],
+  lancamentos: [],
+  saldoInicial: {},
+  acessos: [],
+  atualizadoEm: null
+};
+
+const castEmail = (e) => String(e || '').trim().toLowerCase();
+
+async function castCarregar() {
+  const { data, sha } = await ghGetJson(CASTANHEIRAS_PATH, CASTANHEIRAS_BASE);
+  return { dados: { ...CASTANHEIRAS_BASE, ...(data || {}) }, sha };
+}
+
+function castAutorizado(dados, email) {
+  const alvo = castEmail(email);
+  if (!alvo) return false;
+  return (dados.acessos || []).map(castEmail).includes(alvo);
+}
+
+// A lista de e-mails liberados nunca vai para o navegador nem volta dele: é
+// gerida direto no arquivo de dados, para um cliente desatualizado não apagá-la.
+function castSemAcessos(dados) {
+  const copia = { ...dados };
+  delete copia.acessos;
+  return copia;
+}
+
+app.get('/castanheiras/login', async (req, res) => {
+  const email = castEmail(req.query.email);
+  if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
+  try {
+    const { dados } = await castCarregar();
+    if (!castAutorizado(dados, email)) {
+      return res.json({ ok: false, acesso: false, motivo: 'nao_autorizado' });
+    }
+    res.json({ ok: true, acesso: true, email });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+app.get('/castanheiras/dados', async (req, res) => {
+  const email = castEmail(req.query.email);
+  try {
+    const { dados } = await castCarregar();
+    if (!castAutorizado(dados, email)) {
+      return res.status(403).json({ ok: false, erro: 'E-mail sem acesso às contas do condomínio' });
+    }
+    res.json({ ok: true, dados: castSemAcessos(dados) });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+app.post('/castanheiras/dados', async (req, res) => {
+  const email = castEmail(req.body && req.body.email);
+  const novo = req.body && req.body.dados;
+  const mensagem = (req.body && req.body.mensagem) || 'Atualiza contas do condomínio';
+  if (!novo || typeof novo !== 'object') {
+    return res.status(400).json({ ok: false, erro: 'Payload sem dados' });
+  }
+  try {
+    // SHA sempre fresco, lido no mesmo instante da gravação: duas abas abertas
+    // (ou dois síndicos) invalidam qualquer SHA guardado antes.
+    const { dados: atual, sha } = await castCarregar();
+    if (!castAutorizado(atual, email)) {
+      return res.status(403).json({ ok: false, erro: 'E-mail sem acesso às contas do condomínio' });
+    }
+    const final = {
+      ...castSemAcessos(novo),
+      acessos: atual.acessos || [],
+      atualizadoEm: new Date().toISOString(),
+      atualizadoPor: email
+    };
+    await ghPutJson(CASTANHEIRAS_PATH, final, sha, `${mensagem} (${email})`);
+    res.json({ ok: true, dados: castSemAcessos(final) });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
   }
 });
 
