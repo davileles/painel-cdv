@@ -8044,6 +8044,10 @@ const CASTANHEIRAS_BASE = {
   categorias: [],
   regras: [],
   lancamentos: [],
+  // Pagamentos feitos do bolso de alguem que o condominio precisa devolver.
+  // Ficam fora de `lancamentos` de proposito: as contas sao regime de caixa, e
+  // a despesa so existe quando o dinheiro sai da conta.
+  reembolsos: [],
   saldoInicial: {},
   acessos: [],
   atualizadoEm: null
