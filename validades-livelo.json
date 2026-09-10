@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-09-10T13:17:54.755Z",
+  "coletadoEm": "2026-09-10T14:02:25.176Z",
   "items": {
     "adcos": {
       "id": "SPA",
@@ -133,6 +133,18 @@
       "parityBau": 1,
       "campanha": "PROMOTION"
     },
+    "cea": {
+      "id": "CEA",
+      "nome": "CEA",
+      "categorias": null,
+      "legalTerms": "Campanha válida em 10/09/2026. Ganhe 11 pontos por real gasto em itens selecionados, exclusivo para assinantes do Clube Livelo; 8 pontos por real em itens selecionados demais clientes e 2 pontos por real demais produtos. Não é válido para Cartão presente, Telefonia e Smartwatch. Consulte regulamento.",
+      "dateStart": "2026-09-10",
+      "dateEnd": "2026-09-10",
+      "parity": 8,
+      "parityClub": 11,
+      "parityBau": 2,
+      "campanha": "PROMOTION_CLUB"
+    },
     "camicado": {
       "id": "CMC",
       "nome": "Camicado",
@@ -156,6 +168,18 @@
       "parityClub": 10,
       "parityBau": 1,
       "campanha": "PROMOTION"
+    },
+    "carters": {
+      "id": "CTS",
+      "nome": "Carters",
+      "categorias": null,
+      "legalTerms": "Campanha válida em 10/09/2026. Ganhe 11 pontos por real gasto em itens selecionados, exclusivo para assinantes do Clube Livelo; 8 pontos por real em itens selecionados demais clientes e 3 pontos por real demais produtos. Utilize o cupom LIVELO. Consulte regulamento.",
+      "dateStart": "2026-09-10",
+      "dateEnd": "2026-09-10",
+      "parity": 8,
+      "parityClub": 11,
+      "parityBau": 3,
+      "campanha": "PROMOTION_CLUB"
     },
     "centauro": {
       "id": "CEN",
@@ -360,6 +384,18 @@
       "parityClub": 11,
       "parityBau": 2,
       "campanha": "PROMOTION_CLUB"
+    },
+    "heroseguroviagem": {
+      "id": "HRH",
+      "nome": "HERO SEGURO VIAGEM",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 10 a 14/09/2026. Ganhe 15 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo e 12 pontos por real demais clientes na contratação do seguro viagem. Consulte o regulamento.",
+      "dateStart": "2026-09-10",
+      "dateEnd": "2026-09-14",
+      "parity": 14,
+      "parityClub": 15,
+      "parityBau": 14,
+      "campanha": "PROMOTION_ONLY_CLUB"
     },
     "hoteiscom": {
       "id": "HTC",
