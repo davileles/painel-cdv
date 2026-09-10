@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-09-10T14:02:25.176Z",
+  "coletadoEm": "2026-09-10T15:02:29.067Z",
   "items": {
     "adcos": {
       "id": "SPA",
@@ -337,18 +337,6 @@
       "parityBau": 1,
       "campanha": "PROMOTION_CLUB"
     },
-    "fastshop": {
-      "id": "FST",
-      "nome": "Fast Shop",
-      "categorias": null,
-      "legalTerms": "Campanha válida de 08 a 10/09/2026. Ganhe 5 pontos por real gasto em produtos selecionados vendidos e entregues por Fast Shop; 2 pontos por real gasto em produtos vendidos e entregues por Fast Shop para demais produtos e 1 ponto por real para produtos do marketplace. Utilize o cupom LIVELO. Consulte o regulamento.",
-      "dateStart": "2026-09-08",
-      "dateEnd": "2026-09-10",
-      "parity": 5,
-      "parityClub": 5,
-      "parityBau": 2,
-      "campanha": "PROMOTION"
-    },
     "fila": {
       "id": "FLA",
       "nome": "Fila",
@@ -392,9 +380,9 @@
       "legalTerms": "Campanha válida de 10 a 14/09/2026. Ganhe 15 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo e 12 pontos por real demais clientes na contratação do seguro viagem. Consulte o regulamento.",
       "dateStart": "2026-09-10",
       "dateEnd": "2026-09-14",
-      "parity": 14,
+      "parity": 12,
       "parityClub": 15,
-      "parityBau": 14,
+      "parityBau": 12,
       "campanha": "PROMOTION_ONLY_CLUB"
     },
     "hoteiscom": {
@@ -655,7 +643,7 @@
       "categorias": null,
       "legalTerms": "Campanha válida de 08 a 10/09/2026. Ganhe 5 pontos a cada real gasto em máquinas da linha Vertuo e 4 pontos por real nas máquinas da linha Original. Campanha válida apenas para máquinas, demais produtos não são elegíveis ao acúmulo. Utilize o cupom LIVELO. Consulte o regulamento.",
       "dateStart": "2026-09-08",
-      "dateEnd": "2026-09-10",
+      "dateEnd": "2026-09-11",
       "parity": 5,
       "parityClub": 5,
       "parityBau": 1,
@@ -792,6 +780,18 @@
       "parityClub": 10,
       "parityBau": 2,
       "campanha": "PROMOTION"
+    },
+    "riachuelo": {
+      "id": "RCH",
+      "nome": "Riachuelo",
+      "categorias": null,
+      "legalTerms": "Campanha válida em 10/09/2026. Ganhe 11 pontos por real gasto em itens selecionados, exclusivo para assinantes do Clube Livelo; 8 pontos por real em itens selecionados demais clientes e 3 pontos por real demais produtos. Utilize o cupom LIVELO. Não válido para categorias de eletrônicos, eletroportáteis, beleza e produtos que não são vendidos e entregues por Riachuelo. Consulte regulamento.",
+      "dateStart": "2026-09-10",
+      "dateEnd": "2026-09-10",
+      "parity": 8,
+      "parityClub": 11,
+      "parityBau": 3,
+      "campanha": "PROMOTION_CLUB"
     },
     "samsclub": {
       "id": "WMB",
