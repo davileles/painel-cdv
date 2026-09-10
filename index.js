@@ -8050,6 +8050,10 @@ const CASTANHEIRAS_BASE = {
   reembolsos: [],
   saldoInicial: {},
   acessos: [],
+  // Subconjunto de `acessos` que enxerga tudo. Vazio = arquivo anterior a esta
+  // separacao, e ai todo mundo que tem acesso e administrador (ninguem fica
+  // trancado do lado de fora na migracao).
+  admins: [],
   atualizadoEm: null
 };
 
@@ -8063,7 +8067,43 @@ async function castCarregar() {
 function castAutorizado(dados, email) {
   const alvo = castEmail(email);
   if (!alvo) return false;
-  return (dados.acessos || []).map(castEmail).includes(alvo);
+  return castAcessos(dados).includes(alvo);
+}
+
+// As duas listas aceitam string solta ou { email } — arquivos antigos gravavam
+// so o endereco.
+function castAcessos(dados) {
+  return (dados.acessos || []).map(a => castEmail(typeof a === 'string' ? a : a && a.email)).filter(Boolean);
+}
+function castAdmins(dados) {
+  return (dados.admins || []).map(a => castEmail(typeof a === 'string' ? a : a && a.email)).filter(Boolean);
+}
+function castEhAdmin(dados, email) {
+  const alvo = castEmail(email);
+  if (!alvo || !castAutorizado(dados, alvo)) return false;
+  const admins = castAdmins(dados);
+  return admins.length ? admins.includes(alvo) : true;
+}
+
+// Versao das contas para quem NAO e administrador. A pagina e estatica e
+// publica: esconder coluna no navegador nao esconde nada de quem abre o
+// DevTools, entao o que identifica apartamento nao pode sair daqui.
+// Os totais sobrevivem — grafico, demonstrativo e saldo continuam corretos —,
+// so a autoria some.
+function castRedigir(dados) {
+  const d = { ...dados };
+  d.moradores = [];
+  d.lancamentos = (dados.lancamentos || []).map(l => {
+    if (/receita/.test(l.tipo || '')) return { ...l, destino: '', descricao: 'Cota condominial', obs: '' };
+    if (l.origem === 'reembolso') return { ...l, descricao: 'Restituição de pagamento feito por fora' };
+    return l;
+  });
+  d.reembolsos = (dados.reembolsos || []).map(r => {
+    const c = { ...r };
+    delete c.apto; delete c.pessoa; delete c.criadoPor;
+    return c;
+  });
+  return d;
 }
 
 // A lista de e-mails liberados nunca vai para o navegador nem volta dele: é
@@ -8071,6 +8111,7 @@ function castAutorizado(dados, email) {
 function castSemAcessos(dados) {
   const copia = { ...dados };
   delete copia.acessos;
+  delete copia.admins;
   return copia;
 }
 
@@ -8082,7 +8123,7 @@ app.get('/castanheiras/login', async (req, res) => {
     if (!castAutorizado(dados, email)) {
       return res.json({ ok: false, acesso: false, motivo: 'nao_autorizado' });
     }
-    res.json({ ok: true, acesso: true, email });
+    res.json({ ok: true, acesso: true, email, admin: castEhAdmin(dados, email) });
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }
@@ -8095,7 +8136,9 @@ app.get('/castanheiras/dados', async (req, res) => {
     if (!castAutorizado(dados, email)) {
       return res.status(403).json({ ok: false, erro: 'E-mail sem acesso às contas do condomínio' });
     }
-    res.json({ ok: true, dados: castSemAcessos(dados) });
+    const admin = castEhAdmin(dados, email);
+    const visivel = admin ? dados : castRedigir(dados);
+    res.json({ ok: true, admin, dados: castSemAcessos(visivel) });
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }
@@ -8112,17 +8155,77 @@ app.post('/castanheiras/dados', async (req, res) => {
     // SHA sempre fresco, lido no mesmo instante da gravação: duas abas abertas
     // (ou dois síndicos) invalidam qualquer SHA guardado antes.
     const { dados: atual, sha } = await castCarregar();
-    if (!castAutorizado(atual, email)) {
-      return res.status(403).json({ ok: false, erro: 'E-mail sem acesso às contas do condomínio' });
+    // Precisa ser admin: quem nao e recebe os dados redigidos, e gravar de
+    // volta esse payload apagaria moradores e a autoria das cotas.
+    if (!castEhAdmin(atual, email)) {
+      return res.status(403).json({ ok: false, erro: 'Somente administradores podem alterar as contas' });
     }
     const final = {
       ...castSemAcessos(novo),
       acessos: atual.acessos || [],
+      admins: atual.admins || [],
       atualizadoEm: new Date().toISOString(),
       atualizadoPor: email
     };
     await ghPutJson(CASTANHEIRAS_PATH, final, sha, `${mensagem} (${email})`);
     res.json({ ok: true, dados: castSemAcessos(final) });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+
+// ── Castanheiras: quem acessa e quem administra ──────────────────────────────
+// Fica fora de /castanheiras/dados de proposito: a lista nunca trafega junto
+// com as contas, entao um cliente desatualizado nao tem como apaga-la.
+app.get('/castanheiras/acessos', async (req, res) => {
+  const email = castEmail(req.query.email);
+  try {
+    const { dados } = await castCarregar();
+    if (!castEhAdmin(dados, email)) {
+      return res.status(403).json({ ok: false, erro: 'Somente administradores' });
+    }
+    const lista = castAcessos(dados).map(e => ({ email: e, admin: castEhAdmin(dados, e) }));
+    res.json({ ok: true, lista });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+app.post('/castanheiras/acessos', async (req, res) => {
+  const email = castEmail(req.body && req.body.email);
+  const bruta = (req.body && req.body.lista) || [];
+  if (!Array.isArray(bruta)) return res.status(400).json({ ok: false, erro: 'Lista inválida' });
+  try {
+    const { dados: atual, sha } = await castCarregar();
+    if (!castEhAdmin(atual, email)) {
+      return res.status(403).json({ ok: false, erro: 'Somente administradores' });
+    }
+    const vistos = new Set();
+    const lista = [];
+    for (const item of bruta) {
+      const e = castEmail(typeof item === 'string' ? item : item && item.email);
+      if (!e || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e) || vistos.has(e)) continue;
+      vistos.add(e);
+      lista.push({ email: e, admin: !!(item && item.admin) });
+    }
+    if (!lista.length) return res.status(400).json({ ok: false, erro: 'Cadastre ao menos um e-mail' });
+    const admins = lista.filter(x => x.admin).map(x => x.email);
+    if (!admins.length) return res.status(400).json({ ok: false, erro: 'É preciso ao menos um administrador' });
+    // Trava anti-tranca: ninguem tira o proprio acesso de admin. Transferencia
+    // de sindico se faz pelo administrador que entra, nao pelo que sai.
+    if (!admins.includes(email)) {
+      return res.status(400).json({ ok: false, erro: 'Você não pode remover o seu próprio acesso de administrador — peça a outro administrador' });
+    }
+    const final = {
+      ...atual,
+      acessos: lista.map(x => x.email),
+      admins,
+      atualizadoEm: new Date().toISOString(),
+      atualizadoPor: email
+    };
+    await ghPutJson(CASTANHEIRAS_PATH, final, sha, `Atualiza acessos do condomínio (${email})`);
+    res.json({ ok: true, lista });
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }
