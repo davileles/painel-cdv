@@ -538814,44 +538814,6 @@
         }
       }
     },
-    "fast shop": {
-      "programs": {
-        "livelo": {
-          "pts": 5,
-          "dollar": false
-        },
-        "esfera": {
-          "pts": 6,
-          "dollar": false
-        },
-        "smiles": {
-          "pts": 4,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 1,
-          "dollar": false,
-          "ate": true,
-          "slug": "cupom-fast-shop",
-          "categorias": [
-            {
-              "categoria": "Produtos Apple",
-              "pts": 1,
-              "principal": false
-            },
-            {
-              "categoria": "Demais categorias",
-              "pts": 1,
-              "principal": true
-            }
-          ],
-          "ptsBase": 1
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-fast-shop"
-      }
-    },
     "giuliana flores": {
       "programs": {
         "livelo": {
@@ -539571,6 +539533,44 @@
           "pts": 2,
           "dollar": false
         }
+      }
+    },
+    "fast shop": {
+      "programs": {
+        "livelo": {
+          "pts": 2,
+          "dollar": false
+        },
+        "esfera": {
+          "pts": 6,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-fast-shop",
+          "categorias": [
+            {
+              "categoria": "Produtos Apple",
+              "pts": 1,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-fast-shop"
       }
     },
     "foco": {
