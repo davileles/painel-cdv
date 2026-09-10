@@ -537714,6 +537714,45 @@
         "inter": "https://shopping.inter.co/gift-card/bagaggio-3111"
       }
     },
+    "beleza na web": {
+      "programs": {
+        "livelo": {
+          "pts": 11,
+          "dollar": false
+        },
+        "esfera": {
+          "pts": 6,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 15,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-beleza-na-web",
+          "categorias": [
+            {
+              "categoria": "Maquiagem",
+              "pts": 15,
+              "principal": false
+            },
+            {
+              "categoria": "Cabelos",
+              "pts": 10,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-beleza-na-web"
+      }
+    },
     "bibi calçados": {
       "programs": {
         "livelo": {
@@ -539330,45 +539369,6 @@
           "pts": 2,
           "dollar": false
         }
-      }
-    },
-    "beleza na web": {
-      "programs": {
-        "livelo": {
-          "pts": 2,
-          "dollar": false
-        },
-        "esfera": {
-          "pts": 6,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 15,
-          "dollar": false,
-          "ate": true,
-          "slug": "cupom-beleza-na-web",
-          "categorias": [
-            {
-              "categoria": "Maquiagem",
-              "pts": 15,
-              "principal": false
-            },
-            {
-              "categoria": "Cabelos",
-              "pts": 10,
-              "principal": false
-            },
-            {
-              "categoria": "Demais categorias",
-              "pts": 3,
-              "principal": true
-            }
-          ],
-          "ptsBase": 3
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-beleza-na-web"
       }
     },
     "bobstore": {
