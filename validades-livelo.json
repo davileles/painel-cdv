@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-09-11T15:03:02.379Z",
+  "coletadoEm": "2026-09-11T16:03:03.656Z",
   "items": {
     "airportpark": {
       "id": "SPP",
@@ -240,6 +240,18 @@
       "parityClub": 2,
       "parityBau": 1,
       "campanha": "PROMOTION_ONLY_CLUB"
+    },
+    "insiderstore": {
+      "id": "INS",
+      "nome": "Insider Store",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 11 a 13/09/2026. Ganhe 13 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo e 8 pontos demais clientes. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-11",
+      "dateEnd": "2026-09-13",
+      "parity": 8,
+      "parityClub": 13,
+      "parityBau": 1,
+      "campanha": "PROMOTION_CLUB"
     },
     "localiza": {
       "id": "LCR",
