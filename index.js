@@ -1647,6 +1647,107 @@ app.get('/ofertas/pendentes', async (req, res) => {
   }
 });
 
+// ── Inserir oferta na fila de aprovação (captura externa) ────────────────────
+// Usado pelo baileys-server quando um grupo de WhatsApp cadastrado como fonte
+// de OFERTAS publica uma promoção de pontos/milhas. O item chega no mesmo
+// schema que coletar-radar.js grava — o gerador não precisa saber de onde veio
+// para montar o card, e o template da mensagem sai igual ao das ofertas de RSS.
+//
+// A dedup é por chaveDedup (texto normalizado do post), não por link: post de
+// grupo muitas vezes não tem link, e o mesmo texto reenviado amanhã não pode
+// virar um segundo card. ofertas-processados.json é a memória longa disso —
+// sobrevive a zerar pendentes/aprovadas/rejeitadas, exatamente como no coletor.
+const OFERTAS_PROCESSADOS_PATH = 'ofertas-processados.json';
+const MAX_PENDENTES_GUARDADAS  = 60;
+const MAX_DIAS_PENDENTES       = 21;
+
+function idDeChave(chave) {
+  const raw = String(chave || '');
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) hash = (hash * 31 + raw.charCodeAt(i)) >>> 0;
+  return hash.toString(36);
+}
+
+app.post('/ofertas/pendentes', async (req, res) => {
+  const { item, chaveDedup, fonte, grupoOrigem, grupoNome, conteudoOriginal } = req.body || {};
+  if (!item || !item.titulo) return res.status(400).json({ ok: false, erro: 'Campo obrigatório: item.titulo' });
+  if (!GITHUB_TOKEN) return res.status(500).json({ ok: false, erro: 'GITHUB_TOKEN não configurado no servidor' });
+
+  try {
+    const id = idDeChave(chaveDedup || item.titulo);
+
+    // Quatro listas, uma pergunta só: este conteúdo já passou por aqui?
+    const [pend, aprov, rej, proc] = await Promise.all([
+      ghGetJson(OFERTAS_PENDENTES_PATH,  { geradoEm: null, items: [] }),
+      ghGetJson(OFERTAS_APROVADAS_PATH,  { geradoEm: null, items: [] }),
+      ghGetJson(OFERTAS_REJEITADAS_PATH, []),
+      ghGetJson(OFERTAS_PROCESSADOS_PATH, []),
+    ]);
+    const processados = Array.isArray(proc.data) ? proc.data : [];
+    const rejeitadas  = Array.isArray(rej.data) ? rej.data : [];
+    const jaVisto =
+         processados.includes(id)
+      || rejeitadas.includes(id)
+      || (pend.data.items  || []).some((o) => o.id === id)
+      || (aprov.data.items || []).some((o) => o.id === id);
+    if (jaVisto) return res.json({ ok: true, id, duplicada: true });
+
+    const novo = {
+      id,
+      titulo:            String(item.titulo || ''),
+      emoji:             item.emoji  || '📰',
+      resumo:            String(item.resumo || ''),
+      programa:          String(item.programa || ''),
+      bonus:             String(item.bonus || ''),
+      prazo:             String(item.prazo || ''),
+      categoria:         item.categoria || 'geral',
+      loja:              String(item.loja || ''),
+      cupom:             String(item.cupom || ''),
+      milheiro:          String(item.milheiro || ''),
+      tetoTransferencia: String(item.tetoTransferencia || ''),
+      importante:        String(item.importante || ''),
+      link:              String(item.link || ''),
+      restricoes:        Array.isArray(item.restricoes) ? item.restricoes : [],
+      publicadoEm:       new Date().toISOString(),
+      // Procedência: o card do gerador mostra de onde veio, e o operador julga
+      // uma captura de grupo sabendo que não houve artigo por trás dela.
+      fonte:             fonte || 'externa',
+      grupoOrigem:       grupoOrigem || '',
+      grupoNome:         grupoNome || '',
+      conteudoOriginal:  String(conteudoOriginal || '').slice(0, 1500),
+    };
+
+    const corteMs = Date.now() - MAX_DIAS_PENDENTES * 24 * 60 * 60 * 1000;
+    const items = [novo, ...(pend.data.items || [])]
+      .filter((o) => !o.publicadoEm || new Date(o.publicadoEm).getTime() >= corteMs)
+      .slice(0, MAX_PENDENTES_GUARDADAS);
+
+    await ghPutJson(
+      OFERTAS_PENDENTES_PATH,
+      { geradoEm: new Date().toISOString(), items },
+      pend.sha,
+      `chore: oferta capturada em ${novo.grupoNome || novo.fonte} — "${novo.titulo}"`
+    );
+
+    // Memória longa da dedup gravada DEPOIS da fila: se o PUT acima falhar, o
+    // post continua elegível na próxima captura em vez de sumir para sempre.
+    try {
+      await ghPutJson(
+        OFERTAS_PROCESSADOS_PATH,
+        [...new Set([...processados, id])].slice(-2000),
+        proc.sha,
+        `chore: registra oferta capturada ${id}`
+      );
+    } catch (errProc) {
+      console.error('[Ofertas] Falha ao registrar id processado:', errProc.message);
+    }
+
+    res.json({ ok: true, id });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
 // ── Aprovar oferta pendente ───────────────────────────────────────────────────
 app.post('/ofertas/aprovar', async (req, res) => {
   const { id, edits } = req.body || {};
