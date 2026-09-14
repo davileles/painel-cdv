@@ -1622,6 +1622,176 @@ async function atualizarHistoricoTransferencia(item) {
     `chore: atualiza historico de transferencias (${chave})`
   );
 }
+// ── MENSAGEM DE WHATSAPP DA OFERTA DO RADAR ──────────────────────────────────
+// Ate aqui esta montagem so existia no browser do gestor-cdv. Isso amarrava a
+// aprovacao a uma aba aberta: qualquer outro cliente (bot do Telegram, rotina
+// automatica) teria de reimplementar o template e divergir na primeira mudanca.
+// Agora o texto nasce no servidor e o gestor pode passar a consumi-lo pelo
+// endpoint /ofertas/mensagem/:id — ate la, as duas copias produzem o mesmo
+// resultado e qualquer ajuste precisa ser feito NOS DOIS.
+const RODAPE_OFERTA = '`Faça parte do Clube do Viajante e economize até 90% nas suas passagens: https://clubedoviajante.com.br/`';
+
+function stripEmojis(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/[\u{1F000}-\u{1FFFF}]|[\u{2600}-\u{27BF}]|[\u{2300}-\u{23FF}]|[\u{FE00}-\u{FE0F}]|[\u{1F900}-\u{1F9FF}]|\u{20E3}/gu, '')
+    .replace(/^\s*[-–]\s*/, '')
+    .trim();
+}
+
+function formatarDataBR(iso) {
+  const m = (iso || '').match(/(\d{4})-(\d{2})-(\d{2})/);
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : (iso || '');
+}
+
+function compactarLinhasTeto(str) {
+  if (!str) return [];
+  return String(str).split('\n').map((l) => {
+    const limpo = stripEmojis(l.trim()).replace(/^-\s*/, '');
+    // "Bônus de X% (perfil): transfira até Y pontos para atingir..." vira a
+    // forma curta: no WhatsApp a cauda da frase so empurra o resto para baixo.
+    const m = limpo.match(/^(Bônus de .+?)\s*[:：]\s*transfira\s+até\s+([\d.,]+\s+pontos?).*$/i);
+    return m ? `${m[1]}: até ${m[2]}` : limpo;
+  }).filter(Boolean);
+}
+
+function agruparCondicoes(restricoes) {
+  const volume = [], tempo = [], gerais = [];
+  (restricoes || []).forEach((r) => {
+    const s = stripEmojis(r).replace(/^-\s*/, '').trim();
+    if (!s) return;
+    // "volume" exige numero logo apos "de" ou "acima": sem isso
+    // "Transferências devem..." caia no bloco errado.
+    if (/^transferências? (?:de \d|acima)/i.test(s)) volume.push(s);
+    else if (/^\+\d+%|adicional.*tempo|há mais|entre \d.*ano/i.test(s)) tempo.push(s);
+    else gerais.push(s);
+  });
+  return { volume, tempo, gerais };
+}
+
+// Compara a oferta com o que ja foi registrado para a mesma chave origem→destino.
+// `items` e o conteudo de historico-transferencias.json — passado de fora para
+// esta funcao continuar sincrona e testavel.
+function blocoHistoricoTransferencia(o, items) {
+  if (o.categoria !== 'transferencia' || !o.origem || !o.destino) return '';
+  if (!Array.isArray(items) || !items.length) return '';
+  const chave = chaveHistorico(o.origem, o.destino);
+
+  // Exclui o registro da PROPRIA campanha em avaliacao: reenvio ou lembrete
+  // nao e ocorrencia anterior. Mesma regra de dedup do resto do arquivo —
+  // mesma chave + mesmo prazo = mesma campanha; e campanha ainda ativa
+  // (prazo >= hoje) tambem conta como a atual.
+  const prazoAtualIso = prazoParaIso(o.prazo);
+  const hojeIso = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
+  const anteriores = items.filter((h) => {
+    if (h.chave !== chave) return false;
+    if (prazoAtualIso && h.prazo && h.prazo === prazoAtualIso) return false;
+    if (h.prazo && h.prazo >= hojeIso) return false;
+    return true;
+  });
+  if (!anteriores.length) return '';
+
+  const atual = (o.bonusMax !== undefined && o.bonusMax !== null && o.bonusMax !== '') ? Number(o.bonusMax) : null;
+  const linhas = [];
+
+  if (anteriores.length === 1) {
+    const h0 = anteriores[0];
+    linhas.push(`🔁 Já vimos essa transferência antes: ${h0.bonusMax}% de bônus, em ${formatarDataBR(h0.dataInicio)}`);
+  } else {
+    const media = anteriores.reduce((s, h) => s + h.bonusMax, 0) / anteriores.length;
+    const mediaFmt = media.toFixed(0);
+    linhas.push(atual != null
+      ? `Bônus atual: ${atual}% (média histórica: ${mediaFmt}%, em ${anteriores.length} ofertas)`
+      : `Média histórica: ${mediaFmt}% (em ${anteriores.length} ofertas)`);
+    if (atual != null) {
+      const diffPct = ((atual - media) / media) * 100;
+      if (diffPct >= 10) linhas.push(`📈 Acima do padrão — ${Math.round(diffPct)}% maior que a média`);
+      else if (diffPct <= -10) linhas.push(`📉 Abaixo do padrão — ${Math.round(Math.abs(diffPct))}% menor que a média`);
+      else linhas.push('➡️ Dentro do padrão histórico');
+    }
+    const datas = anteriores.map((h) => new Date(h.dataInicio + 'T00:00:00')).sort((a, b) => a - b);
+    if (datas.length >= 2) {
+      const gaps = [];
+      for (let i = 1; i < datas.length; i++) gaps.push((datas[i] - datas[i - 1]) / 86400000);
+      const mediaGap = Math.round(gaps.reduce((s, g) => s + g, 0) / gaps.length);
+      const ultima = datas[datas.length - 1];
+      const diasDesde = Math.round((new Date() - ultima) / 86400000);
+      linhas.push(`Costuma repetir a cada ~${mediaGap} dias — última vez há ${diasDesde} dias (${formatarDataBR(ultima.toISOString().slice(0, 10))})`);
+    }
+  }
+
+  return '📊 *HISTÓRICO DESSA TRANSFERÊNCIA*\n' + linhas.map((l) => '- ' + l).join('\n') + '\n\n';
+}
+
+function montarMensagemRadar(o, histItems) {
+  let msg = '';
+  if (o.titulo) msg += '*' + o.titulo + '*\n\n';
+  if (o.resumo) msg += stripEmojis(o.resumo) + '\n\n';
+
+  msg += blocoHistoricoTransferencia(o, histItems);
+
+  if (o.milheiro) {
+    const lm = String(o.milheiro).split('\n').map((l) => stripEmojis(l.trim()).replace(/^-\s*/, '')).filter(Boolean);
+    if (lm.length) {
+      msg += '*Custo do milheiro*\n';
+      lm.forEach((l) => { msg += '- ' + l + '\n'; });
+      msg += '\n';
+    }
+  }
+
+  if (o.tetoTransferencia) {
+    const lt = compactarLinhasTeto(o.tetoTransferencia);
+    if (lt.length) {
+      msg += '*Teto de bônus — máximo a transferir por perfil*\n';
+      lt.forEach((l) => { msg += '- ' + l + '\n'; });
+      msg += '\n';
+    }
+  }
+
+  if (o.restricoes && o.restricoes.length) {
+    const g = agruparCondicoes(o.restricoes);
+    if (g.volume.length) {
+      msg += '*Bônus por volume transferido*\n';
+      g.volume.forEach((l) => { msg += '- ' + l + '\n'; });
+      msg += '\n';
+    }
+    if (g.tempo.length) {
+      msg += '*Bônus adicional por tempo no Clube*\n';
+      g.tempo.forEach((l) => { msg += '- ' + l + '\n'; });
+      msg += '\n';
+    }
+    if (g.gerais.length) {
+      msg += '*Condições*\n';
+      g.gerais.forEach((l) => { msg += '- ' + l + '\n'; });
+      msg += '\n';
+    }
+  }
+
+  if (o.loja) msg += '🛒 *LOJA* ' + o.loja + '\n\n';
+  if (o.cupom) msg += '🏷️ *CUPOM* ' + o.cupom + '\n\n';
+  if (o.prazo && o.prazo.toLowerCase() !== 'não informado' && o.prazo !== '') {
+    msg += '📆 *PRAZO* ' + o.prazo + '\n\n';
+  }
+  if (o.importante) msg += '⚠️ *IMPORTANTE* ' + stripEmojis(o.importante) + '\n\n';
+  // Link sem mascara de afiliado: no gestor o mascaramento esta desligado
+  // (IR_ATIVO = false), entao o link sai igual nos dois caminhos. Quando a
+  // mascara for religada, a reescrita tem de entrar AQUI tambem.
+  msg += '🔗 *LINK* ' + (o.link || '—') + '\n\n';
+  msg += RODAPE_OFERTA;
+  return msg;
+}
+
+async function ofertaPendentePorId(id) {
+  const pend = await ghGetJson(OFERTAS_PENDENTES_PATH, { geradoEm: null, items: [] });
+  const item = (pend.data.items || []).find((o) => o.id === id);
+  return item || null;
+}
+
+async function mensagemDaOferta(item) {
+  const hist = await ghGetJson(HISTORICO_TRANSFERENCIAS_PATH, { items: [] });
+  return montarMensagemRadar(item, hist.data.items || []);
+}
+
 const { normalizarDatas, resumirDatas } = require('./passagens-datas.js');
 const { escopoRota } = require('./passagens-escopo.js');
 
@@ -1749,53 +1919,112 @@ app.post('/ofertas/pendentes', async (req, res) => {
 });
 
 // ── Aprovar oferta pendente ───────────────────────────────────────────────────
-app.post('/ofertas/aprovar', async (req, res) => {
-  const { id, edits } = req.body || {};
-  if (!id) return res.status(400).json({ ok: false, erro: 'Campo obrigatório: id' });
-  if (!GITHUB_TOKEN) return res.status(500).json({ ok: false, erro: 'GITHUB_TOKEN não configurado no servidor' });
+// Aprovacao da oferta pendente, sem HTTP: move de pendentes para aprovadas,
+// atualiza o historico de transferencias e dispara os alertas do concierge.
+// Extraida da rota para que /ofertas/aprovar-e-enviar use EXATAMENTE o mesmo
+// caminho — duas copias divergiriam no primeiro ajuste.
+// Devolve { ok:true, item } ou { ok:false, status, erro }.
+async function aprovarOfertaPendente(id, edits) {
+  if (!id) return { ok: false, status: 400, erro: 'Campo obrigatório: id' };
+  if (!GITHUB_TOKEN) return { ok: false, status: 500, erro: 'GITHUB_TOKEN não configurado no servidor' };
+
+  const pend = await ghGetJson(OFERTAS_PENDENTES_PATH, { geradoEm: null, items: [] });
+  const idx = (pend.data.items || []).findIndex((o) => o.id === id);
+  if (idx < 0) return { ok: false, status: 404, erro: 'Oferta não encontrada nas pendentes (pode já ter sido processada)' };
+
+  const item = { ...pend.data.items[idx], ...(edits || {}) };
+  pend.data.items.splice(idx, 1);
+
+  const aprov = await ghGetJson(OFERTAS_APROVADAS_PATH, { geradoEm: null, items: [] });
+  const jaExiste = (aprov.data.items || []).some((o) => o.id === id);
+  const novosAprovados = jaExiste
+    ? aprov.data.items
+    : [item, ...(aprov.data.items || [])].slice(0, MAX_OFERTAS_APROVADAS);
+
+  await ghPutJson(
+    OFERTAS_APROVADAS_PATH,
+    { geradoEm: new Date().toISOString(), items: novosAprovados },
+    aprov.sha,
+    `chore: aprova oferta "${item.titulo || id}"`
+  );
+  await ghPutJson(
+    OFERTAS_PENDENTES_PATH,
+    { geradoEm: pend.data.geradoEm || new Date().toISOString(), items: pend.data.items },
+    pend.sha,
+    `chore: remove oferta aprovada "${item.titulo || id}" das pendentes`
+  );
 
   try {
-    const pend = await ghGetJson(OFERTAS_PENDENTES_PATH, { geradoEm: null, items: [] });
-    const idx = (pend.data.items || []).findIndex((o) => o.id === id);
-    if (idx < 0) return res.status(404).json({ ok: false, erro: 'Oferta não encontrada nas pendentes (pode já ter sido processada)' });
+    await atualizarHistoricoTransferencia(item);
+  } catch (errHist) {
+    console.error('[Histórico transferências] Falha ao atualizar:', errHist.message);
+  }
 
-    const item = { ...pend.data.items[idx], ...(edits || {}) };
-    pend.data.items.splice(idx, 1);
+  // Alertas de oportunidade do concierge (alvo=transferencia).
+  // Best-effort: falha aqui nunca deve quebrar a aprovação da oferta.
+  try {
+    await verificarAlertasTransferencia(item);
+  } catch (errAl) {
+    console.error('[Alertas concierge] Falha ao verificar transferências:', errAl.message);
+  }
 
-    const aprov = await ghGetJson(OFERTAS_APROVADAS_PATH, { geradoEm: null, items: [] });
-    const jaExiste = (aprov.data.items || []).some((o) => o.id === id);
-    const novosAprovados = jaExiste
-      ? aprov.data.items
-      : [item, ...(aprov.data.items || [])].slice(0, MAX_OFERTAS_APROVADAS);
+  return { ok: true, item };
+}
 
-    await ghPutJson(
-      OFERTAS_APROVADAS_PATH,
-      { geradoEm: new Date().toISOString(), items: novosAprovados },
-      aprov.sha,
-      `chore: aprova oferta "${item.titulo || id}"`
-    );
-    await ghPutJson(
-      OFERTAS_PENDENTES_PATH,
-      { geradoEm: pend.data.geradoEm || new Date().toISOString(), items: pend.data.items },
-      pend.sha,
-      `chore: remove oferta aprovada "${item.titulo || id}" das pendentes`
-    );
-
-    try {
-      await atualizarHistoricoTransferencia(item);
-    } catch (errHist) {
-      console.error('[Histórico transferências] Falha ao atualizar:', errHist.message);
-    }
-
-    // Alertas de oportunidade do concierge (alvo=transferencia).
-    // Best-effort: falha aqui nunca deve quebrar a aprovação da oferta.
-    try {
-      await verificarAlertasTransferencia(item);
-    } catch (errAl) {
-      console.error('[Alertas concierge] Falha ao verificar transferências:', errAl.message);
-    }
-
+app.post('/ofertas/aprovar', async (req, res) => {
+  const { id, edits } = req.body || {};
+  try {
+    const r = await aprovarOfertaPendente(id, edits);
+    if (!r.ok) return res.status(r.status).json({ ok: false, erro: r.erro });
     res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// ── Mensagem pronta da oferta pendente ────────────────────────────────────────
+// Devolve a oferta e o texto exatamente como sai no WhatsApp. Existe para que
+// um cliente sem DOM (o bot do Telegram) possa mostrar a previa e decidir sem
+// reimplementar o template.
+app.get('/ofertas/mensagem/:id', async (req, res) => {
+  try {
+    const item = await ofertaPendentePorId(req.params.id);
+    if (!item) return res.status(404).json({ ok: false, erro: 'Oferta não encontrada nas pendentes' });
+    res.json({ ok: true, oferta: item, mensagem: await mensagemDaOferta(item) });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// ── Aprovar e enfileirar no WhatsApp num passo só ─────────────────────────────
+// O gestor faz isso em duas chamadas porque monta a mensagem no browser e
+// permite edita-la antes de enviar. Quem aprova pelo Telegram nao edita: manda
+// como esta. A mensagem e montada AQUI, com o mesmo template.
+// A ordem importa: aprova primeiro, enfileira depois. Se o envio falhar, a
+// oferta ja esta publicada no Radar e o operador reenvia pela tela — o inverso
+// deixaria mensagem no grupo sem registro em ofertas.json.
+app.post('/ofertas/aprovar-e-enviar', async (req, res) => {
+  const { id, edits, grupo } = req.body || {};
+  try {
+    const item = await ofertaPendentePorId(id);
+    if (!item) return res.status(404).json({ ok: false, erro: 'Oferta não encontrada nas pendentes (pode já ter sido processada)' });
+    const mensagem = await mensagemDaOferta({ ...item, ...(edits || {}) });
+
+    const ap = await aprovarOfertaPendente(id, edits);
+    if (!ap.ok) return res.status(ap.status).json({ ok: false, erro: ap.erro });
+
+    try {
+      const r = await fetch(BAILEYS_URL + '/radar/enviar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, mensagem, grupo: grupo || 'cdv_ofertas' }),
+      });
+      const d = await r.json();
+      // Aprovada e aprovada: falha no envio nao volta atras, so avisa.
+      return res.json({ ok: true, aprovada: true, ...d, enviada: !!d.ok });
+    } catch (errEnv) {
+      return res.json({ ok: true, aprovada: true, enviada: false, erroEnvio: 'Baileys inacessível: ' + errEnv.message });
+    }
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }
