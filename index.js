@@ -1996,6 +1996,21 @@ app.get('/ofertas/mensagem/:id', async (req, res) => {
   }
 });
 
+// Mesma previa, mas com campos corrigidos aplicados por cima antes de montar.
+// O POST existe porque os valores editados (resumo, texto do importante) sao
+// longos demais para caber em query string sem virar problema de encoding.
+app.post('/ofertas/mensagem/:id', async (req, res) => {
+  try {
+    const item = await ofertaPendentePorId(req.params.id);
+    if (!item) return res.status(404).json({ ok: false, erro: 'Oferta não encontrada nas pendentes' });
+    const edits = (req.body && req.body.edits) || {};
+    const combinado = { ...item, ...edits };
+    res.json({ ok: true, oferta: combinado, mensagem: await mensagemDaOferta(combinado) });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
 // ── Aprovar e enfileirar no WhatsApp num passo só ─────────────────────────────
 // O gestor faz isso em duas chamadas porque monta a mensagem no browser e
 // permite edita-la antes de enviar. Quem aprova pelo Telegram nao edita: manda
