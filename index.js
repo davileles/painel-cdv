@@ -750,6 +750,9 @@ app.get(/^\/g\/([a-zA-Z0-9\-_]{1,40})$/, (req, res) =>
 // tsp/cliques_links_<dia do envio>.json — { "<base>-<grupo>": { t, u, h } }
 //   t = total, u = unicos (IP+UA, janela de 30 min), h = cliques por hora desde
 //   o envio (0..47 e "48+"). Bots de preview seguem o 302 mas nao contam.
+// Links FIXOS (codigo com prefixo 'z', ex: /shopee/zK3a9-15): mapa permanente
+// em tsp/links_fixos.json e cliques por dia em tsp/cliques_links_fixos.json —
+// { "<base>-<grupo>": { t, u, h: { "AAAA-MM-DD": n } } }.
 // Rota pertence a este host e ao dominio nativo (/l/<loja>/<codigo> para teste).
 const RL_B62        = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 const RL_EPOCA      = Date.UTC(2026, 0, 1);
@@ -776,10 +779,11 @@ async function rlResolver(base) {
     if (r.ok) { const d = await r.json(); if (d && d.ok) reg = d; }
   } catch (e) { /* cai no shard */ }
   if (!reg) {
-    const dia = rlDiaDoCodigo(base);
+    const dia = base[0] === 'z' ? 'fixos' : rlDiaDoCodigo(base);
     let sh = rlShards.get(dia);
     if (!sh || Date.now() - sh.ts > 60 * 1000) {
-      const { data } = await ghGetJson('tsp/links_rastreio_' + dia + '.json', null);
+      const arq = dia === 'fixos' ? 'tsp/links_fixos.json' : 'tsp/links_rastreio_' + dia + '.json';
+      const { data } = await ghGetJson(arq, null);
       sh = { ts: Date.now(), links: (data && data.links) || {} };
       rlShards.set(dia, sh);
       const dias = [...rlShards.keys()].sort();
@@ -799,8 +803,13 @@ function rlDestinoValido(u) {
   catch (e) { return null; }
 }
 
+function rlHojeSP() {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
+}
+
 function rlContar(req, base, suf, reg) {
-  const dia = rlDiaDoCodigo(base);
+  const fixo = base[0] === 'z';
+  const dia = fixo ? 'fixos' : rlDiaDoCodigo(base);
   const codigo = base + '-' + suf;
   const b = (rlBuffer[dia] = rlBuffer[dia] || {});
   const c = (b[codigo] = b[codigo] || { t: 0, u: 0, h: {} });
@@ -808,10 +817,15 @@ function rlContar(req, base, suf, reg) {
   const ip = String(req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
   const chave = crypto.createHash('sha1').update(ip + '|' + (req.headers['user-agent'] || '') + '|' + codigo).digest('base64').slice(0, 16);
   const agora = Date.now();
-  if (!(rlUnicos.get(chave) > agora)) { c.u++; }
+  const unico = !(rlUnicos.get(chave) > agora);
+  if (unico) { c.u++; }
   rlUnicos.set(chave, agora + RL_UNICO_MS);
   const env = Date.parse(reg.enviadoEm || '');
-  if (Number.isFinite(env)) {
+  if (fixo) {
+    const k = rlHojeSP();
+    c.h[k] = (c.h[k] || 0) + 1;
+    if (unico) { c.hu = c.hu || {}; c.hu[k] = (c.hu[k] || 0) + 1; }
+  } else if (Number.isFinite(env)) {
     const horas = Math.floor(Math.max(0, agora - env) / 3600000);
     const k = horas >= 48 ? '48+' : String(horas);
     c.h[k] = (c.h[k] || 0) + 1;
@@ -827,7 +841,7 @@ async function rlFlush() {
   const agoraMs = Date.now();
   for (const [k, exp] of rlUnicos) if (exp <= agoraMs) rlUnicos.delete(k);
   for (const dia of Object.keys(pendentes)) {
-    const arquivo = 'tsp/cliques_links_' + dia + '.json';
+    const arquivo = 'tsp/cliques_links_' + dia + '.json';   // dia 'fixos' -> cliques_links_fixos.json
     try {
       // SHA sempre fresco, imediatamente antes do PUT
       const { data, sha } = await ghGetJson(arquivo, {});
@@ -838,6 +852,7 @@ async function rlFlush() {
         a.u = (a.u || 0) + d.u;
         a.h = a.h || {};
         for (const [h, n] of Object.entries(d.h)) a.h[h] = (a.h[h] || 0) + n;
+        if (d.hu) { a.hu = a.hu || {}; for (const [h, n] of Object.entries(d.hu)) a.hu[h] = (a.hu[h] || 0) + n; }
         a.ultimo = new Date().toISOString();
       }
       await ghPutJson(arquivo, acc, sha, 'cliques: links rastreados TSP ' + dia);
@@ -849,6 +864,7 @@ async function rlFlush() {
         const c = (b[codigo] = b[codigo] || { t: 0, u: 0, h: {} });
         c.t += d.t; c.u += d.u;
         for (const [h, n] of Object.entries(d.h)) c.h[h] = (c.h[h] || 0) + n;
+        if (d.hu) { c.hu = c.hu || {}; for (const [h, n] of Object.entries(d.hu)) c.hu[h] = (c.hu[h] || 0) + n; }
       }
       rlDirty = true;
     }
@@ -920,7 +936,38 @@ app.get('/links-stats', async (req, res) => {
       }
     }
     envios.sort((a, b) => String(b.enviadoEm).localeCompare(String(a.enviadoEm)));
-    res.json({ ok: true, dias: n, envios });
+
+    // Links fixos: cliques e usos (mensagens que levaram o link) dentro do periodo.
+    const diasPeriodo = new Set();
+    for (let i = 0; i < n; i++) diasPeriodo.add(new Date(hoje.getTime() - i * 86400000).toISOString().slice(0, 10));
+    const [fx, fc] = await Promise.all([
+      ghGetJson('tsp/links_fixos.json', null),
+      ghGetJson('tsp/cliques_links_fixos.json', {}),
+    ]);
+    const fLinks = (fx.data && fx.data.links) || {};
+    const fCliques = fc.data || {};
+    const fBuf = rlBuffer.fixos || {};
+    const fixos = Object.entries(fLinks).map(([base, r]) => {
+      let t = 0, u = 0, usos = 0; const porDia = {}; const grupos = {};
+      for (const [d, q] of Object.entries(r.usos || {})) if (diasPeriodo.has(d)) usos += q;
+      for (const [suf, g] of Object.entries(r.grupos || {})) {
+        const cod = base + '-' + suf;
+        let gt = 0;
+        for (const src of [fCliques[cod] || {}, fBuf[cod] || {}]) {
+          for (const [d, q] of Object.entries(src.h || {})) {
+            if (!diasPeriodo.has(d)) continue;
+            gt += q; porDia[d] = (porDia[d] || 0) + q;
+          }
+          for (const [d, q] of Object.entries(src.hu || {})) if (diasPeriodo.has(d)) u += q;
+        }
+        grupos[suf] = { jid: g.jid || null, nome: g.nome || null, t: gt };
+        t += gt;
+      }
+      return { codigo: base, rotulo: r.rotulo, loja: r.loja, slugLoja: r.slugLoja, url: r.url,
+               criadoEm: r.criadoEm, ultimoUso: r.ultimoUso, usos, cliques: t, unicos: u, porDia, grupos };
+    }).filter(x => x.usos || x.cliques).sort((a, b) => b.cliques - a.cliques);
+
+    res.json({ ok: true, dias: n, envios, fixos });
   } catch (e) {
     res.status(500).json({ ok: false, erro: e.message });
   }
