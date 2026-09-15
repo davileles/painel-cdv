@@ -151,6 +151,9 @@ function hostPermitido(cfg, host) {
 //   3. ?u=<url>    -> URL completa, usada quando a campanha vive em outro host
 //                     do mesmo programa (ex: latampass.latam.com)
 // Em todos, os params de afiliado do links.json sao anexados por ultimo.
+// Slug com "limparUtm": true descarta os utm_* que vieram do link original
+// (fonte/concorrente) antes de anexar os nossos -- utm_* do proprio cfg.destino
+// continuam intactos. Sem a flag, comportamento antigo (LATAM depende dele).
 function montarDestinoIr(cfg, opts) {
   opts = opts || {};
   let base;
@@ -159,6 +162,11 @@ function montarDestinoIr(cfg, opts) {
     try { u = new URL(String(opts.urlAlvo)); } catch (e) { return null; }
     if (u.protocol !== 'https:' && u.protocol !== 'http:') return null;
     if (!hostPermitido(cfg, u.hostname)) return null;
+    if (cfg.limparUtm) {
+      for (const k of Array.from(u.searchParams.keys())) {
+        if (/^utm_/i.test(k)) u.searchParams.delete(k);
+      }
+    }
     base = u.toString();
   } else if (opts.resto) {
     let origem;
@@ -173,6 +181,7 @@ function montarDestinoIr(cfg, opts) {
   if (opts.query) {
     for (const k of Object.keys(opts.query)) {
       if (k === 'o' || k === 'u') continue;
+      if (cfg.limparUtm && /^utm_/i.test(k)) continue;
       const v = opts.query[k];
       if (typeof v === 'string') final.searchParams.set(k, v);
     }

@@ -5926,6 +5926,46 @@ function formatDataCurta(iso){
   }catch(e){return '';}
 }
 
+
+// Link afiliado no Radar: mesma mascara do gestor-cdv (afiliarLink), para que o
+// clique do membro tambem leve os params de afiliado do links.json e conte em
+// /ir-stats com origem 'radar'. ESPELHAR AFILIADOS/PATH_SLUG do gestor-cdv/index.html.
+var RADAR_IR_BASE = 'https://ir.clubedoviajante.com.br/';
+var RADAR_AFILIADOS = [
+  { slug:'smiles', hostBase:'www.smiles.com.br',     dominios:['smiles.com.br','shoppingsmiles.com.br'] },
+  { slug:'latam',  hostBase:'www.latamairlines.com', dominios:['latamairlines.com','latampass.latam.com','latampass.com'] },
+  { slug:'azul',   hostBase:'www.voeazul.com.br',    dominios:['voeazul.com.br'] }
+];
+var RADAR_PATH_SLUG = {
+  'latampass.latam.com/pt_br/promocao/esfera-milhas-extras': 'latam-esfera',
+  'latampass.latam.com/pt_br/promocao/livelo-milhas-extras': 'latam-livelo',
+  'latampass.latam.com/pt_br/promocao/itau-milhas-extras':   'latam-itau',
+  'latampass.latam.com/pt_br/promocao/bancos-milhas-extras': 'latam-bancos',
+  'latampass.com/facilidades/compra-milhas/lp':              'latam-compra'
+};
+function linkAfiliadoRadar(url) {
+  var u;
+  try { u = new URL(String(url).trim()); } catch(e) { return url; }
+  if (u.protocol !== 'https:' && u.protocol !== 'http:') return url;
+  var host = u.hostname.toLowerCase();
+  if (host === 'ir.clubedoviajante.com.br') return url;
+  var fixo = RADAR_PATH_SLUG[host.replace(/^www\./,'') + u.pathname.replace(/\/+$/,'')];
+  if (fixo) return RADAR_IR_BASE + fixo + '?o=radar';
+  var cfg = null;
+  RADAR_AFILIADOS.some(function(a){
+    return a.dominios.some(function(d){
+      if (host === d || host.endsWith('.'+d)) { cfg = a; return true; }
+      return false;
+    });
+  });
+  if (!cfg) return url;
+  if (host === cfg.hostBase || host === cfg.hostBase.replace(/^www\./,'')) {
+    var qs = u.search ? u.search.slice(1) + '&' : '';
+    return RADAR_IR_BASE + cfg.slug + (u.pathname === '/' ? '' : u.pathname) + '?' + qs + 'o=radar';
+  }
+  return RADAR_IR_BASE + cfg.slug + '?u=' + encodeURIComponent(u.origin + u.pathname + u.search) + '&o=radar';
+}
+
 function openOfertaModal(id){
   const o=(ofertasData&&ofertasData.items||[]).find(x=>x.id===id);
   if(!o) return;
@@ -5979,7 +6019,7 @@ function openOfertaModal(id){
   const linkEl=document.getElementById('oferta-modal-link');
   if(o.link){
     linkEl.style.display='block';
-    linkEl.href=o.link;
+    linkEl.href=linkAfiliadoRadar(o.link);
   } else {
     linkEl.style.display='none';
     linkEl.removeAttribute('href');
