@@ -567961,6 +567961,14 @@
         }
       }
     },
+    "tia sônia": {
+      "programs": {
+        "livelo": {
+          "pts": 15,
+          "dollar": false
+        }
+      }
+    },
     "assist card": {
       "programs": {
         "livelo": {
@@ -568118,6 +568126,50 @@
         }
       }
     },
+    "riachuelo": {
+      "programs": {
+        "livelo": {
+          "pts": 12,
+          "dollar": false
+        },
+        "esfera": {
+          "pts": 4,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 3,
+          "dollar": false
+        },
+        "inter": {
+          "pts": 15,
+          "dollar": false,
+          "slug": "riachuelo-1686"
+        },
+        "meliuz": {
+          "pts": 12,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-riachuelo",
+          "categorias": [
+            {
+              "categoria": "Feminino",
+              "pts": 12,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
+        }
+      },
+      "links": {
+        "inter": "https://shopping.inter.co/gift-card/riachuelo-1686",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-riachuelo"
+      }
+    },
     "abelha rainha": {
       "programs": {
         "livelo": {
@@ -568231,14 +568283,6 @@
       }
     },
     "piatan natural": {
-      "programs": {
-        "livelo": {
-          "pts": 11,
-          "dollar": false
-        }
-      }
-    },
-    "tia sônia": {
       "programs": {
         "livelo": {
           "pts": 11,
@@ -569434,50 +569478,6 @@
         }
       }
     },
-    "riachuelo": {
-      "programs": {
-        "livelo": {
-          "pts": 3,
-          "dollar": false
-        },
-        "esfera": {
-          "pts": 4,
-          "dollar": false
-        },
-        "azul": {
-          "pts": 3,
-          "dollar": false
-        },
-        "inter": {
-          "pts": 15,
-          "dollar": false,
-          "slug": "riachuelo-1686"
-        },
-        "meliuz": {
-          "pts": 12,
-          "dollar": false,
-          "ate": true,
-          "slug": "cupom-riachuelo",
-          "categorias": [
-            {
-              "categoria": "Feminino",
-              "pts": 12,
-              "principal": false
-            },
-            {
-              "categoria": "Demais categorias",
-              "pts": 3,
-              "principal": true
-            }
-          ],
-          "ptsBase": 3
-        }
-      },
-      "links": {
-        "inter": "https://shopping.inter.co/gift-card/riachuelo-1686",
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-riachuelo"
-      }
-    },
     "sam's club - e-commerce": {
       "programs": {
         "livelo": {
@@ -569501,6 +569501,14 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-shiseido"
+      }
+    },
+    "telhanorte": {
+      "programs": {
+        "livelo": {
+          "pts": 3,
+          "dollar": false
+        }
       }
     },
     "yvy": {
@@ -571163,14 +571171,6 @@
       "links": {
         "inter": "https://shopping.inter.co/gift-card/spicy-1722",
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-spicy"
-      }
-    },
-    "telhanorte": {
-      "programs": {
-        "livelo": {
-          "pts": 1,
-          "dollar": false
-        }
       }
     },
     "thule": {
