@@ -725,6 +725,211 @@ app.use(async (req, res, next) => {
 app.get(/^\/g\/([a-zA-Z0-9\-_]{1,40})$/, (req, res) =>
   ggHandle(req, res, String(req.params[0] || '').toLowerCase()));
 
+// ══ LINKS RASTREADOS DO TICA PROMOS ══════════════════════════════════════════
+// ir.ticapromos.com.br/<loja>/<codigo>-<grupo>   ex: /amazon/49SiL-15
+//
+// O baileys-server troca cada link de loja das mensagens do TSP por um destes
+// (links-rastreio.js) e e a fonte da verdade do mapa codigo -> destino. Aqui
+// so resolvemos e contamos. Ordem de resolucao no clique:
+//   1. cache em memoria
+//   2. GET no baileys /links-rastreio/:codigo  (link acabou de sair)
+//   3. shard diario no repo de dados            (baileys fora do ar)
+// O pedaco <loja> e so para quem le: nao entra na resolucao, entao um link com
+// a loja errada no caminho continua funcionando e contando.
+//
+// Cliques: buffer em memoria, gravados a cada 5 min em
+// tsp/cliques_links_<dia do envio>.json — { "<base>-<grupo>": { t, u, h } }
+//   t = total, u = unicos (IP+UA, janela de 30 min), h = cliques por hora desde
+//   o envio (0..47 e "48+"). Bots de preview seguem o 302 mas nao contam.
+// Rota pertence a este host e ao dominio nativo (/l/<loja>/<codigo> para teste).
+const RL_B62        = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const RL_EPOCA      = Date.UTC(2026, 0, 1);
+const RL_RE_PATH    = /^\/([a-z]{2,20})\/([0-9A-Za-z]{5})-([A-Z0-9]{2,3})\/?$/;
+const RL_FALLBACK   = process.env.RASTREIO_FALLBACK || 'https://www.tudosobrepromos.com/';
+const RL_FLUSH_MS   = 5 * 60 * 1000;
+const RL_UNICO_MS   = 30 * 60 * 1000;
+const rlCache       = new Map();   // base -> registro {url, enviadoEm, grupos:{suf:{destino}}}
+const rlShards      = new Map();   // dia -> { ts, links }
+const rlUnicos      = new Map();   // hash -> expira
+const rlBuffer      = {};          // dia -> { codigo: { t, u, h:{} } }
+let   rlDirty       = false;
+
+function rlDiaDoCodigo(base) {
+  const idx = RL_B62.indexOf(base[0]) * 62 + RL_B62.indexOf(base[1]);
+  return new Date(RL_EPOCA + idx * 86400000).toISOString().slice(0, 10);
+}
+
+async function rlResolver(base) {
+  if (rlCache.has(base)) return rlCache.get(base);
+  let reg = null;
+  try {
+    const r = await fetch(GG_BAILEYS + '/links-rastreio/' + base, { signal: AbortSignal.timeout(2500) });
+    if (r.ok) { const d = await r.json(); if (d && d.ok) reg = d; }
+  } catch (e) { /* cai no shard */ }
+  if (!reg) {
+    const dia = rlDiaDoCodigo(base);
+    let sh = rlShards.get(dia);
+    if (!sh || Date.now() - sh.ts > 60 * 1000) {
+      const { data } = await ghGetJson('tsp/links_rastreio_' + dia + '.json', null);
+      sh = { ts: Date.now(), links: (data && data.links) || {} };
+      rlShards.set(dia, sh);
+      const dias = [...rlShards.keys()].sort();
+      while (dias.length > 10) rlShards.delete(dias.shift());
+    }
+    reg = sh.links[base] || null;
+  }
+  if (reg) {
+    rlCache.set(base, reg);
+    if (rlCache.size > 5000) rlCache.delete(rlCache.keys().next().value);
+  }
+  return reg;
+}
+
+function rlDestinoValido(u) {
+  try { const x = new URL(String(u)); return (x.protocol === 'https:' || x.protocol === 'http:') ? x.toString() : null; }
+  catch (e) { return null; }
+}
+
+function rlContar(req, base, suf, reg) {
+  const dia = rlDiaDoCodigo(base);
+  const codigo = base + '-' + suf;
+  const b = (rlBuffer[dia] = rlBuffer[dia] || {});
+  const c = (b[codigo] = b[codigo] || { t: 0, u: 0, h: {} });
+  c.t++;
+  const ip = String(req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
+  const chave = crypto.createHash('sha1').update(ip + '|' + (req.headers['user-agent'] || '') + '|' + codigo).digest('base64').slice(0, 16);
+  const agora = Date.now();
+  if (!(rlUnicos.get(chave) > agora)) { c.u++; }
+  rlUnicos.set(chave, agora + RL_UNICO_MS);
+  const env = Date.parse(reg.enviadoEm || '');
+  if (Number.isFinite(env)) {
+    const horas = Math.floor(Math.max(0, agora - env) / 3600000);
+    const k = horas >= 48 ? '48+' : String(horas);
+    c.h[k] = (c.h[k] || 0) + 1;
+  }
+  rlDirty = true;
+}
+
+async function rlFlush() {
+  if (!rlDirty) return;
+  const pendentes = JSON.parse(JSON.stringify(rlBuffer));
+  for (const k of Object.keys(rlBuffer)) delete rlBuffer[k];
+  rlDirty = false;
+  const agoraMs = Date.now();
+  for (const [k, exp] of rlUnicos) if (exp <= agoraMs) rlUnicos.delete(k);
+  for (const dia of Object.keys(pendentes)) {
+    const arquivo = 'tsp/cliques_links_' + dia + '.json';
+    try {
+      // SHA sempre fresco, imediatamente antes do PUT
+      const { data, sha } = await ghGetJson(arquivo, {});
+      const acc = (data && typeof data === 'object') ? data : {};
+      for (const [codigo, d] of Object.entries(pendentes[dia])) {
+        const a = acc[codigo] || (acc[codigo] = { t: 0, u: 0, h: {} });
+        a.t = (a.t || 0) + d.t;
+        a.u = (a.u || 0) + d.u;
+        a.h = a.h || {};
+        for (const [h, n] of Object.entries(d.h)) a.h[h] = (a.h[h] || 0) + n;
+        a.ultimo = new Date().toISOString();
+      }
+      await ghPutJson(arquivo, acc, sha, 'cliques: links rastreados TSP ' + dia);
+    } catch (e) {
+      console.error('[links flush]', dia, e.message);
+      // devolve ao buffer para nao perder contagem
+      const b = (rlBuffer[dia] = rlBuffer[dia] || {});
+      for (const [codigo, d] of Object.entries(pendentes[dia])) {
+        const c = (b[codigo] = b[codigo] || { t: 0, u: 0, h: {} });
+        c.t += d.t; c.u += d.u;
+        for (const [h, n] of Object.entries(d.h)) c.h[h] = (c.h[h] || 0) + n;
+      }
+      rlDirty = true;
+    }
+  }
+}
+const rlTimer = setInterval(rlFlush, RL_FLUSH_MS);
+if (rlTimer.unref) rlTimer.unref();
+
+async function rlHandle(req, res, base, suf) {
+  let reg = null;
+  try { reg = await rlResolver(base); }
+  catch (e) { console.error('[links] resolver', base, e.message); }
+  if (!reg) return res.redirect(302, RL_FALLBACK);
+  const g = (reg.grupos && reg.grupos[suf]) || {};
+  const destino = rlDestinoValido(g.destino || reg.url);
+  if (!destino) return res.redirect(302, RL_FALLBACK);
+  if (!PREVIEW_BOT_RE.test(req.headers['user-agent'] || '')) {
+    try { rlContar(req, base, suf, reg); } catch (e) { console.error('[links] contar', e.message); }
+  }
+  res.set('Cache-Control', 'no-store');
+  res.set('X-Robots-Tag', 'noindex, nofollow');
+  return res.redirect(302, destino);
+}
+
+app.use((req, res, next) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+  if (!GG_HOSTS.has(String(req.hostname || '').toLowerCase())) return next();
+  const m = req.path.match(RL_RE_PATH);
+  if (!m) return next();
+  return rlHandle(req, res, m[2], m[3]);
+});
+
+app.get(/^\/l\/([a-z]{2,20})\/([0-9A-Za-z]{5})-([A-Z0-9]{2,3})\/?$/, (req, res) =>
+  rlHandle(req, res, req.params[1], req.params[2]));
+
+// Relatorio para o painel TSP: envios dos ultimos N dias com cliques por grupo.
+// ?dias=7 (max 31). Soma o gravado com o que ainda esta no buffer.
+app.get('/links-stats', async (req, res) => {
+  try {
+    const n = Math.min(31, Math.max(1, parseInt(req.query.dias, 10) || 7));
+    const hoje = new Date(new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }) + 'T00:00:00Z');
+    const envios = [];
+    for (let i = 0; i < n; i++) {
+      const dia = new Date(hoje.getTime() - i * 86400000).toISOString().slice(0, 10);
+      const [lk, cl] = await Promise.all([
+        ghGetJson('tsp/links_rastreio_' + dia + '.json', null),
+        ghGetJson('tsp/cliques_links_' + dia + '.json', {}),
+      ]);
+      const links = (lk.data && lk.data.links) || {};
+      const cliques = cl.data || {};
+      const buf = rlBuffer[dia] || {};
+      for (const [base, r] of Object.entries(links)) {
+        const grupos = {};
+        let t = 0, u = 0; const h = {};
+        for (const [suf, g] of Object.entries(r.grupos || {})) {
+          const cod = base + '-' + suf;
+          const a = cliques[cod] || {}, b = buf[cod] || {};
+          const gt = (a.t || 0) + (b.t || 0), gu = (a.u || 0) + (b.u || 0);
+          grupos[suf] = { jid: g.jid || null, nome: g.nome || null, t: gt, u: gu };
+          t += gt; u += gu;
+          for (const src of [a.h || {}, b.h || {}]) for (const [k, v] of Object.entries(src)) h[k] = (h[k] || 0) + v;
+        }
+        envios.push({
+          codigo: base, dia, tipo: r.tipo, loja: r.loja, slugLoja: r.slugLoja, produto: r.produto,
+          titulo: r.titulo, preco: r.preco, precoDe: r.precoDe, desconto: r.desconto, categoria: r.categoria,
+          cupom: r.cupom, cupomValor: r.cupomValor, cupomTipo: r.cupomTipo, ofertaId: r.ofertaId,
+          enviadoEm: r.enviadoEm, url: r.url, cliques: t, unicos: u, porHora: h, grupos,
+        });
+      }
+    }
+    envios.sort((a, b) => String(b.enviadoEm).localeCompare(String(a.enviadoEm)));
+    res.json({ ok: true, dias: n, envios });
+  } catch (e) {
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+app.post('/links-stats/flush', async (req, res) => {
+  try { await rlFlush(); res.json({ ok: true }); }
+  catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
+// Deploy do Railway manda SIGTERM: grava os cliques em buffer (deste contador
+// e do /ir) antes de sair, com teto para nao segurar o encerramento.
+process.once('SIGTERM', () => {
+  const sair = () => process.exit(0);
+  const teto = setTimeout(sair, 8000);
+  Promise.allSettled([rlFlush(), flushCliques()]).finally(() => { clearTimeout(teto); sair(); });
+});
+
 // Base publica que o painel de gestao exibe/copia. Sai do GG_HOSTS para nao
 // existir URL hardcoded no front quando o dominio mudar.
 function ggBase() {

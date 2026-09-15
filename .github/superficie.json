@@ -96,7 +96,11 @@
         "app.post('/roteiros/doc-meta'",
         "app.post('/roteiros/doc-upload'",
         "app.post('/roteiros/publicar'",
-        "app.post('/webhook/hubla-membros'"
+        "app.post('/webhook/hubla-membros'",
+        "app.get('/links-stats'",
+        "app.post('/links-stats/flush'",
+        "async function rlHandle",
+        "async function rlFlush"
       ]
     },
     "index.html": {
