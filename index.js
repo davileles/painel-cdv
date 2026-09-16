@@ -2336,6 +2336,55 @@ app.post('/ofertas/rejeitar', async (req, res) => {
   }
 });
 
+// ── Rejeitar (limpar) várias ofertas pendentes de uma vez ────────────────────
+// Botão "Limpar todas" da aba Aprovar Ofertas do gestor-cdv. Recebe os ids que
+// o operador estava VENDO na tela — oferta que entrou na fila depois do último
+// carregamento não é descartada às cegas. Faz 2 commits no total (rejeitadas +
+// pendentes) em vez de 2 por oferta, e tenta de novo se o SHA mudar no meio.
+app.post('/ofertas/rejeitar-todas', async (req, res) => {
+  const ids = Array.isArray((req.body || {}).ids)
+    ? [...new Set(req.body.ids.map((x) => String(x || '').trim()).filter(Boolean))]
+    : [];
+  if (!ids.length) return res.status(400).json({ ok: false, erro: 'Campo obrigatório: ids (lista não vazia)' });
+  if (!GITHUB_TOKEN) return res.status(500).json({ ok: false, erro: 'GITHUB_TOKEN não configurado no servidor' });
+
+  const alvo = new Set(ids);
+  const tentar = async (fn) => {
+    try { return await fn(); }
+    catch (e) { await new Promise((r) => setTimeout(r, 800)); return fn(); }
+  };
+
+  try {
+    await tentar(async () => {
+      const rej = await ghGetJson(OFERTAS_REJEITADAS_PATH, []);
+      const lista = Array.isArray(rej.data) ? rej.data : [];
+      const novos = ids.filter((id) => !lista.includes(id));
+      if (!novos.length) return;
+      await ghPutJson(OFERTAS_REJEITADAS_PATH, lista.concat(novos).slice(-1000), rej.sha,
+        `chore: bloqueia ${novos.length} oferta(s) rejeitada(s) em lote`);
+    });
+
+    let removidas = 0;
+    await tentar(async () => {
+      const pend = await ghGetJson(OFERTAS_PENDENTES_PATH, { geradoEm: null, items: [] });
+      const itens = pend.data.items || [];
+      const restantes = itens.filter((o) => !alvo.has(o.id));
+      removidas = itens.length - restantes.length;
+      if (!removidas) return;
+      await ghPutJson(
+        OFERTAS_PENDENTES_PATH,
+        { geradoEm: pend.data.geradoEm || new Date().toISOString(), items: restantes },
+        pend.sha,
+        `chore: remove ${removidas} oferta(s) rejeitada(s) em lote das pendentes`
+      );
+    });
+
+    res.json({ ok: true, rejeitadas: ids.length, removidas });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
 // ── Enfileirar oferta no baileys-server para envio via WhatsApp ───────────────
 // Proxy para /radar/enviar do baileys-server, mantendo o gerador desacoplado.
 const BAILEYS_URL = process.env.BAILEYS_URL || 'https://baileys-server-production-ebfe.up.railway.app';

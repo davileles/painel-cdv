@@ -30,6 +30,7 @@
         "app.get('/health'",
         "app.get('/inter/gift-cards'",
         "app.get('/ir-stats'",
+        "app.get('/links-stats'",
         "app.get('/lounges/aeroportos'",
         "app.get('/lounges/buscar'",
         "app.get('/lounges/sala'",
@@ -80,6 +81,7 @@
         "app.post('/ia/roteiro-chat'",
         "app.post('/ia/roteiro-extrair'",
         "app.post('/ir-stats/flush'",
+        "app.post('/links-stats/flush'",
         "app.post('/membros/enviar-codigo'",
         "app.post('/membros/tema'",
         "app.post('/membros/verificar-codigo'",
@@ -89,6 +91,7 @@
         "app.post('/ofertas/enviar'",
         "app.post('/ofertas/publicar'",
         "app.post('/ofertas/rejeitar'",
+        "app.post('/ofertas/rejeitar-todas'",
         "app.post('/parceiros/resolver-links'",
         "app.post('/passagens/excluir'",
         "app.post('/passagens/registrar'",
@@ -97,10 +100,8 @@
         "app.post('/roteiros/doc-upload'",
         "app.post('/roteiros/publicar'",
         "app.post('/webhook/hubla-membros'",
-        "app.get('/links-stats'",
-        "app.post('/links-stats/flush'",
-        "async function rlHandle",
-        "async function rlFlush"
+        "async function rlFlush",
+        "async function rlHandle"
       ]
     },
     "index.html": {
