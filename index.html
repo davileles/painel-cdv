@@ -1243,6 +1243,94 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
     </div>
     <!-- /calc-cb -->
 
+    <!-- ── Calculadora: Custo da Emissão ──────────────────────────── -->
+    <div class="calc-device">
+      <div class="calc-brand-bar" style="background:linear-gradient(90deg,#ff585e,#ff8a7a)"></div>
+      <div class="calc-header">
+        <div class="calc-icon" style="background:rgba(255,88,94,.12)">✈️</div>
+        <div>
+          <div class="calc-title">Quanto custa essa emissão?</div>
+          <div class="calc-subtitle">Pontos pelo valor do milheiro + taxas convertidas para reais</div>
+        </div>
+      </div>
+
+      <!-- Visor -->
+      <div class="calc-display">
+        <div class="calc-display-label">Custo total da emissão</div>
+        <div id="calc-em-total" class="calc-display-value placeholder">R$ —</div>
+        <div id="calc-em-sub" class="calc-display-sub"></div>
+      </div>
+
+      <!-- Inputs -->
+      <div class="calc-body">
+        <div>
+          <div class="calc-field-label">Pontos da emissão</div>
+          <div class="calc-input-wrap">
+            <span class="calc-input-prefix">pts</span>
+            <input id="calc-em-pts" class="calc-input" type="number" min="0" step="1000" placeholder="ex: 120000" oninput="calcEmissao()">
+          </div>
+        </div>
+        <div>
+          <div class="calc-field-label">Quanto valem 1.000 pontos (R$)</div>
+          <div class="calc-input-wrap">
+            <span class="calc-input-prefix">R$</span>
+            <input id="calc-em-mil" class="calc-input" type="number" min="0" step="0.01" placeholder="ex: 16" oninput="calcEmissao()">
+          </div>
+        </div>
+        <div>
+          <div class="calc-field-label">Moeda das taxas</div>
+          <select id="calc-em-moeda" onchange="calcEmissaoMoeda()"
+            style="width:100%;background:var(--calc-input-bg, #141d2e);border:1px solid var(--calc-input-border, #2a3550);border-radius:8px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;padding:10px;outline:none;cursor:pointer;transition:border-color .15s">
+            <option value="AED">Dirham dos Emirados (AED)</option>
+            <option value="USD" selected>Dólar americano (USD)</option>
+            <option value="AUD">Dólar australiano (AUD)</option>
+            <option value="CAD">Dólar canadense (CAD)</option>
+            <option value="EUR">Euro (EUR)</option>
+            <option value="CHF">Franco suíço (CHF)</option>
+            <option value="JPY">Iene (JPY)</option>
+            <option value="GBP">Libra esterlina (GBP)</option>
+            <option value="ARS">Peso argentino (ARS)</option>
+            <option value="CLP">Peso chileno (CLP)</option>
+            <option value="COP">Peso colombiano (COP)</option>
+            <option value="MXN">Peso mexicano (MXN)</option>
+            <option value="UYU">Peso uruguaio (UYU)</option>
+            <option value="BRL">Real (BRL)</option>
+            <option value="PEN">Sol peruano (PEN)</option>
+          </select>
+        </div>
+        <div>
+          <div class="calc-field-label">Valor das taxas</div>
+          <div class="calc-input-wrap">
+            <span id="calc-em-taxa-prefix" class="calc-input-prefix">USD</span>
+            <input id="calc-em-taxa" class="calc-input" type="number" min="0" step="0.01" placeholder="0,00" oninput="calcEmissao()" style="padding-left:44px">
+          </div>
+        </div>
+        <div id="calc-em-conv" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <div class="calc-field-label">Cotação (R$)</div>
+            <div class="calc-input-wrap">
+              <span class="calc-input-prefix">R$</span>
+              <input id="calc-em-cot" class="calc-input" type="number" min="0" step="any" placeholder="…" oninput="calcEmissao()">
+            </div>
+          </div>
+          <div>
+            <div class="calc-field-label">IOF (%)</div>
+            <div class="calc-input-wrap">
+              <span class="calc-input-prefix">%</span>
+              <input id="calc-em-iof" class="calc-input" type="number" min="0" step="0.01" value="3.5" oninput="calcEmissao()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rodapé -->
+      <div class="calc-footer">
+        <span id="calc-em-cotacao" class="calc-cotacao-badge">⏳ carregando câmbio…</span>
+        &nbsp;Cotação do dia preenchida automaticamente — ajuste se o seu cartão usar outra.
+      </div>
+    </div>
+    <!-- /calc-emissao -->
+
   </div>
 </div><!-- /tab-calculadoras -->
 
@@ -6084,7 +6172,7 @@ function switchTab(tab){
   if(tab==='mapa')         mapaInit();
   if(tab==='milhas')       initMilhas();
   if(tab==='lounges')      lvCarregarAeroportos();
-  if(tab==='calculadoras') calcAccorInit();
+  if(tab==='calculadoras') { calcAccorInit(); calcEmissaoInit(); }
   if(tab==='cartoes')      ctInit();
   if(tab==='roteiros' && window.rotCarregarMeus) window.rotCarregarMeus();
   if (window.matchMedia('(max-width:900px)').matches) toggleSidebar(false);
@@ -7675,6 +7763,146 @@ function calcCB() {
     elV.style.color = '#f87171';
     elS.textContent = `Custo extra: ${fmtBRL(custoExtra)} · Pontos ganhos: ${totalPontos.toLocaleString('pt-BR')} pts (≈ ${fmtBRL(valorPontos)})`;
   }
+}
+
+// ══════════════════════════════════════════════════════
+//  CALCULADORA CUSTO DA EMISSÃO
+// ══════════════════════════════════════════════════════
+// Cotações em R$ por 1 unidade da moeda. Fonte principal: open.er-api.com
+// (uma chamada traz todas as moedas, atualizada 1x/dia). Se falhar, busca só
+// a moeda escolhida na AwesomeAPI.
+let _calcEmCot = null;     // { USD: 5.15, EUR: 5.94, ... }
+let _calcEmFonte = '';
+let _calcEmCarregando = false;
+let _calcEmIniciado = false;
+const CALC_EM_PREF = 'cdv_calc_emissao';
+
+function calcEmFmtCot(v) {
+  return v.toLocaleString('pt-BR', { minimumFractionDigits: v < 0.1 ? 6 : 4, maximumFractionDigits: v < 0.1 ? 6 : 4 });
+}
+
+async function calcEmissaoBuscarCotacoes() {
+  if (_calcEmCarregando) return;
+  _calcEmCarregando = true;
+  const badge = document.getElementById('calc-em-cotacao');
+  try {
+    const ctrl = new AbortController();
+    setTimeout(() => ctrl.abort(), 8000);
+    const r = await fetch('https://open.er-api.com/v6/latest/BRL', { signal: ctrl.signal });
+    const d = await r.json();
+    if (d.result !== 'success' || !d.rates) throw new Error('sem cotações');
+    const cot = {};
+    Object.keys(d.rates).forEach(k => { if (d.rates[k] > 0) cot[k] = 1 / d.rates[k]; });
+    cot.BRL = 1;
+    _calcEmCot = cot;
+    const dt = d.time_last_update_unix ? new Date(d.time_last_update_unix * 1000) : null;
+    _calcEmFonte = dt ? 'cotação de ' + dt.toLocaleDateString('pt-BR') : 'cotação do dia';
+  } catch (e) {
+    // Fallback: AwesomeAPI só para a moeda selecionada
+    const moeda = document.getElementById('calc-em-moeda')?.value || 'USD';
+    try {
+      if (moeda === 'BRL') { _calcEmCot = { BRL: 1 }; }
+      else {
+        const ctrl2 = new AbortController();
+        setTimeout(() => ctrl2.abort(), 8000);
+        const r2 = await fetch('https://economia.awesomeapi.com.br/json/last/' + moeda + '-BRL', { signal: ctrl2.signal });
+        const d2 = await r2.json();
+        const v = parseFloat(d2[moeda + 'BRL']?.ask);
+        if (!v) throw new Error('sem cotação');
+        _calcEmCot = { BRL: 1, [moeda]: v };
+        _calcEmFonte = 'cotação comercial agora';
+      }
+    } catch (e2) {
+      _calcEmCot = null;
+      if (badge) badge.innerHTML = '⚠️ câmbio indisponível — digite a cotação';
+    }
+  }
+  _calcEmCarregando = false;
+  calcEmissaoMoeda(true);
+}
+
+function calcEmissaoInit() {
+  if (_calcEmIniciado) return;
+  // Restaura preferências (milheiro, moeda, IOF)
+  try {
+    const p = JSON.parse(localStorage.getItem(CALC_EM_PREF) || 'null');
+    if (p) {
+      const elMil = document.getElementById('calc-em-mil');
+      const elMoeda = document.getElementById('calc-em-moeda');
+      const elIof = document.getElementById('calc-em-iof');
+      if (p.mil && !elMil.value) elMil.value = p.mil;
+      if (p.moeda && elMoeda.querySelector('option[value="' + p.moeda + '"]')) elMoeda.value = p.moeda;
+      if (p.iof != null && p.iof !== '') elIof.value = p.iof;
+    }
+  } catch (e) {}
+  _calcEmIniciado = true;
+  calcEmissaoMoeda(true);
+  calcEmissaoBuscarCotacoes();
+}
+
+// Troca de moeda: atualiza prefixo, esconde câmbio/IOF para BRL e preenche a cotação do dia
+function calcEmissaoMoeda(silencioso) {
+  const moeda = document.getElementById('calc-em-moeda').value;
+  const badge = document.getElementById('calc-em-cotacao');
+  const elCot = document.getElementById('calc-em-cot');
+  document.getElementById('calc-em-taxa-prefix').textContent = moeda === 'BRL' ? 'R$' : moeda;
+  document.getElementById('calc-em-conv').style.display = moeda === 'BRL' ? 'none' : 'grid';
+
+  if (moeda === 'BRL') {
+    if (badge) badge.innerHTML = '🇧🇷 taxas já em reais';
+  } else if (_calcEmCot && _calcEmCot[moeda]) {
+    const v = _calcEmCot[moeda];
+    elCot.value = +v.toFixed(v < 0.1 ? 6 : 4);
+    if (badge) badge.innerHTML = '📡 1 ' + moeda + ' = R$ ' + calcEmFmtCot(v) + ' · ' + _calcEmFonte;
+  } else {
+    elCot.value = '';
+    if (!_calcEmCarregando && _calcEmCot && silencioso !== true) { _calcEmCot = null; calcEmissaoBuscarCotacoes(); return; }
+    if (badge && !_calcEmCarregando) badge.innerHTML = '⚠️ câmbio indisponível — digite a cotação';
+  }
+  calcEmissao();
+}
+
+function calcEmissao() {
+  const num = id => { const v = parseFloat(document.getElementById(id).value); return isNaN(v) || v < 0 ? 0 : v; };
+  const pts   = num('calc-em-pts');
+  const mil   = num('calc-em-mil');
+  const taxa  = num('calc-em-taxa');
+  const moeda = document.getElementById('calc-em-moeda').value;
+  const cot   = moeda === 'BRL' ? 1 : num('calc-em-cot');
+  const iof   = moeda === 'BRL' ? 0 : num('calc-em-iof');
+
+  try {
+    localStorage.setItem(CALC_EM_PREF, JSON.stringify({
+      mil: document.getElementById('calc-em-mil').value,
+      moeda, iof: document.getElementById('calc-em-iof').value,
+    }));
+  } catch (e) {}
+
+  const elT = document.getElementById('calc-em-total');
+  const elS = document.getElementById('calc-em-sub');
+
+  if (!pts || !mil || (taxa && !cot)) {
+    elT.textContent = 'R$ —';
+    elT.className = 'calc-display-value placeholder';
+    elS.textContent = (taxa && !cot && moeda !== 'BRL') ? 'Informe a cotação para converter as taxas.' : '';
+    return;
+  }
+
+  const fmtBRL = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const fmtN   = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const valorPts   = pts / 1000 * mil;
+  const valorTaxas = taxa * cot * (1 + iof / 100);
+  const total      = valorPts + valorTaxas;
+
+  elT.textContent = fmtBRL(total);
+  elT.className = 'calc-display-value';
+
+  let sub = 'Pontos ' + fmtBRL(valorPts) + ' (' + pts.toLocaleString('pt-BR') + ' × R$ ' + fmtN(mil) + '/mil)';
+  if (taxa) {
+    sub += ' · Taxas ' + fmtBRL(valorTaxas);
+    if (moeda !== 'BRL') sub += ' (' + moeda + ' ' + fmtN(taxa) + ' × R$ ' + calcEmFmtCot(cot) + (iof ? ' + ' + iof.toLocaleString('pt-BR') + '% IOF' : '') + ')';
+  }
+  elS.textContent = sub;
 }
 
 // ── Login ─────────────────────────────────────────────────────────────────────
