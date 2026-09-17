@@ -71,7 +71,7 @@ jobs:
       - name: Salvar arquivos
         run: |
           set -euo pipefail
-          ARQS="historico.json alertas.json variacoes-notificadas.json ofertas-pendentes.json ofertas.json meliuz-lojas.json topcashback-lojas.json cashback-intl-estado.txt validades-livelo.json"
+          ARQS="historico.json alertas.json variacoes-notificadas.json ofertas-pendentes.json ofertas.json meliuz-lojas.json topcashback-lojas.json cashback-intl-estado.txt validades-livelo.json saude-coleta.json"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 

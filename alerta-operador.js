@@ -19,7 +19,9 @@ const PROXY_URL = process.env.CDV_PROXY_URL || process.env.CDV_PROXY || 'https:/
 // Kill switch sem redeploy, no mesmo espírito de AUTO_PUBLICAR_VARIACOES.
 const ALERTAS_ATIVOS = process.env.ALERTAS_OPERADOR !== 'false';
 
-async function alertarOperador(titulo, linhas = []) {
+// opts.icone: '⚠️' por padrão (degradação); '✅' para aviso de normalização.
+async function alertarOperador(titulo, linhas = [], opts = {}) {
+  const icone = opts.icone || '⚠️';
   if (!ALERTAS_ATIVOS) {
     console.log('[Alerta] ALERTAS_OPERADOR=false — alerta suprimido:', titulo);
     return { ok: false, motivo: 'desativado' };
@@ -27,7 +29,7 @@ async function alertarOperador(titulo, linhas = []) {
 
   const corpo = Array.isArray(linhas) ? linhas.filter(Boolean) : [String(linhas)];
   const mensagem = [
-    `⚠️ *${titulo}*`,
+    `${icone} *${titulo}*`,
     '',
     ...corpo,
     '',

@@ -16,6 +16,10 @@ const path = require('path');
 const HISTORICO_FILE  = path.join(__dirname, 'historico.json');
 const ALERTAS_FILE    = path.join(__dirname, 'alertas.json');
 const OFERTAS_FILE    = path.join(__dirname, 'ofertas.json');
+// Estado de saúde por programa entre rodadas: quais estão degradados e desde
+// quando. Sem ele não dá para saber, numa rodada boa, que a anterior era ruim —
+// o snapshot do dia é sobrescrito e a queda some do historico.json.
+const SAUDE_FILE      = path.join(__dirname, 'saude-coleta.json');
 const RESEND_API_KEY  = process.env.RESEND_API_KEY || '';
 
 // ── Publicacao automatica das ofertas de variacao ────────────────────────────
@@ -23,6 +27,73 @@ const RESEND_API_KEY  = process.env.RESEND_API_KEY || '';
 // mensagem-radar.js, compartilhado com coletar-inter.js.
 const { publicarOfertas, MAX_OFERTAS_APROVADAS } = require('./mensagem-radar');
 const { alertarOperador, detectarQuedas } = require('./alerta-operador');
+
+// ── Saúde da coleta entre rodadas ─────────────────────────────────────────────
+function lerSaude() {
+  try {
+    if (!fs.existsSync(SAUDE_FILE)) return { degradados: {} };
+    const s = JSON.parse(fs.readFileSync(SAUDE_FILE, 'utf8'));
+    return (s && typeof s.degradados === 'object' && s.degradados) ? s : { degradados: {} };
+  } catch (e) {
+    console.warn('[Saúde] saude-coleta.json ilegível — considerando tudo normal.');
+    return { degradados: {} };
+  }
+}
+
+function fmtDataHoraSP(iso) {
+  return new Date(iso).toLocaleString('pt-BR', {
+    timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
+  });
+}
+
+function fmtDuracao(ms) {
+  const min = Math.max(1, Math.round(ms / 60000));
+  if (min < 60) return `${min} min`;
+  const h = Math.floor(min / 60), m = min % 60;
+  return m ? `${h}h${String(m).padStart(2, '0')}` : `${h}h`;
+}
+
+async function avisarNormalizacao(quedas, contagem, nomes) {
+  const antes = lerSaude().degradados;
+  const agora = new Date().toISOString();
+  const emQueda = new Set(quedas.map(q => q.progId));
+
+  // Novo estado: mantém o "desde" de quem já estava degradado.
+  const degradados = {};
+  for (const q of quedas) {
+    degradados[q.progId] = antes[q.progId]
+      ? { ...antes[q.progId], gravidade: q.gravidade }
+      : { nome: q.nome, desde: agora, anterior: q.anterior, gravidade: q.gravidade };
+  }
+
+  const recuperados = Object.keys(antes)
+    .filter(id => !emQueda.has(id) && (contagem[id] || 0) > 0);
+
+  if (recuperados.length) {
+    const linhas = recuperados.map(id => {
+      const r = antes[id];
+      const nome = nomes[id] || r.nome || id;
+      const desde = r.desde ? ` — degradado desde ${fmtDataHoraSP(r.desde)} (${fmtDuracao(Date.now() - new Date(r.desde).getTime())})` : '';
+      return `✅ ${nome}: ${contagem[id]} parceiros${desde}`;
+    });
+    await alertarOperador('Coleta normalizada no Comparemania', linhas, { icone: '✅' });
+    console.log(`[Saúde] Normalizado: ${recuperados.join(', ')}`);
+  }
+
+  // Programa que estava degradado mas hoje não foi coletado nem entrou em queda
+  // (ex.: erro de rede pontual) continua marcado até voltar com dados.
+  for (const id of Object.keys(antes)) {
+    if (!emQueda.has(id) && !recuperados.includes(id)) degradados[id] = antes[id];
+  }
+
+  // Só grava quando o estado muda: arquivo reescrito a cada rodada viraria
+  // commit (e pages-build) de hora em hora sem necessidade.
+  const ordenar = o => JSON.stringify(Object.keys(o).sort().map(k => [k, o[k]]));
+  if (ordenar(degradados) !== ordenar(antes)) {
+    fs.writeFileSync(SAUDE_FILE, JSON.stringify({ degradados }, null, 2));
+    console.log(`[Saúde] Estado atualizado: ${Object.keys(degradados).join(', ') || 'nenhum programa degradado'}`);
+  }
+}
 
 // ── Programas monitorados ─────────────────────────────────────────────────────
 const PROGRAMS = [
@@ -1088,6 +1159,10 @@ async function main() {
   } else {
     console.log('[Histórico] Saúde da coleta: OK em todos os programas.');
   }
+
+  // 3c. Aviso de normalização: programa que estava degradado na rodada anterior
+  // e hoje voltou ao normal gera um "✅ Coleta normalizada" no grupo do operador.
+  await avisarNormalizacao(quedas, contagemPorPrograma, nomesPorPrograma);
 
   // 4. Verifica alertas e dispara os atingidos (remove após enviar)
   const alertasRestantes = [];

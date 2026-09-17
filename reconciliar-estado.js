@@ -58,6 +58,7 @@ const SOBRESCREVER = [
   'topcashback-lojas.json',
   'cashback-intl-estado.txt',
   'validades-livelo.json',
+  'saude-coleta.json',
 ];
 
 function lerJson(arquivo, padrao) {
