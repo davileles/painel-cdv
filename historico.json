@@ -580337,10 +580337,23 @@
           "slug": "quem-disse-berenice-3999"
         },
         "meliuz": {
-          "pts": 4.5,
+          "pts": 10,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-quem-disse-berenice"
+          "ate": true,
+          "slug": "cupom-quem-disse-berenice",
+          "categorias": [
+            {
+              "categoria": "Maquiagem e Pele",
+              "pts": 10,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 4.5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 4.5
         }
       },
       "links": {
