@@ -2050,9 +2050,10 @@ async function ofertaPendentePorId(id) {
 
 async function mensagemDaOferta(item) {
   const hist = await ghGetJson(HISTORICO_TRANSFERENCIAS_PATH, { items: [] });
-  return montarMensagemRadar(item, hist.data.items || []);
+  return montarMensagemRadar(completarTransferencia(item), hist.data.items || []);
 }
 
+const { completarTransferencia } = require('./transferencia-deducao.js');
 const { normalizarDatas, resumirDatas } = require('./passagens-datas.js');
 const { escopoRota } = require('./passagens-escopo.js');
 
@@ -2193,7 +2194,10 @@ async function aprovarOfertaPendente(id, edits) {
   const idx = (pend.data.items || []).findIndex((o) => o.id === id);
   if (idx < 0) return { ok: false, status: 404, erro: 'Oferta não encontrada nas pendentes (pode já ter sido processada)' };
 
-  const item = { ...pend.data.items[idx], ...(edits || {}) };
+  // completarTransferencia: ofertas aprovadas pelo bot do Telegram chegam sem
+  // origem/destino/bonusMax (a deducao so existia no gestor) e ficavam fora do
+  // historico de transferencias. Nunca sobrescreve o que veio nos edits.
+  const item = completarTransferencia({ ...pend.data.items[idx], ...(edits || {}) });
   pend.data.items.splice(idx, 1);
 
   const aprov = await ghGetJson(OFERTAS_APROVADAS_PATH, { geradoEm: null, items: [] });
