@@ -5621,9 +5621,61 @@ function buildPassFiltroPrograma() {
     progs.map(p => `<option value="${p}">${p}</option>`).join('');
 }
 
-// Agrupa passagens por rota+programa+cabine para comparação histórica
+// Agrupa passagens por rota+programa+cabine+cia para comparação histórica.
+// Espelha chaveGrupoPassagem() de painel-cdv/index.js (fonte de verdade): sem
+// isso a média exibida aqui divergia da que o gate de auto-envio usou, porque
+// "Amsterdã"/"Amsterdam", "Qatar"/"Qatar Airways" e "Economica"/"ECONÔMICA"
+// viravam grupos diferentes. Registros antigos já gravados com a grafia velha
+// entram no grupo certo porque o alias é aplicado na leitura.
+function chaveTexto(v) {
+  return String(v == null ? '' : v)
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[.]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+const ALIAS_GRUPO = {
+  // cidades
+  'amsterda':'amsterda', 'amsterdam':'amsterda',
+  'cape town':'cidade do cabo', 'capetown':'cidade do cabo',
+  'panama':'cidade do panama', 'panama city':'cidade do panama', 'ciudad de panama':'cidade do panama',
+  'san francisco':'sao francisco',
+  'bangkok':'bangcoc',
+  'shangai':'xangai', 'shanghai':'xangai',
+  'singapore':'singapura', 'singapora':'singapura',
+  'sidney':'sydney',
+  'caixias do sul':'caxias do sul',
+  'santiago do chile':'santiago', 'santiago de chile':'santiago',
+  'st marteen':'st maarten', 'sint maarten':'st maarten',
+  'mauricio':'ilhas mauricio',
+  'vvi':'santa cruz de la sierra',
+  'iguazu':'foz do iguacu',
+  'taiwan':'taipei',
+  'copenhagen':'copenhague',
+  'mexico city':'cidade do mexico',
+  'new york':'nova york', 'nova iorque':'nova york',
+  'lisbon':'lisboa', 'rome':'roma', 'milan':'milao',
+  // cias com grafia antiga em passagens.json (caixa e acento já caem no chaveTexto)
+  'qatar':'qatar airways',
+  'aerolineas':'aerolineas argentinas',
+  'american':'american airlines',
+};
+
+function chaveGrupo(v) {
+  const k = chaveTexto(v);
+  return ALIAS_GRUPO[k] || k;
+}
+
 function grupoKey(p) {
-  return `${(p.origem||'').toLowerCase()}|${(p.destino||'').toLowerCase()}|${(p.programa||'').toLowerCase()}|${(p.cabine||'').toLowerCase()}`;
+  return [
+    chaveGrupo(p.origem),
+    chaveGrupo(p.destino),
+    chaveTexto(p.programa),
+    chaveTexto(p.cabine),
+    chaveGrupo(p.cia),
+  ].join('|');
 }
 
 function normalizarCabine(cabine) {
