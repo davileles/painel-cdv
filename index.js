@@ -2520,16 +2520,61 @@ const ALIAS_CIA = {
   'vs':'Virgin Atlantic', 'virgin atlantic':'Virgin Atlantic',
 };
 
+// chaveTexto() (declarada mais abaixo, junto de chaveCia) e a unica normalizacao
+// de texto do arquivo: minusculas, sem acento, sem ponto, espaco colapsado.
+// Declaracao de funcao sobe por hoisting, por isso pode ser usada aqui.
 function normalizarCia(cia) {
   const bruto = String(cia == null ? '' : cia).trim();
   if (!bruto) return bruto;
-  const chave = bruto
-    .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[.]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-  return ALIAS_CIA[chave] || bruto;
+  return ALIAS_CIA[chaveTexto(bruto)] || bruto;
+}
+
+// ── NORMALIZACAO DE NOME DE CIDADE ───────────────────────────────────────────
+// Mesmo problema do ALIAS_CIA, agora em origem/destino. A IA de extracao devolve
+// ora "Amsterdã", ora "Amsterdam", e a grupoKey do historico 180d tratava as
+// duas como rotas diferentes: a emissao caia na fila com "sem historico" mesmo
+// havendo dezenas de registros da mesma rota (caso #19461, GIG-AMS Smiles).
+// A grafia canonica segue o portugues de IATA_CIDADES em baileys-server/server.js.
+const ALIAS_CIDADE = {
+  'amsterdam':'Amsterdã', 'amsterda':'Amsterdã',
+  'cape town':'Cidade do Cabo', 'capetown':'Cidade do Cabo',
+  'panama':'Cidade do Panamá', 'panama city':'Cidade do Panamá', 'ciudad de panama':'Cidade do Panamá',
+  'san francisco':'São Francisco', 'sao francisco':'São Francisco',
+  'bangkok':'Bangcoc', 'bangcoc':'Bangcoc',
+  'shangai':'Xangai', 'shanghai':'Xangai',
+  'singapore':'Singapura', 'singapora':'Singapura',
+  'sidney':'Sydney',
+  'caixias do sul':'Caxias do Sul',
+  'santiago do chile':'Santiago', 'santiago de chile':'Santiago',
+  'st maarten':'St. Maarten', 'st marteen':'St. Maarten', 'sint maarten':'St. Maarten',
+  'mauricio':'Ilhas Maurício', 'ilhas mauricio':'Ilhas Maurício',
+  'vvi':'Santa Cruz de la Sierra', 'santa cruz de la sierra':'Santa Cruz de la Sierra',
+  'iguazu':'Foz do Iguaçu',
+  'taiwan':'Taipei',
+  'copenhagen':'Copenhague',
+  'brigetown':'Bridgetown',
+  'mexico city':'Cidade do México',
+  'new york':'Nova York', 'nova iorque':'Nova York',
+  'lisbon':'Lisboa', 'rome':'Roma', 'milan':'Milão',
+};
+
+function normalizarCidade(cidade) {
+  const bruto = String(cidade == null ? '' : cidade).trim();
+  if (!bruto) return bruto;
+  return ALIAS_CIDADE[chaveTexto(bruto)] || bruto;
+}
+
+// Chave de agrupamento do historico 180d. Aplica os mesmos alias nos DOIS lados
+// da comparacao, entao registro antigo gravado com a grafia velha ("Amsterdam",
+// "Qatar", "ECONOMICA") entra no grupo sem precisar reescrever passagens.json.
+function chaveGrupoPassagem(p) {
+  return [
+    chaveTexto(normalizarCidade(p.origem)),
+    chaveTexto(normalizarCidade(p.destino)),
+    chaveTexto(p.programa),
+    chaveTexto(p.cabine),
+    chaveTexto(normalizarCia(p.cia)),
+  ].join('|');
 }
 
 // fonte: 'emissao' | 'alerta'
@@ -2609,8 +2654,8 @@ app.post('/passagens/registrar', async (req, res) => {
 
     const novaPassagem = {
       id,
-      origem:      origem.trim(),
-      destino:     destino.trim(),
+      origem:      normalizarCidade(origem),
+      destino:     normalizarCidade(destino),
       cia:         normalizarCia(cia),
       programa:    programa.trim(),
       pontos:      Number(pontos),
@@ -2641,11 +2686,12 @@ app.post('/passagens/registrar', async (req, res) => {
     // ponto ja causou perda silenciosa do backfill historico da planilha.
 
     // Calcula stats de histórico 180 dias ANTES de inserir a nova entrada
-    // Chave de agrupamento: origem|destino|programa|cabine (igual ao painel)
-    const grupoKey = `${(novaPassagem.origem).toLowerCase()}|${(novaPassagem.destino).toLowerCase()}|${(novaPassagem.programa).toLowerCase()}|${(novaPassagem.cabine).toLowerCase()}|${(novaPassagem.cia).toLowerCase()}`;
+    // Chave de agrupamento: origem|destino|programa|cabine|cia (igual ao painel),
+    // com alias de cidade e de cia aplicados nos dois lados — ver chaveGrupoPassagem.
+    const grupoKey = chaveGrupoPassagem(novaPassagem);
     const corteMs180 = Date.now() - 180 * 24 * 60 * 60 * 1000;
     const hist180 = items.filter(p =>
-      `${(p.origem||'').toLowerCase()}|${(p.destino||'').toLowerCase()}|${(p.programa||'').toLowerCase()}|${(p.cabine||'').toLowerCase()}|${(p.cia||'').toLowerCase()}` === grupoKey &&
+      chaveGrupoPassagem(p) === grupoKey &&
       new Date(p.enviadoEm).getTime() >= corteMs180 &&
       p.pontos > 0
     );
@@ -2768,7 +2814,8 @@ const SUFIXOS_CIA = /\s+(airways|airlines|air lines|linhas aereas|aereas|airline
 
 function chaveTexto(v) {
   return String(v == null ? '' : v)
-    .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+    .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[.]/g, '').replace(/\s+/g, ' ').trim();
 }
 
 // Chave especifica de companhia: normaliza e remove sufixo comercial.
