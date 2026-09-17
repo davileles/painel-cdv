@@ -4375,7 +4375,9 @@ function calcularStatsGrupoTransf(records){
   const bonuses = ordenados.map(r=>r.bonusMax);
   const bonusMedio = Math.round(bonuses.reduce((a,b)=>a+b,0)/bonuses.length);
   const bonusMaximo = Math.max(...bonuses);
-  const hoje = new Date().toISOString().slice(0,10);
+  // Fuso de Brasilia: em UTC a data vira as 21h e campanha "so hoje ate 23:59"
+  // sumia das ativas 3 horas antes do fim.
+  const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
   const ativa = ordenados.find(r => r.prazo && r.dataInicio <= hoje && hoje <= r.prazo) || null;
 
   let freqMediaDias = null, proximaEstimada = null;
