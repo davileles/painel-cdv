@@ -1,8 +1,36 @@
 {
-  "geradoEm": "2026-09-16T18:34:10.851Z",
+  "geradoEm": "2026-09-17T15:29:37.251260Z",
   "descricao": "Histórico de ofertas de transferência bonificada entre programas, usado para comparar novas ofertas do Radar com o padrão histórico (bônus médio e frequência). Dois tipos de registro: origem específica→destino específica, ou origem 'Todos' (quando a campanha vale para todos/quase todos os bancos parceiros)→destino específica. Nomes de origem/destino alinhados às listas fixas usadas no dropdown do gerador-cdv (2026-07-18). Backfill adicional (113 registros) importado da planilha histórica do Davi em 2026-07-18, cobrindo 02/01 a 30/06/2026.",
   "regrasDedup": "Duas ofertas com a mesma chave origem→destino e o MESMO prazo de encerramento são consideradas a mesma campanha (ex: reenvio/lembrete) e não geram novo registro — apenas anexam o ofertaId ao registro existente. Prazo diferente = campanha nova = novo registro.",
   "items": [
+    {
+      "chave": "esfera→azul_fidelidade",
+      "origem": "Esfera",
+      "destino": "Azul Fidelidade",
+      "origemTipo": "especifica",
+      "bonusMax": 110,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-09-17",
+      "prazo": "2026-09-20",
+      "ofertaIds": [
+        "11wvni6"
+      ],
+      "observacao": "Registro retroativo em 17/09: aprovada sem origem/destino/bonusMax (bot do Telegram ou origem fora da lista)."
+    },
+    {
+      "chave": "livelo→smiles",
+      "origem": "Livelo",
+      "destino": "Smiles",
+      "origemTipo": "especifica",
+      "bonusMax": 80,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-09-17",
+      "prazo": "2026-09-17",
+      "ofertaIds": [
+        "12sfgv4"
+      ],
+      "observacao": "Registro retroativo em 17/09: aprovada sem origem/destino/bonusMax (bot do Telegram ou origem fora da lista)."
+    },
     {
       "chave": "esfera→connect_miles",
       "origem": "Esfera",
@@ -16,6 +44,34 @@
         "s5bdyv"
       ],
       "observacao": ""
+    },
+    {
+      "chave": "alloyal→azul_fidelidade",
+      "origem": "Alloyal",
+      "destino": "Azul Fidelidade",
+      "origemTipo": "especifica",
+      "bonusMax": 110,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-09-15",
+      "prazo": "2026-09-15",
+      "ofertaIds": [
+        "13qfl6l"
+      ],
+      "observacao": "Registro retroativo em 17/09: aprovada sem origem/destino/bonusMax (bot do Telegram ou origem fora da lista)."
+    },
+    {
+      "chave": "premmia→smiles",
+      "origem": "Premmia",
+      "destino": "Smiles",
+      "origemTipo": "especifica",
+      "bonusMax": 120,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-09-15",
+      "prazo": "2026-09-21",
+      "ofertaIds": [
+        "cfcuen"
+      ],
+      "observacao": "Registro retroativo em 17/09: aprovada sem origem/destino/bonusMax (bot do Telegram ou origem fora da lista)."
     },
     {
       "chave": "itau→azul_fidelidade",
