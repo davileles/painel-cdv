@@ -586478,21 +586478,12 @@
         }
       }
     },
-    "localiza": {
+    "localiza internacional": {
       "programs": {
         "livelo": {
           "pts": 10,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 1,
-          "dollar": false,
-          "ate": false,
-          "slug": "cupom-localiza"
+          "dollar": true
         }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-localiza"
       }
     },
     "mistral": {
@@ -587186,14 +587177,6 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-hoteiscom"
       }
     },
-    "localiza internacional": {
-      "programs": {
-        "livelo": {
-          "pts": 5,
-          "dollar": true
-        }
-      }
-    },
     "maltacor": {
       "programs": {
         "livelo": {
@@ -587312,6 +587295,23 @@
           "pts": 4,
           "dollar": false
         }
+      }
+    },
+    "localiza": {
+      "programs": {
+        "livelo": {
+          "pts": 4,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-localiza"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-localiza"
       }
     },
     "localiza meoo": {
