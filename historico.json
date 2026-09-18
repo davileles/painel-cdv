@@ -586580,10 +586580,23 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 11,
+          "pts": 15,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-beleza-na-web"
+          "ate": true,
+          "slug": "cupom-beleza-na-web",
+          "categorias": [
+            {
+              "categoria": "Lâncome, YSL, Prada , Giorgio Armani e Valentino",
+              "pts": 15,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 8,
+              "principal": true
+            }
+          ],
+          "ptsBase": 8
         }
       },
       "links": {
