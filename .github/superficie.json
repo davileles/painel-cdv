@@ -15,6 +15,7 @@
         "app.get('/castanheiras/login'",
         "app.get('/catalogo-cartoes'",
         "app.get('/catalogo-cartoes/:slug'",
+        "app.get('/concierge-auth/status'",
         "app.get('/concierge/alertas'",
         "app.get('/concierge/arquivo/:reservaId'",
         "app.get('/concierge/cfg'",
@@ -22,6 +23,7 @@
         "app.get('/concierge/modelos'",
         "app.get('/concierge/msgs-enviadas'",
         "app.get('/concierge/portal'",
+        "app.get('/concierge/portal/tema'",
         "app.get('/concierge/reservas'",
         "app.get('/concierge/viagens'",
         "app.get('/fetch'",
@@ -101,7 +103,9 @@
         "app.post('/roteiros/publicar'",
         "app.post('/webhook/hubla-membros'",
         "async function rlFlush",
-        "async function rlHandle"
+        "async function rlHandle",
+        "function assinarSessaoConcierge(",
+        "function sessaoConciergeValida("
       ]
     },
     "index.html": {

@@ -88,13 +88,93 @@ app.use(express.json({ limit: '20mb' }));
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env, X-CDV-Op');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env, X-CDV-Op, X-CDV-Auth, X-CDV-Servico');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
 
 // Health check / warm-up
 app.get('/ping', (req, res) => res.json({ ok: true, ts: Date.now() }));
+
+// ══ CONCIERGE: autenticacao das rotas /concierge/* ═══════════════════════════
+// A base do concierge tem CPF, passaporte, endereco e senhas de programas de
+// fidelidade. Toda rota /concierge/* exige um destes:
+//   X-CDV-Auth    token de sessao assinado, emitido pelo /admin/verificar-codigo
+//                 (login OTP do painel concierge e da extensao do Chrome)
+//   X-CDV-Servico chave de servico dos jobs do GitHub Actions (lembrete-voo.js).
+//                 Aqui fica so o SHA-256 da chave — a chave em si vive no secret
+//                 CDV_SERVICO_CONCIERGE do repo davileles/concierge.
+// Rotas publicas de proposito: o formulario de cadastro, o portal do cliente e
+// as duas que o coletar.js (Actions do painel-cdv) chama sem credencial.
+const CONC_AUTH_EXIGIR   = false;
+const CONC_SESSAO_TTL    = 12 * 3600 * 1000;
+const CONC_SERVICO_HASH  = 'da33dfbf889a93327c0f9f22c2b129bdddb2cc9e1936384aa97234b58d426933';
+const CONC_ROTAS_PUBLICAS = new Set([
+  'POST /concierge/cadastro',
+  'GET /concierge/portal',
+  'GET /concierge/portal/tema',
+  'GET /concierge/alertas',
+  'POST /concierge/alerta/disparar',
+]);
+
+// Segredo derivado: CONCIERGE_SESSION_SECRET se existir, senao o GITHUB_TOKEN
+// do Railway (que ja e segredo e sempre esta presente). Trocar qualquer um dos
+// dois derruba todas as sessoes — efeito desejado num vazamento.
+function concSegredo() {
+  const base = process.env.CONCIERGE_SESSION_SECRET || process.env.GITHUB_TOKEN || '';
+  if (!base) return null;
+  return crypto.createHash('sha256').update('concierge-sessao-v1|' + base).digest();
+}
+
+function assinarSessaoConcierge(email) {
+  const segredo = concSegredo();
+  if (!segredo) return null;
+  const payload = Buffer.from(JSON.stringify({
+    email: String(email).toLowerCase(), exp: Date.now() + CONC_SESSAO_TTL,
+  })).toString('base64url');
+  const assinatura = crypto.createHmac('sha256', segredo).update(payload).digest('base64url');
+  return payload + '.' + assinatura;
+}
+
+// Devolve o e-mail da sessao ou null. Revalida a allowlist a cada chamada:
+// e-mail removido de ADMIN_EMAILS/ADMIN_EMAILS_APP perde o acesso na hora.
+function sessaoConciergeValida(token) {
+  const segredo = concSegredo();
+  if (!segredo || !token) return null;
+  const partes = String(token).split('.');
+  if (partes.length !== 2) return null;
+  const esperada = crypto.createHmac('sha256', segredo).update(partes[0]).digest();
+  let recebida;
+  try { recebida = Buffer.from(partes[1], 'base64url'); } catch (e) { return null; }
+  if (recebida.length !== esperada.length || !crypto.timingSafeEqual(recebida, esperada)) return null;
+  let dados;
+  try { dados = JSON.parse(Buffer.from(partes[0], 'base64url').toString('utf8')); } catch (e) { return null; }
+  if (!dados || !dados.email || !(Number(dados.exp) > Date.now())) return null;
+  if (!adminAutorizado(dados.email, 'concierge')) return null;
+  return dados.email;
+}
+
+function servicoConciergeValido(chave) {
+  if (!chave) return false;
+  const h = crypto.createHash('sha256').update(String(chave)).digest();
+  return crypto.timingSafeEqual(h, Buffer.from(CONC_SERVICO_HASH, 'hex'));
+}
+
+app.use((req, res, next) => {
+  if (req.path !== '/concierge' && !req.path.startsWith('/concierge/')) return next();
+  if (CONC_ROTAS_PUBLICAS.has(req.method + ' ' + req.path.replace(/\/+$/, ''))) return next();
+  const email = sessaoConciergeValida(req.headers['x-cdv-auth']);
+  if (email) { res.locals.conciergeEmail = email; return next(); }
+  if (servicoConciergeValido(req.headers['x-cdv-servico'])) { res.locals.conciergeServico = true; return next(); }
+  if (!CONC_AUTH_EXIGIR) return next();
+  return res.status(401).json({ ok: false, erro: 'nao autorizado', motivo: 'sessao' });
+});
+
+// Checagem do token (usada pela extensao do Chrome e pelo painel ao abrir)
+app.get('/concierge-auth/status', (req, res) => {
+  const email = sessaoConciergeValida(req.headers['x-cdv-auth']);
+  res.json({ ok: !!email, email: email || null });
+});
 
 // ══════════════════════════════════════════════════════════════════════════════
 // LINKS MASCARADOS / AFILIADO — ir.clubedoviajante.com.br
@@ -3597,7 +3677,12 @@ app.post('/admin/verificar-codigo', async (req, res) => {
   if (operadorTsp && !tenantToken) {
     return res.status(500).json({ ok: false, erro: 'TSP_TENANT_SECRET nao configurado no proxy — login de operador bloqueado por seguranca.' });
   }
-  res.json({ ok: true, acesso: true, email, ...(tenantToken ? { tenantToken } : {}) });
+  // Token de sessao do concierge: exigido por todas as rotas /concierge/*.
+  const conciergeToken = (appKey === 'concierge' || !appKey) && adminAutorizado(email, 'concierge')
+    ? assinarSessaoConcierge(email) : null;
+  res.json({ ok: true, acesso: true, email,
+    ...(tenantToken ? { tenantToken } : {}),
+    ...(conciergeToken ? { conciergeToken } : {}) });
 });
 
 // ── Membros: verificar acesso por e-mail ─────────────────────────────────────
@@ -5099,19 +5184,22 @@ app.post('/concierge/pendentes/aprovar', async (req, res) => {
 });
 
 // GET /concierge/portal?email=x — dados do cliente para o portal de acompanhamento
+// Unica fonte do portal.html: o browser do cliente recebe so o que e dele (antes
+// o portal baixava a base inteira de clientes, reservas e viagens e filtrava no
+// front). A regra de casamento por nome e a mesma que o portal usava.
+function _portalNormNome(s) {
+  const partes = String(s || '').trim().split(/\s+/).filter(Boolean);
+  if (!partes.length) return '';
+  const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+  return cap(partes[0]) + (partes[1] ? ' ' + cap(partes[1]) : '');
+}
 app.get('/concierge/portal', async (req, res) => {
   const email = (req.query.email || '').toLowerCase().trim();
   if (!email) return res.status(400).json({ ok: false, erro: 'email obrigatório' });
 
   try {
-    // 1. Base de clientes: JSON no repo privado (antes vinha do Apps Script, que
-    //    quebrava com 404 da user_content_key e derrubava o portal junto).
-    const CONCIERGE_REPO = 'davileles/concierge';
-    const ghHeaders = { 'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json' };
-
     const { lista: baseClientes } = await lerClientesConcierge();
 
-    // 2. Encontrar clientes cujo e-mail corresponde
     const clientesMatch = baseClientes
       .map(c => ({
         nome: String(c.nome || '').trim(),
@@ -5120,45 +5208,47 @@ app.get('/concierge/portal', async (req, res) => {
       .filter(c => c.email === email && c.nome);
 
     if (!clientesMatch.length) {
-      return res.json({ ok: true, clientes: [], viagens: [], reservas: [] });
+      return res.json({ ok: true, clientes: [], nomesCliente: [], viagens: [], reservas: [] });
     }
 
-    const nomesCliente = clientesMatch.map(c => {
-      const partes = c.nome.trim().split(/\s+/);
-      return (partes[0].charAt(0).toUpperCase() + partes[0].slice(1).toLowerCase()) + 
-             (partes[1] ? ' ' + partes[1].charAt(0).toUpperCase() + partes[1].slice(1).toLowerCase() : '');
-    });
+    const nomesCliente = clientesMatch.map(c => _portalNormNome(c.nome));
+    const primeiros = nomesCliente.map(n => n.toLowerCase().split(' ')[0]);
 
-    // 3. Buscar viagens e reservas do GitHub
-    const [viagensRes, reservasRes] = await Promise.all([
-      fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/viagens.json`, { compress: false, headers: ghHeaders }),
-      fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/reservas.json`, { compress: false, headers: ghHeaders }),
+    const [rv, rr] = await Promise.all([
+      getConciergeFile('viagens.json'),
+      getConciergeFile('reservas.json'),
     ]);
-    const viagensData = await viagensRes.json();
-    const reservasData = await reservasRes.json();
-    const todasViagens  = JSON.parse(Buffer.from(viagensData.content,  'base64').toString('utf8'));
-    const todasReservas = JSON.parse(Buffer.from(reservasData.content, 'base64').toString('utf8'));
+    const todasViagens  = Array.isArray(rv.content) ? rv.content : [];
+    const todasReservas = Array.isArray(rr.content) ? rr.content : [];
 
-    // 4. Filtrar por nome do cliente (normalizado)
-    function nomeMatch(nome) {
-      if (!nome) return false;
-      const partes = nome.trim().split(/\s+/);
-      const norm = (partes[0].charAt(0).toUpperCase() + partes[0].slice(1).toLowerCase()) +
-                   (partes[1] ? ' ' + partes[1].charAt(0).toUpperCase() + partes[1].slice(1).toLowerCase() : '');
-      return nomesCliente.includes(norm);
+    function nomeMatch(campo) {
+      if (!campo) return false;
+      const lista = Array.isArray(campo) ? campo : String(campo).split(',');
+      return lista.some(n => {
+        const norm = _portalNormNome(String(n || '').trim());
+        if (!norm) return false;
+        return nomesCliente.includes(norm) || primeiros.includes(norm.toLowerCase().split(' ')[0]);
+      });
     }
 
-    const viagens = todasViagens.filter(v => {
-      const clis = Array.isArray(v.clientes) ? v.clientes : [v.clientes];
-      return clis.some(nomeMatch);
-    });
-
+    const viagens  = todasViagens.filter(v => nomeMatch(v.clientes));
     const reservas = todasReservas.filter(r => nomeMatch(r.cliente));
 
     res.json({ ok: true, clientes: clientesMatch, nomesCliente, viagens, reservas });
   } catch(e) {
     console.error('[concierge/portal]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// GET /concierge/portal/tema — so o tema, para o portal publico nao ler o cfg
+// inteiro (que tem URL do Baileys, conta de envio e grupo de alertas).
+app.get('/concierge/portal/tema', async (req, res) => {
+  try {
+    const { content } = await getConciergeFile('cfg.json');
+    res.json({ ok: true, tema: (content && content.tema) || 'dark' });
+  } catch(e) {
+    res.json({ ok: true, tema: 'dark' });
   }
 });
 
