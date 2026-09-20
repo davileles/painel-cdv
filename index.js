@@ -106,7 +106,7 @@ app.get('/ping', (req, res) => res.json({ ok: true, ts: Date.now() }));
 //                 CDV_SERVICO_CONCIERGE do repo davileles/concierge.
 // Rotas publicas de proposito: o formulario de cadastro, o portal do cliente e
 // as duas que o coletar.js (Actions do painel-cdv) chama sem credencial.
-const CONC_AUTH_EXIGIR   = false;
+const CONC_AUTH_EXIGIR   = true;
 const CONC_SESSAO_TTL    = 12 * 3600 * 1000;
 const CONC_SERVICO_HASH  = 'da33dfbf889a93327c0f9f22c2b129bdddb2cc9e1936384aa97234b58d426933';
 const CONC_ROTAS_PUBLICAS = new Set([
