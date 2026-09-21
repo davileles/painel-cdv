@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-09-21T13:02:33.167Z",
+  "coletadoEm": "2026-09-21T14:02:31.606Z",
   "items": {
     "adcos": {
       "id": "SPA",
@@ -23,6 +23,18 @@
       "parity": 10,
       "parityClub": 10,
       "parityBau": 3,
+      "campanha": "PROMOTION"
+    },
+    "aramis": {
+      "id": "ARA",
+      "nome": "Aramis",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 21 a 23/09/2026. Ganhe 6 pontos a cada real gasto. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-21",
+      "dateEnd": "2026-09-23",
+      "parity": 6,
+      "parityClub": 6,
+      "parityBau": 1,
       "campanha": "PROMOTION"
     },
     "assistcardseguroviagem": {
@@ -157,6 +169,18 @@
       "parityBau": 2,
       "campanha": "PROMOTION"
     },
+    "carrefourmercado": {
+      "id": "CRM",
+      "nome": "Carrefour Mercado",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 21 a 23/09/2026. Ganhe 6 pontos por real gasto em produtos da marca Carrefour e Bulnez e 1 ponto por real nos demais produtos. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-21",
+      "dateEnd": "2026-09-23",
+      "parity": 6,
+      "parityClub": 6,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
     "carrefourshopping": {
       "id": "CRF",
       "nome": "Carrefour Shopping",
@@ -253,6 +277,18 @@
       "parityBau": 6,
       "campanha": "PROMOTION_CLUB"
     },
+    "cookeletroraro": {
+      "id": "COK",
+      "nome": "Cook Eletroraro",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 21 a 27/09/2026. Ganhe 4 pontos a cada real gasto em produtos selecionados e 1 ponto por real demais produtos. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-21",
+      "dateEnd": "2026-09-27",
+      "parity": 4,
+      "parityClub": 4,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
     "coris": {
       "id": "CRS",
       "nome": "Coris",
@@ -312,6 +348,30 @@
       "parityClub": 3,
       "parityBau": 1,
       "campanha": "PROMOTION_CLUB"
+    },
+    "farmaciasapp": {
+      "id": "NCC",
+      "nome": "Farmacias App",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 21 a 22/09/2026. Ganhe 7 pontos por real gasto. Utilize o cupom LIVELO. Não é válido para medicamentos. Elegível a pontuação compras de até R$500 reais por CPF e quantidade máxima de 3 (três) unidades de um mesmo produto por transação. Consulte o regulamento.",
+      "dateStart": "2026-09-21",
+      "dateEnd": "2026-09-22",
+      "parity": 7,
+      "parityClub": 7,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
+    "fastshop": {
+      "id": "FST",
+      "nome": "Fast Shop",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 21 a 22/09/2026. Ganhe 7 pontos por real gasto em smartphones e tablets selecionados; 2 pontos por real em produtos vendidos e entregues por Fast Shop e 1 ponto por real para marketplace. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-21",
+      "dateEnd": "2026-09-22",
+      "parity": 7,
+      "parityClub": 7,
+      "parityBau": 2,
+      "campanha": "PROMOTION"
     },
     "foco": {
       "id": "FOC",
@@ -455,6 +515,18 @@
       "parity": 12,
       "parityClub": 15,
       "parityBau": 2,
+      "campanha": "PROMOTION_CLUB"
+    },
+    "morana": {
+      "id": "MRN",
+      "nome": "Morana",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 21 a 23/09/2026. Ganhe 10 pontos por real gasto, exclusivo para assinantes do Clube Livelo e 8 pontos por real demais clientes. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-21",
+      "dateEnd": "2026-09-23",
+      "parity": 8,
+      "parityClub": 10,
+      "parityBau": 3,
       "campanha": "PROMOTION_CLUB"
     },
     "myconconsorciodigital": {
