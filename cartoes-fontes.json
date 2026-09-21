@@ -1,7 +1,7 @@
 {
   "_meta": {
     "descricao": "Hash do conteúdo das fontes por cartão. Se o hash não mudou, o coletor não chama a IA.",
-    "atualizado_em": "2026-09-14",
+    "atualizado_em": "2026-09-21",
     "total": 67
   },
   "cartoes": {
@@ -30,13 +30,12 @@
       "em": "2026-07-31"
     },
     "btg-mastercard-black-tap": {
-      "hash": "b6467265e7568092",
+      "hash": "000d4a31a551cefa",
       "urls": [
         "https://conteudo.btgpactual.com/cartao-tap-lastreado",
-        "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf",
         "https://conteudo.btgpactual.com/cartao-black-lastreado/"
       ],
-      "em": "2026-07-31"
+      "em": "2026-09-21"
     },
     "btg-mastercard-black-ultrablue": {
       "hash": "42d190b56ec43246",
@@ -59,7 +58,7 @@
       "em": "2026-08-24"
     },
     "safra-investor-visa-infinite": {
-      "hash": "fdfa9f3b0daa50b4",
+      "hash": "8d051aad5ba60b64",
       "urls": [
         "https://www.safra.com.br/cartoes/",
         "https://www.safra.com.br/abra-sua-conta.htm",
@@ -67,17 +66,17 @@
         "https://www.safra.com.br/cartoes/programa-safra-rewards/",
         "https://www.safra.com.br/external-files/servicos/pessoa-fisica/conta-corrente/tabela-de-tarifas-pf.pdf"
       ],
-      "em": "2026-09-07"
+      "em": "2026-09-21"
     },
     "safra-iridium-visa-infinite": {
-      "hash": "aaed028d5d41be5f",
+      "hash": "c175e6f6717daf5f",
       "urls": [
         "https://www.safra.com.br/cartoes/"
       ],
-      "em": "2026-08-10"
+      "em": "2026-09-21"
     },
     "safra-visa-infinite": {
-      "hash": "d520f4cf1c1212e6",
+      "hash": "b1aa3cb641be4933",
       "urls": [
         "https://www.safra.com.br/cartoes/",
         "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/safra-visa-infinite.htm",
@@ -85,7 +84,7 @@
         "https://www.safra.com.br/cartoes/programa-safra-rewards/",
         "https://www.safra.com.br/abra-sua-conta.htm"
       ],
-      "em": "2026-09-14"
+      "em": "2026-09-21"
     },
     "bb-visa-infinite-altus-private": {
       "hash": "fe8bba635e15cb2f",
@@ -95,11 +94,11 @@
       "em": "2026-07-31"
     },
     "bb-mastercard-black": {
-      "hash": "17e7578248df925a",
+      "hash": "d40a2468ad7f03de",
       "urls": [
         "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/"
       ],
-      "em": "2026-07-31"
+      "em": "2026-09-21"
     },
     "bradesco-visa-principal": {
       "hash": "03f243af217949f5",
@@ -167,7 +166,7 @@
       "em": "2026-07-31"
     },
     "nubank-ultravioleta": {
-      "hash": "9eec8b155d2be00a",
+      "hash": "ed5521adfc45f660",
       "urls": [
         "https://nubank.com.br/ultravioleta/cartao-black",
         "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta",
@@ -176,15 +175,15 @@
         "https://nubank.com.br/ultravioleta/beneficios",
         "https://nubank.com.br/ultravioleta/cartao-black/pontos-cashback"
       ],
-      "em": "2026-09-14"
+      "em": "2026-09-21"
     },
     "porto-bank-mastercard-black": {
-      "hash": "9eea893f50015e8d",
+      "hash": "60060a05ebb71dfe",
       "urls": [
         "https://www.mastercard.com/news/latin-america/pt-br/noticias/comunicados-de-imprensa/pr-pt/2025/outubro/mastercard-celebra-seu-primeiro-ano-de-parceria-com-mclaren-formula-1-team-e-anuncia-o-porto-bank-como-parceiro-oficial-da-corrida-no-brasil/",
         "https://www.portobank.com.br/"
       ],
-      "em": "2026-09-07"
+      "em": "2026-09-21"
     },
     "porto-bank-visa-infinite": {
       "hash": "868c0a586f09c2ac",
@@ -219,7 +218,7 @@
       "em": "2026-07-31"
     },
     "sicoob-mastercard-black-merit": {
-      "hash": "5435a4ce9f2e43e7",
+      "hash": "3749caf06937df31",
       "urls": [
         "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf",
         "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
@@ -228,10 +227,10 @@
         "https://www.sicoob.com.br/web/sicoobagrorural/mastercard-black-pf",
         "https://www.sicoob.com.br/documents/37087630/37302699/Cartoes+de+Credito+Diferenciados+PF+por+Valor+Anuidade.pdf/9dd0f9de-d1c5-0d93-e2c0-70af51d042b0?t=1631885857192&download=true"
       ],
-      "em": "2026-09-14"
+      "em": "2026-09-21"
     },
     "sicoob-mastercard-black-zenith": {
-      "hash": "e31d89fdebef5762",
+      "hash": "d63b8224cf63af0a",
       "urls": [
         "https://www.sicoob.com.br/web/sicoob/mastercard-zenith",
         "https://www.sicoob.com.br/web/sicoob/coopera",
@@ -240,10 +239,10 @@
         "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/282563279",
         "https://www.sicoob.com.br/zenith/desbloqueio"
       ],
-      "em": "2026-09-14"
+      "em": "2026-09-21"
     },
     "sicoob-visa-infinite-zenith": {
-      "hash": "f9892fc457f18110",
+      "hash": "a5fc47f7da368ffc",
       "urls": [
         "https://www.sicoob.com.br/web/sicoob/visa-zenith",
         "https://www.sicoob.com.br/web/sicoob/coopera",
@@ -252,10 +251,10 @@
         "https://www.sicoob.com.br/web/sicoobcentralscrs/noticias/-/asset_publisher/xAioIawpOI5S/content/id/279728567",
         "https://www.sicoob.com.br/documents/2204538/138978214/Tabela+de+Tarifas+nov-2025.pdf/9b3d5594-06cf-9814-0a93-193e5584f598?t=1763141556627"
       ],
-      "em": "2026-09-14"
+      "em": "2026-09-21"
     },
     "sicredi-mastercard-black": {
-      "hash": "245b8c9383fd2a9e",
+      "hash": "76e664faefb1acfa",
       "urls": [
         "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/",
         "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-mastercard-black/",
@@ -264,10 +263,10 @@
         "https://www.sicredi.com.br/site/blog/produtos/viagem-descanso-verdadeiro/",
         "https://www.sicredi.com.br/site/solucoes-exclusivas/"
       ],
-      "em": "2026-09-14"
+      "em": "2026-09-21"
     },
     "sicredi-visa-infinite": {
-      "hash": "9036930fd1acf12c",
+      "hash": "a9817460015a1d7f",
       "urls": [
         "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
         "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-visa-infinite/",
@@ -276,7 +275,7 @@
         "https://www.sicredi.com.br/coop/centrosulmsba/noticias/produtos/cashback-de-iof-para-associados-com-cartoes-visa-infinite-e-visa-empresarial/",
         "https://www.sicredi.com.br/site/cartoes/visa-iof/"
       ],
-      "em": "2026-09-14"
+      "em": "2026-09-21"
     },
     "unicred-visa-infinite": {
       "hash": "be14641d7a53d0b2",
@@ -509,14 +508,13 @@
       "em": "2026-08-17"
     },
     "btg-mastercard-world-legend-ultrablue": {
-      "hash": "c33c91587173dd73",
+      "hash": "b8147740192d0528",
       "urls": [
         "https://conteudo.btgpactual.com/cartao-ultrablue",
         "https://banking.btgpactual.com/assets/files/comparativo-cartoes-btg-pactual.pdf",
-        "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/world-legend-mastercard.html",
-        "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf"
+        "https://www.mastercard.com/br/pt/personal/find-a-card/credit-card/world-legend-mastercard.html"
       ],
-      "em": "2026-09-14"
+      "em": "2026-09-21"
     },
     "c6-graphene": {
       "hash": "3ffc03a4e6d9ba1f",
