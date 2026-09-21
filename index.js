@@ -40,7 +40,9 @@ const ARQUIVOS_SENSIVEIS = new Set([
   // Nunca pode viver no painel-cdv, que e publico por servir o GitHub Pages.
   'campanhas.json',
   // Indice de roteiros por membro (e-mail + slug): dado pessoal, repo privado.
-  'roteiros-membros.json'
+  'roteiros-membros.json',
+  // Log dos payloads recebidos da Hubla (e-mail/nome de membros): repo privado.
+  'hubla-webhooks-log.json'
 ]);
 // NÃO migrar (verificado): 'passagens.json' é catálogo de ofertas
 // (cia/origem/destino/pontos) — sem dado pessoal. 'historico.json',
@@ -3735,6 +3737,25 @@ app.post('/membros/tema', async (req, res) => {
   }
 });
 
+// ── Log dos webhooks Hubla (últimos 200 payloads, repo privado) ───────────────
+// Best-effort: nunca bloqueia nem derruba o processamento do webhook.
+const HUBLA_LOG_PATH = 'hubla-webhooks-log.json';
+const HUBLA_LOG_MAX  = 200;
+async function registrarWebhookHubla(entrada) {
+  for (let tentativa = 1; tentativa <= 3; tentativa++) {
+    try {
+      const atual = await ghGetJson(HUBLA_LOG_PATH, { eventos: [] });
+      const eventos = Array.isArray(atual.data.eventos) ? atual.data.eventos : [];
+      eventos.unshift(entrada);
+      await ghPutJson(HUBLA_LOG_PATH, { atualizadoEm: new Date().toISOString(), eventos: eventos.slice(0, HUBLA_LOG_MAX) }, atual.sha, `log: hubla ${entrada.type || ''}`);
+      return;
+    } catch (err) {
+      if (tentativa < 3) { await new Promise(r => setTimeout(r, tentativa * 700)); continue; }
+      console.error('[hubla-log]', err.message);
+    }
+  }
+}
+
 // ── Webhook Hubla: member_added / member_removed ──────────────────────────────
 app.post('/webhook/hubla-membros', async (req, res) => {
   // Valida token
@@ -3755,11 +3776,21 @@ app.post('/webhook/hubla-membros', async (req, res) => {
   const email  = (user.email || '').toLowerCase().trim();
   const nome   = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.fullName || user.name || email;
   const produto = event.products?.[0] || event.product || {};
+  // ID da assinatura Hubla: o membro pode ter mais de uma (ex.: renovou com
+  // assinatura nova e a antiga expirou depois). A remoção passa a ser por
+  // assinatura, não por e-mail.
+  const assinaturaId = String(
+    event.subscription?.id || event.subscriptionId || event.member?.subscriptionId || ''
+  ).trim();
+
+  registrarWebhookHubla({ recebidoEm: new Date().toISOString(), type, email, assinaturaId, event });
 
   if (!email) return res.status(400).json({ ok: false, erro: 'E-mail não encontrado no payload' });
 
+  let acao = isMemberAdded ? 'adicionado' : 'removido';
   for (let tentativa = 1; tentativa <= 4; tentativa++) {
     try {
+      acao = isMemberAdded ? 'adicionado' : 'removido';
       const agora = new Date().toISOString();
       const dados = await ghGetJson(MEMBROS_PATH, { atualizadoEm: agora, total: 0, membros: [] });
       let membros = dados.data.membros || [];
@@ -3774,24 +3805,49 @@ app.post('/webhook/hubla-membros', async (req, res) => {
         if (idx >= 0) {
           membros[idx].status       = 'ativo';
           membros[idx].atualizadoEm = agora;
+          delete membros[idx].removidoEm;
           if (!membros[idx].produtos) membros[idx].produtos = [];
           const jaExiste = membros[idx].produtos.some(p => p.produtoId === entrada.produtoId);
           if (!jaExiste) membros[idx].produtos.push(entrada);
+          if (assinaturaId) {
+            const subs = Array.isArray(membros[idx].assinaturasHubla) ? membros[idx].assinaturasHubla : [];
+            if (!subs.includes(assinaturaId)) subs.push(assinaturaId);
+            membros[idx].assinaturasHubla = subs;
+          }
         } else {
-          membros.push({ nome, email, status: 'ativo', produtos: [entrada], adicionadoEm: agora, atualizadoEm: agora, origem: 'webhook' });
+          const novo = { nome, email, status: 'ativo', produtos: [entrada], adicionadoEm: agora, atualizadoEm: agora, origem: 'webhook' };
+          if (assinaturaId) novo.assinaturasHubla = [assinaturaId];
+          membros.push(novo);
         }
       }
 
       if (isMemberRemoved) {
         if (idx >= 0) {
-          membros[idx].status       = 'inativo';
+          const subs = Array.isArray(membros[idx].assinaturasHubla) ? membros[idx].assinaturasHubla : [];
+          if (assinaturaId && subs.length && !subs.includes(assinaturaId)) {
+            // Remoção de uma assinatura que não é a(s) ativa(s) registrada(s)
+            // (ex.: a antiga expirou depois de o aluno assinar de novo): ignora.
+            console.log(`[hubla-membros] remoção ignorada: ${email} assinatura ${assinaturaId} não está em [${subs.join(', ')}]`);
+            return res.json({ ok: true, type, email, acao: 'ignorado', motivo: 'assinatura_nao_ativa' });
+          }
+          const restantes = assinaturaId ? subs.filter(s => s !== assinaturaId) : [];
           membros[idx].atualizadoEm = agora;
-          membros[idx].removidoEm   = agora;
+          if (restantes.length) {
+            // Ainda há outra assinatura ativa: mantém o acesso.
+            membros[idx].assinaturasHubla = restantes;
+            acao = 'assinatura_removida_mantido_ativo';
+          } else {
+            // Sem ID no payload ou membro legado sem assinaturas registradas:
+            // comportamento anterior (desativa pelo e-mail).
+            if (assinaturaId) membros[idx].assinaturasHubla = [];
+            membros[idx].status     = 'inativo';
+            membros[idx].removidoEm = agora;
+          }
         }
       }
 
       await ghPutJson(MEMBROS_PATH, { atualizadoEm: agora, total: membros.filter(m => m.status === 'ativo').length, membros }, dados.sha, 'webhook: atualiza membros');
-      return res.json({ ok: true, type, email, acao: isMemberAdded ? 'adicionado' : 'removido' });
+      return res.json({ ok: true, type, email, acao });
 
     } catch (err) {
       const isShaConflict = err.message && err.message.includes('but expected');
