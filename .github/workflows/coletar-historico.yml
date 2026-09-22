@@ -28,7 +28,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+      # continue-on-error: queda do Comparemania (ex.: HTTP 500.30 em 22/09)
+      # não pode impedir Inter/Méliuz/TopCashback, que são outros sites. O
+      # coletar.js já avisa o operador; o último passo repinta a run de vermelho.
       - name: Coletar pontuações Comparemania e disparar alertas
+        id: comparemania
+        continue-on-error: true
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -69,6 +74,7 @@ jobs:
       # ofertas por id (respeitando rejeições e aprovações feitas no meio).
       # Conflito deixa de ser possível; push rejeitado só refaz o ciclo.
       - name: Salvar arquivos
+        if: ${{ !cancelled() }}
         run: |
           set -euo pipefail
           ARQS="historico.json alertas.json variacoes-notificadas.json ofertas-pendentes.json ofertas.json meliuz-lojas.json topcashback-lojas.json cashback-intl-estado.txt validades-livelo.json saude-coleta.json"
@@ -96,4 +102,11 @@ jobs:
             sleep "${tent}0"
           done
           echo "::error::Não consegui salvar a coleta após 5 tentativas."
+          exit 1
+      # Mantém a run marcada como falha quando o Comparemania falhou, depois de
+      # já ter salvo o que os demais coletores trouxeram.
+      - name: Sinalizar falha do Comparemania
+        if: ${{ !cancelled() && steps.comparemania.outcome == 'failure' }}
+        run: |
+          echo "::error::Coleta Comparemania falhou — demais coletores rodaram e foram salvos."
           exit 1
