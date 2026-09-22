@@ -113,6 +113,7 @@ const CONC_SESSAO_TTL    = 12 * 3600 * 1000;
 const CONC_SERVICO_HASH  = 'da33dfbf889a93327c0f9f22c2b129bdddb2cc9e1936384aa97234b58d426933';
 const CONC_ROTAS_PUBLICAS = new Set([
   'POST /concierge/cadastro',
+  'POST /concierge/ds160',
   'GET /concierge/portal',
   'GET /concierge/portal/tema',
   'GET /concierge/alertas',
@@ -5034,6 +5035,112 @@ app.post('/concierge/cadastro', async (req, res) => {
   } catch(e) {
     console.error('[concierge/cadastro]', e.message);
     res.status(500).json({ ok: false, erro: 'Nao foi possivel registrar agora. Tente novamente em instantes.' });
+  }
+});
+
+// ── CONCIERGE: Formulario DS-160 (visto americano) ──────────────────────
+// Formulario publico em concierge.clubedoviajante.com.br/ds160.html. Mesmas
+// protecoes do /concierge/cadastro (honeypot, teto por IP, tamanho, LGPD).
+// Grava em concierge/ds160.json no repo PRIVADO de dados — nunca no repo
+// publico `concierge` (tem passaporte, CPF, familia e historico migratorio).
+// Cada registro guarda `dados` (estruturado) e `ficha` (secoes ja rotuladas,
+// na ordem do formulario) — o painel so renderiza a ficha, entao mudar campos
+// no ds160.html nao exige mexer no painel nem aqui.
+const CONCIERGE_DS160 = 'concierge/ds160.json';
+
+function ds160Limpo(v, prof) {
+  if (prof > 4) return null;
+  if (v == null) return '';
+  if (Array.isArray(v)) return v.slice(0, 40).map(x => ds160Limpo(x, prof + 1));
+  if (typeof v === 'object') {
+    const out = {};
+    for (const k of Object.keys(v).slice(0, 200)) {
+      if (!/^[A-Za-z0-9_]{1,40}$/.test(k)) continue;
+      out[k] = ds160Limpo(v[k], prof + 1);
+    }
+    return out;
+  }
+  if (typeof v === 'boolean') return v;
+  return String(v).trim().slice(0, 2000);
+}
+
+// POST /concierge/ds160 — recebe o formulario publico
+app.post('/concierge/ds160', async (req, res) => {
+  try {
+    const ip = String(req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
+    if (!cadastroLiberado(ip)) return res.status(429).json({ ok: false, erro: 'Muitas tentativas. Tente novamente em uma hora.' });
+
+    const b = req.body || {};
+    if (String(b.website || '').trim()) return res.json({ ok: true });
+    if (JSON.stringify(b).length > 150000) return res.status(413).json({ ok: false, erro: 'Formulario grande demais.' });
+    if (b.consentimento !== true) return res.status(400).json({ ok: false, erro: 'E necessario aceitar o tratamento dos dados (LGPD).' });
+
+    const dados = ds160Limpo(b.dados || {}, 0);
+    if (!dados.sobrenome || !dados.nomes) return res.status(400).json({ ok: false, erro: 'Informe nome e sobrenome.' });
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(dados.email || '')) return res.status(400).json({ ok: false, erro: 'E-mail invalido.' });
+    if (soDigitos(dados.tel).length < 10) return res.status(400).json({ ok: false, erro: 'Telefone invalido — inclua o DDD.' });
+    if (!cpfValido(dados.cpf)) return res.status(400).json({ ok: false, erro: 'CPF invalido.' });
+    if (!dados.passaporte) return res.status(400).json({ ok: false, erro: 'Informe o numero do passaporte.' });
+
+    const ficha = (Array.isArray(b.ficha) ? b.ficha : []).slice(0, 20).map(s => ({
+      titulo: String((s && s.titulo) || '').trim().slice(0, 120),
+      campos: (Array.isArray(s && s.campos) ? s.campos : []).slice(0, 200)
+        .map(c => ({ r: String((c && c.r) || '').trim().slice(0, 200), v: String((c && c.v) || '').trim().slice(0, 2000) }))
+        .filter(c => c.r && c.v)
+    })).filter(s => s.titulo);
+
+    const agora = new Date().toISOString();
+    const registro = {
+      id: 'ds-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
+      recebidoEm: agora, ip, status: 'novo',
+      resumo: {
+        nome: nomeApresentavel((dados.nomes + ' ' + dados.sobrenome).trim()),
+        email: String(dados.email).toLowerCase(), tel: soDigitos(dados.tel), cpf: soDigitos(dados.cpf),
+        passaporte: dados.passaporte, chegada: dados.chegada || '', consulado: dados.consulado || ''
+      },
+      dados, ficha
+    };
+
+    await putConciergeRetry(CONCIERGE_DS160, (lista) => { lista.push(registro); return lista; });
+    res.json({ ok: true, id: registro.id });
+  } catch (e) {
+    console.error('[concierge/ds160]', e.message);
+    res.status(500).json({ ok: false, erro: 'Nao foi possivel registrar agora. Tente novamente em instantes.' });
+  }
+});
+
+// GET /concierge/ds160 — lista para o painel (autenticada)
+app.get('/concierge/ds160', async (req, res) => {
+  try {
+    const { lista } = await lerArquivoConcierge(CONCIERGE_DS160);
+    res.json({ ok: true, data: lista });
+  } catch (e) {
+    console.error('[concierge/ds160 GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// POST /concierge/ds160/status { id, acao: 'preenchido'|'novo'|'excluir' }
+app.post('/concierge/ds160/status', async (req, res) => {
+  const { id, acao } = req.body || {};
+  if (!id || !['preenchido', 'novo', 'excluir'].includes(acao)) {
+    return res.status(400).json({ ok: false, erro: 'id e acao (preenchido|novo|excluir) obrigatorios' });
+  }
+  try {
+    let achou = false;
+    await putConciergeRetry(CONCIERGE_DS160, (lista) => {
+      const k = lista.findIndex(x => x && x.id === id);
+      if (k === -1) return null;
+      achou = true;
+      if (acao === 'excluir') lista.splice(k, 1);
+      else { lista[k].status = acao; lista[k].statusEm = new Date().toISOString(); }
+      return lista;
+    });
+    if (!achou) return res.status(404).json({ ok: false, erro: 'formulario nao encontrado' });
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('[concierge/ds160/status]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
   }
 });
 
