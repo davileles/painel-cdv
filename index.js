@@ -5416,7 +5416,13 @@ app.get('/parceiros', async (req, res) => {
     const filtroViagem = req.query.viagem !== 'false'; // padrão: filtra por viagem
     // ghGetJson já trata arquivos >1MB (Accept:raw) e autentica — historico.json cresce continuamente
     const { data: historico } = await ghGetJson('historico.json', {});
-    const dates = Object.keys(historico).sort();
+    // Usa o último dia com dados do Comparemania — não simplesmente o último dia.
+    // Se o Comparemania cair o dia todo, Inter/Méliuz/TopCashback ainda gravam o
+    // dia de hoje só com as lojas deles, e a lista de parceiros ficaria vazia.
+    const PROGS_COMPAREMANIA = ['livelo', 'esfera', 'smiles', 'azul', 'latam'];
+    const temComparemania = snap => Object.values(snap || {}).some(info =>
+      info && info.programs && PROGS_COMPAREMANIA.some(p => info.programs[p]));
+    const dates = Object.keys(historico).sort().filter(d => temComparemania(historico[d]));
     const last = historico[dates[dates.length - 1]] || {};
     let parceiros = Object.entries(last)
       .filter(([nome]) => !filtroViagem || PARCEIROS_VIAGEM.has(nome))
