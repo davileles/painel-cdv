@@ -714,10 +714,77 @@ async function ggHandle(req, res, slug, leituraFalhou) {
   link.origens[origem] = (link.origens[origem] || 0) + 1;
   link.ultimoClique = new Date().toISOString();
   ggDirty = true;
+  try { ccRegistrar(slug, g, origem, req); } catch (e) { console.error('[convite] registrar', e.message); }
 
   res.set('Cache-Control', 'no-store');
   return res.redirect(302, g.convite);
 }
+
+// ── CLIQUES NO CONVITE, EVENTO A EVENTO ─────────────────────────────────────
+// O rodizio ja soma cliques por link e por origem; para custo por ENTRADA
+// CONFIRMADA e preciso o clique com hora e grupo de destino, porque o
+// baileys-server casa cada clique com o ADD que o grupo registra nos minutos
+// seguintes (ver /grupos/membros/trafego la). Buffer em memoria, gravado a cada
+// 5 min em tsp/cliques_convite_<dia SP>.json: { eventos:[{em,slug,jid,origem,utm}] }.
+// So clique HUMANO chega aqui (preview/meta/robo param antes).
+const CC_FLUSH_MS = 5 * 60 * 1000;
+const CC_DIAS_MEMORIA = 3;
+const ccBuffer = {};        // dia -> [eventos]
+let ccDirty = false;
+function ccDiaSP(ms) { return new Date(ms - 3 * 60 * 60 * 1000).toISOString().slice(0, 10); }
+function ccRegistrar(slug, g, origem, req) {
+  const agora = Date.now();
+  const dia = ccDiaSP(agora);
+  const utm = {};
+  for (const k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']) {
+    if (req.query[k]) utm[k.slice(4)] = String(req.query[k]).slice(0, 80);
+  }
+  const ev = { em: new Date(agora).toISOString(), slug, jid: g.jid || null, origem };
+  if (Object.keys(utm).length) ev.utm = utm;
+  (ccBuffer[dia] = ccBuffer[dia] || []).push(ev);
+  ccDirty = true;
+}
+async function ccFlush() {
+  if (!ccDirty) return;
+  const pendentes = ccBuffer; ccDirty = false;
+  for (const k of Object.keys(pendentes)) delete ccBuffer[k];
+  for (const [dia, evs] of Object.entries(pendentes)) {
+    const arquivo = 'tsp/cliques_convite_' + dia + '.json';
+    try {
+      const { data, sha } = await ghGetJson(arquivo, { eventos: [] });
+      const acc = (data && Array.isArray(data.eventos)) ? data : { eventos: [] };
+      acc.eventos.push(...evs);
+      acc.atualizadoEm = new Date().toISOString();
+      await ghPutJson(arquivo, acc, sha, 'cliques: convite ' + dia + ' (+' + evs.length + ')');
+    } catch (e) {
+      console.error('[convite flush]', dia, e.message);
+      (ccBuffer[dia] = ccBuffer[dia] || []).push(...evs);
+      ccDirty = true;
+    }
+  }
+}
+const ccTimer = setInterval(ccFlush, CC_FLUSH_MS);
+if (ccTimer.unref) ccTimer.unref();
+
+// GET /gg/cliques?dias=7 — eventos de clique no convite (gravados + buffer),
+// do mais antigo ao mais novo. E o que o baileys-server le para casar com os ADDs.
+app.get('/gg/cliques', async (req, res) => {
+  try {
+    const n = Math.min(31, Math.max(1, parseInt(req.query.dias, 10) || 7));
+    const hojeMs = Date.now();
+    const eventos = [];
+    for (let i = n - 1; i >= 0; i--) {
+      const dia = ccDiaSP(hojeMs - i * 86400000);
+      const { data } = await ghGetJson('tsp/cliques_convite_' + dia + '.json', null);
+      if (data && Array.isArray(data.eventos)) eventos.push(...data.eventos);
+      if (ccBuffer[dia]) eventos.push(...ccBuffer[dia]);
+    }
+    eventos.sort((a, b) => String(a.em).localeCompare(String(b.em)));
+    res.json({ ok: true, dias: n, total: eventos.length, eventos });
+  } catch (e) {
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
 
 // Pergunta ao Baileys a contagem real de cada grupo e zera a estimativa local.
 async function ggSincronizar(slugFiltro) {
