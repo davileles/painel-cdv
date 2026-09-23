@@ -206,7 +206,86 @@ const CLIQUES_FLUSH_MS = 10 * 60 * 1000;
 const LINKS_FALLBACK = 'https://davileles.com/clube-do-viajante/';
 const PREVIEW_BOT_RE = /whatsapp|facebookexternalhit|telegrambot|twitterbot|slackbot|discordbot|linkedinbot|skypeuripreview|bingbot|googlebot/i;
 
-const RESERVADOS_IR = new Set(['ir', 'ir-stats', 'g', 'gg', 'ping', 'health', 'fetch', 'parceiros', 'bandeiras']);
+const RESERVADOS_IR = new Set(['ir', 'ir-stats', 'g', 'gg', 'ping', 'health', 'fetch', 'parceiros', 'bandeiras', 'links']);
+
+// ── DEFESA DO ENCURTADOR: O QUE NAO E GENTE NAO CONTA ───────────────────────
+// Tres classes de trafego que inflam clique e distorcem custo por entrada:
+//   preview  — WhatsApp/Telegram/Facebook buscando a previa do link (ja tratado)
+//   meta     — faixas de IP da Meta (AS32934): o robo que revisa anuncios abre o
+//              link de cada campanha; sem isto, campanha em revisao "converte"
+//   robo     — cliente HTTP sem cara de navegador (curl, python, Go, scrapers)
+// Nada e bloqueado: todo mundo segue para o destino. So a contagem muda —
+// esses cliques vao para 'b' (bots) em vez de 't'. Um IP abrindo varios links
+// nossos em segundos (copiador montando previa/repasse) e 'rajada': conta em
+// 't' mas nao em 'u', e soma em 'v' (vigiados). Tudo aparece em GET /links/vigia.
+const META_CIDRS_V4 = [
+  '31.13.24.0/21', '31.13.64.0/18', '45.64.40.0/22', '57.141.0.0/16', '57.144.0.0/14',
+  '66.220.144.0/20', '69.63.176.0/20', '69.171.224.0/19', '74.119.76.0/22', '102.132.96.0/20',
+  '103.4.96.0/22', '129.134.0.0/16', '147.75.208.0/20', '157.240.0.0/16', '163.70.128.0/17',
+  '173.252.64.0/18', '179.60.192.0/22', '185.60.216.0/22', '185.89.218.0/23', '204.15.20.0/22',
+].map(cidr => { const [b, m] = cidr.split('/'); return { base: ipv4ToInt(b), mask: m === '0' ? 0 : (~0 << (32 - Number(m))) >>> 0 }; });
+const META_PREFIXOS_V6 = ['2a03:2880:', '2620:0:1c', '2620:10d:c0'];
+function ipv4ToInt(ip) {
+  const p = String(ip || '').split('.').map(Number);
+  if (p.length !== 4 || p.some(n => !Number.isInteger(n) || n < 0 || n > 255)) return null;
+  return ((p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3]) >>> 0;
+}
+function ipDaMeta(ip) {
+  const s = String(ip || '').trim();
+  if (!s) return false;
+  const v4 = ipv4ToInt(s.startsWith('::ffff:') ? s.slice(7) : s);
+  if (v4 != null) return META_CIDRS_V4.some(r => (v4 & r.mask) >>> 0 === (r.base & r.mask) >>> 0);
+  const lower = s.toLowerCase();
+  return META_PREFIXOS_V6.some(p => lower.startsWith(p));
+}
+const ROBO_UA_RE = /curl\/|wget\/|python-requests|python-urllib|aiohttp|go-http-client|java\/|okhttp|axios\/|node-fetch|undici|libwww|httpclient|headlesschrome|phantomjs|puppeteer|playwright|scrapy|crawler|spider|\bbot\b|monitor|uptime|pingdom|semrush|ahrefs|mj12/i;
+function ipDoPedido(req) {
+  return String(req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
+}
+// 'humano' | 'preview' | 'meta' | 'robo'
+function classificarTrafego(req) {
+  const ua = String(req.headers['user-agent'] || '');
+  if (PREVIEW_BOT_RE.test(ua)) return 'preview';
+  if (ipDaMeta(ipDoPedido(req))) return 'meta';
+  if (!ua || ROBO_UA_RE.test(ua)) return 'robo';
+  return 'humano';
+}
+
+// Vigia: contadores do dia por classe e as ultimas ocorrencias (IP em hash).
+const VIGIA_RAJADA_N  = 4;            // codigos distintos...
+const VIGIA_RAJADA_MS = 60 * 1000;    // ...no mesmo minuto, do mesmo IP
+const vigiaDia   = { dia: null, preview: 0, meta: 0, robo: 0, rajada: 0, humano: 0 };
+const vigiaLog   = [];                // { em, tipo, ipHash, ua, alvo }
+const vigiaPorIp = new Map();         // ipHash -> [{ codigo, em }]
+function vigiaHashIp(ip) { return crypto.createHash('sha1').update('vigia|' + ip).digest('base64').slice(0, 10); }
+function vigiaRegistrar(tipo, req, alvo) {
+  const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
+  if (vigiaDia.dia !== hoje) { vigiaDia.dia = hoje; for (const k of ['preview', 'meta', 'robo', 'rajada', 'humano']) vigiaDia[k] = 0; }
+  vigiaDia[tipo] = (vigiaDia[tipo] || 0) + 1;
+  if (tipo === 'humano') return;
+  vigiaLog.push({ em: new Date().toISOString(), tipo, ipHash: vigiaHashIp(ipDoPedido(req)),
+    ua: String(req.headers['user-agent'] || '').slice(0, 120), alvo: String(alvo || '').slice(0, 60) });
+  if (vigiaLog.length > 300) vigiaLog.shift();
+}
+// Rajada: o mesmo IP abrindo VIGIA_RAJADA_N codigos distintos em VIGIA_RAJADA_MS.
+function vigiaEhRajada(req, codigo) {
+  const agora = Date.now();
+  const h = vigiaHashIp(ipDoPedido(req));
+  let lista = vigiaPorIp.get(h);
+  if (!lista) { lista = []; vigiaPorIp.set(h, lista); }
+  while (lista.length && agora - lista[0].em > VIGIA_RAJADA_MS) lista.shift();
+  lista.push({ codigo, em: agora });
+  if (vigiaPorIp.size > 5000) {
+    for (const [k, l] of vigiaPorIp) { if (!l.length || agora - l[l.length - 1].em > VIGIA_RAJADA_MS) vigiaPorIp.delete(k); }
+  }
+  return new Set(lista.map(x => x.codigo)).size >= VIGIA_RAJADA_N;
+}
+
+app.get('/links/vigia', (req, res) => {
+  const n = Math.min(300, Math.max(1, parseInt(req.query.n, 10) || 50));
+  res.json({ ok: true, hoje: { ...vigiaDia }, regras: { rajadaCodigos: VIGIA_RAJADA_N, rajadaJanelaS: VIGIA_RAJADA_MS / 1000, metaFaixasV4: META_CIDRS_V4.length },
+    ultimos: vigiaLog.slice(-n).reverse() });
+});
 
 let linksCache = { data: null, ts: 0 };
 
@@ -594,11 +673,16 @@ async function ggHandle(req, res, slug, leituraFalhou) {
   if (!link) return res.redirect(302, LINKS_FALLBACK);
   if (link.ativo === false) return res.redirect(302, link.fallback || LINKS_FALLBACK);
 
-  const ua = req.headers['user-agent'] || '';
-  if (PREVIEW_BOT_RE.test(ua) && req.query.e !== '1') {
+  // Preview, revisor de anuncios da Meta e cliente sem cara de navegador
+  // recebem a pagina de previa: nao consomem vaga do rodizio nem contam
+  // como clique no convite (a base do custo por entrada). ?e=1 forca a entrada.
+  const classe = classificarTrafego(req);
+  if (classe !== 'humano' && req.query.e !== '1') {
+    vigiaRegistrar(classe, req, '/g/' + slug);
     res.set('Content-Type', 'text/html; charset=utf-8');
     return res.status(200).send(ggPaginaPreview(link, slug));
   }
+  vigiaRegistrar('humano', req, '/g/' + slug);
 
   const g = ggEscolher(link);
   // Todos cheios ou sem convite. Ordem: fallback proprio do link (escolha
@@ -890,17 +974,21 @@ function rlHojeSP() {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
 }
 
-function rlContar(req, base, suf, reg) {
+function rlContar(req, base, suf, reg, classe = 'humano') {
   const fixo = base[0] === 'z';
   const dia = fixo ? 'fixos' : rlDiaDoCodigo(base);
   const codigo = base + '-' + suf;
   const b = (rlBuffer[dia] = rlBuffer[dia] || {});
   const c = (b[codigo] = b[codigo] || { t: 0, u: 0, h: {} });
+  // Nao-humano: registra em 'b' e para por aqui — nao entra em t/u/h.
+  if (classe !== 'humano') { c.b = (c.b || 0) + 1; rlDirty = true; return; }
+  const rajada = vigiaEhRajada(req, codigo);
+  if (rajada) { c.v = (c.v || 0) + 1; vigiaRegistrar('rajada', req, codigo); }
   c.t++;
-  const ip = String(req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
+  const ip = ipDoPedido(req);
   const chave = crypto.createHash('sha1').update(ip + '|' + (req.headers['user-agent'] || '') + '|' + codigo).digest('base64').slice(0, 16);
   const agora = Date.now();
-  const unico = !(rlUnicos.get(chave) > agora);
+  const unico = !rajada && !(rlUnicos.get(chave) > agora);
   if (unico) { c.u++; }
   rlUnicos.set(chave, agora + RL_UNICO_MS);
   const env = Date.parse(reg.enviadoEm || '');
@@ -933,6 +1021,8 @@ async function rlFlush() {
         const a = acc[codigo] || (acc[codigo] = { t: 0, u: 0, h: {} });
         a.t = (a.t || 0) + d.t;
         a.u = (a.u || 0) + d.u;
+        if (d.b) a.b = (a.b || 0) + d.b;
+        if (d.v) a.v = (a.v || 0) + d.v;
         a.h = a.h || {};
         for (const [h, n] of Object.entries(d.h)) a.h[h] = (a.h[h] || 0) + n;
         if (d.hu) { a.hu = a.hu || {}; for (const [h, n] of Object.entries(d.hu)) a.hu[h] = (a.hu[h] || 0) + n; }
@@ -946,6 +1036,8 @@ async function rlFlush() {
       for (const [codigo, d] of Object.entries(pendentes[dia])) {
         const c = (b[codigo] = b[codigo] || { t: 0, u: 0, h: {} });
         c.t += d.t; c.u += d.u;
+        if (d.b) c.b = (c.b || 0) + d.b;
+        if (d.v) c.v = (c.v || 0) + d.v;
         for (const [h, n] of Object.entries(d.h)) c.h[h] = (c.h[h] || 0) + n;
         if (d.hu) { c.hu = c.hu || {}; for (const [h, n] of Object.entries(d.hu)) c.hu[h] = (c.hu[h] || 0) + n; }
       }
@@ -964,9 +1056,13 @@ async function rlHandle(req, res, base, suf) {
   const g = (reg.grupos && reg.grupos[suf]) || {};
   const destino = rlDestinoValido(g.destino || reg.url);
   if (!destino) return res.redirect(302, RL_FALLBACK);
-  if (!PREVIEW_BOT_RE.test(req.headers['user-agent'] || '')) {
-    try { rlContar(req, base, suf, reg); } catch (e) { console.error('[links] contar', e.message); }
-  }
+  // Todo mundo segue para o destino; so a contagem distingue gente de robo.
+  const classe = classificarTrafego(req);
+  try {
+    if (classe !== 'humano') vigiaRegistrar(classe, req, base + '-' + suf);
+    else vigiaRegistrar('humano', req, base + '-' + suf);
+    rlContar(req, base, suf, reg, classe);
+  } catch (e) { console.error('[links] contar', e.message); }
   res.set('Cache-Control', 'no-store');
   res.set('X-Robots-Tag', 'noindex, nofollow');
   return res.redirect(302, destino);
@@ -1001,20 +1097,21 @@ app.get('/links-stats', async (req, res) => {
       const buf = rlBuffer[dia] || {};
       for (const [base, r] of Object.entries(links)) {
         const grupos = {};
-        let t = 0, u = 0; const h = {};
+        let t = 0, u = 0, bots = 0, vig = 0; const h = {};
         for (const [suf, g] of Object.entries(r.grupos || {})) {
           const cod = base + '-' + suf;
           const a = cliques[cod] || {}, b = buf[cod] || {};
           const gt = (a.t || 0) + (b.t || 0), gu = (a.u || 0) + (b.u || 0);
-          grupos[suf] = { jid: g.jid || null, nome: g.nome || null, t: gt, u: gu };
-          t += gt; u += gu;
+          const gb = (a.b || 0) + (b.b || 0), gv = (a.v || 0) + (b.v || 0);
+          grupos[suf] = { jid: g.jid || null, nome: g.nome || null, t: gt, u: gu, b: gb, v: gv };
+          t += gt; u += gu; bots += gb; vig += gv;
           for (const src of [a.h || {}, b.h || {}]) for (const [k, v] of Object.entries(src)) h[k] = (h[k] || 0) + v;
         }
         envios.push({
           codigo: base, dia, tipo: r.tipo, loja: r.loja, slugLoja: r.slugLoja, produto: r.produto,
           titulo: r.titulo, preco: r.preco, precoDe: r.precoDe, desconto: r.desconto, categoria: r.categoria,
           cupom: r.cupom, cupomValor: r.cupomValor, cupomTipo: r.cupomTipo, ofertaId: r.ofertaId,
-          enviadoEm: r.enviadoEm, url: r.url, cliques: t, unicos: u, porHora: h, grupos,
+          enviadoEm: r.enviadoEm, url: r.url, cliques: t, unicos: u, bots, vigiados: vig, porHora: h, grupos,
         });
       }
     }
