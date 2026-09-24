@@ -38,6 +38,11 @@ const PARCEIROS_TIER1_INTER = new Set([
   'coco bambu',
 ]);
 
+// Complemento fixo no título de parceiros com uso específico (chave = normalizarChave)
+const SUFIXO_TITULO_INTER = {
+  'zift - cartão multimarcas': '(use para Airbnb)',
+};
+
 // ── HTTP helper ───────────────────────────────────────────────────────────────
 async function fetchDirect(url, timeoutMs = 20000) {
   const ctrl = new AbortController();
@@ -198,7 +203,7 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
 
   const linhas = variacoes
     .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))
-    .map(v => `🏦 ${v.nome} — ${v.ptsAntes}% → ${v.ptsAgora}% (+${v.delta}%)`)
+    .map(v => `🏦 ${v.nome}${SUFIXO_TITULO_INTER[v.chave] ? ' ' + SUFIXO_TITULO_INTER[v.chave] : ''} — ${v.ptsAntes}% → ${v.ptsAgora}% (+${v.delta}%)`)
     .join('\n');
 
   const tituloAgrupado = `${count} parceiro${count > 1 ? 's tiveram' : ' teve'} aumento de cashback no Shopping Inter`;
@@ -271,7 +276,8 @@ async function gerarOfertasVariacao(snapHoje, historico, hoje) {
     // cálculo do modal do Comparador, usando 12 meses de historico.json.
     const padraoAltasT1 = calcularFrequenciaAltas(historico, v.chave, hoje, v.ptsAgora);
 
-    const tituloBaseT1 = `${v.ptsAgora}% de cashback em ${v.nome} no Shopping Inter`;
+    const sufixoT1 = SUFIXO_TITULO_INTER[v.chave];
+    const tituloBaseT1 = `${v.ptsAgora}% de cashback em ${v.nome} no Shopping Inter${sufixoT1 ? ' ' + sufixoT1 : ''}`;
     const tituloT1 = isRecorde
       ? `\u{1F525} ${tituloBaseT1} - RECORDE DE CASHBACK`
       : tituloBaseT1;
