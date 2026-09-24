@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-09-24T18:48:24.933Z",
+  "coletadoEm": "2026-09-24T20:03:05.755Z",
   "items": {
     "acer": {
       "id": "ACE",
@@ -299,6 +299,18 @@
       "parity": 5,
       "parityClub": 6,
       "parityBau": 2,
+      "campanha": "PROMOTION_CLUB"
+    },
+    "drogal": {
+      "id": "DRO",
+      "nome": "Drogal",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 24 a 25/09/2026. Ganhe 6 pontos por real gasto exclusivo para assinantes do Clube Livelo e 5 pontos por real demais clientes. Medicamentos não são elegíveis a pontuação. Consulte o regulamento.",
+      "dateStart": "2026-09-24",
+      "dateEnd": "2026-09-25",
+      "parity": 5,
+      "parityClub": 6,
+      "parityBau": 1,
       "campanha": "PROMOTION_CLUB"
     },
     "electrolux": {
@@ -660,6 +672,18 @@
       "parityClub": 49,
       "parityBau": 32,
       "campanha": "PROMOTION_CLUB"
+    },
+    "nespresso": {
+      "id": "NES",
+      "nome": "Nespresso",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 24 a 27/09/2026. Ganhe 5 pontos a cada real gasto em máquinas da linha Vertuo e 4 pontos por real nas máquinas da linha Original. Campanha válida apenas para máquinas, demais produtos não são elegíveis ao acúmulo. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-24",
+      "dateEnd": "2026-09-27",
+      "parity": 5,
+      "parityClub": 5,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
     },
     "newbalance": {
       "id": "NWB",
