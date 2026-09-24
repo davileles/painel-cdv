@@ -4821,12 +4821,22 @@ app.post('/concierge/demandas', async (req, res) => {
 // mandam CORS, entao aba renomeada chegava ao front indistinguivel de queda de
 // rede. Agora a fonte da verdade e um JSON versionado no repo privado.
 
+// Aparelho do cliente (iPhone/Android) — orienta passo a passo de apps e
+// instalacao de carteiras/cartoes. Qualquer outro valor vira vazio.
+function aparelhoNormalizado(v) {
+  const s = String(v == null ? '' : v).trim().toLowerCase();
+  if (s === 'iphone' || s === 'ios') return 'iPhone';
+  if (s === 'android') return 'Android';
+  return '';
+}
+
 function clienteNormalizado(c) {
   const t = (v) => String(v == null ? '' : v).trim();
   return {
     id:            t(c.id),
     nome:          t(c.nome),
     tel:           t(c.tel),
+    aparelho:      aparelhoNormalizado(c.aparelho),
     email:         t(c.email),
     cpf:           t(c.cpf),
     nasc:          t(c.nasc),
@@ -5173,7 +5183,7 @@ app.post('/concierge/cadastro', async (req, res) => {
 
     const cadastro = clienteNormalizado({
       id, nome,
-      tel: soDigitos(b.tel), email: t(b.email).toLowerCase(), cpf: soDigitos(b.cpf),
+      tel: soDigitos(b.tel), aparelho: b.aparelho, email: t(b.email).toLowerCase(), cpf: soDigitos(b.cpf),
       nasc: t(b.nasc), passaporte: t(b.passaporte), passaporteVal: t(b.passaporteVal),
       logradouro: t(b.logradouro), numero: t(b.numero), complemento: t(b.complemento),
       cep: soDigitos(b.cep), bairro: t(b.bairro), cidade: t(b.cidade), estado: t(b.estado),
@@ -5381,7 +5391,7 @@ function nomeApresentavel(v) {
 function mesclarCliente(antigo, novo) {
   const t = (v) => String(v == null ? '' : v).trim();
   const out = Object.assign({}, antigo);
-  for (const campo of ['tel','email','cpf','nasc','passaporte','passaporteVal',
+  for (const campo of ['tel','aparelho','email','cpf','nasc','passaporte','passaporteVal',
                        'logradouro','numero','complemento','cep','bairro','cidade',
                        'estado','senhas','acompanhantes','origem']) {
     if (t(novo[campo])) out[campo] = t(novo[campo]);
