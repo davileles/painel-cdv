@@ -1423,6 +1423,26 @@ app.get('/gg/saude', async (req, res) => {
   });
 });
 
+// Vagas por porta, sem convites nem jids: o que o baileys-server precisa para a
+// trava de "porta fechada" (nenhum grupo elegivel: a landing esta mandando
+// para a emergencia) e para o aviso de porta perto de encher.
+app.get('/gg/vagas', async (req, res) => {
+  try {
+    const est = await ggCarregar();
+    const portas = Object.entries(est.links || {}).map(([slug, link]) => {
+      const lim = ggLimite(link);
+      const grupos = (link.grupos || []).filter(g => g.ativo !== false && g.convite && g.conviteMorto !== true);
+      const eleg = ggElegiveis(link);
+      const vagas = eleg.reduce((s, g) => s + Math.max(0, lim - ggOcupacao(g)), 0);
+      return { slug, ativo: link.ativo !== false, limite: lim, grupos: grupos.length, elegiveis: eleg.length, vagas,
+        fechada: link.ativo !== false && grupos.length > 0 && eleg.length === 0,
+        cliquesHoje: (link.cliquesDia || {})[new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString().slice(0, 10)] || 0,
+        ultimoClique: link.ultimoClique || null };
+    });
+    res.json({ ok: true, atualizadoEm: est.atualizadoEm || null, emergenciaConfigurada: GG_EMERGENCIA.length, portas });
+  } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
 // Lista os grupos ATIVOS de todos os links, para o baileys-server verificar se
 // os convites ainda estao vivos. Protegido pelo mesmo X-CDV-Op das campanhas:
 // a lista expoe jid e link de convite dos grupos, que e material de invasao
