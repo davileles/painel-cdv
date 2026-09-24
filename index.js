@@ -3968,6 +3968,7 @@ app.post('/webhook/hubla-membros', async (req, res) => {
           produtoNome: produto.name || ''
         };
         if (idx >= 0) {
+          if (membros[idx].status !== 'ativo') membros[idx].ativadoEm = agora;
           membros[idx].status       = 'ativo';
           membros[idx].atualizadoEm = agora;
           delete membros[idx].removidoEm;
@@ -3980,7 +3981,7 @@ app.post('/webhook/hubla-membros', async (req, res) => {
             membros[idx].assinaturasHubla = subs;
           }
         } else {
-          const novo = { nome, email, status: 'ativo', produtos: [entrada], adicionadoEm: agora, atualizadoEm: agora, origem: 'webhook' };
+          const novo = { nome, email, status: 'ativo', produtos: [entrada], adicionadoEm: agora, ativadoEm: agora, atualizadoEm: agora, origem: 'webhook' };
           if (assinaturaId) novo.assinaturasHubla = [assinaturaId];
           membros.push(novo);
         }
@@ -3994,6 +3995,23 @@ app.post('/webhook/hubla-membros', async (req, res) => {
             // (ex.: a antiga expirou depois de o aluno assinar de novo): ignora.
             console.log(`[hubla-membros] remoção ignorada: ${email} assinatura ${assinaturaId} não está em [${subs.join(', ')}]`);
             return res.json({ ok: true, type, email, acao: 'ignorado', motivo: 'assinatura_nao_ativa' });
+          }
+          // Membro legado (sem assinaturas registradas): ignora a remoção de uma
+          // assinatura cuja última ativação é anterior ao início do acesso atual
+          // do membro — ela não foi a que concedeu o acesso (ex.: assinatura
+          // gratuita antiga de "membros antigos" expirando depois de o aluno
+          // ter assinado o Premium).
+          if (assinaturaId && !subs.length) {
+            const refAcesso = membros[idx].ativadoEm || (membros[idx].origem === 'webhook' ? membros[idx].adicionadoEm : null);
+            const sub = event.subscription || {};
+            const ativacoes = (Array.isArray(sub.statusAt) ? sub.statusAt : [])
+              .filter(s => s && s.status === 'active' && s.when).map(s => s.when).sort();
+            const ultimaAtivacao = ativacoes[ativacoes.length - 1] || sub.activatedAt || sub.createdAt || null;
+            const UM_DIA = 24 * 60 * 60 * 1000;
+            if (refAcesso && ultimaAtivacao && (new Date(ultimaAtivacao).getTime() < new Date(refAcesso).getTime() - UM_DIA)) {
+              console.log(`[hubla-membros] remoção ignorada: ${email} assinatura ${assinaturaId} (ativada ${ultimaAtivacao}) é anterior ao acesso atual (${refAcesso})`);
+              return res.json({ ok: true, type, email, acao: 'ignorado', motivo: 'assinatura_anterior_ao_acesso' });
+            }
           }
           const restantes = assinaturaId ? subs.filter(s => s !== assinaturaId) : [];
           membros[idx].atualizadoEm = agora;
