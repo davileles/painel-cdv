@@ -8872,9 +8872,73 @@ app.get('/afiliados/comissoes', async (req, res) => {
 // aba Descobertas do painel de gestao. So leitura: quem grava e o coletor.
 const DESCOBERTAS_FILE = 'tsp/vendas-descobertas.json';
 
+// Historico permanente de vendas por produto e por dia, de todas as lojas
+// (tudo-sobre-promos/desempenho.js -> acumularHistorico). Com ?periodo= a rota
+// deixa de ler a foto da janela de revisao e agrega o historico no recorte
+// pedido: 7/15/30/90 dias ou 'tudo'. Cache curto: o arquivo so muda 2x ao dia.
+const HISTORICO_VENDAS_FILE = 'tsp/vendas-historico.json';
+let _histVendasCache = { em: 0, dados: null };
+
+async function lerHistoricoVendas() {
+  if (_histVendasCache.dados && Date.now() - _histVendasCache.em < 60000) return _histVendasCache.dados;
+  const { data } = await ghGetJson(HISTORICO_VENDAS_FILE, { produtos: {}, dias: {} });
+  _histVendasCache = { em: Date.now(), dados: data || { produtos: {}, dias: {} } };
+  return _histVendasCache.dados;
+}
+
+function diaSP(offsetDias) {
+  const d = new Date(Date.now() - 3 * 3600000 - offsetDias * 86400000);
+  return d.toISOString().slice(0, 10);
+}
+
+async function descobertasDoHistorico(periodo, foto) {
+  const hist = await lerHistoricoVendas();
+  const dias = Object.keys(hist.dias || {}).sort();
+  const ate = diaSP(1);
+  const n = parseInt(periodo, 10);
+  const de = periodo === 'tudo' || !n ? (dias[0] || ate) : diaSP(n);
+
+  // Origem por link (so a Shopee entrega) continua vindo da foto da janela.
+  const origensFoto = {};
+  for (const x of (foto && foto.itens) || []) {
+    if (x.origens && x.origens.length) origensFoto[(x.loja || '') + '|' + (x.id || '')] = x.origens;
+  }
+
+  const acc = {};
+  for (const dia of dias) {
+    if (dia < de || dia > ate) continue;
+    for (const [chave, r] of Object.entries(hist.dias[dia])) {
+      const a = acc[chave] || (acc[chave] = { unidades: 0, vendas: 0, comissao: 0, diretas: 0, indiretas: 0,
+        diasComVenda: 0, primeiraVenda: dia, ultimaVenda: dia });
+      a.unidades += r.u || 0;
+      a.vendas = Math.round((a.vendas + (r.v || 0)) * 100) / 100;
+      a.comissao = Math.round((a.comissao + (r.c || 0)) * 100) / 100;
+      a.diretas += r.d || 0;
+      a.indiretas += r.i || 0;
+      a.diasComVenda += 1;
+      a.ultimaVenda = dia;
+    }
+  }
+
+  const itens = Object.entries(acc).map(([chave, a]) => {
+    const p = (hist.produtos || {})[chave] || {};
+    const loja = p.loja || chave.split('|')[0];
+    const tipo = a.diretas && !a.indiretas ? 'direta' : (!a.diretas && a.indiretas ? 'indireta' : 'mista');
+    return {
+      loja, id: p.id || null, tipo, nome: p.nome || '', categoria: p.categoria || '',
+      vendedor: p.vendedor || '', link: p.link || '',
+      ...a, ocorrencias: a.diasComVenda,
+      origens: origensFoto[loja + '|' + (p.id || '')] || [],
+    };
+  }).sort((x, y) => y.comissao - x.comissao);
+
+  return { itens, janela: { de, ate }, inicioPorLoja: hist.inicioPorLoja || {}, historicoAtualizadoEm: hist.atualizadoEm || null };
+}
+
 app.get('/afiliados/descobertas', async (req, res) => {
   try {
     const { data } = await ghGetJson(DESCOBERTAS_FILE, { itens: [] });
+    if (req.query.periodo) return await responderDescobertasHistorico(req, res, data);
     let itens = Array.isArray(data.itens) ? data.itens : [];
 
     const { loja, tipo, q } = req.query;
@@ -8912,6 +8976,46 @@ app.get('/afiliados/descobertas', async (req, res) => {
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
+
+async function responderDescobertasHistorico(req, res, foto) {
+  const h = await descobertasDoHistorico(String(req.query.periodo), foto);
+  let itens = h.itens;
+  const { loja, tipo, q } = req.query;
+  if (loja) itens = itens.filter((x) => String(x.loja || '').toLowerCase() === String(loja).toLowerCase());
+  if (tipo === 'direta') itens = itens.filter((x) => x.diretas > 0);
+  else if (tipo === 'indireta') itens = itens.filter((x) => x.indiretas > 0);
+  if (q) {
+    const termo = String(q).toLowerCase();
+    itens = itens.filter((x) => (String(x.nome || '') + ' ' + String(x.categoria || '')).toLowerCase().includes(termo));
+  }
+
+  const r2 = (v) => Math.round(v * 100) / 100;
+  const categorias = {}, porLoja = {};
+  const totais = { unidades: 0, vendas: 0, comissao: 0, diretas: 0, indiretas: 0 };
+  for (const x of itens) {
+    const k = x.categoria || '(sem categoria)';
+    const g = (categorias[k] = categorias[k] || { produtos: 0, unidades: 0, vendas: 0, comissao: 0 });
+    g.produtos += 1; g.unidades += x.unidades; g.vendas = r2(g.vendas + x.vendas); g.comissao = r2(g.comissao + x.comissao);
+    const l = (porLoja[x.loja] = porLoja[x.loja] || { produtos: 0, unidades: 0, vendas: 0, comissao: 0, diretas: 0, indiretas: 0 });
+    l.produtos += 1; l.unidades += x.unidades; l.vendas = r2(l.vendas + x.vendas); l.comissao = r2(l.comissao + x.comissao);
+    l.diretas += x.diretas; l.indiretas += x.indiretas;
+    totais.unidades += x.unidades; totais.vendas = r2(totais.vendas + x.vendas); totais.comissao = r2(totais.comissao + x.comissao);
+    totais.diretas += x.diretas; totais.indiretas += x.indiretas;
+  }
+  // Loja cujo historico comeca depois do inicio do recorte: o total dela no
+  // periodo esta incompleto, e o painel precisa dizer isso.
+  for (const [nome, l] of Object.entries(porLoja)) {
+    const ini = h.inicioPorLoja[nome];
+    if (ini && ini > h.janela.de) l.historicoDesde = ini;
+  }
+
+  const limite = Math.min(parseInt(req.query.limite, 10) || 500, 2000);
+  res.json({
+    ok: true, fonte: 'historico', periodo: String(req.query.periodo),
+    atualizadoEm: h.historicoAtualizadoEm, janela: h.janela, inicioPorLoja: h.inicioPorLoja,
+    totais, porLoja, categorias, total: itens.length, itens: itens.slice(0, limite),
+  });
+}
 
 // ── Rastreio de links divulgados (TSP) ──────────────────────────────────────
 // GET /afiliados/rastreio?de=&ate=&loja=&q=&limite=
