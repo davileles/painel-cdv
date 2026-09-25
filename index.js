@@ -90,7 +90,7 @@ app.use(express.json({ limit: '20mb' }));
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env, X-CDV-Op, X-CDV-Auth, X-CDV-Servico');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env, X-CDV-Op, X-CDV-Auth, X-CDV-Servico, X-CDV-Portal');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
@@ -116,6 +116,8 @@ const CONC_ROTAS_PUBLICAS = new Set([
   'POST /concierge/ds160',
   'GET /concierge/portal',
   'GET /concierge/portal/tema',
+  'POST /concierge/portal/enviar-codigo',
+  'POST /concierge/portal/verificar-codigo',
   'GET /concierge/alertas',
   'POST /concierge/alerta/disparar',
 ]);
@@ -4628,6 +4630,8 @@ app.post('/ia/extrair-reserva', (req, res) => {
 
 // ── CONCIERGE: Reservas e Viagens ──────────────────────────────
 
+// Repo do site do concierge (Pages). So guarda HTML/JS e o workflow
+// lembrete-voo.yml — NENHUM dado de cliente mora mais nele.
 const CONCIERGE_REPO = 'davileles/concierge';
 // Base de clientes do concierge: CPF, endereco, nascimento e o campo `senhas`.
 // Mora no repo PRIVADO de dados — o repo `concierge` e publico (serve o Pages).
@@ -4640,13 +4644,28 @@ const CONCIERGE_PERFIL      = 'concierge/clientes-perfil.json';
 // Cadastros vindos do formulario publico, aguardando aprovacao no painel.
 // Nunca entram direto na base: form aberto na internet nao escreve em producao.
 const CONCIERGE_PENDENTES   = 'concierge/clientes-pendentes.json';
+// Todos os demais dados operacionais do concierge (reservas, viagens, demandas,
+// modelos, cfg, agendamentos, alertas, msgs-enviadas, debug-log e os anexos em
+// arquivos/) tambem moram no repo privado, sob a pasta concierge/. Antes ficavam
+// na raiz do repo `concierge`, que e publico — incluindo um agendamento com CPF
+// e senha de programa de fidelidade em texto aberto.
+const CONCIERGE_PASTA = 'concierge/';
+function _alvoConcierge(filename, repo) {
+  if (repo) return { repoAlvo: repo, caminho: filename };
+  const nome = String(filename || '');
+  return {
+    repoAlvo: CONCIERGE_DADOS_REPO,
+    caminho: nome.startsWith(CONCIERGE_PASTA) ? nome : CONCIERGE_PASTA + nome,
+  };
+}
 
 // Usa fetch (e nao https.get): repo renomeado devolve 301 e o https.get nao
 // segue redirect — o corpo do 301 e JSON valido, entao o parse passava e o
 // arquivo chegava como `{message:'Moved Permanently'}`, virando lista vazia sem
 // nenhum erro no log. Falha agora e falha explicita, com status.
 async function getConciergeFile(filename, repo) {
-  const repoAlvo = repo || CONCIERGE_REPO;
+  const { repoAlvo, caminho } = _alvoConcierge(filename, repo);
+  filename = caminho;
   const url = `https://api.github.com/repos/${repoAlvo}/contents/${filename}`;
   const headers = {
     'Authorization': `token ${GITHUB_TOKEN}`,
@@ -4687,7 +4706,8 @@ async function getConciergeFile(filename, repo) {
 // Escrita com redirect tratado na mao: em PUT o redirect automatico do fetch
 // nao e confiavel (301 pode virar GET), entao segue-se o Location uma unica vez.
 async function putConciergeFile(filename, content, sha, repo) {
-  const repoAlvo = repo || CONCIERGE_REPO;
+  const { repoAlvo, caminho } = _alvoConcierge(filename, repo);
+  filename = caminho;
   const body = JSON.stringify({
     message: `update: ${filename}`,
     content: Buffer.from(JSON.stringify(content, null, 2)).toString('base64'),
@@ -5558,7 +5578,128 @@ app.post('/concierge/pendentes/aprovar', async (req, res) => {
   }
 });
 
-// GET /concierge/portal?email=x — dados do cliente para o portal de acompanhamento
+// ── Portal do cliente: login por codigo de e-mail ────────────────────────────
+// Antes o portal abria so com o e-mail: qualquer pessoa que soubesse o e-mail de
+// um cliente via viagens e reservas dele. Agora o cliente pede um codigo de 6
+// digitos (vale 10 min, 5 tentativas) e recebe um token de portal (7 dias),
+// assinado com uma chave DIFERENTE da sessao do painel — token de cliente nunca
+// vale como sessao de admin, nem o contrario.
+const PORTAL_OTP_TTL      = 10 * 60 * 1000;
+const PORTAL_OTP_MAX_TENT = 5;
+const PORTAL_OTP_INTERVALO = 60 * 1000;      // 1 codigo por minuto por e-mail
+const PORTAL_SESSAO_TTL   = 7 * 24 * 3600 * 1000;
+const portalOtpStore = new Map();            // email -> { codigo, expira, tentativas, enviadoEm }
+
+function portalSegredo() {
+  const base = process.env.CONCIERGE_SESSION_SECRET || process.env.GITHUB_TOKEN || '';
+  if (!base) return null;
+  return crypto.createHash('sha256').update('concierge-portal-v1|' + base).digest();
+}
+function assinarTokenPortal(email) {
+  const segredo = portalSegredo();
+  if (!segredo) return null;
+  const payload = Buffer.from(JSON.stringify({
+    tipo: 'portal', email: String(email).toLowerCase(), exp: Date.now() + PORTAL_SESSAO_TTL,
+  })).toString('base64url');
+  const assinatura = crypto.createHmac('sha256', segredo).update(payload).digest('base64url');
+  return payload + '.' + assinatura;
+}
+function emailDoTokenPortal(token) {
+  const segredo = portalSegredo();
+  if (!segredo || !token) return null;
+  const partes = String(token).split('.');
+  if (partes.length !== 2) return null;
+  const esperada = crypto.createHmac('sha256', segredo).update(partes[0]).digest();
+  let recebida;
+  try { recebida = Buffer.from(partes[1], 'base64url'); } catch (e) { return null; }
+  if (recebida.length !== esperada.length || !crypto.timingSafeEqual(recebida, esperada)) return null;
+  let dados;
+  try { dados = JSON.parse(Buffer.from(partes[0], 'base64url').toString('utf8')); } catch (e) { return null; }
+  if (!dados || dados.tipo !== 'portal' || !dados.email || !(Number(dados.exp) > Date.now())) return null;
+  return dados.email;
+}
+setInterval(() => {
+  const agora = Date.now();
+  for (const [k, v] of portalOtpStore) if (agora > v.expira) portalOtpStore.delete(k);
+}, 15 * 60 * 1000);
+
+// POST /concierge/portal/enviar-codigo { email }
+// Responde sempre ok:true para e-mail valido — nao revela se o e-mail e cliente.
+app.post('/concierge/portal/enviar-codigo', async (req, res) => {
+  const email = String((req.body || {}).email || '').toLowerCase().trim();
+  if (!email || !email.includes('@') || email.length > 200) {
+    return res.status(400).json({ ok: false, erro: 'E-mail inválido' });
+  }
+  const anterior = portalOtpStore.get(email);
+  if (anterior && Date.now() - anterior.enviadoEm < PORTAL_OTP_INTERVALO) {
+    return res.json({ ok: true, aguarde: true });
+  }
+  try {
+    const { lista } = await lerClientesConcierge();
+    const cliente = lista.find(c => String(c.email || '').trim().toLowerCase() === email && String(c.nome || '').trim());
+    if (!cliente) return res.json({ ok: true });
+
+    const codigo = String(crypto.randomInt(100000, 1000000));
+    portalOtpStore.set(email, { codigo, expira: Date.now() + PORTAL_OTP_TTL, tentativas: 0, enviadoEm: Date.now() });
+
+    if (!RESEND_API_KEY) {
+      console.log(`[PORTAL-OTP-DEV] ${email} → ${codigo}`);
+      return res.json({ ok: true });
+    }
+    const emailRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: 'Travel Concierge <noreply@clubedoviajante.com.br>',
+        to: [email],
+        subject: `Seu código de acesso: ${codigo}`,
+        html: `
+          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0a0c12;color:#fff;border-radius:12px">
+            <h2 style="color:#fff;font-weight:300;margin-bottom:8px">Travel Concierge</h2>
+            <p style="color:#aaa;margin-bottom:24px">Use o código abaixo para acompanhar sua viagem. Ele expira em <strong>10 minutos</strong>.</p>
+            <div style="background:#1a1d2e;border-radius:10px;padding:24px;text-align:center;letter-spacing:12px;font-size:32px;font-weight:700;color:#fff;margin-bottom:24px">${codigo}</div>
+            <p style="color:#666;font-size:12px">Se você não solicitou este código, ignore este e-mail.</p>
+          </div>`
+      })
+    });
+    if (!emailRes.ok) {
+      console.error('[PORTAL-OTP-RESEND]', await emailRes.text());
+      portalOtpStore.delete(email);
+      return res.status(500).json({ ok: false, erro: 'Falha ao enviar e-mail' });
+    }
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('[concierge/portal/enviar-codigo]', e.message);
+    res.status(500).json({ ok: false, erro: 'Serviço temporariamente indisponível' });
+  }
+});
+
+// POST /concierge/portal/verificar-codigo { email, codigo } -> { ok, token }
+app.post('/concierge/portal/verificar-codigo', (req, res) => {
+  const email  = String((req.body || {}).email || '').toLowerCase().trim();
+  const codigo = String((req.body || {}).codigo || '').trim();
+  if (!email || !codigo) return res.status(400).json({ ok: false, erro: 'E-mail e código obrigatórios' });
+  const entrada = portalOtpStore.get(email);
+  if (!entrada || Date.now() > entrada.expira) {
+    portalOtpStore.delete(email);
+    return res.json({ ok: false, motivo: 'expirado' });
+  }
+  entrada.tentativas++;
+  if (entrada.tentativas > PORTAL_OTP_MAX_TENT) {
+    portalOtpStore.delete(email);
+    return res.json({ ok: false, motivo: 'tentativas' });
+  }
+  const a = Buffer.from(codigo), b = Buffer.from(entrada.codigo);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return res.json({ ok: false, motivo: 'invalido' });
+  portalOtpStore.delete(email);
+  const token = assinarTokenPortal(email);
+  if (!token) return res.status(500).json({ ok: false, erro: 'Serviço temporariamente indisponível' });
+  res.json({ ok: true, token, email });
+});
+
+// GET /concierge/portal — dados do cliente para o portal de acompanhamento
+// Exige o token do portal (header X-CDV-Portal); o e-mail vem do token, nunca
+// da query string.
 // Unica fonte do portal.html: o browser do cliente recebe so o que e dele (antes
 // o portal baixava a base inteira de clientes, reservas e viagens e filtrava no
 // front). A regra de casamento por nome e a mesma que o portal usava.
@@ -5569,8 +5710,8 @@ function _portalNormNome(s) {
   return cap(partes[0]) + (partes[1] ? ' ' + cap(partes[1]) : '');
 }
 app.get('/concierge/portal', async (req, res) => {
-  const email = (req.query.email || '').toLowerCase().trim();
-  if (!email) return res.status(400).json({ ok: false, erro: 'email obrigatório' });
+  const email = emailDoTokenPortal(req.headers['x-cdv-portal']);
+  if (!email) return res.status(401).json({ ok: false, erro: 'nao autorizado', motivo: 'sessao' });
 
   try {
     const { lista: baseClientes } = await lerClientesConcierge();
@@ -5759,7 +5900,7 @@ app.get('/parceiros', async (req, res) => {
 
 // ══════════════════════════════════════════════════════════════════
 //  ALERTAS DE OPORTUNIDADE DO CONCIERGE
-//  Vivem em davileles/concierge/alertas-concierge.json. Cada alerta está
+//  Vivem em <repo de dados>/concierge/alertas-concierge.json. Cada alerta está
 //  amarrado a uma atividade de viagem pelo campo `id` (a atividade guarda
 //  o mesmo valor em `alertaId`), e tem um alvo:
 //    • compra_bonificada → avaliado pelo coletar.js contra o snapshot
@@ -6102,7 +6243,7 @@ setTimeout(() => { checarLembretes().catch(() => {}); }, 60 * 1000);
 
 // ══════════════════════════════════════════════════════════════════
 //  MENSAGENS AGENDADAS (aba Mensagens -> Disparar do concierge)
-//  Vivem em davileles/concierge/agendamentos.json. Diferente dos alertas
+//  Vivem em <repo de dados>/concierge/agendamentos.json. Diferente dos alertas
 //  de oportunidade, aqui o grupo destino VAI gravado no agendamento: quem
 //  agenda ja escolheu na tela o grupo do cliente ou o da equipe, e o texto
 //  ja vem final (variaveis do modelo resolvidas no front). O proxy nao
@@ -7429,7 +7570,7 @@ app.get('/lounges/aeroportos', async (req, res) => {
 
 
 // ── CONCIERGE: Arquivos de reserva (bilhetes, vouchers) ─────────────────────
-// Salva em arquivos/RES-xxx.ext no repo davileles/concierge
+// Salva em concierge/arquivos/RES-xxx.json no repo privado de dados
 // Suporta múltiplos arquivos: arquivos/RES-xxx_0.ext, arquivos/RES-xxx_1.ext ...
 
 // POST /concierge/arquivo
@@ -7447,7 +7588,7 @@ app.post('/concierge/arquivo', async (req, res) => {
 
     // Descobrir próximo índice disponível (suporte a múltiplos arquivos)
     let idx = 0;
-    const apiBase = `https://api.github.com/repos/${CONCIERGE_REPO}/contents/arquivos/`;
+    const apiBase = `https://api.github.com/repos/${CONCIERGE_DADOS_REPO}/contents/${CONCIERGE_PASTA}arquivos/`;
     const headers = {
       'Authorization': `token ${GITHUB_TOKEN}`,
       'User-Agent': 'cdv-proxy',
@@ -7472,7 +7613,7 @@ app.post('/concierge/arquivo', async (req, res) => {
     // Verificar se já existe (para pegar SHA e sobrescrever se necessário)
     let sha = null;
     try {
-      const checkRes = await fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/${filename}`, { headers });
+      const checkRes = await fetch(`https://api.github.com/repos/${CONCIERGE_DADOS_REPO}/contents/${CONCIERGE_PASTA}${filename}`, { headers });
       if (checkRes.ok) { const cd = await checkRes.json(); sha = cd.sha || null; }
     } catch(e) {}
 
@@ -7482,7 +7623,7 @@ app.post('/concierge/arquivo', async (req, res) => {
     };
     if (sha) putBody.sha = sha;
 
-    const putRes = await fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/${filename}`, {
+    const putRes = await fetch(`https://api.github.com/repos/${CONCIERGE_DADOS_REPO}/contents/${CONCIERGE_PASTA}${filename}`, {
       method: 'PUT',
       headers: { ...headers, 'Content-Type': 'application/json' },
       body: JSON.stringify(putBody)
@@ -7512,7 +7653,7 @@ app.get('/concierge/arquivo/:reservaId', async (req, res) => {
     };
 
     // Listar pasta arquivos/
-    const listRes = await fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/arquivos/`, { headers });
+    const listRes = await fetch(`https://api.github.com/repos/${CONCIERGE_DADOS_REPO}/contents/${CONCIERGE_PASTA}arquivos/`, { headers });
     if (!listRes.ok) return res.json({ ok: true, arquivos: [] });
 
     const listData = await listRes.json();
@@ -7531,7 +7672,7 @@ app.get('/concierge/arquivo/:reservaId', async (req, res) => {
         // Contents API com Accept:raw — evita encoding:'none' em arquivos grandes
         // e continua funcionando se o repositório for privado
         const rawRes = await fetch(
-          `https://api.github.com/repos/${CONCIERGE_REPO}/contents/${f.path}`,
+          `https://api.github.com/repos/${CONCIERGE_DADOS_REPO}/contents/${f.path}`,
           { headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'User-Agent': 'cdv-proxy', 'Accept': 'application/vnd.github.raw' } }
         );
         if (!rawRes.ok) return null;
@@ -7566,11 +7707,11 @@ app.delete('/concierge/arquivo/:reservaId/:idx', async (req, res) => {
     };
 
     // Pegar SHA para poder deletar
-    const checkRes = await fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/${filename}`, { headers });
+    const checkRes = await fetch(`https://api.github.com/repos/${CONCIERGE_DADOS_REPO}/contents/${CONCIERGE_PASTA}${filename}`, { headers });
     if (!checkRes.ok) return res.status(404).json({ ok: false, erro: 'Arquivo não encontrado' });
     const checkData = await checkRes.json();
 
-    const delRes = await fetch(`https://api.github.com/repos/${CONCIERGE_REPO}/contents/${filename}`, {
+    const delRes = await fetch(`https://api.github.com/repos/${CONCIERGE_DADOS_REPO}/contents/${CONCIERGE_PASTA}${filename}`, {
       method: 'DELETE',
       headers,
       body: JSON.stringify({ message: `remove: ${filename}`, sha: checkData.sha })
@@ -7582,6 +7723,41 @@ app.delete('/concierge/arquivo/:reservaId/:idx', async (req, res) => {
     res.json({ ok: true });
   } catch(e) {
     console.error('[concierge/arquivo DELETE]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// ── CONCIERGE: IA gera os dias do roteiro ("Gerar Roteiro" do painel) ────────
+// Antes o painel chamava api.anthropic.com direto do navegador, sem chave — nao
+// funcionava. Agora passa por aqui (rota /concierge/*, exige sessao do painel).
+// Body: { contexto } — texto montado pelo painel com viagem, datas e reservas.
+app.post('/concierge/ia/roteiro-dias', async (req, res) => {
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+  if (!ANTHROPIC_API_KEY) return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY não configurada no servidor.' });
+  const contexto = String((req.body || {}).contexto || '').trim();
+  if (!contexto) return res.status(400).json({ ok: false, erro: 'Campo obrigatório: contexto' });
+  if (contexto.length > 60000) return res.status(413).json({ ok: false, erro: 'Contexto grande demais' });
+
+  const prompt = 'Você é um assistente de roteiros de viagem premium. Com base nos dados abaixo, crie um roteiro dia a dia para o cliente.\n\n' + contexto +
+    '\n\nRetorne SOMENTE um JSON válido sem markdown, no formato:\n[{"num":1,"titulo":"Título curto","data":"YYYY-MM-DD","atividades":[{"horario":"09:00","nome":"Nome completo do local","descricao":"Descrição detalhada","dica":"Dica prática ou null","lat":-23.5505,"lng":-46.6333}],"deslocamentos":[],"custos":[]}]\n' +
+    'IMPORTANTE: inclua lat e lng reais e precisos para CADA atividade — são usados para gerar links do Google Maps entre os pontos. Se não souber as exatas, use aproximadas da região. Se não há datas, distribua logicamente pelos dias. Inclua refeições e deslocamentos relevantes.';
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 8000, messages: [{ role: 'user', content: prompt }] }),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) return res.status(502).json({ ok: false, erro: (data.error && data.error.message) || `Anthropic ${r.status}` });
+    const bloco = (data.content || []).find(b => b.type === 'text');
+    if (!bloco) return res.status(502).json({ ok: false, erro: 'Sem resposta da IA' });
+    const limpo = bloco.text.replace(/```json|```/g, '').trim();
+    let dias;
+    try { dias = JSON.parse(limpo); } catch (e) { return res.status(502).json({ ok: false, erro: 'A IA não devolveu um JSON válido' }); }
+    if (!Array.isArray(dias)) return res.status(502).json({ ok: false, erro: 'A IA não devolveu uma lista de dias' });
+    res.json({ ok: true, dias });
+  } catch (e) {
+    console.error('[concierge/ia/roteiro-dias]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
