@@ -1099,7 +1099,17 @@ async function main() {
     contagemPorPrograma[prog.id] = 0;
     console.log(`[Histórico] Coletando ${prog.name}…`);
     try {
-      const html = await fetchDirect(prog.url);
+      // 503/429/timeout do Comparemania costumam ser passageiros (rajada de
+      // requisições seguidas): tenta até 3 vezes com espera crescente.
+      let html;
+      for (let tent = 1; ; tent++) {
+        try { html = await fetchDirect(prog.url); break; }
+        catch (e) {
+          if (tent >= 3) throw e;
+          console.warn(`[Histórico] ${prog.name}: ${e.message} — nova tentativa em ${tent * 10}s`);
+          await new Promise(r => setTimeout(r, tent * 10000));
+        }
+      }
 
       // Sanidade mínima
       const hasContent =
@@ -1227,7 +1237,12 @@ async function main() {
   // apenas para os programas em PROGRAMS (livelo/esfera/azul). Programas gravados
   // por outros coletores (inter, meliuz, tcbuk, tcbus) são preservados — sem isso,
   // a run horária apagava os dados do Méliuz/TopCashback coletados às 09h/18h.
-  const progsComparemania = new Set(PROGRAMS.map(p => p.id));
+  // Programa que falhou nesta rodada (0 parceiros) NÃO é fonte de verdade:
+  // preserva o que as rodadas anteriores do dia gravaram, senão um 503
+  // passageiro apaga o dia inteiro de Azul/LATAM do histórico.
+  const progsComparemania = new Set(
+    PROGRAMS.map(p => p.id).filter(id => contagemPorPrograma[id] > 0)
+  );
   const snapExistente = historico[hoje] || {};
   for (const [chave, dados] of Object.entries(snapExistente)) {
     for (const [pid, val] of Object.entries(dados.programs || {})) {
