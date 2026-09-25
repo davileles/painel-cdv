@@ -58,7 +58,7 @@ Presentes em painel-cdv, baileys-server, gestor-cdv, concierge, tudo-sobre-promo
 | `painel-cdv` | Proxy central (`index.js`) + painel do membro CDV (`index.html`) + coletores (Actions) + JSONs públicos | Railway (proxy) + GitHub Pages | `cdv-proxy-production.up.railway.app` · `painel.clubedoviajante.com.br` · `ir.clubedoviajante.com.br` | **CommonJS** |
 | `baileys-server` | WhatsApp (Baileys) + Telegram (GramJS) + radares de afiliados + filas de envio; `wa-envio/` (Go) | Railway (2 serviços) | `baileys-server-production-ebfe.up.railway.app` | **ESM** |
 | `gestor-cdv` (ex-`gerador-cdv`) | Painel de Gestão CDV (ofertas, emissões, alertas, campanhas, reentrada, grupos, config) | GitHub Pages | `davileles.github.io/gestor-cdv` (o antigo `/gerador-cdv/` dá 404) | HTML único |
-| `concierge` | Painel do Concierge Estratégico + portal do cliente + cadastro + DS-160 + `lembrete-voo.js` | GitHub Pages (`pages.yml`) | `concierge.clubedoviajante.com.br` | HTML único |
+| `concierge` | Painel do Concierge Estratégico + portal do cliente + cadastro + DS-160 + `lembrete-voo.js` (**sem dados de cliente** desde 25/09/2026) | GitHub Pages (`pages.yml`) | `concierge.clubedoviajante.com.br` | HTML único |
 | `roteiros` | Páginas de roteiro publicadas (clientes do concierge e membros) | GitHub Pages | `roteiros.clubedoviajante.com.br` | estático |
 | `dados` (**privado**) | Todos os dados sensíveis/persistentes (CDV, TSP, concierge) | — | — | JSON |
 | `tudo-sobre-promos` | Painel de gestão Tica Promos/TSP + coletor de comissões | GitHub Pages | `gestao.ticapromos.com.br` | HTML único |
@@ -85,7 +85,7 @@ gestor-cdv · concierge · tudo-sobre-promos · roteiros · baileys-server
                     PROXY CDV (painel-cdv/index.js, Railway)
                     ├─ GitHub API → painel-cdv (JSON públicos)
                     │             → davileles/dados (sensíveis, tsp/, concierge/, castanheiras/)
-                    │             → concierge (reservas, viagens, cfg…) · roteiros (páginas)
+                    │             → roteiros (páginas)
                     ├─ encurtador ir.clubedoviajante.com.br / distribuidor ir.ticapromos.com.br
                     └─ BAILEYS_URL → baileys-server
                                    │
@@ -111,7 +111,7 @@ TeamRausch, financas e castanheiras são ISOLADOS (serviços, tokens e dados pr�
   - `tsp/*`, `castanheiras/*` → `GITHUB_REPO_TSP` (padrão `davileles/dados`)
   - `ARQUIVOS_SENSIVEIS` (`membros`, `perfis`, `cartoes`, `assinaturas`, `desejos`, `campanhas`, `roteiros-membros`, `hubla-webhooks-log`) → `GITHUB_REPO_DADOS`
   - resto → `GITHUB_REPO` (painel-cdv)
-  - concierge: `concierge/clientes*.json`, `concierge/ds160.json` → `davileles/dados`; reservas/viagens/cfg/modelos/agendamentos/arquivos → repo `concierge`.
+  - concierge: **tudo** em `davileles/dados/concierge/` (`CONCIERGE_DADOS_REPO`) — clientes, ds160, reservas, viagens, demandas, modelos, agendamentos, cfg, alertas, msgs-enviadas, debug-log e `arquivos/`. `getConciergeFile/putConciergeFile` sem repo explícito prefixam `concierge/` sozinhos. **Nada de dado de cliente no repo `concierge`** (é público).
 - **Dois "cartões":** `cartoes.json` = cartões **dos membros** (sensível, repo dados). `cartoes-catalogo.json` = catálogo público de cartões de crédito (rotas `/catalogo-cartoes`).
 - **Modo dev:** `?env=dev` no front liga `IS_DEV` → header `x-cdv-env: dev` → o proxy lê/grava `X-dev.json` e prefixa commit com `[DEV]`.
 - **Escrita concorrente:** `ofertas*.json` e `passagens.json` são escritos pelo proxy e pelo Actions ao mesmo tempo → usar `reconciliar-estado.js` ou Contents API com SHA fresco; nunca `pull --rebase` ingênuo em cima de dado.
@@ -294,7 +294,7 @@ Cron do GitHub está degradado (atrasa 2–4 h): disparo real vem do Railway; cr
 
 ### 4.4 `concierge` (Concierge Estratégico)
 - Arquivos: `index.html` (~10,5k linhas, painel), `portal.html` (portal do cliente), `cadastro.html` (formulário público com ViaCEP), `ds160.html` (formulário público do visto americano), `iata.js`, `lembrete-voo.js`, `tc.html` (página empacotada avulsa, sem ligação). Deploy por `.github/workflows/pages.yml`.
-- Dados versionados **no próprio repo** (escritos pelo proxy): `reservas.json`, `viagens.json`, `demandas.json`, `modelos.json`, `agendamentos.json`, `cfg.json`, `msgs-enviadas.json`, `debug-log.json`, `alertas-concierge.json`, `arquivos/RES-<ts>_<n>.json` (anexos base64). Clientes ficam em `davileles/dados/concierge/`.
+- Dados em **`davileles/dados/concierge/`** (escritos pelo proxy e pelo `lembrete-voo.js`, migrados em 25/09/2026): `reservas.json`, `viagens.json`, `demandas.json`, `modelos.json`, `agendamentos.json`, `cfg.json`, `msgs-enviadas.json`, `debug-log.json`, `alertas-concierge.json`, `arquivos/RES-<ts>_<n>.json` (anexos base64), `clientes*.json`, `ds160.json`. O repo `concierge` só tem código.
 - Abas: Reservas, Nova Reserva (anexos → `/ia/extrair-reserva` por tipo: voo/hotel/carro/passeio/seguro; HTML vai como texto, PDF/imagem como documento; `normalizarAnoDatas()` completa ano), Demandas, Viagens, Clientes (inclui pendentes de aprovação), Mensagens (modelos + envio em massa `_massa*`), Gerar Roteiro, Config.
 - **Autenticação:** OTP por e-mail (`/admin/*-codigo` com `app:'concierge'`) → token no cookie `cdv_conc_sess` (12 h). Wrapper global de `fetch` injeta `X-CDV-Auth` em `/concierge/*`; 401 → apaga cookie e recarrega.
 - **Zero localStorage/sessionStorage** para estado. Único resto: `localStorage['concierge_cfg']` como migração/fallback legado — não expandir.
@@ -304,7 +304,8 @@ Cron do GitHub está degradado (atrasa 2–4 h): disparo real vem do Railway; cr
 - **`lembrete-voo.yml`**: de hora em hora + dispatch pelo proxy; Node 20, 3 tentativas. Secrets `CDV_CONCIERGE_TOKEN` (→ `CDV_GITHUB_TOKEN`) e `CDV_SERVICO_CONCIERGE` (→ `X-CDV-Servico`). Gatilhos: `voo_ida_dt`, `voo_ida_d`, `voo_volta_dt`, `voo_volta_d`, `checkin`, `seguro_inicio`, `seguro_fim`, `viagem`, `primeiro_voo_viagem`. Alerta interno de check-in 26 h antes de cada trecho. Fuso pelo aeroporto de partida (`IATA_TZ`).
 - **O painel NUNCA escreve `msgs-enviadas.json`** (só o job; chaves `"MOD-x|RES-y"`).
 - DS-160: `ds160.html` → `POST /concierge/ds160`; painel acompanha `/concierge/ds160/status`.
-- Portal (`portal.html`): tema escuro premium, `font-weight:300`, branco sobre `#0a0c12`, sem partículas/efeitos.
+- IA do "Gerar Roteiro": `rgChamarIA` → `POST /concierge/ia/roteiro-dias` (proxy, chave no servidor). Nunca chamar `api.anthropic.com` do navegador.
+- Portal (`portal.html`): tema escuro premium, `font-weight:300`, branco sobre `#0a0c12`, sem partículas/efeitos. Login por **código no e-mail**: `POST /concierge/portal/enviar-codigo` → `POST /concierge/portal/verificar-codigo` (10 min, 5 tentativas) → token de portal (7 dias, cookie `cdv_portal_sess`, chave HMAC própria) → `GET /concierge/portal` com header `X-CDV-Portal` (o e-mail sai do token, nunca da query).
 - Modelo do serviço (contexto): contrato de 12 meses (contratante, cônjuge e filhos), pagamento único por link, assinatura via ZapSign, atendimento dias úteis 8h–18h; após assinar, cliente preenche cadastro (dados, beneficiários, logins de fidelidade); aprovações de emissão acontecem na conversa.
 - Planejado: extensão Chrome do concierge que preenche cadastros em sites (cias, hotéis) com dados do cliente — primeiro fechar autenticação das rotas `/concierge/*`, depois usar o mesmo login OTP.
 
@@ -408,10 +409,8 @@ Cron do GitHub está degradado (atrasa 2–4 h): disparo real vem do Railway; cr
 ---
 
 ## 6. Riscos e pendências conhecidos (não resolvidos)
-- `concierge` é **público** e guarda reservas, viagens, anexos e agendamentos com dados pessoais → candidato a migrar para `davileles/dados` (como já foi feito com clientes e `roteiros-membros.json`).
+- Dados do concierge migrados para `davileles/dados` (25/09/2026), mas o **histórico** do repo público `concierge` ainda contém reservas, anexos e um agendamento com CPF + senha Esfera (senha deve ser trocada). Plano (opção A): tornar `concierge` **privado** e publicar o site num repo público novo `concierge-site` (só HTML/JS, histórico limpo). O `lembrete-voo.yml` continua no `concierge` privado.
 - `painel-cdv/alertas.json` ainda contém e-mail de membro (migração pendente; `coletar.js` grava via checkout).
-- Portal do concierge abre só com e-mail (sem código).
-- `concierge/index.html` → `rgChamarIA` chama `api.anthropic.com` direto sem chave — deveria passar pelo proxy (`/ia/*`).
 - CORS do proxy lista `GET, POST, OPTIONS`, mas há rotas `DELETE`.
 - Concierge: popular retroativamente `roteiros-membros.json` para roteiros publicados antes da associação por e-mail; `cli-31`/`cli-34` com CPF duplicado.
 - Mensagens recorrentes/agendadas do TSP ainda não suportam anexo.
