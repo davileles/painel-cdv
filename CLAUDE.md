@@ -288,6 +288,7 @@ Cron do GitHub está degradado (atrasa 2–4 h): disparo real vem do Railway; cr
 - Auto-envio de emissão aprovada quando pontos ≤ média histórica ± tolerância.
 - **Alaska Atmos é proibido de envio automático** — sempre aprovação manual.
 - Comparador: abas de compras bonificadas e transferências bonificadas; parceiros Tier 1 recebem mensagens individuais; projeções de frequência/próximo aumento.
+- **Lembrete "ACABA HOJE"** (baileys-server, `checarLembretesAcabaHoje`): toda oferta do radar de categoria `transferencia`, `clube` ou `compra` enviada a um grupo é reenviada automaticamente no último dia do prazo (09:00 SP; 2 h antes se a promo acaba cedo), com o **mesmo texto** e `⏰ ACABA HOJE!` no título. Vai direto pela `filaRadar` (não passa pelo proxy): **não registra no `historico-transferencias.json`**. Texto em `sessao/lembretes_radar.json`; prazo/categoria de `ofertas.json`. Inspeção: `GET /radar/lembretes` (`?checar=1`). Kill switch `LEMBRETE_ACABA_HOJE=off`; categorias em `LEMBRETE_ACABA_HOJE_CATS`.
 - Coleta de passagens do seats.aero é feita por automação de navegador (API bloqueada para o Brasil) e entra por `/passagens/registrar`.
 
 ---
