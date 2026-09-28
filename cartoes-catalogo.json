@@ -7,14 +7,14 @@
       "observacao": "Alíquota federal aplicada a todos os cartões. O que varia por cartão é se o emissor absorve o custo (campo iof_isento).",
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
-    "atualizado_em": "2026-09-21",
+    "atualizado_em": "2026-09-28",
     "total": 143,
-    "validado_em": "2026-09-21",
+    "validado_em": "2026-09-28",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização.",
     "coletor": "coletar-cartoes.js",
     "modelo_coleta": "claude-sonnet-5",
-    "conflitos_abertos": 5,
+    "conflitos_abertos": 4,
     "imputacao_planilha": {
       "arquivo": "cartoes-premium-comparativo.xlsx",
       "em": "2026-07-31",
@@ -3324,7 +3324,7 @@
         "nacional": null,
         "internacional": 3,
         "unidade": "pts/USD",
-        "observacao": "Até 3 pontos por dólar que não expiram."
+        "observacao": "Até 3 pontos por dólar que não expiram, conforme linha 'Bradesco Principal'."
       },
       "cashback": {
         "percentual": 0,
@@ -3340,29 +3340,17 @@
       "salas_vip": [
         {
           "programa": "Bradesco Lounge",
-          "regra": "4 acessos a salas VIP com reserva antecipada."
-        },
-        {
-          "programa": "Rede de salas VIP",
-          "regra": "Acesso a mais de 1.000 salas VIP ao redor do mundo."
+          "regra": "4 acessos a salas VIP com reserva antecipada; acesso a mais de 1.000 salas VIP ao redor do mundo."
         }
       ],
       "beneficios_banco": [
-        {
-          "titulo": "Bradesco Lounge",
-          "descricao": "Salas VIP privativas nos principais aeroportos do Brasil."
-        },
         {
           "titulo": "Fast Pass",
           "descricao": "Fila exclusiva no raio-X do aeroporto para agilizar o embarque."
         },
         {
-          "titulo": "Pontos Livelo",
-          "descricao": "Acumule pontos e troque por viagens, cashback ou produtos."
-        },
-        {
           "titulo": "Programa Menu",
-          "descricao": "Até 15% de desconto na conta, mesa VIP e sobremesa em restaurantes premiados."
+          "descricao": "Ganhe até 15% de desconto na conta e aproveite vantagens como mesa VIP e sobremesa em restaurantes premiados."
         },
         {
           "titulo": "Viagens & Concierge Bradesco",
@@ -3370,46 +3358,54 @@
         },
         {
           "titulo": "Ofertas especiais",
-          "descricao": "Condições diferenciadas em marcas selecionadas, disponíveis no app Bradesco."
+          "descricao": "Condições diferenciadas nas melhores marcas, disponíveis no app Bradesco."
+        },
+        {
+          "titulo": "Pix com cartão de crédito",
+          "descricao": "Use o limite de saque do cartão para pagar e fazer transferências via Pix."
+        },
+        {
+          "titulo": "Parcelamento de compras internacionais",
+          "descricao": "Parcele compras feitas à vista no exterior de forma simples pelo app."
         }
       ],
       "link_solicitacao": null,
-      "nota_curadoria": "A página oficial não detalha valor de anuidade, renda mínima nem regras específicas de isenção, apenas cita que ela pode ocorrer por gastos ou investimentos. Os 4 acessos a salas VIP com reserva antecipada e a pontuação de até 3 pontos por dólar são os dados mais concretos disponíveis. Recomenda-se confirmar diretamente com o gerente Bradesco os valores exatos de anuidade e critérios de isenção antes de recomendar o cartão.",
-      "procedencia": {
-        "categoria": "https://banco.bradesco/html/principal/cartoes.html",
-        "isencao": "https://banco.bradesco/html/principal/cartoes.html",
-        "pontos": "https://banco.bradesco/html/principal/cartoes.html",
-        "programa_proprio": "https://banco.bradesco/html/principal/cartoes.html",
-        "salas_vip": "https://banco.bradesco/html/principal/cartoes.html",
-        "beneficios_banco": "https://banco.bradesco/html/principal/cartoes.html",
-        "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
-        "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
-        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "planilha:cartoes-premium-comparativo.xlsx",
-        "transfere_para": "https://banco.bradesco/html/principal/cartoes.html",
-        "validade_pontos": "https://banco.bradesco/html/principal/cartoes.html"
-      },
+      "nota_curadoria": "A fonte oficial não traz valor exato de anuidade nem regras detalhadas de isenção, apenas menciona que ela pode ocorrer por gastos ou investimentos. Os benefícios de pontos (até 3 pts/USD) e salas VIP (4 acessos com reserva antecipada) são específicos da linha 'Bradesco Principal', mas não há confirmação de que sejam exclusivos da variante Visa Infinite. Recomenda-se checar condições comerciais atualizadas diretamente com o gerente antes de indicar ao cliente.",
       "fontes": [
         "https://banco.bradesco/html/principal/cartoes.html",
         "planilha:cartoes-premium-comparativo.xlsx",
         "planilha:arquivo_unificado_fuzzy.xlsx"
       ],
-      "verificado_em": "2026-09-07",
+      "verificado_em": "2026-09-28",
+      "procedencia": {
+        "isencao": "https://banco.bradesco/html/principal/cartoes.html",
+        "pontos": "https://banco.bradesco/html/principal/cartoes.html",
+        "salas_vip": "https://banco.bradesco/html/principal/cartoes.html",
+        "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
+        "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "iof": "planilha:cartoes-premium-comparativo.xlsx",
+        "transfere_para": "https://banco.bradesco/html/principal/cartoes.html"
+      },
       "campos_pendentes": [
         "anuidade_parcelas",
         "renda_minima",
         "requisito_acesso"
       ],
       "campos_rejeitados": [],
+      "campos_procedencia_inferida": [
+        "isencao",
+        "pontos",
+        "salas_vip"
+      ],
       "campos_preservados": [
         "adicionais_gratis",
         "anuidade",
         "cashback",
         "iof",
         "spread",
-        "transfere_para",
-        "validade_pontos"
+        "transfere_para"
       ],
       "bandeira_ref": "visa-infinite"
     },
@@ -4701,26 +4697,26 @@
       "nome": "BTG Mastercard World Legend Ultrablue",
       "emissor": "BTG Pactual",
       "bandeira": "Mastercard",
-      "categoria": "Ultrablue (World Legend)",
+      "categoria": "World Legend",
       "anuidade": 4800,
       "anuidade_parcelas": 12,
       "isencao": {
         "tipo": "investimento",
         "valor": 400000,
-        "regra": "Isenção total de anuidade para clientes com mais de R$ 400 mil investidos no BTG Pactual. Para quem não atinge esse patamar, a anuidade é de R$ 400 por mês, com desconto de R$ 10 a cada R$ 1 mil em gastos ou R$ 10 mil em investimentos."
+        "regra": "Isenção total de anuidade para clientes com investimentos acima de R$ 400 mil no BTG Pactual. Para quem não atinge esse patamar, a anuidade é de R$ 400/mês, com desconto de R$ 10 a cada R$ 1 mil em gastos ou a cada R$ 10 mil em investimentos."
       },
       "renda_minima": null,
-      "requisito_acesso": "Elegibilidade exige investir ao menos R$ 1 milhão com o BTG Pactual (cliente do banco).",
+      "requisito_acesso": "É necessário ter ao menos R$ 1 milhão investido com o BTG Pactual para ser elegível ao upgrade para o Ultrablue.",
       "adicionais_gratis": null,
       "pontos": {
         "nacional": 3,
         "internacional": null,
         "unidade": "pts/BRL",
-        "observacao": "Ultrablue oferece 3 pontos por R$1 em compras nacionais, ou alternativamente 1,5% de cashback, conforme comparativo de cartões BTG Pactual (categoria Black Unlimited/Ultrablue)."
+        "observacao": "3 pontos por real em compras nacionais no programa de fidelidade do Ultrablue, ou opção de 1,5% de cashback em compras nacionais."
       },
       "cashback": {
         "percentual": 1.5,
-        "regra": "Opção de 1,5% de cashback em compras nacionais como alternativa ao programa de pontos, disponível para o cartão Ultrablue."
+        "regra": "Opção alternativa ao programa de pontos: 1,5% de cashback em compras nacionais para clientes Ultrablue."
       },
       "programa_proprio": "Pontos BTG",
       "transfere_para": [
@@ -4736,13 +4732,13 @@
       "salas_vip": [
         {
           "programa": "LoungeKey",
-          "regra": "Acesso ilimitado ao titular e 12 acessos para acompanhantes, sem custo adicional, em mais de mil salas VIP ao redor do mundo."
+          "regra": "Acesso ilimitado ao titular e 12 acessos para acompanhantes, sem custo, em mais de mil salas VIP ao redor do mundo."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Terminal BTG Pactual em GRU",
-          "descricao": "Acesso prioritário e 20% de desconto no Terminal BTG Pactual, terminal exclusivo no Aeroporto de Guarulhos com check-in, embarque e lounges dedicados."
+          "titulo": "Terminal BTG Pactual (GRU)",
+          "descricao": "Acesso com prioridade e 20% de desconto no primeiro terminal exclusivo da América Latina, localizado no Aeroporto de Guarulhos."
         },
         {
           "titulo": "Concierge via WhatsApp",
@@ -4750,23 +4746,23 @@
         },
         {
           "titulo": "Seguro Conta e Cartão exclusivo",
-          "descricao": "Cobertura contra perdas e roubos com reembolso de até R$ 45.000,00, sem custo adicional para o titular Ultrablue."
+          "descricao": "Cobertura contra perdas e roubos com reembolso de até R$ 45.000,00, sem custo adicional para o titular."
         },
         {
-          "titulo": "Art Advisory com Nara Roesler",
-          "descricao": "Consultoria personalizada de um especialista em arte para compra, venda e curadoria de obras, em parceria com a galeria Nara Roesler."
+          "titulo": "Cartão de metal com limite flexível",
+          "descricao": "Cartão Unlimited, com limite analisado conforme o perfil de uso de cada cliente, sem teto fixo."
         },
         {
-          "titulo": "World Legend Concierge e experiências exclusivas",
-          "descricao": "Acesso a coleções de hotéis selecionados, experiências gastronômicas com chefs renomados (ex.: Alex Atala), Mastercard Travel Rewards e cashback de 8% na Booking.com."
+          "titulo": "Welcome Bonus de pontos",
+          "descricao": "Bônus de até 100 mil pontos extras para gastos entre R$ 60 mil e R$ 120 mil no cartão entre 01/11 e 31/12/2024 (ou R$ 1.250 a R$ 2.500 em cashback para quem optar por esse programa)."
         },
         {
-          "titulo": "Welcome Bonus por gastos",
-          "descricao": "Promoção temporária que concedia até 100 mil pontos extras (ou R$ 2.500 em cashback) para gastos entre R$ 60 mil e R$ 120 mil em período determinado."
+          "titulo": "Pacote completo de benefícios",
+          "descricao": "Inclui módulos de Entretenimento, Viagem, Transacional, Segurança extra e Investimentos em um único pacote, ao contrário de outras categorias que oferecem apenas um módulo."
         }
       ],
       "link_solicitacao": "https://banking.btgpactual.com/cartao-de-credito/cartao-ultrablue",
-      "nota_curadoria": "O Ultrablue não é um cartão de solicitação direta: exige upgrade dentro do app BTG Banking e elegibilidade condicionada a investimentos mínimos de R$ 1 milhão. A isenção de anuidade só ocorre acima de R$ 400 mil investidos; caso contrário, a anuidade mensal de R$ 400 pode ser abatida por gastos ou investimentos adicionais, o que exige atenção do assessor. Benefícios de pontos/cashback e salas VIP foram confirmados via comparativo oficial BTG, mas dados como renda mínima, transferência de pontos e programa de fidelidade específico não estão explícitos nas fontes.",
+      "nota_curadoria": "O Ultrablue é a categoria máxima do BTG Pactual e exige R$ 1 milhão investido para elegibilidade, sendo obtido via upgrade dentro do app BTG Banking, não por solicitação externa. A anuidade nominal de R$ 400/mês só é isenta com R$ 400 mil investidos, havendo descontos parciais por gasto ou investimento para quem não atinge esse valor. Os benefícios de viagem (Terminal BTG, LoungeKey ilimitado, concierge) são bastante superiores aos das categorias inferiores do banco, conforme comparativo oficial. A página da Mastercard descreve benefícios genéricos da linha World Legend (seguro viagem, art advisory, Michelin), mas não confirma se todos se aplicam especificamente à variante Ultrablue do BTG.",
       "procedencia": {
         "anuidade": "https://conteudo.btgpactual.com/cartao-ultrablue",
         "anuidade_parcelas": "https://conteudo.btgpactual.com/cartao-ultrablue",
@@ -4790,7 +4786,7 @@
         "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf",
         "https://banking.btgpactual.com/ajuda/programadefidelidade/btgpontos"
       ],
-      "verificado_em": "2026-09-21",
+      "verificado_em": "2026-09-28",
       "campos_pendentes": [
         "adicionais_gratis",
         "renda_minima"
@@ -4804,21 +4800,7 @@
         "transfere_para",
         "validade_pontos"
       ],
-      "bandeira_ref": "mastercard-world-legend",
-      "conflitos": [
-        {
-          "campo": "isencao.valor",
-          "antes": 40000,
-          "depois": 400000,
-          "variacao_pct": 900,
-          "fonte_antes": "https://banking.btgpactual.com/assets/files/tabela-de-tarifas.pdf",
-          "fonte_depois": "https://conteudo.btgpactual.com/cartao-ultrablue",
-          "valor_mantido": "depois",
-          "motivo": null,
-          "detectado_em": "2026-09-21",
-          "resolvido": false
-        }
-      ]
+      "bandeira_ref": "mastercard-world-legend"
     },
     {
       "slug": "btg-mastercard-black-ultrablue",
@@ -8085,8 +8067,8 @@
       "validade_pontos": "As Milhas/Pontos LATAM Pass da variante Black não expiram enquanto o cartão estiver em uso. Se o cartão ficar sem uso por 12 meses consecutivos ou for cancelado, as milhas passam a ter validade de 24 meses.",
       "salas_vip": [
         {
-          "programa": "LoungeKey (Mastercard Airport Experiences)",
-          "regra": "Acesso a salas VIP em aeroportos por meio do programa Mastercard Airport Experiences, fornecido pela LoungeKey; quantidade de acessos não especificada na fonte."
+          "programa": "LoungeKey",
+          "regra": "Acesso a salas VIP em aeroportos por meio do Mastercard Airport Experiences, fornecido pela LoungeKey; quantidade de acessos não especificada na fonte."
         }
       ],
       "beneficios_banco": [
@@ -8116,10 +8098,8 @@
         }
       ],
       "link_solicitacao": "https://www.itau.com.br/cartoes/escolha/formulario/latam-pass-itaucard-mastercard-black.html",
-      "nota_curadoria": "A fonte utilizada é institucional da Mastercard e descreve benefícios genéricos da bandeira Black, não especificamente do produto LATAM Pass Itaú Mastercard Black. Dados essenciais como anuidade, renda mínima, isenção, pontuação e transferência de pontos não constam nesta fonte e precisam ser confirmados diretamente com o Itaú. A quantidade de acessos ao Lounge Key/Mastercard Airport Experiences não é especificada.",
+      "nota_curadoria": "A única fonte disponível é a página institucional genérica da Mastercard Black, que descreve benefícios padrão da bandeira (LoungeKey, seguros MasterAssist, Mastercard Travel Rewards) e não traz dados específicos do produto LATAM Pass Itaú Mastercard Black, como anuidade, renda mínima, regras de pontuação ou de isenção. Recomenda-se confirmar diretamente com o Itaú os termos comerciais específicos deste cartão antes de usá-los com clientes.",
       "procedencia": {
-        "bandeira": "https://www.mastercard.com.br/pt-br/consumidores/encontre-seu-cartao/cartoes-credito/mastercard-black.html",
-        "categoria": "https://www.mastercard.com.br/pt-br/consumidores/encontre-seu-cartao/cartoes-credito/mastercard-black.html",
         "salas_vip": "https://www.mastercard.com.br/pt-br/consumidores/encontre-seu-cartao/cartoes-credito/mastercard-black.html",
         "anuidade": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-mastercard-black/",
         "anuidade_parcelas": "https://www.itau.com.br/cartoes/escolha/g/latam-pass-mastercard-black/",
@@ -8139,7 +8119,7 @@
         "https://www.itau.com.br/media/dam/m/25dc6670a45fec09/original/Regulamento-Latam-Pass.pdf",
         "https://www.itau.com.br/media/dam/m/4474d6764777bb8b/original/pontos_milhas_latam_03_2025.pdf"
       ],
-      "verificado_em": "2026-09-14",
+      "verificado_em": "2026-09-28",
       "campos_pendentes": [
         "adicionais_gratis",
         "cashback",
@@ -8150,6 +8130,7 @@
       "campos_preservados": [
         "anuidade",
         "anuidade_parcelas",
+        "beneficios_banco",
         "iof",
         "isencao",
         "link_solicitacao",
@@ -8805,22 +8786,22 @@
       "isencao": {
         "tipo": "gasto_mensal",
         "valor": 8000,
-        "regra": "Isento da mensalidade de R$ 89 quem gastar acima de R$ 8 mil por mês no cartão de crédito ou mantiver R$ 50 mil investidos/guardados no Nubank; caso contrário, a mensalidade é de R$ 89."
+        "regra": "Isento da mensalidade de R$ 89 quem gastar acima de R$ 8 mil por mês no cartão de crédito ou mantiver R$ 50 mil investidos ou guardados no Nubank; caso contrário, a mensalidade é de R$ 89."
       },
       "renda_minima": null,
-      "requisito_acesso": "Não há regra de renda mínima definida; o acesso depende de análise de crédito automática feita pelo Nubank no cadastro e mensalmente para clientes já correntistas.",
+      "requisito_acesso": "Não há regra de renda mínima fixa; o acesso depende de análise de crédito automática realizada no cadastro e mensalmente para clientes existentes.",
       "adicionais_gratis": 1,
       "pontos": {
         "nacional": null,
         "internacional": 2.2,
         "unidade": "pts/USD",
-        "observacao": "Acumula a partir de 2,2 pontos por dólar gasto em compras no crédito; no Nu Viagens o acúmulo sobe para 9 pontos por dólar. Não há informação de pontuação para compras nacionais em reais."
+        "observacao": "Cliente acumula a partir de 2,2 pontos por dólar gasto (Modo Pontos) ou pode optar por 1,25% de cashback; no Nu Viagens a pontuação sobe para 9 pontos por dólar."
       },
       "cashback": {
         "percentual": 1.25,
-        "regra": "1,25% de cashback em todas as compras no crédito (R$0,0125 por R$1 gasto), disponível instantaneamente e sem expiração; não há cashback em saques, boletos, PIX, tributos, seguros, assinaturas e mensalidade do Ultravioleta. Limite de resgate de R$7.500/mês por modalidade."
+        "regra": "1,25% de cashback sobre compras no crédito ou via NuPay no crédito, calculado em reais, com limite de resgate de R$ 7.500 por mês por modalidade; não gera cashback saques, estornos, boletos, PIX, seguros e mensalidade do Ultravioleta."
       },
-      "programa_proprio": "Programa de Pontos e Cashback Nubank Ultravioleta",
+      "programa_proprio": "Nubank Ultravioleta (Pontos e Cashback)",
       "transfere_para": [
         "LATAM Pass",
         "Azul Fidelidade",
@@ -8828,58 +8809,58 @@
       ],
       "spread": 3.5,
       "iof": 0,
-      "validade_pontos": "Saldo de pontos e cashback não expira",
+      "validade_pontos": "Não expira",
       "salas_vip": [
         {
           "programa": "Priority Pass",
-          "regra": "4 visitas gratuitas por ano (titular e acompanhantes) a mais de 1.700 salas VIP em todo o mundo."
+          "regra": "4 visitas gratuitas por ano para o titular e acompanhantes em mais de 1.700 salas VIP ao redor do mundo."
         },
         {
-          "programa": "Nubank Ultravioleta Lounge (Guarulhos)",
-          "regra": "Acesso ilimitado e gratuito ao lounge próprio no Terminal 3 do Aeroporto de Guarulhos, para titular e acompanhantes, até 3 horas antes do voo internacional."
+          "programa": "Nubank Ultravioleta Lounge",
+          "regra": "Acesso ilimitado ao espaço exclusivo no Terminal 3 do Aeroporto de Guarulhos para titulares e adicionais, mediante geração de Ultravioleta Pass no app, disponível até 3h antes do voo."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Nu Viagens",
-          "descricao": "Reservas de passagens aéreas e hotéis pelo app com 9 pontos por dólar ou 5% de cashback, proteção contra variação de preço e alertas de melhor momento de compra."
+          "descricao": "Reservas de passagens aéreas e hotéis pelo app rendem 9 pontos por dólar ou 5% de cashback, além de proteção contra variação de preço e seguro viagem incluso para destinos internacionais."
+        },
+        {
+          "titulo": "Modo LATAM Pass",
+          "descricao": "Permite acumular 2,2 milhas LATAM Pass por dólar gasto, com 10% de bônus em envios automáticos e 1 Ponto Qualificável a cada 4 milhas."
         },
         {
           "titulo": "Conta Global Ultravioleta",
-          "descricao": "Parceria com a Wise Platform: spread zero e gerenciamento de saldo em reais, dólar, euro e mais de 40 moedas pelo aplicativo."
-        },
-        {
-          "titulo": "NuTag",
-          "descricao": "Duas tags gratuitas de pedágio e estacionamento, sem mensalidade, com cobrança lançada diretamente na fatura do cartão."
-        },
-        {
-          "titulo": "Casa Nubank Ultravioleta (Parque Ibirapuera)",
-          "descricao": "Espaço exclusivo no Parque Ibirapuera com estacionamento gratuito via NuTag, Wi-Fi, carregadores por indução e comodidades para relaxar."
+          "descricao": "Em parceria com a Wise, oferece spread zero e gerenciamento de saldo em mais de 40 moedas diretamente pelo app."
         },
         {
           "titulo": "eSIM de Viagem",
-          "descricao": "eSIM com 10GB de dados, renovação automática após 365 dias, com conexão em mais de 150 países."
+          "descricao": "10GB de internet com renovação automática após 365 dias, garantindo conexão em mais de 150 países."
         },
         {
-          "titulo": "Assinatura HBO Max",
-          "descricao": "Valor exclusivo para clientes Ultravioleta assinarem a HBO Max e acessarem filmes, séries e esportes."
+          "titulo": "Seguro Proteção de Transações Digitais",
+          "descricao": "Cobertura de até R$ 30 mil por ano (2 eventos por CPF) para transações não autorizadas após roubo, furto ou coação, oferecida pela Chubb Seguros."
+        },
+        {
+          "titulo": "Cartão adicional sem custo",
+          "descricao": "Possibilidade de solicitar cartão adicional gratuito, cujos gastos também contam para a isenção da mensalidade e geram cashback ao titular."
         }
       ],
       "link_solicitacao": "https://nubank.com.br/ultravioleta",
-      "nota_curadoria": "Atenção à pegadinha da isenção: é preciso gastar R$ 8 mil/mês no cartão OU manter R$ 50 mil investidos/guardados no Nubank, senão a mensalidade de R$ 89 é cobrada integralmente; clientes antigos tiveram regra de transição (R$ 49/mês com gasto de R$ 5 mil) válida por 12 meses a partir de agosto/2025. Não há renda mínima formal, mas há análise de crédito recorrente que pode bloquear o acesso. O programa de pontos/cashback e a transferência para LATAM, Azul e Smiles foram lançados em 20/08/2025, substituindo o antigo cashback de 200% do CDI (descontinuado em 30/09/2025). O acesso ao Priority Pass é limitado a 4 visitas/ano, enquanto o lounge próprio em Guarulhos é ilimitado.",
+      "nota_curadoria": "A anuidade nominal é de R$ 89/mês (R$ 1.068/ano), mas é isenta para quem gasta acima de R$ 8 mil/mês no cartão ou mantém R$ 50 mil investidos/guardados no Nubank — atenção porque essa regra mudou recentemente e pode voltar a ser revisada. Não há renda mínima formal, mas há análise de crédito automática e recorrente. O cartão une pontos (a partir de 2,2 pts/USD) e cashback (1,25%) na mesma conta, com limite de resgate mensal de R$ 7.500 por modalidade, algo que pode pegar clientes de alto gasto desprevenidos.",
       "procedencia": {
-        "anuidade": "https://nubank.com.br/ultravioleta",
-        "anuidade_parcelas": "https://nubank.com.br/ultravioleta",
-        "isencao": "https://nubank.com.br/ultravioleta",
+        "anuidade": "https://international.nubank.com.br/pt-br/companhia/nubank-ultravioleta-apresenta-novos-beneficios-com-programa-de-pontos-e-parceria-com-companhias-aereas-ou-125-de-cashback/",
+        "anuidade_parcelas": "https://international.nubank.com.br/pt-br/companhia/nubank-ultravioleta-apresenta-novos-beneficios-com-programa-de-pontos-e-parceria-com-companhias-aereas-ou-125-de-cashback/",
+        "isencao": "https://nubank.com.br/ultravioleta/cartao-black",
         "requisito_acesso": "https://nubank.com.br/ultravioleta",
-        "adicionais_gratis": "https://nubank.com.br/ultravioleta/cartao-black",
         "pontos": "https://nubank.com.br/ultravioleta/cartao-black/pontos-cashback",
         "cashback": "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta",
-        "transfere_para": "https://international.nubank.com.br/pt-br/companhia/nubank-ultravioleta-apresenta-novos-beneficios-com-programa-de-pontos-e-parceria-com-companhias-aereas-ou-125-de-cashback/",
+        "transfere_para": "https://nubank.com.br/ultravioleta/cartao-black",
         "spread": "https://nubank.com.br/ultravioleta/cartao-black",
         "iof": "https://nubank.com.br/ultravioleta/cartao-black",
-        "salas_vip": "https://international.nubank.com.br/pt-br/companhia/nubank-ultravioleta-apresenta-novos-beneficios-com-programa-de-pontos-e-parceria-com-companhias-aereas-ou-125-de-cashback/",
-        "validade_pontos": "https://nubank.com.br/ultravioleta/cartao-black"
+        "validade_pontos": "https://nubank.com.br/ultravioleta",
+        "salas_vip": "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta",
+        "adicionais_gratis": "https://nubank.com.br/ultravioleta/cartao-black"
       },
       "fontes": [
         "https://nubank.com.br/ultravioleta/cartao-black",
@@ -8889,13 +8870,13 @@
         "https://nubank.com.br/ultravioleta/beneficios",
         "https://nubank.com.br/ultravioleta/cartao-black/pontos-cashback"
       ],
-      "verificado_em": "2026-09-21",
+      "verificado_em": "2026-09-28",
       "campos_pendentes": [
         "renda_minima"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
-        "validade_pontos"
+        "adicionais_gratis"
       ],
       "bandeira_ref": "mastercard-black"
     },
@@ -10795,7 +10776,7 @@
       "isencao": {
         "tipo": "outro",
         "valor": null,
-        "regra": "Programa Vantagem Progressiva: os gastos realizados pelo titular e pelos adicionais são convertidos em descontos na anuidade, concedidos a partir do segundo ano de emissão do cartão. Condições detalhadas devem ser confirmadas com o gerente de relacionamento."
+        "regra": "Pelo Programa Vantagem Progressiva, os gastos do titular e dos adicionais são convertidos em descontos na anuidade, podendo chegar à isenção total; os descontos são concedidos a partir do segundo ano de emissão do cartão."
       },
       "renda_minima": null,
       "requisito_acesso": "Ser cooperado de uma cooperativa filiada ao Sicoob. Cartão solicitado diretamente na cooperativa.",
@@ -10804,7 +10785,7 @@
         "nacional": null,
         "internacional": 2.5,
         "unidade": "pts/USD",
-        "observacao": "Programa Coopera: conversão de compras na função crédito em pontos, considerando o dólar gasto (categoria Black Merit/Infinite Merit)."
+        "observacao": "No Programa Coopera, compras internacionais convertem US$ 1 = 2,5 pontos para o Black Merit."
       },
       "cashback": null,
       "programa_proprio": "Coopera",
@@ -10817,37 +10798,37 @@
       "salas_vip": [
         {
           "programa": "LoungeKey (Mastercard Airport Experiences)",
-          "regra": "Acesso ilimitado a mais de 1.400 salas VIP em mais de 400 aeroportos ao redor do mundo, independentemente da companhia aérea ou tipo de bilhete."
+          "regra": "Acesso ilimitado a mais de 1.400 salas VIP em mais de 400 aeroportos ao redor do mundo."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Mastercard Black Concierge",
-          "descricao": "Assistente pessoal 24h para planejamento de viagens, compra de ingressos e indicação de restaurantes em qualquer lugar do mundo."
+          "descricao": "Assistente pessoal 24h para planejar viagens, buscar ingressos para shows/eventos e indicar restaurantes onde quer que você esteja."
         },
         {
-          "titulo": "Cotação do Dólar sem spread",
-          "descricao": "Conversão de compras internacionais pelo dólar PTAX do dia, mais IOF, sem cobrança de taxas adicionais."
+          "titulo": "Salas VIP Mastercard Airport Experiences",
+          "descricao": "Acesso ilimitado a mais de 1.400 salas VIP em mais de 400 aeroportos ao redor do mundo, independente da companhia aérea ou tipo de bilhete."
+        },
+        {
+          "titulo": "Cotação do Dólar sem taxas adicionais",
+          "descricao": "Conversão de compras internacionais pelo dólar PTAX do dia, mais IOF, sem cobrança de taxas extras."
         },
         {
           "titulo": "Seguro Proteção Perda ou Roubo",
-          "descricao": "Proteção contra roubo, perda, utilização sob coação ou clonagem do cartão, mediante contratação."
-        },
-        {
-          "titulo": "Cartão Virtual",
-          "descricao": "Geração de cartão virtual de uso único ou recorrente pelos apps Sicoob ou Sicoobcard para compras online mais seguras."
-        },
-        {
-          "titulo": "Carteira Digital",
-          "descricao": "Pagamentos via Apple Pay, Google Pay, Samsung Wallet e WhatsApp."
+          "descricao": "Proteção contra roubo, perda, utilização sob coação ou clonagem do cartão (mediante contratação)."
         },
         {
           "titulo": "Parcelamento de fatura",
-          "descricao": "Parcelamento da última fatura em até 12x diretamente pelo App Sicoob, com taxas de juros mais vantajosas."
+          "descricao": "Parcele sua última fatura em até 12x diretamente no App Sicoob, com taxas de juros mais vantajosas."
+        },
+        {
+          "titulo": "Carteira Digital",
+          "descricao": "Pague compras com o celular usando Apple Pay, Google Pay, Samsung Wallet e pagamentos via WhatsApp."
         }
       ],
       "link_solicitacao": "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf",
-      "nota_curadoria": "A anuidade de R$1.320,00/ano pode ser reduzida via Programa Vantagem Progressiva, mas o desconto só passa a valer a partir do segundo ano e depende do volume de gastos do titular e adicionais - vale confirmar as faixas exatas com o gerente. O cartão pontua 2,5 pontos por dólar no programa Coopera, mas não há confirmação de parceiros de transferência de pontos (companhias aéreas específicas) nas fontes oficiais. Renda mínima e critérios de elegibilidade não são divulgados publicamente, sendo definidos por análise de perfil e relacionamento com a cooperativa.",
+      "nota_curadoria": "A anuidade anual de R$ 1.320 é cobrada em até 12 parcelas, com possibilidade de isenção total via Programa Vantagem Progressiva, mas o Sicoob não divulga o valor de gasto necessário nem a regra exata de desconto. O acúmulo de pontos de 2,5 por dólar aparece em fontes recentes (site e notícia), embora tabelas de benefícios mais antigas ainda listem 2,2 pts/USD para o Black/Black Merit — vale confirmar a taxa vigente com o gerente. Destaque para IOF reduzido (3,5%) e ausência de spread em compras internacionais, além de acesso ilimitado a salas VIP via LoungeKey.",
       "procedencia": {
         "anuidade": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
         "anuidade_parcelas": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
@@ -10869,7 +10850,7 @@
         "https://www.sicoob.com.br/web/sicoobagrorural/mastercard-black-pf",
         "https://www.sicoob.com.br/documents/37087630/37302699/Cartoes+de+Credito+Diferenciados+PF+por+Valor+Anuidade.pdf/9dd0f9de-d1c5-0d93-e2c0-70af51d042b0?t=1631885857192&download=true"
       ],
-      "verificado_em": "2026-09-21",
+      "verificado_em": "2026-09-28",
       "campos_pendentes": [
         "cashback",
         "renda_minima"
@@ -10888,13 +10869,13 @@
       "nome": "Sicoob Mastercard Black Zenith",
       "emissor": "Sicoob",
       "bandeira": "Mastercard",
-      "categoria": "Zenith",
+      "categoria": "Black Zenith",
       "anuidade": 1790,
       "anuidade_parcelas": 12,
       "isencao": {
         "tipo": "outro",
         "valor": null,
-        "regra": "Via Programa Vantagem Progressiva, os gastos do titular e adicionais são convertidos em descontos na anuidade, podendo chegar à isenção total a partir do segundo ano de emissão do cartão. Não há valor fixo divulgado, dependendo da análise do gerente de relacionamento."
+        "regra": "Pelo Programa Vantagem Progressiva, os gastos do titular e dos adicionais são convertidos em descontos na anuidade, concedidos a partir do segundo ano de emissão do cartão; condições detalhadas dependem do gerente de relacionamento."
       },
       "renda_minima": null,
       "requisito_acesso": null,
@@ -10903,7 +10884,7 @@
         "nacional": null,
         "internacional": 4,
         "unidade": "pts/USD",
-        "observacao": "4 pontos Coopera por dólar gasto em compras internacionais, uma das maiores pontuações do portfólio Sicoob."
+        "observacao": "4 pontos Coopera por dólar gasto em compras internacionais, um dos maiores retornos do mercado para este segmento."
       },
       "cashback": null,
       "programa_proprio": "Coopera",
@@ -10914,7 +10895,7 @@
       "salas_vip": [
         {
           "programa": "LoungeKey",
-          "regra": "Acesso ilimitado a salas VIP, com até 2 convidados gratuitos por visita; acessos excedentes de convidados são cobrados em USD 35 por pessoa (cartões Mastercard), lançado na fatura."
+          "regra": "Acesso ilimitado a salas VIP para titular e adicionais, com até 2 convidados gratuitos por visita; visitas excedentes custam USD 35 para cartões Mastercard, cobrado na fatura."
         }
       ],
       "beneficios_banco": [
@@ -10923,28 +10904,28 @@
           "descricao": "Serviço de concierge disponível 24 horas para organizar viagens, comprar ingressos e fazer reservas em restaurantes."
         },
         {
-          "titulo": "Acesso ilimitado a salas VIP",
-          "descricao": "Acesso ilimitado às salas VIP LoungeKey, com direito a 2 convidados gratuitos por visita."
+          "titulo": "Seguro contra atrasos de voo e proteção de bagagens",
+          "descricao": "Cobertura para imprevistos relacionados a atrasos de voos e extravio ou dano de bagagens em viagens."
         },
         {
-          "titulo": "Compras internacionais sem taxa extra",
-          "descricao": "Conversão pelo dólar PTAX do dia da compra, sem cobrança de spread adicional."
+          "titulo": "Assistência global de emergência",
+          "descricao": "Suporte emergencial disponível em qualquer lugar do mundo para o portador do cartão."
         },
         {
           "titulo": "Seguro de Assistência Médica Internacional",
-          "descricao": "Cobertura para emergências médicas durante viagens internacionais."
+          "descricao": "Cobertura médica para viagens internacionais, garantindo suporte em caso de imprevistos de saúde."
         },
         {
           "titulo": "Isenção de rolha e experiências Priceless",
-          "descricao": "Benefícios exclusivos Mastercard, incluindo isenção de taxa de rolha em restaurantes parceiros e experiências Priceless."
+          "descricao": "Benefícios exclusivos Mastercard Priceless, incluindo isenção de taxa de rolha em restaurantes parceiros."
         },
         {
-          "titulo": "Seguro contra incoveniências de viagem",
-          "descricao": "Proteção contra atrasos de voos e perda/extravio de bagagens durante viagens."
+          "titulo": "Compras internacionais sem taxa extra",
+          "descricao": "Sem cobrança de spread nas operações internacionais, com conversão pelo dólar PTAX do dia da compra."
         }
       ],
       "link_solicitacao": "https://www.sicoob.com.br/web/sicoob/mastercard-zenith",
-      "nota_curadoria": "A anuidade de R$ 1.790,00 é uma das mais altas do portfólio Sicoob, mas pode ser reduzida ou isentada via Programa Vantagem Progressiva, sem regra numérica pública divulgada. O acesso a salas VIP é ilimitado com 2 convidados grátis por visita, mas visitas extras são cobradas em dólar. Não há confirmação oficial de renda mínima, requisito de relacionamento para elegibilidade nem lista de parceiros de transferência de pontos do Coopera.",
+      "nota_curadoria": "A anuidade de R$1.790,00/ano é uma das mais altas do portfólio Sicoob, parcelada em até 12 vezes, com isenção parcial condicionada ao Programa Vantagem Progressiva apenas a partir do segundo ano — não há isenção garantida por gasto mensal fixo. A pontuação de 4 pontos Coopera por dólar é destaque competitivo, mas renda mínima e requisito de acesso específicos não foram divulgados nas fontes oficiais. O acesso a salas VIP é ilimitado via LoungeKey, mas com limite de 2 convidados gratuitos por visita, sendo cobrada taxa de USD 35 por acesso excedente.",
       "procedencia": {
         "anuidade": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d",
         "anuidade_parcelas": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d",
@@ -10964,7 +10945,7 @@
         "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/282563279",
         "https://www.sicoob.com.br/zenith/desbloqueio"
       ],
-      "verificado_em": "2026-09-21",
+      "verificado_em": "2026-09-28",
       "campos_pendentes": [
         "cashback",
         "renda_minima",
@@ -10973,8 +10954,7 @@
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
-        "adicionais_gratis",
-        "link_solicitacao"
+        "adicionais_gratis"
       ],
       "bandeira_ref": "mastercard-black",
       "vigencia_ate": "2025-11-30"
@@ -10984,7 +10964,7 @@
       "nome": "Sicoob Visa Infinite Zenith",
       "emissor": "Sicoob",
       "bandeira": "Visa",
-      "categoria": "Infinite",
+      "categoria": "Infinite Zenith",
       "anuidade": 900,
       "anuidade_parcelas": 12,
       "isencao": {
@@ -10996,7 +10976,7 @@
       "requisito_acesso": null,
       "adicionais_gratis": null,
       "pontos": {
-        "nacional": null,
+        "nacional": 4,
         "internacional": 4,
         "unidade": "pts/USD",
         "observacao": "4 pontos Coopera por dólar gasto, uma das maiores pontuações do mercado segundo o Sicoob."
@@ -11008,17 +10988,17 @@
       ],
       "spread": 0,
       "iof": 3.5,
-      "validade_pontos": "24 meses a partir da data de aquisição/lançamento no extrato",
+      "validade_pontos": "24 meses a partir da data de lançamento no extrato",
       "salas_vip": [
         {
           "programa": "LoungeKey",
-          "regra": "Acesso ilimitado a salas VIP, com 2 convidados gratuitos por visita; adicionais têm os mesmos benefícios do titular; acesso excedente cobrado em USD 32 por visita para cartões Visa."
+          "regra": "Acesso ilimitado a salas VIP, com direito a 2 convidados gratuitos por visita; adicionais têm os mesmos benefícios do titular. Visitas excedentes de convidados são cobradas em USD 32 por acesso para cartões Visa."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Visa Concierge",
-          "descricao": "Assistente pessoal disponível 24 horas por dia."
+          "descricao": "Assistente pessoal disponível 24 horas para auxiliar em reservas, compras e outras solicitações."
         },
         {
           "titulo": "Fast Pass",
@@ -11030,19 +11010,18 @@
         },
         {
           "titulo": "Compras internacionais sem taxa extra",
-          "descricao": "Cartão permite compras internacionais sem cobrança de taxa extra."
+          "descricao": "Isenção de taxa adicional em compras internacionais realizadas com o cartão."
         },
         {
-          "titulo": "Programa Coopera",
-          "descricao": "Pontos podem ser trocados por passagens aéreas, hotéis, eletrônicos e outros produtos no marketplace do Coopera."
+          "titulo": "Coopera",
+          "descricao": "Programa de fidelidade e marketplace gratuito com mais de 250 mil produtos, permitindo resgate de pontos por viagens, produtos e serviços."
         }
       ],
       "link_solicitacao": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
-      "nota_curadoria": "O Sicoob Zenith foi anunciado como lançamento recente (a partir de 6/08, segundo notícia datada de 21/09/2026) e as fontes não trazem anuidade, renda mínima ou regra de isenção específicas para esta versão Visa Infinite Zenith — a tabela de tarifas disponível refere-se ao cartão 'Visa Infinite' comum, não ao Zenith, por isso não foi usada. A pontuação de 4 pontos Coopera por dólar e o acesso ilimitado a salas VIP LoungeKey com 2 convidados grátis são os diferenciais confirmados oficialmente. Recomenda-se buscar confirmação direta com o Sicoob sobre anuidade e critérios de elegibilidade antes de indicar o produto a clientes.",
+      "nota_curadoria": "O Sicoob Zenith é um lançamento recente (a partir de 6/8) e a tabela de tarifas oficial disponível ainda não traz um valor de anuidade específico para essa linha, apenas para o 'Visa Infinite' tradicional, por isso o campo de anuidade e isenção ficou em branco até confirmação oficial. A pontuação de 4 pontos Coopera por dólar e o acesso ilimitado a salas VIP (2 convidados grátis) são destaques confirmados nas fontes oficiais. Fique atento a excedentes de convidados nas salas VIP, cobrados em USD 32 por acesso extra em cartões Visa. Não há renda mínima nem número de adicionais gratuitos divulgados publicamente para este produto até o momento.",
       "procedencia": {
         "pontos": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
         "salas_vip": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
-        "programa_proprio": "https://www.sicoob.com.br/web/sicoob/coopera",
         "validade_pontos": "https://www.sicoob.com.br/web/sicoob/coopera",
         "anuidade": "https://www.sicoob.com.br/documents/56793504/105115028/sicoob_credfaz_tabela_de_tarifas_pf.pdf",
         "anuidade_parcelas": "https://www.sicoob.com.br/documents/56793504/105115028/sicoob_credfaz_tabela_de_tarifas_pf.pdf",
@@ -11060,7 +11039,7 @@
         "https://www.sicoob.com.br/documents/2204538/138978214/Tabela+de+Tarifas+nov-2025.pdf/9b3d5594-06cf-9814-0a93-193e5584f598?t=1763141556627",
         "planilha:cartoes-premium-comparativo.xlsx"
       ],
-      "verificado_em": "2026-09-21",
+      "verificado_em": "2026-09-28",
       "campos_pendentes": [
         "adicionais_gratis",
         "cashback",
@@ -11081,7 +11060,7 @@
     },
     {
       "slug": "sicredi-mastercard-black",
-      "nome": "Cartão Sicredi Mastercard Black",
+      "nome": "Sicredi Mastercard Black",
       "emissor": "Sicredi",
       "bandeira": "Mastercard",
       "categoria": "Black",
@@ -11123,43 +11102,32 @@
       ],
       "beneficios_banco": [
         {
-          "titulo": "Seguro Viagem MasterAssist Black",
-          "descricao": "Cobertura internacional para titular e dependentes em viagens de até 60 dias, incluindo traslado médico, despesas médicas e hospedagem."
-        },
-        {
-          "titulo": "Seguro para veículo locado",
-          "descricao": "Proteção contra danos e roubo em veículos alugados, desde que a locação seja paga integralmente com o cartão."
+          "titulo": "Concierge 24h",
+          "descricao": "Assistência personalizada para reservas em restaurantes, compra de ingressos e organização de experiências exclusivas."
         },
         {
           "titulo": "Mastercard Global Services",
           "descricao": "Upgrades de quarto, café da manhã gratuito e check-out tardio em hotéis parceiros no mundo todo."
         },
         {
-          "titulo": "Concierge 24h",
-          "descricao": "Assistência personalizada para reservas em restaurantes, compra de ingressos e organização de experiências exclusivas."
+          "titulo": "Seguro Emergência Médica Internacional (MasterAssist Black)",
+          "descricao": "Cobertura internacional para titular e dependentes em viagens de até 60 dias, incluindo traslado médico e hospedagem."
+        },
+        {
+          "titulo": "Seguro para veículo de locadora",
+          "descricao": "Cobertura contra danos, roubo e acidentes em veículos alugados, desde que a locação seja paga com o cartão."
         },
         {
           "titulo": "Mastercard Travel Rewards",
-          "descricao": "Cashback automático em compras realizadas em estabelecimentos parceiros no exterior, sem necessidade de cadastro."
+          "descricao": "Cashback automático em compras realizadas em estabelecimentos parceiros no exterior, sem necessidade de cadastro prévio."
         },
         {
-          "titulo": "Seguro Bagagem",
-          "descricao": "Cobertura para extravio, roubo ou atraso de bagagem, com reembolso de despesas emergenciais."
+          "titulo": "Mastercard Surpreenda",
+          "descricao": "Programa de fidelidade da Mastercard: a cada compra, de qualquer valor, o portador ganha 1 ponto, com ofertas como 'compre 1, leve 2'."
         }
       ],
       "link_solicitacao": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/",
-      "nota_curadoria": "Não há informação oficial explícita sobre o valor da anuidade, renda mínima ou isenção do Sicredi Mastercard Black nas fontes analisadas, portanto esses campos ficaram em branco. A pontuação é escalonada por faixa de gasto mensal (2 a 2,5 pts/USD), e há uma promoção temporária (15/09 a 15/12/2025) de 30 mil pontos de boas-vindas que não deve ser considerada regra permanente. Atenção: a Sala VIP exclusiva em Guarulhos é separada da cota de 12 acessos LoungeKey, e cobra R$200 por acompanhante além do titular.",
-      "procedencia": {
-        "pontos": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/",
-        "transfere_para": "https://www.sicredi.com.br/site/cartoes/programa-de-recompensa/",
-        "salas_vip": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/",
-        "validade_pontos": "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-mastercard-black/",
-        "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
-        "cashback": "https://www.sicredi.com.br/site/blog/produtos/viagem-descanso-verdadeiro/",
-        "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "planilha:cartoes-premium-comparativo.xlsx",
-        "requisito_acesso": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/"
-      },
+      "nota_curadoria": "As fontes oficiais não trazem o valor da anuidade nem a renda mínima exigida para o Sicredi Mastercard Black, o que é uma lacuna importante para orientar o cliente antes da solicitação. A pontuação é por reciprocidade, aumentando conforme o gasto mensal (2 a 2,5 pontos por dólar), e os pontos expiram em 2 anos, diferente do Sicredi Visa Infinite. Há duas salas VIP distintas: o LoungeKey (12 acessos/ano) e a sala exclusiva Mastercard Black em Guarulhos, que não consome os acessos do LoungeKey. Houve promoção temporária (15/09 a 15/12/2025) de 30 mil pontos de boas-vindas, que não deve ser considerada benefício permanente.",
       "fontes": [
         "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/",
         "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-mastercard-black/",
@@ -11169,128 +11137,40 @@
         "https://www.sicredi.com.br/site/solucoes-exclusivas/",
         "planilha:cartoes-premium-comparativo.xlsx"
       ],
-      "verificado_em": "2026-09-21",
+      "verificado_em": "2026-09-28",
+      "procedencia": {
+        "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
+        "pontos": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/",
+        "cashback": "https://www.sicredi.com.br/site/blog/produtos/viagem-descanso-verdadeiro/",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "iof": "planilha:cartoes-premium-comparativo.xlsx",
+        "salas_vip": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/",
+        "transfere_para": "https://www.sicredi.com.br/site/cartoes/programa-de-recompensa/",
+        "requisito_acesso": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/"
+      },
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade_parcelas",
         "isencao",
         "renda_minima"
       ],
-      "campos_rejeitados": [],
+      "campos_rejeitados": [
+        "pontos",
+        "salas_vip",
+        "transfere_para"
+      ],
       "campos_preservados": [
         "anuidade",
         "cashback",
         "iof",
+        "link_solicitacao",
+        "pontos",
         "requisito_acesso",
-        "spread"
+        "salas_vip",
+        "spread",
+        "transfere_para"
       ],
       "bandeira_ref": "mastercard-black"
-    },
-    {
-      "slug": "sicredi-visa-infinite",
-      "nome": "Cartão Sicredi Visa Infinite",
-      "emissor": "Sicredi",
-      "bandeira": "Visa",
-      "categoria": "Infinite",
-      "anuidade": 1200,
-      "anuidade_parcelas": null,
-      "isencao": {
-        "tipo": "outro",
-        "valor": null,
-        "regra": "Não há regra de isenção"
-      },
-      "renda_minima": null,
-      "requisito_acesso": "Sujeito à análise de crédito.",
-      "adicionais_gratis": null,
-      "pontos": {
-        "nacional": 3,
-        "internacional": 3,
-        "unidade": "pts/USD",
-        "observacao": "3 pontos por dólar gasto em compras na função crédito; pontos não expiram. Resgate mínimo de 10.000 pontos (múltiplos de 10.000) para transferência a Smiles, TudoAzul e LATAM Pass, ou 7.000 pontos no Shopping do Sicredi."
-      },
-      "cashback": {
-        "percentual": 100,
-        "regra": "Campanha nacional de cashback de 100% do IOF (3,5%) em compras internacionais em moeda estrangeira (físicas ou online), na função crédito, com cadastro prévio no site da campanha. Limitado a R$ 450,00 por CPF/CNPJ, pago em reais em até 45 dias úteis. Válida até 18/03/2026 — trata-se de promoção, não de isenção oficial do imposto."
-      },
-      "programa_proprio": "Programa de Recompensas Sicredi",
-      "transfere_para": [
-        "Smiles",
-        "TudoAzul",
-        "LATAM Pass"
-      ],
-      "spread": 1,
-      "iof": 3.5,
-      "validade_pontos": "Pontos não expiram",
-      "salas_vip": [
-        {
-          "programa": "Visa Airport Companion (Sala VIP Visa Infinite)",
-          "regra": "Acessos ilimitados para o titular e acompanhantes em salas VIP de aeroportos ao redor do mundo. É necessário habilitar o uso internacional do cartão no app Sicredi (Cartões > Permissões e uso), mesmo para acessos no Brasil."
-        }
-      ],
-      "beneficios_banco": [
-        {
-          "titulo": "Concierge 24h (Visa Digital Concierge)",
-          "descricao": "Assistente pessoal via WhatsApp, e-mail ou plataforma digital para reservas de hotéis, restaurantes, ingressos, planejamento de viagens e presentes."
-        },
-        {
-          "titulo": "Fast Pass no embarque",
-          "descricao": "Acesso exclusivo à fila do Raio X nos aeroportos de Guarulhos (Terminais 2 e 3) e RIOgaleão (Piso 1), sem custo, via app Visa Airport Companion."
-        },
-        {
-          "titulo": "Seguro de emergência médica internacional",
-          "descricao": "Cobertura para o titular e para quem tiver a passagem comprada com o cartão, mediante emissão do bilhete."
-        },
-        {
-          "titulo": "Seguro para veículo de locadora",
-          "descricao": "Proteção contra danos por colisão, roubo, vandalismo e acidentes totais ou parciais quando a locação é reservada e pagada integralmente com o cartão."
-        },
-        {
-          "titulo": "Até 40 dias para pagar a fatura",
-          "descricao": "Maior flexibilidade no ciclo de fatura para organização financeira."
-        },
-        {
-          "titulo": "Cashback de IOF em compras internacionais",
-          "descricao": "Campanha nacional que devolve 100% do IOF (3,5%) pago em compras internacionais em moeda estrangeira, limitado a R$ 450,00 por CPF/CNPJ, válida até 18/03/2026."
-        }
-      ],
-      "link_solicitacao": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
-      "nota_curadoria": "A anuidade, renda mínima e regras de isenção não estão divulgadas nas páginas oficiais consultadas — a concessão do cartão é 'sujeita à análise de crédito', sem critérios claros de acesso publicados. O cashback de IOF é uma campanha promocional com data de validade (até 18/03/2026) e teto de R$ 450,00, não uma isenção permanente, e deve ser reconfirmada antes de comunicar ao cliente. Os pontos (3 por dólar) não expiram, mas o resgate mínimo de 10.000 pontos para transferência a parceiros aéreos pode ser uma barreira para quem gasta pouco.",
-      "procedencia": {
-        "pontos": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
-        "cashback": "https://www.sicredi.com.br/coop/centrosulmsba/noticias/produtos/cashback-de-iof-para-associados-com-cartoes-visa-infinite-e-visa-empresarial/",
-        "transfere_para": "https://www.sicredi.com.br/site/cartoes/portfolio-visa/",
-        "salas_vip": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
-        "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
-        "isencao": "planilha:cartoes-premium-comparativo.xlsx",
-        "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "https://www.sicredi.com.br/coop/centrosulmsba/noticias/produtos/cashback-de-iof-para-associados-com-cartoes-visa-infinite-e-visa-empresarial/",
-        "requisito_acesso": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/"
-      },
-      "fontes": [
-        "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
-        "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-visa-infinite/",
-        "https://www.sicredi.com.br/site/cartoes/portfolio-visa/",
-        "https://www.sicredi.com.br/coop/altosdaserra/cartao-visa-infinite/",
-        "https://www.sicredi.com.br/coop/centrosulmsba/noticias/produtos/cashback-de-iof-para-associados-com-cartoes-visa-infinite-e-visa-empresarial/",
-        "https://www.sicredi.com.br/site/cartoes/visa-iof/",
-        "planilha:cartoes-premium-comparativo.xlsx"
-      ],
-      "verificado_em": "2026-09-21",
-      "campos_pendentes": [
-        "adicionais_gratis",
-        "anuidade_parcelas",
-        "renda_minima"
-      ],
-      "campos_rejeitados": [],
-      "campos_preservados": [
-        "anuidade",
-        "iof",
-        "isencao",
-        "link_solicitacao",
-        "requisito_acesso",
-        "spread"
-      ],
-      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "sicredi-mastercard-gold",
@@ -11486,6 +11366,110 @@
         "transfere_para"
       ],
       "campos_rejeitados": []
+    },
+    {
+      "slug": "sicredi-visa-infinite",
+      "nome": "Sicredi Visa Infinite",
+      "emissor": "Sicredi",
+      "bandeira": "Visa",
+      "categoria": "Infinite",
+      "anuidade": 1200,
+      "anuidade_parcelas": null,
+      "isencao": {
+        "tipo": "outro",
+        "valor": null,
+        "regra": "Não há regra de isenção"
+      },
+      "renda_minima": null,
+      "requisito_acesso": "Sujeito à análise de crédito.",
+      "adicionais_gratis": null,
+      "pontos": {
+        "nacional": 3,
+        "internacional": 3,
+        "unidade": "pts/USD",
+        "observacao": "3 pontos por dólar gasto em compras na função crédito; pontos não expiram."
+      },
+      "cashback": {
+        "percentual": 100,
+        "regra": "Campanha nacional de cashback de 100% do IOF (3,5%) em compras internacionais em moeda estrangeira, física ou online, na função crédito, limitado a R$ 450,00 por CPF, com pagamento em até 45 dias úteis. Válida até 18/03/2026, mediante cadastro prévio; trata-se de promoção e não isenção oficial do tributo."
+      },
+      "programa_proprio": "Programa de Recompensas Sicredi",
+      "transfere_para": [
+        "Smiles",
+        "TudoAzul",
+        "LATAM Pass"
+      ],
+      "spread": 1,
+      "iof": 3.5,
+      "validade_pontos": "Pontos não expiram",
+      "salas_vip": [
+        {
+          "programa": "Visa Airport Companion",
+          "regra": "Acessos ilimitados a salas VIP em aeroportos ao redor do mundo para o titular e acompanhantes; é necessário habilitar o uso do cartão no exterior no app Sicredi (Cartões > Permissões e uso), mesmo para acessos no Brasil."
+        }
+      ],
+      "beneficios_banco": [
+        {
+          "titulo": "Concierge 24h",
+          "descricao": "Assistente pessoal via WhatsApp, plataforma Visa Digital Concierge ou e-mail para reservas de hotéis, restaurantes, ingressos e planejamento de viagens."
+        },
+        {
+          "titulo": "Fast Pass no embarque",
+          "descricao": "Acesso diferenciado ao Raio X nos Terminais 2 e 3 de Guarulhos (SP) e Piso 1 do Rio Galeão (RJ), sem custo, via app Visa Airport Companion."
+        },
+        {
+          "titulo": "Seguro de emergência médica internacional",
+          "descricao": "Cobertura para o titular e para qualquer pessoa cujas passagens sejam pagas com o cartão, mediante emissão do bilhete."
+        },
+        {
+          "titulo": "Seguro para veículo de locadora",
+          "descricao": "Proteção contra danos por colisão, roubo, vandalismo e acidentes totais ou parciais ao reservar e pagar integralmente a locação com o cartão."
+        },
+        {
+          "titulo": "Proteção de compras",
+          "descricao": "Reembolso em caso de roubo, dano ou furto qualificado nos primeiros 180 dias após a compra de bem elegível."
+        },
+        {
+          "titulo": "Garantia estendida",
+          "descricao": "Até 12 meses extras de garantia para produtos comprados com o cartão."
+        }
+      ],
+      "link_solicitacao": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
+      "nota_curadoria": "A anuidade não é divulgada publicamente nas páginas oficiais consultadas, sendo necessário confirmar diretamente com a cooperativa; a concessão do cartão está sujeita a análise de crédito, sem faixa de renda mínima explicitada. O cashback de 100% do IOF é uma campanha promocional temporária (até 18/03/2026), limitada a R$ 450 por CPF, e não uma isenção permanente do tributo. O diferencial forte do cartão é a pontuação de 3 pts/USD sem prazo de expiração e o acesso ilimitado a salas VIP via Visa Airport Companion, desde que o uso internacional seja habilitado no app.",
+      "procedencia": {
+        "pontos": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
+        "cashback": "https://www.sicredi.com.br/coop/centrosulmsba/noticias/produtos/cashback-de-iof-para-associados-com-cartoes-visa-infinite-e-visa-empresarial/",
+        "iof": "https://www.sicredi.com.br/coop/centrosulmsba/noticias/produtos/cashback-de-iof-para-associados-com-cartoes-visa-infinite-e-visa-empresarial/",
+        "salas_vip": "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-visa-infinite/",
+        "transfere_para": "https://www.sicredi.com.br/site/cartoes/portfolio-visa/",
+        "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
+        "isencao": "planilha:cartoes-premium-comparativo.xlsx",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "requisito_acesso": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/"
+      },
+      "fontes": [
+        "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-visa-infinite/",
+        "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-visa-infinite/",
+        "https://www.sicredi.com.br/site/cartoes/portfolio-visa/",
+        "https://www.sicredi.com.br/coop/altosdaserra/cartao-visa-infinite/",
+        "https://www.sicredi.com.br/coop/centrosulmsba/noticias/produtos/cashback-de-iof-para-associados-com-cartoes-visa-infinite-e-visa-empresarial/",
+        "https://www.sicredi.com.br/site/cartoes/visa-iof/",
+        "planilha:cartoes-premium-comparativo.xlsx"
+      ],
+      "verificado_em": "2026-09-28",
+      "campos_pendentes": [
+        "adicionais_gratis",
+        "anuidade_parcelas",
+        "renda_minima"
+      ],
+      "campos_rejeitados": [],
+      "campos_preservados": [
+        "anuidade",
+        "isencao",
+        "requisito_acesso",
+        "spread"
+      ],
+      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "sicredi-visa-internacional",
@@ -11805,13 +11789,13 @@
       "anuidade_parcelas": null,
       "isencao": null,
       "renda_minima": null,
-      "requisito_acesso": "É necessário ser cooperado da Unicred, pessoa física ou jurídica, desde que preencha os requisitos de associação da cooperativa de sua região.",
+      "requisito_acesso": "Ser cooperado da Unicred (pessoa física ou jurídica), atendendo aos requisitos de associação da cooperativa da região.",
       "adicionais_gratis": null,
       "pontos": {
-        "nacional": null,
+        "nacional": 2.2,
         "internacional": 2.2,
         "unidade": "pts/USD",
-        "observacao": "2,2 pontos por dólar gasto; a pontuação sobe para 2,5 pontos por dólar quando o gasto mensal é igual ou superior a R$ 15 mil, no programa Único."
+        "observacao": "1 dólar gasto = 2,2 pontos; a pontuação sobe para 2,5 pontos por dólar quando o gasto mensal no cartão atinge R$ 15 mil ou mais (regra divulgada no lançamento do produto)."
       },
       "cashback": {
         "nacional": null,
@@ -11830,49 +11814,41 @@
       "validade_pontos": "36 meses",
       "salas_vip": [
         {
-          "programa": "Visa Airport Companion",
-          "regra": "Acesso ilimitado gratuito a mais de 1.000 salas VIP com direito a um acompanhante (titulares e adicionais Unicred Visa Infinite)"
+          "programa": "Salas VIP internacionais (programa não especificado)",
+          "regra": "Acesso a salas VIP dos principais aeroportos do mundo, conforme divulgado no lançamento do cartão."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Concierge",
-          "descricao": "Assistente pessoal para reservas, compras e organização de compromissos."
-        },
-        {
-          "titulo": "Acesso a salas VIP",
-          "descricao": "Acesso às salas VIP dos principais aeroportos do mundo."
+          "descricao": "Serviço de concierge disponível para o portador do cartão."
         },
         {
           "titulo": "Seguro de garantia estendida",
-          "descricao": "Extensão da garantia de fábrica para produtos elegíveis comprados com o cartão."
+          "descricao": "Cobertura de garantia estendida para produtos elegíveis comprados com o cartão."
         },
         {
           "titulo": "Coberturas extras para viagens",
-          "descricao": "Seguros e coberturas adicionais voltadas para viagens internacionais."
+          "descricao": "Coberturas adicionais de seguro voltadas para viagens internacionais."
         },
         {
           "titulo": "Spread zero em compras internacionais",
-          "descricao": "Compras no exterior são cobradas pela cotação comercial do dólar (PTAX), sem acréscimo de taxas de custos operacionais da Unicred."
-        },
-        {
-          "titulo": "Programa Único de Fidelidade",
-          "descricao": "Pontuação automática por dólar gasto, resgatável em produtos, milhas, crédito na fatura ou aportes na previdência Precaver."
+          "descricao": "Compras no exterior são convertidas pela cotação comercial do dólar, sem cobrança de spread ou taxas operacionais adicionais."
         }
       ],
       "link_solicitacao": "https://www.unicred.com.br/solucoes/cartoes",
-      "nota_curadoria": "O Unicred Visa Infinite só está disponível para cooperados da Unicred, o que restringe seu público-alvo a profissionais e empresas associadas à cooperativa. Não há confirmação oficial do valor da anuidade nem de regras de isenção nas fontes analisadas, sendo necessário confirmar diretamente com o gerente da cooperativa. O grande diferencial é o spread zero em compras internacionais (dólar comercial) e IOF padrão de 3,5%, o que o torna competitivo frente a contas globais. Atenção: não confundir este cartão com o Unicred Visa Infinite Privilege, produto por convite com benefícios superiores (Lifestyle Manager, transfer de helicóptero, salas exclusivas), cujos dados não devem ser atribuídos ao Infinite padrão.",
+      "nota_curadoria": "O valor da anuidade do Unicred Visa Infinite não está divulgado publicamente nas fontes oficiais consultadas; é preciso confirmar com o gerente da cooperativa. A pontuação do programa Único é escalonada conforme o volume de gastos mensais, o que pode gerar dúvidas sobre a taxa efetiva aplicada. Atenção: o Unicred Visa Infinite é um produto diferente do 'Visa Infinite Privilege', que possui benefícios superiores (LoungeKey/DragonPass ilimitado, Lifestyle Manager, transfer de helicóptero) e não deve ser confundido com este cartão.",
       "procedencia": {
+        "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
         "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
         "programa_proprio": "https://www.unicred.com.br/solucoes/unico",
         "spread": "https://unicred.com.br/blog/produtos-e-servicos/novas-regras-do-iof-unicred-visa-e-o-melhor-cartao-internacional-para-compras/",
         "iof": "https://unicred.com.br/blog/produtos-e-servicos/novas-regras-do-iof-unicred-visa-e-o-melhor-cartao-internacional-para-compras/",
         "validade_pontos": "https://www.unicred.com.br/solucoes/unico",
-        "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
+        "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
         "beneficios_banco": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
         "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
         "cashback": "https://materiais.unicred.com.br/visa-unicred",
-        "salas_vip": "https://materiais.unicred.com.br/visa-unicred",
         "transfere_para": "https://www.unicred.com.br/solucoes/privilege",
         "link_solicitacao": "https://www.unicred.com.br/solucoes/cartoes"
       },
@@ -11886,7 +11862,7 @@
         "https://materiais.unicred.com.br/visa-unicred",
         "https://www.unicred.com.br/solucoes/cartoes"
       ],
-      "verificado_em": "2026-09-07",
+      "verificado_em": "2026-09-28",
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade_parcelas",
@@ -11898,7 +11874,6 @@
         "anuidade",
         "cashback",
         "link_solicitacao",
-        "salas_vip",
         "transfere_para"
       ],
       "bandeira_ref": "visa-infinite"
