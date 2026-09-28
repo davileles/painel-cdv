@@ -7727,6 +7727,46 @@ app.delete('/concierge/arquivo/:reservaId/:idx', async (req, res) => {
   }
 });
 
+// ── CONCIERGE: IA traduz respostas do DS-160 (extensao Chrome do concierge) ──
+// A extensao (concierge/extensao) preenche o DS-160 com as respostas do
+// formulario ds160.html; os textos livres (funcoes, curso, motivos...) chegam
+// em portugues e o site do consulado so aceita ingles, sem acento.
+// Body: { textos: [string] } -> { ok, traducoes: [string] } (mesma ordem).
+// Rota /concierge/* = exige sessao do concierge (X-CDV-Auth).
+app.post('/concierge/ia/traduzir-ds160', async (req, res) => {
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+  if (!ANTHROPIC_API_KEY) return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY não configurada no servidor.' });
+  const textos = Array.isArray((req.body || {}).textos) ? req.body.textos.slice(0, 40).map(t => String(t || '').slice(0, 2000)) : [];
+  if (!textos.length) return res.status(400).json({ ok: false, erro: 'Campo obrigatório: textos' });
+  if (textos.join('').length > 20000) return res.status(413).json({ ok: false, erro: 'Textos grandes demais' });
+
+  const prompt = 'Traduza para o inglês cada texto abaixo, que são respostas de um solicitante brasileiro para o formulário DS-160 (visto americano).\n' +
+    'Regras: tradução fiel e objetiva, sem acrescentar nem omitir informação; LETRAS MAIÚSCULAS; sem acentos nem caracteres especiais (só A-Z, 0-9, espaço e . , - / ( ) \'); ' +
+    'nomes próprios de empresas, escolas, cidades e pessoas ficam como estão (só sem acento); siglas brasileiras podem ganhar a forma por extenso em inglês entre parênteses quando ajudarem (ex.: CLT); ' +
+    'cursos e cargos usam o termo usual em inglês (ex.: "Administração" -> "BUSINESS ADMINISTRATION", "Analista financeiro" -> "FINANCIAL ANALYST").\n' +
+    'Retorne SOMENTE um JSON válido, sem markdown: um array de strings com a mesma quantidade e a mesma ordem dos textos.\n\n' +
+    'TEXTOS:\n' + JSON.stringify(textos);
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) return res.status(502).json({ ok: false, erro: (data.error && data.error.message) || `Anthropic ${r.status}` });
+    const bloco = (data.content || []).find(b => b.type === 'text');
+    if (!bloco) return res.status(502).json({ ok: false, erro: 'Sem resposta da IA' });
+    let traducoes;
+    try { traducoes = JSON.parse(bloco.text.replace(/```json|```/g, '').trim()); } catch (e) { return res.status(502).json({ ok: false, erro: 'A IA não devolveu um JSON válido' }); }
+    if (!Array.isArray(traducoes) || traducoes.length !== textos.length) return res.status(502).json({ ok: false, erro: 'A IA devolveu uma quantidade diferente de textos' });
+    traducoes = traducoes.map(t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().replace(/[^A-Z0-9 .,\-\/()'\n]/g, '').replace(/[ \t]+/g, ' ').trim());
+    res.json({ ok: true, traducoes });
+  } catch (e) {
+    console.error('[concierge/ia/traduzir-ds160]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 // ── CONCIERGE: IA gera os dias do roteiro ("Gerar Roteiro" do painel) ────────
 // Antes o painel chamava api.anthropic.com direto do navegador, sem chave — nao
 // funcionava. Agora passa por aqui (rota /concierge/*, exige sessao do painel).
