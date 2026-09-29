@@ -1094,6 +1094,9 @@ async function main() {
   // Contagem por programa — usada na checagem de saúde da coleta logo abaixo.
   const contagemPorPrograma = {};
   const nomesPorPrograma = Object.fromEntries(PROGRAMS.map(p => [p.id, p.name]));
+  // Erro final de cada programa — entra no alerta de falha total para dizer a
+  // causa real (ex.: HTTP 500 em todos = site do Comparemania fora do ar).
+  const errosPorPrograma = {};
 
   for (const prog of PROGRAMS) {
     contagemPorPrograma[prog.id] = 0;
@@ -1117,6 +1120,7 @@ async function main() {
         html.includes('pt/R$') || /<table[\s\S]*?<tr/i.test(html);
       if (!hasContent) {
         console.warn(`[Histórico] ${prog.name}: resposta inesperada (${html.length} chars), pulando.`);
+        errosPorPrograma[prog.id] = `resposta sem pontuação (${html.length} chars)`;
         continue;
       }
 
@@ -1138,6 +1142,7 @@ async function main() {
       }
     } catch (e) {
       console.error(`[Histórico] Erro ao coletar ${prog.name}:`, e.message);
+      errosPorPrograma[prog.id] = e.name === 'AbortError' ? 'timeout' : e.message.replace(/ para https?:\/\/\S+/, '');
     }
   }
 
@@ -1145,9 +1150,19 @@ async function main() {
   console.log(`[Histórico] Snapshot do dia: ${totalParceiros} parceiros únicos`);
 
   if (totalParceiros === 0) {
+    const erros = Object.values(errosPorPrograma);
+    const todos5xx = erros.length === PROGRAMS.length && erros.every(m => /HTTP 5\d\d/.test(m));
+    const todos4xx = erros.length === PROGRAMS.length && erros.every(m => /HTTP 4(03|29)/.test(m));
+    const causa = todos5xx
+      ? 'Causa: o próprio site do Comparemania está fora do ar (erro 5xx em todos os programas). Não há o que corrigir do nosso lado — a próxima rodada tenta de novo.'
+      : todos4xx
+        ? 'Causa provável: bloqueio de IP/anti-bot do Comparemania (403/429 em todos os programas).'
+        : 'Causa provável: mudança estrutural no Comparemania (páginas respondem, mas o parser não extraiu nada) ou falha de rede.';
     await alertarOperador('Coleta Comparemania falhou por completo', [
       'Nenhum parceiro foi coletado em nenhum programa — nada foi salvo.',
-      'Provável causa: proxy fora do ar, bloqueio de IP ou mudança estrutural no Comparemania.',
+      causa,
+      '',
+      ...PROGRAMS.map(p => `• ${p.name}: ${errosPorPrograma[p.id] || '0 parceiros'}`),
     ]);
     console.error('[Histórico] Nenhum dado coletado — abortando sem salvar.');
     process.exit(1);
