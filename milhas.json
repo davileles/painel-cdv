@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-09-29T19:45:49.261Z",
+  "atualizadoEm": "2026-09-29T21:54:53.086Z",
   "registros": [
     {
       "id": "1783549764743_qbqy",
@@ -3723,6 +3723,30 @@
       "origemVoo": "CNF",
       "destinoVoo": "SSA",
       "valorDinheiro": 800
+    },
+    {
+      "id": "1790711088721_10ee",
+      "email": "andrporto@gmail.com",
+      "data": "2026-09-29",
+      "tipo": "credito",
+      "operacao": "credito",
+      "subcat": "saldo_ini",
+      "programa": "livelo",
+      "qtde": 190364,
+      "custo": 0,
+      "obs": ""
+    },
+    {
+      "id": "1790711148469_llwx",
+      "email": "andrporto@gmail.com",
+      "data": "2026-09-29",
+      "tipo": "credito",
+      "operacao": "credito",
+      "subcat": "saldo_ini",
+      "programa": "outros",
+      "qtde": 5021,
+      "custo": 0,
+      "obs": "laranja"
     },
     {
       "id": "1789762692271_ixb3",
@@ -7538,28 +7562,34 @@
       "autoLancado": true
     },
     {
-      "id": "1790711088721_10ee",
-      "email": "andrporto@gmail.com",
-      "data": "2026-09-29",
+      "id": "1790114196487_ass_2026-09",
+      "email": "gu.presoti@gmail.com",
+      "data": "2026-09-25",
       "tipo": "credito",
       "operacao": "credito",
-      "subcat": "saldo_ini",
-      "programa": "livelo",
-      "qtde": 190364,
-      "custo": 0,
-      "obs": ""
+      "subcat": "clube",
+      "programa": "smiles",
+      "qtde": 1000,
+      "custo": 46,
+      "obs": "Clube Smiles 1000",
+      "assId": "1790114196487_ass",
+      "assMes": "2026-09",
+      "autoLancado": true
     },
     {
-      "id": "1790711148469_llwx",
-      "email": "andrporto@gmail.com",
-      "data": "2026-09-29",
+      "id": "1790123992460_ass_2026-09",
+      "email": "gu.presoti@gmail.com",
+      "data": "2026-09-28",
       "tipo": "credito",
       "operacao": "credito",
-      "subcat": "saldo_ini",
-      "programa": "outros",
-      "qtde": 5021,
-      "custo": 0,
-      "obs": "laranja"
+      "subcat": "clube",
+      "programa": "livelo",
+      "qtde": 1000,
+      "custo": 44.9,
+      "obs": "Clube Livelo Classic 1000",
+      "assId": "1790123992460_ass",
+      "assMes": "2026-09",
+      "autoLancado": true
     }
   ]
 }
