@@ -208,6 +208,17 @@ const CLIQUES_FLUSH_MS = 10 * 60 * 1000;
 const LINKS_FALLBACK = 'https://davileles.com/clube-do-viajante/';
 const PREVIEW_BOT_RE = /whatsapp|facebookexternalhit|telegrambot|twitterbot|slackbot|discordbot|linkedinbot|skypeuripreview|bingbot|googlebot/i;
 
+// Slugs cb-<parceiro>: compra bonificada de parceiro unico (Tier 1). Nao tem
+// entrada em links.json — todos usam a config virtual CB_CFG de
+// link-parceiro.js; cada parceiro conta clique na propria chave.
+const { CB_CFG, CB_HERDAR_DE, linkParceiroCb } = require('./link-parceiro.js');
+const CB_SLUG_RE = /^cb-[a-z0-9-]{1,37}$/;
+function cfgDoSlug(links, slug) {
+  if (links && links[slug]) return links[slug];
+  if (CB_SLUG_RE.test(slug)) return CB_CFG;
+  return null;
+}
+
 const RESERVADOS_IR = new Set(['ir', 'ir-stats', 'g', 'gg', 'ping', 'health', 'fetch', 'parceiros', 'bandeiras', 'links']);
 
 // ── DEFESA DO ENCURTADOR: O QUE NAO E GENTE NAO CONTA ───────────────────────
@@ -357,6 +368,25 @@ function montarDestinoIr(cfg, opts) {
   return final.toString();
 }
 
+// cb-*: quando o destino cai no dominio de um programa com afiliacao (ex.:
+// shoppingsmiles -> 'smiles'), reaplica os params daquele slug — o mesmo que
+// o link teria pela mascara do programa.
+function herdarParamsAfiliado(links, destino) {
+  let u;
+  try { u = new URL(destino); } catch (e) { return destino; }
+  for (const s of CB_HERDAR_DE) {
+    const cfg = links && links[s];
+    if (!cfg || !hostPermitido(cfg, u.hostname)) continue;
+    if (cfg.limparUtm) {
+      for (const k of Array.from(u.searchParams.keys())) if (/^utm_/i.test(k)) u.searchParams.delete(k);
+    }
+    const params = cfg.params || {};
+    for (const k of Object.keys(params)) u.searchParams.set(k, params[k]);
+    break;
+  }
+  return u.toString();
+}
+
 // ── Contador de cliques (buffer em memória + flush periódico) ────────────────
 const cliquesBuffer = {};
 let cliquesDirty = false;
@@ -426,10 +456,12 @@ function paginaPreviewIr(destino, cfg) {
 async function handleIr(req, res, slug, resto) {
   let links;
   try { links = await carregarLinks(); } catch (e) { links = linksCache.data || {}; }
-  const cfg = links[slug];
+  const cfg = cfgDoSlug(links, slug);
   if (!cfg || !cfg.destino) return res.redirect(302, LINKS_FALLBACK);
-  const destino = montarDestinoIr(cfg, { urlAlvo: req.query.u, resto: resto, query: req.query });
+  let destino = montarDestinoIr(cfg, { urlAlvo: req.query.u, resto: resto, query: req.query });
+  if (!destino && cfg === CB_CFG) destino = CB_CFG.destino; // link cb fora da lista: painel, nunca 400
   if (!destino) return res.status(400).send('Destino inválido para este link.');
+  if (cfg === CB_CFG) destino = herdarParamsAfiliado(links, destino);
   if (PREVIEW_BOT_RE.test(req.headers['user-agent'] || '')) {
     res.set('Content-Type', 'text/html; charset=utf-8');
     return res.status(200).send(paginaPreviewIr(destino, cfg));
@@ -454,7 +486,7 @@ app.use(async (req, res, next) => {
   try { links = await carregarLinks(); } catch (e) { links = linksCache.data || {}; }
   // Slug desconhecido (typo em mensagem antiga, link cadastrado errado): manda
   // para o site do Clube em vez de devolver 404 do Express na cara do membro.
-  if (!links[slug]) return res.redirect(302, LINKS_FALLBACK);
+  if (!cfgDoSlug(links, slug)) return res.redirect(302, LINKS_FALLBACK);
   return handleIr(req, res, slug, resto);
 });
 
@@ -2303,10 +2335,10 @@ function montarMensagemRadar(o, histItems) {
     msg += '📆 *PRAZO* ' + o.prazo + '\n\n';
   }
   if (o.importante) msg += '⚠️ *IMPORTANTE* ' + stripEmojis(o.importante) + '\n\n';
-  // Link sem mascara de afiliado: no gestor o mascaramento esta desligado
-  // (IR_ATIVO = false), entao o link sai igual nos dois caminhos. Quando a
-  // mascara for religada, a reescrita tem de entrar AQUI tambem.
-  msg += '🔗 *LINK* ' + (o.link || '—') + '\n\n';
+  // Mascara de afiliado por programa: aplicada pelo gestor (afiliarTexto) na
+  // aprovacao manual. Aqui so entra a do parceiro unico de compra bonificada
+  // (Tier 1), para medir cliques por parceiro (ver link-parceiro.js).
+  msg += '🔗 *LINK* ' + (linkParceiroCb(o) || '—') + '\n\n';
   msg += RODAPE_OFERTA;
   return msg;
 }

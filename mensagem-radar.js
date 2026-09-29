@@ -28,6 +28,7 @@ const ENVIO_TENTATIVAS  = 3;
 const ENVIO_BACKOFF_MS  = [5000, 20000]; // espera antes da 2a e da 3a tentativa
 
 const { alertarOperador } = require('./alerta-operador');
+const { linkParceiroCb } = require('./link-parceiro');
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // ── Montagem da mensagem de WhatsApp ─────────────────────────────────────────
@@ -116,7 +117,9 @@ function montarMensagemRadar(o) {
     msg += '📆 *PRAZO* ' + o.prazo + '\n\n';
   }
   if (o.importante) msg += '⚠️ *IMPORTANTE* ' + stripEmojis(o.importante) + '\n\n';
-  msg += '🔗 *LINK* ' + (o.link || '—') + '\n\n';
+  // Compra bonificada de parceiro unico (Tier 1): link pelo dominio do Clube
+  // para medir cliques por parceiro (ver link-parceiro.js).
+  msg += '🔗 *LINK* ' + (linkParceiroCb(o) || '—') + '\n\n';
   msg += RODAPE_OFERTA;
   return msg;
 }

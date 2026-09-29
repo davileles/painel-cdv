@@ -145,6 +145,7 @@ TeamRausch, financas e castanheiras são ISOLADOS (serviços, tokens e dados pr�
 
 **Hosts tratados por `req.hostname`**
 - `ir.clubedoviajante.com.br/<slug>` → redirect com UTM de `links.json` (13 slugs de programas); `?o=` origem; `?u=` deep link só em domínio do slug; bots de preview recebem página de prévia; slug desconhecido → fallback. Slugs reservados: `ir, ir-stats, g, gg, ping, health, fetch, parceiros, bandeiras, links`.
+- Compra bonificada de parceiro único (Tier 1, `tier1:true`): link sai como `ir.clubedoviajante.com.br/cb-<parceiro>?u=<link>&o=of-<programa>` para medir cliques por parceiro em `cliques.json`. Slugs `cb-*` não ficam em `links.json`: o proxy usa a config virtual de `link-parceiro.js` (lista `DOMINIOS_CB`; fora dela → painel; herda params de `smiles/azul/latam` no domínio deles). Montado em `mensagem-radar.js` (auto), `montarMensagemRadar` do proxy e do `gestor-cdv/index.html` (espelho de `link-parceiro.js`).
 - `GG_HOSTS` (padrão `ir.ticapromos.com.br, grupo.ticapromos.com.br, grupo.tudosobrepromos.com, ir.tudosobrepromos.com`):
   - `/<slug>` → distribuidor de grupos (= `/g/<slug>`, rodízio de vagas, teto `GG_LIMITE_PADRAO=1010`, `GG_TETO_WA=1024`).
   - `/<loja>/<cod5>-<grupo>` → link rastreado TSP (cache → baileys `/links-rastreio/:codigo` → shard `tsp/links_rastreio_<dia>.json`; prefixo `z` = link fixo).
