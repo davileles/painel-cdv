@@ -655414,10 +655414,23 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 2,
+          "pts": 25,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-lacoste"
+          "ate": true,
+          "slug": "cupom-lacoste",
+          "categorias": [
+            {
+              "categoria": "Camisetas",
+              "pts": 25,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 18,
+              "principal": true
+            }
+          ],
+          "ptsBase": 18
         }
       },
       "links": {
@@ -660473,10 +660486,17 @@
           "pts": 3,
           "dollar": false,
           "slug": "fever-4182"
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-fever-up"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/fever-4182"
+        "inter": "https://shopping.inter.co/gift-card/fever-4182",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-fever-up"
       }
     },
     "cupom ingresso.com": {
