@@ -2768,6 +2768,19 @@ app.post('/ofertas/publicar', async (req, res) => {
     };
 
     const aprov = await ghGetJson(OFERTAS_APROVADAS_PATH, { geradoEm: null, items: [] });
+    // Mesma oferta publicada de novo (reenvio/duplo clique na aba Oferta):
+    // devolve o id existente em vez de criar um segundo card no Radar. Assim o
+    // lembrete "ACABA HOJE" (registrado pelo gestor com esse id) fica unico.
+    // Mesmo titulo + prazo + link nas ultimas 24 h = mesma oferta.
+    const normPub = (s) => String(s || '').trim().toLowerCase();
+    const corte24h = Date.now() - 24 * 3600000;
+    const repetida = (aprov.data.items || []).find(o =>
+      normPub(o.titulo) === normPub(item.titulo) &&
+      normPub(o.prazo) === normPub(item.prazo) &&
+      normPub(o.link) === normPub(item.link) &&
+      o.publicadoEm && new Date(o.publicadoEm).getTime() >= corte24h);
+    if (repetida) return res.json({ ok: true, id: repetida.id, duplicada: true });
+
     const jaExiste = (aprov.data.items || []).some(o => o.id === id);
     const novosItens = jaExiste
       ? aprov.data.items
