@@ -1,6 +1,18 @@
 {
-  "coletadoEm": "2026-09-28T22:53:44.605Z",
+  "coletadoEm": "2026-09-29T11:49:15.775Z",
   "items": {
+    "adcos": {
+      "id": "SPA",
+      "nome": "ADCOS",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 29 a 30/09/2026. Ganhe 6 pontos por real gasto. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-29",
+      "dateEnd": "2026-09-30",
+      "parity": 6,
+      "parityClub": 6,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
     "abelharainha": {
       "id": "BLH",
       "nome": "Abelha Rainha",
@@ -36,6 +48,18 @@
       "parityClub": 6,
       "parityBau": 1,
       "campanha": "PROMOTION"
+    },
+    "beep": {
+      "id": "BEP",
+      "nome": "Beep",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 28 a 30/09/2026. Ganhe 6 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo e 4 pontos por real demais clientes. Consulte o regulamento.",
+      "dateStart": "2026-09-29",
+      "dateEnd": "2026-09-30",
+      "parity": 4,
+      "parityClub": 5,
+      "parityBau": 1,
+      "campanha": "PROMOTION_CLUB"
     },
     "belezanaweb": {
       "id": "BLZ",
@@ -109,18 +133,6 @@
       "parityBau": 2,
       "campanha": "PROMOTION"
     },
-    "carrefourmercado": {
-      "id": "CRM",
-      "nome": "Carrefour Mercado",
-      "categorias": null,
-      "legalTerms": "Campanha válida em 28/09/2026. Ganhe 3 pontos por real gasto. Utilize o cupom LIVELO. Consulte o regulamento.",
-      "dateStart": "2026-09-28",
-      "dateEnd": "2026-09-28",
-      "parity": 3,
-      "parityClub": 3,
-      "parityBau": 1,
-      "campanha": "PROMOTION"
-    },
     "carters": {
       "id": "CTS",
       "nome": "Carters",
@@ -131,6 +143,18 @@
       "parity": 6,
       "parityClub": 8,
       "parityBau": 3,
+      "campanha": "PROMOTION_CLUB"
+    },
+    "centauro": {
+      "id": "CEN",
+      "nome": "Centauro",
+      "categorias": null,
+      "legalTerms": "Campanha válida em 29/09/2026. Ganhe 15 pontos por real gasto em produtos selecionados, exclusivo para assinantes do Clube Livelo; 11 pontos por real em produtos selecionados demais clientes e 2 pontos por real demais produtos. Pontuação válida para vendidos e entregues por Centauro. Consulte o regulamento.",
+      "dateStart": "2026-09-29",
+      "dateEnd": "2026-09-29",
+      "parity": 11,
+      "parityClub": 15,
+      "parityBau": 2,
       "campanha": "PROMOTION_CLUB"
     },
     "ciclicsegurocelular": {
@@ -241,6 +265,18 @@
       "parityBau": 2,
       "campanha": "PROMOTION_ONLY_CLUB"
     },
+    "farmaciasapp": {
+      "id": "NCC",
+      "nome": "Farmacias App",
+      "categorias": null,
+      "legalTerms": "Campanha válida em 29/09/2026. Ganhe 7 pontos por real gasto. Utilize o cupom LIVELO. Não é válido para medicamentos. Elegível a pontuação compras de até R$500 reais por CPF e quantidade máxima de 3 (três) unidades de um mesmo produto por transação. Consulte o regulamento.",
+      "dateStart": "2026-09-29",
+      "dateEnd": "2026-09-29",
+      "parity": 7,
+      "parityClub": 7,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
     "fastshop": {
       "id": "FST",
       "nome": "Fast Shop",
@@ -277,6 +313,18 @@
       "parityBau": 12,
       "campanha": "PROMOTION_ONLY_CLUB"
     },
+    "hope": {
+      "id": "HPE",
+      "nome": "Hope",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 29 a 30/09/2026. Ganhe 12 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo e 8 pontos por real demais clientes. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-29",
+      "dateEnd": "2026-09-30",
+      "parity": 8,
+      "parityClub": 12,
+      "parityBau": 2,
+      "campanha": "PROMOTION_CLUB"
+    },
     "hoteiscom": {
       "id": "HTC",
       "nome": "Hoteis com",
@@ -301,6 +349,18 @@
       "parityBau": 1,
       "campanha": "PROMOTION"
     },
+    "lego": {
+      "id": "LEG",
+      "nome": "LEGO",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 29/09 a 12/10/2026. Ganhe 3 pontos a cada real gasto. Consulte o regulamento.",
+      "dateStart": "2026-09-29",
+      "dateEnd": "2026-10-12",
+      "parity": 3,
+      "parityClub": 3,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
     "lojastorra": {
       "id": "TRR",
       "nome": "Lojas Torra",
@@ -317,9 +377,9 @@
       "id": "MZL",
       "nome": "Magalu",
       "categorias": null,
-      "legalTerms": "Campanha válida 21 a 28/09/2026. Ganhe 8 pontos a cada real gasto em produtos Oppo da linha Reno 16, vendidos e entregues por Magalu; 2 pontos por real demais produtos. Consulte o regulamento.",
-      "dateStart": "2026-09-21",
-      "dateEnd": "2026-09-28",
+      "legalTerms": "Campanha válida 29 a 30/09/2026. Ganhe 8 pontos a cada real gasto em produtos Oppo da linha Reno 16, vendidos e entregues por Magalu; 1 ponto por real demais produtos. Consulte o regulamento.",
+      "dateStart": "2026-09-29",
+      "dateEnd": "2026-09-30",
       "parity": 8,
       "parityClub": 8,
       "parityBau": 2,
@@ -397,6 +457,18 @@
       "parityBau": 2,
       "campanha": "PROMOTION"
     },
+    "boticario": {
+      "id": "BOT",
+      "nome": "O Boticario",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 29 a 30/09/2026. Ganhe 8 pontos por real gasto na categoria de perfumes e 3 pontos por real nos demais produtos. Consulte o regulamento.",
+      "dateStart": "2026-09-29",
+      "dateEnd": "2026-09-30",
+      "parity": 8,
+      "parityClub": 8,
+      "parityBau": 3,
+      "campanha": "PROMOTION"
+    },
     "ouiparis": {
       "id": "OUI",
       "nome": "O.U.i Paris",
@@ -469,6 +541,18 @@
       "parityBau": 1,
       "campanha": "PROMOTION_CLUB"
     },
+    "puket": {
+      "id": "PKT",
+      "nome": "Puket",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 29/09 a 12/10/2026. Ganhe 5 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo e 4 pontos por real demais clientes. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-29",
+      "dateEnd": "2026-10-12",
+      "parity": 4,
+      "parityClub": 5,
+      "parityBau": 1,
+      "campanha": "PROMOTION_CLUB"
+    },
     "quemdisseberenice": {
       "id": "QDB",
       "nome": "Quem Disse, Berenice?",
@@ -480,6 +564,18 @@
       "parityClub": 6,
       "parityBau": 3,
       "campanha": "PROMOTION_ONLY_CLUB"
+    },
+    "renner": {
+      "id": "RNN",
+      "nome": "Renner",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 29 a 30/09/2026. Ganhe 7 pontos a cada real gasto na categoria Infantil e 2 pontos demais produtos. Consulte o regulamento.",
+      "dateStart": "2026-09-29",
+      "dateEnd": "2026-09-30",
+      "parity": 7,
+      "parityClub": 7,
+      "parityBau": 2,
+      "campanha": "PROMOTION"
     },
     "rentcars": {
       "id": "RTC",
@@ -505,6 +601,18 @@
       "parityBau": 3,
       "campanha": "PROMOTION"
     },
+    "samsclub": {
+      "id": "WMB",
+      "nome": "Sam's Club",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 29/09 a 04/10/2026. Ganhe 51 pontos por real sob o valor da anuidade ao se tornar sócio Sam's Club do plano de R$95,00, válido apenas na primeira adesão, mediante a compra de no mínimo R$300 em até 30 dias após adesão, em loja física ou 14 pontos por real sob a adesão do plano de R$175 mediante a compra de no mínimo R$100 em até 30 dias após adesão. Ganhe 30% OFF em todos os...",
+      "dateStart": "2026-09-29",
+      "dateEnd": "2026-10-04",
+      "parity": 51,
+      "parityClub": 51,
+      "parityBau": 14,
+      "campanha": "PROMOTION"
+    },
     "scudoosegurocelular": {
       "id": "SIO",
       "nome": "Scudoo Seguro Celular",
@@ -528,6 +636,18 @@
       "parityClub": 15,
       "parityBau": 2,
       "campanha": "PROMOTION_CLUB"
+    },
+    "sephora": {
+      "id": "SPR",
+      "nome": "Sephora",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 29 a 30/09/2026. Ganhe 6 pontos por real gasto. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-29",
+      "dateEnd": "2026-09-30",
+      "parity": 6,
+      "parityClub": 6,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
     },
     "spicy": {
       "id": "MCB",
@@ -611,6 +731,18 @@
       "parity": 7,
       "parityClub": 7,
       "parityBau": 3,
+      "campanha": "PROMOTION"
+    },
+    "elbo": {
+      "id": "ELB",
+      "nome": "elbo",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 29 a 30/09/2026. Ganhe 10 pontos por real gasto. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-09-29",
+      "dateEnd": "2026-09-30",
+      "parity": 10,
+      "parityClub": 10,
+      "parityBau": 1,
       "campanha": "PROMOTION"
     }
   }
