@@ -665572,10 +665572,23 @@
           "slug": "renner-3644"
         },
         "meliuz": {
-          "pts": 6,
+          "pts": 10,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-renner"
+          "ate": true,
+          "slug": "cupom-renner",
+          "categorias": [
+            {
+              "categoria": "Produtos Vendidos e Entregues por Renner (Site) e Produtos Vendidos e Entregues por Renner (App)",
+              "pts": 10,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
         }
       },
       "links": {
@@ -666855,6 +666868,18 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-viator",
         "tcbuk": "https://www.topcashback.co.uk/viator-a-tripadvisor-company/",
         "tcbus": "https://www.topcashback.com/viator/"
+      }
+    },
+    "carrefour posto": {
+      "programs": {
+        "inter": {
+          "pts": 2,
+          "dollar": false,
+          "slug": "carrefour-posto-4464"
+        }
+      },
+      "links": {
+        "inter": "https://shopping.inter.co/gift-card/carrefour-posto-4464"
       }
     }
   }
