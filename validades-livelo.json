@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-09-29T23:02:57.214Z",
+  "coletadoEm": "2026-09-30T09:03:25.415Z",
   "items": {
     "adcos": {
       "id": "SPA",
@@ -65,11 +65,11 @@
       "id": "BLZ",
       "nome": "Beleza na web",
       "categorias": null,
-      "legalTerms": "Campanha válida de 28 a 29/09/2026. Ganhe 8 pontos por real gasto em produtos Sebastian Professional e 2 pontos por real nos demais produtos, válido para vendidos e entregues por Beleza na Web. Consulte o regulamento.",
-      "dateStart": "2026-09-28",
-      "dateEnd": "2026-09-29",
-      "parity": 8,
-      "parityClub": 8,
+      "legalTerms": "Campanha válida em 30/09/2026. Ganhe 7 pontos por real gasto nos produtos das categorias de pele e perfumaria e 2 pontos por real nos demais produtos, válido para vendidos e entregues por Beleza na Web. Consulte o regulamento.",
+      "dateStart": "2026-09-30",
+      "dateEnd": "2026-09-30",
+      "parity": 7,
+      "parityClub": 7,
       "parityBau": 2,
       "campanha": "PROMOTION"
     },
@@ -145,39 +145,15 @@
       "parityBau": 3,
       "campanha": "PROMOTION_CLUB"
     },
-    "centauro": {
-      "id": "CEN",
-      "nome": "Centauro",
-      "categorias": null,
-      "legalTerms": "Campanha válida em 29/09/2026. Ganhe 15 pontos por real gasto em produtos selecionados, exclusivo para assinantes do Clube Livelo; 11 pontos por real em produtos selecionados demais clientes e 2 pontos por real demais produtos. Pontuação válida para vendidos e entregues por Centauro. Consulte o regulamento.",
-      "dateStart": "2026-09-29",
-      "dateEnd": "2026-09-29",
-      "parity": 11,
-      "parityClub": 15,
-      "parityBau": 2,
-      "campanha": "PROMOTION_CLUB"
-    },
-    "ciclicsegurocelular": {
-      "id": "CEL",
-      "nome": "Ciclic Seguro Celular",
-      "categorias": null,
-      "legalTerms": "Campanha válida de 28 a 29/09/2026. Ganhe 5 pontos a cada real gasto na contratação do seguro celular Ciclic. Consulte o regulamento.",
-      "dateStart": "2026-09-28",
-      "dateEnd": "2026-09-29",
-      "parity": 5,
-      "parityClub": 5,
-      "parityBau": 4,
-      "campanha": "PROMOTION"
-    },
     "ciclicseguroviagem": {
       "id": "CIC",
       "nome": "Ciclic Seguro Viagem",
       "categorias": null,
-      "legalTerms": "Campanha válida de 28 a 29/09/2026. Ganhe 14 pontos a cada real gasto na contratação do seguro viagem Ciclic. Consulte o regulamento.",
-      "dateStart": "2026-09-28",
-      "dateEnd": "2026-09-29",
-      "parity": 14,
-      "parityClub": 14,
+      "legalTerms": "Campanha válida em 30/09/2026. Ganhe 13 pontos a cada real gasto e até 300 pontos bônus na contratação do seguro Viagem. Consulte o regulamento.",
+      "dateStart": "2026-09-30",
+      "dateEnd": "2026-09-30",
+      "parity": 13,
+      "parityClub": 13,
       "parityBau": 8,
       "campanha": "PROMOTION"
     },
@@ -264,18 +240,6 @@
       "parityClub": 6,
       "parityBau": 2,
       "campanha": "PROMOTION_ONLY_CLUB"
-    },
-    "farmaciasapp": {
-      "id": "NCC",
-      "nome": "Farmacias App",
-      "categorias": null,
-      "legalTerms": "Campanha válida em 29/09/2026. Ganhe 8 pontos por real gasto. Utilize o cupom LIVELO. Não é válido para medicamentos. Elegível a pontuação compras de até R$500 reais por CPF e quantidade máxima de 3 (três) unidades de um mesmo produto por transação. Consulte o regulamento.",
-      "dateStart": "2026-09-29",
-      "dateEnd": "2026-09-29",
-      "parity": 8,
-      "parityClub": 8,
-      "parityBau": 1,
-      "campanha": "PROMOTION"
     },
     "fastshop": {
       "id": "FST",
@@ -445,18 +409,6 @@
       "parityBau": 2,
       "campanha": "PROMOTION"
     },
-    "nike": {
-      "id": "NIK",
-      "nome": "Nike",
-      "categorias": null,
-      "legalTerms": "Campanha válida de 28 a 29/09/2026. Ganhe 4 pontos a cada real gasto. Utilize o cupom LIVELO. Consulte o regulamento.",
-      "dateStart": "2026-09-28",
-      "dateEnd": "2026-09-29",
-      "parity": 4,
-      "parityClub": 4,
-      "parityBau": 2,
-      "campanha": "PROMOTION"
-    },
     "boticario": {
       "id": "BOT",
       "nome": "O Boticario",
@@ -479,6 +431,18 @@
       "parity": 7,
       "parityClub": 7,
       "parityBau": 3,
+      "campanha": "PROMOTION"
+    },
+    "ourocap": {
+      "id": "BRC",
+      "nome": "OuroCap",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 30/09 a 31/10/2026. Ganhe 10 pontos a cada real gasto na contratação de títulos Ourocap. Pontuação válida na primeira mensalidade. Oferta exclusiva para correntistas do Banco do Brasil. Consulte o regulamento.",
+      "dateStart": "2026-09-30",
+      "dateEnd": "2026-10-31",
+      "parity": 10,
+      "parityClub": 10,
+      "parityBau": 1,
       "campanha": "PROMOTION"
     },
     "petlovesaude": {
