@@ -747,12 +747,50 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje, validadesLiv
   // Agrupa variações positivas por programa — filtrando as já notificadas hoje
   const variacoesPorProg = {};
 
+  // ── Parceiros novos ─────────────────────────────────────────────────────────
+  // Política: parceiro que aparece pela primeira vez num programa dispara uma
+  // oferta "Novo parceiro" mesmo sem comparativo. "Primeira vez" = sem registro
+  // desse parceiro+programa em NENHUM snapshot anterior do historico.json (não
+  // só no de ontem) — assim um programa que ficou zerado por falha de coleta
+  // (Smiles/LATAM no Comparemania) não faz todos os parceiros parecerem novos
+  // quando volta. Acima de LIMITE_NOVOS_POR_PROG no mesmo programa é tratado
+  // como mudança de catálogo/renomeação em massa e não gera mensagem.
+  const LIMITE_NOVOS_POR_PROG = 5;
+  const jaVistos = new Set();
+  for (const d of Object.keys(historico)) {
+    if (d === hoje) continue;
+    for (const [parc, dados] of Object.entries(historico[d] || {})) {
+      for (const [pid, pv] of Object.entries((dados && dados.programs) || {})) {
+        const ptsH = typeof pv === 'object' && pv ? pv.pts : pv;
+        if (ptsH != null) jaVistos.add(`${parc}__${pid}`);
+      }
+    }
+  }
+  const novosPorProg = {};
+
   for (const [parceiro, dadosAtual] of Object.entries(snapshotAtual)) {
     const dadosAnt = snapshotAnterior[parceiro];
-    if (!dadosAnt) continue; // parceiro novo — não compara
 
     for (const [progId, progAtual] of Object.entries(dadosAtual.programs || {})) {
       const ptsNow = typeof progAtual === 'object' ? progAtual.pts : progAtual;
+
+      // Parceiro novo neste programa — sem comparativo, vai para a mensagem de novos
+      if (!jaVistos.has(`${parceiro}__${progId}`)) {
+        const chaveNovo = `${parceiro}__${progId}`;
+        if (ptsNow > 0 && notifHoje[chaveNovo] !== ptsNow) {
+          if (!novosPorProg[progId]) novosPorProg[progId] = [];
+          novosPorProg[progId].push({
+            parceiro: normalizarNomeParceiro(parceiro),
+            parceiroKey: parceiro,
+            chave: chaveNovo,
+            ptsNow,
+            dollar: typeof progAtual === 'object' ? (progAtual.dollar || false) : false,
+          });
+        }
+        continue;
+      }
+
+      if (!dadosAnt) continue; // ausente ontem (mas já visto antes) — não compara
       const progBefore = (dadosAnt.programs || {})[progId];
       const ptsBefore = typeof progBefore === 'object' ? progBefore.pts : progBefore;
       if (!ptsBefore || ptsNow <= ptsBefore) continue; // sem variação positiva
@@ -774,13 +812,22 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje, validadesLiv
     }
   }
 
+  for (const [progId, novos] of Object.entries(novosPorProg)) {
+    if (novos.length > LIMITE_NOVOS_POR_PROG) {
+      console.log(`[Novo parceiro] ${novos.length} parceiros "novos" em ${progId} de uma vez — provável mudança de catálogo; nenhuma mensagem gerada.`);
+      delete novosPorProg[progId];
+    }
+  }
+
   const programasComVariacao = Object.keys(variacoesPorProg);
-  if (programasComVariacao.length === 0) {
+  const programasComNovos = Object.keys(novosPorProg);
+  if (programasComVariacao.length === 0 && programasComNovos.length === 0) {
     console.log('[Variação] Nenhuma variação nova para notificar.');
     return;
   }
 
-  console.log(`[Variação] Novas variações em ${programasComVariacao.length} programa(s): ${programasComVariacao.join(', ')}`);
+  if (programasComVariacao.length > 0) console.log(`[Variação] Novas variações em ${programasComVariacao.length} programa(s): ${programasComVariacao.join(', ')}`);
+  if (programasComNovos.length > 0) console.log(`[Novo parceiro] Parceiros novos em ${programasComNovos.length} programa(s): ${programasComNovos.join(', ')}`);
 
   // Lê ofertas-pendentes.json atual
   const pendentesFile = 'ofertas-pendentes.json';
@@ -1017,6 +1064,83 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje, validadesLiv
     for (const v of variacoes) {
       notifHoje[v.chave] = v.ptsNow;
     }
+  }
+
+  // ── Ofertas de parceiro novo (uma por programa) ────────────────────────────
+  for (const progId of programasComNovos) {
+    const progName = PROG_NAMES[progId] || progId;
+    const novos = novosPorProg[progId].sort((a, b) => a.parceiro.localeCompare(b.parceiro, 'pt-BR'));
+    const count = novos.length;
+
+    const linkDe = (parceiroKey) => {
+      for (const d of Object.keys(historico).sort().reverse()) {
+        const dd = (historico[d] || {})[parceiroKey] || {};
+        if (dd.links && dd.links[progId]) return dd.links[progId];
+      }
+      return '';
+    };
+
+    let titulo, resumo, prazo = '', link = 'https://painel.clubedoviajante.com.br', restricoes = [];
+    if (count === 1) {
+      const n = novos[0];
+      const moeda = n.dollar ? 'US$' : 'R$';
+      const moedaLabel = n.dollar ? 'dólar' : 'real';
+      const camp = campanhaDoParceiro(validadesLivelo, progId, n.parceiro, n.ptsNow);
+      // Nome oficial da Livelo quando casou ("OuroCap" em vez de "Ourocap")
+      if (camp && camp.nome) n.parceiro = camp.nome;
+      titulo = `🆕 Novo parceiro disponível: ${n.parceiro} com ${n.ptsNow} ponto${n.ptsNow > 1 ? 's' : ''} por ${moedaLabel} na ${progName}`;
+      const linhas = [
+        `${n.parceiro} passou a ser parceiro da ${progName} e já está pontuando.`,
+        '',
+        `* Pontuação atual: ${n.ptsNow} pts/${moeda}`,
+      ];
+      if (camp && camp.categorias) linhas.push('* Vale para: ' + camp.categorias.map(x => x.nome).join(', '));
+      if (camp && camp.dateEnd) {
+        prazo = isoParaPrazoBr(camp.dateEnd);
+        linhas.push(camp.dateEnd === hoje ? `* Campanha encerra hoje (${prazo.slice(0, 5)})` : `* Campanha válida até ${prazo.slice(0, 5)}`);
+      }
+      if (camp && camp.legalTerms) restricoes = [camp.legalTerms];
+      resumo = linhas.join('\n');
+      link = linkDe(n.parceiroKey) || link;
+    } else {
+      titulo = `🆕 ${count} novos parceiros disponíveis na ${progName}`;
+      const linhas = novos.map(n => {
+        const moeda = n.dollar ? 'US$' : 'R$';
+        const fim = validadeDoParceiro(validadesLivelo, progId, n.parceiro, n.ptsNow);
+        const ateTxt = fim ? ` (até ${isoParaPrazoBr(fim).slice(0, 5)})` : '';
+        return `🛍️ ${n.parceiro} — ${n.ptsNow} pts/${moeda}${ateTxt}`;
+      }).join('\n');
+      resumo = `${count} novos parceiros passaram a pontuar na ${progName}, segundo a última atualização do Painel do Clube do Viajante.\n\n${linhas}`;
+    }
+
+    const raw = `novo-parceiro-${progId}-${new Date().toISOString()}`;
+    let hash = 0;
+    for (let i = 0; i < raw.length; i++) hash = (hash * 31 + raw.charCodeAt(i)) >>> 0;
+
+    novasOfertas.push({
+      id:          'var_novo_' + hash.toString(36),
+      titulo,
+      emoji:       '🆕',
+      resumo,
+      descricao:   '',
+      programa:    progName,
+      bonus:       '',
+      prazo,
+      categoria:   'compra_bonificada',
+      loja:        count === 1 ? novos[0].parceiro : progName,
+      cupom:       '',
+      link,
+      importante:  '',
+      milheiro:    '',
+      tetoTransferencia: '',
+      restricoes,
+      publicadoEm: new Date().toISOString(),
+      tipoVariacao: true,
+      parceiroNovo: true,
+    });
+    console.log(`[Novo parceiro] Oferta gerada: "${titulo}"`);
+
+    for (const n of novos) notifHoje[n.chave] = n.ptsNow;
   }
 
   // Salva controle de notificações atualizado
