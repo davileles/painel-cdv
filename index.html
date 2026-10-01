@@ -9145,6 +9145,23 @@ function mapaCustoReal(programa, pontos) {
   if (!cpm || !pontos) return null;
   return (pontos / 1000) * cpm;
 }
+// Coordenadas resolvidas automaticamente (coords-cidades.js, workflow
+// coords-cidades.yml): toda cidade nova que aparece em passagens.json ganha
+// lat/lon sem ninguem precisar editar MAPA_COORDS. Mesclado no mapaInit.
+async function mapaCarregarCoordsExtras() {
+  try {
+    const r = await fetch('cidades-coords.json?t=' + Date.now(), {cache:'no-cache'});
+    if (!r.ok) return;
+    const j = await r.json();
+    for (const [k, v] of Object.entries(j.cidades || {})) {
+      if (!Array.isArray(v) || MAPA_COORDS[k]) continue;
+      const [nome, lat, lon, brasil] = v;
+      if (!nome || typeof lat !== 'number' || typeof lon !== 'number') continue;
+      MAPA_COORDS[k] = [nome, lat, lon];
+      if (brasil) MAPA_BRASIL.add(nome);
+    }
+  } catch (e) { /* sem extras: mapa segue com as coordenadas embutidas */ }
+}
 // Cidades brasileiras para detectar rotas domésticas
 const MAPA_BRASIL = new Set(['São Paulo','Rio de Janeiro','Belo Horizonte','Curitiba','Porto Alegre',
   'Florianópolis','Fortaleza','Recife','Salvador','Brasília','Manaus','Belém','Goiânia','Goiania',
@@ -9337,6 +9354,9 @@ async function mapaInit() {
   // "scroll=zoom" nao existe no celular; o texto tem que descrever o gesto real.
   const legenda = document.getElementById('map-legenda-gesto');
   if (legenda && mapaToque()) legenda.textContent = 'pinça=zoom · arrastar=mover';
+
+  // Coordenadas de cidades novas (resolvidas automaticamente) antes de contar rotas.
+  await mapaCarregarCoordsExtras();
 
   // Filtro: apenas últimos 180 dias
   // Fontes que NAO entram no mapa. Blocklist (nao allowlist): o mapa vive de

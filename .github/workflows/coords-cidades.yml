@@ -1,0 +1,52 @@
+name: Coordenadas de cidades novas (Mapa de Emissões)
+# Toda vez que passagens.json muda (alerta enviado, coleta, planilha), confere
+# se surgiu cidade sem coordenada e resolve sozinho — o mapa nunca mais deixa
+# emissão de fora por falta de lat/lon. Sem cidade nova, termina em segundos
+# sem chamar API nenhuma. O cron diário é só rede de segurança.
+on:
+  push:
+    branches: [main]
+    paths: ['passagens.json']
+  schedule:
+    - cron: '17 11 * * *'   # 08h17 (Brasília)
+  workflow_dispatch:
+
+concurrency:
+  group: coords-cidades
+  cancel-in-progress: false
+
+jobs:
+  coords:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Resolver cidades sem coordenada
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node coords-cidades.js
+      # cidades-coords.json só é escrito por este workflow (serializado pelo
+      # concurrency acima), então reaplicar a cópia por cima do remoto é seguro.
+      - name: Salvar cidades-coords.json
+        run: |
+          set -euo pipefail
+          [ -f cidades-coords.json ] || { echo "Nada a salvar."; exit 0; }
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          cp cidades-coords.json /tmp/cidades-coords.json
+          for tent in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/cidades-coords.json cidades-coords.json
+            git add cidades-coords.json
+            if git diff --staged --quiet; then echo "Sem mudança."; exit 0; fi
+            git commit -m "chore: coordenadas de cidades novas do mapa"
+            if git push; then echo "✓ Salvo."; exit 0; fi
+            sleep "${tent}0"
+          done
+          echo "::error::Não consegui salvar cidades-coords.json."
+          exit 1

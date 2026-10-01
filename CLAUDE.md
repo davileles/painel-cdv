@@ -184,6 +184,7 @@ flush de cliques (10 min), `ggSincronizar` + validação de convites (4 min / 6 
 | Workflow | Gatilho | Faz |
 |---|---|---|
 | `coletar-historico.yml` | cron 3/3h (fallback; disparo real de hora em hora pelo `agenda-actions.js` do baileys) | `coletar.js`, `coletar-inter.js`; Méliuz/TopCashback só nas janelas; commit com `reconciliar-estado.js` (até 5 tentativas) |
+| `coords-cidades.yml` | push em `passagens.json` + cron diário 08h17 + manual | `coords-cidades.js`: acha cidade de origem/destino sem coordenada (fora de `MAPA_COORDS` no `index.html`) e resolve lat/lon via Claude → `cidades-coords.json`, que o Mapa de Emissões mescla ao abrir. Sem cidade nova, não chama API. Admin vê "⚠️ N fora do mapa" no contador se algo ainda faltar |
 | `radar-ofertas.yml` | 3/3h | `coletar-radar.js` (RSS → IA → `ofertas-pendentes.json`) |
 | `resumo-diario.yml` | seg–sex (fallback; real 18h05 SP pelo baileys) | agenda resumo 20h SP em `cdv_ofertas`/`cdv_emissao` |
 | `arquivar-passagens.yml` | diário 04:00 UTC | arquiva em shards semestrais (grava o shard **antes** de reduzir `passagens.json`) |
