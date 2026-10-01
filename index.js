@@ -9460,9 +9460,13 @@ async function lerCampanhas() {
 // Le, aplica a mutacao e grava. Em 409 (SHA vencido por escrita concorrente)
 // refaz a leitura e reaplica — o worker grava a cada envio e o painel tambem
 // salva, entao a corrida e real.
+const CAMPANHAS_TENTATIVAS = 5;
+function ehConflitoSha(e) {
+  return /409|sha|conflict|but expected|does not match/i.test(String((e && e.message) || ''));
+}
 async function mutarCampanhas(msg, fn) {
   let ultimoErro = null;
-  for (let tentativa = 0; tentativa < 3; tentativa++) {
+  for (let tentativa = 0; tentativa < CAMPANHAS_TENTATIVAS; tentativa++) {
     const { data, sha } = await lerCampanhas();
     const resultado = fn(data);
     if (resultado && resultado.abortar) return resultado;
@@ -9471,7 +9475,10 @@ async function mutarCampanhas(msg, fn) {
       return resultado || { ok: true };
     } catch (e) {
       ultimoErro = e;
-      if (/409|sha|conflict/i.test(e.message) && tentativa < 2) continue;
+      // O GitHub responde o SHA vencido como "is at <x> but expected <y>" — sem
+      // "409" nem "sha" no texto. A leitura logo apos uma escrita pode vir com o
+      // SHA anterior por alguns segundos: espera um pouco antes de reler.
+      if (ehConflitoSha(e) && tentativa < CAMPANHAS_TENTATIVAS - 1) { await new Promise(r => setTimeout(r, 700 * (tentativa + 1))); continue; }
       throw e;
     }
   }
@@ -9538,13 +9545,16 @@ app.post('/campanhas', async (req, res) => {
   if (data.campanhas.filter(c => c.status === 'ativa').length > 1) {
     return res.status(400).json({ ok: false, erro: 'so pode haver uma campanha ativa por vez' });
   }
-  for (let tentativa = 0; tentativa < 3; tentativa++) {
+  for (let tentativa = 0; tentativa < CAMPANHAS_TENTATIVAS; tentativa++) {
     try {
       const { data: remoto, sha } = await lerCampanhas();
       await ghPutJson(CAMPANHAS_PATH, preservarStatusContatos(remoto, data), sha, 'chore: atualiza campanhas');
       return res.json({ ok: true });
     } catch (e) {
-      if (/409|sha|conflict/i.test(e.message) && tentativa < 2) continue;
+      // O GitHub responde o SHA vencido como "is at <x> but expected <y>" — sem
+      // "409" nem "sha" no texto. A leitura logo apos uma escrita pode vir com o
+      // SHA anterior por alguns segundos: espera um pouco antes de reler.
+      if (ehConflitoSha(e) && tentativa < CAMPANHAS_TENTATIVAS - 1) { await new Promise(r => setTimeout(r, 700 * (tentativa + 1))); continue; }
       console.error('[campanhas POST]', e.message);
       return res.status(500).json({ ok: false, erro: e.message });
     }
