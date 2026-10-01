@@ -666911,10 +666911,23 @@
           "slug": "buser-141"
         },
         "meliuz": {
-          "pts": 6,
+          "pts": 11,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-buser"
+          "ate": true,
+          "slug": "cupom-buser",
+          "categorias": [
+            {
+              "categoria": "Passagens com origem Rio de Janeiro , Passagens com origem e destino Curitiba e Passagens com origem e destino entre as cidades São Paulo ↔ Extrema",
+              "pts": 11,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 5
         }
       },
       "links": {
