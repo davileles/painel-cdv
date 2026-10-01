@@ -667354,23 +667354,28 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 10,
+          "pts": 8,
           "dollar": false,
           "ate": true,
           "slug": "cupom-magazine-luiza",
           "categorias": [
             {
-              "categoria": "Eletroportáteis vendidos e entregues por Magalu",
-              "pts": 10,
+              "categoria": "Todos os Produtos Vendidos e Entregues por Magalu, exceto Mercado e Celulares vendidos e entregues por Magalu",
+              "pts": 8,
+              "principal": false
+            },
+            {
+              "categoria": "Todos os produtos vendidos e entregues por outras lojas",
+              "pts": 5,
               "principal": false
             },
             {
               "categoria": "Demais categorias",
-              "pts": 5,
+              "pts": 2,
               "principal": true
             }
           ],
-          "ptsBase": 5
+          "ptsBase": 2
         }
       },
       "links": {
