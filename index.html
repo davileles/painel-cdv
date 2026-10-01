@@ -9085,6 +9085,31 @@ const MAPA_COORDS = {
   'cidade do cabo':['Cidade do Cabo',-33.92,18.42],'joanesburgo':['Joanesburgo',-26.2,28.05],'dubai':['Dubai',25.2,55.27],
   'toquio':['Tóquio',35.68,139.69],'xangai':['Xangai',31.23,121.47],'doha':['Doha',25.29,51.53],'seul':['Seul',37.57,126.98],
   'casablanca':['Casablanca',33.57,-7.59],'abu dhabi':['Abu Dhabi',24.45,54.38],
+  // Cidades acrescentadas em out/2026: estavam em passagens.json mas sem coordenada,
+  // e o mapa descartava a emissao inteira (ex.: Helsinki → Bangcoc). Chaves extras
+  // com o mesmo nome exibido funcionam como apelido (Bangkok/Bangcoc, Amsterdam/Amsterdã).
+  'amsterdam':['Amsterdã',52.37,4.9],'cape town':['Cidade do Cabo',-33.92,18.42],'vvi':['Santa Cruz de la Sierra',-17.78,-63.18],
+  'helsinki':['Helsinki',60.17,24.94],'bangcoc':['Bangkok',13.76,100.5],'bangkok':['Bangkok',13.76,100.5],
+  'hong kong':['Hong Kong',22.32,114.17],'osaka':['Osaka',34.69,135.5],'kuala lumpur':['Kuala Lumpur',3.14,101.69],
+  'maldivas':['Maldivas',4.18,73.51],'mauricio':['Ilhas Maurício',-20.16,57.5],'ilhas mauricio':['Ilhas Maurício',-20.16,57.5],
+  'sydney':['Sydney',-33.87,151.21],'auckland':['Auckland',-36.85,174.76],'perth':['Perth',-31.95,115.86],
+  'cairo':['Cairo',30.04,31.24],'istambul':['Istambul',41.01,28.98],'viena':['Viena',48.21,16.37],'bruxelas':['Bruxelas',50.85,4.35],
+  'veneza':['Veneza',45.44,12.32],'valencia':['Valência',39.47,-0.38],'madeira':['Madeira',32.65,-16.91],'ios':['Ios',36.73,25.28],
+  'los angeles':['Los Angeles',34.05,-118.24],'las vegas':['Las Vegas',36.17,-115.14],'san diego':['San Diego',32.72,-117.16],
+  'toronto':['Toronto',43.65,-79.38],'montreal':['Montreal',45.5,-73.57],'cidade do mexico':['Cidade do México',19.43,-99.13],
+  'cidade do panama':['Cidade do Panamá',8.98,-79.52],'aruba':['Aruba',12.52,-70.03],'curacao':['Curaçao',12.17,-68.98],
+  'providenciales':['Providenciales',21.77,-72.27],'nassau':['Nassau',25.04,-77.35],'montego bay':['Montego Bay',18.47,-77.92],
+  'san andres':['San Andrés',12.58,-81.7],'caracas':['Caracas',10.48,-66.9],'quito':['Quito',-0.18,-78.47],'cusco':['Cusco',-13.53,-71.97],
+  'mendoza':['Mendoza',-32.89,-68.84],'calama':['Calama',-22.46,-68.93],'la serena':['La Serena',-29.9,-71.25],
+  'punta del este':['Punta del Este',-34.96,-54.95],'iguazu':['Puerto Iguazú',-25.6,-54.57],
+  'aracaju':['Aracaju',-10.91,-37.07],'campina grande':['Campina Grande',-7.23,-35.88],'petrolina':['Petrolina',-9.39,-40.5],
+  'bonito':['Bonito',-21.13,-56.48],'caldas novas':['Caldas Novas',-17.74,-48.62],'ipatinga':['Ipatinga',-19.47,-42.54],
+  'pelotas':['Pelotas',-31.77,-52.34],'jericoacoara':['Jericoacoara',-2.79,-40.51],'sinop':['Sinop',-11.86,-55.51],
+  'santarem':['Santarém',-2.44,-54.71],'porto seguro':['Porto Seguro',-16.45,-39.06],'vitoria da conquista':['Vitória da Conquista',-14.86,-40.84],
+  'santo angelo':['Santo Ângelo',-28.3,-54.26],'governador valadares':['Governador Valadares',-18.85,-41.95],'maraba':['Marabá',-5.37,-49.12],
+  'boa vista':['Boa Vista',2.82,-60.67],'marilia':['Marília',-22.21,-49.95],'maringa':['Maringá',-23.42,-51.94],'macapa':['Macapá',0.03,-51.07],
+  'juazeiro do norte':['Juazeiro do Norte',-7.21,-39.32],'cabo frio':['Cabo Frio',-22.88,-42.02],'sao jose do rio preto':['São José do Rio Preto',-20.82,-49.38],
+  'lencois':['Lençóis',-12.56,-41.39],'uberaba':['Uberaba',-19.75,-47.93],'porto velho':['Porto Velho',-8.76,-63.9],
 };
 const MAPA_PROG_COLORS = {
   'Smiles':'#f97316','LATAM Pass':'#dc2626','Azul Fidelidade':'#0ea5e9','Azul pelo Mundo':'#38bdf8',
@@ -9125,7 +9150,11 @@ const MAPA_BRASIL = new Set(['São Paulo','Rio de Janeiro','Belo Horizonte','Cur
   'Florianópolis','Fortaleza','Recife','Salvador','Brasília','Manaus','Belém','Goiânia','Goiania',
   'Natal','Maceió','Campo Grande','Cuiabá','Vitória','Vitoria','Campinas','Ribeirão Preto',
   'Uberlândia','Uberlandia','Joinville','Londrina','Navegantes','Palmas','Teresina',
-  'João Pessoa','Ilhéus','Foz do Iguaçu','Fernando de Noronha','São Luís','São Francisco']);
+  'João Pessoa','Ilhéus','Foz do Iguaçu','Fernando de Noronha','São Luís',
+  'Aracaju','Boa Vista','Bonito','Cabo Frio','Caldas Novas','Campina Grande','Governador Valadares','Ipatinga',
+  'Jericoacoara','Juazeiro do Norte','Lençóis','Macapá','Marabá','Maringá','Marília','Pelotas','Petrolina',
+  'Porto Seguro','Porto Velho','Santarém','Santo Ângelo','São José do Rio Preto','Sinop','Uberaba','Vitória da Conquista']);
+// ('São Francisco' saiu daqui: é San Francisco/EUA e fazia SP→SFO ser tratada como doméstica.)
 
 let mapaItems = [];
 let _mapaCountsCache = null; // cache invalidado quando mapaItems muda
@@ -9236,17 +9265,26 @@ function mapaGetPaisesComEmissao() {
 // ── DADOS ──────────────────────────────────────────────
 function mapaGetCounts() {
   if (_mapaCountsCache) return _mapaCountsCache;
-  const counts = {}, routes = {};
+  const counts = {}, routes = {}, semCoord = {};
+  let semCoordTotal = 0;
   for (const it of mapaItems) {
     if (!it.origem || !it.destino || it.origem === it.destino) continue;
     const o = mapaCanon(it.origem), d = mapaCanon(it.destino);
-    if (!o || !d || o === d) continue;
+    if (!o || !d) {
+      // Cidade sem coordenada em MAPA_COORDS: a emissao existe, so nao tem onde desenhar.
+      semCoordTotal++;
+      if (!o) semCoord[it.origem] = (semCoord[it.origem]||0) + 1;
+      if (!d) semCoord[it.destino] = (semCoord[it.destino]||0) + 1;
+      continue;
+    }
+    if (o === d) continue;
     counts[o] = (counts[o]||0) + 1;
     counts[d] = (counts[d]||0) + 1;
     const k = o+'|'+d;
     (routes[k] = routes[k]||[]).push(it);
   }
-  _mapaCountsCache = {counts, routes};
+  if (semCoordTotal) console.warn('[mapa] ' + semCoordTotal + ' emissões sem coordenada (adicionar em MAPA_COORDS):', semCoord);
+  _mapaCountsCache = {counts, routes, semCoord, semCoordTotal};
   return _mapaCountsCache;
 }
 
@@ -9564,7 +9602,7 @@ function mapaBusca(q) {
 
   // Coletar todas as cidades com registros nos últimos 180 dias
   const cidades = new Set();
-  mapaItems.forEach(p => { if(p.origem) cidades.add(p.origem); if(p.destino) cidades.add(p.destino); });
+  mapaItems.forEach(p => { const o = mapaCanon(p.origem), d = mapaCanon(p.destino); if(o) cidades.add(o); if(d) cidades.add(d); });
 
   const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   const qn = norm(q);
@@ -9781,8 +9819,14 @@ function mapaRenderPainel() {
   // Atualizar stats
   const statsEl = document.getElementById('map-stats');
   if (statsEl && mapaItems.length) {
-    const {counts} = mapaGetCounts();
+    const {counts, semCoord, semCoordTotal} = mapaGetCounts();
     statsEl.textContent = `${mapaItems.length} registros · ${Object.keys(counts).length} cidades`;
+    // Para o admin: denuncia emissoes que ficaram fora do mapa por falta de coordenada.
+    if (semCoordTotal && devAcesso()) {
+      const lista = Object.entries(semCoord).sort((a,b)=>b[1]-a[1]).map(([c,n])=>c+' ('+n+')').join(', ');
+      statsEl.textContent += ` · ⚠️ ${semCoordTotal} fora do mapa`;
+      statsEl.title = 'Cidades sem coordenada em MAPA_COORDS: ' + lista;
+    } else statsEl.title = '';
   }
 
   // Sem seleção → mostrar top cidades
@@ -10678,7 +10722,8 @@ function mapaAbrirPassagensModal(rotaKey, programa, cabineFiltro) {
   // Coletar todos os registros da rota nas duas direções para o programa
   const items = mapaItems.filter(it => {
     const matchProg = it.programa === programa;
-    const matchRota = (it.origem === origK && it.destino === destK) || (it.origem === destK && it.destino === origK);
+    const io = mapaCanon(it.origem), id = mapaCanon(it.destino);
+    const matchRota = (io === origK && id === destK) || (io === destK && id === origK);
     let matchCab = true;
     if (cabineFiltro === 'eco') matchCab = mapaIsEco(it.cabine);
     else if (cabineFiltro === 'exec') matchCab = mapaIsExec(it.cabine);
