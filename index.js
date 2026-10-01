@@ -9517,7 +9517,7 @@ app.get('/campanhas/ativa', async (req, res) => {
 // nunca status. Casa por id + telefone para nao herdar status de outra pessoa
 // quando o publico e reimportado.
 function preservarStatusContatos(remoto, novo) {
-  const CAMPOS = ['status', 'enviadoEm', 'respondidoEm', 'followupEm', 'erro', 'tentativasEnvio'];
+  const CAMPOS = ['status', 'enviadoEm', 'respondidoEm', 'followupEm', 'erro', 'tentativasEnvio', 'respostaTexto'];
   const idx = new Map();
   (remoto.campanhas || []).forEach(c =>
     (c.contatos || []).forEach(ct => idx.set(c.id + '|' + ct.id + '|' + ct.telefone, ct)));
@@ -9634,7 +9634,7 @@ app.post('/campanhas/contato', async (req, res) => {
   if (!campanhaId || !contatoId || !patch || typeof patch !== 'object') {
     return res.status(400).json({ ok: false, erro: 'campanhaId, contatoId e patch obrigatorios' });
   }
-  const CAMPOS = ['status', 'enviadoEm', 'respondidoEm', 'followupEm', 'erro', 'tentativasEnvio', 'obs'];
+  const CAMPOS = ['status', 'enviadoEm', 'respondidoEm', 'followupEm', 'erro', 'tentativasEnvio', 'obs', 'respostaTexto'];
   try {
     const r = await mutarCampanhas('chore: contato ' + contatoId + ' (' + campanhaId + ')', (d) => {
       const camp = d.campanhas.find(c => c.id === campanhaId);
