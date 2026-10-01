@@ -9650,13 +9650,15 @@ app.post('/campanhas/contato', async (req, res) => {
 // campanhas-midia/, no mesmo repo privado, e o bloco guarda so o nome.
 const CAMPANHAS_MIDIA_DIR = 'campanhas-midia';
 const CAMPANHAS_MIDIA_MAX = 3 * 1024 * 1024;
-const MIMES_MIDIA = { png:'image/png', jpg:'image/jpeg', jpeg:'image/jpeg', webp:'image/webp' };
+// Audio (bloco de audio da campanha): .ogg/.opus sai como mensagem de voz; o resto como arquivo de audio.
+const MIMES_MIDIA = { png:'image/png', jpg:'image/jpeg', jpeg:'image/jpeg', webp:'image/webp',
+  ogg:'audio/ogg', opus:'audio/ogg', m4a:'audio/mp4', mp3:'audio/mpeg', aac:'audio/aac' };
 
 function nomeMidiaSeguro(nome) {
   const limpo = String(nome || '')
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .toLowerCase().replace(/[^a-z0-9._-]/g, '-').replace(/-+/g, '-');
-  return /^[a-z0-9][a-z0-9._-]{0,80}\.(png|jpe?g|webp)$/.test(limpo) ? limpo : null;
+  return /^[a-z0-9][a-z0-9._-]{0,80}\.(png|jpe?g|webp|ogg|opus|m4a|mp3|aac)$/.test(limpo) ? limpo : null;
 }
 
 // POST /campanhas/midia — body { arquivo, base64 }
@@ -9664,11 +9666,11 @@ app.post('/campanhas/midia', async (req, res) => {
   if (!opAutorizado(req, res)) return;
   const { arquivo, base64 } = req.body || {};
   const nome = nomeMidiaSeguro(arquivo);
-  if (!nome) return res.status(400).json({ ok: false, erro: 'nome de arquivo invalido (use .png, .jpg ou .webp)' });
+  if (!nome) return res.status(400).json({ ok: false, erro: 'nome de arquivo invalido (use .png, .jpg, .webp, .ogg, .opus, .m4a ou .mp3)' });
   const cru = String(base64 || '').replace(/^data:[^;]+;base64,/, '');
   if (!cru) return res.status(400).json({ ok: false, erro: 'base64 vazio' });
   if (Buffer.from(cru, 'base64').length > CAMPANHAS_MIDIA_MAX) {
-    return res.status(413).json({ ok: false, erro: 'imagem acima de 3MB' });
+    return res.status(413).json({ ok: false, erro: 'arquivo acima de 3MB' });
   }
   const url = `https://api.github.com/repos/${GITHUB_REPO_DADOS}/contents/${CAMPANHAS_MIDIA_DIR}/${nome}`;
   try {
