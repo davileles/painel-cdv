@@ -70,7 +70,8 @@
         "app.post('/concierge/cfg'",
         "app.post('/concierge/demandas'",
         "app.post('/concierge/ds160'",
-        "app.post('/concierge/ds160/status'", "app.post('/concierge/ia/traduzir-ds160'",
+        "app.post('/concierge/ds160/status'",
+        "app.post('/concierge/ia/traduzir-ds160'",
         "app.post('/concierge/lembretes/checar'",
         "app.post('/concierge/modelos'",
         "app.post('/concierge/msgs-enviadas'",
@@ -108,7 +109,9 @@
         "async function rlFlush",
         "async function rlHandle",
         "function assinarSessaoConcierge(",
-        "function sessaoConciergeValida("
+        "function sessaoConciergeValida(",
+        "function registroMesmaCampanha(",
+        "function situacaoHistoricoTransferencia("
       ]
     },
     "index.html": {
