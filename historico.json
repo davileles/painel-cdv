@@ -671822,6 +671822,10 @@
         "azul": {
           "pts": 27,
           "dollar": false
+        },
+        "latam": {
+          "pts": 6,
+          "dollar": true
         }
       }
     },
@@ -672491,6 +672495,10 @@
         "esfera": {
           "pts": 4,
           "dollar": false
+        },
+        "latam": {
+          "pts": 6,
+          "dollar": true
         },
         "meliuz": {
           "pts": 3.5,
@@ -673828,6 +673836,10 @@
         },
         "esfera": {
           "pts": 1,
+          "dollar": false
+        },
+        "latam": {
+          "pts": 0.5,
           "dollar": false
         },
         "meliuz": {
@@ -676724,6 +676736,62 @@
         "meliuz": "https://www.meliuz.com.br/desconto/estoque"
       }
     },
+    "nomad": {
+      "programs": {
+        "latam": {
+          "pts": 5,
+          "dollar": true
+        }
+      }
+    },
+    "revo": {
+      "programs": {
+        "latam": {
+          "pts": 3,
+          "dollar": false
+        }
+      }
+    },
+    "ifriend": {
+      "programs": {
+        "latam": {
+          "pts": 2,
+          "dollar": false
+        }
+      }
+    },
+    "rappi": {
+      "programs": {
+        "latam": {
+          "pts": 2,
+          "dollar": true
+        },
+        "inter": {
+          "pts": 15,
+          "dollar": false,
+          "slug": "rappi-1662"
+        }
+      },
+      "links": {
+        "inter": "https://shopping.inter.co/gift-card/rappi-1662"
+      }
+    },
+    "picpay": {
+      "programs": {
+        "latam": {
+          "pts": 0.5,
+          "dollar": false
+        }
+      }
+    },
+    "elite internacional realty": {
+      "programs": {
+        "latam": {
+          "pts": 0.07,
+          "dollar": true
+        }
+      }
+    },
     "sony playstation": {
       "programs": {
         "inter": {
@@ -676902,18 +676970,6 @@
       },
       "links": {
         "inter": "https://shopping.inter.co/gift-card/roblox-plus-plano-de-assinatura-4225"
-      }
-    },
-    "rappi": {
-      "programs": {
-        "inter": {
-          "pts": 15,
-          "dollar": false,
-          "slug": "rappi-1662"
-        }
-      },
-      "links": {
-        "inter": "https://shopping.inter.co/gift-card/rappi-1662"
       }
     },
     "razer gold": {
