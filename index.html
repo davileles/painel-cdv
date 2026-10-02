@@ -4231,7 +4231,7 @@ const PROGRAMS = [
   { id:'azul',    name:'Azul',        color:'#0ea5e9', dim:'rgba(14,165,233,0.15)',
     url:'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-tudo-azul' },
   { id:'latam',   name:'LATAM Pass',  color:'#dc2626', dim:'rgba(220,38,38,0.15)',
-    url:'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-shopping-latam' },
+    url:'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-latam-pass' },
   { id:'inter',   name:'Inter',        color:'#00a859', dim:'rgba(0,168,89,0.15)',
     url:'https://shopping.inter.co/gift-card', cashback:true,
     fallbackMsg:'↗ Acesse o app do Banco Inter' },
@@ -4279,6 +4279,15 @@ const CAT_ICONS={'Marketplace':'🛒','Eletrônicos':'💻','Moda':'👗','Belez
 function categorize(n){for(const[re,c]of CAT_RULES)if(re.test(n))return c;return'Outros';}
 
 function extractPts(g){
+  // LATAM Pass (página nova do Comparemania, 30/09/2026): "6 milhas a cada US$ 1,00",
+  // "1 milha a cada R$ 2,00". Normaliza para "por 1 unidade da moeda" — espelho de
+  // extractACada() no coletar.js.
+  const ac=g.match(/(\d+(?:[.,]\d+)?)\s*milhas?\s+(?:a|por)\s+cada\s+(R\$|US\$|U\$|USD)\s*(\d+(?:[.,]\d+)?)/i);
+  if(ac){
+    const qtd=parseFloat(ac[1].replace(',','.')), base=parseFloat(ac[3].replace(',','.'));
+    const v=(qtd>0&&base>0)?Math.round((qtd/base)*100)/100:0;
+    if(v) return {pts:v, ate:/até\s+\d/i.test(g), dollar:!/^R\$$/i.test(ac[2])};
+  }
   const ate=g.match(/até\s+(\d+)/i);
   const eq=g.match(/=\s+(\d+)/i);
   const azul=g.match(/(\d+[,.]?\d*)\s*pt\//i);
@@ -4316,7 +4325,7 @@ function parseHTML(html, progId){
       'kaligo':                ['livelo','esfera','smiles','azul','latam'],
       'aliexpress':            ['livelo','esfera','smiles','azul','latam'],
     };
-    const dollar = (DOLLAR_EX[name.toLowerCase().trim()]||[]).includes(progId);
+    const dollar = (typeof parsed.dollar==='boolean') ? parsed.dollar : (DOLLAR_EX[name.toLowerCase().trim()]||[]).includes(progId);
     const rawHref=na.getAttribute("href")||"#";
     const url=rawHref.startsWith("http")?rawHref:"https://www.comparemania.com.br"+rawHref;
     out.push({name,pts,per:pm?+pm[1]:1,ate,dollar,cat:categorize(name),url,prog:progId});

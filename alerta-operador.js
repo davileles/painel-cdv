@@ -66,21 +66,30 @@ async function alertarOperador(titulo, linhas = [], opts = {}) {
 //
 // Regras: só alerta se o programa tinha pelo menos MIN_BASE ontem (evita ruído
 // de programas naturalmente pequenos) e caiu a zero ou perdeu mais da metade.
-function detectarQuedas(contagemHoje, historico, hoje, nomes = {}, MIN_BASE = 10) {
+//
+// `ajustes` (opcional) → { latam: { desde: 'YYYY-MM-DD', minBase: 5 } }
+//   desde   : ignora o histórico anterior a essa data como base de comparação
+//             (a fonte trocou a lista do programa; comparar com a lista antiga
+//             daria falso alerta de queda).
+//   minBase : piso próprio do programa, para lista pequena não ficar sem alerta.
+function detectarQuedas(contagemHoje, historico, hoje, nomes = {}, MIN_BASE = 10, ajustes = {}) {
   const datas = Object.keys(historico).filter(d => d < hoje).sort().reverse();
   const quedas = [];
 
   for (const [progId, atual] of Object.entries(contagemHoje)) {
+    const aj = ajustes[progId] || {};
+    const minBase = aj.minBase || MIN_BASE;
     // Última data em que esse programa teve QUALQUER dado
     let anterior = 0;
     let dataRef = null;
     for (const d of datas) {
+      if (aj.desde && d < aj.desde) break;
       const n = Object.values(historico[d] || {})
         .filter(p => p?.programs?.[progId] != null).length;
       if (n > 0) { anterior = n; dataRef = d; break; }
     }
 
-    if (anterior < MIN_BASE) continue;
+    if (anterior < minBase) continue;
 
     if (atual === 0) {
       quedas.push({

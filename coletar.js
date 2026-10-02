@@ -120,7 +120,15 @@ const PROGRAMS = [
   {
     id:   'latam',
     name: 'LATAM Pass',
-    url:  'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-shopping-latam',
+    // Em 30/09/2026 o Comparemania tirou do ar a página "Shopping LATAM"
+    // (programa-fidelidade-shopping-latam passou a redirecionar para /erro) e
+    // publicou esta, com os parceiros diretos do LATAM Pass em outro formato
+    // ("6 milhas a cada US$ 1"). É outra lista: o histórico anterior a
+    // `baseDesde` não serve de base para o alerta de queda, e como a lista é
+    // pequena o piso do alerta (`minBase`) é menor que o padrão.
+    url:  'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-latam-pass',
+    baseDesde: '2026-10-02',
+    minBase:   5,
   },
 ];
 
@@ -211,6 +219,7 @@ async function resolvePartnerLink(comparemaniaParceirUrl) {
 //   Azul          : "5 pt/R$"  |  "4,5 pt/R$"
 //   LATAM         : "Cada 1 real gastos = 3 ponto(s) Latam Pass"
 //   Smiles        : "você ganha até 26 Smiles"
+//   LATAM (nova)  : "6 milhas a cada US$ 1,00"  |  "1 milha a cada R$ 2,00"  → extractACada
 function extractPts(g) {
   const ate    = g.match(/até\s+(\d+)/i);
   const eq     = g.match(/=\s+(\d+)/i);
@@ -223,6 +232,24 @@ function extractPts(g) {
   return isNaN(pts) ? null : Math.round(pts) || pts;
 }
 
+
+// Formato "N milhas a cada <moeda> X" (página do LATAM Pass desde 30/09/2026):
+//   "6 milhas a cada US$ 1,00"            → 6 por dólar
+//   "2 milhas por cada USD 1 gasto"       → 2 por dólar
+//   "Até 3 milhas a cada R$ 1 gasto"      → 3 por real
+//   "1 milha a cada R$ 2,00 em compras…"  → 0,5 por real
+// Devolve { pts, dollar } já normalizado para "por 1 unidade da moeda", ou null.
+// A moeda vem do próprio texto, então não depende da lista DOLLAR_EXCEPTIONS.
+function extractACada(g) {
+  const m = g.match(/(\d+(?:[.,]\d+)?)\s*milhas?\s+(?:a|por)\s+cada\s+(R\$|US\$|U\$|USD)\s*(\d+(?:[.,]\d+)?)/i);
+  if (!m) return null;
+  const qtd  = parseFloat(m[1].replace(',', '.'));
+  const base = parseFloat(m[3].replace(',', '.'));
+  if (!(qtd > 0) || !(base > 0)) return null;
+  const pts = Math.round((qtd / base) * 100) / 100;
+  if (!pts) return null;
+  return { pts, dollar: !/^R\$$/i.test(m[2]) };
+}
 
 // Normaliza nome de parceiro para exibição (corrige abreviações e capitalização)
 function normalizarNomeParceiro(nome) {
@@ -300,7 +327,8 @@ function parseComparemaniaPts(html, progId) {
       .replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d))
       .replace(/&amp;/g, '&').replace(/&apos;/g, "'").replace(/&#39;/g, "'")
       .replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ').replace(/&shy;/g, '');
-    const pts = extractPts(ptsTxt);
+    const aCada = extractACada(ptsTxt);
+    const pts = aCada ? aCada.pts : extractPts(ptsTxt);
     if (!pts) continue;
 
     const DOLLAR_EXCEPTIONS = {
@@ -312,7 +340,9 @@ function parseComparemaniaPts(html, progId) {
       'kaligo':                ['livelo', 'esfera', 'smiles', 'azul', 'latam'],
       'aliexpress':            ['livelo', 'esfera', 'smiles', 'azul', 'latam'],
     };
-    const dollar = (DOLLAR_EXCEPTIONS[name.toLowerCase().trim()] || []).includes(progId);
+    const dollar = aCada
+      ? aCada.dollar
+      : (DOLLAR_EXCEPTIONS[name.toLowerCase().trim()] || []).includes(progId);
 
     const key = name.toLowerCase().trim();
     if (!result[key] || pts > result[key].pts) {
@@ -1297,7 +1327,10 @@ async function main() {
   // redirecionar para /erro, que responde 200 e contém "ponto", então a checagem
   // hasContent acima passava e o parser simplesmente extraía zero linhas.
   // Comparar a contagem de hoje com a última contagem conhecida pega isso.
-  const quedas = detectarQuedas(contagemPorPrograma, historico, hoje, nomesPorPrograma);
+  const ajustesQueda = Object.fromEntries(PROGRAMS
+    .filter(p => p.baseDesde || p.minBase)
+    .map(p => [p.id, { desde: p.baseDesde, minBase: p.minBase }]));
+  const quedas = detectarQuedas(contagemPorPrograma, historico, hoje, nomesPorPrograma, 10, ajustesQueda);
   if (quedas.length) {
     const linhas = quedas.map(q => q.gravidade === 'zerado'
       ? `❌ ${q.nome}: 0 parceiros hoje (tinha ${q.anterior} em ${q.dataRef})`

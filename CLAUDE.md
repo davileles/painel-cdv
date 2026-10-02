@@ -418,6 +418,7 @@ Cron do GitHub está degradado (atrasa 2–4 h): disparo real vem do Railway; cr
 - Dados do concierge migrados para `davileles/dados` (25/09/2026), mas o **histórico** do repo público `concierge` ainda contém reservas, anexos e um agendamento com CPF + senha Esfera (senha deve ser trocada). Plano (opção A): tornar `concierge` **privado** e publicar o site num repo público novo `concierge-site` (só HTML/JS, histórico limpo). O `lembrete-voo.yml` continua no `concierge` privado.
 - `painel-cdv/alertas.json` ainda contém e-mail de membro (migração pendente; `coletar.js` grava via checkout).
 - CORS do proxy lista `GET, POST, OPTIONS`, mas há rotas `DELETE`.
+- Comparemania (desde 30/09/2026): a página do **Smiles** cai em `/erro` e o site não lista mais lojas do programa — o coletor segue tentando e o alerta "Coleta degradada" do Smiles continua até haver fonte nova (a API do Shopping Smiles responde 403 fora do navegador). **LATAM Pass** passou a ser coletado de `programa-fidelidade-latam-pass` (parceiros diretos, formato "N milhas a cada R$/US$ X", lido por `extractACada` no `coletar.js` e espelhado em `extractPts` do `index.html`); a página antiga `programa-fidelidade-shopping-latam` não existe mais.
 - Concierge: popular retroativamente `roteiros-membros.json` para roteiros publicados antes da associação por e-mail; `cli-31`/`cli-34` com CPF duplicado.
 - Mensagens recorrentes/agendadas do TSP ainda não suportam anexo.
 - Consolidação de domínios: aposentar `davileles.com`; tudo para `ticapromos.com.br` / `clubedoviajante.com.br`.
