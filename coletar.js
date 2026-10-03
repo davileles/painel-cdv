@@ -1258,9 +1258,16 @@ async function main() {
     try {
       // 503/429/timeout do Comparemania costumam ser passageiros (rajada de
       // requisições seguidas): tenta até 3 vezes com espera crescente.
+      // Página que chega incompleta (0 parceiros) também é tratada como falha
+      // passageira e tenta de novo — evita alarme falso de "coleta degradada".
       let html;
       for (let tent = 1; ; tent++) {
-        try { html = await fetchDirect(prog.url); break; }
+        try {
+          html = await fetchDirect(prog.url);
+          if (Object.keys(parseComparemaniaPts(html, prog.id)).length > 0 || tent >= 3) break;
+          console.warn(`[Histórico] ${prog.name}: 0 parceiros (página incompleta?) — nova tentativa em ${tent * 10}s`);
+          await new Promise(r => setTimeout(r, tent * 10000));
+        }
         catch (e) {
           if (tent >= 3) throw e;
           console.warn(`[Histórico] ${prog.name}: ${e.message} — nova tentativa em ${tent * 10}s`);
