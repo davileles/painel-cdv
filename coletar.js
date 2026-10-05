@@ -691,17 +691,44 @@ function parseValidadesLivelo(html) {
   return out;
 }
 
+// Link oficial da página de cada parceiro na Livelo (juntar-pontos/parceiros/<slug>/<ID>).
+// O redirect do Comparemania às vezes cai numa BUSCA da Livelo (ex.: Magalu →
+// livelo.com.br/busca?query=magalu&sellers=...), que não é a página do parceiro
+// nem ativa a pontuação. Este mapa (todos os parceiros, com ou sem campanha) vai
+// em validades-livelo.json → `links`, e o comparador do painel e as ofertas Tier 1
+// usam ele quando o link salvo não é uma página de parceiro.
+let linksLiveloOficiais = {};
+
+function parseLinksLivelo(html) {
+  const out = {};
+  const re = /"id":"([A-Z0-9]{2,5})","image":"[^"]*","name":"([^"]+)"[^{}]{0,400}?"link":"(https?:\/\/[^"]*livelo\.com\.br\/juntar-pontos\/parceiros\/[^"]+)"/g;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    const chaveBase = chaveParceiroValidade(m[2]);
+    const chave = LIVELO_ALIAS_CHAVE[chaveBase] || chaveBase;
+    if (chave && !out[chave]) out[chave] = m[3].replace(/^https:\/\/livelo\.com\.br/, 'https://www.livelo.com.br');
+  }
+  return out;
+}
+
+// Link salvo é página de parceiro da Livelo? (busca, home e afins não contam)
+function ehPaginaParceiroLivelo(url) {
+  return /livelo\.com\.br\/juntar-pontos\/parceiros\//i.test(String(url || ''));
+}
+
 async function coletarValidadesLivelo() {
   try {
     const html = await fetchDirect(LIVELO_PARCEIROS_URL, 30000);
     const validades = parseValidadesLivelo(html);
+    linksLiveloOficiais = parseLinksLivelo(html);
     const total = Object.keys(validades).length;
+    console.log(`[Validade] ${Object.keys(linksLiveloOficiais).length} link(s) oficiais de parceiros Livelo.`);
     if (total === 0) {
       console.warn('[Validade] Nenhuma campanha encontrada na Livelo — layout pode ter mudado.');
       return {};
     }
     fs.writeFileSync(VALIDADES_FILE, JSON.stringify(
-      { coletadoEm: new Date().toISOString(), items: validades }, null, 2
+      { coletadoEm: new Date().toISOString(), items: validades, links: linksLiveloOficiais }, null, 2
     ));
     const porTipo = {};
     for (const v of Object.values(validades)) porTipo[v.campanha] = (porTipo[v.campanha] || 0) + 1;
@@ -1037,6 +1064,12 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje, validadesLiv
           linkSalvo = dadosD.links[progId];
           break;
         }
+      }
+      // Livelo: se o link salvo não for a página do parceiro (ex.: busca da
+      // Livelo), usa o link oficial publicado pela própria Livelo.
+      if (progId === 'livelo' && !ehPaginaParceiroLivelo(linkSalvo)) {
+        const oficial = linksLiveloOficiais[chaveParceiroValidade(parceiroKey)];
+        if (oficial) linkSalvo = oficial;
       }
       const linkT1 = linkSalvo || 'https://painel.clubedoviajante.com.br';
       if (!linkSalvo) console.log('[LinkT1] Link não encontrado para ' + parceiroKey + '/' + progId + ' — usando painel.');

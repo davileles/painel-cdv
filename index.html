@@ -4976,12 +4976,37 @@ function render(){
 const directUrlCache={};
 const PROG_NAME_MAP={azul:'tudo azul','latam':'latam pass',livelo:'livelo',esfera:'esfera',smiles:'smiles'};
 
-function resolveLink(pid, links, data){
+// Link oficial da página de cada parceiro na Livelo, publicado pelo coletor em
+// validades-livelo.json → links (chave = nome sem acento/pontuação, mesma regra
+// de chaveParceiroValidade em coletar.js). O redirect do Comparemania às vezes
+// cai numa BUSCA da Livelo (ex.: Magalu), que não é a página do parceiro.
+let linksLiveloOficiais={};
+(async()=>{
+  try{
+    const r=await fetch('validades-livelo.json?v='+Date.now(),{cache:'no-cache'});
+    if(r.ok){const j=await r.json();linksLiveloOficiais=(j&&j.links)||{};}
+  }catch(e){}
+})();
+function chaveParceiroLivelo(nome){
+  return String(nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase().replace(/&/g,' e ').replace(/[^a-z0-9]+/g,'');
+}
+function linkOficialLivelo(nome){
+  return linksLiveloOficiais[chaveParceiroLivelo(nome)]||'';
+}
+
+function resolveLink(pid, links, data, nome){
   // Programas de cashback já trazem o link direto do historico.json (data.url) —
   // não dependem do scraping de links do Comparemania.
   if(isCashback(pid)) return links[pid]||data?.url||'';
   const key=PROG_NAME_MAP[pid]||pid;
-  return links[key]||links[pid]||'';
+  const url=links[key]||links[pid]||'';
+  // Livelo: link resolvido que não é página de parceiro (busca, home) → oficial
+  if(pid==='livelo'&&!/livelo\.com\.br\/juntar-pontos\/parceiros\//i.test(url)){
+    const oficial=linkOficialLivelo(nome);
+    if(oficial) return oficial;
+  }
+  return url;
 }
 
 function renderModalRows(p, links={}, resolvido=false){
@@ -5004,7 +5029,7 @@ function renderModalRows(p, links={}, resolvido=false){
     const equiv=data.pts*(EQUIV[pid]||1);
     const isBest=!isCashback(pid) && Math.abs(equiv-bestEquivReal)<0.01;
     const lbl=isCashback(pid)?'%':(data.per>1)?`R$${data.per}`:data.dollar?'U$':'R$';
-    const destUrl=resolveLink(pid,links,data);
+    const destUrl=resolveLink(pid,links,data,p.name);
     // `resolvido` = a busca de links já terminou (mesmo que sem resultado).
     // Sem isso, um fetch que volta vazio deixava a linha travada em
     // "carregando link…" para sempre.
