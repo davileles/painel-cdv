@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-10-05T19:04:11.798Z",
+  "coletadoEm": "2026-10-05T20:09:23.743Z",
   "items": {
     "abcdaconstrucao": {
       "id": "ABC",
@@ -542,6 +542,18 @@
       "parityBau": 3,
       "campanha": "PROMOTION"
     },
+    "shein": {
+      "id": "RAK",
+      "nome": "SHEIN",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 05 a 09/10/2026. Ganhe 2 pontos por real gasto em compras internacionais. Use o cupom LIVELO15OFF para 15% de desconto, mediante a compras de no mínimo R$ 100,00, válido apenas para clientes Livelo, uso único por CPF. Compras com envio nacional não pontuam. Consulte o regulamento.",
+      "dateStart": "2026-10-05",
+      "dateEnd": "2026-10-09",
+      "parity": 2,
+      "parityClub": 2,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
     "samsclub": {
       "id": "WMB",
       "nome": "Sam's Club",
@@ -575,18 +587,6 @@
       "dateEnd": "2026-10-31",
       "parity": 4,
       "parityClub": 4,
-      "parityBau": 1,
-      "campanha": "PROMOTION"
-    },
-    "shein": {
-      "id": "RAK",
-      "nome": "Shein",
-      "categorias": null,
-      "legalTerms": "Campanha válida de 05 a 09/10/2026. Ganhe 2 pontos por real gasto em compras internacionais. Use o cupom LIVELO15OFF para 15% de desconto, mediante a compras de no mínimo R$ 100,00, válido apenas para clientes Livelo, uso único por CPF. Compras com envio nacional não pontuam. Consulte o regulamento.",
-      "dateStart": "2026-10-05",
-      "dateEnd": "2026-10-09",
-      "parity": 2,
-      "parityClub": 2,
       "parityBau": 1,
       "campanha": "PROMOTION"
     },
@@ -867,6 +867,7 @@
     "reservecar": "https://www.livelo.com.br/juntar-pontos/parceiros/reserve-car/RSC",
     "riachuelo": "https://www.livelo.com.br/juntar-pontos/parceiros/riachuelo/RCH",
     "richards": "https://www.livelo.com.br/juntar-pontos/parceiros/richards/IRC",
+    "shein": "https://www.livelo.com.br/juntar-pontos/parceiros/shein/RAK",
     "salinas": "https://www.livelo.com.br/juntar-pontos/parceiros/salinas/SLN",
     "samsclub": "https://www.livelo.com.br/juntar-pontos/parceiros/sams-club/WMB",
     "samsclubecommerce": "https://www.livelo.com.br/juntar-pontos/parceiros/sams-club-e-commerce/ECO",
@@ -878,7 +879,6 @@
     "seguroviagembradesco": "https://www.livelo.com.br/juntar-pontos/parceiros/seguro-viagem-bradesco/BVP",
     "sephora": "https://www.livelo.com.br/juntar-pontos/parceiros/sephora/SPR",
     "seusingressos": "https://www.livelo.com.br/juntar-pontos/parceiros/seus-ingressos/SIN",
-    "shein": "https://www.livelo.com.br/juntar-pontos/parceiros/shein/RAK",
     "shiseido": "https://www.livelo.com.br/juntar-pontos/parceiros/shiseido/SHS",
     "shoestock": "https://www.livelo.com.br/juntar-pontos/parceiros/shoestock/NSC",
     "shopee": "https://www.livelo.com.br/juntar-pontos/parceiros/shopee/PEE",
