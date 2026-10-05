@@ -4655,9 +4655,21 @@ function mergePartners(allData){
 
 async function fetchProg(prog, onLog){
   onLog(`Consultando ${prog.name}…`);
-  const _ctrl15=new AbortController();setTimeout(()=>_ctrl15.abort(),15000);const res=await fetch(`${PROXY}?url=${encodeURIComponent(prog.url)}`,{signal:_ctrl15.signal});
-  if(!res.ok) throw new Error(`${prog.name}: servidor retornou ${res.status}`);
-  const html=await res.text();
+  // Até 2 tentativas (20s cada); timeout vira mensagem em PT em vez de "signal is aborted without reason"
+  let html='';
+  for(let tentativa=1;tentativa<=2;tentativa++){
+    const ctrl=new AbortController();const tid=setTimeout(()=>ctrl.abort(),20000);
+    try{
+      const res=await fetch(`${PROXY}?url=${encodeURIComponent(prog.url)}`,{signal:ctrl.signal});
+      if(!res.ok) throw new Error(`${prog.name}: servidor retornou ${res.status}`);
+      html=await res.text();
+      break;
+    }catch(e){
+      const msg=e&&e.name==='AbortError'?`${prog.name}: tempo esgotado`:(e&&e.message)||String(e);
+      if(tentativa===2) throw new Error(msg);
+      onLog(`${msg} — tentando de novo…`);
+    }finally{clearTimeout(tid);}
+  }
   const hasKnownText = html.includes('ponto')||html.includes('PONTOS')||html.includes('pt/R$')||/=\s*\d+\s*PONTOS?/i.test(html);
   const hasTable = /<table[\s\S]*?<tr/i.test(html);
   if(!hasKnownText && !hasTable){
@@ -4807,10 +4819,17 @@ async function loadData(){
 
   try{
     const allData={};
-    for(const prog of PROGRAMS){
-      if(prog.cashback) continue; // cashback (ex: Inter) vem só do historico.json
-      allData[prog.id]=await fetchProg(prog,log);
-    }
+    // Em paralelo e tolerante a falha: um programa fora do ar não derruba o Comparador inteiro
+    const progsPontos=PROGRAMS.filter(p=>!p.cashback); // cashback (ex: Inter) vem só do historico.json
+    log('Consultando programas…');
+    const resultados=await Promise.allSettled(progsPontos.map(prog=>fetchProg(prog,()=>{})));
+    const falhas=[];
+    resultados.forEach((r,i)=>{
+      const prog=progsPontos[i];
+      if(r.status==='fulfilled') allData[prog.id]=r.value;
+      else{ allData[prog.id]=[]; falhas.push(prog.name); console.warn('[CDV] Comparador:',r.reason&&r.reason.message); }
+    });
+    if(falhas.length===progsPontos.length) throw new Error('Não foi possível consultar os programas agora. Tente novamente em instantes.');
     partners=mergePartners(allData);
     if(!partners.length) throw new Error('Nenhum parceiro encontrado.');
 
@@ -4819,9 +4838,13 @@ async function loadData(){
     // Injeta dados do Inter (e demais programas cashback) vindos do historico.json
     injetarProgramasCashback();
     buildCatBar();buildProgFilters();render();
+    if(falhas.length){
+      const g=document.getElementById('grid');
+      if(g) g.insertAdjacentHTML('afterbegin',`<div class="error-box" style="grid-column:1/-1">⚠️ Sem dados de ${falhas.join(', ')} no momento — os demais programas estão atualizados. <a href="#" onclick="loadData();return false">Tentar de novo</a></div>`);
+    }
 
   }catch(e){
-    document.getElementById('grid').innerHTML=`<div class="error-box">⚠️ ${e.message}</div>`;
+    document.getElementById('grid').innerHTML=`<div class="error-box">⚠️ ${e.message} <a href="#" onclick="loadData();return false">Tentar de novo</a></div>`;
   }
 }
 
