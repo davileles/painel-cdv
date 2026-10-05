@@ -689663,12 +689663,12 @@
           "pts": 15,
           "dollar": true
         },
-        "azul": {
-          "pts": 1,
-          "dollar": false
-        },
         "esfera": {
           "pts": 2,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 1,
           "dollar": false
         },
         "meliuz": {
@@ -689735,12 +689735,12 @@
           "pts": 13,
           "dollar": false
         },
-        "azul": {
-          "pts": 1,
-          "dollar": false
-        },
         "esfera": {
           "pts": 12,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 1,
           "dollar": false
         },
         "meliuz": {
@@ -690160,11 +690160,11 @@
           "pts": 6,
           "dollar": false
         },
-        "azul": {
+        "esfera": {
           "pts": 6,
           "dollar": false
         },
-        "esfera": {
+        "azul": {
           "pts": 6,
           "dollar": false
         }
@@ -690176,11 +690176,11 @@
           "pts": 6,
           "dollar": false
         },
-        "azul": {
+        "esfera": {
           "pts": 3,
           "dollar": false
         },
-        "esfera": {
+        "azul": {
           "pts": 3,
           "dollar": false
         },
@@ -690526,16 +690526,16 @@
           "pts": 4,
           "dollar": false
         },
+        "esfera": {
+          "pts": 2,
+          "dollar": false
+        },
         "smiles": {
           "pts": 4,
           "dollar": false
         },
         "azul": {
           "pts": 4,
-          "dollar": false
-        },
-        "esfera": {
-          "pts": 2,
           "dollar": false
         },
         "meliuz": {
@@ -691030,16 +691030,16 @@
           "pts": 2,
           "dollar": false
         },
+        "esfera": {
+          "pts": 1,
+          "dollar": false
+        },
         "smiles": {
           "pts": 4,
           "dollar": false
         },
         "azul": {
           "pts": 2,
-          "dollar": false
-        },
-        "esfera": {
-          "pts": 1,
           "dollar": false
         },
         "inter": {
@@ -691158,12 +691158,12 @@
           "pts": 2,
           "dollar": false
         },
-        "smiles": {
-          "pts": 4,
-          "dollar": false
-        },
         "esfera": {
           "pts": 2,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
           "dollar": false
         },
         "meliuz": {
@@ -691191,12 +691191,12 @@
           "pts": 2,
           "dollar": false
         },
-        "smiles": {
-          "pts": 4,
-          "dollar": false
-        },
         "esfera": {
           "pts": 2,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
           "dollar": false
         },
         "meliuz": {
@@ -691388,15 +691388,15 @@
           "pts": 2,
           "dollar": false
         },
+        "esfera": {
+          "pts": 2,
+          "dollar": false
+        },
         "smiles": {
           "pts": 4,
           "dollar": false
         },
         "azul": {
-          "pts": 2,
-          "dollar": false
-        },
-        "esfera": {
           "pts": 2,
           "dollar": false
         }
@@ -691416,15 +691416,15 @@
           "pts": 2,
           "dollar": false
         },
+        "esfera": {
+          "pts": 1,
+          "dollar": false
+        },
         "smiles": {
           "pts": 4,
           "dollar": false
         },
         "azul": {
-          "pts": 1,
-          "dollar": false
-        },
-        "esfera": {
           "pts": 1,
           "dollar": false
         },
@@ -691501,11 +691501,11 @@
           "pts": 2,
           "dollar": false
         },
-        "azul": {
+        "esfera": {
           "pts": 2,
           "dollar": false
         },
-        "esfera": {
+        "azul": {
           "pts": 2,
           "dollar": false
         },
@@ -691526,15 +691526,15 @@
           "pts": 2,
           "dollar": false
         },
+        "esfera": {
+          "pts": 3,
+          "dollar": false
+        },
         "smiles": {
           "pts": 4,
           "dollar": false
         },
         "azul": {
-          "pts": 3,
-          "dollar": false
-        },
-        "esfera": {
           "pts": 3,
           "dollar": false
         },
@@ -691798,12 +691798,12 @@
           "pts": 2,
           "dollar": false
         },
-        "latam": {
-          "pts": 0.5,
-          "dollar": false
-        },
         "esfera": {
           "pts": 1,
+          "dollar": false
+        },
+        "latam": {
+          "pts": 0.5,
           "dollar": false
         },
         "meliuz": {
@@ -691908,11 +691908,11 @@
           "pts": 2,
           "dollar": false
         },
-        "azul": {
+        "esfera": {
           "pts": 2,
           "dollar": false
         },
-        "esfera": {
+        "azul": {
           "pts": 2,
           "dollar": false
         }
@@ -691965,15 +691965,15 @@
           "pts": 2,
           "dollar": false
         },
+        "esfera": {
+          "pts": 3,
+          "dollar": false
+        },
         "smiles": {
           "pts": 4,
           "dollar": false
         },
         "azul": {
-          "pts": 3,
-          "dollar": false
-        },
-        "esfera": {
           "pts": 3,
           "dollar": false
         },
@@ -692528,7 +692528,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 4,
+          "pts": 1,
           "dollar": false
         },
         "inter": {
@@ -693115,128 +693115,6 @@
         }
       }
     },
-    "diageo": {
-      "programs": {
-        "smiles": {
-          "pts": 4,
-          "dollar": false
-        }
-      }
-    },
-    "polishop": {
-      "programs": {
-        "smiles": {
-          "pts": 4,
-          "dollar": false
-        },
-        "esfera": {
-          "pts": 3,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 0.5,
-          "dollar": false,
-          "ate": false,
-          "slug": "polishop"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/polishop"
-      }
-    },
-    "stanley": {
-      "programs": {
-        "smiles": {
-          "pts": 4,
-          "dollar": false
-        },
-        "esfera": {
-          "pts": 1,
-          "dollar": false
-        }
-      }
-    },
-    "top store": {
-      "programs": {
-        "smiles": {
-          "pts": 4,
-          "dollar": false
-        }
-      }
-    },
-    "tramontina": {
-      "programs": {
-        "smiles": {
-          "pts": 4,
-          "dollar": false
-        }
-      }
-    },
-    "easy live vouchers": {
-      "programs": {
-        "azul": {
-          "pts": 14,
-          "dollar": false
-        }
-      }
-    },
-    "airport park - guarulhos": {
-      "programs": {
-        "azul": {
-          "pts": 10,
-          "dollar": false
-        }
-      }
-    },
-    "easy live entreterimento": {
-      "programs": {
-        "azul": {
-          "pts": 3,
-          "dollar": false
-        }
-      }
-    },
-    "estoque": {
-      "programs": {
-        "azul": {
-          "pts": 1,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 7,
-          "dollar": false,
-          "ate": false,
-          "slug": "estoque"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/estoque"
-      }
-    },
-    "revo": {
-      "programs": {
-        "latam": {
-          "pts": 3,
-          "dollar": false
-        }
-      }
-    },
-    "picpay": {
-      "programs": {
-        "latam": {
-          "pts": 0.5,
-          "dollar": false
-        }
-      }
-    },
-    "elite internacional realty": {
-      "programs": {
-        "latam": {
-          "pts": 0.07,
-          "dollar": true
-        }
-      }
-    },
     "pague menos": {
       "programs": {
         "esfera": {
@@ -693258,6 +693136,27 @@
       "links": {
         "inter": "https://shopping.inter.co/gift-card/pague-menos-172",
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-pague-menos"
+      }
+    },
+    "polishop": {
+      "programs": {
+        "esfera": {
+          "pts": 3,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 0.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "polishop"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/polishop"
       }
     },
     "trussardi": {
@@ -694402,6 +694301,18 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-shop2gether"
       }
     },
+    "stanley": {
+      "programs": {
+        "esfera": {
+          "pts": 1,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
     "avianca": {
       "programs": {
         "esfera": {
@@ -694619,6 +694530,95 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        }
+      }
+    },
+    "diageo": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
+    "top store": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
+    "tramontina": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
+    "easy live vouchers": {
+      "programs": {
+        "azul": {
+          "pts": 14,
+          "dollar": false
+        }
+      }
+    },
+    "airport park - guarulhos": {
+      "programs": {
+        "azul": {
+          "pts": 10,
+          "dollar": false
+        }
+      }
+    },
+    "easy live entreterimento": {
+      "programs": {
+        "azul": {
+          "pts": 3,
+          "dollar": false
+        }
+      }
+    },
+    "estoque": {
+      "programs": {
+        "azul": {
+          "pts": 1,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 7,
+          "dollar": false,
+          "ate": false,
+          "slug": "estoque"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/estoque"
+      }
+    },
+    "revo": {
+      "programs": {
+        "latam": {
+          "pts": 3,
+          "dollar": false
+        }
+      }
+    },
+    "picpay": {
+      "programs": {
+        "latam": {
+          "pts": 0.5,
+          "dollar": false
+        }
+      }
+    },
+    "elite internacional realty": {
+      "programs": {
+        "latam": {
+          "pts": 0.07,
+          "dollar": true
         }
       }
     },
