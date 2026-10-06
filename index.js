@@ -6187,7 +6187,7 @@ async function lerAlertasConcierge() {
   }
 }
 
-function montarMsgAlertaConcierge(al, dados) {
+function montarMsgAlertaConcierge(al, dados, irmaos) {
   const d = dados || {};
   const alvo = alvoDoAlerta(al);
   const linhas = [];
@@ -6232,6 +6232,13 @@ function montarMsgAlertaConcierge(al, dados) {
   if (al.atividadeDescricao) ctx.push(`*Detalhes:* ${al.atividadeDescricao}`);
   if (ctx.length) { linhas.push(''); ctx.forEach((l) => linhas.push(l)); }
 
+  if (irmaos && irmaos.length) {
+    linhas.push('');
+    linhas.push(`_Outros alertas desta demanda continuam ativos:_`);
+    irmaos.forEach((x) => linhas.push(`• ${criterioDoAlerta(x)}`));
+    linhas.push('_Se resolver por aqui, remova os demais no painel do concierge._');
+  }
+
   linhas.push('');
   linhas.push(d.prazoEsgotado
     ? 'Decida hoje: seguir sem a promoção ou estender o prazo do alerta.'
@@ -6239,6 +6246,15 @@ function montarMsgAlertaConcierge(al, dados) {
       ? 'Hora de executar essa tarefa.'
       : 'Essa oferta atende a uma necessidade do cliente — vale avaliar agora.');
   return linhas.join('\n');
+}
+
+// Outros alertas de oportunidade ativos do mesmo item (mesma demanda ou
+// mesma atividade de viagem) — uma demanda pode ter várias formas de resolver.
+function irmaosDoAlerta(al, alertas) {
+  return (alertas || []).filter((x) => x.id !== al.id && alvoDoAlerta(x) !== 'lembrete' && (
+    (al.demandaId && x.demandaId === al.demandaId) ||
+    (al.atividadeId && x.atividadeId === al.atividadeId && x.viagemId === al.viagemId)
+  ));
 }
 
 // Envia o alerta para o grupo fixo configurado e consome (remove) o alerta.
@@ -6258,7 +6274,7 @@ async function dispararAlertaConcierge(alertaId, dados) {
     compress: false,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ grupo, mensagem: montarMsgAlertaConcierge(al, dados) })
+    body: JSON.stringify({ grupo, mensagem: montarMsgAlertaConcierge(al, dados, irmaosDoAlerta(al, alertas)) })
   });
   if (!rw.ok) throw new Error(`Baileys respondeu ${rw.status}`);
 
@@ -6431,6 +6447,7 @@ app.post('/concierge/alerta', async (req, res) => {
       clientes: b.clientes || '',
       viagemId: b.viagemId || '',
       viagemNome: b.viagemNome || '',
+      atividadeId: b.atividadeId || '',
       atividadeNome: b.atividadeNome || '',
       atividadeTitulo: b.atividadeTitulo || '',
       atividadeDescricao: b.atividadeDescricao || '',
