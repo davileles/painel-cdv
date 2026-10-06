@@ -701159,10 +701159,23 @@
           "slug": "o-boticario-3988"
         },
         "meliuz": {
-          "pts": 6,
+          "pts": 12,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-boticario"
+          "ate": true,
+          "slug": "cupom-boticario",
+          "categorias": [
+            {
+              "categoria": "Presentes Dia das Crianças",
+              "pts": 12,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
         }
       },
       "links": {
