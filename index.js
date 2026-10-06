@@ -2673,6 +2673,11 @@ async function aprovarOfertaPendente(id, edits) {
   } catch (errAl) {
     console.error('[Alertas concierge] Falha ao verificar transferências:', errAl.message);
   }
+  try {
+    await verificarAlertasPalavraChave(item);
+  } catch (errAl) {
+    console.error('[Alertas concierge] Falha ao verificar palavras-chave:', errAl.message);
+  }
 
   return { ok: true, item };
 }
@@ -2935,6 +2940,8 @@ app.post('/ofertas/publicar', async (req, res) => {
     );
 
     res.json({ ok: true, id });
+    // Alertas do concierge por palavra-chave (best-effort, depois da resposta)
+    verificarAlertasPalavraChave(item).catch((e) => console.error('[Alertas concierge] palavras-chave (publicar):', e.message));
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }
@@ -6092,6 +6099,11 @@ app.get('/parceiros', async (req, res) => {
 //    • compra_bonificada → avaliado pelo coletar.js contra o snapshot
 //      Comparemania; o disparo chega aqui por POST /concierge/alerta/disparar
 //    • transferencia     → avaliado aqui mesmo, em POST /ofertas/aprovar
+//    • palavra_chave     → qualquer oferta aprovada/publicada cujo texto
+//      contenha um dos termos (cupom Azul Viagens, Localiza, Rent Cars…)
+//    • lembrete          → data/hora marcada (checarLembretes)
+//  Opcional em compra/transferência/palavra-chave: prazoLimite (YYYY-MM-DD).
+//  Se nada bater até 09:00 desse dia, checarLembretes avisa "prazo chegou".
 //  O grupo de WhatsApp NÃO fica gravado no alerta: é lido de cfg.json
 //  (campo grupoAlertas) no momento do envio, para refletir sempre a
 //  configuração atual da aba Configuração do concierge.
@@ -6104,7 +6116,48 @@ function alvoDoAlerta(al) {
   const a = al && al.alvo;
   if (a === 'transferencia') return 'transferencia';
   if (a === 'lembrete') return 'lembrete';
+  if (a === 'palavra_chave') return 'palavra_chave';
   return 'compra_bonificada';
+}
+
+// ── Alerta por palavra-chave (alvo = 'palavra_chave') ──
+// Para oportunidades que não são compra/transferência com número: cupom da
+// Azul Viagens, promoção da Localiza ou da Rent Cars etc. Casa qualquer termo
+// (separado por vírgula) com título/resumo/loja/programa/cupom/restrições de
+// uma oferta aprovada (POST /ofertas/aprovar) ou publicada (POST /ofertas/publicar).
+function normTxtAlerta(s) {
+  return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+}
+function termosDoAlerta(al) {
+  return String((al && al.palavras) || '').split(/[,;\n]/).map(normTxtAlerta).filter((t) => t.length >= 2);
+}
+function termoQueBate(al, item) {
+  const termos = termosDoAlerta(al);
+  if (!termos.length || !item) return null;
+  const txt = normTxtAlerta([
+    item.titulo, item.resumo, item.loja, item.programa, item.cupom, item.importante,
+    Array.isArray(item.restricoes) ? item.restricoes.join(' ') : item.restricoes
+  ].filter(Boolean).join(' '));
+  return termos.find((t) => txt.includes(t)) || null;
+}
+function dadosOfertaPalavra(item, termo) {
+  return { termo, titulo: item.titulo || '', prazo: item.prazo || '', cupom: item.cupom || '', link: item.link || '' };
+}
+
+// Prazo-limite opcional de alertas de oportunidade: se nenhuma oferta atingir
+// o critério até essa data (09:00 SP), o grupo recebe o aviso "prazo chegou"
+// e o alerta é consumido. Serve para a reserva segurada que precisa da
+// transferência até X, mesmo sem promoção.
+function tsPrazoLimite(al) {
+  if (!al || !/^\d{4}-\d{2}-\d{2}$/.test(al.prazoLimite || '')) return null;
+  const t = new Date(`${al.prazoLimite}T09:00:00-03:00`).getTime();
+  return isNaN(t) ? null : t;
+}
+function criterioDoAlerta(al) {
+  const alvo = alvoDoAlerta(al);
+  if (alvo === 'transferencia') return `Transferência ${al.origem || 'qualquer origem'} → ${al.destino} com bônus ≥ ${al.bonusMin}%`;
+  if (alvo === 'palavra_chave') return `Oferta/cupom com: ${al.palavras}`;
+  return `Compra bonificada ${al.parceiro} · ${al.programa} ≥ ${al.minPts} pts/R$`;
 }
 
 function fmtDataBRAlerta(iso) {
@@ -6136,7 +6189,12 @@ function montarMsgAlertaConcierge(al, dados) {
   const alvo = alvoDoAlerta(al);
   const linhas = [];
 
-  if (alvo === 'lembrete') {
+  if (d.prazoEsgotado) {
+    linhas.push('*⏳ Prazo da demanda chegou*', '');
+    linhas.push('Nenhuma oferta atingiu o critério até agora.');
+    linhas.push(`*Critério:* ${criterioDoAlerta(al)}`);
+    linhas.push(`*Prazo-limite:* ${fmtDataBRAlerta(al.prazoLimite)}`);
+  } else if (alvo === 'lembrete') {
     linhas.push('*Lembrete agendado*', '');
     linhas.push(al.textoLembrete || al.demandaTitulo || al.atividadeTitulo || 'Lembrete');
     if (al.dataLembrete) {
@@ -6148,6 +6206,13 @@ function montarMsgAlertaConcierge(al, dados) {
     linhas.push(`*Bônus:* ${d.bonus}% (mínimo configurado: ${al.bonusMin}%)`);
     if (d.prazo) linhas.push(`*Prazo:* ${d.prazo}`);
     if (d.titulo) linhas.push(`*Oferta:* ${d.titulo}`);
+  } else if (alvo === 'palavra_chave') {
+    linhas.push('*Oportunidade para uma demanda*', '');
+    linhas.push(`*Oferta encontrada:* ${d.titulo || '—'}`);
+    if (d.termo) linhas.push(`*Palavra-chave:* ${d.termo}`);
+    if (d.cupom) linhas.push(`*Cupom:* ${d.cupom}`);
+    if (d.prazo) linhas.push(`*Prazo:* ${d.prazo}`);
+    if (d.link) linhas.push(`*Link:* ${d.link}`);
   } else {
     linhas.push('*Oportunidade para uma demanda*', '');
     linhas.push(`*Compra bonificada:* ${al.parceiro} · ${al.programa}`);
@@ -6165,9 +6230,11 @@ function montarMsgAlertaConcierge(al, dados) {
   if (ctx.length) { linhas.push(''); ctx.forEach((l) => linhas.push(l)); }
 
   linhas.push('');
-  linhas.push(alvo === 'lembrete'
-    ? 'Hora de executar essa tarefa.'
-    : 'Essa oferta atende a uma necessidade do cliente — vale avaliar agora.');
+  linhas.push(d.prazoEsgotado
+    ? 'Decida hoje: seguir sem a promoção ou estender o prazo do alerta.'
+    : alvo === 'lembrete'
+      ? 'Hora de executar essa tarefa.'
+      : 'Essa oferta atende a uma necessidade do cliente — vale avaliar agora.');
   return linhas.join('\n');
 }
 
@@ -6231,6 +6298,26 @@ async function verificarAlertasTransferencia(item) {
   }
 }
 
+// Avalia alertas por palavra-chave contra uma oferta aprovada ou publicada
+// (qualquer categoria: cupom, compra bonificada do radar, geral…).
+async function verificarAlertasPalavraChave(item) {
+  if (!item || !item.titulo) return;
+  const { alertas } = await lerAlertasConcierge();
+  const atingidos = alertas
+    .filter((al) => alvoDoAlerta(al) === 'palavra_chave')
+    .map((al) => ({ al, termo: termoQueBate(al, item) }))
+    .filter((x) => x.termo);
+  // Sequencial: dispararAlertaConcierge relê o arquivo (SHA fresco) a cada envio
+  for (const { al, termo } of atingidos) {
+    try {
+      const r = await dispararAlertaConcierge(al.id, dadosOfertaPalavra(item, termo));
+      if (!r.ok) console.error('[Alertas concierge] Não enviado:', al.id, r.erro);
+    } catch (e) {
+      console.error('[Alertas concierge] Erro ao disparar', al.id, e.message);
+    }
+  }
+}
+
 // Procura algo JÁ ATIVO que atenda o alerta no momento em que ele é criado.
 // Sem isso, um alerta criado depois de a campanha entrar no ar só dispararia
 // na próxima coleta (compra bonificada) ou nunca (transferência, cujo gatilho
@@ -6241,6 +6328,20 @@ async function checarOportunidadeAtual(al) {
   if (alvoDoAlerta(al) === 'lembrete') {
     const ts = tsLembrete(al);
     return (ts !== null && ts <= Date.now()) ? { vencido: true } : null;
+  }
+  if (alvoDoAlerta(al) === 'palavra_chave') {
+    const { data: ofertas } = await ghGetJson(OFERTAS_APROVADAS_PATH, { items: [] });
+    const hoje = new Date().toISOString().slice(0, 10);
+    const limite7d = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString().slice(0, 10);
+    for (const item of (ofertas.items || [])) {
+      const termo = termoQueBate(al, item);
+      if (!termo) continue;
+      const prazoIso = prazoParaIso(item.prazo);
+      const vigente = prazoIso ? prazoIso >= hoje : (item.publicadoEm || '').slice(0, 10) >= limite7d;
+      if (!vigente) continue;
+      return dadosOfertaPalavra(item, termo);
+    }
+    return null;
   }
   if (alvoDoAlerta(al) === 'transferencia') {
     const { data: ofertas } = await ghGetJson(OFERTAS_APROVADAS_PATH, { items: [] });
@@ -6280,6 +6381,7 @@ app.post('/concierge/alerta', async (req, res) => {
   const b = req.body || {};
   const alvo = b.alvo === 'transferencia' ? 'transferencia'
              : b.alvo === 'lembrete'      ? 'lembrete'
+             : b.alvo === 'palavra_chave' ? 'palavra_chave'
              : 'compra_bonificada';
   if (alvo === 'transferencia') {
     if (!b.destino || b.bonusMin === undefined || b.bonusMin === null || b.bonusMin === '') {
@@ -6288,6 +6390,10 @@ app.post('/concierge/alerta', async (req, res) => {
   } else if (alvo === 'lembrete') {
     if (!b.dataLembrete || !/^\d{4}-\d{2}-\d{2}$/.test(String(b.dataLembrete)) || !String(b.textoLembrete || '').trim()) {
       return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: dataLembrete (YYYY-MM-DD), textoLembrete' });
+    }
+  } else if (alvo === 'palavra_chave') {
+    if (!termosDoAlerta({ palavras: b.palavras }).length) {
+      return res.status(400).json({ ok: false, erro: 'Campo obrigatório: palavras (ex.: Azul Viagens, Localiza)' });
     }
   } else if (!b.parceiro || !b.programa || !b.minPts) {
     return res.status(400).json({ ok: false, erro: 'Campos obrigatórios: parceiro, programa, minPts' });
@@ -6307,6 +6413,8 @@ app.post('/concierge/alerta', async (req, res) => {
       dataLembrete: b.dataLembrete || '',
       horaLembrete: /^\d{2}:\d{2}$/.test(b.horaLembrete || '') ? b.horaLembrete : (alvo === 'lembrete' ? '09:00' : ''),
       textoLembrete: (b.textoLembrete || '').trim(),
+      palavras: alvo === 'palavra_chave' ? String(b.palavras || '').trim() : '',
+      prazoLimite: (alvo !== 'lembrete' && /^\d{4}-\d{2}-\d{2}$/.test(String(b.prazoLimite || ''))) ? b.prazoLimite : '',
       // Vinculo: 'atividade' (modal da viagem) ou 'demanda' (modal de demandas).
       // Demanda espelhada de atividade tem os dois conjuntos de campos preenchidos.
       vinculo: b.vinculo || (b.demandaId ? 'demanda' : 'atividade'),
@@ -6389,15 +6497,15 @@ async function checarLembretes() {
     const { alertas } = await lerAlertasConcierge();
     const agora = Date.now();
     const vencidos = alertas.filter((al) => {
-      if (alvoDoAlerta(al) !== 'lembrete') return false;
-      const ts = tsLembrete(al);
+      // Alerta de oportunidade com prazo-limite vencido também entra (aviso "prazo chegou")
+      const ts = alvoDoAlerta(al) === 'lembrete' ? tsLembrete(al) : tsPrazoLimite(al);
       return ts !== null && ts <= agora;
     });
     // Sequencial de proposito: dispararAlertaConcierge re-le o arquivo (SHA fresco)
     // a cada chamada, entao paralelizar geraria 409 no PUT.
     for (const al of vencidos) {
       try {
-        const r = await dispararAlertaConcierge(al.id, {});
+        const r = await dispararAlertaConcierge(al.id, alvoDoAlerta(al) === 'lembrete' ? {} : { prazoEsgotado: true });
         if (r.ok) enviados.push(al.id);
         else falhas.push({ id: al.id, erro: r.erro });
       } catch (e) {
