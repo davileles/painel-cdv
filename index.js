@@ -6218,7 +6218,7 @@ function montarMsgAlertaConcierge(al, dados) {
     if (d.link) linhas.push(`*Link:* ${d.link}`);
   } else {
     linhas.push('*Oportunidade para uma demanda*', '');
-    linhas.push(`*Compra bonificada:* ${al.parceiro} · ${al.programa}`);
+    linhas.push(`*Compra bonificada:* ${d.parceiro || al.parceiro} · ${al.programa}`);
     linhas.push(`*Pontuação atual:* ${d.pts} pts/R$ (mínimo configurado: ${al.minPts})`);
   }
 
@@ -6371,12 +6371,16 @@ async function checarOportunidadeAtual(al) {
   // Compra bonificada: último snapshot do histórico (mesma fonte usada pelo coletar.js)
   const { data: historico } = await ghGetJson('historico.json', {});
   const dias = Object.keys(historico).sort();
-  const snap = (historico[dias[dias.length - 1]] || {})[(al.parceiro || '').toLowerCase().trim()];
-  if (!snap || !snap.programs) return null;
-  const pd = snap.programs[al.programa];
-  const pts = (pd && typeof pd === 'object') ? pd.pts : pd;
-  if (!pts || Number(pts) < Number(al.minPts)) return null;
-  return { pts };
+  // Vários parceiros separados por vírgula: vale o primeiro que atingir
+  const ultimo = historico[dias[dias.length - 1]] || {};
+  for (const nomeP of String(al.parceiro || '').split(',').map((s) => s.toLowerCase().trim()).filter(Boolean)) {
+    const snap = ultimo[nomeP];
+    if (!snap || !snap.programs) continue;
+    const pd = snap.programs[al.programa];
+    const pts = (pd && typeof pd === 'object') ? pd.pts : pd;
+    if (pts && Number(pts) >= Number(al.minPts)) return { pts, parceiro: nomeP };
+  }
+  return null;
 }
 
 // POST /concierge/alerta — cria/atualiza alerta de oportunidade
@@ -6747,10 +6751,10 @@ setTimeout(() => { dispararLembreteVoo(); }, 90 * 1000);
 
 // POST /concierge/alerta/disparar — usado pelo coletar.js (alvo=compra_bonificada)
 app.post('/concierge/alerta/disparar', async (req, res) => {
-  const { id, pts } = req.body || {};
+  const { id, pts, parceiro } = req.body || {};
   if (!id) return res.status(400).json({ ok: false, erro: 'Campo obrigatório: id' });
   try {
-    const r = await dispararAlertaConcierge(id, { pts });
+    const r = await dispararAlertaConcierge(id, { pts, parceiro: parceiro || '' });
     res.json(r);
   } catch(e) {
     console.error('[concierge/alerta/disparar]', e.message);

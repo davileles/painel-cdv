@@ -1419,15 +1419,20 @@ async function main() {
     const alertasConcierge = (dAl && dAl.data) || [];
     for (const al of alertasConcierge) {
       if ((al.alvo || 'compra_bonificada') !== 'compra_bonificada') continue;
-      const snapC = snapshot[(al.parceiro || '').toLowerCase().trim()];
-      if (!snapC) continue;
-      const pd = snapC.programs[al.programa];
-      const ptsC = typeof pd === 'object' ? pd.pts : pd;
-      if (!ptsC || ptsC < Number(al.minPts)) continue;
+      // Vários parceiros separados por vírgula: dispara pelo primeiro que atingir
+      let ptsC = 0, parceiroC = '';
+      for (const nomeP of String(al.parceiro || '').split(',').map((s) => s.toLowerCase().trim()).filter(Boolean)) {
+        const snapC = snapshot[nomeP];
+        if (!snapC || !snapC.programs) continue;
+        const pd = snapC.programs[al.programa];
+        const p = typeof pd === 'object' && pd ? pd.pts : pd;
+        if (p && p >= Number(al.minPts)) { ptsC = p; parceiroC = nomeP; break; }
+      }
+      if (!ptsC) continue;
       const rD = await fetch(`${PROXY}/concierge/alerta/disparar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: al.id, pts: ptsC })
+        body: JSON.stringify({ id: al.id, pts: ptsC, parceiro: parceiroC })
       });
       const dD = await rD.json().catch(() => ({}));
       console.log(`[Concierge] ${al.parceiro}/${al.programa} = ${ptsC} pts (min ${al.minPts}) → ${dD.ok ? 'enviado' : 'FALHOU: ' + (dD.erro || rD.status)}`);
