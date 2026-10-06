@@ -6105,7 +6105,7 @@ app.get('/parceiros', async (req, res) => {
 //  Opcional em compra/transferência/palavra-chave: prazoLimite (YYYY-MM-DD).
 //  Se nada bater até 09:00 desse dia, checarLembretes avisa "prazo chegou".
 //  O grupo de WhatsApp NÃO fica gravado no alerta: é lido de cfg.json
-//  (campo grupoAlertas) no momento do envio, para refletir sempre a
+//  (grupoOportunidades para oportunidades, grupoAlertas para lembretes) no momento do envio, para refletir sempre a
 //  configuração atual da aba Configuração do concierge.
 //  Alertas são consumidos (removidos) após o envio.
 // ══════════════════════════════════════════════════════════════════
@@ -6266,9 +6266,14 @@ async function dispararAlertaConcierge(alertaId, dados) {
   let grupo = '';
   try {
     const { content: cfg } = await getConciergeFile('cfg.json');
-    grupo = (cfg && cfg.grupoAlertas) || '';
+    // Lembrete com data é tarefa de gestão → grupo de gestão (grupoAlertas, o
+    // mesmo do check-in de voo). Oportunidades → grupoOportunidades
+    // ("Alertas Concierge"); vazio = cai no grupo de gestão.
+    grupo = alvoDoAlerta(al) === 'lembrete'
+      ? ((cfg && cfg.grupoAlertas) || '')
+      : ((cfg && (cfg.grupoOportunidades || cfg.grupoAlertas)) || '');
   } catch (e) {}
-  if (!grupo) return { ok: false, erro: 'grupoAlertas não configurado (aba Configuração do concierge)' };
+  if (!grupo) return { ok: false, erro: 'grupo não configurado (aba Configuração do concierge)' };
 
   const rw = await fetch(`${BAILEYS_URL}/enviar`, {
     compress: false,
