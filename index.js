@@ -6122,9 +6122,12 @@ function alvoDoAlerta(al) {
 
 // ── Alerta por palavra-chave (alvo = 'palavra_chave') ──
 // Para oportunidades que não são compra/transferência com número: cupom da
-// Azul Viagens, promoção da Localiza ou da Rent Cars etc. Casa qualquer termo
-// (separado por vírgula) com título/resumo/loja/programa/cupom/restrições de
-// uma oferta aprovada (POST /ofertas/aprovar) ou publicada (POST /ofertas/publicar).
+// Azul Viagens, promoção da Localiza ou da Rent Cars etc. Vírgula separa
+// ALTERNATIVAS (basta uma bater); dentro de cada grupo, TODAS as palavras
+// precisam aparecer (qualquer ordem/posição) no título/resumo/loja/programa/
+// cupom/restrições de uma oferta aprovada (POST /ofertas/aprovar) ou publicada
+// (POST /ofertas/publicar). Ex.: "transferencia smiles, cupom azul viagens"
+// → (transferencia E smiles) OU (cupom E azul E viagens).
 function normTxtAlerta(s) {
   return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
 }
@@ -6132,13 +6135,13 @@ function termosDoAlerta(al) {
   return String((al && al.palavras) || '').split(/[,;\n]/).map(normTxtAlerta).filter((t) => t.length >= 2);
 }
 function termoQueBate(al, item) {
-  const termos = termosDoAlerta(al);
-  if (!termos.length || !item) return null;
+  const grupos = termosDoAlerta(al);
+  if (!grupos.length || !item) return null;
   const txt = normTxtAlerta([
     item.titulo, item.resumo, item.loja, item.programa, item.cupom, item.importante,
     Array.isArray(item.restricoes) ? item.restricoes.join(' ') : item.restricoes
   ].filter(Boolean).join(' '));
-  return termos.find((t) => txt.includes(t)) || null;
+  return grupos.find((g) => g.split(' ').filter(Boolean).every((p) => txt.includes(p))) || null;
 }
 function dadosOfertaPalavra(item, termo) {
   return { termo, titulo: item.titulo || '', prazo: item.prazo || '', cupom: item.cupom || '', link: item.link || '' };
