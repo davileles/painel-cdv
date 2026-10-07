@@ -53,12 +53,25 @@ function fmtDuracao(ms) {
   return m ? `${h}h${String(m).padStart(2, '0')}` : `${h}h`;
 }
 
-async function avisarNormalizacao(quedas, contagem, nomes) {
+// Política de aviso (desde 07/10/2026). Antes, toda rodada horária com queda
+// reenviava "Coleta degradada" e toda volta mandava "✅ normalizada" — com o
+// Comparemania tirando e repondo Smiles/LATAM do ar várias vezes por semana,
+// isso virava uma dezena de mensagens por dia sem nada a fazer do nosso lado.
+//   • Avisa na transição (programa entra em queda), não a cada rodada.
+//   • Lembrete do mesmo programa no máximo 1x a cada LEMBRETE_MS.
+//   • Programa marcado `instavel` em PROGRAMS só é avisado depois de ficar
+//     fora por GRACA_INSTAVEL_MS seguidos (piscadas curtas passam em silêncio).
+//   • "✅ normalizada" só sai se o aviso de queda daquele programa foi enviado.
+const LEMBRETE_MS       = 24 * 3600 * 1000;
+const GRACA_INSTAVEL_MS = 6 * 3600 * 1000;
+
+async function processarSaude(quedas, contagem, nomes, instaveis) {
   const antes = lerSaude().degradados;
-  const agora = new Date().toISOString();
+  const agoraMs = Date.now();
+  const agora = new Date(agoraMs).toISOString();
   const emQueda = new Set(quedas.map(q => q.progId));
 
-  // Novo estado: mantém o "desde" de quem já estava degradado.
+  // Novo estado: mantém "desde" e "ultimoAlerta" de quem já estava degradado.
   const degradados = {};
   for (const q of quedas) {
     degradados[q.progId] = antes[q.progId]
@@ -66,19 +79,51 @@ async function avisarNormalizacao(quedas, contagem, nomes) {
       : { nome: q.nome, desde: agora, anterior: q.anterior, gravidade: q.gravidade };
   }
 
+  // Quais quedas merecem mensagem nesta rodada.
+  const avisar = quedas.filter(q => {
+    const r = degradados[q.progId];
+    const foraHa = agoraMs - new Date(r.desde).getTime();
+    if (instaveis.has(q.progId) && foraHa < GRACA_INSTAVEL_MS) {
+      console.log(`[Saúde] ${q.nome}: fora há ${fmtDuracao(foraHa)} (programa instável) — aviso segurado até ${fmtDuracao(GRACA_INSTAVEL_MS)}.`);
+      return false;
+    }
+    if (r.ultimoAlerta && agoraMs - new Date(r.ultimoAlerta).getTime() < LEMBRETE_MS) {
+      console.log(`[Saúde] ${q.nome}: já avisado em ${fmtDataHoraSP(r.ultimoAlerta)} — sem novo aviso.`);
+      return false;
+    }
+    return true;
+  });
+
+  if (avisar.length) {
+    const linhas = avisar.map(q => {
+      const r = degradados[q.progId];
+      const ha = ` — fora desde ${fmtDataHoraSP(r.desde)}`;
+      return q.gravidade === 'zerado'
+        ? `❌ ${q.nome}: 0 parceiros hoje (tinha ${q.anterior} em ${q.dataRef})${ha}`
+        : `⚠️ ${q.nome}: ${q.atual} parceiros hoje (tinha ${q.anterior} em ${q.dataRef})${ha}`;
+    });
+    linhas.push('', 'Verifique se a URL do programa no Comparemania mudou ou se o parser quebrou.');
+    linhas.push('Próximo lembrete deste problema só em 24h, se continuar.');
+    const res = await alertarOperador('Coleta degradada no Comparemania', linhas);
+    if (res && res.ok) for (const q of avisar) degradados[q.progId].ultimoAlerta = agora;
+  }
+
   const recuperados = Object.keys(antes)
     .filter(id => !emQueda.has(id) && (contagem[id] || 0) > 0);
 
-  if (recuperados.length) {
-    const linhas = recuperados.map(id => {
+  // Só anuncia a volta de quem teve a queda anunciada — piscada silenciosa
+  // na ida continua silenciosa na volta.
+  const recuperadosAvisados = recuperados.filter(id => antes[id].ultimoAlerta);
+  if (recuperadosAvisados.length) {
+    const linhas = recuperadosAvisados.map(id => {
       const r = antes[id];
       const nome = nomes[id] || r.nome || id;
-      const desde = r.desde ? ` — degradado desde ${fmtDataHoraSP(r.desde)} (${fmtDuracao(Date.now() - new Date(r.desde).getTime())})` : '';
+      const desde = r.desde ? ` — degradado desde ${fmtDataHoraSP(r.desde)} (${fmtDuracao(agoraMs - new Date(r.desde).getTime())})` : '';
       return `✅ ${nome}: ${contagem[id]} parceiros${desde}`;
     });
     await alertarOperador('Coleta normalizada no Comparemania', linhas, { icone: '✅' });
-    console.log(`[Saúde] Normalizado: ${recuperados.join(', ')}`);
   }
+  if (recuperados.length) console.log(`[Saúde] Normalizado: ${recuperados.join(', ')}`);
 
   // Programa que estava degradado mas hoje não foi coletado nem entrou em queda
   // (ex.: erro de rede pontual) continua marcado até voltar com dados.
@@ -111,6 +156,9 @@ const PROGRAMS = [
     id:   'smiles',
     name: 'Smiles',
     url:  'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-smiles',
+    // O Comparemania tira esta página do ar (cai em /erro) e repõe com
+    // frequência: 30/09–02/10, 07/10… Aviso só após GRACA_INSTAVEL_MS fora.
+    instavel: true,
   },
   {
     id:   'azul',
@@ -129,6 +177,8 @@ const PROGRAMS = [
     url:  'https://www.comparemania.com.br/lojas/pontos-milhas/programa-fidelidade-latam-pass',
     baseDesde: '2026-10-02',
     minBase:   5,
+    // Mesma intermitência do Smiles (22 → 0 → 9 → 4 → 9 → 0 entre 29/09 e 07/10).
+    instavel: true,
   },
 ];
 
@@ -1371,20 +1421,13 @@ async function main() {
     .filter(p => p.baseDesde || p.minBase)
     .map(p => [p.id, { desde: p.baseDesde, minBase: p.minBase }]));
   const quedas = detectarQuedas(contagemPorPrograma, historico, hoje, nomesPorPrograma, 10, ajustesQueda);
-  if (quedas.length) {
-    const linhas = quedas.map(q => q.gravidade === 'zerado'
-      ? `❌ ${q.nome}: 0 parceiros hoje (tinha ${q.anterior} em ${q.dataRef})`
-      : `⚠️ ${q.nome}: ${q.atual} parceiros hoje (tinha ${q.anterior} em ${q.dataRef})`);
-    linhas.push('', 'Verifique se a URL do programa no Comparemania mudou ou se o parser quebrou.');
-    await alertarOperador('Coleta degradada no Comparemania', linhas);
-    for (const q of quedas) console.warn(`[Histórico] ALERTA — ${q.nome}: ${q.atual} vs ${q.anterior} (${q.dataRef})`);
-  } else {
-    console.log('[Histórico] Saúde da coleta: OK em todos os programas.');
-  }
+  for (const q of quedas) console.warn(`[Histórico] Queda — ${q.nome}: ${q.atual} vs ${q.anterior} (${q.dataRef})`);
+  if (!quedas.length) console.log('[Histórico] Saúde da coleta: OK em todos os programas.');
 
-  // 3c. Aviso de normalização: programa que estava degradado na rodada anterior
-  // e hoje voltou ao normal gera um "✅ Coleta normalizada" no grupo do operador.
-  await avisarNormalizacao(quedas, contagemPorPrograma, nomesPorPrograma);
+  // 3c. Aviso ao operador (transição + lembrete diário + carência dos
+  // programas instáveis) e "✅ normalizada" na volta — ver processarSaude.
+  const instaveis = new Set(PROGRAMS.filter(p => p.instavel).map(p => p.id));
+  await processarSaude(quedas, contagemPorPrograma, nomesPorPrograma, instaveis);
 
   // 4. Verifica alertas e dispara os atingidos (remove após enviar)
   const alertasRestantes = [];
