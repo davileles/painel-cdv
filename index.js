@@ -2980,6 +2980,9 @@ const ALIAS_CIA = {
   'sq':'Singapore Airlines', 'singapore':'Singapore Airlines', 'singapore airlines':'Singapore Airlines',
   'a3':'Aegean', 'aegean':'Aegean', 'aegean airlines':'Aegean',
   'vs':'Virgin Atlantic', 'virgin atlantic':'Virgin Atlantic',
+  'at':'Royal Air Maroc', 'ram':'Royal Air Maroc', 'royal air maroc':'Royal Air Maroc', 'air maroc':'Royal Air Maroc',
+  'royal maroc':'Royal Air Maroc', 'royal air marroc':'Royal Air Maroc', 'air marroc':'Royal Air Maroc',
+  'royal air morocco':'Royal Air Maroc', 'air morocco':'Royal Air Maroc',
 };
 
 // chaveTexto() (declarada mais abaixo, junto de chaveCia) e a unica normalizacao
