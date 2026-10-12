@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-10-11T23:02:57.081Z",
+  "coletadoEm": "2026-10-12T09:03:58.209Z",
   "items": {
     "airportpark": {
       "id": "SPP",
@@ -121,6 +121,18 @@
       "parityBau": 2,
       "campanha": "PROMOTION"
     },
+    "carrefourshopping": {
+      "id": "CRF",
+      "nome": "Carrefour Shopping",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 12 a 16/10/2026. Ganhe 3 pontos por real gasto em pneus vendidos e entregues por Carrefour Shopping e 1 ponto por real nos demais produtos. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-10-12",
+      "dateEnd": "2026-10-16",
+      "parity": 3,
+      "parityClub": 3,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
     "ciclicsegurocelular": {
       "id": "CEL",
       "nome": "Ciclic Seguro Celular",
@@ -157,6 +169,18 @@
       "parityBau": 8,
       "campanha": "PROMOTION_CLUB"
     },
+    "consorciomagalu": {
+      "id": "MGC",
+      "nome": "Consórcio Magalu",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 12 a 19/10/2026. Ganhe 25 pontos a cada real gasto. Pontuação válida na primeira mensalidade dos segmentos carro e imóvel. Os pontos são válidos após o pagamento das 3 primeiras mensalidades. Consulte o regulamento.",
+      "dateStart": "2026-10-12",
+      "dateEnd": "2026-10-19",
+      "parity": 25,
+      "parityClub": 25,
+      "parityBau": 6,
+      "campanha": "PROMOTION"
+    },
     "crocs": {
       "id": "CRO",
       "nome": "Crocs",
@@ -180,18 +204,6 @@
       "parityClub": 8,
       "parityBau": 1,
       "campanha": "PROMOTION_CLUB"
-    },
-    "fastshop": {
-      "id": "FST",
-      "nome": "Fast Shop",
-      "categorias": null,
-      "legalTerms": "Campanha válida de 08 a 11/10/2026. Ganhe 5 pontos por real gasto em eletrodomésticos, vídeo e áudio selecionados; 2 pontos por real nos demais produtos vendidos e entregues por Fast Shop e 1 ponto por real para marketplace. Utilize o cupom LIVELO. Consulte o regulamento.",
-      "dateStart": "2026-10-08",
-      "dateEnd": "2026-10-11",
-      "parity": 5,
-      "parityClub": 5,
-      "parityBau": 2,
-      "campanha": "PROMOTION"
     },
     "heroseguroviagem": {
       "id": "HRH",
@@ -241,50 +253,13 @@
       "parityBau": 1,
       "campanha": "PROMOTION"
     },
-    "magazineluiza": {
-      "id": "MZL",
-      "nome": "Magalu",
-      "categorias": null,
-      "legalTerms": "Campanha válida de 07 a 11/10/2026. Ganhe 3 pontos a cada real gasto em produtos vendidos e entregues por Magalu e 2 pontos por real para marketplace. Os pontos não são válidos para as categorias de: Telefonia e Mercado. Consulte o regulamento.",
-      "dateStart": "2026-10-07",
-      "dateEnd": "2026-10-11",
-      "parity": 3,
-      "parityClub": 3,
-      "parityBau": 2,
-      "campanha": "PROMOTION"
-    },
-    "meiasola": {
-      "id": "MSA",
-      "nome": "Meia Sola",
-      "categorias": null,
-      "legalTerms": "Campanha válida de 10 a 11/10/2026. Ganhe 10 pontos a cada real gasto. Utilize o cupom LIVELO. Consulte o regulamento.",
-      "dateStart": "2026-10-10",
-      "dateEnd": "2026-10-11",
-      "parity": 10,
-      "parityClub": 10,
-      "parityBau": 2,
-      "campanha": "PROMOTION"
-    },
     "mercadolivre": {
       "id": "MCL",
       "nome": "Mercado Livre",
-      "categorias": [
-        {
-          "nome": "Bebês",
-          "pts": 2
-        },
-        {
-          "nome": "Brinquedos",
-          "pts": 2
-        },
-        {
-          "nome": "Hobbies",
-          "pts": 2
-        }
-      ],
-      "legalTerms": "Campanha válida de 05 a 11/10/2026. Ganhe 2 pontos por real gasto nas categorias de Bebês, Brinquedos e Hobbies; 1 ponto a cada R$2,00 nas demais categorias, exceto Alimentos e Bebidas. Use o cupom LIVELOBRINCAR válido para categoria Brinquedos e ganhe 15% OFF, mediante a compras acima de R$49,00 válido apenas para clientes Livelo, uso único por CPF. Consulte regulamento.",
-      "dateStart": "2026-10-05",
-      "dateEnd": "2026-10-11",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 12 a 18/10/2026. Ganhe 2 pontos por real gasto nas categorias de Saúde \\u0026amp; Esporte; 1 ponto a cada 2 reais nas demais categorias, exceto Alimentos e Bebidas. Consulte regulamento.",
+      "dateStart": "2026-10-12",
+      "dateEnd": "2026-10-18",
       "parity": 2,
       "parityClub": 2,
       "parityBau": 1,
@@ -326,18 +301,6 @@
       "parityBau": 2,
       "campanha": "PROMOTION_CLUB"
     },
-    "olx": {
-      "id": "OLX",
-      "nome": "OLX",
-      "categorias": null,
-      "legalTerms": "Campanha válida de 10 a 11/10/2026. Ganhe 3 pontos por real gasto. Válido somente para produtos elegíveis com Garantia da OLX e Entrega OLX. Categorias de Imóveis, Autos e Serviços não são elegíveis para essa campanha. Imagem ilustrativa. Consulte o regulamento.",
-      "dateStart": "2026-10-10",
-      "dateEnd": "2026-10-11",
-      "parity": 3,
-      "parityClub": 3,
-      "parityBau": 1,
-      "campanha": "PROMOTION"
-    },
     "ourocap": {
       "id": "BRC",
       "nome": "OuroCap",
@@ -348,6 +311,18 @@
       "parity": 10,
       "parityClub": 10,
       "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
+    "petlove": {
+      "id": "PLV",
+      "nome": "Petlove",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 12 a 13/10/2026. Ganhe 6 pontos por real gasto em produtos da marca MEAU e 2 pontos por real nos demais itens. Exceto para compras rePet, com recorrência, assinantes Petlove, e Clube Petlove. Consulte o regulamento.",
+      "dateStart": "2026-10-12",
+      "dateEnd": "2026-10-13",
+      "parity": 6,
+      "parityClub": 6,
+      "parityBau": 2,
       "campanha": "PROMOTION"
     },
     "petlovesaude": {
