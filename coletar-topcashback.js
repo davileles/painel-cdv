@@ -17,14 +17,15 @@
 const fs   = require('fs');
 const path = require('path');
 
+const DADOS_DIR = require('./dados-dir');
 const { publicarOfertas, MAX_OFERTAS_APROVADAS } = require('./mensagem-radar');
 const { alertarOperador } = require('./alerta-operador');
 
-const HISTORICO_FILE = path.join(__dirname, 'historico.json');
+const HISTORICO_FILE = path.join(DADOS_DIR, 'historico.json');
 const LOJAS_FILE     = path.join(__dirname, 'topcashback-lojas.json');
-const PENDENTES_FILE = path.join(__dirname, 'ofertas-pendentes.json');
-const OFERTAS_FILE   = path.join(__dirname, 'ofertas.json');
-const NOTIF_FILE     = path.join(__dirname, 'variacoes-notificadas.json');
+const PENDENTES_FILE = path.join(DADOS_DIR, 'ofertas-pendentes.json');
+const OFERTAS_FILE   = path.join(DADOS_DIR, 'ofertas.json');
+const NOTIF_FILE     = path.join(DADOS_DIR, 'variacoes-notificadas.json');
 
 const PROXY_URL = process.env.CDV_PROXY_URL || 'https://cdv-proxy-production.up.railway.app';
 const API_URL   = `${PROXY_URL}/topcashback/cashback`;

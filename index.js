@@ -69,9 +69,24 @@ setTimeout(() => {
 // chamadas à Contents API do repo de dados, usando um secret com Contents:write,
 // e remover o arquivo do 'git add' do workflow.
 
+// Conteúdo pago do painel: desde a fase 2 da segurança (out/2026) mora no repo
+// PRIVADO de dados, na pasta painel/. Os coletores do Actions fazem checkout
+// dessa pasta (secret CDV_DADOS_TOKEN); o painel lê por GET /conteudo/:arquivo.
+const ARQUIVOS_PAINEL = new Set([
+  'alertas.json', 'historico.json', 'historico-transferencias.json',
+  'ofertas.json', 'ofertas-pendentes.json', 'ofertas-processados.json', 'ofertas-rejeitadas.json',
+  'passagens.json', 'passagens-historico-index.json',
+  'saude-coleta.json', 'validades-livelo.json', 'variacoes-notificadas.json',
+]);
+function ehArquivoPainel(filePath) {
+  const base = String(filePath || '').replace(/-dev\.json$/, '.json');
+  return ARQUIVOS_PAINEL.has(base) || /^passagens-historico-\d{4}-S[12]\.json$/.test(base);
+}
+
 // Caminho do arquivo dentro do repo onde ele mora (ver repoDoArquivo).
 function caminhoNoRepo(filePath) {
-  return String(filePath || '');
+  const f = String(filePath || '');
+  return ehArquivoPainel(f) ? 'painel/' + f : f;
 }
 
 // Aceita tanto 'membros.json' quanto a variante dev 'membros-dev.json'
@@ -79,6 +94,7 @@ function repoDoArquivo(filePath) {
   const base = String(filePath || '').replace(/-dev\.json$/, '.json');
   if (base.startsWith('tsp/')) return GITHUB_REPO_TSP;
   if (base.startsWith('castanheiras/')) return GITHUB_REPO_CASTANHEIRAS;
+  if (ehArquivoPainel(base)) return GITHUB_REPO_DADOS;
   return ARQUIVOS_SENSIVEIS.has(base) ? GITHUB_REPO_DADOS : GITHUB_REPO;
 }
 

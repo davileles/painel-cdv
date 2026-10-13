@@ -25,9 +25,19 @@ jobs:
     # /ofertas/enviar responde 401 e as ofertas automaticas caem na fila manual.
     env:
       CDV_OP_KEY: ${{ secrets.CDV_OP_KEY }}
+      CDV_DADOS_DIR: ${{ github.workspace }}/_dados/painel
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      # Conteúdo pago (histórico, ofertas, passagens, alertas) mora no repo
+      # PRIVADO de dados desde out/2026 — o painel-cdv é público.
+      - name: Checkout dos dados (repo privado)
+        uses: actions/checkout@v4
+        with:
+          repository: davileles/dados
+          token: ${{ secrets.CDV_DADOS_TOKEN }}
+          path: _dados
+          sparse-checkout: painel
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -81,32 +91,13 @@ jobs:
         if: ${{ !cancelled() }}
         run: |
           set -euo pipefail
-          ARQS="historico.json alertas.json variacoes-notificadas.json ofertas-pendentes.json ofertas.json meliuz-lojas.json topcashback-lojas.json cashback-intl-estado.txt validades-livelo.json saude-coleta.json"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          mkdir -p /tmp/coleta
-          for f in $ARQS; do [ -f "$f" ] && cp "$f" /tmp/coleta/ || true; done
-
-          for tent in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
-            node reconciliar-estado.js /tmp/coleta
-            for f in $ARQS; do [ -f "$f" ] && git add "$f" || true; done
-            if git diff --staged --quiet; then
-              echo "Nada mudou em relação ao remoto — nada a commitar."
-              exit 0
-            fi
-            git commit -m "chore: atualiza histórico $(date -u +'%Y-%m-%d %H:%M')"
-            if git push; then
-              echo "✓ Coleta salva na tentativa $tent."
-              exit 0
-            fi
-            echo "Push rejeitado (remoto mudou durante o commit). Nova tentativa em ${tent}0s..."
-            sleep "${tent}0"
-          done
-          echo "::error::Não consegui salvar a coleta após 5 tentativas."
-          exit 1
+          ARQS_DADOS="historico.json alertas.json variacoes-notificadas.json ofertas-pendentes.json ofertas.json validades-livelo.json saude-coleta.json"
+          ARQS_PAINEL="meliuz-lojas.json topcashback-lojas.json cashback-intl-estado.txt"
+          mkdir -p /tmp/coleta-dados /tmp/coleta-painel
+          for f in $ARQS_DADOS; do [ -f "$CDV_DADOS_DIR/$f" ] && cp "$CDV_DADOS_DIR/$f" /tmp/coleta-dados/ || true; done
+          for f in $ARQS_PAINEL; do [ -f "$f" ] && cp "$f" /tmp/coleta-painel/ || true; done
+          bash scripts/salvar-estado.sh "$GITHUB_WORKSPACE/_dados" painel /tmp/coleta-dados "$ARQS_DADOS" "chore: atualiza histórico $(date -u +'%Y-%m-%d %H:%M')"
+          bash scripts/salvar-estado.sh "$GITHUB_WORKSPACE" "" /tmp/coleta-painel "$ARQS_PAINEL" "chore: atualiza catálogos de cashback $(date -u +'%Y-%m-%d %H:%M')"
       # Mantém a run marcada como falha quando o Comparemania falhou, depois de
       # já ter salvo o que os demais coletores trouxeram.
       - name: Sinalizar falha do Comparemania

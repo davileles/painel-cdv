@@ -45,7 +45,7 @@ function coordsEmbutidas() {
 
 // Todos os nomes de cidade presentes em passagens.json (origem e destino).
 function nomesDasPassagens() {
-  const j = lerJSON(path.join(DIR, 'passagens.json'), { items: [] });
+  const j = lerJSON(path.join(require('./dados-dir'), 'passagens.json'), { items: [] });
   const nomes = new Map(); // chave normalizada → nome original mais frequente
   for (const it of j.items || []) {
     for (const n of [it.origem, it.destino]) {

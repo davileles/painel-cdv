@@ -15,12 +15,13 @@
 const fs = require('fs');
 const path = require('path');
 
+const DADOS_DIR = require('./dados-dir');
 const BAILEYS = 'https://baileys-server-production-ebfe.up.railway.app';
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const DRY_RUN = process.argv.includes('--dry-run');
 
-const OFERTAS_FILE = path.join(__dirname, 'ofertas.json');
-const PASSAGENS_FILE = path.join(__dirname, 'passagens.json');
+const OFERTAS_FILE = path.join(DADOS_DIR, 'ofertas.json');
+const PASSAGENS_FILE = path.join(DADOS_DIR, 'passagens.json');
 
 const RODAPE = '`Confira tudo com detalhes no Painel CDV: https://painel.clubedoviajante.com.br`';
 

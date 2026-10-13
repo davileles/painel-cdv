@@ -31,8 +31,10 @@ jobs:
 
       - name: Rotacionar passagens para shards semestrais
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPO: ${{ github.repository }}
+          # Arquivos no repo privado de dados, pasta painel/ (out/2026).
+          GITHUB_TOKEN: ${{ secrets.CDV_DADOS_TOKEN }}
+          GITHUB_REPO: davileles/dados
+          CDV_DADOS_PASTA: painel
         run: |
           if [ "${{ inputs.dry_run }}" = "true" ]; then
             node arquivar-passagens.js --dry-run

@@ -16,16 +16,17 @@
 const fs = require('fs');
 const path = require('path');
 
+const DADOS_DIR = require('./dados-dir');
 const PROXY = 'https://cdv-proxy-production.up.railway.app/fetch';
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const OUT_FILE = path.join(__dirname, 'ofertas-pendentes.json');
-const APROVADAS_FILE = path.join(__dirname, 'ofertas.json');
-const REJEITADAS_FILE = path.join(__dirname, 'ofertas-rejeitadas.json');
+const OUT_FILE = path.join(DADOS_DIR, 'ofertas-pendentes.json');
+const APROVADAS_FILE = path.join(DADOS_DIR, 'ofertas.json');
+const REJEITADAS_FILE = path.join(DADOS_DIR, 'ofertas-rejeitadas.json');
 // Arquivo de histórico acumulativo de IDs já processados (aprovados, rejeitados ou pendentes).
 // É commitado pelo workflow e serve como fonte única de verdade para deduplicação —
 // mesmo que ofertas-pendentes.json, ofertas.json ou ofertas-rejeitadas.json sejam zerados,
 // este arquivo garante que artigos já vistos não sejam reprocessados.
-const PROCESSADOS_FILE = path.join(__dirname, 'ofertas-processados.json');
+const PROCESSADOS_FILE = path.join(DADOS_DIR, 'ofertas-processados.json');
 
 // IMPORTANTE: a fonte nunca é exibida no painel nem mencionada nos textos
 // gerados pela IA — esses valores ficam só aqui, internos ao coletor.

@@ -14,7 +14,8 @@
 const fs   = require('fs');
 const path = require('path');
 
-const HISTORICO_FILE = path.join(__dirname, 'historico.json');
+const DADOS_DIR = require('./dados-dir');
+const HISTORICO_FILE = path.join(DADOS_DIR, 'historico.json');
 const OUT_FILE       = path.join(__dirname, 'meliuz-lojas.json');
 const INDICE_URL     = 'https://www.meliuz.com.br/desconto';
 

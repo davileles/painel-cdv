@@ -21,7 +21,10 @@ const DRY_RUN  = process.argv.includes('--dry-run');
 
 const PASSAGENS_PATH = 'passagens.json';
 const INDEX_PATH     = 'passagens-historico-index.json';
-const API            = `https://api.github.com/repos/${REPO}/contents`;
+// Desde out/2026 os arquivos moram no repo privado de dados, em painel/
+// (GITHUB_REPO=davileles/dados, CDV_DADOS_PASTA=painel).
+const PASTA          = (process.env.CDV_DADOS_PASTA || '').replace(/\/+$/, '');
+const API            = `https://api.github.com/repos/${REPO}/contents${PASTA ? '/' + PASTA : ''}`;
 
 const HEADERS = {
   Authorization: `Bearer ${TOKEN}`,

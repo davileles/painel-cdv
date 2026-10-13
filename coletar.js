@@ -13,13 +13,14 @@
 const fs   = require('fs');
 const path = require('path');
 
-const HISTORICO_FILE  = path.join(__dirname, 'historico.json');
-const ALERTAS_FILE    = path.join(__dirname, 'alertas.json');
-const OFERTAS_FILE    = path.join(__dirname, 'ofertas.json');
+const DADOS_DIR = require('./dados-dir');
+const HISTORICO_FILE  = path.join(DADOS_DIR, 'historico.json');
+const ALERTAS_FILE    = path.join(DADOS_DIR, 'alertas.json');
+const OFERTAS_FILE    = path.join(DADOS_DIR, 'ofertas.json');
 // Estado de saúde por programa entre rodadas: quais estão degradados e desde
 // quando. Sem ele não dá para saber, numa rodada boa, que a anterior era ruim —
 // o snapshot do dia é sobrescrito e a queda some do historico.json.
-const SAUDE_FILE      = path.join(__dirname, 'saude-coleta.json');
+const SAUDE_FILE      = path.join(DADOS_DIR, 'saude-coleta.json');
 const RESEND_API_KEY  = process.env.RESEND_API_KEY || '';
 
 // ── Publicacao automatica das ofertas de variacao ────────────────────────────
@@ -618,7 +619,7 @@ function calcularFrequenciaAltas(historico, parceiroKey, progId, hoje, pontosHoj
 // de prazo só é preenchido em ofertas Livelo — nos demais programas continua
 // vazio, como antes.
 const LIVELO_PARCEIROS_URL = 'https://www.livelo.com.br/juntar-pontos/todos-os-parceiros';
-const VALIDADES_FILE = path.join(__dirname, 'validades-livelo.json');
+const VALIDADES_FILE = path.join(DADOS_DIR, 'validades-livelo.json');
 
 // Chave de casamento entre o nome do parceiro no Comparemania e o nome na Livelo.
 // Remove acentos, pontuação e espaços; "C&A" e "CEA" convergem para "cea".
@@ -839,7 +840,7 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje, validadesLiv
   console.log(`[Variação] Comparando com snapshot de ${dataAnterior}`);
 
   // Carrega controle de notificações do dia (evita mensagens repetidas)
-  const notifFile = 'variacoes-notificadas.json';
+  const notifFile = path.join(DADOS_DIR, 'variacoes-notificadas.json');
   let notifRaw = {};
   if (fs.existsSync(notifFile)) {
     try { notifRaw = JSON.parse(fs.readFileSync(notifFile, 'utf8')); } catch (e) {}
@@ -937,7 +938,7 @@ async function gerarOfertasVariacao(snapshotAtual, historico, hoje, validadesLiv
   if (programasComNovos.length > 0) console.log(`[Novo parceiro] Parceiros novos em ${programasComNovos.length} programa(s): ${programasComNovos.join(', ')}`);
 
   // Lê ofertas-pendentes.json atual
-  const pendentesFile = 'ofertas-pendentes.json';
+  const pendentesFile = path.join(DADOS_DIR, 'ofertas-pendentes.json');
   let pendentesDados = { geradoEm: null, items: [] };
   if (fs.existsSync(pendentesFile)) {
     try { pendentesDados = JSON.parse(fs.readFileSync(pendentesFile, 'utf8')); } catch (e) {}

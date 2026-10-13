@@ -12,11 +12,22 @@ concurrency:
 jobs:
   catalogo:
     runs-on: ubuntu-latest
+    env:
+      CDV_DADOS_DIR: ${{ github.workspace }}/_dados/painel
     permissions:
       contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      # Conteúdo pago (histórico, ofertas, passagens, alertas) mora no repo
+      # PRIVADO de dados desde out/2026 — o painel-cdv é público.
+      - name: Checkout dos dados (repo privado)
+        uses: actions/checkout@v4
+        with:
+          repository: davileles/dados
+          token: ${{ secrets.CDV_DADOS_TOKEN }}
+          path: _dados
+          sparse-checkout: painel
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:

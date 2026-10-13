@@ -4,11 +4,10 @@ name: Coordenadas de cidades novas (Mapa de Emissões)
 # emissão de fora por falta de lat/lon. Sem cidade nova, termina em segundos
 # sem chamar API nenhuma. O cron diário é só rede de segurança.
 on:
-  push:
-    branches: [main]
-    paths: ['passagens.json']
   schedule:
-    - cron: '17 11 * * *'   # 08h17 (Brasília)
+    # passagens.json mudou para o repo privado de dados (out/2026): o gatilho
+    # "push em passagens.json" deixou de existir, agora roda de hora em hora.
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 concurrency:
@@ -18,10 +17,21 @@ concurrency:
 jobs:
   coords:
     runs-on: ubuntu-latest
+    env:
+      CDV_DADOS_DIR: ${{ github.workspace }}/_dados/painel
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      # Conteúdo pago (histórico, ofertas, passagens, alertas) mora no repo
+      # PRIVADO de dados desde out/2026 — o painel-cdv é público.
+      - name: Checkout dos dados (repo privado)
+        uses: actions/checkout@v4
+        with:
+          repository: davileles/dados
+          token: ${{ secrets.CDV_DADOS_TOKEN }}
+          path: _dados
+          sparse-checkout: painel
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
