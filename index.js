@@ -90,8 +90,148 @@ app.use(express.json({ limit: '20mb' }));
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env, X-CDV-Op, X-CDV-Auth, X-CDV-Servico, X-CDV-Portal');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env, X-CDV-Op, X-CDV-Auth, X-CDV-Servico, X-CDV-Portal, X-CDV-Membro');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
+
+// ── AUTENTICAÇÃO DE ROTAS (membro, operador, concierge) ─────────────────────
+// Até 13/10/2026 as rotas abaixo confiavam no e-mail vindo da URL/corpo e as de
+// envio não pediam nada: sabendo o e-mail de um membro dava para ler e apagar a
+// Gestão de Milhas dele, e qualquer um mandava texto no grupo de Ofertas.
+//
+// - Membro: /membros/verificar-codigo devolve um token HMAC (7 dias). O painel
+//   manda em X-CDV-Membro; aqui o e-mail SAI DO TOKEN e sobrescreve o que vier
+//   em req.query.email / req.body.email — os handlers continuam iguais.
+//   O status 'ativo' em membros.json é revalidado (cache de 5 min).
+// - Operador (envio/aprovação de ofertas, exclusão de passagem): X-CDV-Op =
+//   CAMPANHAS_KEY (gestor-cdv, baileys, Actions) ou sessão de membro de ADMIN_EMAILS.
+// - /ia/extrair-reserva: sessão do concierge (X-CDV-Auth) ou de membro.
+// - POST /roteiros/publicar: sessão do concierge (livre) ou de membro (só slug
+//   membro-*, e só o próprio roteiro).
+const MEMBRO_SESSAO_TTL = 7 * 24 * 60 * 60 * 1000;
+function membroSegredo() {
+  const base = process.env.MEMBRO_SESSION_SECRET || process.env.CONCIERGE_SESSION_SECRET || process.env.GITHUB_TOKEN || '';
+  if (!base) return null;
+  return crypto.createHash('sha256').update('membro-sessao-v1|' + base).digest();
+}
+function assinarSessaoMembro(email) {
+  const segredo = membroSegredo();
+  if (!segredo) return null;
+  const payload = Buffer.from(JSON.stringify({
+    tipo: 'membro', email: String(email).toLowerCase().trim(), exp: Date.now() + MEMBRO_SESSAO_TTL,
+  })).toString('base64url');
+  return payload + '.' + crypto.createHmac('sha256', segredo).update(payload).digest('base64url');
+}
+function emailDoTokenMembro(token) {
+  const segredo = membroSegredo();
+  if (!segredo || !token) return null;
+  const partes = String(token).split('.');
+  if (partes.length !== 2) return null;
+  const esperada = crypto.createHmac('sha256', segredo).update(partes[0]).digest();
+  let recebida;
+  try { recebida = Buffer.from(partes[1], 'base64url'); } catch (e) { return null; }
+  if (recebida.length !== esperada.length || !crypto.timingSafeEqual(recebida, esperada)) return null;
+  let dados;
+  try { dados = JSON.parse(Buffer.from(partes[0], 'base64url').toString('utf8')); } catch (e) { return null; }
+  if (!dados || dados.tipo !== 'membro' || !dados.email || !(Number(dados.exp) > Date.now())) return null;
+  return dados.email;
+}
+// Conjunto de e-mails ativos, por modo (prod/dev). Falha ao ler o GitHub sem
+// cache anterior = deixa passar (o token já prova a identidade; só não dá para
+// conferir cancelamento naquele minuto).
+const _membrosAtivos = { prod: { set: null, ts: 0 }, dev: { set: null, ts: 0 } };
+async function membroAtivo(email, devMode) {
+  const c = _membrosAtivos[devMode ? 'dev' : 'prod'];
+  if (!c.set || Date.now() - c.ts > 5 * 60 * 1000) {
+    try {
+      // ghGetJson devolve o fallback em silêncio quando o GitHub falha (5xx,
+      // rate limit): fallback null = falha, para não deslogar todo mundo.
+      const dados = await ghGetJsonDev(MEMBROS_PATH, null, devMode);
+      const lista = dados && dados.data && Array.isArray(dados.data.membros) ? dados.data.membros : null;
+      if (!lista || !lista.length) throw new Error('membros.json indisponível ou vazio');
+      c.set = new Set(lista.filter(m => m && m.status === 'ativo').map(m => String(m.email || '').toLowerCase().trim()));
+      c.ts = Date.now();
+    } catch (e) {
+      console.warn('[auth-membro] falha ao ler membros.json:', e.message);
+      if (!c.set) return true;
+      c.ts = Date.now() - 4 * 60 * 1000; // tenta de novo em ~1 min
+    }
+  }
+  return c.set.has(email);
+}
+async function sessaoMembroDaReq(req, devMode) {
+  const email = emailDoTokenMembro(req.headers['x-cdv-membro']);
+  if (!email) return null;
+  return (await membroAtivo(email, devMode)) ? email : null;
+}
+function emailEhAdmin(email) {
+  return !!email && ADMIN_EMAILS.includes(String(email).toLowerCase());
+}
+const ROTAS_MEMBRO = new Set([
+  '/assinaturas/listar', '/assinaturas/salvar',
+  '/cartoes/listar', '/cartoes/salvar',
+  '/ia/reclamacao', '/ia/roteiro-chat', '/ia/roteiro-extrair',
+  '/membros/tema',
+  '/milhas/excluir', '/milhas/listar', '/milhas/salvar',
+  '/perfis/listar', '/perfis/salvar',
+  '/roteiros/meus',
+]);
+const ROTAS_OPERADOR_POST = new Set([
+  '/ofertas/aprovar', '/ofertas/aprovar-e-enviar', '/ofertas/enviar', '/ofertas/publicar',
+  '/ofertas/rejeitar', '/ofertas/rejeitar-todas', '/passagens/excluir',
+]);
+function negar(res, status, erro, motivo) {
+  res.status(status).json({ ok: false, erro, motivo });
+}
+app.use(async (req, res, next) => {
+  if (req.method === 'OPTIONS') return next();
+  const p = req.path;
+  const devMode = !!res.locals.isDevMode;
+  try {
+    if (ROTAS_MEMBRO.has(p)) {
+      const email = await sessaoMembroDaReq(req, devMode);
+      if (!email) return negar(res, 401, 'Sessão expirada. Entre novamente.', 'sessao');
+      res.locals.membroEmail = email;
+      if (req.query) req.query.email = email;
+      if (req.body && typeof req.body === 'object' && !Array.isArray(req.body)) req.body.email = email;
+      return next();
+    }
+
+    const ehOperador = req.method === 'POST' && (ROTAS_OPERADOR_POST.has(p) || p.startsWith('/ofertas/mensagem/'));
+    if (ehOperador) {
+      if (req.headers['x-cdv-op']) return opAutorizado(req, res) ? next() : undefined;
+      const email = await sessaoMembroDaReq(req, devMode);
+      if (emailEhAdmin(email)) return next();
+      return negar(res, 401, 'nao autorizado', 'operador');
+    }
+
+    if (p === '/ia/extrair-reserva') {
+      if (sessaoConciergeValida(req.headers['x-cdv-auth'])) return next();
+      if (await sessaoMembroDaReq(req, devMode)) return next();
+      return negar(res, 401, 'nao autorizado', 'sessao');
+    }
+
+    if (p === '/roteiros/publicar' && req.method === 'POST') {
+      if (sessaoConciergeValida(req.headers['x-cdv-auth'])) return next();
+      const email = await sessaoMembroDaReq(req, devMode);
+      if (!email) return negar(res, 401, 'Sessão expirada. Entre novamente.', 'sessao');
+      const body = req.body || {};
+      const slug = String(body.slug || '');
+      if (!/^membro-[a-z0-9-]{1,80}$/.test(slug)) return negar(res, 403, 'slug não permitido', 'slug');
+      const { data } = await ghGetJson(ROTEIROS_MEMBROS_PATH, []);
+      const dono = (Array.isArray(data) ? data : []).find(r => r && r.slug === slug);
+      if (dono && dono.email && String(dono.email).toLowerCase().trim() !== email) {
+        return negar(res, 403, 'Este roteiro pertence a outro membro.', 'dono');
+      }
+      body.email = email;
+      delete body.viagemId; // vincular a viagem do concierge é só do concierge
+      return next();
+    }
+  } catch (e) {
+    console.error('[auth]', p, e.message);
+    return negar(res, 500, 'Falha ao validar acesso', 'erro');
+  }
   next();
 });
 
@@ -3842,10 +3982,14 @@ app.post('/membros/enviar-codigo', async (req, res) => {
     const dados = await ghGetJsonDev(MEMBROS_PATH, { membros: [] }, devMode);
     const membro = (dados.data.membros || []).find(m => m.email === email);
     if (!membro) return res.json({ ok: false, motivo: 'nao_encontrado' });
-    if (membro.status !== 'ativo') return res.json({ ok: false, motivo: 'inativo', nome: membro.nome });
+    if (membro.status !== 'ativo') return res.json({ ok: false, motivo: 'inativo' });
 
+    const anterior = otpStore.get(email);
+    if (anterior && anterior.enviadoEm && Date.now() - anterior.enviadoEm < 45 * 1000) {
+      return res.json({ ok: false, motivo: 'aguarde' });
+    }
     const codigo = gerarCodigo();
-    otpStore.set(email, { codigo, expira: Date.now() + OTP_TTL, nome: membro.nome, produtos: membro.produtos });
+    otpStore.set(email, { codigo, expira: Date.now() + OTP_TTL, enviadoEm: Date.now(), tentativas: 0, nome: membro.nome, produtos: membro.produtos });
 
     if (!RESEND_API_KEY) {
       // Modo dev sem Resend: loga o código no servidor
@@ -3893,10 +4037,19 @@ app.post('/membros/verificar-codigo', (req, res) => {
     otpStore.delete(emailNorm);
     return res.json({ ok: false, motivo: 'expirado' });
   }
-  if (entrada.codigo !== codigoNorm) return res.json({ ok: false, motivo: 'invalido' });
+  if (entrada.codigo !== codigoNorm) {
+    entrada.tentativas = (entrada.tentativas || 0) + 1;
+    if (entrada.tentativas >= 5) {
+      otpStore.delete(emailNorm);
+      return res.json({ ok: false, motivo: 'tentativas' });
+    }
+    return res.json({ ok: false, motivo: 'invalido' });
+  }
 
   otpStore.delete(emailNorm);
-  res.json({ ok: true, acesso: true, nome: entrada.nome, email: emailNorm, produtos: entrada.produtos });
+  const token = assinarSessaoMembro(emailNorm);
+  if (!token) return res.status(500).json({ ok: false, erro: 'Segredo de sessão não configurado no servidor' });
+  res.json({ ok: true, acesso: true, nome: entrada.nome, email: emailNorm, produtos: entrada.produtos, token });
 });
 
 // ── ADMIN OTP: acesso restrito (TSP + Concierge) ─────────────────────────────
@@ -4079,8 +4232,8 @@ app.get('/membros/verificar', async (req, res) => {
     const dados = await ghGetJsonDev(MEMBROS_PATH, { membros: [] }, devMode);
     const membro = (dados.data.membros || []).find(m => m.email === email);
     if (!membro) return res.json({ ok: false, acesso: false, motivo: 'nao_encontrado' });
-    if (membro.status !== 'ativo') return res.json({ ok: false, acesso: false, motivo: 'inativo', nome: membro.nome });
-    res.json({ ok: true, acesso: true, nome: membro.nome, email: membro.email, produtos: membro.produtos });
+    if (membro.status !== 'ativo') return res.json({ ok: false, acesso: false, motivo: 'inativo' });
+    res.json({ ok: true, acesso: true });
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }

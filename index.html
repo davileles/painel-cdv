@@ -642,6 +642,41 @@
 <link rel="stylesheet" href="cdv-redesign.css">
 <script defer src="cdv-redesign.js"></script>
 <script>
+/* Sessão do membro: injeta X-CDV-Membro em toda chamada ao proxy. O proxy tira
+   o e-mail do token (não confia mais no ?email=). 401 em rota de membro =
+   sessão expirada ou assinatura cancelada → volta para o login. */
+(function(){
+  var PROXY = 'https://cdv-proxy-production.up.railway.app';
+  var ROTAS = ['/assinaturas/','/cartoes/listar','/cartoes/salvar','/ia/','/membros/tema','/milhas/','/perfis/','/roteiros/meus','/roteiros/publicar','/passagens/excluir'];
+  var _orig = window.fetch.bind(window);
+  var _saindo = false;
+  function token(){
+    try { var s = JSON.parse(localStorage.getItem('cdv_auth') || 'null'); return (s && s.token) || ''; } catch(e){ return ''; }
+  }
+  window.fetch = function(input, init){
+    var url = typeof input === 'string' ? input : (input && input.url) || '';
+    if (url.indexOf(PROXY) !== 0) return _orig(input, init);
+    var tk = token();
+    if (!tk) return _orig(input, init);
+    var opts = Object.assign({}, init || {});
+    var h = new Headers(opts.headers || (typeof input !== 'string' && input.headers) || {});
+    h.set('X-CDV-Membro', tk);
+    opts.headers = h;
+    var caminho = url.slice(PROXY.length).split('?')[0];
+    var deMembro = ROTAS.some(function(r){ return caminho.indexOf(r) === 0; }) && caminho !== '/passagens/excluir';
+    return _orig(input, opts).then(function(r){
+      if (r.status === 401 && deMembro && !_saindo) {
+        _saindo = true;
+        try { localStorage.removeItem('cdv_auth'); } catch(e){}
+        alert('Sua sessão expirou. Entre novamente.');
+        location.reload();
+      }
+      return r;
+    });
+  };
+})();
+</script>
+<script>
 /* Ícones Phosphor: converte emojis de interface em SVG (sprite #i-*). Áreas com [data-emoji] mantêm emoji. */
 (function(){
   var NS='http://www.w3.org/2000/svg';
@@ -8070,6 +8105,8 @@ function lerSessao() {
     const s = JSON.parse(localStorage.getItem(LOGIN_KEY) || 'null');
     if (!s || !s.ts) return null;
     if (Date.now() - s.ts > LOGIN_TTL) { localStorage.removeItem(LOGIN_KEY); return null; }
+    // Sessão antiga, de antes do token (13/10/2026): pede login de novo.
+    if (!s.token) { localStorage.removeItem(LOGIN_KEY); return null; }
     return s;
   } catch { return null; }
 }
@@ -8163,7 +8200,8 @@ async function enviarCodigo() {
     } else {
       const msgs = {
         nao_encontrado: 'E-mail não encontrado. Verifique se é o mesmo da sua assinatura.',
-        inativo: 'Sua assinatura está inativa. Renove para acessar o painel.'
+        inativo: 'Sua assinatura está inativa. Renove para acessar o painel.',
+        aguarde: 'Já enviamos um código há pouco. Confira seu e-mail (e o spam) ou aguarde alguns segundos.'
       };
       erroEl.textContent = msgs[data.motivo] || 'Não foi possível enviar o código.';
     }
@@ -8189,12 +8227,13 @@ async function verificarCodigo() {
     const res = await _postProxy('/membros/verificar-codigo', { email, codigo });
     const data = await res.json();
     if (data.ok && data.acesso) {
-      salvarSessao({ email: data.email, nome: data.nome });
+      salvarSessao({ email: data.email, nome: data.nome, token: data.token });
       mostrarPainel(data);
     } else {
       const msgs = {
         invalido: 'Código incorreto. Verifique e tente novamente.',
         expirado: 'Código expirado. Solicite um novo código.',
+        tentativas: 'Muitas tentativas. Solicite um novo código.',
         nao_encontrado: 'Sessão expirada. Solicite um novo código.'
       };
       erroEl.textContent = msgs[data.motivo] || 'Código inválido.';

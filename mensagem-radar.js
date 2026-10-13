@@ -132,9 +132,12 @@ async function postEnviarOferta(id, mensagem) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), 25000);
   try {
+    const headers = { 'Content-Type': 'application/json' };
+    // Desde 13/10/2026 o proxy exige a chave de operador (secret CDV_OP_KEY).
+    if (process.env.CDV_OP_KEY) headers['X-CDV-Op'] = process.env.CDV_OP_KEY;
     const res = await fetch(`${CDV_PROXY}/ofertas/enviar`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ id, mensagem, grupo: GRUPO_OFERTA }),
       signal: ctrl.signal,
     });

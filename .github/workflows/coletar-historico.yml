@@ -21,6 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    # Chave de operador do proxy (= CAMPANHAS_KEY do Railway). Sem ela o
+    # /ofertas/enviar responde 401 e as ofertas automaticas caem na fila manual.
+    env:
+      CDV_OP_KEY: ${{ secrets.CDV_OP_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
