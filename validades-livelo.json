@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-10-13T13:02:30.300Z",
+  "coletadoEm": "2026-10-13T14:02:21.961Z",
   "items": {
     "airportpark": {
       "id": "SPP",
@@ -10,6 +10,18 @@
       "dateEnd": "2026-10-13",
       "parity": 3,
       "parityClub": 3,
+      "parityBau": 2,
+      "campanha": "PROMOTION"
+    },
+    "americantourister": {
+      "id": "AMN",
+      "nome": "American Tourister",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 13 a 14/10/2026. Ganhe 6 pontos a cada real gasto. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-10-13",
+      "dateEnd": "2026-10-14",
+      "parity": 6,
+      "parityClub": 6,
       "parityBau": 2,
       "campanha": "PROMOTION"
     },
@@ -409,6 +421,18 @@
       "parityBau": 1,
       "campanha": "PROMOTION"
     },
+    "samsclubecommerce": {
+      "id": "ECO",
+      "nome": "Sam's Club - E-commerce",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 13 a 14/10/2026. Ganhe 3 pontos por real gasto. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-10-13",
+      "dateEnd": "2026-10-14",
+      "parity": 3,
+      "parityClub": 3,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
     "sephora": {
       "id": "SPR",
       "nome": "Sephora",
@@ -505,6 +529,7 @@
     "aliexpress": "https://www.livelo.com.br/juntar-pontos/parceiros/aliexpress/ALB",
     "allianz": "https://www.livelo.com.br/juntar-pontos/parceiros/allianz/ALZ",
     "alura": "https://www.livelo.com.br/juntar-pontos/parceiros/alura/ALU",
+    "americantourister": "https://www.livelo.com.br/juntar-pontos/parceiros/american-tourister/AMN",
     "angeloni": "https://www.livelo.com.br/juntar-pontos/parceiros/angeloni/AGE",
     "aramis": "https://www.livelo.com.br/juntar-pontos/parceiros/aramis/ARA",
     "asics": "https://www.livelo.com.br/juntar-pontos/parceiros/asics/ACS",
