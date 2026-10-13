@@ -2,6 +2,7 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const crypto = require('crypto');
+const zlib = require('zlib');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -67,6 +68,11 @@ setTimeout(() => {
 // Para migrar: trocar os fs.read/writeFileSync de alertas.json no coletar.js por
 // chamadas à Contents API do repo de dados, usando um secret com Contents:write,
 // e remover o arquivo do 'git add' do workflow.
+
+// Caminho do arquivo dentro do repo onde ele mora (ver repoDoArquivo).
+function caminhoNoRepo(filePath) {
+  return String(filePath || '');
+}
 
 // Aceita tanto 'membros.json' quanto a variante dev 'membros-dev.json'
 function repoDoArquivo(filePath) {
@@ -191,6 +197,13 @@ const ROTAS_MEMBRO = new Set([
   '/perfis/listar', '/perfis/salvar',
   '/roteiros/meus',
 ]);
+// Conteúdo do painel (o que o membro paga para ver): membro logado OU operador.
+// GET em todas; o e-mail não é sobrescrito (as rotas não dependem dele).
+const ROTAS_CONTEUDO_GET = new Set([
+  '/ofertas/pendentes', '/passagens/comportamento', '/passagens/listar', '/passagens/panorama',
+]);
+// Exigem sessão de membro mas mantêm o e-mail digitado (alerta pode ir para outro e-mail).
+const ROTAS_SO_MEMBRO = new Set(['/alerta']);
 const ROTAS_OPERADOR_POST = new Set([
   '/ofertas/aprovar', '/ofertas/aprovar-e-enviar', '/ofertas/enviar', '/ofertas/publicar',
   '/ofertas/rejeitar', '/ofertas/rejeitar-todas', '/passagens/excluir',
@@ -210,6 +223,17 @@ app.use(async (req, res, next) => {
       if (req.query) req.query.email = email;
       if (req.body && typeof req.body === 'object' && !Array.isArray(req.body)) req.body.email = email;
       return next();
+    }
+
+    if (ROTAS_SO_MEMBRO.has(p) && req.method === 'POST') {
+      if (await sessaoMembroDaReq(req, devMode)) return next();
+      return negar(res, 401, 'Sessão expirada. Entre novamente.', 'sessao');
+    }
+
+    if (req.method === 'GET' && (ROTAS_CONTEUDO_GET.has(p) || p.startsWith('/conteudo/') || p.startsWith('/ofertas/mensagem/'))) {
+      if (req.headers['x-cdv-op']) return opAutorizado(req, res) ? next() : undefined;
+      if (await sessaoMembroDaReq(req, devMode)) return next();
+      return negar(res, 401, 'Sessão expirada. Entre novamente.', 'sessao');
     }
 
     const ehOperador = req.method === 'POST' && (ROTAS_OPERADOR_POST.has(p) || p.startsWith('/ofertas/mensagem/'));
@@ -247,6 +271,63 @@ app.use(async (req, res, next) => {
     return negar(res, 500, 'Falha ao validar acesso', 'erro');
   }
   next();
+});
+
+// ── CONTEÚDO DO PAINEL (GET /conteudo/:arquivo) ─────────────────────────────
+// O painel do membro, o gestor e o baileys leem o conteúdo pago por aqui, com
+// sessão (o middleware acima exige membro ou X-CDV-Op), em vez de baixar o JSON
+// do GitHub Pages. O proxy lê do repo onde o arquivo mora (repoDoArquivo), guarda
+// em memória e responde gzip + ETag.
+const CONTEUDO_LIBERADO = new Set([
+  'historico.json', 'historico-transferencias.json', 'ofertas.json', 'ofertas-pendentes.json',
+  'passagens.json', 'validades-livelo.json',
+]);
+const CONTEUDO_TTL = { 'historico.json': 5 * 60 * 1000 };
+const _conteudoCache = new Map();   // nome -> { ts, texto, gz, etag } | { promessa }
+async function lerConteudo(nome) {
+  const ttl = CONTEUDO_TTL[nome] || 60 * 1000;
+  const atual = _conteudoCache.get(nome);
+  if (atual && atual.texto && Date.now() - atual.ts < ttl) return atual;
+  if (atual && atual.promessa) return atual.promessa;
+  const promessa = (async () => {
+    const url = `https://api.github.com/repos/${repoDoArquivo(nome)}/contents/${caminhoNoRepo(nome)}`;
+    const r = await fetch(url, { compress: false, headers: { ...ghHeaders(true), Accept: 'application/vnd.github.raw' } });
+    if (!r.ok) {
+      if (atual && atual.texto) return atual; // GitHub fora: serve a última cópia
+      throw new Error(`GitHub ${r.status} ao ler ${nome}`);
+    }
+    const texto = await r.text();
+    const entrada = {
+      ts: Date.now(), texto,
+      gz: zlib.gzipSync(texto),
+      etag: '"' + crypto.createHash('sha1').update(texto).digest('hex') + '"',
+    };
+    _conteudoCache.set(nome, entrada);
+    return entrada;
+  })();
+  _conteudoCache.set(nome, { ...(atual || {}), promessa });
+  try { return await promessa; }
+  catch (e) { if (atual && atual.texto) _conteudoCache.set(nome, atual); else _conteudoCache.delete(nome); throw e; }
+}
+app.get('/conteudo/:arquivo', async (req, res) => {
+  const nome = String(req.params.arquivo || '');
+  if (!CONTEUDO_LIBERADO.has(nome)) return res.status(404).json({ ok: false, erro: 'arquivo não disponível' });
+  try {
+    const c = await lerConteudo(nome);
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Cache-Control', 'private, no-cache');
+    res.setHeader('ETag', c.etag);
+    res.setHeader('Vary', 'Accept-Encoding, X-CDV-Membro, X-CDV-Op');
+    if (req.headers['if-none-match'] === c.etag) return res.status(304).end();
+    if (/\bgzip\b/.test(req.headers['accept-encoding'] || '')) {
+      res.setHeader('Content-Encoding', 'gzip');
+      return res.end(c.gz);
+    }
+    res.end(c.texto);
+  } catch (e) {
+    console.error('[conteudo]', nome, e.message);
+    res.status(502).json({ ok: false, erro: 'Falha ao ler o conteúdo. Tente de novo em instantes.' });
+  }
 });
 
 // Health check / warm-up
@@ -2165,7 +2246,7 @@ app.post('/alerta', async (req, res) => {
   }
 
   try {
-    const apiBase = `https://api.github.com/repos/${repoDoArquivo('alertas.json')}/contents/alertas.json`;
+    const apiBase = `https://api.github.com/repos/${repoDoArquivo('alertas.json')}/contents/${caminhoNoRepo('alertas.json')}`;
     const headers = {
       'Authorization': `Bearer ${GITHUB_TOKEN}`,
       'Accept': 'application/vnd.github+json',
@@ -2239,7 +2320,7 @@ async function migrarDoPublico(filePath, fallback) {
 }
 
 async function ghGetJson(filePath, fallback) {
-  const apiBase = `https://api.github.com/repos/${repoDoArquivo(filePath)}/contents/${filePath}`;
+  const apiBase = `https://api.github.com/repos/${repoDoArquivo(filePath)}/contents/${caminhoNoRepo(filePath)}`;
   const res = await fetch(apiBase, { compress: false, headers: ghHeaders(true) });
   if (res.status === 404) {
     const base = String(filePath).replace(/-dev\.json$/, '.json');
@@ -2276,7 +2357,7 @@ async function ghGetJson(filePath, fallback) {
 }
 
 async function ghPutJson(filePath, jsonData, sha, message) {
-  const apiBase = `https://api.github.com/repos/${repoDoArquivo(filePath)}/contents/${filePath}`;
+  const apiBase = `https://api.github.com/repos/${repoDoArquivo(filePath)}/contents/${caminhoNoRepo(filePath)}`;
   const body = {
     message,
     content: Buffer.from(JSON.stringify(jsonData, null, 2)).toString('base64'),

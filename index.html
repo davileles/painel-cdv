@@ -647,7 +647,7 @@
    sessão expirada ou assinatura cancelada → volta para o login. */
 (function(){
   var PROXY = 'https://cdv-proxy-production.up.railway.app';
-  var ROTAS = ['/assinaturas/','/cartoes/listar','/cartoes/salvar','/ia/','/membros/tema','/milhas/','/perfis/','/roteiros/meus','/roteiros/publicar','/passagens/excluir'];
+  var ROTAS = ['/alerta','/assinaturas/','/cartoes/listar','/cartoes/salvar','/conteudo/','/ia/','/membros/tema','/milhas/','/passagens/comportamento','/passagens/panorama','/perfis/','/roteiros/meus','/roteiros/publicar','/passagens/excluir'];
   var _orig = window.fetch.bind(window);
   var _saindo = false;
   function token(){
@@ -4377,7 +4377,7 @@ let historico={};
 
 async function carregarHistorico(){
   try{
-    const r=await fetch('historico.json?v='+Date.now(),{cache:'no-cache'});
+    const r=await fetch(_BASE+'/conteudo/historico.json',{cache:'no-cache'});
     if(!r.ok) return;
     historico=await r.json();
     console.log('[CDV] Histórico carregado:',Object.keys(historico).length,'dias');
@@ -4399,7 +4399,7 @@ let historicoTransferenciasPromise = null;
 
 function carregarHistoricoTransferencias(){
   if (!historicoTransferenciasPromise){
-    historicoTransferenciasPromise = fetch('historico-transferencias.json',{cache:'no-cache'})
+    historicoTransferenciasPromise = fetch(_BASE+'/conteudo/historico-transferencias.json',{cache:'no-cache'})
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         historicoTransferencias = data;
@@ -5018,7 +5018,7 @@ const PROG_NAME_MAP={azul:'tudo azul','latam':'latam pass',livelo:'livelo',esfer
 let linksLiveloOficiais={};
 (async()=>{
   try{
-    const r=await fetch('validades-livelo.json?v='+Date.now(),{cache:'no-cache'});
+    const r=await fetch(_BASE+'/conteudo/validades-livelo.json',{cache:'no-cache'});
     if(r.ok){const j=await r.json();linksLiveloOficiais=(j&&j.links)||{};}
   }catch(e){}
 })();
@@ -5719,7 +5719,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 
 // ─── Aba Passagens ─────────────────────────────────────────────────────────────
-const PASSAGENS_URL = 'passagens.json';
+const PASSAGENS_URL = _BASE + '/conteudo/passagens.json';
 // (unificado em _BASE acima)
 let passagensData = [];
 let passagensLoaded = false;
@@ -6039,7 +6039,7 @@ async function excluirPassagem(id) {
 loadData();
 
 // ─── Radar de Ofertas ───────────────────────────────────────────────────────
-const OFERTAS_URL = 'ofertas.json';
+const OFERTAS_URL = _BASE + '/conteudo/ofertas.json';
 let ofertasData = null;
 let ofertasLoaded = false;
 let radarActiveCat = 'all';
@@ -8228,7 +8228,10 @@ async function verificarCodigo() {
     const data = await res.json();
     if (data.ok && data.acesso) {
       salvarSessao({ email: data.email, nome: data.nome, token: data.token });
-      mostrarPainel(data);
+      // Recarrega para que o conteúdo (comparador, histórico) venha com o token:
+      // ele começa a carregar antes do login e, sem sessão, o proxy recusa.
+      location.reload();
+      return;
     } else {
       const msgs = {
         invalido: 'Código incorreto. Verifique e tente novamente.',
