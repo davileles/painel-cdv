@@ -42,11 +42,25 @@ const ARQUIVOS_SENSIVEIS = new Set([
   // Indice de roteiros por membro (e-mail + slug): dado pessoal, repo privado.
   'roteiros-membros.json',
   // Log dos payloads recebidos da Hubla (e-mail/nome de membros): repo privado.
-  'hubla-webhooks-log.json'
+  'hubla-webhooks-log.json',
+  // Gestão de Milhas dos membros (e-mail + saldos). Até 13/10/2026 vivia no
+  // painel-cdv público e era servido pelo Pages — migrado (ver MIGRAR_DO_PUBLICO).
+  'milhas.json',
 ]);
-// NÃO migrar (verificado): 'passagens.json' é catálogo de ofertas
-// (cia/origem/destino/pontos) — sem dado pessoal. 'historico.json',
-// 'ofertas.json', 'milhas.json', 'lounges-db.json' idem.
+// Arquivos que saíram do painel-cdv: na 1ª leitura sem cópia no repo de dados,
+// o proxy copia a versão do repo público para lá (uma vez por arquivo).
+const MIGRAR_DO_PUBLICO = new Set(['milhas.json']);
+const _migracoesEmCurso = new Map();
+// Migra já no boot, sem esperar o primeiro membro abrir a Gestão de Milhas.
+setTimeout(() => {
+  for (const f of MIGRAR_DO_PUBLICO) {
+    ghGetJson(f, null).then(r => console.log(`[migracao] ${f}: ${r && r.data ? 'ok no repo de dados' : 'sem dados'}`))
+      .catch(e => console.error(`[migracao] ${f} falhou:`, e.message));
+  }
+}, 15000);
+// 'passagens.json', 'historico.json', 'ofertas.json', 'lounges-db.json' não têm
+// dado pessoal (são conteúdo do painel). 'milhas.json' TEM (Gestão de Milhas
+// por e-mail) e foi migrado em 13/10/2026.
 //
 // PENDENTE: 'alertas.json' contém e-mail de membro. Não migrado porque é lido
 // e reescrito por coletar.js via checkout local (git add no coletar-historico.yml).
@@ -2208,10 +2222,30 @@ function ghHeaders(nocache = false) {
   return h;
 }
 
+async function migrarDoPublico(filePath, fallback) {
+  if (_migracoesEmCurso.has(filePath)) return _migracoesEmCurso.get(filePath);
+  const p = (async () => {
+    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`;
+    const r = await fetch(url, { compress: false, headers: { ...ghHeaders(true), Accept: 'application/vnd.github.raw' } });
+    if (r.status === 404) return { data: fallback, sha: null };
+    if (!r.ok) throw new Error(`migração de ${filePath}: leitura do repo público falhou (${r.status})`);
+    const dados = JSON.parse(await r.text());
+    const put = await ghPutJson(filePath, dados, null, `migra ${filePath} do repo público para o privado`);
+    console.log(`[migracao] ${filePath} copiado de ${GITHUB_REPO} para ${repoDoArquivo(filePath)}`);
+    return { data: dados, sha: put && put.content ? put.content.sha : null };
+  })();
+  _migracoesEmCurso.set(filePath, p);
+  try { return await p; } finally { _migracoesEmCurso.delete(filePath); }
+}
+
 async function ghGetJson(filePath, fallback) {
   const apiBase = `https://api.github.com/repos/${repoDoArquivo(filePath)}/contents/${filePath}`;
   const res = await fetch(apiBase, { compress: false, headers: ghHeaders(true) });
-  if (res.status === 404) return { data: fallback, sha: null };
+  if (res.status === 404) {
+    const base = String(filePath).replace(/-dev\.json$/, '.json');
+    if (MIGRAR_DO_PUBLICO.has(base) && repoDoArquivo(filePath) !== GITHUB_REPO) return migrarDoPublico(filePath, fallback);
+    return { data: fallback, sha: null };
+  }
   const data = await res.json();
   if (!res.ok) return { data: fallback, sha: null };
   // Arquivo >1MB: GitHub retorna encoding:'none' e content vazio.
