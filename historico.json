@@ -744469,10 +744469,23 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 1,
+          "pts": 10,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-fast-shop"
+          "ate": true,
+          "slug": "cupom-fast-shop",
+          "categorias": [
+            {
+              "categoria": "Produtos - Vendidos e Entregues por Fast Shop (exceto Apple)",
+              "pts": 10,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1
         }
       },
       "links": {
@@ -744763,7 +744776,7 @@
           "dollar": false
         },
         "azul": {
-          "pts": 4,
+          "pts": 20,
           "dollar": false
         },
         "meliuz": {
