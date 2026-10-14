@@ -747346,10 +747346,23 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 0.5,
+          "pts": 6.5,
           "dollar": false,
-          "ate": false,
-          "slug": "polishop"
+          "ate": true,
+          "slug": "polishop",
+          "categorias": [
+            {
+              "categoria": "Fitness - Vendido e Entregue por Polishop, Casa - Vendido e Entregue por Polishop, Massagem e Bem-estar - Vendido e Entregue por Polishop, Beleza e Cuidados Pessoais - Vendido e Entregue por Polishop e Cozinha e Eletroportáteis - Vendido e Entregue por Polishop",
+              "pts": 6.5,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 0.5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 0.5
         }
       },
       "links": {
