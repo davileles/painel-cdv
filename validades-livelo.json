@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-10-16T13:03:08.551Z",
+  "coletadoEm": "2026-10-16T13:43:02.802Z",
   "items": {
     "angeloni": {
       "id": "AGE",
@@ -70,6 +70,18 @@
       "dateEnd": "2026-12-31",
       "parity": 30,
       "parityClub": 30,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
+    "cea": {
+      "id": "CEA",
+      "nome": "CEA",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 16 a 19/10/2026. Ganhe 7 pontos por real gasto em produtos selecionados e 2 pontos por real nos demais produtos. Consulte o regulamento.",
+      "dateStart": "2026-10-16",
+      "dateEnd": "2026-10-19",
+      "parity": 7,
+      "parityClub": 7,
       "parityBau": 1,
       "campanha": "PROMOTION"
     },
