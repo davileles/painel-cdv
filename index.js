@@ -5349,6 +5349,37 @@ app.post('/concierge/seats-alertas', async (req, res) => {
   }
 });
 
+// Modelos de alerta do seats.aero (combinações que se repetem: destino,
+// programas, cabine, pontos...). Mesmo formato de lista da fila acima.
+app.get('/concierge/seats-modelos', async (req, res) => {
+  try {
+    const { content } = await getConciergeFile('seats-modelos.json');
+    res.json({ ok: true, data: Array.isArray(content) ? content : [] });
+  } catch(e) {
+    if (e.status === 404) return res.json({ ok: true, data: [] });
+    console.error('[concierge/seats-modelos GET]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+app.post('/concierge/seats-modelos', async (req, res) => {
+  const { data } = req.body;
+  if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    try {
+      let sha = null;
+      try { ({ sha } = await getConciergeFile('seats-modelos.json')); }
+      catch(e) { if (e.status !== 404) throw e; }
+      await putConciergeFile('seats-modelos.json', data, sha);
+      return res.json({ ok: true });
+    } catch(e) {
+      if ((e.status === 409 || e.status === 422) && tentativa < 2) continue;
+      console.error('[concierge/seats-modelos POST]', e.message);
+      return res.status(500).json({ ok: false, erro: e.message });
+    }
+  }
+});
+
 // ── CONCIERGE: Base de clientes ────────────────────────────────────────
 // Antes a base vinha do Apps Script (planilha do Google Forms) em TRES pontos:
 // painel, lembrete-voo.js e /concierge/portal. O /exec nunca serve JSON direto —
