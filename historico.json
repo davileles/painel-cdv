@@ -756171,7 +756171,20 @@
           "pts": 11,
           "dollar": false,
           "ate": false,
-          "slug": "cupom-beleza-na-web"
+          "slug": "cupom-beleza-na-web",
+          "categorias": [
+            {
+              "categoria": "Todos os produtos da marca Lâncome, Todos os produtos da marca Valentino, Todos os produtos da marca Giorgio Armani , Todos os produtos da marca Yves Saint Laurent e Todos os produtos da marca Prada",
+              "pts": 15,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 8,
+              "principal": true
+            }
+          ],
+          "ptsBase": 8
         }
       },
       "links": {
@@ -757611,7 +757624,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "hope-resort"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/hope-resort"
       }
     },
     "lacoste": {
@@ -761144,7 +761166,7 @@
     "cupom zé delivery": {
       "programs": {
         "inter": {
-          "pts": 3,
+          "pts": 10,
           "dollar": false,
           "slug": "cupom-ze-delivery-1755"
         }
