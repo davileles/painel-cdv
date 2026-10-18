@@ -1623,6 +1623,11 @@ app.post('/gg/links', async (req, res) => {
         souAdmin: velho.souAdmin,
         sincronizadoEm: velho.sincronizadoEm || null,
         erro: velho.erro || null,
+        // Sem isto, salvar o link pela tela devolvia ao rodizio todo grupo de
+        // convite travado (a marca sumia e o lead ia para link morto).
+        conviteMorto: velho.conviteMorto === true,
+        conviteChecadoEm: velho.conviteChecadoEm || null,
+        conviteErro: velho.conviteErro || null,
       };
       if (!g.convite) {
         try { g.convite = await ggBuscarConvite(jid, req.headers['x-tsp-token']); g.erro = null; }
