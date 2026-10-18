@@ -3167,6 +3167,8 @@ app.post('/ofertas/publicar', async (req, res) => {
       restricoes:        Array.isArray(oferta.restricoes) ? oferta.restricoes : [],
       publicadoEm:       new Date().toISOString(),
     };
+    // lembrete:false = sem o "⏰ ACABA HOJE" no ultimo dia do prazo (baileys).
+    if (oferta.lembrete === false) item.lembrete = false;
 
     const aprov = await ghGetJson(OFERTAS_APROVADAS_PATH, { geradoEm: null, items: [] });
     // Mesma oferta publicada de novo (reenvio/duplo clique na aba Oferta):
