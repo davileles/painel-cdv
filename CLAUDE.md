@@ -164,6 +164,9 @@ TeamRausch, financas e castanheiras são ISOLADOS (serviços, tokens e dados pr�
 - Infra: `/ping`, `/health`, `/fetch`, `/fetch-oferta` (whitelist de domínios).
 - Encurtador/links: `/ir/:slug`, `/ir-stats`, `/links/vigia`, `/links-stats`, `/l/:loja/:cod-:g`, flushes.
 - Distribuidor: `/g/:slug`, `/gg/{cliques,links,saude,vagas,grupos-ativos}`, `POST /gg/{links,links/excluir,convite,sync,validar,flush}` (`tsp/grupos-links.json`; guarda anti-destruição impede memória vazia sobrescrever remoto).
+  - **Convite travado = lead perdido** (desde 18/10/2026): cada convite em rodízio é revisto a cada `GG_CONVITE_TTL_MIN` (60 min; era 6 h), 5 por ciclo de 4 min com 2,5 s entre consultas — **não forçar `/gg/validar` em massa** (38 seguidas fizeram o WhatsApp devolver página vazia e marcar grupo vivo como morto). `/gg/vagas` conta todo grupo ativo, inclusive travado (`fechada` + `motivo: convite|teto|misto`, `travados[]`, `usandoReserva`, `reservasLivres`, `desviosHoje`) — antes excluía os travados e a trava de porta fechada nunca disparou quando o único grupo do Bebidas travou.
+  - **Grupo reserva** (`reserva:true` no grupo, via `POST /gg/links`; ausente no corpo = mantém): fora do rodízio enquanto houver titular elegível; entra sozinho quando nenhum titular serve (cheio ou convite travado). `usandoReserva:true` = hora de criar o próximo grupo.
+  - Clique sem grupo elegível conta em `desviosDia`/`ultimoDesvio` do link. Nichos têm `fallback` = `https://ir.ticapromos.com.br/geral?o=fallback-<slug>` (a pessoa cai num grupo geral em vez da landing).
 - Cashback: `/inter/gift-cards`, `/meliuz/*`, `/topcashback/cashback`.
 - Alertas/ofertas: `/alerta`, `/alertas/operador`, `/ofertas/{pendentes,aprovar,aprovar-e-enviar,rejeitar,rejeitar-todas,enviar,publicar,mensagem/:id}`.
 - Passagens: `/passagens/{registrar,excluir,listar,comportamento,panorama}`.

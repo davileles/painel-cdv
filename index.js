@@ -848,8 +848,14 @@ function ggLimite(link) {
 //
 // A checagem e o proprio comportamento do chat.whatsapp.com: convite vivo
 // devolve og:title com o nome do grupo; convite morto devolve og:title vazio.
-const GG_CONVITE_TTL_MS   = 6 * 60 * 60 * 1000;   // revalida cada convite a cada 6h
+// Convite travado = lead perdido: o grupo que recebe gente e revisto de hora
+// em hora (era 6 h, e o Bebidas ficou um dia mandando para a landing geral).
+// 5 por ciclo de 4 min = ate 75 checagens/h, folga para os ~40 grupos.
+const GG_CONVITE_TTL_MS   = Math.max(15, parseInt(process.env.GG_CONVITE_TTL_MIN || '60', 10) || 60) * 60 * 1000;
 const GG_VALIDA_POR_CICLO = 5;                    // teto de checagens por ciclo de sync
+// Pausa entre uma checagem e outra: em 18/10/2026 uma rajada de 38 seguidas
+// fez o WhatsApp devolver pagina vazia e marcar grupo vivo como morto.
+const GG_VALIDA_PAUSA_MS  = 2500;
 const GG_UA_BROWSER = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ' +
   'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
@@ -881,10 +887,22 @@ async function ggConviteVivo(url) {
   }
 }
 
+// Grupo com convite valido e vaga. Grupo RESERVA (g.reserva) fica fora do
+// rodizio enquanto houver titular elegivel e entra sozinho quando nenhum
+// titular serve (cheio ou convite travado) — o lead nao espera alguem ver o aviso.
+function ggPodeReceber(g, lim) {
+  return g.ativo !== false && g.convite && g.conviteMorto !== true && ggOcupacao(g) < lim;
+}
 function ggElegiveis(link) {
   const lim = ggLimite(link);
-  return (link.grupos || []).filter(g => g.ativo !== false && g.convite &&
-    g.conviteMorto !== true && ggOcupacao(g) < lim);
+  const todos = (link.grupos || []).filter(g => ggPodeReceber(g, lim));
+  const titulares = todos.filter(g => g.reserva !== true);
+  return titulares.length ? titulares : todos;
+}
+// true quando o rodizio esta rodando so com reserva (hora de criar a proxima).
+function ggUsandoReserva(link) {
+  const eleg = ggElegiveis(link);
+  return eleg.length > 0 && eleg.every(g => g.reserva === true);
 }
 
 function ggEscolher(link) {
@@ -957,6 +975,17 @@ async function ggHandle(req, res, slug, leituraFalhou) {
   // Todos cheios ou sem convite. Ordem: fallback proprio do link (escolha
   // explicita do operador) > grupo de emergencia > fallback global.
   if (!g) {
+    // Clique que nao achou grupo: conta por dia para medir o lead desviado
+    // (antes ele sumia sem rastro — nao entrava em cliques nem em origens).
+    const diaDesvio = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    link.desviosDia = link.desviosDia || {};
+    if (!link.desviosDia[diaDesvio]) {
+      const dd = Object.keys(link.desviosDia).sort();
+      while (dd.length >= 60) delete link.desviosDia[dd.shift()];
+    }
+    link.desviosDia[diaDesvio] = (link.desviosDia[diaDesvio] || 0) + 1;
+    link.ultimoDesvio = new Date().toISOString();
+    ggDirty = true;
     if (link.fallback) return res.redirect(302, link.fallback);
     const emerg = ggConviteEmergencia();
     if (emerg) {
@@ -1136,7 +1165,10 @@ async function ggValidarConvites(est, slugFiltro, opcoes) {
     .slice(0, teto);
 
   const veredito = [];
-  for (const it of lote) veredito.push([it.g, await ggConviteVivo(it.g.convite)]);
+  for (let i = 0; i < lote.length; i++) {
+    if (i) await new Promise(r => setTimeout(r, GG_VALIDA_PAUSA_MS));
+    veredito.push([lote[i].g, await ggConviteVivo(lote[i].g.convite)]);
+  }
 
   // Guarda anti-falso-positivo: um lote inteiro dando "morto" quase sempre
   // significa que quem esta bloqueado somos nos, nao que todos os grupos
@@ -1530,9 +1562,13 @@ app.get('/gg/links', async (req, res) => {
       ultimoClique: l.ultimoClique || null,
       criadoEm: l.criadoEm || null,
       disponiveis: ggElegiveis(l).length,
+      usandoReserva: ggUsandoReserva(l),
+      desviosDia: l.desviosDia || {},
+      ultimoDesvio: l.ultimoDesvio || null,
       grupos: (l.grupos || []).map(g => ({
         jid: g.jid, nome: g.nome || null, convite: g.convite || '',
-        ativo: g.ativo !== false, membros: g.membros == null ? null : g.membros,
+        ativo: g.ativo !== false, reserva: g.reserva === true,
+        membros: g.membros == null ? null : g.membros,
         entradas: g.entradas || 0, ocupacao: ggOcupacao(g), cliques: g.cliques || 0,
         souAdmin: g.souAdmin === undefined ? null : g.souAdmin,
         sincronizadoEm: g.sincronizadoEm || null, erro: g.erro || null,
@@ -1579,6 +1615,8 @@ app.post('/gg/links', async (req, res) => {
         nome: item.nome || velho.nome || null,
         convite: velho.convite || '',
         ativo: item.ativo !== false,
+        // Ausente no corpo = mantem o que estava (a tela antiga nao manda o campo).
+        reserva: item.reserva !== undefined ? item.reserva === true : velho.reserva === true,
         membros: velho.membros == null ? null : velho.membros,
         entradas: velho.entradas || 0,
         cliques: velho.cliques || 0,
@@ -1700,11 +1738,27 @@ app.get('/gg/vagas', async (req, res) => {
     const est = await ggCarregar();
     const portas = Object.entries(est.links || {}).map(([slug, link]) => {
       const lim = ggLimite(link);
-      const grupos = (link.grupos || []).filter(g => g.ativo !== false && g.convite && g.conviteMorto !== true);
+      // `grupos` conta TODO grupo ativo, inclusive de convite travado. Antes ele
+      // excluia os travados: com o unico grupo do Bebidas travado a conta dava
+      // 0 grupos, `fechada` saia false e a trava nunca disparou (17–18/10/2026).
+      const ativos = (link.grupos || []).filter(g => g.ativo !== false);
       const eleg = ggElegiveis(link);
       const vagas = eleg.reduce((s, g) => s + Math.max(0, lim - ggOcupacao(g)), 0);
-      return { slug, ativo: link.ativo !== false, limite: lim, grupos: grupos.length, elegiveis: eleg.length, vagas,
-        fechada: link.ativo !== false && grupos.length > 0 && eleg.length === 0,
+      const travados = ativos.filter(g => g.convite && g.conviteMorto === true)
+        .map(g => ({ nome: g.nome || g.jid, reserva: g.reserva === true, desde: g.conviteChecadoEm || null }));
+      const semConvite = ativos.filter(g => !g.convite).length;
+      const cheios = ativos.filter(g => g.convite && g.conviteMorto !== true && ggOcupacao(g) >= lim).length;
+      const fechada = link.ativo !== false && ativos.length > 0 && eleg.length === 0;
+      const motivo = !fechada ? null
+        : travados.length && !cheios ? 'convite'
+        : cheios && !travados.length ? 'teto' : 'misto';
+      const diaSP = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      return { slug, ativo: link.ativo !== false, limite: lim, grupos: ativos.length, elegiveis: eleg.length, vagas,
+        fechada, motivo, travados, cheios, semConvite,
+        usandoReserva: ggUsandoReserva(link),
+        reservasLivres: (link.grupos || []).filter(g => g.reserva === true && ggPodeReceber(g, lim)).length,
+        fallback: link.fallback || null,
+        desviosHoje: (link.desviosDia || {})[diaSP] || 0,
         cliquesHoje: (link.cliquesDia || {})[new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString().slice(0, 10)] || 0,
         ultimoClique: link.ultimoClique || null };
     });
