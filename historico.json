@@ -773845,6 +773845,10 @@
         "livelo": {
           "pts": 14,
           "dollar": false
+        },
+        "azul": {
+          "pts": 1,
+          "dollar": false
         }
       }
     },
@@ -773860,6 +773864,10 @@
       "programs": {
         "livelo": {
           "pts": 13,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 27,
           "dollar": false
         },
         "latam": {
@@ -773884,6 +773892,10 @@
         },
         "esfera": {
           "pts": 3,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 1,
           "dollar": false
         },
         "meliuz": {
@@ -773979,6 +773991,10 @@
         },
         "esfera": {
           "pts": 12,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 1,
           "dollar": false
         },
         "meliuz": {
@@ -774216,6 +774232,10 @@
         },
         "esfera": {
           "pts": 30,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 6,
           "dollar": false
         }
       }
@@ -774479,6 +774499,10 @@
           "dollar": false
         },
         "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
+        "azul": {
           "pts": 4,
           "dollar": false
         },
@@ -774777,6 +774801,10 @@
           "dollar": false
         },
         "esfera": {
+          "pts": 3,
+          "dollar": false
+        },
+        "azul": {
           "pts": 3,
           "dollar": false
         },
@@ -775459,6 +775487,10 @@
         "smiles": {
           "pts": 4,
           "dollar": false
+        },
+        "azul": {
+          "pts": 2,
+          "dollar": false
         }
       }
     },
@@ -775567,6 +775599,10 @@
           "pts": 2,
           "dollar": false
         },
+        "azul": {
+          "pts": 2,
+          "dollar": false
+        },
         "meliuz": {
           "pts": 3.5,
           "dollar": false,
@@ -775593,7 +775629,7 @@
           "dollar": false
         },
         "azul": {
-          "pts": 3,
+          "pts": 12,
           "dollar": false
         },
         "inter": {
@@ -775894,6 +775930,10 @@
         "esfera": {
           "pts": 2,
           "dollar": false
+        },
+        "azul": {
+          "pts": 2,
+          "dollar": false
         }
       }
     },
@@ -775942,6 +775982,10 @@
         },
         "smiles": {
           "pts": 4,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 3,
           "dollar": false
         },
         "inter": {
@@ -776082,6 +776126,10 @@
     "bagaggio": {
       "programs": {
         "livelo": {
+          "pts": 1,
+          "dollar": false
+        },
+        "azul": {
           "pts": 1,
           "dollar": false
         },
@@ -776943,6 +776991,10 @@
         },
         "smiles": {
           "pts": 4,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 20,
           "dollar": false
         }
       }
@@ -778663,6 +778715,47 @@
           "pts": 4,
           "dollar": false
         }
+      }
+    },
+    "easy live vouchers": {
+      "programs": {
+        "azul": {
+          "pts": 14,
+          "dollar": false
+        }
+      }
+    },
+    "airport park - guarulhos": {
+      "programs": {
+        "azul": {
+          "pts": 10,
+          "dollar": false
+        }
+      }
+    },
+    "easy live entreterimento": {
+      "programs": {
+        "azul": {
+          "pts": 3,
+          "dollar": false
+        }
+      }
+    },
+    "estoque": {
+      "programs": {
+        "azul": {
+          "pts": 1,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 7,
+          "dollar": false,
+          "ate": false,
+          "slug": "estoque"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/estoque"
       }
     },
     "nomad": {
@@ -780611,19 +780704,6 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-estee-lauder"
-      }
-    },
-    "estoque": {
-      "programs": {
-        "meliuz": {
-          "pts": 7,
-          "dollar": false,
-          "ate": false,
-          "slug": "estoque"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/estoque"
       }
     },
     "fossil": {
