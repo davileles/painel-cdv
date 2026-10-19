@@ -773721,6 +773721,10 @@
   "2026-10-19": {
     "camicado": {
       "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
         "azul": {
           "pts": 16,
           "dollar": false
@@ -773742,39 +773746,49 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-camicado"
       }
     },
-    "netshoes": {
-      "programs": {
-        "azul": {
-          "pts": 3,
-          "dollar": false
-        },
-        "inter": {
-          "pts": 4,
-          "dollar": false,
-          "slug": "netshoes-2055"
-        },
-        "meliuz": {
-          "pts": 10,
-          "dollar": false,
-          "ate": false,
-          "slug": "cupom-netshoes"
-        }
-      },
-      "links": {
-        "inter": "https://shopping.inter.co/gift-card/netshoes-2055",
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-netshoes"
-      }
-    },
     "casas bahia": {
       "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
         "azul": {
           "pts": 2,
           "dollar": false
         }
       }
     },
+    "diageo": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
+    "época cosméticos": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-epoca-cosmeticos"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-epoca-cosmeticos"
+      }
+    },
     "extra": {
       "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
         "azul": {
           "pts": 2,
           "dollar": false
@@ -773789,16 +773803,37 @@
         "inter": "https://shopping.inter.co/gift-card/extra-2616"
       }
     },
-    "ponto": {
+    "fast shop": {
       "programs": {
-        "azul": {
-          "pts": 2,
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-fast-shop"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-fast-shop"
+      }
+    },
+    "lojas renner": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
           "dollar": false
         }
       }
     },
     "magazine luiza": {
       "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
         "azul": {
           "pts": 1,
           "dollar": false
@@ -773825,6 +773860,245 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-magazine-luiza"
+      }
+    },
+    "natura": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 10,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-natura"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-natura"
+      }
+    },
+    "netshoes": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 3,
+          "dollar": false
+        },
+        "inter": {
+          "pts": 4,
+          "dollar": false,
+          "slug": "netshoes-2055"
+        },
+        "meliuz": {
+          "pts": 10,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-netshoes"
+        }
+      },
+      "links": {
+        "inter": "https://shopping.inter.co/gift-card/netshoes-2055",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-netshoes"
+      }
+    },
+    "polishop": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 6.5,
+          "dollar": false,
+          "ate": true,
+          "slug": "polishop",
+          "categorias": [
+            {
+              "categoria": "Fitness - Vendido e Entregue por Polishop, Casa - Vendido e Entregue por Polishop, Massagem e Bem-estar - Vendido e Entregue por Polishop, Beleza e Cuidados Pessoais - Vendido e Entregue por Polishop e Cozinha e Eletroportáteis - Vendido e Entregue por Polishop",
+              "pts": 6.5,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 0.5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 0.5
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/polishop"
+      }
+    },
+    "ponto": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 2,
+          "dollar": false
+        }
+      }
+    },
+    "portal das malas": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
+    "stanley": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
+    "top store": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
+    "tramontina": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
+    "zattini": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
+        "inter": {
+          "pts": 5,
+          "dollar": false,
+          "slug": "zattini-128"
+        },
+        "meliuz": {
+          "pts": 4.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-zattini"
+        }
+      },
+      "links": {
+        "inter": "https://shopping.inter.co/gift-card/zattini-128",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-zattini"
+      }
+    },
+    "assist card": {
+      "programs": {
+        "latam": {
+          "pts": 6,
+          "dollar": true
+        }
+      }
+    },
+    "booking": {
+      "programs": {
+        "latam": {
+          "pts": 6,
+          "dollar": true
+        },
+        "meliuz": {
+          "pts": 3.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-booking"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-booking"
+      }
+    },
+    "nomad": {
+      "programs": {
+        "latam": {
+          "pts": 5,
+          "dollar": true
+        }
+      }
+    },
+    "revo": {
+      "programs": {
+        "latam": {
+          "pts": 3,
+          "dollar": false
+        }
+      }
+    },
+    "ifriend": {
+      "programs": {
+        "latam": {
+          "pts": 2,
+          "dollar": false
+        }
+      }
+    },
+    "rappi": {
+      "programs": {
+        "latam": {
+          "pts": 2,
+          "dollar": true
+        },
+        "inter": {
+          "pts": 15,
+          "dollar": false,
+          "slug": "rappi-1662"
+        }
+      },
+      "links": {
+        "inter": "https://shopping.inter.co/gift-card/rappi-1662"
+      }
+    },
+    "picpay": {
+      "programs": {
+        "latam": {
+          "pts": 0.5,
+          "dollar": false
+        }
+      }
+    },
+    "shopee": {
+      "programs": {
+        "latam": {
+          "pts": 0.5,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-shopee"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-shopee"
+      }
+    },
+    "elite internacional realty": {
+      "programs": {
+        "latam": {
+          "pts": 0.07,
+          "dollar": true
+        }
       }
     },
     "uber": {
@@ -774087,18 +774361,6 @@
       },
       "links": {
         "inter": "https://shopping.inter.co/gift-card/outback-steakhouse-1737"
-      }
-    },
-    "rappi": {
-      "programs": {
-        "inter": {
-          "pts": 15,
-          "dollar": false,
-          "slug": "rappi-1662"
-        }
-      },
-      "links": {
-        "inter": "https://shopping.inter.co/gift-card/rappi-1662"
       }
     },
     "marvel's wolverine": {
@@ -775011,25 +775273,6 @@
       "links": {
         "inter": "https://shopping.inter.co/gift-card/democrata-1340",
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-democrata"
-      }
-    },
-    "zattini": {
-      "programs": {
-        "inter": {
-          "pts": 5,
-          "dollar": false,
-          "slug": "zattini-128"
-        },
-        "meliuz": {
-          "pts": 4.5,
-          "dollar": false,
-          "ate": false,
-          "slug": "cupom-zattini"
-        }
-      },
-      "links": {
-        "inter": "https://shopping.inter.co/gift-card/zattini-128",
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-zattini"
       }
     },
     "imvu": {
@@ -776468,19 +776711,6 @@
         "meliuz": "https://www.meliuz.com.br/desconto/bobo"
       }
     },
-    "booking": {
-      "programs": {
-        "meliuz": {
-          "pts": 3.5,
-          "dollar": false,
-          "ate": false,
-          "slug": "cupom-booking"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-booking"
-      }
-    },
     "brastemp": {
       "programs": {
         "meliuz": {
@@ -776889,19 +777119,6 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-eotica"
       }
     },
-    "época cosméticos": {
-      "programs": {
-        "meliuz": {
-          "pts": 3,
-          "dollar": false,
-          "ate": false,
-          "slug": "cupom-epoca-cosmeticos"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-epoca-cosmeticos"
-      }
-    },
     "esteé lauder": {
       "programs": {
         "meliuz": {
@@ -776952,19 +777169,6 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-farm"
-      }
-    },
-    "fast shop": {
-      "programs": {
-        "meliuz": {
-          "pts": 1,
-          "dollar": false,
-          "ate": false,
-          "slug": "cupom-fast-shop"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-fast-shop"
       }
     },
     "fila": {
@@ -777673,19 +777877,6 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-multilaser"
       }
     },
-    "natura": {
-      "programs": {
-        "meliuz": {
-          "pts": 10,
-          "dollar": false,
-          "ate": false,
-          "slug": "cupom-natura"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-natura"
-      }
-    },
     "nespresso": {
       "programs": {
         "meliuz": {
@@ -777897,32 +778088,6 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-pneustore"
       }
     },
-    "polishop": {
-      "programs": {
-        "meliuz": {
-          "pts": 6.5,
-          "dollar": false,
-          "ate": true,
-          "slug": "polishop",
-          "categorias": [
-            {
-              "categoria": "Fitness - Vendido e Entregue por Polishop, Casa - Vendido e Entregue por Polishop, Massagem e Bem-estar - Vendido e Entregue por Polishop, Beleza e Cuidados Pessoais - Vendido e Entregue por Polishop e Cozinha e Eletroportáteis - Vendido e Entregue por Polishop",
-              "pts": 6.5,
-              "principal": false
-            },
-            {
-              "categoria": "Demais categorias",
-              "pts": 0.5,
-              "principal": true
-            }
-          ],
-          "ptsBase": 0.5
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/polishop"
-      }
-    },
     "positivo": {
       "programs": {
         "meliuz": {
@@ -778116,19 +778281,6 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-shop2gether"
-      }
-    },
-    "shopee": {
-      "programs": {
-        "meliuz": {
-          "pts": 1,
-          "dollar": false,
-          "ate": false,
-          "slug": "cupom-shopee"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-shopee"
       }
     },
     "soldiers nutrition": {
