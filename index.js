@@ -5801,6 +5801,10 @@ app.post('/concierge/cadastro', async (req, res) => {
     if (b.consentimento !== true) return res.status(400).json({ ok: false, erro: 'E necessario aceitar o tratamento dos dados (LGPD).' });
 
     const t = (v) => String(v == null ? '' : v).trim().slice(0, 500);
+    // Texto livre (objetivos, estilo de viagem, observacoes) nao cabe em 500:
+    // o corte silencioso fazia o painel do concierge mostrar a resposta pela metade.
+    // O teto do corpo inteiro (60 KB) continua valendo acima.
+    const tl = (v) => String(v == null ? '' : v).trim().slice(0, 5000);
     const nome = t(b.nome);
     if (nome.split(/\s+/).length < 2) return res.status(400).json({ ok: false, erro: 'Informe o nome completo.' });
     if (soDigitos(b.tel).length < 10)  return res.status(400).json({ ok: false, erro: 'Telefone invalido — inclua o DDD.' });
@@ -5816,7 +5820,7 @@ app.post('/concierge/cadastro', async (req, res) => {
       nasc: t(b.nasc), passaporte: t(b.passaporte), passaporteVal: t(b.passaporteVal),
       logradouro: t(b.logradouro), numero: t(b.numero), complemento: t(b.complemento),
       cep: soDigitos(b.cep), bairro: t(b.bairro), cidade: t(b.cidade), estado: t(b.estado),
-      acompanhantes: t(b.acompanhantes), grupo: '', ativo: false,
+      acompanhantes: tl(b.acompanhantes), grupo: '', ativo: false,
       origem: 'formulario', atualizadoEm: agora
     });
 
@@ -5826,17 +5830,17 @@ app.post('/concierge/cadastro', async (req, res) => {
 
     const perfil = perfilNormalizado({
       id, nome,
-      criarContas:     t(b.criarContas),
+      criarContas:     tl(b.criarContas),
       programas:       (Array.isArray(b.programas) ? b.programas : []).map(x => ({
                          programa: t(x.programa), tem: x.tem === true,
                          pontos: x.pontos === '' || x.pontos == null ? null : Number(soDigitos(x.pontos))
                        })).filter(x => x.programa),
-      outrosProgramas: t(b.outrosProgramas),
-      senhas:          { itens: senhasItens, outros: t(b.senhasOutros), bruto: '' },
+      outrosProgramas: tl(b.outrosProgramas),
+      senhas:          { itens: senhasItens, outros: tl(b.senhasOutros), bruto: '' },
       cartoes:         (Array.isArray(b.cartoes) ? b.cartoes : []).map(t).filter(Boolean),
       cartaoVirtual:   '',
-      objetivos:       t(b.objetivos),
-      estilo:          t(b.estilo),
+      objetivos:       tl(b.objetivos),
+      estilo:          tl(b.estilo),
       consentimento:   'Aceito',
       respondidoEm:    agora,
       atualizadoEm:    agora
