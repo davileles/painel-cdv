@@ -1,10 +1,9 @@
-// busca-voos.js — teste de busca de voos direto nos programas (Azul, LATAM, Smiles, GOL)
+// busca-voos.js — sonda de busca de voos nos programas (Azul, LATAM, Smiles, GOL)
 //
-// FASE 0 (diagnóstico): GET /voos/sonda faz uma busca fixa (CNF → GRU, ida daqui a 30 dias)
-// em cada programa, a partir do servidor, e responde só o que aconteceu: código HTTP,
-// tempo, tamanho, se parece bloqueio anti-robô e um trecho curto da resposta.
-// Não recebe parâmetro do usuário (não é um proxy aberto) e guarda o resultado por 2 min.
-// Uso exclusivo de teste no gestor-cdv e no concierge — NÃO ligar no painel do membro.
+// GET /voos/sonda faz uma busca fixa (CNF → GRU, ida daqui a 30 dias) em cada programa,
+// a partir do servidor, e responde o que aconteceu: código HTTP, tempo, tamanho, sinais
+// de proteção do site e um trecho curto da resposta. Não recebe parâmetro do usuário
+// e guarda o resultado por 2 min. Usada pela aba Buscar voos do gestor-cdv e do concierge.
 //
 // As rotas internas dos sites não são API oficial: podem mudar sem aviso.
 
@@ -20,7 +19,7 @@ function dataISO(diasAFrente) {
 }
 function uuid() { return crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString('hex'); }
 
-function sinaisDeBloqueio(status, headers, corpo) {
+function sinaisDeProtecao(status, headers, corpo) {
   const t = String(corpo || '').slice(0, 4000).toLowerCase();
   const s = [];
   if (status === 403) s.push('403');
@@ -39,7 +38,7 @@ async function chamar(nome, url, opcoes) {
   try {
     const r = await fetch(url, Object.assign({ redirect: 'manual', signal: ctrl.signal }, opcoes));
     const corpo = await r.text();
-    const bloqueio = sinaisDeBloqueio(r.status, r.headers, corpo);
+    const protecao = sinaisDeProtecao(r.status, r.headers, corpo);
     let json = null;
     try { json = JSON.parse(corpo); } catch (e) {}
     return {
@@ -50,7 +49,7 @@ async function chamar(nome, url, opcoes) {
       servidor: r.headers.get('server') || '',
       tipo: (r.headers.get('content-type') || '').split(';')[0],
       redireciona: r.headers.get('location') || undefined,
-      bloqueio: bloqueio.length ? bloqueio : undefined,
+      protecao: protecao.length ? protecao : undefined,
       json: json ? Object.keys(json).slice(0, 12) : undefined,
       trecho: corpo.replace(/\s+/g, ' ').slice(0, 280)
     };
@@ -114,7 +113,7 @@ async function rodarSonda() {
   for (const [nome, url, op] of testes(origem, destino, ida)) resultados.push(await chamar(nome, url, op));
   const dados = { ok: true, quando: new Date().toISOString(), rota: origem + '→' + destino, ida, resultados };
   cacheSonda = { em: Date.now(), dados };
-  console.log('[voos/sonda] ' + JSON.stringify(resultados.map(x => ({ t: x.teste, s: x.status, e: x.erro, b: x.bloqueio, ms: x.ms, bytes: x.bytes, srv: x.servidor, j: x.json, tr: (x.trecho || '').slice(0, 120) }))));
+  console.log('[voos/sonda] ' + JSON.stringify(resultados.map(x => ({ t: x.teste, s: x.status, e: x.erro, p: x.protecao, ms: x.ms, bytes: x.bytes, srv: x.servidor, j: x.json, tr: (x.trecho || '').slice(0, 120) }))));
   return dados;
 }
 

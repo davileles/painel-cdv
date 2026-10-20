@@ -10479,10 +10479,10 @@ process.on('unhandledRejection', (e) => {
   console.error('[unhandledRejection]', (e && e.stack) || e);
 });
 
-// ── BUSCA DE VOOS — TESTE (gestor-cdv e concierge; NÃO usar no painel do membro) ──
-// Fase 0: GET /voos/sonda diz se as buscas de Azul, LATAM, Smiles e GOL respondem a
-// partir do servidor ou são bloqueadas. Rota fixa (CNF→GRU), sem parâmetro do usuário,
-// resultado guardado por 2 min. Lógica em busca-voos.js.
+// ── BUSCA DE VOOS — sonda (aba Buscar voos do gestor-cdv e do concierge) ──
+// GET /voos/sonda mostra como Azul, LATAM, Smiles e GOL respondem a uma busca feita
+// a partir do servidor. Rota fixa (CNF→GRU), sem parâmetro do usuário, resultado
+// guardado por 2 min. Lógica em busca-voos.js.
 let buscaVoos = null;
 try { buscaVoos = require('./busca-voos.js'); } catch (e) { console.error('[busca-voos] não carregou:', e.message); }
 app.get('/voos/sonda', async (req, res) => {
