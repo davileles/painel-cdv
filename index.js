@@ -10494,6 +10494,35 @@ app.get('/voos/sonda', async (req, res) => {
   }
 });
 
+// ── BUSCA DE VOOS — preços ao vivo via ZenRows (etapa de teste, gestor-cdv e concierge) ──
+// GET /voos/precos?origem=&destino=&ida=&volta=&adt=&chd=&inf=&cabine=&pagamento=[&novo=1]
+// responde na hora com o estado (rodando/pronta) e busca em segundo plano; a página repete
+// a consulta. Gasta créditos do ZenRows: exige chave de operador (X-CDV-Op) ou sessão do
+// concierge (X-CDV-Auth). GET /voos/precos/bruto[?fonte=] = última captura, para ajustar a leitura.
+let buscaPrecos = null;
+try { buscaPrecos = require('./busca-voos-precos.js'); } catch (e) { console.error('[busca-voos-precos] não carregou:', e.message); }
+function autorizaBuscaVoos(req, res) {
+  if (sessaoConciergeValida(req.headers['x-cdv-auth'])) return true;
+  if (req.headers['x-cdv-op']) return opAutorizado(req, res);
+  res.status(401).json({ ok: false, erro: 'nao autorizado', motivo: 'operador' });
+  return false;
+}
+app.get('/voos/precos', (req, res) => {
+  if (!buscaPrecos) return res.status(503).json({ ok: false, erro: 'módulo busca-voos-precos indisponível' });
+  if (!autorizaBuscaVoos(req, res)) return;
+  try {
+    const r = buscaPrecos.buscarPrecos(req.query || {});
+    res.status(r.status).json(r.corpo);
+  } catch (e) {
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+app.get('/voos/precos/bruto', (req, res) => {
+  if (!buscaPrecos) return res.status(503).json({ ok: false, erro: 'módulo busca-voos-precos indisponível' });
+  if (!autorizaBuscaVoos(req, res)) return;
+  res.json({ ok: true, captura: buscaPrecos.capturaBruta(String(req.query.fonte || '')) });
+});
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
 });
