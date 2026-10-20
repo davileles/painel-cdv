@@ -663,7 +663,7 @@
 .bv-tipo-campo .bv-chip{padding:10px 12px}
 .bv-iata{position:relative}
 .bv-iata input{font-weight:800;font-size:17px}
-.bv-ac{display:none;position:absolute;left:0;right:0;top:calc(100% - 14px);z-index:50;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 10px 30px rgba(0,0,0,.35);max-height:300px;overflow-y:auto;min-width:260px}
+.bv-ac{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:50;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 10px 30px rgba(0,0,0,.35);max-height:300px;overflow-y:auto;min-width:260px}
 .bv-ac.on{display:block}
 .bv-ac-item{display:flex;gap:10px;align-items:baseline;padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border)}
 .bv-ac-item:last-child{border-bottom:none}
@@ -672,8 +672,10 @@
 .bv-ac-nome{font-size:12px;color:var(--muted);line-height:1.35}
 .bv-secao{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:10px 0 6px}
 .bv-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
-.bv-aero{font-size:11px;color:var(--muted2);min-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bv-trocar{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--r);width:40px;height:42px;font-size:17px;cursor:pointer;flex:0 0 auto;margin-bottom:18px}
+.bv-caixa{position:relative}
+.bv-aero{position:absolute;top:50%;transform:translateY(-50%);left:62px;right:12px;font-size:12px;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.bv-caixa input{padding-right:12px}
+.bv-trocar{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--r);width:40px;height:42px;font-size:17px;cursor:pointer;flex:0 0 auto;margin-bottom:0}
 .bv-trocar:hover{border-color:var(--accent)}
 .bv-chips{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
 .bv-chip{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:999px;padding:7px 14px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer}
@@ -1030,11 +1032,11 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   <p class="bv-sub">Preencha o trecho e abra a pesquisa já pronta na Azul, na LATAM e na Smiles (em dinheiro, na GOL). O resultado abre no site de cada programa.</p>
   <div class="bv-card bv-form">
     <div class="bv-linha">
-      <div class="field bv-iata"><label>Origem</label><input type="text" id="bv-origem" placeholder="Código ou cidade" autocomplete="off" spellcheck="false"/><div class="bv-ac" id="bv-origem-ac"></div><span class="bv-aero" id="bv-origem-nome"></span></div>
+      <div class="field bv-iata"><label>Origem</label><div class="bv-caixa"><input type="text" id="bv-origem" placeholder="Código ou cidade" autocomplete="off" spellcheck="false"/><span class="bv-aero" id="bv-origem-nome"></span></div><div class="bv-ac" id="bv-origem-ac"></div></div>
       <button type="button" class="bv-trocar" onclick="bvTrocar()" title="Inverter origem e destino">⇄</button>
-      <div class="field bv-iata"><label>Destino</label><input type="text" id="bv-destino" placeholder="Código ou cidade" autocomplete="off" spellcheck="false"/><div class="bv-ac" id="bv-destino-ac"></div><span class="bv-aero" id="bv-destino-nome"></span></div>
-      <div class="field bv-data"><label>🛫 Ida</label><input type="date" id="bv-ida"/><span class="bv-aero"></span></div>
-      <div class="field bv-data" id="bv-volta-campo" style="display:none"><label>🛬 Volta</label><input type="date" id="bv-volta"/><span class="bv-aero"></span></div>
+      <div class="field bv-iata"><label>Destino</label><div class="bv-caixa"><input type="text" id="bv-destino" placeholder="Código ou cidade" autocomplete="off" spellcheck="false"/><span class="bv-aero" id="bv-destino-nome"></span></div><div class="bv-ac" id="bv-destino-ac"></div></div>
+      <div class="field bv-data"><label>🛫 Ida</label><input type="date" id="bv-ida"/></div>
+      <div class="field bv-data" id="bv-volta-campo" style="display:none"><label>🛬 Volta</label><input type="date" id="bv-volta"/></div>
     </div>
     <div class="bv-linha">
       <div class="field bv-tipo-campo"><label>Tipo</label>
@@ -11148,7 +11150,7 @@ function bvLer() {
 // ── Aeroportos (iata.js) e autocomplete de origem/destino ──
 var bvAeroBase = null;
 // Aeroportos comerciais principais sobem na lista; apelidos em português entram na busca
-var BV_AERO_PRINCIPAIS = 'AEP AJU AMS ATL BCN BEL BOG BOS BPS BSB BVB CDG CGB CGH CGR CNF CUN CWB DFW DOH DXB EWR EZE FCO FLN FOR FRA GIG GRU GYN HND IAD IAH IGU IOS IST JFK JPA LAX LGW LHR LIM LIS MAD MAO MCO MCP MCZ MEX MIA MUC MXP NAT NRT NVT OPO ORD ORY PMW POA PTY PVH RBR REC SCL SDU SFO SLZ SSA THE VCP VIX YYZ ZRH'.split(' ');
+var BV_AERO_PRINCIPAIS = 'AUA BUD CUR KEF MLE PRG SJO SXM WAW AEP AJU AMS ATL BCN BEL BOG BOS BPS BSB BVB CDG CGB CGH CGR CNF CUN CWB DFW DOH DXB EWR EZE FCO FLN FOR FRA GIG GRU GYN HND IAD IAH IGU IOS IST JFK JPA LAX LGW LHR LIM LIS MAD MAO MCO MCP MCZ MEX MIA MUC MXP NAT NRT NVT OPO ORD ORY PMW POA PTY PVH RBR REC SCL SDU SFO SLZ SSA THE VCP VIX YYZ ZRH'.split(' ');
 var BV_APELIDOS = {
   AEP: 'buenos aires aeroparque', AMS: 'amsterda holanda', BCN: 'barcelona espanha', CDG: 'paris franca', CGH: 'congonhas',
   CNF: 'confins', CUN: 'cancun mexico', DXB: 'dubai emirados', EWR: 'nova york newark', EZE: 'buenos aires ezeiza argentina',
@@ -11184,16 +11186,94 @@ var BV_AERO_CIDADES = [
   ['YMQ', 'Montreal – Todos os aeroportos (Canadá)', ''],
   ['YTO', 'Toronto – Todos os aeroportos (Canadá)', '']
 ];
+// Cidade em português (por código; o iata.js traz o município e nomes em inglês)
+var BV_CIDADE_PT = {
+  GIG:'Rio de Janeiro', SDU:'Rio de Janeiro', VCP:'Campinas',
+  MXP:'Milão', LIN:'Milão', BGY:'Milão', FCO:'Roma', CIA:'Roma', VCE:'Veneza', TSF:'Veneza', NAP:'Nápoles',
+  FLR:'Florença', PSA:'Pisa', TRN:'Turim', BLQ:'Bolonha',
+  LIS:'Lisboa', OPO:'Porto', MAD:'Madri', BCN:'Barcelona', AGP:'Málaga', SVQ:'Sevilha', VLC:'Valência', FAO:'Faro',
+  PMI:'Palma de Mallorca', IBZ:'Ibiza', TFS:'Tenerife', TFN:'Tenerife', LPA:'Gran Canaria',
+  CDG:'Paris', ORY:'Paris', BVA:'Paris', NCE:'Nice', LYS:'Lyon', MRS:'Marselha', AMS:'Amsterdã', BRU:'Bruxelas',
+  LHR:'Londres', LGW:'Londres', STN:'Londres', LTN:'Londres', LCY:'Londres', MAN:'Manchester', EDI:'Edimburgo', DUB:'Dublin',
+  FRA:'Frankfurt', MUC:'Munique', BER:'Berlim', DUS:'Düsseldorf', HAM:'Hamburgo',
+  ZRH:'Zurique', GVA:'Genebra', VIE:'Viena', CPH:'Copenhague', ARN:'Estocolmo', OSL:'Oslo', HEL:'Helsinque',
+  ATH:'Atenas', JTR:'Santorini', JMK:'Mykonos', IST:'Istambul', SAW:'Istambul',
+  JFK:'Nova York', LGA:'Nova York', EWR:'Nova York', IAD:'Washington', DCA:'Washington',
+  LAX:'Los Angeles', ORD:'Chicago', MDW:'Chicago', MIA:'Miami', FLL:'Fort Lauderdale', MCO:'Orlando', ATL:'Atlanta',
+  IAH:'Houston', DFW:'Dallas', SFO:'São Francisco', LAS:'Las Vegas', BOS:'Boston', SEA:'Seattle', HNL:'Honolulu',
+  PHL:'Filadélfia', MSY:'Nova Orleans',
+  YYZ:'Toronto', YUL:'Montreal', YVR:'Vancouver',
+  MEX:'Cidade do México', CUN:'Cancún', PTY:'Cidade do Panamá', HAV:'Havana', CCS:'Caracas',
+  EZE:'Buenos Aires', AEP:'Buenos Aires', SCL:'Santiago', MVD:'Montevidéu', ASU:'Assunção', BOG:'Bogotá', LIM:'Lima', UIO:'Quito',
+  DXB:'Dubai', AUH:'Abu Dhabi', DOH:'Doha', TLV:'Tel Aviv',
+  NRT:'Tóquio', HND:'Tóquio', KIX:'Osaka', ITM:'Osaka', ICN:'Seul', GMP:'Seul', PEK:'Pequim', PKX:'Pequim', PVG:'Xangai', SHA:'Xangai',
+  HKG:'Hong Kong', SIN:'Singapura', BKK:'Bangcoc', DMK:'Bangcoc', DEL:'Nova Délhi', BOM:'Mumbai', DPS:'Bali',
+  JNB:'Joanesburgo', CPT:'Cidade do Cabo', CAI:'Cairo',
+  SYD:'Sydney', MEL:'Melbourne', AKL:'Auckland'
+};
+// Nomes em inglês do iata.js que viram português quando o código não está acima
+var BV_TRADUZ = {
+  'London':'Londres', 'Rome':'Roma', 'Lisbon':'Lisboa', 'Milan':'Milão', 'Munich':'Munique', 'Zurich':'Zurique',
+  'Geneva':'Genebra', 'Vienna':'Viena', 'Copenhagen':'Copenhague', 'Stockholm':'Estocolmo', 'Athens':'Atenas',
+  'New York':'Nova York', 'Mexico City':'Cidade do México', 'Cape Town':'Cidade do Cabo', 'Johannesburg':'Joanesburgo',
+  'Tokyo':'Tóquio', 'Beijing':'Pequim', 'Shanghai':'Xangai', 'Seoul':'Seul', 'Singapore':'Singapura', 'Bangkok':'Bangcoc',
+  'New Delhi':'Nova Délhi', 'Philadelphia':'Filadélfia', 'New Orleans':'Nova Orleans', 'Edinburgh':'Edimburgo',
+  'Madrid':'Madri', 'Seville':'Sevilha', 'Florence':'Florença', 'Venice':'Veneza', 'Naples':'Nápoles', 'Turin':'Turim',
+  'Hamburg':'Hamburgo', 'Berlin':'Berlim', 'Bogota':'Bogotá', 'Bologna':'Bolonha', 'Valencia':'Valência',
+  'Marseille':'Marselha', 'Brussels':'Bruxelas', 'Amsterdam':'Amsterdã', 'Helsinki':'Helsinque', 'Istanbul':'Istambul',
+  'San Francisco':'São Francisco', 'Montevideo':'Montevidéu', 'Moscow':'Moscou', 'Saint Petersburg':'São Petersburgo'
+};
+// Aeroportos que não estão no iata.js
+var BV_AERO_EXTRAS = [
+  ['AMM', 'Amã – Queen Alia (Jordan)'], ['AUA', 'Aruba – Queen Beatrix (Aruba)'], ['BAH', 'Bahrein – Bahrain International (Bahrain)'],
+  ['BEG', 'Belgrado – Nikola Tesla (Serbia)'], ['BGI', 'Barbados – Grantley Adams (Barbados)'], ['BOB', 'Bora Bora – Motu Mute (French Polynesia)'],
+  ['BSL', 'Basileia – EuroAirport Basel-Mulhouse-Freiburg (France)'], ['BUD', 'Budapeste – Ferenc Liszt (Hungary)'],
+  ['CAY', 'Caiena – Félix Eboué (French Guiana)'], ['CEB', 'Cebu – Mactan-Cebu (Philippines)'], ['CMB', 'Colombo – Bandaranaike (Sri Lanka)'],
+  ['CUR', 'Curaçao – Hato (Curaçao)'], ['DAD', 'Da Nang – Da Nang International (Vietnam)'], ['DAR', 'Dar es Salaam – Julius Nyerere (Tanzania)'],
+  ['DBV', 'Dubrovnik – Dubrovnik (Croatia)'], ['DME', 'Moscou – Domodedovo (Russia)'], ['DSS', 'Dakar – Blaise Diagne (Senegal)'],
+  ['EVN', 'Ierevan – Zvartnots (Armenia)'], ['GEO', 'Georgetown – Cheddi Jagan (Guyana)'], ['GUA', 'Cidade da Guatemala – La Aurora (Guatemala)'],
+  ['GYD', 'Baku – Heydar Aliyev (Azerbaijan)'], ['HAN', 'Hanói – Noi Bai (Vietnam)'], ['JRO', 'Kilimanjaro – Kilimanjaro International (Tanzania)'],
+  ['KEF', 'Reykjavik – Keflavík (Iceland)'], ['KRK', 'Cracóvia – João Paulo II Kraków-Balice (Poland)'], ['KTM', 'Katmandu – Tribhuvan (Nepal)'],
+  ['KWI', 'Kuwait – Kuwait International (Kuwait)'], ['LCA', 'Lárnaca – Larnaca International (Cyprus)'], ['LED', 'São Petersburgo – Pulkovo (Russia)'],
+  ['LIR', 'Libéria – Daniel Oduber Quirós (Costa Rica)'], ['MBJ', 'Montego Bay – Sangster (Jamaica)'], ['MCT', 'Mascate – Muscat International (Oman)'],
+  ['MGA', 'Manágua – Augusto C. Sandino (Nicaragua)'], ['MLA', 'Malta – Malta International (Malta)'], ['MLE', 'Malé – Velana (Maldives)'],
+  ['MNL', 'Manila – Ninoy Aquino (Philippines)'], ['MRU', 'Maurício – Sir Seewoosagur Ramgoolam (Mauritius)'], ['NAN', 'Nadi – Nadi International (Fiji)'],
+  ['NAS', 'Nassau – Lynden Pindling (Bahamas)'], ['OTP', 'Bucareste – Henri Coandă (Romania)'], ['PBM', 'Paramaribo – Johan Adolf Pengel (Suriname)'],
+  ['POS', 'Port of Spain – Piarco (Trinidad and Tobago)'], ['PPT', 'Papeete (Taiti) – Faa\'a (French Polynesia)'], ['PQC', 'Phu Quoc – Phu Quoc International (Vietnam)'],
+  ['PRG', 'Praga – Václav Havel (Czechia)'], ['SAL', 'San Salvador – Monseñor Óscar Arnulfo Romero (El Salvador)'], ['SEZ', 'Seychelles – Seychelles International (Seychelles)'],
+  ['SGN', 'Ho Chi Minh – Tan Son Nhat (Vietnam)'], ['SJO', 'San José (Costa Rica) – Juan Santamaría (Costa Rica)'], ['SJU', 'San Juan (Porto Rico) – Luis Muñoz Marín (Puerto Rico)'],
+  ['SOF', 'Sófia – Vasil Levski (Bulgaria)'], ['SPU', 'Split – Split (Croatia)'], ['SVO', 'Moscou – Sheremetyevo (Russia)'],
+  ['SXM', 'Saint Martin – Princess Juliana (Sint Maarten)'], ['TBS', 'Tbilisi – Shota Rustaveli (Georgia)'], ['TPE', 'Taipé – Taoyuan (Taiwan)'],
+  ['TUN', 'Túnis – Tunis-Carthage (Tunisia)'], ['WAW', 'Varsóvia – Chopin (Poland)'], ['WDH', 'Windhoek – Hosea Kutako (Namibia)'],
+  ['ZAG', 'Zagreb – Franjo Tuđman (Croatia)'], ['ZNZ', 'Zanzibar – Abeid Amani Karume (Tanzania)']
+];
+function bvCidadePt(code, label) {
+  var partes = label.split(' – ');
+  if (partes.length < 2) return label;
+  var cidade = partes[0];
+  if (BV_CIDADE_PT[code]) cidade = BV_CIDADE_PT[code];
+  else {
+    var base = cidade.replace(/\s*\(.*\)\s*$/, '');
+    if (BV_TRADUZ[base]) cidade = BV_TRADUZ[base] + cidade.slice(base.length);
+  }
+  return cidade + ' – ' + partes.slice(1).join(' – ');
+}
 function bvAeroportos() {
   if (bvAeroBase) return bvAeroBase;
   if (typeof IATA_AIRPORTS === 'undefined') return [];
   var cidades = BV_AERO_CIDADES.map(function(x) {
     return { code: x[0], label: x[1], norm: bvNorm(x[1] + ' ' + x[2]), br: /\(Brasil\)$/.test(x[1]), principal: true, cidade: true };
   });
-  bvAeroBase = cidades.concat(IATA_AIRPORTS.map(function(a) {
-    var label = String(a.label || '').replace(/\(Brazil\)\s*$/, '(Brasil)');
-    var code = String(a.code).toUpperCase();
-    return { code: code, label: label, norm: bvNorm(label + ' ' + (BV_APELIDOS[code] || '')), br: /\(Brasil\)\s*$/.test(label), principal: BV_AERO_PRINCIPAIS.indexOf(code) >= 0 };
+  var vistos = {};
+  var lista = IATA_AIRPORTS.map(function(a) { return { code: String(a.code).toUpperCase(), label: String(a.label || '') }; })
+    .concat(BV_AERO_EXTRAS.map(function(x) { return { code: x[0], label: x[1] }; }));
+  bvAeroBase = cidades.concat(lista.filter(function(a) {
+    if (vistos[a.code]) return false; vistos[a.code] = true; return true;
+  }).map(function(a) {
+    var original = a.label.replace(/\(Brazil\)\s*$/, '(Brasil)');
+    var label = bvCidadePt(a.code, original);
+    var code = a.code;
+    return { code: code, label: label, norm: bvNorm(label + ' ' + original + ' ' + (BV_APELIDOS[code] || '')), br: /\(Brasil\)\s*$/.test(label), principal: BV_AERO_PRINCIPAIS.indexOf(code) >= 0 };
   }));
   return bvAeroBase;
 }
@@ -11298,13 +11378,27 @@ function bvProblema(b) {
 
 var bvLinksAtuais = [];
 
+// Nome do aeroporto escrito dentro da caixa, logo depois do código
+var bvCanvasMedida = null;
+function bvMostrarNome(k) {
+  var inp = document.getElementById('bv-' + k), span = document.getElementById('bv-' + k + '-nome');
+  if (!inp || !span) return;
+  var v = inp.value.trim(), nome = /^[A-Za-z]{3}$/.test(v) ? bvNomeAeroporto(v.toUpperCase()) : '';
+  span.textContent = nome;
+  if (!nome) return;
+  try {
+    var cs = getComputedStyle(inp);
+    bvCanvasMedida = bvCanvasMedida || document.createElement('canvas');
+    var ctx = bvCanvasMedida.getContext('2d');
+    ctx.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    span.style.left = (parseFloat(cs.paddingLeft) + parseFloat(cs.borderLeftWidth) + ctx.measureText(inp.value).width + 10) + 'px';
+  } catch (e) {}
+}
+
 function bvRender() {
   var el = document.getElementById('bv-resultado');
   if (!el) return;
-  ['origem', 'destino'].forEach(function(k) {
-    var cod = document.getElementById('bv-' + k).value.trim().toUpperCase();
-    document.getElementById('bv-' + k + '-nome').textContent = bvNomeAeroporto(cod);
-  });
+  ['origem', 'destino'].forEach(function(k) { bvMostrarNome(k); });
   var b = bvLer();
   var erro = bvProblema(b);
   bvLinksAtuais = [];
