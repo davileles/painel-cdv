@@ -10479,6 +10479,23 @@ process.on('unhandledRejection', (e) => {
   console.error('[unhandledRejection]', (e && e.stack) || e);
 });
 
+// ── BUSCA DE VOOS — TESTE (gestor-cdv e concierge; NÃO usar no painel do membro) ──
+// Fase 0: GET /voos/sonda diz se as buscas de Azul, LATAM, Smiles e GOL respondem a
+// partir do servidor ou são bloqueadas. Rota fixa (CNF→GRU), sem parâmetro do usuário,
+// resultado guardado por 2 min. Lógica em busca-voos.js.
+let buscaVoos = null;
+try { buscaVoos = require('./busca-voos.js'); } catch (e) { console.error('[busca-voos] não carregou:', e.message); }
+app.get('/voos/sonda', async (req, res) => {
+  if (!buscaVoos) return res.status(503).json({ ok: false, erro: 'módulo busca-voos indisponível' });
+  try {
+    const r = await buscaVoos.sondar();
+    console.log('[voos/sonda]', JSON.stringify((r.resultados || []).map(x => ({ t: x.teste, s: x.status, e: x.erro, b: x.bloqueio, ms: x.ms, bytes: x.bytes, srv: x.servidor }))));
+    res.json(r);
+  } catch (e) {
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CDV Proxy rodando na porta ${PORT}`);
 });
