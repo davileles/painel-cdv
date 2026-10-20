@@ -637,6 +637,57 @@
   #cdv-map-svg{min-height:240px!important}
 }
 /* === /MAPA DE EMISSÕES === */
+/* ══ BUSCAR VOOS (painel do viajante) — bloco bv* espelhado de gestor-cdv e concierge ══ */
+#tab-buscavoos{--surface2:var(--card);--border2:var(--border-ctrl);--r:10px;--font:'Montserrat',sans-serif}
+#tab-buscavoos .bv-wrap{max-width:1180px;margin:0 auto;padding:22px 26px 40px}
+@media(max-width:900px){#tab-buscavoos .bv-wrap{padding:18px 16px 32px}}
+#tab-buscavoos .bv-titulo{font-size:22px;font-weight:900;letter-spacing:-.4px;margin:0 0 4px}
+#tab-buscavoos .bv-sub{font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.5}
+#tab-buscavoos .bv-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;box-shadow:var(--shadow-1)}
+#tab-buscavoos .field{display:flex;flex-direction:column;gap:4px}
+#tab-buscavoos label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
+#tab-buscavoos input,#tab-buscavoos select{background:var(--surface);border:1px solid var(--border-ctrl);border-radius:10px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:500;padding:10px 12px;width:100%;outline:none;box-sizing:border-box;height:42px}
+#tab-buscavoos select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a97b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
+#tab-buscavoos input:focus,#tab-buscavoos select:focus{border-color:var(--accent)}
+#tab-buscavoos .bv-chip{height:42px}
+#tab-buscavoos .bv-ac{box-shadow:var(--shadow-3)}
+.bv-form{padding:1rem 1.1rem}
+.bv-linha{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:6px}
+.bv-linha:last-child{margin-bottom:0}
+.bv-linha>.field{flex:1 1 140px;margin-bottom:0;gap:4px}
+.bv-linha>.bv-iata{flex:1.4 1 170px}
+.bv-linha>.bv-data{flex:1 1 140px}
+.bv-linha>.bv-num{flex:0 1 84px;min-width:70px}
+.bv-linha>.bv-tipo-campo{flex:0 0 auto}
+.bv-tipo-campo .bv-chips{margin:0}
+.bv-tipo-campo .bv-chip{padding:10px 12px}
+.bv-iata{position:relative}
+.bv-iata input{font-weight:800;font-size:17px}
+.bv-ac{display:none;position:absolute;left:0;right:0;top:calc(100% - 14px);z-index:50;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 10px 30px rgba(0,0,0,.35);max-height:300px;overflow-y:auto;min-width:260px}
+.bv-ac.on{display:block}
+.bv-ac-item{display:flex;gap:10px;align-items:baseline;padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border)}
+.bv-ac-item:last-child{border-bottom:none}
+.bv-ac-item.sel,.bv-ac-item:hover{background:var(--surface2)}
+.bv-ac-cod{font-weight:800;letter-spacing:1px;min-width:38px;color:var(--text)}
+.bv-ac-nome{font-size:12px;color:var(--muted);line-height:1.35}
+.bv-secao{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:10px 0 6px}
+.bv-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.bv-aero{font-size:11px;color:var(--muted2);min-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bv-trocar{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--r);width:40px;height:42px;font-size:17px;cursor:pointer;flex:0 0 auto;margin-bottom:18px}
+.bv-trocar:hover{border-color:var(--accent)}
+.bv-chips{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.bv-chip{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:999px;padding:7px 14px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer}
+.bv-chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.bv-aviso{font-size:13px;color:var(--muted);padding:14px 16px;border:1px dashed var(--border2);border-radius:var(--r)}
+.bv-prog{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--bv-cor,var(--accent));border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bv-prog-topo{display:flex;align-items:center;gap:4px;min-width:0}
+.bv-prog-nome{font-weight:800;font-size:14px;white-space:nowrap}
+.bv-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);background:var(--surface2);border-radius:6px;padding:3px 7px;margin-left:6px}
+.bv-acoes{display:flex;gap:6px;flex:0 0 auto}
+.bv-acoes a,.bv-acoes button{font-family:var(--font);font-size:12px;font-weight:800;padding:7px 10px;border-radius:8px;cursor:pointer;text-decoration:none;border:1px solid var(--border2);background:var(--surface2);color:var(--text)}
+.bv-acoes a.bv-abrir{background:var(--bv-cor,var(--accent));border-color:var(--bv-cor,var(--accent));color:#fff}
+.bv-copiar-tudo{display:flex;justify-content:flex-end;margin-bottom:4px}
+.bv-copiar-tudo button{font-family:var(--font);font-size:12px;font-weight:800;padding:8px 14px;border-radius:8px;cursor:pointer;border:1px solid var(--border2);background:var(--surface2);color:var(--text)}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link rel="stylesheet" href="cdv-redesign.css">
@@ -855,6 +906,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   <button class="main-tab active" data-tab="comparador">🏆 Comparador</button>
   <button class="main-tab" data-tab="radar">📡 Radar de Ofertas</button>
   <button class="main-tab" data-tab="passagens">✈️ Passagens</button>
+  <button class="main-tab" data-tab="buscavoos" id="tab-btn-buscavoos">🔎 Buscar Voos</button>
   <button class="main-tab" data-tab="mapa" id="tab-btn-mapa">🗺️ Mapa de Emissões</button>
   <div class="side-group">Minhas milhas</div>
   <button class="main-tab" data-tab="milhas">📋 Gestão de Milhas</button>
@@ -970,6 +1022,40 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   <div class="grid" id="radar-grid">
     <div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando ofertas…</div></div>
   </div>
+</div>
+
+<div id="tab-buscavoos" class="tab-panel" style="display:none">
+<div class="bv-wrap">
+  <h2 class="bv-titulo">🔎 Buscar voos</h2>
+  <p class="bv-sub">Preencha o trecho e abra a pesquisa já pronta na Azul, na LATAM e na Smiles (em dinheiro, na GOL). O resultado abre no site de cada programa.</p>
+  <div class="bv-card bv-form">
+    <div class="bv-linha">
+      <div class="field bv-iata"><label>Origem</label><input type="text" id="bv-origem" placeholder="Código ou cidade" autocomplete="off" spellcheck="false"/><div class="bv-ac" id="bv-origem-ac"></div><span class="bv-aero" id="bv-origem-nome"></span></div>
+      <button type="button" class="bv-trocar" onclick="bvTrocar()" title="Inverter origem e destino">⇄</button>
+      <div class="field bv-iata"><label>Destino</label><input type="text" id="bv-destino" placeholder="Código ou cidade" autocomplete="off" spellcheck="false"/><div class="bv-ac" id="bv-destino-ac"></div><span class="bv-aero" id="bv-destino-nome"></span></div>
+      <div class="field bv-data"><label>🛫 Ida</label><input type="date" id="bv-ida"/><span class="bv-aero"></span></div>
+      <div class="field bv-data" id="bv-volta-campo" style="display:none"><label>🛬 Volta</label><input type="date" id="bv-volta"/><span class="bv-aero"></span></div>
+    </div>
+    <div class="bv-linha">
+      <div class="field bv-tipo-campo"><label>Tipo</label>
+        <div class="bv-chips" id="bv-tipo">
+          <button type="button" class="bv-chip" data-v="ida-volta" onclick="bvTipo('ida-volta')">Ida e volta</button>
+          <button type="button" class="bv-chip on" data-v="ida" onclick="bvTipo('ida')">Só ida</button>
+        </div>
+      </div>
+      <div class="field bv-num"><label>Adultos</label><input type="number" id="bv-adt" min="1" max="9" value="1"/></div>
+      <div class="field bv-num"><label>Crianças</label><input type="number" id="bv-chd" min="0" max="8" value="0"/></div>
+      <div class="field bv-num"><label>Bebês</label><input type="number" id="bv-inf" min="0" max="8" value="0"/></div>
+      <div class="field"><label>Cabine</label>
+        <select id="bv-cabine"><option value="economica">Econômica</option><option value="executiva">Executiva</option></select>
+      </div>
+      <div class="field"><label>Pagamento</label>
+        <select id="bv-pagamento"><option value="ambos">Ambos</option><option value="dinheiro">Dinheiro</option><option value="pontos" selected>Pontos</option></select>
+      </div>
+    </div>
+  </div>
+  <div id="bv-resultado"></div>
+</div>
 </div>
 
 <div id="tab-lounges" class="tab-panel" style="display:none">
@@ -6340,6 +6426,7 @@ function switchTab(tab){
   document.getElementById('tab-radar').style.display        = tab==='radar'        ?'block':'none';
   document.getElementById('tab-passagens').style.display    = tab==='passagens'    ?'block':'none';
   document.getElementById('tab-mapa').style.display         = tab==='mapa'         ?'block':'none';
+  document.getElementById('tab-buscavoos').style.display    = tab==='buscavoos'    ?'block':'none';
   document.getElementById('tab-milhas').style.display       = tab==='milhas'       ?'block':'none';
   document.getElementById('tab-lounges').style.display      = tab==='lounges'      ?'block':'none';
   document.getElementById('tab-calculadoras').style.display = tab==='calculadoras' ?'block':'none';
@@ -10961,6 +11048,323 @@ function mapaRenderAll() {
   </div>
 </div>
 <script src="iata.js"></script>
+<script>
+// ══ BUSCAR VOOS — monta links de pesquisa de Azul, LATAM Pass e Smiles ══
+// Espelhado em gestor-cdv/index.html, concierge/index.html e painel-cdv/index.html (mudou um, muda os outros).
+// Azul, LATAM, Smiles e GOL: formato confirmado com links reais (out/2026).
+// Em dinheiro, a Smiles (só milhas) dá lugar à busca da GOL.
+var bvEstado = { tipo: 'ida' };
+
+var BV_PROGRAMAS = [
+  { id: 'azul',   nome: 'Azul Fidelidade', cor: '#1b5bd6', link: bvLinkAzul },
+  { id: 'latam',  nome: 'LATAM Pass',      cor: '#e8114b', link: bvLinkLatam },
+  { id: 'smiles', nome: 'Smiles',          cor: '#ff7020', link: bvLinkSmiles,
+    dinheiro: { id: 'gol', nome: 'GOL',     cor: '#ff7020', link: bvLinkGol } }
+];
+
+function bvPartes(iso) { var p = String(iso).split('-'); return { a: p[0], m: p[1], d: p[2] }; }
+function bvDataBR(iso) { var x = bvPartes(iso); return x.d + '/' + x.m + '/' + x.a; }
+
+// Azul: c[i].std = MM/DD/AAAA; passageiros p[i].t = ADT/CHD/INF; cc = PTS (pontos) ou BRL (dinheiro)
+function bvLinkAzul(b) {
+  var q = [];
+  function trecho(i, de, data, para) {
+    var x = bvPartes(data);
+    q.push('c[' + i + '].ds=' + de, 'c[' + i + '].std=' + x.m + '/' + x.d + '/' + x.a, 'c[' + i + '].as=' + para);
+  }
+  trecho(0, b.origem, b.ida, b.destino);
+  if (b.volta) trecho(1, b.destino, b.volta, b.origem);
+  var i = 0;
+  [['ADT', b.adt], ['CHD', b.chd], ['INF', b.inf]].forEach(function(p) {
+    if (p[1] > 0) { q.push('p[' + i + '].t=' + p[0], 'p[' + i + '].c=' + p[1], 'p[' + i + '].cp=false'); i++; }
+  });
+  q.push('f.dl=3', 'f.dr=3', 'cc=' + (b.pagamento === 'dinheiro' ? 'BRL' : 'PTS'));
+  return 'https://www.voeazul.com.br/br/pt/home/selecao-voo?' + q.join('&');
+}
+
+// LATAM: datas AAAA-MM-DD, inbound=null em só ida; redemption=true é busca em pontos
+function bvLinkLatam(b) {
+  return 'https://www.latamairlines.com/br/pt/oferta-voos/?' + [
+    'origin=' + b.origem,
+    'outbound=' + b.ida,
+    'destination=' + b.destino,
+    'inbound=' + (b.volta || 'null'),
+    'adt=' + b.adt, 'chd=' + b.chd, 'inf=' + b.inf,
+    'trip=' + (b.volta ? 'RT' : 'OW'),
+    'cabin=' + (b.cabine === 'executiva' ? 'Business' : 'Economy'),
+    'redemption=' + (b.pagamento === 'pontos' ? 'true' : 'false'),
+    'sort=RECOMMENDED'
+  ].join('&');
+}
+
+// Smiles: datas em milissegundos (meia-noite de Brasília); tripType 1 = ida e volta, 2 = só ida
+function bvLinkSmiles(b) {
+  function ms(d) { return String(Date.parse(d + 'T00:00:00-03:00')); }
+  return 'https://www.smiles.com.br/mfe/emissao-passagem/?' + [
+    'adults=' + b.adt,
+    'cabin=' + (b.cabine === 'executiva' ? 'BUSINESS' : 'ECONOMIC'),
+    'children=' + b.chd,
+    'departureDate=' + ms(b.ida),
+    'infants=' + b.inf,
+    'isElegible=false', 'isFlexibleDateChecked=false',
+    'returnDate=' + (b.volta ? ms(b.volta) : ''),
+    'searchType=g3', 'segments=1',
+    'tripType=' + (b.volta ? '1' : '2'),
+    'originAirport=' + b.origem, 'originCity=', 'originCountry=', 'originAirportIsAny=false',
+    'destinationAirport=' + b.destino, 'destinCity=', 'destinCountry=', 'destinAirportIsAny=false',
+    'novo-resultado-voos=true'
+  ].join('&');
+}
+
+// GOL (dinheiro): datas DD-MM-AAAA; ADL=0 e voebiz=0 como no site
+function bvLinkGol(b) {
+  function dt(d) { var x = bvPartes(d); return x.d + '-' + x.m + '-' + x.a; }
+  return 'https://b2c.voegol.com.br/compra/busca-parceiros?' + [
+    'pv=br', 'tipo=DF', 'lang=pt-BR',
+    'de=' + b.origem, 'para=' + b.destino,
+    'ida=' + dt(b.ida)
+  ].concat(b.volta ? ['volta=' + dt(b.volta)] : []).concat([
+    'ADT=' + b.adt, 'ADL=0', 'CHD=' + b.chd, 'INF=' + b.inf, 'voebiz=0'
+  ]).join('&');
+}
+
+function bvNum(id, min) {
+  var n = parseInt(document.getElementById(id).value, 10);
+  return isNaN(n) || n < min ? min : Math.min(n, 9);
+}
+
+function bvLer() {
+  return {
+    origem: document.getElementById('bv-origem').value.trim().toUpperCase(),
+    destino: document.getElementById('bv-destino').value.trim().toUpperCase(),
+    ida: document.getElementById('bv-ida').value,
+    volta: bvEstado.tipo === 'ida-volta' ? document.getElementById('bv-volta').value : '',
+    adt: bvNum('bv-adt', 1), chd: bvNum('bv-chd', 0), inf: bvNum('bv-inf', 0),
+    cabine: document.getElementById('bv-cabine').value,
+    pagamento: document.getElementById('bv-pagamento').value
+  };
+}
+
+// ── Aeroportos (iata.js) e autocomplete de origem/destino ──
+var bvAeroBase = null;
+// Aeroportos comerciais principais sobem na lista; apelidos em português entram na busca
+var BV_AERO_PRINCIPAIS = 'AEP AJU AMS ATL BCN BEL BOG BOS BPS BSB BVB CDG CGB CGH CGR CNF CUN CWB DFW DOH DXB EWR EZE FCO FLN FOR FRA GIG GRU GYN HND IAD IAH IGU IOS IST JFK JPA LAX LGW LHR LIM LIS MAD MAO MCO MCP MCZ MEX MIA MUC MXP NAT NRT NVT OPO ORD ORY PMW POA PTY PVH RBR REC SCL SDU SFO SLZ SSA THE VCP VIX YYZ ZRH'.split(' ');
+var BV_APELIDOS = {
+  AEP: 'buenos aires aeroparque', AMS: 'amsterda holanda', BCN: 'barcelona espanha', CDG: 'paris franca', CGH: 'congonhas',
+  CNF: 'confins', CUN: 'cancun mexico', DXB: 'dubai emirados', EWR: 'nova york newark', EZE: 'buenos aires ezeiza argentina',
+  FCO: 'roma italia', FRA: 'frankfurt alemanha', GIG: 'galeao', GRU: 'guarulhos cumbica', HND: 'toquio japao',
+  IST: 'istambul turquia', JFK: 'nova york', LGW: 'londres', LHR: 'londres inglaterra', LIS: 'lisboa portugal',
+  MAD: 'madri espanha', MCO: 'orlando disney', MIA: 'miami', MUC: 'munique alemanha', MXP: 'milao italia',
+  NRT: 'toquio japao', OPO: 'porto portugal', ORY: 'paris', SCL: 'santiago chile', SDU: 'santos dumont',
+  VCP: 'viracopos campinas', ZRH: 'zurique suica'
+};
+function bvSemAcento(s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+function bvNorm(s) { return ' ' + bvSemAcento(s).replace(/[^a-z0-9]+/g, ' ').trim() + ' '; }
+// Códigos de cidade (agrupam todos os aeroportos): não estão no iata.js
+var BV_AERO_CIDADES = [
+  ['BHZ', 'Belo Horizonte – Todos os aeroportos (Brasil)', 'confins pampulha'],
+  ['BJS', 'Pequim – Todos os aeroportos (China)', 'beijing'],
+  ['BUE', 'Buenos Aires – Todos os aeroportos (Argentina)', ''],
+  ['CHI', 'Chicago – Todos os aeroportos (Estados Unidos)', ''],
+  ['JKT', 'Jacarta – Todos os aeroportos (Indonésia)', 'jakarta'],
+  ['LON', 'Londres – Todos os aeroportos (Reino Unido)', 'london'],
+  ['MIL', 'Milão – Todos os aeroportos (Itália)', 'milan milano'],
+  ['MOW', 'Moscou – Todos os aeroportos (Rússia)', 'moscow'],
+  ['NYC', 'Nova York – Todos os aeroportos (Estados Unidos)', 'new york'],
+  ['OSA', 'Osaka – Todos os aeroportos (Japão)', ''],
+  ['PAR', 'Paris – Todos os aeroportos (França)', ''],
+  ['REK', 'Reykjavik – Todos os aeroportos (Islândia)', ''],
+  ['RIO', 'Rio de Janeiro – Todos os aeroportos (Brasil)', 'galeao santos dumont'],
+  ['ROM', 'Roma – Todos os aeroportos (Itália)', 'rome'],
+  ['SAO', 'São Paulo – Todos os aeroportos (Brasil)', 'guarulhos congonhas viracopos'],
+  ['SEL', 'Seul – Todos os aeroportos (Coreia do Sul)', 'seoul'],
+  ['STO', 'Estocolmo – Todos os aeroportos (Suécia)', 'stockholm'],
+  ['TYO', 'Tóquio – Todos os aeroportos (Japão)', 'tokyo'],
+  ['WAS', 'Washington – Todos os aeroportos (Estados Unidos)', ''],
+  ['YMQ', 'Montreal – Todos os aeroportos (Canadá)', ''],
+  ['YTO', 'Toronto – Todos os aeroportos (Canadá)', '']
+];
+function bvAeroportos() {
+  if (bvAeroBase) return bvAeroBase;
+  if (typeof IATA_AIRPORTS === 'undefined') return [];
+  var cidades = BV_AERO_CIDADES.map(function(x) {
+    return { code: x[0], label: x[1], norm: bvNorm(x[1] + ' ' + x[2]), br: /\(Brasil\)$/.test(x[1]), principal: true, cidade: true };
+  });
+  bvAeroBase = cidades.concat(IATA_AIRPORTS.map(function(a) {
+    var label = String(a.label || '').replace(/\(Brazil\)\s*$/, '(Brasil)');
+    var code = String(a.code).toUpperCase();
+    return { code: code, label: label, norm: bvNorm(label + ' ' + (BV_APELIDOS[code] || '')), br: /\(Brasil\)\s*$/.test(label), principal: BV_AERO_PRINCIPAIS.indexOf(code) >= 0 };
+  }));
+  return bvAeroBase;
+}
+function bvNomeAeroporto(cod) {
+  if (!/^[A-Z]{3}$/.test(cod)) return '';
+  var a = bvAeroportos().find(function(x) { return x.code === cod; });
+  return a ? a.label : '';
+}
+function bvSugestoes(texto) {
+  var q = bvNorm(texto).trim();
+  if (!q) return [];
+  var qc = q.toUpperCase(), lista = [];
+  bvAeroportos().forEach(function(a) {
+    var s;
+    if (a.code === qc) s = 0;
+    else if (q.length <= 3 && q.indexOf(' ') < 0 && a.code.indexOf(qc) === 0) s = 2;
+    else if (a.norm.indexOf(' ' + q) === 0) s = 1;
+    else if (a.norm.indexOf(' ' + q) > 0) s = 3;
+    else if (q.length >= 3 && a.norm.indexOf(q) >= 0) s = 4;
+    else return;
+    lista.push({ a: a, s: s + (a.br ? 0 : 0.5) - (a.principal ? 0.6 : 0) - (a.cidade ? 0.3 : 0) });
+  });
+  // Três letras que formam um código existente: só ele aparece
+  var exato = lista.filter(function(x) { return x.a.code === qc; });
+  if (exato.length) return [exato[0].a];
+  lista.sort(function(x, y) { return x.s - y.s || x.a.label.localeCompare(y.a.label, 'pt'); });
+  return lista.slice(0, 8).map(function(x) { return x.a; });
+}
+var bvAcEstado = {};
+function bvAcAbrir(k) {
+  var inp = document.getElementById('bv-' + k), box = document.getElementById('bv-' + k + '-ac');
+  var itens = bvSugestoes(inp.value);
+  bvAcEstado[k] = { itens: itens, sel: itens.length ? 0 : -1 };
+  if (!itens.length) { box.classList.remove('on'); box.innerHTML = ''; return; }
+  box.innerHTML = itens.map(function(a, i) {
+    return '<div class="bv-ac-item' + (i === 0 ? ' sel' : '') + '" data-i="' + i + '"><span class="bv-ac-cod">' + a.code + '</span><span class="bv-ac-nome">' + bvEsc(a.label) + '</span></div>';
+  }).join('');
+  box.classList.add('on');
+}
+function bvAcFechar(k) { var box = document.getElementById('bv-' + k + '-ac'); if (box) { box.classList.remove('on'); box.innerHTML = ''; } }
+function bvAcEscolher(k, i) {
+  var st = bvAcEstado[k]; if (!st || !st.itens[i]) return;
+  document.getElementById('bv-' + k).value = st.itens[i].code;
+  bvAcFechar(k);
+  bvRender();
+}
+function bvAcMarcar(k) {
+  var st = bvAcEstado[k], box = document.getElementById('bv-' + k + '-ac');
+  box.querySelectorAll('.bv-ac-item').forEach(function(el, i) { el.classList.toggle('sel', i === st.sel); if (i === st.sel) el.scrollIntoView({ block: 'nearest' }); });
+}
+function bvAcLigar(k) {
+  var inp = document.getElementById('bv-' + k), box = document.getElementById('bv-' + k + '-ac');
+  inp.addEventListener('input', function() { bvAcAbrir(k); });
+  inp.addEventListener('focus', function() { if (inp.value.trim() && !/^[A-Za-z]{3}$/.test(inp.value.trim())) bvAcAbrir(k); });
+  inp.addEventListener('keydown', function(e) {
+    var st = bvAcEstado[k];
+    if (!box.classList.contains('on') || !st) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); st.sel = Math.min(st.sel + 1, st.itens.length - 1); bvAcMarcar(k); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); st.sel = Math.max(st.sel - 1, 0); bvAcMarcar(k); }
+    else if (e.key === 'Enter' || e.key === 'Tab') { if (st.sel >= 0) { if (e.key === 'Enter') e.preventDefault(); bvAcEscolher(k, st.sel); } }
+    else if (e.key === 'Escape') { bvAcFechar(k); }
+  });
+  inp.addEventListener('blur', function() {
+    setTimeout(function() {
+      bvAcFechar(k);
+      var v = inp.value.trim();
+      if (/^[A-Za-z]{3}$/.test(v)) { inp.value = v.toUpperCase(); bvRender(); return; }
+      var sug = v ? bvSugestoes(v) : [];
+      if (sug.length) { inp.value = sug[0].code; bvRender(); }
+    }, 150);
+  });
+  box.addEventListener('mousedown', function(e) {
+    var it = e.target.closest('.bv-ac-item');
+    if (it) { e.preventDefault(); bvAcEscolher(k, +it.getAttribute('data-i')); }
+  });
+}
+
+function bvTipo(t) {
+  bvEstado.tipo = t;
+  document.querySelectorAll('#bv-tipo .bv-chip').forEach(function(c) { c.classList.toggle('on', c.getAttribute('data-v') === t); });
+  document.getElementById('bv-volta-campo').style.display = t === 'ida-volta' ? '' : 'none';
+  bvRender();
+}
+
+function bvTrocar() {
+  var o = document.getElementById('bv-origem'), d = document.getElementById('bv-destino');
+  var tmp = o.value; o.value = d.value; d.value = tmp;
+  bvRender();
+}
+
+function bvEsc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+function bvProblema(b) {
+  if (!/^[A-Z]{3}$/.test(b.origem) || !/^[A-Z]{3}$/.test(b.destino)) return 'Escolha origem e destino: digite o código (CGH, CNF, GRU) ou o nome da cidade e escolha o aeroporto na lista.';
+  if (b.origem === b.destino) return 'Origem e destino estão iguais.';
+  if (!b.ida) return 'Informe a data de ida 🛫.';
+  if (bvEstado.tipo === 'ida-volta' && !b.volta) return 'Informe a data de volta 🛬.';
+  if (b.volta && b.volta < b.ida) return 'A volta 🛬 está antes da ida 🛫.';
+  if (b.inf > b.adt) return 'Cada bebê precisa de um adulto.';
+  return '';
+}
+
+var bvLinksAtuais = [];
+
+function bvRender() {
+  var el = document.getElementById('bv-resultado');
+  if (!el) return;
+  ['origem', 'destino'].forEach(function(k) {
+    var cod = document.getElementById('bv-' + k).value.trim().toUpperCase();
+    document.getElementById('bv-' + k + '-nome').textContent = bvNomeAeroporto(cod);
+  });
+  var b = bvLer();
+  var erro = bvProblema(b);
+  bvLinksAtuais = [];
+  if (erro) { el.innerHTML = '<div class="bv-aviso">' + erro + '</div>'; return; }
+  var html = '<div class="bv-copiar-tudo"><button type="button" onclick="bvCopiarTudo(this)">📋 Copiar todos os links</button></div>';
+  var modos = b.pagamento === 'ambos' ? ['pontos', 'dinheiro'] : [b.pagamento];
+  modos.forEach(function(modo) {
+    var bm = Object.assign({}, b, { pagamento: modo });
+    html += '<div class="bv-secao">' + (modo === 'pontos' ? 'Em pontos' : 'Em dinheiro') + '</div><div class="bv-grade">';
+    BV_PROGRAMAS.forEach(function(base) {
+      var p = (modo === 'dinheiro' && base.dinheiro) ? base.dinheiro : base;
+      var url = p.link(bm);
+      var i = bvLinksAtuais.length;
+      bvLinksAtuais.push({ nome: p.nome + (modos.length > 1 ? ' (' + modo + ')' : ''), url: url });
+      html += '<div class="bv-prog" style="--bv-cor:' + p.cor + '">' +
+        '<div class="bv-prog-topo"><span class="bv-prog-nome">' + p.nome + '</span></div>' +
+        '<div class="bv-acoes"><a class="bv-abrir" href="' + bvEsc(url) + '" target="_blank" rel="noopener" title="Abrir pesquisa">Abrir ↗</a>' +
+        '<button type="button" onclick="bvCopiar(' + i + ', this)" title="Copiar link">📋</button></div></div>';
+    });
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function bvCopiarTexto(txt, btn) {
+  var ok = function() {
+    if (!btn) return;
+    var antes = btn.innerHTML, curto = btn.textContent.trim().length <= 2;
+    btn.textContent = curto ? '✅' : '✅ Copiado';
+    setTimeout(function() { btn.innerHTML = antes; }, 1500);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(ok, function() { prompt('Copie o texto:', txt); });
+  } else { prompt('Copie o texto:', txt); }
+}
+
+function bvCopiar(i, btn) { if (bvLinksAtuais[i]) bvCopiarTexto(bvLinksAtuais[i].url, btn); }
+
+function bvCopiarTudo(btn) {
+  var b = bvLer();
+  var cab = '✈️ ' + b.origem + ' → ' + b.destino + '\n🛫 ' + bvDataBR(b.ida) + (b.volta ? '  🛬 ' + bvDataBR(b.volta) : '');
+  var txt = cab + '\n\n' + bvLinksAtuais.map(function(l) { return l.nome + ':\n' + l.url; }).join('\n\n');
+  bvCopiarTexto(txt, btn);
+}
+
+(function bvIniciar() {
+  function ligar() {
+    if (!document.getElementById('bv-origem')) return;
+    ['bv-origem', 'bv-destino', 'bv-ida', 'bv-volta', 'bv-adt', 'bv-chd', 'bv-inf', 'bv-cabine', 'bv-pagamento'].forEach(function(id) {
+      var e = document.getElementById(id);
+      e.addEventListener('input', bvRender);
+      e.addEventListener('change', bvRender);
+    });
+    bvAcLigar('origem');
+    bvAcLigar('destino');
+    bvRender();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ligar); else ligar();
+})();
+</script>
 <!-- MODAIS (fora do app-content para evitar stacking context) -->
 <!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay">

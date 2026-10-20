@@ -183,7 +183,7 @@ TeamRausch, financas e castanheiras são ISOLADOS (serviços, tokens e dados pr�
 flush de cliques (10 min), `ggSincronizar` + validação de convites (4 min / 6 h), flush gg (2 min), cliques de convite e de links (5 min, `tsp/cliques_*_<dia>.json`), `checarLembretes` (10 min), `checarAgendamentos` do concierge (5 min, retenção 7 d, até 5 tentativas), `dispararLembreteVoo` (30 min → `workflow_dispatch` do `concierge/lembrete-voo.yml`).
 
 **Painel do membro (`index.html`)**
-- Abas: `inicio, comparador, radar, passagens, mapa, milhas, lounges, calculadoras, reclamacoes, roteiros, cartoes`.
+- Abas: `inicio, comparador, radar, passagens, buscavoos, mapa, milhas, lounges, calculadoras, reclamacoes, roteiros, cartoes`. **Buscar Voos** (`tab-buscavoos`, desde 20/10/2026): o mesmo gerador de links de pesquisa (Azul, LATAM Pass, Smiles; GOL em dinheiro; opção Ambos) do `gestor-cdv` — bloco `bv*` espelhado em `gestor-cdv/index.html` e `concierge/index.html`, com CSS próprio escopado em `#tab-buscavoos`; só gera links, não consulta os sites.
 - **Gestão de Milhas liberada para todo membro logado** (FIFO de custo, assinaturas recorrentes, transferências).
 - `DEV_EMAILS` + `devAcesso()` restringem **só** a sub-aba Admin do Comparador de Cartões (`ct-sub-admin`, `ctGerarAnalise`, `ctExtrairFila`) e abas de dev.
 - Sessão em `localStorage['cdv_auth']` = `{email, nome, token, ts}` (7 dias; sessão sem `token` é descartada). Wrapper de `fetch` no topo do `index.html` injeta `X-CDV-Membro` em toda chamada ao proxy; 401 em rota de membro → volta ao login. `_BASE` fixo no proxy de produção. Chart.js 4.4.1, Montserrat, Phosphor.
