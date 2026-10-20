@@ -688,7 +688,8 @@
 .bv-acoes{display:flex;gap:6px;flex:0 0 auto}
 .bv-acoes a,.bv-acoes button{font-family:var(--font);font-size:12px;font-weight:800;padding:7px 10px;border-radius:8px;cursor:pointer;text-decoration:none;border:1px solid var(--border2);background:var(--surface2);color:var(--text)}
 .bv-acoes a.bv-abrir{background:var(--bv-cor,var(--accent));border-color:var(--bv-cor,var(--accent));color:#fff}
-.bv-copiar-tudo{display:flex;justify-content:flex-end;margin-bottom:4px}
+.bv-copiar-tudo{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+.bv-abrir-aviso{flex-basis:100%;text-align:right;font-size:12px;font-weight:600;line-height:1.5;color:var(--muted)}
 .bv-copiar-tudo button{font-family:var(--font);font-size:12px;font-weight:800;padding:8px 14px;border-radius:8px;cursor:pointer;border:1px solid var(--border2);background:var(--surface2);color:var(--text)}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -11403,7 +11404,7 @@ function bvRender() {
   var erro = bvProblema(b);
   bvLinksAtuais = [];
   if (erro) { el.innerHTML = '<div class="bv-aviso">' + erro + '</div>'; return; }
-  var html = '<div class="bv-copiar-tudo"><button type="button" onclick="bvCopiarTudo(this)">📋 Copiar todos os links</button></div>';
+  var html = '<div class="bv-copiar-tudo"><button type="button" onclick="bvAbrirTodos(this)">↗ Abrir todos os links</button><button type="button" onclick="bvCopiarTudo(this)">📋 Copiar todos os links</button><div class="bv-abrir-aviso" id="bv-abrir-aviso" style="display:none"></div></div>';
   var modos = b.pagamento === 'ambos' ? ['pontos', 'dinheiro'] : [b.pagamento];
   modos.forEach(function(modo) {
     var bm = Object.assign({}, b, { pagamento: modo });
@@ -11436,6 +11437,20 @@ function bvCopiarTexto(txt, btn) {
 }
 
 function bvCopiar(i, btn) { if (bvLinksAtuais[i]) bvCopiarTexto(bvLinksAtuais[i].url, btn); }
+
+function bvAbrirTodos(btn) {
+  var bloqueados = 0;
+  bvLinksAtuais.forEach(function(l) {
+    var w = window.open(l.url, '_blank');
+    if (w) { try { w.opener = null; } catch (e) {} } else bloqueados++;
+  });
+  var av = document.getElementById('bv-abrir-aviso');
+  if (!av) return;
+  if (bloqueados) {
+    av.innerHTML = '⚠️ O navegador bloqueou ' + bloqueados + ' de ' + bvLinksAtuais.length + ' abas. Clique no ícone de pop-up bloqueado na barra de endereço, escolha <b>sempre permitir pop-ups deste site</b> e clique de novo.';
+    av.style.display = 'block';
+  } else { av.style.display = 'none'; av.innerHTML = ''; }
+}
 
 function bvCopiarTudo(btn) {
   var b = bvLer();
