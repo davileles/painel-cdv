@@ -691,6 +691,22 @@
 .bv-copiar-tudo{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin-bottom:4px}
 .bv-abrir-aviso{flex-basis:100%;text-align:right;font-size:12px;font-weight:600;line-height:1.5;color:var(--muted)}
 .bv-copiar-tudo button{font-family:var(--font);font-size:12px;font-weight:800;padding:8px 14px;border-radius:8px;cursor:pointer;border:1px solid var(--border2);background:var(--surface2);color:var(--text)}
+@media(max-width:600px){
+  .bv-form{padding:14px}
+  .bv-linha{gap:10px 8px;margin-bottom:10px}
+  .bv-linha>.bv-iata{flex:1 1 calc(100% - 48px);min-width:0}
+  .bv-linha>.bv-iata+.bv-trocar+.bv-iata{margin-right:48px}
+  .bv-linha>.bv-data{flex:1 1 calc(50% - 4px);min-width:0}
+  .bv-linha>.bv-tipo-campo{flex:1 1 100%}
+  .bv-tipo-campo .bv-chips{display:grid;grid-template-columns:1fr 1fr}
+  .bv-tipo-campo .bv-chip{text-align:center}
+  .bv-linha>.bv-num{flex:1 1 calc(33.33% - 6px);min-width:0}
+  .bv-linha>.field:not(.bv-iata):not(.bv-data):not(.bv-num):not(.bv-tipo-campo){flex:1 1 calc(50% - 4px);min-width:0}
+  .bv-copiar-tudo{display:grid;grid-template-columns:1fr 1fr}
+  .bv-copiar-tudo button{padding:10px 8px;text-align:center}
+  .bv-abrir-aviso{grid-column:1/-1;text-align:left}
+  .bv-prog-nome{white-space:normal}
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link rel="stylesheet" href="cdv-redesign.css">
