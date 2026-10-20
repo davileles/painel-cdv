@@ -105,17 +105,28 @@ function testes(o, d, ida) {
 }
 
 let cacheSonda = null;
+let sondaRodando = null;
 
-async function sondar() {
-  if (cacheSonda && Date.now() - cacheSonda.em < 2 * 60 * 1000) return Object.assign({ doCache: true }, cacheSonda.dados);
+async function rodarSonda() {
   const origem = 'CNF', destino = 'GRU', ida = dataISO(30);
-  const lista = testes(origem, destino, ida);
-  // um programa por vez, para não parecer rajada
   const resultados = [];
-  for (const [nome, url, op] of lista) resultados.push(await chamar(nome, url, op));
+  // um teste por vez, para não parecer rajada
+  for (const [nome, url, op] of testes(origem, destino, ida)) resultados.push(await chamar(nome, url, op));
   const dados = { ok: true, quando: new Date().toISOString(), rota: origem + '→' + destino, ida, resultados };
   cacheSonda = { em: Date.now(), dados };
+  console.log('[voos/sonda] ' + JSON.stringify(resultados.map(x => ({ t: x.teste, s: x.status, e: x.erro, b: x.bloqueio, ms: x.ms, bytes: x.bytes, srv: x.servidor, j: x.json, tr: (x.trecho || '').slice(0, 120) }))));
   return dados;
+}
+
+// Responde na hora: devolve o último resultado (até 10 min) e, se estiver velho, dispara
+// uma rodada nova em segundo plano. Assim a página não fica esperando os sites.
+function sondar() {
+  const velho = !cacheSonda || Date.now() - cacheSonda.em > 2 * 60 * 1000;
+  if (velho && !sondaRodando) {
+    sondaRodando = rodarSonda().catch(e => console.error('[voos/sonda]', e.message)).finally(() => { sondaRodando = null; });
+  }
+  if (cacheSonda) return Object.assign({ rodandoNovamente: !!sondaRodando }, cacheSonda.dados);
+  return { ok: true, rodando: true, aviso: 'Teste em andamento (leva até 2 min). Abra de novo daqui a pouco.' };
 }
 
 module.exports = { sondar };

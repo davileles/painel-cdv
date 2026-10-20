@@ -10488,9 +10488,7 @@ try { buscaVoos = require('./busca-voos.js'); } catch (e) { console.error('[busc
 app.get('/voos/sonda', async (req, res) => {
   if (!buscaVoos) return res.status(503).json({ ok: false, erro: 'módulo busca-voos indisponível' });
   try {
-    const r = await buscaVoos.sondar();
-    console.log('[voos/sonda]', JSON.stringify((r.resultados || []).map(x => ({ t: x.teste, s: x.status, e: x.erro, b: x.bloqueio, ms: x.ms, bytes: x.bytes, srv: x.servidor }))));
-    res.json(r);
+    res.json(buscaVoos.sondar());
   } catch (e) {
     res.status(500).json({ ok: false, erro: e.message });
   }
