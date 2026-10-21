@@ -21,7 +21,7 @@
 const fetch = require('node-fetch');
 
 const ZENROWS_URL = 'https://api.zenrows.com/v1/';
-const TIMEOUT_MS = 170 * 1000;
+const TIMEOUT_MS = 200 * 1000;
 const CACHE_MS = 15 * 60 * 1000;
 
 function chave() { return process.env.ZENROWS_API_KEY || process.env.ZENROWS_KEY || ''; }
@@ -71,10 +71,10 @@ function linkGol(b) {
 
 // Uma "fonte" = um programa num modo (pontos ou dinheiro). xhr = quais chamadas da página têm os voos.
 const FONTES = [
-  { id: 'azul-pontos',   programa: 'Azul Fidelidade', modo: 'pontos',   espera: 20000, link: b => linkAzul(b, 'pontos'),   xhr: /availability/i, ler: lerAzul },
+  { id: 'azul-pontos',   programa: 'Azul Fidelidade', modo: 'pontos',   espera: 20000, esperaExtra: 30000, link: b => linkAzul(b, 'pontos'),   xhr: /availability/i, ler: lerAzul },
   { id: 'latam-pontos',  programa: 'LATAM Pass',      modo: 'pontos',   espera: 25000, link: b => linkLatam(b, 'pontos'),  xhr: /offers\/search/i, ler: lerLatam },
-  { id: 'smiles-pontos', programa: 'Smiles',          modo: 'pontos',   espera: 28000, link: b => linkSmiles(b),           xhr: /airlines\/search|flightsearch/i, ler: lerSmiles },
-  { id: 'azul-dinheiro', programa: 'Azul',            modo: 'dinheiro', espera: 20000, link: b => linkAzul(b, 'dinheiro'), xhr: /availability/i, ler: lerAzul },
+  { id: 'smiles-pontos', programa: 'Smiles',          modo: 'pontos',   espera: 28000, esperaExtra: 30000, link: b => linkSmiles(b),           xhr: /airlines\/search|flightsearch/i, ler: lerSmiles },
+  { id: 'azul-dinheiro', programa: 'Azul',            modo: 'dinheiro', espera: 20000, esperaExtra: 30000, link: b => linkAzul(b, 'dinheiro'), xhr: /availability/i, ler: lerAzul },
   { id: 'latam-dinheiro', programa: 'LATAM',          modo: 'dinheiro', espera: 25000, link: b => linkLatam(b, 'dinheiro'), xhr: /offers\/search/i, ler: lerLatam },
   { id: 'gol-dinheiro',  programa: 'GOL',             modo: 'dinheiro', espera: 25000, link: b => linkGol(b),              xhr: /availability|search|flight|offer|shop/i, ler: null }
 ];
@@ -297,12 +297,18 @@ function podeGastar(n) {
   return usoDia.paginas + n <= limiteDia();
 }
 
-async function abrirPagina(url, espera) {
+async function abrirPagina(url, espera, extra) {
   const params = new URLSearchParams({
     apikey: chave(), url,
     js_render: 'true', premium_proxy: 'true', proxy_country: 'br',
     json_response: 'true', wait: String(esperaMs(espera))
   });
+  // Espera adicional depois do carregamento (a busca de voos de Smiles e Azul sai bem depois da página abrir)
+  if (extra > 0) {
+    const passos = [];
+    for (let t = extra; t > 0; t -= 10000) passos.push({ wait: Math.min(10000, t) });
+    params.set('js_instructions', JSON.stringify(passos));
+  }
   const ctrl = new AbortController();
   const tm = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
   const ini = Date.now();
@@ -328,12 +334,12 @@ async function abrirPagina(url, espera) {
 
 async function buscarFonte(fonte, b) {
   const url = fonte.link(b);
-  let pg = await abrirPagina(url, fonte.espera);
+  let pg = await abrirPagina(url, fonte.espera, fonte.esperaExtra);
   // RESP001 = o ZenRows não conseguiu carregar a página; uma segunda tentativa costuma passar
   if (pg.erro && /RESP001/.test(pg.erro)) {
     console.log('[voos/precos] ' + fonte.id + ': RESP001, tentando de novo');
     const ms1 = pg.ms;
-    pg = await abrirPagina(url, fonte.espera);
+    pg = await abrirPagina(url, fonte.espera, fonte.esperaExtra);
     pg.ms = (pg.ms || 0) + (ms1 || 0);
   }
   const base = { fonte: fonte.id, programa: fonte.programa, modo: fonte.modo, link: url, ms: pg.ms, custo: pg.custo || null };
@@ -368,7 +374,8 @@ async function buscarFonte(fonte, b) {
     }));
     return Object.assign(base, {
       estado: 'sem-voos',
-      erro: protegido ? 'a página abriu com bloqueio do site (' + marca + ')' : (pg.xhr.length ? 'a página abriu, mas não achei os voos nas chamadas dela (' + pg.xhr.length + ')' : 'a página abriu sem chamadas de dados'),
+      erro: /login|entrar|acesse sua conta/i.test(tituloDe(pg.html)) ? 'o site pediu login (' + tituloDe(pg.html) + ')' :
+        protegido ? 'a página abriu com bloqueio do site (' + marca + ')' : (pg.xhr.length ? 'a página abriu, mas não achei os voos nas chamadas dela (' + pg.xhr.length + ')' : 'a página abriu sem chamadas de dados'),
       voos: []
     });
   }
