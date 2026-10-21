@@ -26,7 +26,8 @@ const CACHE_MS = 15 * 60 * 1000;
 
 function chave() { return process.env.ZENROWS_API_KEY || process.env.ZENROWS_KEY || ''; }
 function limiteDia() { const n = parseInt(process.env.ZENROWS_LIMITE_DIA, 10); return isNaN(n) ? 150 : n; }
-function esperaMs() { const n = parseInt(process.env.ZENROWS_ESPERA_MS, 10); return isNaN(n) ? 15000 : Math.min(Math.max(n, 0), 30000); }
+// ZENROWS_ESPERA_MS (se definida) vale para todos; senão cada fonte tem a sua espera
+function esperaMs(padrao) { const n = parseInt(process.env.ZENROWS_ESPERA_MS, 10); return Math.min(Math.max(isNaN(n) ? (padrao || 15000) : n, 0), 30000); }
 function hojeSP() { return new Date(Date.now() - 3 * 3600 * 1000).toISOString().slice(0, 10); }
 
 // ── Links de busca (mesmo formato do bloco bv* dos painéis) ──
@@ -70,12 +71,12 @@ function linkGol(b) {
 
 // Uma "fonte" = um programa num modo (pontos ou dinheiro). xhr = quais chamadas da página têm os voos.
 const FONTES = [
-  { id: 'azul-pontos',   programa: 'Azul Fidelidade', modo: 'pontos',   link: b => linkAzul(b, 'pontos'),   xhr: /availability/i, ler: lerAzul },
-  { id: 'latam-pontos',  programa: 'LATAM Pass',      modo: 'pontos',   link: b => linkLatam(b, 'pontos'),  xhr: /offers\/search/i, ler: lerLatam },
-  { id: 'smiles-pontos', programa: 'Smiles',          modo: 'pontos',   link: b => linkSmiles(b),           xhr: /airlines\/search|flightsearch/i, ler: lerSmiles },
-  { id: 'azul-dinheiro', programa: 'Azul',            modo: 'dinheiro', link: b => linkAzul(b, 'dinheiro'), xhr: /availability/i, ler: lerAzul },
-  { id: 'latam-dinheiro', programa: 'LATAM',          modo: 'dinheiro', link: b => linkLatam(b, 'dinheiro'), xhr: /offers\/search/i, ler: lerLatam },
-  { id: 'gol-dinheiro',  programa: 'GOL',             modo: 'dinheiro', link: b => linkGol(b),              xhr: /availability|search|flight|offer|shop/i, ler: null }
+  { id: 'azul-pontos',   programa: 'Azul Fidelidade', modo: 'pontos',   espera: 20000, link: b => linkAzul(b, 'pontos'),   xhr: /availability/i, ler: lerAzul },
+  { id: 'latam-pontos',  programa: 'LATAM Pass',      modo: 'pontos',   espera: 25000, link: b => linkLatam(b, 'pontos'),  xhr: /offers\/search/i, ler: lerLatam },
+  { id: 'smiles-pontos', programa: 'Smiles',          modo: 'pontos',   espera: 28000, link: b => linkSmiles(b),           xhr: /airlines\/search|flightsearch/i, ler: lerSmiles },
+  { id: 'azul-dinheiro', programa: 'Azul',            modo: 'dinheiro', espera: 20000, link: b => linkAzul(b, 'dinheiro'), xhr: /availability/i, ler: lerAzul },
+  { id: 'latam-dinheiro', programa: 'LATAM',          modo: 'dinheiro', espera: 25000, link: b => linkLatam(b, 'dinheiro'), xhr: /offers\/search/i, ler: lerLatam },
+  { id: 'gol-dinheiro',  programa: 'GOL',             modo: 'dinheiro', espera: 25000, link: b => linkGol(b),              xhr: /availability|search|flight|offer|shop/i, ler: null }
 ];
 
 // ── Utilitários de leitura ──
@@ -268,6 +269,18 @@ function normalizar(v, fonte) {
   };
 }
 
+// Só sinais claros de página de bloqueio (não a palavra "captcha" solta: páginas normais carregam reCAPTCHA)
+function tituloDe(html) { const m = String(html || '').match(/<title[^>]*>([^<]{0,160})/i); return m ? m[1].trim() : ''; }
+function sinalBloqueio(html) {
+  const h = String(html || '').slice(0, 60000);
+  const t = tituloDe(h).toLowerCase();
+  if (/access denied/.test(t) || /<h1>access denied<\/h1>/i.test(h)) return 'akamai';
+  if (/just a moment|attention required/.test(t) || /cf-chl-|challenge-platform/i.test(h)) return 'cloudflare';
+  if (/id="px-captcha"|px-captcha-wrapper/i.test(h)) return 'perimeterx';
+  if (/incapsula incident|_incapsula_resource/i.test(h)) return 'imperva';
+  return '';
+}
+
 // ── Chamada ao ZenRows ──
 const brutos = {}; // última captura por fonte (para ajustar a leitura): { quando, url, xhr:[{url,status,bytes,inicio}] , escolhido }
 let usoDia = { dia: '', paginas: 0, creditos: 0 };
@@ -284,11 +297,11 @@ function podeGastar(n) {
   return usoDia.paginas + n <= limiteDia();
 }
 
-async function abrirPagina(url) {
+async function abrirPagina(url, espera) {
   const params = new URLSearchParams({
     apikey: chave(), url,
     js_render: 'true', premium_proxy: 'true', proxy_country: 'br',
-    json_response: 'true', wait: String(esperaMs())
+    json_response: 'true', wait: String(esperaMs(espera))
   });
   const ctrl = new AbortController();
   const tm = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
@@ -315,7 +328,14 @@ async function abrirPagina(url) {
 
 async function buscarFonte(fonte, b) {
   const url = fonte.link(b);
-  const pg = await abrirPagina(url);
+  let pg = await abrirPagina(url, fonte.espera);
+  // RESP001 = o ZenRows não conseguiu carregar a página; uma segunda tentativa costuma passar
+  if (pg.erro && /RESP001/.test(pg.erro)) {
+    console.log('[voos/precos] ' + fonte.id + ': RESP001, tentando de novo');
+    const ms1 = pg.ms;
+    pg = await abrirPagina(url, fonte.espera);
+    pg.ms = (pg.ms || 0) + (ms1 || 0);
+  }
   const base = { fonte: fonte.id, programa: fonte.programa, modo: fonte.modo, link: url, ms: pg.ms, custo: pg.custo || null };
   if (pg.erro) return Object.assign(base, { estado: 'erro', erro: pg.erro, voos: [] });
 
@@ -340,10 +360,15 @@ async function buscarFonte(fonte, b) {
     htmlInicio: String(pg.html || '').replace(/\s+/g, ' ').slice(0, 3000)
   };
   if (!voos) {
-    const protegido = /access denied|captcha|px-captcha|just a moment/i.test(String(pg.html).slice(0, 20000));
+    const marca = sinalBloqueio(pg.html);
+    const protegido = !!marca;
+    console.log('[voos/precos][diag] ' + fonte.id + ' ' + JSON.stringify({
+      titulo: tituloDe(pg.html), bloqueio: marca || null, htmlBytes: String(pg.html || '').length,
+      xhr: resumoXhr.slice(0, 60).map(x => ({ u: x.url.slice(0, 160), s: x.status, b: x.bytes, i: x.inicio.replace(/\s+/g, ' ').slice(0, 80) }))
+    }));
     return Object.assign(base, {
       estado: 'sem-voos',
-      erro: protegido ? 'a página abriu com bloqueio do site' : (pg.xhr.length ? 'a página abriu, mas não achei os voos nas chamadas dela (' + pg.xhr.length + ')' : 'a página abriu sem chamadas de dados'),
+      erro: protegido ? 'a página abriu com bloqueio do site (' + marca + ')' : (pg.xhr.length ? 'a página abriu, mas não achei os voos nas chamadas dela (' + pg.xhr.length + ')' : 'a página abriu sem chamadas de dados'),
       voos: []
     });
   }
