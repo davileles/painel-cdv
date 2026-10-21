@@ -368,6 +368,15 @@ async function buscarFonte(fonte, b) {
   if (!voos) {
     const marca = sinalBloqueio(pg.html);
     const protegido = !!marca;
+    // Chamadas que parecem ser a busca de voos: grava o registro inteiro (pedido e resposta) para
+    // montar a chamada direta (opção 2: sessão aquecida + chamada direta, sem abrir a página)
+    const RE_BUSCA = /availability|offers\/search|airlines\/search|flightsearch|oauth\/token|authentication\/v1\/token|\/search\b|\/shop|\/flights?\b|\/trip/i;
+    pg.xhr.filter(x => RE_BUSCA.test(String(x.url || ''))).slice(0, 8).forEach(x => {
+      const corpo = typeof x.body === 'string' ? x.body : JSON.stringify(x.body || '');
+      const resto = Object.assign({}, x); delete resto.body;
+      console.log('[voos/precos][busca] ' + fonte.id + ' ' + JSON.stringify(resto).slice(0, 3000) + ' RESPOSTA: ' + corpo.replace(/\s+/g, ' ').slice(0, 2500));
+    });
+    if (pg.xhr.length) console.log('[voos/precos][diag] campos de uma chamada: ' + Object.keys(pg.xhr[0]).join(','));
     console.log('[voos/precos][diag] ' + fonte.id + ' ' + JSON.stringify({
       titulo: tituloDe(pg.html), bloqueio: marca || null, htmlBytes: String(pg.html || '').length,
       xhr: resumoXhr.slice(0, 60).map(x => ({ u: x.url.slice(0, 160), s: x.status, b: x.bytes, i: x.inicio.replace(/\s+/g, ' ').slice(0, 80) }))
