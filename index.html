@@ -11088,6 +11088,7 @@ var bvEstado = { tipo: 'ida' };
 
 var BV_PROGRAMAS = [
   { id: 'azul',   nome: 'Azul Fidelidade', cor: '#1b5bd6', link: bvLinkAzul },
+  { id: 'azulmundo', nome: 'Azul Pelo Mundo', cor: '#0d3f9e', link: bvLinkAzulMundo, soPontos: true },
   { id: 'latam',  nome: 'LATAM Pass',      cor: '#e8114b', link: bvLinkLatam },
   { id: 'smiles', nome: 'Smiles',          cor: '#ff7020', link: bvLinkSmiles,
     dinheiro: { id: 'gol', nome: 'GOL',     cor: '#ff7020', link: bvLinkGol } }
@@ -11111,6 +11112,16 @@ function bvLinkAzul(b) {
   });
   q.push('f.dl=3', 'f.dr=3', 'cc=' + (b.pagamento === 'dinheiro' ? 'BRL' : 'PTS'));
   return 'https://www.voeazul.com.br/br/pt/home/selecao-voo?' + q.join('&');
+}
+
+// Azul Pelo Mundo (parceiras, só pontos): /flights/{OW|RT}/ORIG/DEST/-/-/IDA/{VOLTA|-}/ADT/CHD/INF/0/0/ALL/F/{ECONOMY|BUSINESS}/-/-/-/-/A/-
+// Formato confirmado com links reais (out/2026); ordem CHD/INF e o rótulo BUSINESS seguem o padrão do site.
+function bvLinkAzulMundo(b) {
+  return 'https://azulpelomundo.voeazul.com.br/flights/' + [
+    b.volta ? 'RT' : 'OW', b.origem, b.destino, '-', '-', b.ida, b.volta || '-',
+    b.adt, b.chd, b.inf, 0, 0, 'ALL', 'F',
+    b.cabine === 'executiva' ? 'BUSINESS' : 'ECONOMY', '-', '-', '-', '-', 'A', '-'
+  ].join('/');
 }
 
 // LATAM: datas AAAA-MM-DD, inbound=null em só ida; redemption=true é busca em pontos
@@ -11438,6 +11449,7 @@ function bvRender() {
     var bm = Object.assign({}, b, { pagamento: modo });
     html += '<div class="bv-secao">' + (modo === 'pontos' ? 'Em pontos' : 'Em dinheiro') + '</div><div class="bv-grade">';
     BV_PROGRAMAS.forEach(function(base) {
+      if (modo === 'dinheiro' && base.soPontos) return;
       var p = (modo === 'dinheiro' && base.dinheiro) ? base.dinheiro : base;
       var url = p.link(bm);
       var i = bvLinksAtuais.length;
