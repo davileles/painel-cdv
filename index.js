@@ -110,7 +110,7 @@ app.use(express.json({ limit: '20mb' }));
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env, X-CDV-Op, X-CDV-Auth, X-CDV-Servico, X-CDV-Portal, X-CDV-Membro');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env, X-CDV-Op, X-CDV-Auth, X-CDV-Servico, X-CDV-Portal, X-CDV-Membro, X-CDV-Roteiros');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
@@ -127,8 +127,9 @@ app.use((req, res, next) => {
 // - Operador (envio/aprovação de ofertas, exclusão de passagem): X-CDV-Op =
 //   CAMPANHAS_KEY (gestor-cdv, baileys, Actions) ou sessão de membro de ADMIN_EMAILS.
 // - /ia/extrair-reserva: sessão do concierge (X-CDV-Auth) ou de membro.
-// - POST /roteiros/publicar: sessão do concierge (livre) ou de membro (só slug
-//   membro-*, e só o próprio roteiro).
+// - POST /roteiros/publicar: sessão do concierge (livre), chave X-CDV-Roteiros
+//   (= ROTEIROS_PUBLICAR_KEY, assistente de roteiros no Claude; livre, só esta
+//   rota) ou de membro (só slug membro-*, e só o próprio roteiro).
 const MEMBRO_SESSAO_TTL = 7 * 24 * 60 * 60 * 1000;
 function membroSegredo() {
   const base = process.env.MEMBRO_SESSION_SECRET || process.env.CONCIERGE_SESSION_SECRET || process.env.GITHUB_TOKEN || '';
@@ -187,6 +188,15 @@ async function sessaoMembroDaReq(req, devMode) {
 }
 function emailEhAdmin(email) {
   return !!email && ADMIN_EMAILS.includes(String(email).toLowerCase());
+}
+// Chave exclusiva para publicar roteiros (assistente de roteiros no Claude).
+// Vale só para POST /roteiros/publicar; sem ROTEIROS_PUBLICAR_KEY (ou curta), fica desligada.
+function roteirosChaveValida(chave) {
+  const esperado = process.env.ROTEIROS_PUBLICAR_KEY || '';
+  if (!chave || esperado.length < 24) return false;
+  const a = crypto.createHash('sha256').update(String(chave)).digest();
+  const b = crypto.createHash('sha256').update(esperado).digest();
+  return crypto.timingSafeEqual(a, b);
 }
 const ROTAS_MEMBRO = new Set([
   '/assinaturas/listar', '/assinaturas/salvar',
@@ -252,6 +262,7 @@ app.use(async (req, res, next) => {
 
     if (p === '/roteiros/publicar' && req.method === 'POST') {
       if (sessaoConciergeValida(req.headers['x-cdv-auth'])) return next();
+      if (roteirosChaveValida(req.headers['x-cdv-roteiros'])) return next();
       const email = await sessaoMembroDaReq(req, devMode);
       if (!email) return negar(res, 401, 'Sessão expirada. Entre novamente.', 'sessao');
       const body = req.body || {};
