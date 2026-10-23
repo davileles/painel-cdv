@@ -14,7 +14,7 @@
 // COPIA ESPELHADA: gestor-cdv/index.html (deduzirTransferencia e listas
 // ORIGEM_/DESTINO_TRANSFERENCIA_OPTIONS). Ajuste nos DOIS.
 
-const ORIGEM_TRANSFERENCIA_OPTIONS = ['Todos','Alloyal','Azul Fidelidade','BRB','BTG','C6','Caixa','Esfera','Inter','Itaú','LATAM Pass','Livelo','Nubank','Porto Seguro','Premmia','Revolut','Sicoob','Sicredi','Smiles','XP'];
+const ORIGEM_TRANSFERENCIA_OPTIONS = ['Todos','Alloyal','Azul Fidelidade','Banco do Brasil','BRB','BTG','BV','C6','Caixa','Esfera','Inter','Itaú','LATAM Pass','Livelo','Nubank','Porto Seguro','Premmia','Revolut','Sicoob','Sicredi','Smiles','Unicred','XP'];
 const DESTINO_TRANSFERENCIA_OPTIONS = ['AAdvantage','ALL Accor','Azul Fidelidade','Connect Miles','Flying Blue','Hilton Honors','Iberia Plus','IHG','LATAM Pass','Livelo','Smiles','TAP Miles&Go'];
 
 const ALIAS_PROGRAMAS = {
@@ -32,6 +32,8 @@ const ALIAS_PROGRAMAS = {
   'AAdvantage': ['aadvantage','advantage'],
   'Premmia': ['petrobras premmia','premmia'],
   'Alloyal': ['alloyal'],
+  'Banco do Brasil': ['banco do brasil','bb empresas','bb'],
+  'BV': ['banco bv','bv'],
 };
 
 function normalizarBusca(s) {
