@@ -3239,6 +3239,17 @@ app.post('/ofertas/publicar', async (req, res) => {
     };
     // lembrete:false = sem o "⏰ ACABA HOJE" no ultimo dia do prazo (baileys).
     if (oferta.lembrete === false) item.lembrete = false;
+    // Transferencia publicada pela aba Oferta do gestor tambem entra no
+    // historico de transferencias (antes so /ofertas/aprovar registrava e a
+    // campanha nao aparecia como ativa no Comparador — oferta lrstel, Livelo ->
+    // LATAM Pass 25%, 22/10/2026). Campos escolhidos na tela valem; o que
+    // faltar e deduzido do texto.
+    if (item.categoria === 'transferencia') {
+      ['origem', 'destino', 'bonusMax', 'semHistorico', 'campanhaNova'].forEach((k) => {
+        if (oferta[k] !== undefined && oferta[k] !== null && oferta[k] !== '') item[k] = oferta[k];
+      });
+      Object.assign(item, completarTransferencia(item));
+    }
 
     const aprov = await ghGetJson(OFERTAS_APROVADAS_PATH, { geradoEm: null, items: [] });
     // Mesma oferta publicada de novo (reenvio/duplo clique na aba Oferta):
@@ -3267,6 +3278,16 @@ app.post('/ofertas/publicar', async (req, res) => {
     );
 
     res.json({ ok: true, id });
+    // Historico de transferencias + alertas de transferencia do concierge
+    // (best-effort, depois da resposta, mesma ordem de /ofertas/aprovar).
+    if (item.categoria === 'transferencia' && !jaExiste) {
+      (async () => {
+        try { await atualizarHistoricoTransferencia(item); }
+        catch (e) { console.error('[Histórico transferências] Falha ao atualizar (publicar):', e.message); }
+        try { await verificarAlertasTransferencia(item); }
+        catch (e) { console.error('[Alertas concierge] transferências (publicar):', e.message); }
+      })();
+    }
     // Alertas do concierge por palavra-chave (best-effort, depois da resposta)
     verificarAlertasPalavraChave(item).catch((e) => console.error('[Alertas concierge] palavras-chave (publicar):', e.message));
   } catch (err) {
