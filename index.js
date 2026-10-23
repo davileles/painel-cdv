@@ -5047,11 +5047,29 @@ app.post('/ia/extrair-reserva', (req, res) => {
       return c < p ? somarDias(t.data, 1) : t.data;
     }
 
-    // Separar trechos de ida e volta
-    // Ida: sequência do início; volta: quando destino de um trecho = origem do primeiro
+    // Separar trechos de ida e volta.
+    // Regra principal: a virada da viagem e o MAIOR intervalo entre a chegada de
+    // um trecho e a partida do seguinte, desde que seja de 24 h ou mais (estadia
+    // no destino). Conexoes ficam de fora mesmo quando sao varias (ex.: ida
+    // CNF-GRU-CPT e volta CPT-JNB-GRU-CNF). Sem intervalo de 24 h, cai na regra
+    // antiga (volta = trecho que retorna a origem).
+    function instanteTrecho(data, hora) {
+      if (!data || !/^\d{4}-\d{2}-\d{2}$/.test(data)) return null;
+      const m = minutosDeHora(hora);
+      return Date.parse(data + 'T00:00:00Z') / 60000 + (m === null ? 720 : m);
+    }
     const origem0 = (d.trechos[0].origem||'').toUpperCase();
     let idxVolta = -1;
+    let maiorGap = 0;
     for (let i = 1; i < d.trechos.length; i++) {
+      const ant = d.trechos[i - 1], atu = d.trechos[i];
+      const chegou = instanteTrecho(dataChegadaTrecho(ant), ant.horaChegada);
+      const parte  = instanteTrecho(atu.data, atu.horaPartida);
+      if (chegou === null || parte === null) continue;
+      const gap = parte - chegou;
+      if (gap >= 24 * 60 && gap > maiorGap) { maiorGap = gap; idxVolta = i; }
+    }
+    for (let i = 1; idxVolta === -1 && i < d.trechos.length; i++) {
       if (mesmaCidadeCheck(d.trechos[i].origem, d.trechos[d.trechos.length-1].destino) &&
           mesmaCidadeCheck(d.trechos[i].destino, origem0)) {
         idxVolta = i; break;
@@ -5078,11 +5096,30 @@ app.post('/ia/extrair-reserva', (req, res) => {
       dataChegadaTrecho({ data: d.dataIda, horaPartida: d.horaPartida, horaChegada: d.horaChegada });
     d.nvooIda = trechosIda.map(t => t.nvoo).filter(Boolean).join(', ');
     d.classe = cabineToClasse(primeiro.cabine);
-    if (!d.ciaIda) d.ciaIda = trechosIda.map(t => t.cia).filter(Boolean)[0] || '';
 
-    // Conexão na ida: destino do primeiro trecho (se há mais de um trecho)
+    // Cia de cada sentido = a que opera mais trechos nele; empate decide pela
+    // que mais opera na reserva inteira (ex.: Azul CNF-GRU + SAA GRU-CPT → SAA).
+    const contaCiaTotal = {};
+    d.trechos.forEach(t => { const k = String(t.cia || '').trim(); if (k) contaCiaTotal[k] = (contaCiaTotal[k] || 0) + 1; });
+    function ciaPrincipal(lista) {
+      const conta = {};
+      lista.forEach(t => { const k = String(t.cia || '').trim(); if (k) conta[k] = (conta[k] || 0) + 1; });
+      return Object.keys(conta).sort((a, b) => (conta[b] - conta[a]) || (contaCiaTotal[b] - contaCiaTotal[a]))[0] || '';
+    }
+    // Conexoes do sentido = todos os aeroportos intermediarios, na ordem.
+    function conexoesDe(lista) {
+      const out = [];
+      for (let i = 0; i < lista.length - 1; i++) {
+        const c = String(lista[i].destino || '').trim().toUpperCase();
+        if (c && out.indexOf(c) === -1) out.push(c);
+      }
+      return out.join(', ');
+    }
+    if (!d.ciaIda) d.ciaIda = ciaPrincipal(trechosIda);
+
+    // Conexão na ida: todos os pontos intermediários (se há mais de um trecho)
     if (trechosIda.length > 1) {
-      d.conexao = trechosIda[0].destino;
+      d.conexao = conexoesDe(trechosIda);
     }
 
     // Montar campos de volta
@@ -5095,9 +5132,11 @@ app.post('/ia/extrair-reserva', (req, res) => {
       d.dataChegadaVolta = dataChegadaTrecho(ultimoV) ||
         dataChegadaTrecho({ data: d.dataVolta, horaPartida: d.horaPartidaVolta, horaChegada: d.horaChegadaVolta });
       d.nvooVolta = trechosVolta.map(t => t.nvoo).filter(Boolean).join(', ');
-      d.ciaVolta = d.ciaVolta || d.ciaIda;
+      d.origemVolta = d.origemVolta || primeiroV.origem;
+      d.destinoVolta = d.destinoVolta || ultimoV.destino;
+      d.ciaVolta = d.ciaVolta || ciaPrincipal(trechosVolta) || d.ciaIda;
       if (trechosVolta.length > 1) {
-        d.conexaoVolta = trechosVolta[0].destino;
+        d.conexaoVolta = conexoesDe(trechosVolta);
       }
     }
 
