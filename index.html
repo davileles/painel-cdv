@@ -1065,7 +1065,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
       <button type="button" class="bv-trocar" onclick="bvTrocar()" title="Inverter origem e destino">⇄</button>
       <div class="field bv-iata"><label>Destino</label><div class="bv-caixa"><input type="text" id="bv-destino" placeholder="Código ou cidade" autocomplete="off" spellcheck="false"/><span class="bv-aero" id="bv-destino-nome"></span></div><div class="bv-ac" id="bv-destino-ac"></div></div>
       <div class="field bv-data"><label>🛫 Ida</label><input type="date" id="bv-ida"/></div>
-      <div class="field bv-data" id="bv-volta-campo" style="display:none"><label>🛬 Volta</label><input type="date" id="bv-volta"/></div>
+      <div class="field bv-data" id="bv-volta-campo" style="display:none"><label>🛬 Volta</label><input type="date" id="bv-volta" data-data-de="bv-ida"/></div>
     </div>
     <div class="bv-linha">
       <div class="field bv-tipo-campo"><label>Tipo</label>
@@ -4203,7 +4203,7 @@ async function ctSalvar(i){
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
           <div><label class="milhas-label">Check-in</label><input type="date" id="ml-hosp-checkin" class="milhas-input"/></div>
-          <div><label class="milhas-label">Check-out</label><input type="date" id="ml-hosp-checkout" class="milhas-input"/></div>
+          <div><label class="milhas-label">Check-out</label><input type="date" id="ml-hosp-checkout" data-data-de="ml-hosp-checkin" class="milhas-input"/></div>
         </div>
         <div><label class="milhas-label">Valor em Dinheiro (R$) <span style="color:var(--muted);font-weight:400">(opcional)</span></label><input type="number" id="ml-hosp-valor" class="milhas-input" placeholder="Ex: 1500.00" min="0" step="0.01"/></div>
       </div>
@@ -4220,7 +4220,7 @@ async function ctSalvar(i){
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
           <div><label class="milhas-label">Data de Retirada</label><input type="date" id="ml-loc-retirada" class="milhas-input"/></div>
-          <div><label class="milhas-label">Data de Entrega</label><input type="date" id="ml-loc-entrega" class="milhas-input"/></div>
+          <div><label class="milhas-label">Data de Entrega</label><input type="date" id="ml-loc-entrega" data-data-de="ml-loc-retirada" class="milhas-input"/></div>
         </div>
         <div><label class="milhas-label">Valor em Dinheiro (R$) <span style="color:var(--muted);font-weight:400">(opcional)</span></label><input type="number" id="ml-loc-valor" class="milhas-input" placeholder="Ex: 800.00" min="0" step="0.01"/></div>
       </div>
@@ -11596,6 +11596,55 @@ function bvCopiarTudo(btn) {
   </div>
 </div>
 <script>document.addEventListener('keydown',function(e){if(e.key==='Escape')compFecharPanorama();});</script>
+<script>
+/* Par de datas (regra de todos os projetos): o 2º campo de um intervalo abre no mês da 1ª data.
+   Marque o 2º campo com data-data-de="id-do-1º" (vários: "a,b" → usa o 1º preenchido; ".classe" → busca no contêiner mais próximo).
+   Ao abrir o 2º campo vazio, ele recebe a 1ª data só para o calendário abrir naquele mês; se nada for escolhido, volta a ficar vazio. */
+(function(){
+  if (window.__parDatas) return; window.__parDatas = 1;
+  var TIPOS = {'date':1, 'datetime-local':1, 'month':1};
+  function origem(el){
+    var refs = (el.getAttribute('data-data-de') || '').split(',');
+    for (var i = 0; i < refs.length; i++){
+      var r = refs[i].trim(), a = null;
+      if (!r) continue;
+      if (/^[.\[]/.test(r)) { for (var p = el.parentElement; p && !a; p = p.parentElement) a = p.querySelector(r); }
+      else a = document.getElementById(r.replace(/^#/, ''));
+      if (a && a !== el && a.value) return a;
+    }
+    return null;
+  }
+  function adaptar(v, tipo){
+    if (tipo === 'month') return v.slice(0, 7);
+    var d = v.length === 7 ? v + '-01' : v.slice(0, 10);
+    return tipo === 'datetime-local' ? (v.length > 10 ? v.slice(0, 16) : d + 'T00:00') : d;
+  }
+  function preparar(e){
+    var el = e.target;
+    if (!el || el.tagName !== 'INPUT' || !TIPOS[el.type] || !el.hasAttribute('data-data-de')) return;
+    if (el.value || el.readOnly || el.disabled || el.__parAuto !== undefined) return;
+    var a = origem(el); if (!a) return;
+    var v = adaptar(a.value, el.type);
+    // Mesmo mês do atual: o calendário já abre certo, não precisa preencher
+    var hoje = new Date(), mesAtual = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0');
+    if (v.slice(0, 7) === mesAtual) return;
+    el.value = v;
+    if (el.value !== v) return;
+    el.__parAuto = v; el.__parMexeu = false;
+  }
+  function mexeu(e){ var el = e.target; if (el && el.__parAuto !== undefined) el.__parMexeu = true; }
+  function soltar(e){
+    var el = e.target; if (!el || el.__parAuto === undefined) return;
+    if (!el.__parMexeu && el.value === el.__parAuto) el.value = '';
+    delete el.__parAuto; delete el.__parMexeu;
+  }
+  document.addEventListener('pointerdown', preparar, true);
+  document.addEventListener('focusin', preparar, true);
+  document.addEventListener('input', mexeu, true);
+  document.addEventListener('change', mexeu, true);
+  document.addEventListener('focusout', soltar, true);
+})();
+</script>
 </body>
 <!-- deploy-1784058289 -->
 </html>

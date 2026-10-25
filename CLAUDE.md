@@ -44,6 +44,7 @@ Presentes em painel-cdv, baileys-server, gestor-cdv, concierge, tudo-sobre-promo
 ### Convenções de UI (todos os projetos)
 - Todo seletor/dropdown com opções em **ordem alfabética**.
 - 🛫 para data de ida, 🛬 para data de volta.
+- Dois campos de data em sequência (de/até, ida/volta, check-in/check-out): o 2º abre no mês da 1ª data escolhida, não no mês corrente. Marcar o 2º com `data-data-de="id-do-1º"` (vários: `"a,b"`; classe: `".x"`) e incluir o bloco "Par de datas" (`window.__parDatas`) no fim do `<body>` — mesmo código em todos os projetos.
 - Cards de revisão no Telegram: **sem blocos expansíveis/colapsáveis**.
 - Painel do membro CDV: ícones **Phosphor** (sprite SVG `#i-*`) em vez de emoji de interface.
 - Preferir soluções **sem novo serviço externo**.
