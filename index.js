@@ -4339,7 +4339,7 @@ function assinarTokenTenant(email) {
 }
 const ADMIN_EMAILS_APP = {
   tsp:       [],
-  concierge: ['felipetruta1@gmail.com']
+  concierge: ['felipetruta1@gmail.com', 'henriquefrattezi@hotmail.com']
 };
 function adminAutorizado(email, appKey) {
   if (ADMIN_EMAILS.includes(email)) return true;
