@@ -47,6 +47,8 @@ const ARQUIVOS_SENSIVEIS = new Set([
   // Gestão de Milhas dos membros (e-mail + saldos). Até 13/10/2026 vivia no
   // painel-cdv público e era servido pelo Pages — migrado (ver MIGRAR_DO_PUBLICO).
   'milhas.json',
+  // Pedidos de Planejamento Estratégico (e-mail, gastos, saldos, viagem): repo privado.
+  'consultorias.json',
 ]);
 // Arquivos que saíram do painel-cdv: na 1ª leitura sem cópia no repo de dados,
 // o proxy copia a versão do repo público para lá (uma vez por arquivo).
@@ -206,6 +208,7 @@ const ROTAS_MEMBRO = new Set([
   '/milhas/excluir', '/milhas/listar', '/milhas/salvar',
   '/perfis/listar', '/perfis/salvar',
   '/roteiros/meus',
+  '/consultoria/meus', '/consultoria/enviar', '/consultoria/listar', '/consultoria/responder',
 ]);
 // Conteúdo do painel (o que o membro paga para ver): membro logado OU operador.
 // GET em todas; o e-mail não é sobrescrito (as rotas não dependem dele).
@@ -4663,6 +4666,158 @@ app.post('/perfis/salvar', async (req, res) => {
       console.error('[perfis/salvar]', err.message);
       return res.status(500).json({ ok: false, erro: err.message });
     }
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  PLANEJAMENTO ESTRATÉGICO (aba do painel do membro)
+// ══════════════════════════════════════════════════════════════════════════════
+// O membro preenche um formulário (viajantes, viagem, cartão/saldos/clubes,
+// objetivo) e o Davi devolve um planejamento em texto. Tudo em
+// consultorias.json no repo PRIVADO de dados (ARQUIVOS_SENSIVEIS).
+// Todas as rotas estão em ROTAS_MEMBRO: o e-mail sai do token. listar/responder
+// exigem ADMIN_EMAILS por cima disso.
+const CONSULTORIAS_PATH = 'consultorias.json';
+const CONSULTORIA_LIMITE = 2;            // pedidos por membro...
+const CONSULTORIA_JANELA_DIAS = 365;     // ...a cada 12 meses
+const CONSULTORIA_STATUS = ['recebido', 'em_analise', 'entregue', 'cancelado'];
+
+function consultoriaPublica(p) {
+  // O membro vê o próprio pedido inteiro (sem campos internos).
+  const { notaInterna, ...resto } = p;
+  return resto;
+}
+function consultoriaContaNaJanela(pedidos, email) {
+  const limite = Date.now() - CONSULTORIA_JANELA_DIAS * 86400e3;
+  return pedidos.filter(p => p.email === email && p.status !== 'cancelado' && Date.parse(p.criadoEm) >= limite).length;
+}
+function consultoriaResumoWA(p) {
+  const d = p.dados || {};
+  const quando = d.dataTipo === 'fixa' ? `${d.ida || '?'} → ${d.volta || '?'}`
+    : d.dataTipo === 'flexivel' ? `flexível ${d.mesDe || ''}${d.mesAte ? ' a ' + d.mesAte : ''}${d.duracao ? ' · ' + d.duracao + ' dias' : ''}`
+    : `qualquer data${d.duracao ? ' · ' + d.duracao + ' dias' : ''}`;
+  const pessoas = [d.adultos ? `${d.adultos} adulto(s)` : '', d.criancas ? `${d.criancas} criança(s)` : '', d.bebes ? `${d.bebes} bebê(s)` : ''].filter(Boolean).join(', ');
+  return [
+    `🧭 *Novo pedido de Planejamento Estratégico*`,
+    `👤 ${p.nome || p.email} (${p.email})`,
+    `✈️ ${d.origem || '?'} → ${d.destino || '?'} · ${d.cabine || 'cabine ?'}`,
+    `📅 ${quando}`,
+    pessoas ? `👥 ${pessoas}` : '',
+    d.gastoMensal ? `💳 gasto mensal ~R$ ${d.gastoMensal}` : '',
+    `🔗 painel.clubedoviajante.com.br → Planejamento Estratégico (id ${p.id})`,
+  ].filter(Boolean).join('\n');
+}
+async function consultoriaAvisarWA(p) {
+  try {
+    let grupo = '';
+    try { const { content: cfg } = await getConciergeFile('cfg.json'); grupo = (cfg && cfg.grupoAlertas) || ''; } catch (e) {}
+    if (!grupo) { console.warn('[consultoria] grupoAlertas não configurado; sem aviso WA'); return; }
+    const rw = await fetch(`${BAILEYS_URL}/enviar`, {
+      compress: false, method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ grupo, mensagem: consultoriaResumoWA(p) })
+    });
+    if (!rw.ok) console.warn(`[consultoria] baileys respondeu ${rw.status}`);
+  } catch (e) { console.warn('[consultoria] aviso WA falhou:', e.message); }
+}
+async function consultoriaGravar(mutador, msg, devMode) {
+  for (let tentativa = 1; tentativa <= 4; tentativa++) {
+    try {
+      const atual = await ghGetJsonDev(CONSULTORIAS_PATH, { atualizadoEm: null, pedidos: [] }, devMode);
+      const pedidos = Array.isArray(atual.data.pedidos) ? atual.data.pedidos : [];
+      const out = mutador(pedidos);
+      if (out && out.erro) return out;
+      await ghPutJsonDev(CONSULTORIAS_PATH, { atualizadoEm: new Date().toISOString(), pedidos }, atual.sha, msg, devMode);
+      return out || { ok: true };
+    } catch (err) {
+      const isShaConflict = err.message && err.message.includes('but expected');
+      if (isShaConflict && tentativa < 4) { await new Promise(r => setTimeout(r, tentativa * 400)); continue; }
+      throw err;
+    }
+  }
+}
+
+app.get('/consultoria/meus', async (req, res) => {
+  const email = res.locals.membroEmail;
+  try {
+    const atual = await ghGetJsonDev(CONSULTORIAS_PATH, { pedidos: [] }, res.locals.isDevMode);
+    const todos = atual.data.pedidos || [];
+    const meus = todos.filter(p => p.email === email).map(consultoriaPublica)
+      .sort((a, b) => String(b.criadoEm).localeCompare(String(a.criadoEm)));
+    res.json({ ok: true, pedidos: meus, usados: consultoriaContaNaJanela(todos, email), limite: CONSULTORIA_LIMITE, janelaDias: CONSULTORIA_JANELA_DIAS });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// Body: { nome, dados:{...formulário} }
+app.post('/consultoria/enviar', async (req, res) => {
+  const email = res.locals.membroEmail;
+  const { nome, dados } = req.body || {};
+  if (!dados || typeof dados !== 'object') return res.status(400).json({ ok: false, erro: 'dados obrigatórios' });
+  if (!String(dados.origem || '').trim() || !String(dados.destino || '').trim()) return res.status(400).json({ ok: false, erro: 'Informe origem e destino' });
+  if (!GITHUB_TOKEN) return res.status(500).json({ ok: false, erro: 'GITHUB_TOKEN não configurado' });
+  const pedido = {
+    id: 'PE-' + Date.now().toString(36).toUpperCase(),
+    email,
+    nome: String(nome || '').slice(0, 120),
+    criadoEm: new Date().toISOString(),
+    status: 'recebido',
+    dados: JSON.parse(JSON.stringify(dados)),
+    resposta: '',
+    respondidoEm: null,
+    atualizadoEm: new Date().toISOString(),
+  };
+  try {
+    const r = await consultoriaGravar((pedidos) => {
+      const usados = consultoriaContaNaJanela(pedidos, email);
+      if (usados >= CONSULTORIA_LIMITE) return { erro: `Você já usou ${usados} de ${CONSULTORIA_LIMITE} pedidos nos últimos 12 meses.`, usados };
+      pedidos.push(pedido);
+      return { ok: true, usados: usados + 1 };
+    }, `consultoria: novo pedido ${pedido.id}`, res.locals.isDevMode);
+    if (r.erro) return res.status(409).json({ ok: false, erro: r.erro, usados: r.usados, limite: CONSULTORIA_LIMITE });
+    consultoriaAvisarWA(pedido); // best-effort, não bloqueia a resposta
+    res.json({ ok: true, pedido: consultoriaPublica(pedido), usados: r.usados, limite: CONSULTORIA_LIMITE });
+  } catch (err) {
+    console.error('[consultoria/enviar]', err.message);
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// Operador (ADMIN_EMAILS): fila completa.
+app.get('/consultoria/listar', async (req, res) => {
+  if (!emailEhAdmin(res.locals.membroEmail)) return negar(res, 403, 'nao autorizado', 'operador');
+  try {
+    const atual = await ghGetJsonDev(CONSULTORIAS_PATH, { pedidos: [] }, res.locals.isDevMode);
+    const pedidos = (atual.data.pedidos || []).slice().sort((a, b) => String(b.criadoEm).localeCompare(String(a.criadoEm)));
+    res.json({ ok: true, pedidos });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// Operador: Body { id, status?, resposta?, notaInterna? }
+app.post('/consultoria/responder', async (req, res) => {
+  if (!emailEhAdmin(res.locals.membroEmail)) return negar(res, 403, 'nao autorizado', 'operador');
+  const { id, status, resposta, notaInterna } = req.body || {};
+  if (!id) return res.status(400).json({ ok: false, erro: 'id obrigatório' });
+  if (status !== undefined && !CONSULTORIA_STATUS.includes(status)) return res.status(400).json({ ok: false, erro: 'status inválido' });
+  try {
+    const r = await consultoriaGravar((pedidos) => {
+      const p = pedidos.find(x => x.id === id);
+      if (!p) return { erro: 'Pedido não encontrado' };
+      if (resposta !== undefined) p.resposta = String(resposta);
+      if (notaInterna !== undefined) p.notaInterna = String(notaInterna);
+      if (status !== undefined) p.status = status;
+      else if (resposta !== undefined && String(resposta).trim() && p.status === 'recebido') p.status = 'em_analise';
+      if (p.status === 'entregue' && !p.respondidoEm) p.respondidoEm = new Date().toISOString();
+      p.atualizadoEm = new Date().toISOString();
+      return { ok: true, pedido: p };
+    }, `consultoria: ${id} ${status || 'resposta'}`, res.locals.isDevMode);
+    if (r.erro) return res.status(404).json({ ok: false, erro: r.erro });
+    res.json(r);
+  } catch (err) {
+    console.error('[consultoria/responder]', err.message);
+    res.status(500).json({ ok: false, erro: err.message });
   }
 });
 

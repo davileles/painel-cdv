@@ -945,6 +945,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   <button class="main-tab" data-tab="lounges" id="tab-btn-lounges">🛋️ Salas VIP</button>
   <button class="main-tab" data-tab="calculadoras" id="tab-btn-calculadoras">🧮 Calculadoras</button>
   <button class="main-tab" data-tab="reclamacoes" id="tab-btn-reclamacoes">⚖️ Reclamações</button>
+  <button class="main-tab" data-tab="planejamento" id="tab-btn-planejamento">🧭 Planejamento Estratégico</button>
   <button class="main-tab" data-tab="roteiros" id="tab-btn-roteiros">🗺️ Roteiros</button>
   <button class="main-tab" data-tab="cartoes" id="tab-btn-cartoes">💳 Cartões</button>
 </div>
@@ -1773,6 +1774,595 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 })();
 </script>
 </div><!-- /tab-reclamacoes -->
+
+<div id="tab-planejamento" class="tab-panel" style="display:none">
+<style>
+  #tab-planejamento .pe-wrap{max-width:860px;margin:0 auto;padding:24px 22px 60px}
+  #tab-planejamento .pe-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px}
+  #tab-planejamento .pe-title{font-size:13px;font-weight:800;color:var(--cdv-coral);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  #tab-planejamento .pe-title .pe-cota{margin-left:auto;font-size:11px;font-weight:700;color:var(--muted);text-transform:none;letter-spacing:0}
+  #tab-planejamento .pe-intro{font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:18px}
+  #tab-planejamento .pe-intro strong{color:var(--text)}
+  #tab-planejamento .pe-sec{font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin:6px 0 14px;padding-top:14px;border-top:1px solid var(--border)}
+  #tab-planejamento .pe-sec:first-of-type{border-top:none;padding-top:0}
+  #tab-planejamento .pe-field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;min-width:0}
+  #tab-planejamento .pe-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
+  #tab-planejamento .pe-help{font-size:11px;color:var(--muted2);line-height:1.5}
+  #tab-planejamento .pe-input{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:13px;padding:10px 12px;outline:none;transition:border-color .15s;width:100%;min-width:0}
+  #tab-planejamento .pe-input:focus{border-color:var(--cdv-coral)}
+  #tab-planejamento textarea.pe-input{resize:vertical;min-height:72px}
+  #tab-planejamento .pe-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  #tab-planejamento .pe-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  #tab-planejamento .pe-chips{display:flex;gap:8px;flex-wrap:wrap}
+  #tab-planejamento .pe-chip{padding:9px 13px;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:999px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;line-height:1}
+  #tab-planejamento .pe-chip.sel{border-color:var(--cdv-coral);color:var(--cdv-coral);background:rgba(255,88,94,.08)}
+  #tab-planejamento .pe-sub{display:none;margin-top:4px}
+  #tab-planejamento .pe-sub.on{display:block}
+  #tab-planejamento .pe-saldos{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px 12px}
+  #tab-planejamento .pe-saldo{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 8px 6px 10px}
+  #tab-planejamento .pe-saldo span{font-size:11.5px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #tab-planejamento .pe-saldo input{width:96px;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:'Montserrat',sans-serif;font-size:12.5px;text-align:right;padding:3px 2px;outline:none}
+  #tab-planejamento .pe-saldo input:focus{border-bottom-color:var(--cdv-coral)}
+  #tab-planejamento .pe-clubes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px 12px}
+  #tab-planejamento .pe-clube{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600}
+  #tab-planejamento .pe-clube input[type=checkbox]{accent-color:var(--cdv-coral);width:16px;height:16px}
+  #tab-planejamento .pe-clube input[type=text]{flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:12px;padding:5px 8px;outline:none}
+  #tab-planejamento .pe-btn{width:100%;padding:13px;background:var(--cdv-coral);color:#fff;border:none;border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:opacity .15s;letter-spacing:.3px}
+  #tab-planejamento .pe-btn:hover{opacity:.88}
+  #tab-planejamento .pe-btn:disabled{opacity:.5;cursor:not-allowed}
+  #tab-planejamento .pe-btn.sec{background:transparent;border:1px solid rgba(255,88,94,.45);color:var(--cdv-coral)}
+  #tab-planejamento .pe-fb{font-size:12px;font-weight:700;text-align:center;min-height:16px;margin-top:8px;color:var(--cdv-coral)}
+  #tab-planejamento .pe-list{display:flex;flex-direction:column;gap:10px}
+  #tab-planejamento .pe-item{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .15s}
+  #tab-planejamento .pe-item:hover{border-color:var(--cdv-coral)}
+  #tab-planejamento .pe-item-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  #tab-planejamento .pe-item-rota{font-size:14px;font-weight:800;flex:1;min-width:0}
+  #tab-planejamento .pe-item-meta{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.5}
+  #tab-planejamento .pe-badge{font-size:10px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;padding:4px 9px;border-radius:999px;border:1px solid}
+  #tab-planejamento .pe-badge.recebido{color:#60a5fa;border-color:rgba(96,165,250,.45);background:rgba(96,165,250,.1)}
+  #tab-planejamento .pe-badge.em_analise{color:#f5a623;border-color:rgba(245,166,35,.45);background:rgba(245,166,35,.1)}
+  #tab-planejamento .pe-badge.entregue{color:#34d399;border-color:rgba(52,211,153,.45);background:rgba(52,211,153,.1)}
+  #tab-planejamento .pe-badge.cancelado{color:var(--muted);border-color:var(--border)}
+  #tab-planejamento .pe-resposta{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px 20px;font-size:13.5px;line-height:1.75;word-break:break-word}
+  #tab-planejamento .pe-resposta h1,#tab-planejamento .pe-resposta h2,#tab-planejamento .pe-resposta h3{font-weight:900;letter-spacing:-.2px;margin:16px 0 8px;line-height:1.3}
+  #tab-planejamento .pe-resposta h1{font-size:19px}#tab-planejamento .pe-resposta h2{font-size:16px;color:var(--cdv-coral)}#tab-planejamento .pe-resposta h3{font-size:14px}
+  #tab-planejamento .pe-resposta h1:first-child,#tab-planejamento .pe-resposta h2:first-child{margin-top:0}
+  #tab-planejamento .pe-resposta ul,#tab-planejamento .pe-resposta ol{padding-left:22px;margin:6px 0 10px}
+  #tab-planejamento .pe-resposta li{margin:3px 0}
+  #tab-planejamento .pe-resposta p{margin:0 0 10px}
+  #tab-planejamento .pe-resposta a{color:var(--blue,#126eff);font-weight:700}
+  #tab-planejamento .pe-resposta hr{border:none;border-top:1px solid var(--border);margin:14px 0}
+  #tab-planejamento .pe-resposta code{background:var(--surface);padding:1px 5px;border-radius:4px;font-size:12px}
+  #tab-planejamento .pe-det{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:12.5px;margin:6px 0 14px}
+  #tab-planejamento .pe-det div b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted2);font-weight:700;margin-bottom:2px}
+  #tab-planejamento .pe-det .wide{grid-column:1/-1}
+  #tab-planejamento .pe-back{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;padding:0;margin-bottom:12px}
+  #tab-planejamento .pe-back:hover{color:var(--cdv-coral)}
+  #tab-planejamento .pe-empty{text-align:center;color:var(--muted);font-size:12.5px;padding:18px 0}
+  #tab-planejamento .pe-filtros{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  @media (max-width:640px){
+    #tab-planejamento .pe-wrap{padding:16px 14px 80px}
+    #tab-planejamento .pe-row2,#tab-planejamento .pe-row3,#tab-planejamento .pe-det{grid-template-columns:1fr}
+  }
+</style>
+
+<div class="pe-wrap">
+
+  <!-- ═══ VISÃO DO MEMBRO ═══ -->
+  <div id="pe-membro">
+
+    <!-- Meus pedidos -->
+    <div class="pe-card" id="pe-card-meus">
+      <div class="pe-title">🧭 Planejamento Estratégico <span class="pe-cota" id="pe-cota"></span></div>
+      <p class="pe-intro">Me conte a viagem que você quer fazer e o que você tem em mãos (gasto no cartão, milhas, clubes). Eu monto um <strong>planejamento estratégico</strong> com o que eu faria no seu lugar: quais pontos usar, quais comprar ou transferir, em que programa emitir, quando e por quanto.</p>
+      <div id="pe-meus-lista" class="pe-list"></div>
+      <div id="pe-meus-vazio" class="pe-empty" style="display:none">Você ainda não fez nenhum pedido.</div>
+      <div style="margin-top:14px">
+        <button class="pe-btn" id="pe-btn-novo" onclick="peNovo()">✍️ Fazer um pedido</button>
+        <div class="pe-fb" id="pe-fb-meus"></div>
+      </div>
+    </div>
+
+    <!-- Detalhe de um pedido meu -->
+    <div class="pe-card" id="pe-card-det" style="display:none">
+      <button class="pe-back" onclick="peVoltar()">← Meus pedidos</button>
+      <div id="pe-det-conteudo"></div>
+    </div>
+
+    <!-- Formulário -->
+    <div class="pe-card" id="pe-card-form" style="display:none">
+      <button class="pe-back" onclick="peVoltar()">← Meus pedidos</button>
+      <div class="pe-title">✍️ Novo pedido</div>
+
+      <div class="pe-sec">👥 Quem viaja</div>
+      <div class="pe-field">
+        <label class="pe-label">Composição</label>
+        <div class="pe-chips" id="pe-quem">
+          <button class="pe-chip" data-v="sozinho" onclick="peChip('pe-quem',this,false)">Sozinho(a)</button>
+          <button class="pe-chip" data-v="casal" onclick="peChip('pe-quem',this,false)">Casal</button>
+          <button class="pe-chip" data-v="familia" onclick="peChip('pe-quem',this,false)">Família</button>
+          <button class="pe-chip" data-v="amigos" onclick="peChip('pe-quem',this,false)">Amigos / grupo</button>
+        </div>
+      </div>
+      <div class="pe-row3">
+        <div class="pe-field"><label class="pe-label">Adultos</label><input class="pe-input" id="pe-adultos" type="number" min="1" max="20" value="1"/></div>
+        <div class="pe-field"><label class="pe-label">Crianças (2 a 11)</label><input class="pe-input" id="pe-criancas" type="number" min="0" max="20" value="0"/></div>
+        <div class="pe-field"><label class="pe-label">Bebês (até 2)</label><input class="pe-input" id="pe-bebes" type="number" min="0" max="10" value="0"/></div>
+      </div>
+      <div class="pe-field">
+        <label class="pe-label">Idades das crianças e observações sobre os viajantes</label>
+        <input class="pe-input" id="pe-viajantes-obs" placeholder="Ex: filhos de 4 e 9 anos; minha mãe tem 72 e evita escadas"/>
+      </div>
+
+      <div class="pe-sec">✈️ A viagem</div>
+      <div class="pe-row2">
+        <div class="pe-field"><label class="pe-label">Origem</label><input class="pe-input" id="pe-origem" placeholder="Ex: Belo Horizonte (CNF)"/></div>
+        <div class="pe-field"><label class="pe-label">Destino(s)</label><input class="pe-input" id="pe-destino" placeholder="Ex: Lisboa; ou Roma + Paris"/></div>
+      </div>
+      <div class="pe-field">
+        <label class="pe-label">Datas</label>
+        <div class="pe-chips" id="pe-datatipo">
+          <button class="pe-chip" data-v="fixa" onclick="peChip('pe-datatipo',this,false);peDataTipo()">Data fixa</button>
+          <button class="pe-chip" data-v="flexivel" onclick="peChip('pe-datatipo',this,false);peDataTipo()">Flexível dentro de um período</button>
+          <button class="pe-chip" data-v="qualquer" onclick="peChip('pe-datatipo',this,false);peDataTipo()">Qualquer data</button>
+        </div>
+      </div>
+      <div class="pe-sub" id="pe-sub-fixa">
+        <div class="pe-row2">
+          <div class="pe-field"><label class="pe-label">🛫 Ida</label><input class="pe-input" id="pe-ida" type="date"/></div>
+          <div class="pe-field"><label class="pe-label">🛬 Volta</label><input class="pe-input" id="pe-volta" type="date" data-data-de="pe-ida"/></div>
+        </div>
+        <div class="pe-field"><label class="pe-label">Margem nas datas</label><input class="pe-input" id="pe-margem" placeholder="Ex: ida pode variar ±2 dias; volta é fixa"/></div>
+      </div>
+      <div class="pe-sub" id="pe-sub-flexivel">
+        <div class="pe-row3">
+          <div class="pe-field"><label class="pe-label">De (mês)</label><input class="pe-input" id="pe-mes-de" type="month"/></div>
+          <div class="pe-field"><label class="pe-label">Até (mês)</label><input class="pe-input" id="pe-mes-ate" type="month"/></div>
+          <div class="pe-field"><label class="pe-label">Duração (dias)</label><input class="pe-input" id="pe-duracao-flex" type="number" min="1" placeholder="Ex: 10"/></div>
+        </div>
+      </div>
+      <div class="pe-sub" id="pe-sub-qualquer">
+        <div class="pe-row2">
+          <div class="pe-field"><label class="pe-label">Duração (dias)</label><input class="pe-input" id="pe-duracao-qq" type="number" min="1" placeholder="Ex: 7"/></div>
+          <div class="pe-field"><label class="pe-label">Alguma época a evitar?</label><input class="pe-input" id="pe-evitar-epoca" placeholder="Ex: férias escolares, janeiro"/></div>
+        </div>
+      </div>
+      <div class="pe-row2">
+        <div class="pe-field">
+          <label class="pe-label">Cabine desejada</label>
+          <select class="pe-input" id="pe-cabine">
+            <option value="">Selecionar…</option>
+            <option value="Econômica">Econômica</option>
+            <option value="Executiva">Executiva</option>
+            <option value="Premium Economy">Premium Economy</option>
+            <option value="Primeira Classe">Primeira Classe</option>
+          </select>
+        </div>
+        <div class="pe-field">
+          <label class="pe-label">Conexões</label>
+          <select class="pe-input" id="pe-conexoes">
+            <option value="">Selecionar…</option>
+            <option value="Aceito até 1 conexão">Aceito até 1 conexão</option>
+            <option value="Aceito qualquer conexão">Aceito qualquer conexão</option>
+            <option value="Só voo direto">Só voo direto</option>
+          </select>
+        </div>
+      </div>
+      <div class="pe-field">
+        <label class="pe-label">Preferências e limitações</label>
+        <textarea class="pe-input" id="pe-limitacoes" placeholder="Ex: evito a Air France; prefiro voo noturno; não posso fazer conexão nos EUA; cabine executiva só se o preço compensar"></textarea>
+      </div>
+
+      <div class="pe-sec">💳 O que você tem em mãos</div>
+      <div class="pe-row2">
+        <div class="pe-field">
+          <label class="pe-label">Gasto médio mensal no cartão (R$)</label>
+          <input class="pe-input" id="pe-gasto" type="number" min="0" step="100" placeholder="Ex: 8000"/>
+        </div>
+        <div class="pe-field">
+          <label class="pe-label">Cartões que você usa</label>
+          <input class="pe-input" id="pe-cartoes" placeholder="Ex: Itaú Personnalité Black, C6 Carbon"/>
+        </div>
+      </div>
+      <div class="pe-field">
+        <label class="pe-label">Saldo de pontos/milhas por programa</label>
+        <div class="pe-help" id="pe-saldos-help">Preenchido com o que está na sua Gestão de Milhas — ajuste o que precisar.</div>
+        <div class="pe-saldos" id="pe-saldos"></div>
+      </div>
+      <div class="pe-field">
+        <label class="pe-label">Clubes que você assina</label>
+        <div class="pe-clubes" id="pe-clubes"></div>
+        <input class="pe-input" id="pe-clubes-outros" style="margin-top:8px" placeholder="Outros clubes ou assinaturas (ex: Clube Esfera 10k, Passaporte Azul)"/>
+      </div>
+
+      <div class="pe-sec">🎯 Objetivo</div>
+      <div class="pe-field">
+        <label class="pe-label">O que mais importa (pode marcar vários)</label>
+        <div class="pe-chips" id="pe-prioridades">
+          <button class="pe-chip" data-v="Conforto / cabine" onclick="peChip('pe-prioridades',this,true)">Conforto / cabine</button>
+          <button class="pe-chip" data-v="Datas exatas" onclick="peChip('pe-prioridades',this,true)">Datas exatas</button>
+          <button class="pe-chip" data-v="Hospedagem com pontos" onclick="peChip('pe-prioridades',this,true)">Hospedagem com pontos</button>
+          <button class="pe-chip" data-v="Menor custo" onclick="peChip('pe-prioridades',this,true)">Menor custo</button>
+          <button class="pe-chip" data-v="Menos conexões" onclick="peChip('pe-prioridades',this,true)">Menos conexões</button>
+          <button class="pe-chip" data-v="Resolver rápido" onclick="peChip('pe-prioridades',this,true)">Resolver rápido</button>
+        </div>
+      </div>
+      <div class="pe-row2">
+        <div class="pe-field">
+          <label class="pe-label">Orçamento disponível em R$ (compra de pontos / passagem)</label>
+          <input class="pe-input" id="pe-orcamento" type="number" min="0" step="500" placeholder="Ex: 6000"/>
+        </div>
+        <div class="pe-field">
+          <label class="pe-label">Topa comprar ou transferir pontos?</label>
+          <select class="pe-input" id="pe-comprar">
+            <option value="">Selecionar…</option>
+            <option value="Não, só com o que tenho">Não, só com o que tenho</option>
+            <option value="Sim, se compensar">Sim, se compensar</option>
+            <option value="Sim, sem problema">Sim, sem problema</option>
+          </select>
+        </div>
+      </div>
+      <div class="pe-field">
+        <label class="pe-label">Observações</label>
+        <textarea class="pe-input" id="pe-obs" placeholder="Qualquer coisa que me ajude a planejar: motivo da viagem, hotel em mente, já tem algo reservado, dúvidas…"></textarea>
+      </div>
+
+      <button class="pe-btn" id="pe-btn-enviar" onclick="peEnviar()">🚀 Enviar pedido</button>
+      <div class="pe-fb" id="pe-fb-form"></div>
+    </div>
+  </div>
+
+  <!-- ═══ VISÃO DO OPERADOR (ADMIN_EMAILS) ═══ -->
+  <div id="pe-admin" style="display:none">
+    <div class="pe-card" id="pe-admin-lista-card">
+      <div class="pe-title">🛠️ Fila de pedidos <span class="pe-cota" id="pe-admin-cont"></span></div>
+      <div class="pe-filtros" id="pe-admin-filtros">
+        <button class="pe-chip sel" data-v="abertos" onclick="peChip('pe-admin-filtros',this,false);peAdminRender()">Abertos</button>
+        <button class="pe-chip" data-v="entregue" onclick="peChip('pe-admin-filtros',this,false);peAdminRender()">Entregues</button>
+        <button class="pe-chip" data-v="todos" onclick="peChip('pe-admin-filtros',this,false);peAdminRender()">Todos</button>
+      </div>
+      <div id="pe-admin-lista" class="pe-list"></div>
+      <div id="pe-admin-vazio" class="pe-empty" style="display:none">Nenhum pedido aqui.</div>
+    </div>
+    <div class="pe-card" id="pe-admin-det-card" style="display:none">
+      <button class="pe-back" onclick="peAdminVoltar()">← Fila</button>
+      <div id="pe-admin-det"></div>
+      <div class="pe-sec">📝 Planejamento (markdown simples: #, ##, -, **negrito**, links)</div>
+      <textarea class="pe-input" id="pe-admin-resposta" style="min-height:260px;font-size:13px;line-height:1.6"></textarea>
+      <div class="pe-row2" style="margin-top:12px">
+        <div class="pe-field">
+          <label class="pe-label">Status</label>
+          <select class="pe-input" id="pe-admin-status">
+            <option value="recebido">Recebido</option>
+            <option value="em_analise">Em análise</option>
+            <option value="entregue">Entregue</option>
+            <option value="cancelado">Cancelado</option>
+          </select>
+        </div>
+        <div class="pe-field">
+          <label class="pe-label">Nota interna (o membro não vê)</label>
+          <input class="pe-input" id="pe-admin-nota"/>
+        </div>
+      </div>
+      <div class="pe-row2">
+        <button class="pe-btn sec" onclick="peAdminPrevia()">👁️ Pré-visualizar</button>
+        <button class="pe-btn" id="pe-admin-salvar" onclick="peAdminSalvar()">💾 Salvar</button>
+      </div>
+      <div class="pe-fb" id="pe-fb-admin"></div>
+      <div id="pe-admin-previa" class="pe-resposta" style="display:none;margin-top:14px"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const PE_CLUBES = ['Clube Azul', 'Clube Esfera', 'Clube LATAM Pass', 'Clube Livelo', 'Clube Smiles', 'Clube TudoAzul Viagens'];
+  const PE_STATUS = { recebido:'Recebido', em_analise:'Em análise', entregue:'Entregue', cancelado:'Cancelado' };
+  let peMeus = [];      // pedidos do membro
+  let peAdminTodos = [];// fila (admin)
+  let peAdminAtual = null;
+  let peSaldosProntos = false;
+
+  function peSessao(){ try{ return JSON.parse(localStorage.getItem('cdv_auth')||'null'); }catch(e){ return null; } }
+  function peEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function peFmtData(iso){ if(!iso) return ''; try{ return new Date(iso).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}); }catch(e){ return iso; } }
+  function peFmtBR(d){ if(!d) return ''; const m=String(d).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? `${m[3]}/${m[2]}/${m[1]}` : d; }
+  function peFmtMes(m){ if(!m) return ''; const x=String(m).match(/^(\d{4})-(\d{2})$/); if(!x) return m; const n=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][+x[2]-1]; return `${n}/${x[1]}`; }
+  function peNum(v){ const n=Number(v); return isFinite(n)?n.toLocaleString('pt-BR'):''; }
+
+  // Markdown mínimo → HTML (texto já escapado). Suporta #/##/###, listas - e 1., **b**, *i*, [t](url), url solta, ---, `code`.
+  function peMd(src){
+    const linhas = String(src||'').replace(/\r/g,'').split('\n');
+    let html='', lista=null;
+    const fechar=()=>{ if(lista){ html+=`</${lista}>`; lista=null; } };
+    const inline=(t)=>{
+      t = peEsc(t)
+        .replace(/`([^`]+)`/g,'<code>$1</code>')
+        .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+        .replace(/(^|[^*])\*([^*\n]+)\*/g,'$1<em>$2</em>')
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')
+        .replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g,'$1<a href="$2" target="_blank" rel="noopener">$2</a>');
+      return t;
+    };
+    for(const l of linhas){
+      const t=l.trim();
+      if(!t){ fechar(); continue; }
+      let m;
+      if((m=t.match(/^(#{1,3})\s+(.*)$/))){ fechar(); const n=m[1].length; html+=`<h${n}>${inline(m[2])}</h${n}>`; continue; }
+      if(/^(-{3,}|\*{3,})$/.test(t)){ fechar(); html+='<hr>'; continue; }
+      if((m=t.match(/^[-*•]\s+(.*)$/))){ if(lista!=='ul'){ fechar(); html+='<ul>'; lista='ul'; } html+=`<li>${inline(m[1])}</li>`; continue; }
+      if((m=t.match(/^\d+[.)]\s+(.*)$/))){ if(lista!=='ol'){ fechar(); html+='<ol>'; lista='ol'; } html+=`<li>${inline(m[1])}</li>`; continue; }
+      fechar(); html+=`<p>${inline(t)}</p>`;
+    }
+    fechar();
+    return html;
+  }
+
+  // ── chips ──
+  window.peChip = function(grupoId, btn, multi){
+    const g=document.getElementById(grupoId);
+    if(!multi) g.querySelectorAll('.pe-chip').forEach(b=>b.classList.toggle('sel', b===btn));
+    else btn.classList.toggle('sel');
+  };
+  function peChipVal(grupoId, multi){
+    const sel=[...document.querySelectorAll(`#${grupoId} .pe-chip.sel`)].map(b=>b.dataset.v);
+    return multi ? sel : (sel[0]||'');
+  }
+  window.peDataTipo = function(){
+    const t=peChipVal('pe-datatipo');
+    ['fixa','flexivel','qualquer'].forEach(k=>document.getElementById('pe-sub-'+k).classList.toggle('on', t===k));
+  };
+
+  // ── saldos a partir da Gestão de Milhas ──
+  function peMontarSaldos(saldos){
+    const cont=document.getElementById('pe-saldos');
+    const progs = (typeof MILHAS_PROGS!=='undefined' ? MILHAS_PROGS : []).slice().sort((a,b)=>a.name.localeCompare(b.name,'pt-BR'));
+    cont.innerHTML = progs.map(p=>`<div class="pe-saldo"><span title="${peEsc(p.name)}">${peEsc(p.name)}</span><input type="number" min="0" step="100" data-prog="${peEsc(p.id)}" data-nome="${peEsc(p.name)}" value="${saldos && saldos[p.id]>0 ? Math.round(saldos[p.id]) : ''}" placeholder="0"/></div>`).join('')
+      + `<div class="pe-saldo"><span>Outro programa</span><input type="text" id="pe-saldo-outro" placeholder="Nome: qtde" style="width:140px;text-align:left"/></div>`;
+  }
+  async function peCarregarSaldos(){
+    if(peSaldosProntos) return;
+    const s=peSessao(); const email=s&&s.email; if(!email){ peMontarSaldos(null); return; }
+    const saldos={};
+    try{
+      const rp = await devFetch(`${_BASE}/perfis/listar?email=${encodeURIComponent(email)}`);
+      const dp = await rp.json();
+      const perfis = (dp.ok && Array.isArray(dp.perfis) && dp.perfis.length) ? dp.perfis : [{id:'principal', isPrincipal:true}];
+      const regs = await Promise.all(perfis.map(async p=>{
+        const key = (p.isPrincipal||p.id==='principal') ? email : email+'|'+p.id;
+        try{ const r=await devFetch(`${_BASE}/milhas/listar?email=${encodeURIComponent(key)}`); const d=await r.json(); return d.ok?d.registros:[]; }catch(e){ return []; }
+      }));
+      regs.flat().forEach(r=>{
+        if(r.tipo==='credito') saldos[r.programa]=(saldos[r.programa]||0)+(+r.qtde||0);
+        else if(r.tipo==='debito') saldos[r.programa]=(saldos[r.programa]||0)-(+r.qtde||0);
+      });
+      peSaldosProntos = true;
+    }catch(e){ document.getElementById('pe-saldos-help').textContent='Não consegui ler a Gestão de Milhas — preencha manualmente.'; }
+    peMontarSaldos(saldos);
+  }
+  function peMontarClubes(){
+    const cont=document.getElementById('pe-clubes');
+    if(cont.children.length) return;
+    cont.innerHTML = PE_CLUBES.map((c,i)=>`<label class="pe-clube"><input type="checkbox" data-clube="${peEsc(c)}" id="pe-clube-${i}"/><span style="min-width:0;white-space:nowrap">${peEsc(c)}</span><input type="text" data-plano-de="${i}" placeholder="plano / pts mês"/></label>`).join('');
+  }
+
+  // ── coleta do formulário ──
+  function peColetar(){
+    const g=id=>document.getElementById(id).value.trim();
+    const dataTipo=peChipVal('pe-datatipo');
+    const saldos=[...document.querySelectorAll('#pe-saldos input[data-prog]')].filter(i=>i.value!=='' && +i.value>0).map(i=>({programa:i.dataset.prog, nome:i.dataset.nome, qtde:+i.value}));
+    const saldoOutro=g('pe-saldo-outro');
+    const clubes=[...document.querySelectorAll('#pe-clubes input[type=checkbox]:checked')].map(cb=>{
+      const idx=cb.id.replace('pe-clube-',''); const plano=document.querySelector(`#pe-clubes input[data-plano-de="${idx}"]`);
+      return { nome: cb.dataset.clube, plano: plano ? plano.value.trim() : '' };
+    });
+    const d = {
+      quem: peChipVal('pe-quem'),
+      adultos: +g('pe-adultos')||0, criancas: +g('pe-criancas')||0, bebes: +g('pe-bebes')||0,
+      viajantesObs: g('pe-viajantes-obs'),
+      origem: g('pe-origem'), destino: g('pe-destino'),
+      dataTipo,
+      ida: dataTipo==='fixa' ? g('pe-ida') : '', volta: dataTipo==='fixa' ? g('pe-volta') : '', margem: dataTipo==='fixa' ? g('pe-margem') : '',
+      mesDe: dataTipo==='flexivel' ? g('pe-mes-de') : '', mesAte: dataTipo==='flexivel' ? g('pe-mes-ate') : '',
+      duracao: dataTipo==='flexivel' ? g('pe-duracao-flex') : (dataTipo==='qualquer' ? g('pe-duracao-qq') : ''),
+      evitarEpoca: dataTipo==='qualquer' ? g('pe-evitar-epoca') : '',
+      cabine: g('pe-cabine'), conexoes: g('pe-conexoes'), limitacoes: g('pe-limitacoes'),
+      gastoMensal: g('pe-gasto'), cartoes: g('pe-cartoes'),
+      saldos, saldoOutro, clubes, clubesOutros: g('pe-clubes-outros'),
+      prioridades: peChipVal('pe-prioridades', true),
+      orcamento: g('pe-orcamento'), comprarPontos: g('pe-comprar'),
+      obs: g('pe-obs'),
+    };
+    return d;
+  }
+  function peValidar(d){
+    if(!d.quem) return 'Marque quem viaja.';
+    if(!d.origem) return 'Informe a origem.';
+    if(!d.destino) return 'Informe o destino.';
+    if(!d.dataTipo) return 'Escolha como são as datas.';
+    if(d.dataTipo==='fixa' && !d.ida) return 'Informe a data de ida.';
+    if(d.dataTipo==='flexivel' && !d.mesDe) return 'Informe a partir de que mês.';
+    if(!d.cabine) return 'Escolha a cabine.';
+    if(!d.conexoes) return 'Diga se aceita conexão.';
+    if(!d.gastoMensal) return 'Informe o gasto médio mensal no cartão.';
+    return '';
+  }
+
+  // ── render do detalhe (membro e admin usam o mesmo) ──
+  function peDetalheHtml(p){
+    const d=p.dados||{};
+    const quando = d.dataTipo==='fixa' ? `${peFmtBR(d.ida)} 🛫 → ${peFmtBR(d.volta)||'?'} 🛬${d.margem?` · ${peEsc(d.margem)}`:''}`
+      : d.dataTipo==='flexivel' ? `Flexível: ${peFmtMes(d.mesDe)}${d.mesAte?' a '+peFmtMes(d.mesAte):''}${d.duracao?` · ${peEsc(d.duracao)} dias`:''}`
+      : `Qualquer data${d.duracao?` · ${peEsc(d.duracao)} dias`:''}${d.evitarEpoca?` · evitar: ${peEsc(d.evitarEpoca)}`:''}`;
+    const pessoas=[d.adultos?`${d.adultos} adulto(s)`:'',d.criancas?`${d.criancas} criança(s)`:'',d.bebes?`${d.bebes} bebê(s)`:''].filter(Boolean).join(', ');
+    const saldos=(d.saldos||[]).map(s=>`${peEsc(s.nome||s.programa)}: <b style="display:inline;font-size:12.5px;color:var(--text);text-transform:none;letter-spacing:0">${peNum(s.qtde)}</b>`).join(' · ') + (d.saldoOutro?` · ${peEsc(d.saldoOutro)}`:'');
+    const clubes=(d.clubes||[]).map(c=>peEsc(c.nome)+(c.plano?` (${peEsc(c.plano)})`:'')).join(', ') + (d.clubesOutros?(d.clubes&&d.clubes.length?', ':'')+peEsc(d.clubesOutros):'');
+    const quemTxt={sozinho:'Sozinho(a)',casal:'Casal',familia:'Família',amigos:'Amigos / grupo'}[d.quem]||d.quem||'';
+    const campo=(t,v,wide)=> v ? `<div${wide?' class="wide"':''}><b>${t}</b>${v}</div>` : '';
+    return `
+      <div class="pe-det">
+        ${campo('Rota', `${peEsc(d.origem)} → ${peEsc(d.destino)}`, true)}
+        ${campo('Datas', quando, true)}
+        ${campo('Quem viaja', `${peEsc(quemTxt)}${pessoas?' · '+pessoas:''}`)}
+        ${campo('Cabine', peEsc(d.cabine))}
+        ${campo('Conexões', peEsc(d.conexoes))}
+        ${campo('Prioridades', peEsc((d.prioridades||[]).join(', ')))}
+        ${campo('Sobre os viajantes', peEsc(d.viajantesObs), true)}
+        ${campo('Preferências / limitações', peEsc(d.limitacoes), true)}
+        ${campo('Gasto mensal no cartão', d.gastoMensal?'R$ '+peNum(d.gastoMensal):'')}
+        ${campo('Cartões', peEsc(d.cartoes))}
+        ${campo('Saldos', saldos, true)}
+        ${campo('Clubes', clubes, true)}
+        ${campo('Orçamento em R$', d.orcamento?'R$ '+peNum(d.orcamento):'')}
+        ${campo('Comprar/transferir pontos', peEsc(d.comprarPontos))}
+        ${campo('Observações', peEsc(d.obs), true)}
+      </div>`;
+  }
+  function peItemHtml(p, admin){
+    const d=p.dados||{};
+    return `<div class="pe-item" onclick="${admin?`peAdminAbrir('${p.id}')`:`peAbrir('${p.id}')`}">
+      <div class="pe-item-top"><div class="pe-item-rota">${peEsc(d.origem||'?')} → ${peEsc(d.destino||'?')}</div><span class="pe-badge ${peEsc(p.status)}">${PE_STATUS[p.status]||p.status}</span></div>
+      <div class="pe-item-meta">${admin?`<b>${peEsc(p.nome||p.email)}</b> · `:''}${peEsc(d.cabine||'')}${d.cabine?' · ':''}pedido em ${peFmtData(p.criadoEm)}${p.respondidoEm?` · entregue em ${peFmtData(p.respondidoEm)}`:''}</div>
+    </div>`;
+  }
+
+  // ── membro ──
+  function peMostrar(card){
+    ['pe-card-meus','pe-card-det','pe-card-form'].forEach(id=>document.getElementById(id).style.display = id===card?'block':'none');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  window.peVoltar = function(){ peMostrar('pe-card-meus'); };
+  async function peCarregarMeus(){
+    const lista=document.getElementById('pe-meus-lista'); const vazio=document.getElementById('pe-meus-vazio');
+    lista.innerHTML='<div class="pe-empty">Carregando…</div>';
+    try{
+      const r=await devFetch(`${_BASE}/consultoria/meus`); const d=await r.json();
+      if(!d.ok) throw new Error(d.erro||'falha');
+      peMeus=d.pedidos||[];
+      document.getElementById('pe-cota').textContent=`${d.usados} de ${d.limite} pedidos usados nos últimos 12 meses`;
+      const btn=document.getElementById('pe-btn-novo');
+      btn.disabled = d.usados>=d.limite;
+      document.getElementById('pe-fb-meus').textContent = d.usados>=d.limite ? 'Você já usou os pedidos deste período. O próximo libera 12 meses após o primeiro.' : '';
+      lista.innerHTML = peMeus.map(p=>peItemHtml(p,false)).join('');
+      vazio.style.display = peMeus.length?'none':'block';
+    }catch(e){ lista.innerHTML=`<div class="pe-empty">Não consegui carregar seus pedidos (${peEsc(e.message)}).</div>`; }
+  }
+  window.peAbrir = function(id){
+    const p=peMeus.find(x=>x.id===id); if(!p) return;
+    const resp = p.status==='entregue' && p.resposta
+      ? `<div class="pe-sec">🧭 Seu planejamento</div><div class="pe-resposta">${peMd(p.resposta)}</div>`
+      : `<div class="pe-sec">🧭 Planejamento</div><div class="pe-empty">${p.status==='cancelado'?'Pedido cancelado.':'Ainda estou preparando o seu planejamento. Você recebe um aviso quando ficar pronto.'}</div>`;
+    document.getElementById('pe-det-conteudo').innerHTML = `
+      <div class="pe-title">${peEsc((p.dados||{}).origem)} → ${peEsc((p.dados||{}).destino)} <span class="pe-badge ${peEsc(p.status)}" style="margin-left:auto">${PE_STATUS[p.status]||p.status}</span></div>
+      <div class="pe-item-meta" style="margin:-8px 0 10px">Pedido ${peEsc(p.id)} · ${peFmtData(p.criadoEm)}</div>
+      ${resp}
+      <div class="pe-sec">📋 O que você informou</div>
+      ${peDetalheHtml(p)}`;
+    peMostrar('pe-card-det');
+  };
+  window.peNovo = async function(){
+    peMontarClubes();
+    peMostrar('pe-card-form');
+    document.getElementById('pe-fb-form').textContent='';
+    if(!document.getElementById('pe-saldos').children.length) peMontarSaldos(null);
+    peCarregarSaldos();
+  };
+  window.peEnviar = async function(){
+    const fb=document.getElementById('pe-fb-form'); const btn=document.getElementById('pe-btn-enviar');
+    const dados=peColetar(); const erro=peValidar(dados);
+    if(erro){ fb.textContent=erro; return; }
+    btn.disabled=true; fb.textContent='Enviando…';
+    try{
+      const s=peSessao();
+      const r=await devFetch(`${_BASE}/consultoria/enviar`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:s&&s.nome||'',dados})});
+      const d=await r.json();
+      if(!d.ok) throw new Error(d.erro||'falha ao enviar');
+      fb.textContent='';
+      peLimparForm();
+      await peCarregarMeus();
+      peMostrar('pe-card-meus');
+      document.getElementById('pe-fb-meus').textContent='✅ Pedido enviado! Vou analisar e te aviso quando o planejamento estiver pronto.';
+    }catch(e){ fb.textContent=e.message; }
+    btn.disabled=false;
+  };
+  function peLimparForm(){
+    ['pe-viajantes-obs','pe-origem','pe-destino','pe-ida','pe-volta','pe-margem','pe-mes-de','pe-mes-ate','pe-duracao-flex','pe-duracao-qq','pe-evitar-epoca','pe-cabine','pe-conexoes','pe-limitacoes','pe-gasto','pe-cartoes','pe-clubes-outros','pe-orcamento','pe-comprar','pe-obs'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+    document.getElementById('pe-adultos').value='1'; document.getElementById('pe-criancas').value='0'; document.getElementById('pe-bebes').value='0';
+    document.querySelectorAll('#pe-card-form .pe-chip.sel').forEach(b=>b.classList.remove('sel'));
+    document.querySelectorAll('#pe-clubes input').forEach(i=>{ if(i.type==='checkbox') i.checked=false; else i.value=''; });
+    peDataTipo();
+  }
+
+  // ── admin ──
+  function peEhAdmin(){ const s=peSessao(); return !!(s && s.email && typeof DEV_EMAILS!=='undefined' && DEV_EMAILS.includes(s.email)); }
+  async function peAdminCarregar(){
+    const lista=document.getElementById('pe-admin-lista');
+    lista.innerHTML='<div class="pe-empty">Carregando…</div>';
+    try{
+      const r=await devFetch(`${_BASE}/consultoria/listar`); const d=await r.json();
+      if(!d.ok) throw new Error(d.erro||'falha');
+      peAdminTodos=d.pedidos||[];
+      peAdminRender();
+    }catch(e){ lista.innerHTML=`<div class="pe-empty">${peEsc(e.message)}</div>`; }
+  }
+  window.peAdminRender = function(){
+    const f=peChipVal('pe-admin-filtros')||'abertos';
+    const itens=peAdminTodos.filter(p=> f==='todos' ? true : f==='entregue' ? p.status==='entregue' : (p.status==='recebido'||p.status==='em_analise'));
+    const abertos=peAdminTodos.filter(p=>p.status==='recebido'||p.status==='em_analise').length;
+    document.getElementById('pe-admin-cont').textContent=`${abertos} aberto(s) · ${peAdminTodos.length} no total`;
+    document.getElementById('pe-admin-lista').innerHTML=itens.map(p=>peItemHtml(p,true)).join('');
+    document.getElementById('pe-admin-vazio').style.display=itens.length?'none':'block';
+  };
+  window.peAdminAbrir = function(id){
+    const p=peAdminTodos.find(x=>x.id===id); if(!p) return;
+    peAdminAtual=p;
+    document.getElementById('pe-admin-det').innerHTML = `
+      <div class="pe-title">${peEsc(p.nome||p.email)} <span class="pe-badge ${peEsc(p.status)}" style="margin-left:auto">${PE_STATUS[p.status]||p.status}</span></div>
+      <div class="pe-item-meta" style="margin:-8px 0 10px">${peEsc(p.email)} · ${peEsc(p.id)} · ${peFmtData(p.criadoEm)}</div>
+      ${peDetalheHtml(p)}`;
+    document.getElementById('pe-admin-resposta').value=p.resposta||'';
+    document.getElementById('pe-admin-status').value=p.status||'recebido';
+    document.getElementById('pe-admin-nota').value=p.notaInterna||'';
+    document.getElementById('pe-admin-previa').style.display='none';
+    document.getElementById('pe-fb-admin').textContent='';
+    document.getElementById('pe-admin-lista-card').style.display='none';
+    document.getElementById('pe-admin-det-card').style.display='block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+  window.peAdminVoltar = function(){
+    document.getElementById('pe-admin-det-card').style.display='none';
+    document.getElementById('pe-admin-lista-card').style.display='block';
+  };
+  window.peAdminPrevia = function(){
+    const el=document.getElementById('pe-admin-previa');
+    el.innerHTML=peMd(document.getElementById('pe-admin-resposta').value); el.style.display='block';
+  };
+  window.peAdminSalvar = async function(){
+    if(!peAdminAtual) return;
+    const fb=document.getElementById('pe-fb-admin'); const btn=document.getElementById('pe-admin-salvar');
+    btn.disabled=true; fb.textContent='Salvando…';
+    try{
+      const body={ id:peAdminAtual.id, resposta:document.getElementById('pe-admin-resposta').value, status:document.getElementById('pe-admin-status').value, notaInterna:document.getElementById('pe-admin-nota').value };
+      const r=await devFetch(`${_BASE}/consultoria/responder`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const d=await r.json(); if(!d.ok) throw new Error(d.erro||'falha');
+      const i=peAdminTodos.findIndex(x=>x.id===d.pedido.id); if(i>=0) peAdminTodos[i]=d.pedido; peAdminAtual=d.pedido;
+      fb.textContent='✅ Salvo.'; peAdminRender();
+    }catch(e){ fb.textContent=e.message; }
+    btn.disabled=false;
+  };
+
+  // ── entrada da aba ──
+  window.peInit = function(){
+    const admin=peEhAdmin();
+    document.getElementById('pe-admin').style.display = admin?'block':'none';
+    peCarregarMeus();
+    if(admin) peAdminCarregar();
+  };
+})();
+</script>
+</div><!-- /tab-planejamento -->
+
 
 <div id="tab-roteiros" class="tab-panel" style="display:none">
 <style>
@@ -6462,6 +7052,7 @@ function switchTab(tab){
   document.getElementById('tab-lounges').style.display      = tab==='lounges'      ?'block':'none';
   document.getElementById('tab-calculadoras').style.display = tab==='calculadoras' ?'block':'none';
   document.getElementById('tab-reclamacoes').style.display  = tab==='reclamacoes'  ?'block':'none';
+  document.getElementById('tab-planejamento').style.display = tab==='planejamento' ?'block':'none';
   document.getElementById('tab-roteiros').style.display     = tab==='roteiros'     ?'block':'none';
   document.getElementById('tab-cartoes').style.display      = tab==='cartoes'      ?'block':'none';
   window.scrollTo({top:0, behavior:'smooth'});
@@ -6473,6 +7064,7 @@ function switchTab(tab){
   if(tab==='lounges')      lvCarregarAeroportos();
   if(tab==='calculadoras') { calcAccorInit(); calcEmissaoInit(); }
   if(tab==='cartoes')      ctInit();
+  if(tab==='planejamento' && window.peInit) window.peInit();
   if(tab==='roteiros' && window.rotCarregarMeus) window.rotCarregarMeus();
   if (window.matchMedia('(max-width:900px)').matches) toggleSidebar(false);
   try{localStorage.setItem('cdv_active_tab', tab);}catch(e){}
