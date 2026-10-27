@@ -2347,7 +2347,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
       const r=await devFetch(`${_BASE}/consultoria/responder`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
       const d=await r.json(); if(!d.ok) throw new Error(d.erro||'falha');
       const i=peAdminTodos.findIndex(x=>x.id===d.pedido.id); if(i>=0) peAdminTodos[i]=d.pedido; peAdminAtual=d.pedido;
-      fb.textContent='✅ Salvo.'; peAdminRender();
+      fb.textContent = d.avisado ? '✅ Salvo. O membro recebeu um e-mail avisando que o planejamento está pronto.' : '✅ Salvo.'; peAdminRender();
     }catch(e){ fb.textContent=e.message; }
     btn.disabled=false;
   };

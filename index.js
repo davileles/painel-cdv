@@ -4719,6 +4719,33 @@ async function consultoriaAvisarWA(p) {
     if (!rw.ok) console.warn(`[consultoria] baileys respondeu ${rw.status}`);
   } catch (e) { console.warn('[consultoria] aviso WA falhou:', e.message); }
 }
+async function consultoriaAvisarEntregue(p) {
+  // E-mail ao membro quando o planejamento é marcado como entregue (best-effort).
+  try {
+    if (!RESEND_API_KEY) { console.log(`[consultoria] (sem RESEND) entregue ${p.id} → ${p.email}`); return; }
+    const d = p.dados || {};
+    const primeiro = String(p.nome || '').trim().split(/\s+/)[0] || '';
+    const rota = `${d.origem || ''} → ${d.destino || ''}`;
+    const r = await fetch('https://api.resend.com/emails', {
+      compress: false, method: 'POST',
+      headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: 'Clube do Viajante <noreply@clubedoviajante.com.br>',
+        to: [p.email],
+        subject: `🧭 Seu planejamento estratégico está pronto: ${rota}`,
+        html: `
+          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0a0c12;color:#fff;border-radius:12px">
+            <h2 style="color:#FF6B5B;margin-bottom:8px">Clube do Viajante</h2>
+            <p style="color:#ddd;margin-bottom:8px">Olá${primeiro ? ', ' + primeiro : ''}!</p>
+            <p style="color:#aaa;margin-bottom:24px">O planejamento estratégico da sua viagem <strong style="color:#fff">${rota}</strong> ficou pronto. Ele está no seu painel, no menu <strong style="color:#fff">Planejamento Estratégico</strong>.</p>
+            <a href="https://painel.clubedoviajante.com.br/" style="display:block;background:#FF6B5B;color:#fff;text-decoration:none;border-radius:10px;padding:16px;text-align:center;font-weight:800;margin-bottom:24px">Ver meu planejamento</a>
+            <p style="color:#666;font-size:12px">Pedido ${p.id}. Dúvidas? Responda este e-mail ou me chame na comunidade.</p>
+          </div>`
+      })
+    });
+    if (!r.ok) console.warn('[consultoria] resend respondeu', r.status, await r.text().catch(() => ''));
+  } catch (e) { console.warn('[consultoria] e-mail de entrega falhou:', e.message); }
+}
 async function consultoriaGravar(mutador, msg, devMode) {
   for (let tentativa = 1; tentativa <= 4; tentativa++) {
     try {
@@ -4807,14 +4834,17 @@ app.post('/consultoria/responder', async (req, res) => {
       if (!p) return { erro: 'Pedido não encontrado' };
       if (resposta !== undefined) p.resposta = String(resposta);
       if (notaInterna !== undefined) p.notaInterna = String(notaInterna);
+      const antes = p.status;
       if (status !== undefined) p.status = status;
       else if (resposta !== undefined && String(resposta).trim() && p.status === 'recebido') p.status = 'em_analise';
-      if (p.status === 'entregue' && !p.respondidoEm) p.respondidoEm = new Date().toISOString();
+      let avisar = false;
+      if (p.status === 'entregue' && antes !== 'entregue') { avisar = true; p.respondidoEm = new Date().toISOString(); p.avisadoEm = null; }
       p.atualizadoEm = new Date().toISOString();
-      return { ok: true, pedido: p };
+      return { ok: true, pedido: p, avisar };
     }, `consultoria: ${id} ${status || 'resposta'}`, res.locals.isDevMode);
     if (r.erro) return res.status(404).json({ ok: false, erro: r.erro });
-    res.json(r);
+    if (r.avisar && !res.locals.isDevMode) consultoriaAvisarEntregue(r.pedido); // best-effort
+    res.json({ ok: true, pedido: r.pedido, avisado: !!r.avisar });
   } catch (err) {
     console.error('[consultoria/responder]', err.message);
     res.status(500).json({ ok: false, erro: err.message });
