@@ -828592,10 +828592,23 @@
           "slug": "riachuelo-1686"
         },
         "meliuz": {
-          "pts": 3,
+          "pts": 15,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-riachuelo"
+          "ate": true,
+          "slug": "cupom-riachuelo",
+          "categorias": [
+            {
+              "categoria": "Infantil",
+              "pts": 15,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
         }
       },
       "links": {
