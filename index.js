@@ -461,6 +461,9 @@ const PREVIEW_BOT_RE = /whatsapp|facebookexternalhit|telegrambot|twitterbot|slac
 // entrada em links.json — todos usam a config virtual CB_CFG de
 // link-parceiro.js; cada parceiro conta clique na propria chave.
 const { CB_CFG, CB_HERDAR_DE, linkParceiroCb } = require('./link-parceiro.js');
+// Busca de voos ja preenchida atras do link mascarado (?bo=&bd=&bi=...), ver
+// busca-links.js. Os parametros de afiliado do slug sao aplicados por cima.
+const { CHAVES_BUSCA, lerBuscaDaQuery, montarLinkBusca } = require('./busca-links.js');
 const CB_SLUG_RE = /^cb-[a-z0-9-]{1,37}$/;
 function cfgDoSlug(links, slug) {
   if (links && links[slug]) return links[slug];
@@ -604,13 +607,28 @@ function montarDestinoIr(cfg, opts) {
   // Repassa a query original da campanha, menos os parametros de controle
   if (opts.query) {
     for (const k of Object.keys(opts.query)) {
-      if (k === 'o' || k === 'u') continue;
+      if (k === 'o' || k === 'u' || CHAVES_BUSCA.includes(k)) continue;
       if (cfg.limparUtm && /^utm_/i.test(k)) continue;
       const v = opts.query[k];
       if (typeof v === 'string') final.searchParams.set(k, v);
     }
   }
   const params = cfg.params || {};
+  if (opts.preservarBusca) {
+    // Busca preenchida (busca-links.js): a query da pesquisa fica EXATAMENTE
+    // como o site espera (c[0].ds=, datas com barra — URLSearchParams
+    // reescreveria em %5B/%2F) e os params do slug sao anexados em texto. O
+    // parametro funcional da pesquisa (ex. origin=CNF da LATAM) vence o de
+    // campanha de mesmo nome (origin=all); utm_*/s_kwcid entram sempre.
+    if (!hostPermitido(cfg, final.hostname)) return null;
+    const extra = [];
+    for (const k of Object.keys(params)) {
+      if (final.searchParams.has(k) && !/^(utm_|s_kwcid)/i.test(k)) continue;
+      extra.push(encodeURIComponent(k) + '=' + encodeURIComponent(params[k]));
+    }
+    if (!extra.length) return base;
+    return base + (base.includes('?') ? '&' : '?') + extra.join('&');
+  }
   for (const k of Object.keys(params)) final.searchParams.set(k, params[k]);
   // Defesa em profundidade: nada sai fora dos dominios declarados no slug
   if (!hostPermitido(cfg, final.hostname)) return null;
@@ -707,7 +725,12 @@ async function handleIr(req, res, slug, resto) {
   try { links = await carregarLinks(); } catch (e) { links = linksCache.data || {}; }
   const cfg = cfgDoSlug(links, slug);
   if (!cfg || !cfg.destino) return res.redirect(302, LINKS_FALLBACK);
-  let destino = montarDestinoIr(cfg, { urlAlvo: req.query.u, resto: resto, query: req.query });
+  // ?bo=&bd=&bi= (busca preenchida): monta a pagina de pesquisa do programa e
+  // trata como deep link (?u=), com os params de afiliado do slug por cima.
+  // Slug sem builder, ou busca invalida, segue para o destino padrao.
+  const busca = req.query.u ? null : lerBuscaDaQuery(req.query);
+  const urlBusca = busca ? montarLinkBusca(slug, busca) : null;
+  let destino = montarDestinoIr(cfg, { urlAlvo: urlBusca || req.query.u, resto: urlBusca ? '' : resto, query: req.query, preservarBusca: !!urlBusca });
   if (!destino && cfg === CB_CFG) destino = CB_CFG.destino; // link cb fora da lista: painel, nunca 400
   if (!destino) return res.status(400).send('Destino inválido para este link.');
   if (cfg === CB_CFG) destino = herdarParamsAfiliado(links, destino);

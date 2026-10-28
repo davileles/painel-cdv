@@ -17,6 +17,11 @@ Quem pesquisa passagem com pontos repete a mesma busca em vários lugares: Azul 
 - Formatos de link **conferidos com buscas reais** dos quatro programas (detalhes na seção 4.3 do `CLAUDE.md`).
 - O código do bloco (`bv*`) é **o mesmo** nos três painéis: mudou um, muda os outros.
 
+### Busca preenchida nas mensagens dos grupos de emissão (28/10/2026)
+- As emissões enviadas aos grupos (Emissões CDV, executiva e grupos por estado) saem com o link do programa **já apontando para a pesquisa preenchida** (rota, datas e cabine da emissão) e **comissionado**: o `baileys-server` monta `ir.clubedoviajante.com.br/<slug>?bo=&bd=&bi=[&bv=][&bc=]` (`buscaDaEmissao` + `linkPrograma`) e o proxy (`painel-cdv/busca-links.js`) converte na URL de busca do programa — os mesmos formatos do bloco `bv*` — com os parâmetros de afiliado de `links.json` por cima.
+- Programas cobertos: Azul Fidelidade, Azul pelo Mundo, LATAM Pass e Smiles. Os outros (Iberia, Qatar, TAP…) seguem com o link padrão do programa.
+- Regra de datas: primeira ida e última volta (volta anterior à ida vira só-ida). Cidade fora da tabela IATA do baileys = link padrão.
+
 ### Sonda pelo servidor (só Gestor e Concierge)
 - Cartão "🧪 Sonda" na aba Buscar voos → `GET /voos/sonda` do proxy (`painel-cdv/busca-voos.js`).
 - Faz uma busca fixa (CNF → GRU, ida daqui a 30 dias) em cada programa a partir do Railway e mostra como cada site responde: código HTTP, tempo, sinais de proteção e o início da resposta. Não traz voos.
@@ -72,6 +77,6 @@ Botão "Abrir todas" que abre as pesquisas dos programas em abas, já preenchida
 ## 6. Arquivos
 - `painel-cdv/index.html` — aba `tab-buscavoos` (bloco `bv*`).
 - `gestor-cdv/index.html` e `concierge/index.html` — aba Buscar voos (bloco `bv*`) + sonda (bloco `bvs*`).
-- `painel-cdv/busca-voos.js` — sonda; `painel-cdv/busca-voos-precos.js` — preços ao vivo via ZenRows; `painel-cdv/index.js` — rotas `GET /voos/sonda`, `GET /voos/precos` e `GET /voos/precos/bruto`.
+- `painel-cdv/busca-links.js` — busca preenchida atrás do link mascarado (`/ir`), usada pelas emissões dos grupos; `painel-cdv/busca-voos.js` — sonda; `painel-cdv/busca-voos-precos.js` — preços ao vivo via ZenRows; `painel-cdv/index.js` — rotas `GET /voos/sonda`, `GET /voos/precos` e `GET /voos/precos/bruto`.
 - `gestor-cdv/index.html` e `concierge/index.html` — cartão de preços (bloco `bvp*`, igual nos dois).
 - `iata.js` (concierge, gestor e painel) — base de aeroportos.
