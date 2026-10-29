@@ -4763,6 +4763,13 @@ app.get('/hubla/assinaturas/status', async (req, res) => {
   }
 });
 
+// Andamento da sincronização, sem dado pessoal (aberto, para diagnóstico).
+app.get('/hubla/assinaturas/progresso', (req, res) => {
+  const p = hublaAssinaturas.progresso;
+  res.json({ ok: true, chaveApi: hublaAssinaturas.temChaveApi(), rodando: p.rodando, etapa: p.etapa,
+    inicio: p.inicio, fim: p.fim, erro: p.erro, contagem: p.contagem });
+});
+
 // Busca na API da Hubla todas as assinaturas (passadas e vigentes) e os acessos
 // atuais do produto do painel. Roda em segundo plano; acompanhar em /status. X-CDV-Op.
 async function hublaSincronizarComMembros() {
