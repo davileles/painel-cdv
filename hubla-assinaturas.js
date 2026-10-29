@@ -214,6 +214,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     const { data } = await ghGetJson(ARQUIVO, null);
     const d = data && typeof data === 'object' ? data : {};
     return { ofertas: d.ofertas || {}, assinaturas: d.assinaturas || {}, acessos: d.acessos || {},
+      acessosPorProduto: d.acessosPorProduto || {},
       sincronizacao: d.sincronizacao || null, atualizadoEm: d.atualizadoEm || null };
   }
 
@@ -427,6 +428,41 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     return acessos;
   }
 
+  // Membros de TODOS os produtos (gratuitos, convites, vitalícios e compradores),
+  // para cruzar com os participantes dos grupos do WhatsApp. Usa o id interno
+  // (legacyId) de cada produto. Resultado: { produtoId: { nome, membros: { email: {...} } } }.
+  async function lerAcessosTodosProdutos() {
+    progresso.etapa = 'membros de todos os produtos';
+    const porProduto = {};
+    const contagem = {};
+    const produtos = await paginar(p => api('POST', '/v1/products/list', { page: p, pageSize: 100 }), 20);
+    for (const pr of produtos) {
+      const ref = pr.legacyId || pr.id;
+      const membros = {};
+      for (const f of ['', 'status=deactivate']) {
+        let lista = [];
+        try {
+          lista = await paginar(p => api('GET', `/v1/${encodeURIComponent(ref)}/members?page=${p}&pageSize=200${f ? '&' + f : ''}`), 100);
+        } catch (err) { contagem[pr.name] = 'erro: ' + err.message.slice(0, 80); continue; }
+        for (const m of lista) {
+          const email = String(m.email || '').toLowerCase().trim();
+          if (!email) continue;
+          const novo = { nome: m.name || '', telefone: m.phone || '', tipo: m.type || '', status: m.status || '',
+            removidoEm: iso(m.removalAt), vitalicio: !!m.isLifetime };
+          const ant = membros[email];
+          if (!ant || (ant.status !== 'active' && novo.status === 'active')) membros[email] = novo;
+        }
+      }
+      porProduto[pr.id] = { nome: pr.name, legacyId: pr.legacyId || null, membros };
+      if (typeof contagem[pr.name] !== 'string') {
+        const v = Object.values(membros);
+        contagem[pr.name] = { ativos: v.filter(x => x.status === 'active').length, total: v.length };
+      }
+    }
+    progresso.contagem.membrosPorProduto = contagem;
+    return porProduto;
+  }
+
   // Só a etapa de membros + resumo (rápida), sem refazer faturas e assinaturas.
   async function sincronizarMembros({ membrosAtivos } = {}) {
     if (progresso.rodando) return { ok: false, erro: 'sincronização já em andamento', progresso };
@@ -434,9 +470,11 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     Object.assign(progresso, { rodando: true, etapa: 'membros', inicio: new Date().toISOString(), fim: null, erro: null, contagem: {} });
     try {
       const acessos = await lerAcessosProduto();
+      const acessosPorProduto = await lerAcessosTodosProdutos();
       let resumo = null;
       await salvar(base => {
         base.acessos = acessos;
+        base.acessosPorProduto = acessosPorProduto;
         resumo = resumir(base, membrosAtivos);
         base.sincronizacao = Object.assign({}, base.sincronizacao, { membrosEm: new Date().toISOString(), resumo,
           contagem: Object.assign({}, (base.sincronizacao && base.sincronizacao.contagem) || {}, progresso.contagem) });
@@ -494,11 +532,13 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
 
       // 3. Acessos atuais do produto do painel (inclui gratuitos/convites, que não têm fatura)
       const acessos = await lerAcessosProduto();
+      const acessosPorProduto = await lerAcessosTodosProdutos();
 
       progresso.etapa = 'gravando';
       let resumo = null;
       await salvar(base => {
         base.acessos = acessos;
+        base.acessosPorProduto = acessosPorProduto;
         resumo = resumir(base, membrosAtivos);
         base.sincronizacao = { ultimaEm: new Date().toISOString(), inicio: progresso.inicio, contagem: Object.assign({}, progresso.contagem), resumo };
       }, 'hubla: sincronização concluída');

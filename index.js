@@ -4803,7 +4803,7 @@ setTimeout(async () => {
     const d = await hublaAssinaturas.ler();
     const s = d.sincronizacao || {};
     if (!s.emAndamento && s.ultimaEm) {
-      if (!Object.keys(d.acessos || {}).length) {
+      if (!Object.keys(d.acessos || {}).length || !Object.keys(d.acessosPorProduto || {}).length) {
         console.log('[hubla-sync] membros do produto ainda vazios: sincronizando só membros');
         hublaSincronizarComMembros(true).catch(e => console.error('[hubla-sync]', e.message));
       }
