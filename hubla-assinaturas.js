@@ -382,6 +382,61 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     return pendentes;
   }
 
+  // Membros do produto do painel. A API filtra por `types`/`status`; sem filtro
+  // pode vir vazio, então tenta as combinações e junta por e-mail. Contagens
+  // (sem dado pessoal) ficam em progresso.contagem.membrosTentativas.
+  async function lerAcessosProduto() {
+    progresso.etapa = 'membros';
+    const acessos = {};
+    const tentativas = {};
+    const variantes = ['', 'types=buyer', 'types=free', 'types=partner', 'types=seller',
+      'status=active', 'status=deactivate', 'types=buyer&status=deactivate', 'types=free&status=deactivate'];
+    for (const v of variantes) {
+      let lista = [];
+      try {
+        lista = await paginar(p => api('GET', `/v1/${PRODUTO_PAINEL_ID}/members?page=${p}&pageSize=200${v ? '&' + v : ''}`), 100);
+      } catch (err) { tentativas[v || 'sem filtro'] = 'erro: ' + err.message.slice(0, 80); continue; }
+      tentativas[v || 'sem filtro'] = lista.length;
+      for (const m of lista) {
+        const email = String(m.email || '').toLowerCase().trim();
+        if (!email) continue;
+        const ant = acessos[email];
+        const novo = { nome: m.name || '', telefone: m.phone || '', tipo: m.type || '', status: m.status || '',
+          removidoEm: iso(m.removalAt), vitalicio: !!m.isLifetime };
+        // Mesmo e-mail em duas listas: vale o acesso ativo.
+        if (!ant || (ant.status !== 'active' && novo.status === 'active')) acessos[email] = novo;
+      }
+    }
+    progresso.contagem.membrosTentativas = tentativas;
+    progresso.contagem.acessosProduto = Object.keys(acessos).length;
+    return acessos;
+  }
+
+  // Só a etapa de membros + resumo (rápida), sem refazer faturas e assinaturas.
+  async function sincronizarMembros({ membrosAtivos } = {}) {
+    if (progresso.rodando) return { ok: false, erro: 'sincronização já em andamento', progresso };
+    if (!apiKey()) return { ok: false, erro: 'HUBLA_API_KEY não configurada no Railway' };
+    Object.assign(progresso, { rodando: true, etapa: 'membros', inicio: new Date().toISOString(), fim: null, erro: null, contagem: {} });
+    try {
+      const acessos = await lerAcessosProduto();
+      let resumo = null;
+      await salvar(base => {
+        base.acessos = acessos;
+        resumo = resumir(base, membrosAtivos);
+        base.sincronizacao = Object.assign({}, base.sincronizacao, { membrosEm: new Date().toISOString(), resumo,
+          contagem: Object.assign({}, (base.sincronizacao && base.sincronizacao.contagem) || {}, progresso.contagem) });
+      }, 'hubla: sincroniza membros do produto do painel');
+      progresso.etapa = 'concluida';
+      return { ok: true, contagem: progresso.contagem, resumo };
+    } catch (err) {
+      progresso.erro = err.message;
+      return { ok: false, erro: err.message };
+    } finally {
+      progresso.rodando = false;
+      progresso.fim = new Date().toISOString();
+    }
+  }
+
   async function sincronizar({ membrosAtivos, retomar } = {}) {
     if (progresso.rodando) return { ok: false, erro: 'sincronização já em andamento', progresso };
     if (!apiKey()) return { ok: false, erro: 'HUBLA_API_KEY não configurada no Railway' };
@@ -422,17 +477,8 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
         pendentes = restantes;
       }
 
-      // 3. Acessos atuais do produto do painel (status, data de remoção, vitalício)
-      progresso.etapa = 'membros';
-      const acessos = {};
-      const membros = await paginar(p => api('GET', `/v1/${PRODUTO_PAINEL_ID}/members?page=${p}&pageSize=200`), 100, 'membros');
-      for (const m of membros) {
-        const email = String(m.email || '').toLowerCase().trim();
-        if (!email) continue;
-        acessos[email] = { nome: m.name || '', telefone: m.phone || '', tipo: m.type || '', status: m.status || '',
-          removidoEm: iso(m.removalAt), vitalicio: !!m.isLifetime };
-      }
-      progresso.contagem.acessosProduto = membros.length;
+      // 3. Acessos atuais do produto do painel (inclui gratuitos/convites, que não têm fatura)
+      const acessos = await lerAcessosProduto();
 
       progresso.etapa = 'gravando';
       let resumo = null;
@@ -491,7 +537,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
   }
 
   return {
-    registrarEvento, sincronizar, listar, ler, resumir, progresso,
+    registrarEvento, sincronizar, sincronizarMembros, listar, ler, resumir, progresso,
     temChaveApi: () => !!apiKey(),
   };
 }

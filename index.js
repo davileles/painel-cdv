@@ -4772,7 +4772,7 @@ app.get('/hubla/assinaturas/progresso', (req, res) => {
 
 // Busca na API da Hubla todas as assinaturas (passadas e vigentes) e os acessos
 // atuais do produto do painel. Roda em segundo plano; acompanhar em /status. X-CDV-Op.
-async function hublaSincronizarComMembros() {
+async function hublaSincronizarComMembros(soMembros) {
   let ativos = null;
   try {
     const { data } = await ghGetJson(MEMBROS_PATH, null);
@@ -4780,7 +4780,9 @@ async function hublaSincronizarComMembros() {
       ativos = data.membros.filter(m => m && m.status === 'ativo').map(m => String(m.email || '').toLowerCase().trim());
     }
   } catch (e) { /* relatório sai sem a comparação */ }
-  const r = await hublaAssinaturas.sincronizar({ membrosAtivos: ativos });
+  const r = soMembros
+    ? await hublaAssinaturas.sincronizarMembros({ membrosAtivos: ativos })
+    : await hublaAssinaturas.sincronizar({ membrosAtivos: ativos });
   console.log('[hubla-sync]', r.ok ? JSON.stringify(r.contagem) : r.erro);
   return r;
 }
@@ -4788,7 +4790,8 @@ app.post('/hubla/assinaturas/sincronizar', async (req, res) => {
   if (!opAutorizado(req, res)) return;
   if (!hublaAssinaturas.temChaveApi()) return res.status(503).json({ ok: false, erro: 'HUBLA_API_KEY não configurada no Railway' });
   if (hublaAssinaturas.progresso.rodando) return res.json({ ok: true, jaRodando: true, progresso: hublaAssinaturas.progresso });
-  hublaSincronizarComMembros().catch(e => console.error('[hubla-sync]', e.message));
+  // ?so=membros → só os membros do produto do painel e o resumo (rápido).
+  hublaSincronizarComMembros(req.query.so === 'membros').catch(e => console.error('[hubla-sync]', e.message));
   res.json({ ok: true, iniciado: true });
 });
 
@@ -4799,7 +4802,13 @@ setTimeout(async () => {
   try {
     const d = await hublaAssinaturas.ler();
     const s = d.sincronizacao || {};
-    if (!s.emAndamento && s.ultimaEm) return;
+    if (!s.emAndamento && s.ultimaEm) {
+      if (!Object.keys(d.acessos || {}).length && !s.membrosEm) {
+        console.log('[hubla-sync] membros do produto ainda vazios: sincronizando só membros');
+        hublaSincronizarComMembros(true).catch(e => console.error('[hubla-sync]', e.message));
+      }
+      return;
+    }
     console.log('[hubla-sync]', s.emAndamento ? 'retomando sincronização interrompida' : 'primeira carga do histórico');
     hublaSincronizarComMembros().catch(e => console.error('[hubla-sync]', e.message));
   } catch (e) { console.error('[hubla-sync] boot', e.message); }
