@@ -188,6 +188,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
         base.ofertas = base.ofertas || {};
         base.assinaturas = base.assinaturas || {};
         base.acessos = base.acessos || {};
+        for (const k of Object.keys(base.assinaturas)) if (/-tester$/.test(k)) delete base.assinaturas[k];
         const resultado = await alterar(base);
         if (resultado === false) return base; // nada mudou
         base.atualizadoEm = new Date().toISOString();
@@ -248,6 +249,8 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     const fatura = e.invoice || null;
     const subId = String((sub && sub.id) || e.subscriptionId || (fatura && (fatura.subscriptionId || (fatura.subscriptionIds || [])[0])) || '').trim();
     if (!subId) return null;
+    // "Testar configuração" da Hubla manda IDs fictícios terminados em -tester: não grava.
+    if (/-tester$/.test(subId)) return null;
     const po = produtoOfertaDoEvento(e);
     const pessoa = pessoaDe(e.user || (sub && sub.payer) || (fatura && fatura.payer) || e.member || e.customer);
     const novo = Object.assign(
