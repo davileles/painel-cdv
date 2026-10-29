@@ -4690,8 +4690,9 @@ app.post('/webhook/hubla-assinaturas', async (req, res) => {
   const user   = event.user || event.subscription?.payer || event.invoice?.payer || event.member || event.customer || {};
   const email  = (user.email || '').toLowerCase().trim();
   const nome   = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.fullName || user.name || email;
-  const produto = event.products?.[0] || event.product || {};
   const po = hublaAss.produtoOfertaDoEvento(event);
+  // Para membros.json: o produto/oferta que libera o painel (order bump pode vir junto).
+  const produto = { id: po.produtoId, name: po.produtoNome, offers: [{ id: po.ofertaId, name: po.ofertaNome }] };
   const liberaPainel = hublaAss.ofertaLiberaPainel(po.produtoId, po.produtoNome, po.ofertaNome);
   const assinaturaId = String(
     event.subscription?.id || event.subscriptionId || event.member?.subscriptionId || event.invoice?.subscriptionId || ''

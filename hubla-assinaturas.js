@@ -44,17 +44,26 @@ function ofertaLiberaPainel(produtoId, produtoNome, ofertaNome) {
   return produtoEhDoPainel(produtoId, produtoNome) && _ofertasPainelNorm.has(norm(ofertaNome));
 }
 
-// Produto e oferta de um payload de webhook v2.
+// Produto e oferta de um payload de webhook v2. Venda com order bump chega num
+// evento só, com vários produtos (modo "Integração recomendada" da Hubla): vale
+// o par que libera o painel, se houver; senão o primeiro.
 function produtoOfertaDoEvento(event) {
   const e = event || {};
-  const produto = (Array.isArray(e.products) && e.products[0]) || e.product || {};
-  const oferta = (Array.isArray(produto.offers) && produto.offers[0]) || {};
-  return {
-    produtoId: produto.id || '',
-    produtoNome: produto.name || '',
-    ofertaId: oferta.id || '',
-    ofertaNome: oferta.name || produto.name || '',
-  };
+  const produtos = (Array.isArray(e.products) && e.products.length) ? e.products : [e.product || {}];
+  const pares = [];
+  for (const produto of produtos) {
+    const p = produto || {};
+    const ofertas = (Array.isArray(p.offers) && p.offers.length) ? p.offers : [{}];
+    for (const oferta of ofertas) {
+      pares.push({
+        produtoId: p.id || '',
+        produtoNome: p.name || '',
+        ofertaId: (oferta && oferta.id) || '',
+        ofertaNome: (oferta && oferta.name) || p.name || '',
+      });
+    }
+  }
+  return pares.find(x => ofertaLiberaPainel(x.produtoId, x.produtoNome, x.ofertaNome)) || pares[0];
 }
 
 // ── Datas e situação ─────────────────────────────────────────────────────────
