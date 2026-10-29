@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-10-28T23:02:33.160Z",
+  "coletadoEm": "2026-10-29T09:03:39.251Z",
   "items": {
     "adcos": {
       "id": "SPA",
@@ -401,9 +401,9 @@
       "id": "FST",
       "nome": "Fast Shop",
       "categorias": null,
-      "legalTerms": "Campanha válida de 23 a 28/10/2026. Ganhe 5 pontos por real gasto em eletrodomésticos e eletroportáteis selecionados; 2 pontos por real nos demais produtos vendidos e entregues por Fast Shop e 1 ponto por real para marketplace. Utilize o cupom LIVELO. Consulte o regulamento.",
-      "dateStart": "2026-10-23",
-      "dateEnd": "2026-10-28",
+      "legalTerms": "Campanha válida de 29/10 a 02/11/2026. Ganhe 5 pontos por real gasto em eletrodomésticos, vídeo e áudio selecionados; 2 pontos por real nos demais produtos vendidos e entregues por Fast Shop e 1 ponto por real para marketplace. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-10-29",
+      "dateEnd": "2026-11-02",
       "parity": 5,
       "parityClub": 5,
       "parityBau": 2,
@@ -454,6 +454,18 @@
       "dateEnd": "2026-10-29",
       "parity": 8,
       "parityClub": 10,
+      "parityBau": 2,
+      "campanha": "PROMOTION_CLUB"
+    },
+    "gocase": {
+      "id": "GCS",
+      "nome": "Go case",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 29 a 30/10/2026. Ganhe 5 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo e 4 pontos por real demais clientes. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-10-29",
+      "dateEnd": "2026-10-30",
+      "parity": 4,
+      "parityClub": 5,
       "parityBau": 2,
       "campanha": "PROMOTION_CLUB"
     },
@@ -521,13 +533,13 @@
       "id": "INS",
       "nome": "Insider Store",
       "categorias": null,
-      "legalTerms": "Campanha válida de 26 a 28/10/2026. Ganhe 13 pontos por real gasto exclusivo para assinantes Clube Livelo e 8 pontos por real para demais clientes. Utilize o cupom LIVELO. Consulte o regulamento.",
-      "dateStart": "2026-10-26",
-      "dateEnd": "2026-10-28",
-      "parity": 8,
-      "parityClub": 13,
+      "legalTerms": "Campanha válida em 29/10/2026. Ganhe 20 pontos por real gasto em produtos selecionados e 1 ponto por real nos demais produtos. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-10-29",
+      "dateEnd": "2026-10-29",
+      "parity": 20,
+      "parityClub": 20,
       "parityBau": 1,
-      "campanha": "PROMOTION_CLUB"
+      "campanha": "PROMOTION"
     },
     "johnjohn": {
       "id": "JOH",
@@ -649,18 +661,6 @@
       "parityBau": 3,
       "campanha": "PROMOTION_CLUB"
     },
-    "magazineluiza": {
-      "id": "MZL",
-      "nome": "Magalu",
-      "categorias": null,
-      "legalTerms": "Campanha válida de 26 a 28/10/2026. Ganhe 3 pontos por real gasto em produtos vendidos e entregues por Magalu e 2 pontos por real para marketplace. Pontuação não elegível para as categorias de mercado e telefonia. Consulte o regulamento.",
-      "dateStart": "2026-10-26",
-      "dateEnd": "2026-10-28",
-      "parity": 3,
-      "parityClub": 3,
-      "parityBau": 2,
-      "campanha": "PROMOTION"
-    },
     "maxtitanium": {
       "id": "SUP",
       "nome": "Max Titanium",
@@ -757,18 +757,6 @@
       "parityBau": 32,
       "campanha": "PROMOTION_CLUB"
     },
-    "natura": {
-      "id": "NTR",
-      "nome": "Natura",
-      "categorias": null,
-      "legalTerms": "Campanha válida de 26 a 27/10/2026; Ganhe 15 pontos por real gasto exclusivo para primeira compra e 4 pontos por real nas demais compras. Consulte o regulamento.",
-      "dateStart": "2026-10-26",
-      "dateEnd": "2026-10-28",
-      "parity": 15,
-      "parityClub": 15,
-      "parityBau": 2,
-      "campanha": "PROMOTION"
-    },
     "netshoes": {
       "id": "NTS",
       "nome": "Netshoes",
@@ -851,18 +839,6 @@
       "parity": 10,
       "parityClub": 10,
       "parityBau": 1,
-      "campanha": "PROMOTION"
-    },
-    "petlove": {
-      "id": "PLV",
-      "nome": "Petlove",
-      "categorias": null,
-      "legalTerms": "Campanha válida de 27 a 28/10/2026. Ganhe 9 pontos por real gasto em produtos selecionados e 2 pontos por real nos demais itens. Exceto para compras rePet, com recorrência, assinantes Petlove, e Clube Petlove.",
-      "dateStart": "2026-10-27",
-      "dateEnd": "2026-10-28",
-      "parity": 9,
-      "parityClub": 9,
-      "parityBau": 2,
       "campanha": "PROMOTION"
     },
     "petlovesaude": {
@@ -1007,18 +983,6 @@
       "parity": 15,
       "parityClub": 15,
       "parityBau": 2,
-      "campanha": "PROMOTION"
-    },
-    "shopee": {
-      "id": "PEE",
-      "nome": "Shopee",
-      "categorias": null,
-      "legalTerms": "Campanha válida em 28/10/2026. Ganhe 3 pontos por real gasto exclusivo para primeira compra na Shopee e 1 ponto a cada 2 reais nas demais compras. Use o cupom L1V3LO2810SHOPB para R$15 de desconto, mediante a compras de no mínimo R$75,00, válido apenas para clientes Livelo, uso único por CPF. Não elegível a pontuação produtos digitais, doações e serviços. Lembre-se de iniciar a compra com seu c...",
-      "dateStart": "2026-10-28",
-      "dateEnd": "2026-10-28",
-      "parity": 3,
-      "parityClub": 3,
-      "parityBau": 1,
       "campanha": "PROMOTION"
     },
     "sixt": {
