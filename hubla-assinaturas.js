@@ -536,6 +536,25 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     const d = await ler();
     const agora = Date.now();
     let lista = Object.values(d.assinaturas).map(a => Object.assign({}, a, calcularSituacao(a, agora)));
+    // Quem tem acesso ao produto do painel sem assinatura paga dele (grátis,
+    // convite, vitalício): entra como linha de "acesso", com o fim que a Hubla
+    // informa (removalAt). Assinatura gratuita não gera fatura, por isso não
+    // aparece na descoberta pelas faturas.
+    const comAssinaturaDoProduto = new Set(Object.values(d.assinaturas)
+      .filter(a => a.produtoId === PRODUTO_PAINEL_ID && a.email).map(a => a.email));
+    for (const [em, ac] of Object.entries(d.acessos || {})) {
+      if (comAssinaturaDoProduto.has(em)) continue;
+      const ativo = ac.status === 'active';
+      const fim = ac.removidoEm || null;
+      const situacao = ativo ? (ac.vitalicio ? 'vitalicio' : 'vigente') : 'encerrada';
+      lista.push({
+        id: 'acesso:' + em, fonte: 'acesso', email: em, nome: ac.nome, telefone: ac.telefone,
+        produtoId: PRODUTO_PAINEL_ID, produtoNome: PRODUTO_PAINEL_NOME,
+        ofertaNome: ac.vitalicio ? 'Acesso vitalício (sem assinatura paga)' : (ac.tipo === 'free' ? 'Acesso gratuito / convite' : 'Acesso ao produto (sem fatura)'),
+        tipo: ac.tipo, liberaPainel: false, situacao, fim,
+        diasRestantes: ativo && fim && !ac.vitalicio ? Math.ceil((new Date(fim).getTime() - agora) / DIA) : null,
+      });
+    }
     if (painel === '1' || painel === true) lista = lista.filter(a => a.liberaPainel);
     if (situacao) {
       const quer = new Set(String(situacao).split(','));
