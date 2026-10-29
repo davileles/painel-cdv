@@ -609,11 +609,15 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     // convite, vitalício): entra como linha de "acesso", com o fim que a Hubla
     // informa (removalAt). Assinatura gratuita não gera fatura, por isso não
     // aparece na descoberta pelas faturas.
-    const comAssinaturaDoProduto = new Set(Object.values(d.assinaturas)
-      .filter(a => a.produtoId === PRODUTO_PAINEL_ID && a.email).map(a => a.email));
+    // Acesso ativo só fica de fora se já houver assinatura ATIVA do produto (uma
+    // assinatura antiga vencida não pode esconder um acesso grátis/vitalício atual).
+    const doProduto = lista.filter(a => a.produtoId === PRODUTO_PAINEL_ID && a.email);
+    const comAssinaturaDoProduto = new Set(doProduto.map(a => a.email));
+    const comAssinaturaAtivaDoProduto = new Set(doProduto
+      .filter(a => a.situacao === 'vigente' || a.situacao === 'teste' || a.situacao === 'vitalicio').map(a => a.email));
     for (const [em, ac] of Object.entries(d.acessos || {})) {
-      if (comAssinaturaDoProduto.has(em)) continue;
       const ativo = membroAtivo(ac, agora);
+      if (comAssinaturaAtivaDoProduto.has(em) || (!ativo && comAssinaturaDoProduto.has(em))) continue;
       const fim = ac.removidoEm || null;
       const situacao = ativo ? (ac.vitalicio ? 'vitalicio' : 'vigente') : 'encerrada';
       lista.push({
