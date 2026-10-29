@@ -8,7 +8,8 @@
 // Cruzamento pelo telefone: DDI 55 + DDD + últimos 8 dígitos (o 9º dígito do
 // celular às vezes falta no WhatsApp ou no cadastro).
 //
-// CommonJS, sem dependências.
+// CommonJS. Usa as regras de situação de hubla-assinaturas.js.
+const { calcularSituacao, membroAtivo } = require('./hubla-assinaturas');
 
 // Grupos fora da conferência (nome, sem acento/caixa). Emissões em executiva tem
 // clientes do concierge sem cadastro na Hubla (decisão do Davi, 29/10/2026).
@@ -48,14 +49,15 @@ function auditar({ hubla, grupos, clientesConcierge, agora = Date.now() }) {
     for (const [email, m] of Object.entries(p.membros || {})) {
       const k = chaveTelefone(m.telefone);
       if (!k) continue;
-      if (m.status === 'active') reg(ativos, k, { nome: m.nome, email, produto: p.nome });
+      if (membroAtivo(m, agora)) reg(ativos, k, { nome: m.nome, email, produto: p.nome });
       else reg(vencidos, k, { nome: m.nome, email, produto: p.nome, venceuEm: m.removidoEm });
     }
   }
   for (const a of Object.values((hubla && hubla.assinaturas) || {})) {
     const k = chaveTelefone(a.telefone);
     if (!k) continue;
-    if (a.status === 'active' || a.status === 'trial') reg(ativos, k, { nome: a.nome, email: a.email, produto: a.produtoNome });
+    const sit = calcularSituacao(a, agora).situacao;
+    if (sit === 'vigente' || sit === 'teste' || sit === 'vitalicio') reg(ativos, k, { nome: a.nome, email: a.email, produto: a.produtoNome });
     else if (a.status === 'inactive' || a.status === 'canceled') {
       reg(vencidos, k, { nome: a.nome, email: a.email, produto: a.produtoNome,
         venceuEm: a.inativadaEm || a.canceladaEm || a.modificadaEm });

@@ -85,22 +85,36 @@ const DIA = 24 * 60 * 60 * 1000;
 // - encerrada: fim = inativação → cancelamento → última modificação.
 function calcularSituacao(a, agora = Date.now()) {
   const st = String(a.status || '').toLowerCase();
+  const creditos = Number(a.creditos) || 0;
+  // Créditos = dias pagos que restam (1 crédito = 1 dia), contados a partir da
+  // última conferência na API. 10.000 dias é como a Hubla grava o vitalício.
+  const baseCreditos = new Date(a.conferidaApiEm || a.ultimoDebito || a.modificadaEm || agora).getTime();
+  const porCreditos = creditos > 0 ? new Date(baseCreditos + creditos * DIA).toISOString() : null;
+  const futuro = v => v && new Date(v).getTime() > agora ? v : null;
   let fim = null;
   let situacao;
-  if (st === 'active' || st === 'trial') {
-    // A Hubla mantém `deactivateEta` de ciclos antigos em assinaturas renovadas:
-    // só vale se ainda estiver no futuro. O fim do período pago é a próxima
-    // cobrança (bate com os créditos: 1 crédito = 1 dia).
-    const desativaFutura = a.desativaEm && new Date(a.desativaEm).getTime() > agora ? a.desativaEm : null;
-    const porCreditos = Number(a.creditos) > 0 ? new Date(agora + Number(a.creditos) * DIA).toISOString() : null;
-    fim = a.proximaCobranca || desativaFutura || porCreditos;
-    if (desativaFutura && fim && new Date(desativaFutura) < new Date(fim)) fim = desativaFutura;
-    situacao = (st === 'trial' || a.teste) ? 'teste' : 'vigente';
-    if (fim && new Date(fim).getTime() < agora - DIA && !a.renovacaoAutomatica) situacao = 'encerrada';
+  // "canceled" na Hubla = renovação desligada: o acesso segue até os créditos
+  // acabarem (ex.: cancelou em set/2026 com renovação paga até nov/2026).
+  // "inactive" com créditos = acesso retirado à mão: conta como encerrada.
+  const vigente = st === 'active' || st === 'trial' || (st === 'canceled' && creditos > 0);
+  if (vigente) {
+    if (creditos >= 3650) {
+      situacao = 'vitalicio';
+    } else {
+      // A Hubla mantém `deactivateEta` de ciclos antigos: só vale se estiver no futuro.
+      const desativaFutura = futuro(a.desativaEm);
+      fim = futuro(a.proximaCobranca) || porCreditos || desativaFutura || a.proximaCobranca || null;
+      if (desativaFutura && fim && new Date(desativaFutura) < new Date(fim)) fim = desativaFutura;
+      situacao = (st === 'trial' || a.teste) ? 'teste' : 'vigente';
+      if (fim && new Date(fim).getTime() < agora - DIA && !(st !== 'canceled' && a.renovacaoAutomatica)) situacao = 'encerrada';
+    }
   } else if (st === 'incomplete') {
     situacao = 'pendente';
   } else if (st) {
-    fim = a.inativadaEm || a.canceladaEm || a.modificadaEm || null;
+    // Fim = a data mais recente entre inativação e cancelamento (a Hubla guarda
+    // inativações antigas, de antes da primeira ativação).
+    const datas = [a.inativadaEm, a.canceladaEm].filter(Boolean).sort();
+    fim = datas[datas.length - 1] || a.modificadaEm || null;
     situacao = 'encerrada';
   } else {
     situacao = 'desconhecida';
@@ -108,6 +122,15 @@ function calcularSituacao(a, agora = Date.now()) {
   const diasRestantes = fim && situacao !== 'encerrada'
     ? Math.ceil((new Date(fim).getTime() - agora) / DIA) : null;
   return { situacao, fim, diasRestantes };
+}
+
+// Membro com acesso? A leitura sem filtro da API não preenche o status de quem
+// está ativo (vem vazio); desativado vem "deactivate".
+function membroAtivo(m, agora = Date.now()) {
+  if (!m) return false;
+  if (m.status === 'active') return true;
+  if (m.status) return false;
+  return !m.removidoEm || new Date(m.removidoEm).getTime() > agora;
 }
 
 // Converte o objeto de assinatura (webhook ou API) para o registro interno.
@@ -447,7 +470,8 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
         for (const m of lista) {
           const email = String(m.email || '').toLowerCase().trim();
           if (!email) continue;
-          const novo = { nome: m.name || '', telefone: m.phone || '', tipo: m.type || '', status: m.status || '',
+          const novo = { nome: m.name || '', telefone: m.phone || '', tipo: m.type || '',
+            status: m.status || (f ? 'deactivate' : 'active'),
             removidoEm: iso(m.removalAt), vitalicio: !!m.isLifetime };
           const ant = membros[email];
           if (!ant || (ant.status !== 'active' && novo.status === 'active')) membros[email] = novo;
@@ -456,7 +480,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
       porProduto[pr.id] = { nome: pr.name, legacyId: pr.legacyId || null, membros };
       if (typeof contagem[pr.name] !== 'string') {
         const v = Object.values(membros);
-        contagem[pr.name] = { ativos: v.filter(x => x.status === 'active').length, total: v.length };
+        contagem[pr.name] = { ativos: v.filter(x => membroAtivo(x)).length, total: v.length };
       }
     }
     progresso.contagem.membrosPorProduto = contagem;
@@ -563,13 +587,13 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     for (const a of Object.values(base.assinaturas || {})) {
       const { situacao } = calcularSituacao(a, agora);
       porSituacao[situacao] = (porSituacao[situacao] || 0) + 1;
-      if (a.liberaPainel && (situacao === 'vigente' || situacao === 'teste') && a.email) vigentesPainel.add(a.email);
+      if (a.liberaPainel && (situacao === 'vigente' || situacao === 'teste' || situacao === 'vitalicio') && a.email) vigentesPainel.add(a.email);
     }
     const out = { porSituacao, membrosComAssinaturaPainelVigente: vigentesPainel.size };
     if (membrosAtivos) {
       const ativos = new Set(membrosAtivos);
       const acessos = base.acessos || {};
-      const acessoAtivo = e => acessos[e] && acessos[e].status === 'active';
+      const acessoAtivo = e => membroAtivo(acessos[e], agora);
       out.ativosNoPainelSemAssinaturaVigente = [...ativos].filter(e => !vigentesPainel.has(e) && !acessoAtivo(e)).sort();
       out.assinaturaVigenteSemPainel = [...vigentesPainel].filter(e => !ativos.has(e)).sort();
     }
@@ -589,7 +613,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
       .filter(a => a.produtoId === PRODUTO_PAINEL_ID && a.email).map(a => a.email));
     for (const [em, ac] of Object.entries(d.acessos || {})) {
       if (comAssinaturaDoProduto.has(em)) continue;
-      const ativo = ac.status === 'active';
+      const ativo = membroAtivo(ac, agora);
       const fim = ac.removidoEm || null;
       const situacao = ativo ? (ac.vitalicio ? 'vitalicio' : 'vigente') : 'encerrada';
       lista.push({
@@ -617,6 +641,6 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
 }
 
 module.exports = {
-  criarHublaAssinaturas, ofertaLiberaPainel, produtoOfertaDoEvento, calcularSituacao,
+  criarHublaAssinaturas, ofertaLiberaPainel, produtoOfertaDoEvento, calcularSituacao, membroAtivo,
   camposDaAssinatura, mesclarRegistro, OFERTAS_PAINEL, PRODUTO_PAINEL_ID, ARQUIVO_HUBLA_ASSINATURAS: ARQUIVO,
 };
