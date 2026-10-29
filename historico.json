@@ -834087,10 +834087,23 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 1.5,
+          "pts": 13,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-insider-store"
+          "ate": true,
+          "slug": "cupom-insider-store",
+          "categorias": [
+            {
+              "categoria": "Compra de produtos com uso de cupom Méliuz ou sem o uso de cupom",
+              "pts": 13,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1.5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1.5
         }
       },
       "links": {
@@ -835752,14 +835765,6 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-aliexpress"
       }
     },
-    "beach park hospedagens": {
-      "programs": {
-        "livelo": {
-          "pts": 3,
-          "dollar": false
-        }
-      }
-    },
     "beyoung": {
       "programs": {
         "livelo": {
@@ -836014,6 +836019,14 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-american-tourister"
+      }
+    },
+    "beach park hospedagens": {
+      "programs": {
+        "livelo": {
+          "pts": 2,
+          "dollar": false
+        }
       }
     },
     "beto carrero world": {
