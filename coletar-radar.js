@@ -26,6 +26,9 @@ const REJEITADAS_FILE = path.join(__dirname, 'ofertas-rejeitadas.json');
 // mesmo que ofertas-pendentes.json, ofertas.json ou ofertas-rejeitadas.json sejam zerados,
 // este arquivo garante que artigos já vistos não sejam reprocessados.
 const PROCESSADOS_FILE = path.join(__dirname, 'ofertas-processados.json');
+const HISTORICO_TRANSF_FILE = path.join(__dirname, 'historico-transferencias.json');
+const { situacaoHistoricoTransferencia } = require('./transferencia-historico.js');
+const { completarTransferencia } = require('./transferencia-deducao.js');
 
 // IMPORTANTE: a fonte nunca é exibida no painel nem mencionada nos textos
 // gerados pela IA — esses valores ficam só aqui, internos ao coletor.
@@ -462,6 +465,39 @@ async function main() {
   }
 
   console.log(`[Radar] ${novosItens.length} ofertas reescritas com sucesso.`);
+
+  // 1b. Transferencia repetida nao entra na fila (desde 29/10/2026).
+  // Mesma campanha (origem→destino + periodo) ja registrada no historico ou ja
+  // esperando na fila = ja foi (ou sera) enviada aos membros, e o lembrete
+  // "ACABA HOJE" do baileys cobre o ultimo dia. Mesma regra do disparo
+  // automatico de transferencia capturada em grupo (baileys-server). Fica para
+  // aprovacao manual so a repetida com bonus MAIOR que o registrado (pode ser
+  // aumento da campanha; vale tambem frente a outra igual na fila) e a sem
+  // origem/destino identificados.
+  let histTransf = [];
+  try { histTransf = (JSON.parse(fs.readFileSync(HISTORICO_TRANSF_FILE, 'utf8')).items) || []; }
+  catch (e) { console.error('[Radar] historico-transferencias.json ilegivel — sem filtro de repetidas:', e.message); }
+  const filaParaComparar = [...(atual.items || [])];
+  const novosFiltrados = [];
+  for (const o of novosItens) {
+    if (o.categoria === 'transferencia' && histTransf.length + filaParaComparar.length > 0) {
+      const s = situacaoHistoricoTransferencia(o, histTransf, [...filaParaComparar, ...novosFiltrados]);
+      if (s && (s.tipo === 'reenvio' || s.tipo === 'duplicada_fila')) {
+        const bonusNovo = Number(completarTransferencia(o).bonusMax) || 0;
+        const outro = s.tipo === 'duplicada_fila'
+          ? [...filaParaComparar, ...novosFiltrados].find((p) => p.id === s.outroId) : null;
+        const bonusReg = Number(s.registro ? s.registro.bonusMax : (outro && completarTransferencia(outro).bonusMax)) || 0;
+        if (!(bonusReg && bonusNovo > bonusReg)) {
+          console.log(`[Radar] Transferencia repetida descartada (${s.tipo}): ${o.titulo} — ${s.texto}`);
+          continue;
+        }
+        console.log(`[Radar] Transferencia repetida com bonus maior (${bonusNovo}% x ${bonusReg}%) — vai para aprovacao: ${o.titulo}`);
+      }
+    }
+    novosFiltrados.push(o);
+  }
+  novosItens.length = 0;
+  novosItens.push(...novosFiltrados);
 
   // 2. Combina com os existentes, remove antigos, ordena por data desc, limita tamanho
   const corteMs = Date.now() - MAX_DIAS_RETENCAO * 24 * 60 * 60 * 1000;
