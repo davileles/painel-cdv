@@ -5227,7 +5227,7 @@ app.post('/ia/extrair-reserva', (req, res) => {
       : 'Analise este documento (' + (docs[0].kind === 'texto' ? 'texto extraído de um arquivo HTML' : (docs[0].kind === 'pdf' ? 'PDF' : 'imagem')) + ') de ' + (tipoCampos || 'reserva de viagem') + '. ') +
     'Extraia os dados REAIS do documento e retorne SOMENTE um JSON válido (sem markdown). ' +
     'Use exatamente esta estrutura JSON (substitua pelos valores reais): ' +
-    '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","dataChegada":"YYYY-MM-DD","cabine":"cabine exata","cia":"companhia aerea"}],"pnr":"","pax":0,"passageiros":["NOME DO PASSAGEIRO EXATAMENTE COMO IMPRESSO"],"programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","subtipo":"transfer","transferOrigem":"","transferDestino":"","transferData":"","transferHora":"","transferPax":"","transferOp":"","transferVeiculo":"","transferConf":"","transferValor":"","transferVoltaOrigem":"","transferVoltaDestino":"","transferVoltaData":"","transferVoltaHora":"","transferVoltaHoraChegada":"","transferVoltaOp":"","transferVoltaConf":"","transferVoltaCategoria":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","seguradora":"","seguroPlano":"","seguroApolice":"","seguroCartao":"","seguroInicio":"","seguroFim":"","seguroModalidade":"","seguroDias":"","seguroTerritorio":"","seguroCobertura":"","seguroPax":"","seguroValor":"","seguroEmergencia":"","obs":""} ' +
+    '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","dataChegada":"YYYY-MM-DD","cabine":"cabine exata","cia":"companhia aerea","assento":""}],"pnr":"","pax":0,"passageiros":["NOME DO PASSAGEIRO EXATAMENTE COMO IMPRESSO"],"programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","subtipo":"transfer","transferOrigem":"","transferDestino":"","transferData":"","transferHora":"","transferPax":"","transferOp":"","transferVeiculo":"","transferConf":"","transferValor":"","transferVoltaOrigem":"","transferVoltaDestino":"","transferVoltaData":"","transferVoltaHora":"","transferVoltaHoraChegada":"","transferVoltaOp":"","transferVoltaConf":"","transferVoltaCategoria":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","seguradora":"","seguroPlano":"","seguroApolice":"","seguroCartao":"","seguroInicio":"","seguroFim":"","seguroModalidade":"","seguroDias":"","seguroTerritorio":"","seguroCobertura":"","seguroPax":"","seguroValor":"","seguroEmergencia":"","obs":"","bilhetes":[],"tarifa":"","taxas":"","bagagem":{"pessoal":"","mao":"","despachada":""},"regrasTarifa":"","hotelEndereco":"","horaCheckin":"","horaCheckout":"","cancelamento":""} ' +
     'REGRAS: ' +
     '1) trechos[]: um objeto por segmento de voo na ordem do itinerário. ' +
     '2) Em cada trecho, cia = nome da companhia aérea operadora (ex: LATAM, Azul, Gol, TAP, KLM). ' +
@@ -5280,6 +5280,14 @@ app.post('/ia/extrair-reserva', (req, res) => {
     '   Quando horaChegada for MAIOR OU IGUAL a horaPartida, dataChegada = a MESMA data da partida ' +
     '   (ex: partida 21/09 as 10:40 e chegada as 16:05 -> dataChegada = 21/09). ' +
     '   Se o documento trouxer indicador de dias (ex: \"08:00+1\" ou \"+2\"), some exatamente os dias indicados. ' +
+    '9.2) DETALHES PARA O COMPROVANTE (preencha so o que estiver ESCRITO no documento; na duvida deixe vazio, nunca deduza nem use regra geral da companhia): ' +
+    'trechos[].assento = assento(s) daquele trecho (ex: \"3D\" ou \"12A, 12B\"); ' +
+    'bilhetes = numeros dos bilhetes/e-tickets, um por passageiro, na ordem de passageiros (ex: [\"9572307025216\"]); ' +
+    'tarifa = nome da familia tarifaria (ex: \"Light\", \"Plus\", \"Premium Economy Full\"); ' +
+    'taxas = valor em reais das taxas de embarque/impostos (ex: \"62,14\"); ' +
+    'bagagem.pessoal / bagagem.mao / bagagem.despachada = franquia de cada tipo em texto curto (ex: \"Ate 10 kg · 45 x 35 x 20 cm\", \"1 peca de 23 kg\"; se o documento disser que nao inclui, \"Nao incluida\"); ' +
+    'regrasTarifa = regras de remarcacao, cancelamento/reembolso e validade, uma por linha no formato \"Titulo: texto curto\" (ex: \"Remarcacao: sem multa antes do voo\"); ' +
+    'hotelEndereco = endereco do hotel; horaCheckin / horaCheckout = horarios HH:MM do hotel; cancelamento = politica de cancelamento do hotel, locacao, passeio ou seguro, uma regra por linha. ' +
     '10) Retorne SOMENTE o JSON, sem explicações.' +
     (multiDoc
       ? ' 11) MULTIPLOS DOCUMENTOS DA MESMA RESERVA: nunca gere um JSON por documento — consolide todos em um so. ' +
@@ -5443,6 +5451,10 @@ app.post('/ia/extrair-reserva', (req, res) => {
       dataChegadaTrecho({ data: d.dataIda, horaPartida: d.horaPartida, horaChegada: d.horaChegada });
     d.nvooIda = trechosIda.map(t => t.nvoo).filter(Boolean).join(', ');
     d.classe = cabineToClasse(primeiro.cabine);
+    // Assentos por sentido (comprovante em PDF do concierge)
+    const assentosDe = lista => lista.map(t => String(t.assento || '').trim()).filter(Boolean)
+      .filter((a, i, arr) => arr.indexOf(a) === i).join(' · ');
+    d.assentoIda = assentosDe(trechosIda);
 
     // Cia de cada sentido = a que opera mais trechos nele; empate decide pela
     // que mais opera na reserva inteira (ex.: Azul CNF-GRU + SAA GRU-CPT → SAA).
@@ -5479,6 +5491,7 @@ app.post('/ia/extrair-reserva', (req, res) => {
       d.dataChegadaVolta = dataChegadaTrecho(ultimoV) ||
         dataChegadaTrecho({ data: d.dataVolta, horaPartida: d.horaPartidaVolta, horaChegada: d.horaChegadaVolta });
       d.nvooVolta = trechosVolta.map(t => t.nvoo).filter(Boolean).join(', ');
+      d.assentoVolta = assentosDe(trechosVolta);
       d.origemVolta = d.origemVolta || primeiroV.origem;
       d.destinoVolta = d.destinoVolta || ultimoV.destino;
       d.ciaVolta = d.ciaVolta || ciaPrincipal(trechosVolta) || d.ciaIda;
