@@ -4792,16 +4792,18 @@ app.post('/hubla/assinaturas/sincronizar', async (req, res) => {
   res.json({ ok: true, iniciado: true });
 });
 
-// Primeira carga: se ainda não houve sincronização, roda 3 min após o boot.
+// No boot (30 s depois): retoma sincronização interrompida por reinício (o proxy
+// reinicia a cada commit no painel-cdv) ou faz a primeira carga se nunca houve.
 setTimeout(async () => {
   if (!hublaAssinaturas.temChaveApi() || hublaAssinaturas.progresso.rodando) return;
   try {
     const d = await hublaAssinaturas.ler();
-    if (d.sincronizacao && d.sincronizacao.ultimaEm) return;
-    console.log('[hubla-sync] primeira carga do histórico');
+    const s = d.sincronizacao || {};
+    if (!s.emAndamento && s.ultimaEm) return;
+    console.log('[hubla-sync]', s.emAndamento ? 'retomando sincronização interrompida' : 'primeira carga do histórico');
     hublaSincronizarComMembros().catch(e => console.error('[hubla-sync]', e.message));
   } catch (e) { console.error('[hubla-sync] boot', e.message); }
-}, 3 * 60 * 1000);
+}, 30 * 1000);
 
 // Conferência diária às 04:30 (São Paulo): corrige webhook perdido e atualiza
 // as datas de fim. Uma vez por dia por processo.

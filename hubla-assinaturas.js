@@ -293,11 +293,17 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
   // ── Sincronização completa pela API ────────────────────────────────────────
   const progresso = { rodando: false, etapa: null, inicio: null, fim: null, erro: null, contagem: {} };
 
-  async function paginar(fn, max = 500) {
+  async function paginar(fn, max = 500, rotulo) {
     const itens = [];
+    let primeiroAnterior = null;
     for (let page = 1; page <= max; page++) {
+      if (rotulo) progresso.contagem[rotulo + 'Paginas'] = page;
       const r = await fn(page);
       const lote = (r && (r.items || r.data)) || [];
+      // API que ignora o parâmetro de página devolveria a mesma página para sempre.
+      const primeiro = lote[0] && (lote[0].id || JSON.stringify(lote[0]).slice(0, 80));
+      if (page > 1 && primeiro && primeiro === primeiroAnterior) break;
+      primeiroAnterior = primeiro;
       itens.push(...lote);
       const ultima = (r && (r.lastPage || (r.pagination && r.pagination.lastPage))) || 0;
       if (!lote.length || (ultima && page >= ultima)) break;
@@ -305,83 +311,121 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     return itens;
   }
 
-  async function sincronizar({ membrosAtivos } = {}) {
+  // Sincronização RETOMÁVEL. O proxy reinicia a cada commit no painel-cdv (os
+  // coletores comitam de poucos em poucos minutos), então o avanço fica gravado
+  // em `sincronizacao.emAndamento` e um novo processo continua de onde parou:
+  //   1. produtos + ofertas + faturas (rápido) → grava os registros-base e a fila
+  //      `pendentes` de IDs a conferir na API;
+  //   2. cada assinatura pela API, em lotes de LOTE, tirando da fila a cada lote;
+  //   3. membros do produto do painel → `acessos`, resumo e `ultimaEm`.
+  const LOTE = 40;
+
+  async function etapaBase() {
+    progresso.etapa = 'produtos';
+    const produtos = await paginar(p => api('POST', '/v1/products/list', { page: p, pageSize: 100 }), 20, 'produtos');
+    const ofertas = {};
+    progresso.etapa = 'ofertas';
+    for (const pr of produtos) {
+      ofertas[pr.id] = ofertas[pr.id] || { nome: pr.name, produtoId: pr.id, produtoNome: pr.name, liberaPainel: false, ehProduto: true };
+      const lista = await paginar(p => api('GET', `/v1/products/${encodeURIComponent(pr.id)}/offers?page=${p}&pageSize=100`), 10);
+      for (const of of lista) {
+        ofertas[of.id] = { nome: of.name, produtoId: pr.id, produtoNome: pr.name,
+          liberaPainel: ofertaLiberaPainel(pr.id, pr.name, of.name), arquivada: !!of.isArchived };
+      }
+    }
+    progresso.contagem.produtos = produtos.length;
+    progresso.contagem.ofertas = Object.values(ofertas).filter(o => !o.ehProduto).length;
+
+    progresso.etapa = 'faturas';
+    const porSub = {};
+    const ate = new Date().toISOString();
+    const faturas = await paginar(p => api('POST', '/v1/invoices/list', {
+      filters: { dateStart: '2018-01-01T00:00:00.000Z', dateEnd: ate, dateRangeBy: 'createdAt', orderBy: 'createdAt', orderDir: 'ASC' },
+      pagination: { page: p, pageSize: 200 },
+    }), 500, 'faturas');
+    progresso.contagem.faturas = faturas.length;
+    for (const f of faturas) {
+      const ids = [f.subscriptionId, ...(Array.isArray(f.subscriptionIds) ? f.subscriptionIds : [])].filter(Boolean);
+      for (const sid of new Set(ids)) {
+        const x = porSub[sid] = porSub[sid] || { id: sid, faturasPagas: 0 };
+        if (f.status === 'paid') x.faturasPagas++;
+        const pessoa = pessoaDe(f.payer);
+        if (pessoa.email) Object.assign(x, pessoa);
+        const itens = Array.isArray(f.items) ? f.items : [];
+        const item = itens.find(i => i && ofertas[i.id] && !ofertas[i.id].ehProduto) || itens.find(i => i && ofertas[i.id]) || itens[0];
+        if (item) {
+          const o = ofertas[item.id];
+          x.ofertaId = item.id;
+          x.ofertaNome = o ? o.nome : item.name;
+          if (o) { x.produtoId = o.produtoId; x.produtoNome = o.produtoNome; }
+        }
+        const quando = iso(f.paidAt || f.createdAt);
+        if (f.status === 'paid' && quando) {
+          x.primeiraAtivacao = minIso(x.primeiraAtivacao || null, quando);
+          if (!x.ultimoPagamento || quando > x.ultimoPagamento) x.ultimoPagamento = quando;
+        }
+      }
+    }
+    for (const x of Object.values(porSub)) {
+      if (x.ofertaNome || x.produtoNome) x.liberaPainel = ofertaLiberaPainel(x.produtoId, x.produtoNome, x.ofertaNome);
+    }
+    const pendentes = Object.keys(porSub);
+    progresso.contagem.assinaturas = pendentes.length;
+    progresso.etapa = 'gravando';
+    await salvar(base => {
+      Object.assign(base.ofertas, ofertas);
+      for (const [sid, novo] of Object.entries(porSub)) base.assinaturas[sid] = mesclarRegistro(base.assinaturas[sid], novo);
+      base.sincronizacao = Object.assign({}, base.sincronizacao, {
+        emAndamento: { inicio: progresso.inicio, total: pendentes.length, pendentes, contagem: Object.assign({}, progresso.contagem) },
+      });
+    }, `hubla: sincronização — base (${pendentes.length} assinaturas)`);
+    return pendentes;
+  }
+
+  async function sincronizar({ membrosAtivos, retomar } = {}) {
     if (progresso.rodando) return { ok: false, erro: 'sincronização já em andamento', progresso };
     if (!apiKey()) return { ok: false, erro: 'HUBLA_API_KEY não configurada no Railway' };
-    Object.assign(progresso, { rodando: true, etapa: 'produtos', inicio: new Date().toISOString(), fim: null, erro: null, contagem: {} });
+    Object.assign(progresso, { rodando: true, etapa: 'iniciando', inicio: new Date().toISOString(), fim: null, erro: null, contagem: {} });
     try {
-      // 1. Produtos e ofertas
-      const produtos = await paginar(p => api('POST', '/v1/products/list', { page: p, pageSize: 100 }), 20);
-      const ofertas = {};
-      for (const pr of produtos) {
-        ofertas[pr.id] = ofertas[pr.id] || { nome: pr.name, produtoId: pr.id, produtoNome: pr.name, liberaPainel: false, ehProduto: true };
-        const lista = await paginar(p => api('GET', `/v1/products/${encodeURIComponent(pr.id)}/offers?page=${p}&pageSize=100`), 20);
-        for (const of of lista) {
-          ofertas[of.id] = { nome: of.name, produtoId: pr.id, produtoNome: pr.name,
-            liberaPainel: ofertaLiberaPainel(pr.id, pr.name, of.name), arquivada: !!of.isArchived };
-        }
-      }
-      progresso.contagem.produtos = produtos.length;
-      progresso.contagem.ofertas = Object.values(ofertas).filter(o => !o.ehProduto).length;
-
-      // 2. Faturas → assinaturas (pagador, oferta, primeira/última venda)
-      progresso.etapa = 'faturas';
-      const porSub = {};
-      const ate = new Date().toISOString();
-      const faturas = await paginar(p => api('POST', '/v1/invoices/list', {
-        filters: { dateStart: '2018-01-01T00:00:00.000Z', dateEnd: ate, dateRangeBy: 'createdAt', orderBy: 'createdAt', orderDir: 'ASC' },
-        pagination: { page: p, pageSize: 200 },
-      }), 500);
-      progresso.contagem.faturas = faturas.length;
-      for (const f of faturas) {
-        const ids = [f.subscriptionId, ...(Array.isArray(f.subscriptionIds) ? f.subscriptionIds : [])].filter(Boolean);
-        for (const sid of new Set(ids)) {
-          const x = porSub[sid] = porSub[sid] || { id: sid, faturas: 0, pagas: 0 };
-          x.faturas++;
-          if (f.status === 'paid') x.pagas++;
-          const pessoa = pessoaDe(f.payer);
-          if (pessoa.email) Object.assign(x, pessoa);
-          const item = (Array.isArray(f.items) ? f.items : []).find(i => i && ofertas[i.id] && !ofertas[i.id].ehProduto)
-            || (Array.isArray(f.items) ? f.items : []).find(i => i && ofertas[i.id])
-            || (Array.isArray(f.items) ? f.items[0] : null);
-          if (item) {
-            const o = ofertas[item.id];
-            x.ofertaId = item.id;
-            x.ofertaNome = o ? o.nome : item.name;
-            if (o) { x.produtoId = o.produtoId; x.produtoNome = o.produtoNome; }
-          }
-          const quando = iso(f.paidAt || f.createdAt);
-          if (f.status === 'paid' && quando) {
-            x.primeiroPagamento = minIso(x.primeiroPagamento || null, quando);
-            if (!x.ultimoPagamento || quando > x.ultimoPagamento) x.ultimoPagamento = quando;
-          }
-        }
+      const atual = await ler();
+      const andamento = atual.sincronizacao && atual.sincronizacao.emAndamento;
+      let pendentes;
+      if (andamento && Array.isArray(andamento.pendentes) && (retomar !== false)) {
+        pendentes = andamento.pendentes.slice();
+        progresso.inicio = andamento.inicio || progresso.inicio;
+        Object.assign(progresso.contagem, andamento.contagem || {}, { retomada: true });
+        progresso.contagem.assinaturas = andamento.total || pendentes.length;
+      } else {
+        pendentes = await etapaBase();
       }
 
-      // 3. Cada assinatura pela API (datas exatas)
+      // 2. Assinaturas pela API, em lotes gravados
       progresso.etapa = 'assinaturas';
-      const ids = Object.keys(porSub);
-      progresso.contagem.assinaturas = ids.length;
-      progresso.contagem.lidas = 0;
-      const registros = {};
-      for (const sid of ids) {
-        let completo = null;
-        try { completo = await buscarAssinaturaApi(sid); } catch (err) { log.warn('[hubla-sync]', sid, err.message); }
-        const base = porSub[sid];
-        const novo = Object.assign({}, base, completo ? camposDaAssinatura(completo) : {},
-          completo ? { conferidaApiEm: new Date().toISOString() } : {});
-        if (!novo.primeiraAtivacao && base.primeiroPagamento) novo.primeiraAtivacao = base.primeiroPagamento;
-        if (novo.ofertaNome || novo.produtoNome) novo.liberaPainel = ofertaLiberaPainel(novo.produtoId, novo.produtoNome, novo.ofertaNome);
-        delete novo.faturas;
-        novo.faturasPagas = base.pagas;
-        registros[sid] = novo;
-        progresso.contagem.lidas++;
+      const total = progresso.contagem.assinaturas || pendentes.length;
+      progresso.contagem.lidas = total - pendentes.length;
+      while (pendentes.length) {
+        const lote = pendentes.slice(0, LOTE);
+        const registros = {};
+        for (const sid of lote) {
+          let completo = null;
+          try { completo = await buscarAssinaturaApi(sid); } catch (err) { log.warn('[hubla-sync]', sid, err.message); }
+          if (completo) registros[sid] = Object.assign(camposDaAssinatura(completo), { conferidaApiEm: new Date().toISOString() });
+          progresso.contagem.lidas++;
+        }
+        const restantes = pendentes.slice(LOTE);
+        await salvar(base => {
+          for (const [sid, novo] of Object.entries(registros)) base.assinaturas[sid] = mesclarRegistro(base.assinaturas[sid], novo);
+          const em = (base.sincronizacao && base.sincronizacao.emAndamento) || {};
+          em.pendentes = restantes;
+          base.sincronizacao = Object.assign({}, base.sincronizacao, { emAndamento: em });
+        }, `hubla: sincronização — ${total - restantes.length}/${total}`);
+        pendentes = restantes;
       }
 
-      // 4. Acessos atuais do produto do painel (status, data de remoção, vitalício)
+      // 3. Acessos atuais do produto do painel (status, data de remoção, vitalício)
       progresso.etapa = 'membros';
       const acessos = {};
-      const membros = await paginar(p => api('GET', `/v1/${PRODUTO_PAINEL_ID}/members?page=${p}&pageSize=200`), 100);
+      const membros = await paginar(p => api('GET', `/v1/${PRODUTO_PAINEL_ID}/members?page=${p}&pageSize=200`), 100, 'membros');
       for (const m of membros) {
         const email = String(m.email || '').toLowerCase().trim();
         if (!email) continue;
@@ -390,16 +434,13 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
       }
       progresso.contagem.acessosProduto = membros.length;
 
-      // 5. Grava (mescla com o que webhooks gravaram no meio tempo)
       progresso.etapa = 'gravando';
       let resumo = null;
       await salvar(base => {
-        Object.assign(base.ofertas, ofertas);
-        for (const [sid, novo] of Object.entries(registros)) base.assinaturas[sid] = mesclarRegistro(base.assinaturas[sid], novo);
         base.acessos = acessos;
         resumo = resumir(base, membrosAtivos);
-        base.sincronizacao = { ultimaEm: new Date().toISOString(), contagem: Object.assign({}, progresso.contagem), resumo };
-      }, 'hubla: sincroniza assinaturas pela API');
+        base.sincronizacao = { ultimaEm: new Date().toISOString(), inicio: progresso.inicio, contagem: Object.assign({}, progresso.contagem), resumo };
+      }, 'hubla: sincronização concluída');
       progresso.etapa = 'concluida';
       return { ok: true, contagem: progresso.contagem, resumo };
     } catch (err) {
