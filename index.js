@@ -2494,8 +2494,11 @@ async function atualizarHistoricoTransferencia(item) {
   // ofertas individuais e colaria o % de uma perna no par da outra.
   if (item.semHistorico) return;
   if (!item.origem || !item.destino || item.bonusMax === undefined || item.bonusMax === null || item.bonusMax === '') return;
+  // "Bancos selecionados" vira um registro por banco da lista (29/10/2026).
+  // Sem banco marcado nao registra nada (seria um par sem sentido).
+  const origensReg = transfHist.origensDaOferta(item);
+  if (!origensReg.length) return;
 
-  const chave = chaveHistorico(item.origem, item.destino);
   const prazoIso = prazoParaIso(item.prazo);
   const dataInicio = (item.publicadoEm ? item.publicadoEm.slice(0, 10) : new Date().toISOString().slice(0, 10));
 
@@ -2507,6 +2510,22 @@ async function atualizarHistoricoTransferencia(item) {
   });
 
   const items = hist.data.items || [];
+  const chaves = [];
+  // Bancos selecionados x registro antigo "Todos → destino" da MESMA campanha
+  // (rotulo errado de antes da opcao existir, ex. fqbp5g): o registro Todos sai
+  // e cada banco herda inicio, prazo, bonus e ofertaIds dele.
+  let todosReg = null;
+  if (item.origem === 'Bancos selecionados' && !item.campanhaNova) {
+    const mt = registroMesmaCampanha(items, chaveHistorico('Todos', item.destino), prazoIso);
+    if (mt) {
+      todosReg = mt.registro;
+      items.splice(items.indexOf(todosReg), 1);
+      chaves.push(`${todosReg.chave} (substituído)`);
+    }
+  }
+  for (const origemReg of origensReg) {
+  const chave = chaveHistorico(origemReg, item.destino);
+  chaves.push(chave);
   // Mesma campanha = mesmo prazo, campanha registrada ainda vigente ou (sem
   // prazo) registrada ha poucos dias. `campanhaNova:true` (escolha explicita no
   // gestor) pula a dedup para o caso raro de duas campanhas do mesmo par no
@@ -2516,31 +2535,34 @@ async function atualizarHistoricoTransferencia(item) {
 
   if (existente) {
     if (!Array.isArray(existente.ofertaIds)) existente.ofertaIds = [];
+    if (todosReg) (todosReg.ofertaIds || []).forEach((oid) => { if (!existente.ofertaIds.includes(oid)) existente.ofertaIds.push(oid); });
     if (!existente.ofertaIds.includes(item.id)) existente.ofertaIds.push(item.id);
     // Prorrogacao: o reenvio trouxe prazo mais longo que o registrado.
     if (prazoIso && (!existente.prazo || prazoIso > existente.prazo)) existente.prazo = prazoIso;
     const bonusNovo = Number(item.bonusMax);
     if (!isNaN(bonusNovo) && bonusNovo > Number(existente.bonusMax || 0)) existente.bonusMax = bonusNovo;
   } else {
+    const prazoTodos = todosReg && todosReg.prazo ? todosReg.prazo : '';
     items.unshift({
       chave,
-      origem: item.origem,
+      origem: origemReg,
       destino: item.destino,
-      origemTipo: item.origem === 'Todos' ? 'todos' : 'especifica',
-      bonusMax: Number(item.bonusMax),
+      origemTipo: origemReg === 'Todos' ? 'todos' : 'especifica',
+      bonusMax: todosReg ? Math.max(Number(item.bonusMax), Number(todosReg.bonusMax) || 0) : Number(item.bonusMax),
       tipoBonus: 'percentual_direto',
-      dataInicio,
-      prazo: prazoIso || '',
-      ofertaIds: [item.id],
-      observacao: '',
+      dataInicio: (todosReg && todosReg.dataInicio) || dataInicio,
+      prazo: (prazoTodos && (!prazoIso || prazoTodos > prazoIso)) ? prazoTodos : (prazoIso || ''),
+      ofertaIds: todosReg ? [...new Set([...(todosReg.ofertaIds || []), item.id])] : [item.id],
+      observacao: origensReg.length > 1 ? `Campanha de bancos selecionados (${origensReg.length} bancos)` : '',
     });
+  }
   }
 
   await ghPutJson(
     HISTORICO_TRANSFERENCIAS_PATH,
     { geradoEm: new Date().toISOString(), descricao: hist.data.descricao, regrasDedup: hist.data.regrasDedup, items },
     hist.sha,
-    `chore: atualiza historico de transferencias (${chave})`
+    `chore: atualiza historico de transferencias (${origensReg.length > 1 ? origensReg.length + ' bancos → ' + normalizarChaveHist(item.destino) + (todosReg ? ', substitui ' + todosReg.chave : '') : chaves.join(', ')})`
   );
 }
 // ── REENVIO x CAMPANHA NOVA (transferencias) ─────────────────────────────────
@@ -3177,7 +3199,7 @@ app.post('/ofertas/publicar', async (req, res) => {
     // LATAM Pass 25%, 22/10/2026). Campos escolhidos na tela valem; o que
     // faltar e deduzido do texto.
     if (item.categoria === 'transferencia') {
-      ['origem', 'destino', 'bonusMax', 'semHistorico', 'campanhaNova'].forEach((k) => {
+      ['origem', 'origens', 'destino', 'bonusMax', 'semHistorico', 'campanhaNova'].forEach((k) => {
         if (oferta[k] !== undefined && oferta[k] !== null && oferta[k] !== '') item[k] = oferta[k];
       });
       Object.assign(item, completarTransferencia(item));
@@ -7093,6 +7115,8 @@ async function verificarAlertasTransferencia(item) {
   const { alertas } = await lerAlertasConcierge();
   const destinoItem = normalizarChaveHist(item.destino);
   const origemItem  = normalizarChaveHist(item.origem);
+  // "Bancos selecionados": o alerta casa com qualquer banco da lista.
+  const origensItem = transfHist.origensDaOferta(item).map(normalizarChaveHist);
   const bonus = Number(item.bonusMax);
 
   const atingidos = alertas.filter((al) => {
@@ -7100,7 +7124,7 @@ async function verificarAlertasTransferencia(item) {
     if (normalizarChaveHist(al.destino) !== destinoItem) return false;
     const origemAl = normalizarChaveHist(al.origem);
     // Alerta sem origem = qualquer origem. Oferta com origem "Todos" vale para todas.
-    const origemBate = !origemAl || origemAl === 'todos' || origemItem === 'todos' || origemAl === origemItem;
+    const origemBate = !origemAl || origemAl === 'todos' || origemItem === 'todos' || origensItem.includes(origemAl);
     if (!origemBate) return false;
     return bonus >= Number(al.bonusMin);
   });
@@ -7108,7 +7132,8 @@ async function verificarAlertasTransferencia(item) {
   for (const al of atingidos) {
     try {
       const r = await dispararAlertaConcierge(al.id, {
-        origem: item.origem, destino: item.destino,
+        // Lista de bancos: a mensagem mostra o banco que o alerta pediu.
+        origem: (item.origem === 'Bancos selecionados' && al.origem) ? al.origem : item.origem, destino: item.destino,
         bonus, prazo: item.prazo || '', titulo: item.titulo || ''
       });
       if (!r.ok) console.error('[Alertas concierge] Não enviado:', al.id, r.erro);
@@ -7174,14 +7199,15 @@ async function checarOportunidadeAtual(al) {
       if (!item.destino || item.bonusMax === undefined || item.bonusMax === null || item.bonusMax === '') continue;
       if (normalizarChaveHist(item.destino) !== destinoAl) continue;
       const origemItem = normalizarChaveHist(item.origem);
-      const origemBate = !origemAl || origemAl === 'todos' || origemItem === 'todos' || origemAl === origemItem;
+      const origensItem = transfHist.origensDaOferta(item).map(normalizarChaveHist);
+      const origemBate = !origemAl || origemAl === 'todos' || origemItem === 'todos' || origensItem.includes(origemAl);
       if (!origemBate) continue;
       if (Number(item.bonusMax) < Number(al.bonusMin)) continue;
       // Vigência: prazo ainda no futuro; sem prazo, aceita se publicada nos últimos 7 dias
       const prazoIso = prazoParaIso(item.prazo);
       const vigente = prazoIso ? prazoIso >= hoje : (item.publicadoEm || '').slice(0, 10) >= limite7d;
       if (!vigente) continue;
-      return { origem: item.origem, destino: item.destino, bonus: Number(item.bonusMax), prazo: item.prazo || '', titulo: item.titulo || '' };
+      return { origem: (item.origem === 'Bancos selecionados' && al.origem) ? al.origem : item.origem, destino: item.destino, bonus: Number(item.bonusMax), prazo: item.prazo || '', titulo: item.titulo || '' };
     }
     return null;
   }

@@ -14,7 +14,12 @@
 // COPIA ESPELHADA: gestor-cdv/index.html (deduzirTransferencia e listas
 // ORIGEM_/DESTINO_TRANSFERENCIA_OPTIONS). Ajuste nos DOIS.
 
-const ORIGEM_TRANSFERENCIA_OPTIONS = ['Todos','Alloyal','Azul Fidelidade','Banco do Brasil','BRB','BTG','BV','C6','Caixa','Esfera','Inter','Itaú','LATAM Pass','Livelo','Nubank','Porto Seguro','Premmia','Revolut','Sicoob','Sicredi','Smiles','Unicred','XP'];
+// 'Todos' e 'Bancos selecionados' sao especiais e ficam no topo; o resto em
+// ordem alfabetica. 'Bancos selecionados' (29/10/2026) = campanha que vale para
+// uma LISTA de bancos (nao um so, nao todos) — a lista vai em `origens` e o
+// historico ganha um registro por banco (oferta 17dsmmp, 15 bancos -> LATAM).
+const ORIGEM_ESPECIAIS = ['Todos', 'Bancos selecionados'];
+const ORIGEM_TRANSFERENCIA_OPTIONS = ['Todos','Bancos selecionados','Alloyal','Azul Fidelidade','Banco do Brasil','Banco do Nordeste','Banco Industrial','Banco Mercantil','Banestes','Banpará','Banrisul','BRB','BTG','BV','C6','Caixa','Credicard','Esfera','Inter','Itaú','LATAM Pass','Livelo','Nubank','PicPay','Porto Seguro','Premmia','Revolut','Sicoob','Sicredi','Sisprime','Smiles','Unicred','XP'];
 const DESTINO_TRANSFERENCIA_OPTIONS = ['AAdvantage','ALL Accor','Azul Fidelidade','Connect Miles','Flying Blue','Hilton Honors','Iberia Plus','IHG','LATAM Pass','Livelo','Smiles','TAP Miles&Go'];
 
 const ALIAS_PROGRAMAS = {
@@ -34,6 +39,10 @@ const ALIAS_PROGRAMAS = {
   'Alloyal': ['alloyal'],
   'Banco do Brasil': ['banco do brasil','bb empresas','bb'],
   'BV': ['banco bv','bv'],
+  'Banco do Nordeste': ['banco do nordeste','bnb'],
+  'Banco Mercantil': ['banco mercantil','mercantil'],
+  'Banpará': ['banpara'],
+  'PicPay': ['picpay','pic pay'],
 };
 
 function normalizarBusca(s) {
@@ -55,7 +64,7 @@ function posPrograma(txt, op) {
 function matchPosicional(txt, opcoes, excluir) {
   let melhor = '', pos = Infinity;
   (opcoes || []).forEach((op) => {
-    if (!op || op === 'Todos' || op === excluir) return;
+    if (!op || ORIGEM_ESPECIAIS.includes(op) || op === excluir) return;
     const i = posPrograma(txt, op);
     if (i < pos) { pos = i; melhor = op; }
   });
@@ -73,6 +82,16 @@ function destinoPorPreposicao(txt) {
     });
   });
   return melhor;
+}
+
+// Linhas de condicao que NEGAM um banco ("pontos do cartao X nao sao validos",
+// "exceto Y") nao entram na lista de bancos da campanha.
+const RE_NEGACAO = /(^|[^a-z])(nao|exceto|excluid|exclusao|fora da campanha)([^a-z]|$)/;
+
+// Todas as origens da lista citadas no texto, na ordem da lista (alfabetica).
+function origensCitadas(txt, excluir) {
+  return ORIGEM_TRANSFERENCIA_OPTIONS.filter((op) =>
+    !ORIGEM_ESPECIAIS.includes(op) && op !== excluir && posPrograma(txt, op) !== Infinity);
 }
 
 function deduzirTransferencia(o) {
@@ -95,14 +114,28 @@ function deduzirTransferencia(o) {
     'todos os parceiros','bancos participantes','parceiros bancarios','bancos selecionados',
     'cartoes de credito e programas','bancos e programas','diversos bancos','principais bancos',
     'varios parceiros','diversos parceiros'];
+  // "todos os bancos" escrito com todas as letras continua sendo Todos, mesmo
+  // que o texto cite alguns bancos como exemplo.
+  const gatilhosTodosLiteral = ['todos os bancos','quase todos os parceiros','todos os parceiros'];
+  // Condicoes (restricoes) costumam trazer a lista de bancos participantes.
+  const condicoes = (Array.isArray(o.restricoes) ? o.restricoes : [])
+    .map(normalizarBusca).filter((l) => l && !RE_NEGACAO.test(l)).join(' \n ');
   let origem = '';
-  if (gatilhosTodos.some((g) => texto.indexOf(g) !== -1)) {
-    origem = 'Todos';
-  } else {
+  let origens = [];
+  let ampla = gatilhosTodos.some((g) => texto.indexOf(g) !== -1);
+  if (!ampla) {
     origem = matchPosicional(titulo, ORIGEM_TRANSFERENCIA_OPTIONS, destino)
           || matchPosicional(programa, ORIGEM_TRANSFERENCIA_OPTIONS, destino)
           || matchPosicional(corpo, ORIGEM_TRANSFERENCIA_OPTIONS, destino);
-    if (!origem && link.indexOf('/bancos-') !== -1) origem = 'Todos';
+    if (!origem && link.indexOf('/bancos-') !== -1) ampla = true;
+  }
+  if (ampla) {
+    origem = 'Todos';
+    const literal = gatilhosTodosLiteral.some((g) => texto.indexOf(g) !== -1);
+    const lista = origensCitadas([texto, condicoes].join(' \n '), destino);
+    // Dois ou mais bancos nomeados numa campanha "de varios bancos" = lista
+    // fechada, nao todos.
+    if (!literal && lista.length >= 2) { origem = 'Bancos selecionados'; origens = lista; }
   }
 
   let bonusMax = null;
@@ -114,7 +147,7 @@ function deduzirTransferencia(o) {
       if (nums.length) bonusMax = Math.max.apply(null, nums);
     }
   }
-  return { origem, destino, bonusMax, combo };
+  return { origem, origens, destino, bonusMax, combo };
 }
 
 function vazio(v) { return v === undefined || v === null || v === ''; }
@@ -129,12 +162,17 @@ function completarTransferencia(item) {
   if (out.semHistorico === undefined && g.combo) out.semHistorico = true;
   if (out.semHistorico) return out;
   if (vazio(out.origem) && g.origem) out.origem = g.origem;
+  // Lista de bancos: so completa quando a escolha e "Bancos selecionados" e a
+  // tela nao mandou lista (bot do Telegram, oferta sem edicao).
+  if (out.origem === 'Bancos selecionados' && !(Array.isArray(out.origens) && out.origens.length)
+      && g.origem === 'Bancos selecionados') out.origens = g.origens.slice();
   if (vazio(out.destino) && g.destino) out.destino = g.destino;
   if (vazio(out.bonusMax) && g.bonusMax != null) out.bonusMax = g.bonusMax;
   return out;
 }
 
 module.exports = {
+  ORIGEM_ESPECIAIS,
   ORIGEM_TRANSFERENCIA_OPTIONS,
   DESTINO_TRANSFERENCIA_OPTIONS,
   deduzirTransferencia,

@@ -73,6 +73,17 @@ function periodoHistorico(h) {
   return ini ? `${ini} a ${fim}` : `até ${fim}`;
 }
 
+// Origens que viram registro no historico. "Bancos selecionados" = um registro
+// por banco da lista (`origens`); qualquer outra origem = ela mesma.
+function origensDaOferta(c) {
+  if (!c || !c.origem) return [];
+  if (c.origem !== 'Bancos selecionados') return [c.origem];
+  const vistos = {};
+  return (Array.isArray(c.origens) ? c.origens : [])
+    .map((s) => String(s || '').trim())
+    .filter((s) => s && s !== 'Todos' && s !== 'Bancos selecionados' && !vistos[s] && (vistos[s] = 1));
+}
+
 // Situacao de uma oferta pendente frente ao historico e a propria fila.
 // tipo: reenvio | duplicada_fila | nova | indefinida. null = nao se aplica.
 function situacaoHistoricoTransferencia(o, histItems, pendentes) {
@@ -82,6 +93,7 @@ function situacaoHistoricoTransferencia(o, histItems, pendentes) {
   if (!c.origem || !c.destino) {
     return { tipo: 'indefinida', texto: '❔ Não identifiquei origem/destino — confira no histórico antes de aprovar' };
   }
+  if (c.origem === 'Bancos selecionados') return situacaoVariasOrigens(o, c, histItems, pendentes);
   const chave = chaveHistorico(c.origem, c.destino);
   const prazoIso = prazoParaIso(c.prazo);
   const par = `${c.origem} → ${c.destino}`;
@@ -126,7 +138,68 @@ function situacaoHistoricoTransferencia(o, histItems, pendentes) {
   };
 }
 
+// "Bancos selecionados": reenvio/duplicada so quando TODOS os bancos da lista
+// ja estao registrados (ou na fila) para essa campanha; senao e nova e o texto
+// diz quais bancos ja estavam.
+function situacaoVariasOrigens(o, c, histItems, pendentes) {
+  const lista = origensDaOferta(c);
+  if (!lista.length) {
+    return { tipo: 'indefinida', texto: '❔ Origem "Bancos selecionados" sem nenhum banco marcado — marque os bancos antes de aprovar' };
+  }
+  const prazoIso = prazoParaIso(c.prazo);
+  const par = `${lista.length} banco${lista.length === 1 ? '' : 's'} → ${c.destino}`;
+  const base = { chave: chaveHistorico('Bancos selecionados', c.destino), origem: c.origem, origens: lista, destino: c.destino };
+  const resumoReg = (h) => ({ dataInicio: h.dataInicio || '', prazo: h.prazo || '', bonusMax: h.bonusMax, ofertaIds: h.ofertaIds || [] });
+
+  const noHist = lista.map((b) => ({ b, m: registroMesmaCampanha(histItems, chaveHistorico(b, c.destino), prazoIso) }));
+  const ja = noHist.filter((x) => x.m);
+  // A mesma campanha registrada antes como "Todos → destino" (rotulo antigo,
+  // ex. fqbp5g) cobre todos os bancos: e reenvio, e a aprovacao troca aquele
+  // registro pelos registros por banco.
+  const todos = registroMesmaCampanha(histItems, chaveHistorico('Todos', c.destino), prazoIso);
+  if (todos && !c.campanhaNova) {
+    const r = todos.registro;
+    return {
+      ...base, tipo: 'reenvio', motivo: todos.motivo, registro: resumoReg(r), substituiTodos: true,
+      texto: `🔁 Reenvio: a campanha já está no histórico como Todos → ${c.destino} (${periodoHistorico(r)}, ${r.bonusMax}%) — ${todos.motivo}. Aprovar troca esse registro por um para cada um dos ${par}.`,
+    };
+  }
+  if (ja.length === lista.length) {
+    const r = ja[0].m.registro;
+    return {
+      ...base, tipo: 'reenvio', motivo: ja[0].m.motivo, registro: resumoReg(r),
+      texto: `🔁 Reenvio: ${par} já estão no histórico (${periodoHistorico(r)}, ${r.bonusMax}%) — ${ja[0].m.motivo}. Aprovar não cria registro novo.`,
+    };
+  }
+
+  const outros = [];
+  (pendentes || [])
+    .filter((p) => p && p.id !== o.id && p.categoria === 'transferencia' && (p.publicadoEm || '') < (o.publicadoEm || ''))
+    .forEach((p) => {
+      const cp = completarTransferencia(p);
+      if (cp.semHistorico || !cp.destino) return;
+      origensDaOferta(cp).forEach((b) => outros.push({ id: p.id, chave: chaveHistorico(b, cp.destino),
+        prazo: prazoParaIso(cp.prazo) || '', dataInicio: (p.publicadoEm || '').slice(0, 10), bonusMax: cp.bonusMax }));
+    });
+  const naFila = lista.map((b) => registroMesmaCampanha(outros, chaveHistorico(b, c.destino), prazoIso));
+  if (naFila.every(Boolean)) {
+    return {
+      ...base, tipo: 'duplicada_fila', motivo: naFila[0].motivo, outroId: naFila[0].registro.id,
+      texto: `🔁 Duplicada na fila: mesma campanha ${par} da oferta #${naFila[0].registro.id}, ainda pendente.`,
+    };
+  }
+
+  const novos = noHist.filter((x) => !x.m).map((x) => x.b);
+  return {
+    ...base, tipo: 'nova', jaNoHistorico: ja.map((x) => x.b),
+    texto: ja.length
+      ? `🆕 Campanha nova: ${par}. Entram no histórico: ${novos.join(', ')}. Já registrados nesta campanha: ${ja.map((x) => x.b).join(', ')}.`
+      : `🆕 Campanha nova: ${par} (${lista.join(', ')}). Cada banco ganha seu registro no histórico.`,
+  };
+}
+
 module.exports = {
+  origensDaOferta,
   normalizarChaveHist,
   chaveHistorico,
   prazoParaIso,
