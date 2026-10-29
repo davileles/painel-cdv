@@ -4763,6 +4763,42 @@ app.get('/hubla/assinaturas/status', async (req, res) => {
   }
 });
 
+// ── Grupos × acesso: quem está nos grupos do CDV sem acesso ativo na Hubla ──
+// SÓ RELATÓRIO (ninguém é removido). Lê grupos e participantes no baileys-server
+// (cache dele, sem forçar consulta ao WhatsApp), cruza pelo telefone com
+// hubla-assinaturas.json e os clientes do concierge. Cache de 10 min. X-CDV-Op.
+const hublaAuditoria = require('./hubla-grupos-auditoria');
+let _audCache = null, _audEmVoo = null;
+async function montarAuditoriaGrupos() {
+  const rg = await fetch(`${BAILEYS_URL}/grupos-gestao/grupos?operacao=cdv`, { timeout: 60000 });
+  const dg = await rg.json().catch(() => ({}));
+  if (!rg.ok || !dg.ok) throw new Error('baileys-server: ' + (dg.erro || ('HTTP ' + rg.status)));
+  const grupos = [];
+  for (const g of (dg.grupos || [])) {
+    const r = await fetch(`${BAILEYS_URL}/grupos-gestao/membros?jid=${encodeURIComponent(g.jid)}`, { timeout: 60000 });
+    const d = await r.json().catch(() => ({}));
+    grupos.push({ jid: g.jid, nome: g.nome, membros: d.ok ? (d.membros || []) : [] });
+    await new Promise(res => setTimeout(res, 600));
+  }
+  const { data: hubla } = await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {});
+  let clientes = [];
+  try { clientes = (await getConciergeFile('clientes.json')).content || []; } catch (e) { /* sem concierge, segue */ }
+  return hublaAuditoria.auditar({ hubla, grupos, clientesConcierge: clientes });
+}
+app.get('/hubla/grupos-auditoria', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const forcar = req.query.forcar === '1';
+    if (!forcar && _audCache && Date.now() - _audCache.em < 10 * 60 * 1000) return res.json(Object.assign({ ok: true, cache: true }, _audCache.dados));
+    if (!_audEmVoo) _audEmVoo = montarAuditoriaGrupos().finally(() => { _audEmVoo = null; });
+    const dados = await _audEmVoo;
+    _audCache = { em: Date.now(), dados };
+    res.json(Object.assign({ ok: true }, dados));
+  } catch (err) {
+    res.status(502).json({ ok: false, erro: err.message });
+  }
+});
+
 // Andamento da sincronização, sem dado pessoal (aberto, para diagnóstico).
 app.get('/hubla/assinaturas/progresso', (req, res) => {
   const p = hublaAssinaturas.progresso;

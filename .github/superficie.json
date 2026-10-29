@@ -121,7 +121,8 @@
         "app.post('/webhook/hubla-assinaturas'",
         "app.get('/hubla/assinaturas'",
         "app.post('/hubla/assinaturas/sincronizar'",
-        "async function aplicarAcessoMembroHubla("
+        "async function aplicarAcessoMembroHubla(",
+        "app.get('/hubla/grupos-auditoria'"
       ]
     },
     "index.html": {
@@ -333,6 +334,13 @@
         "function criarHublaAssinaturas(",
         "function ofertaLiberaPainel(",
         "const OFERTAS_PAINEL = ["
+      ]
+    },
+    "hubla-grupos-auditoria.js": {
+      "minLinhas": 80,
+      "obrigatorio": [
+        "function auditar(",
+        "const GRUPOS_IGNORADOS = ["
       ]
     }
   }
