@@ -389,14 +389,24 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     progresso.etapa = 'membros';
     const acessos = {};
     const tentativas = {};
-    const variantes = ['', 'types=buyer', 'types=free', 'types=partner', 'types=seller',
-      'status=active', 'status=deactivate', 'types=buyer&status=deactivate', 'types=free&status=deactivate'];
-    for (const v of variantes) {
+    // O `id` público do produto passou a ser o da oferta principal; a rota de
+    // membros pode esperar o id interno (`legacyId`). Tenta os dois.
+    const refs = [PRODUTO_PAINEL_ID];
+    try {
+      const produtos = await paginar(p => api('POST', '/v1/products/list', { page: p, pageSize: 100 }), 20);
+      const pr = produtos.find(x => x && (x.id === PRODUTO_PAINEL_ID || norm(x.name) === norm(PRODUTO_PAINEL_NOME)));
+      if (pr && pr.legacyId && !refs.includes(pr.legacyId)) refs.unshift(pr.legacyId);
+      if (pr && pr.id && !refs.includes(pr.id)) refs.push(pr.id);
+    } catch (err) { tentativas.produtos = 'erro: ' + err.message.slice(0, 80); }
+    const variantes = [];
+    for (const ref of refs) for (const f of ['', 'status=active', 'status=deactivate']) variantes.push({ ref, f });
+    for (const { ref, f } of variantes) {
+      const rotulo = (ref === PRODUTO_PAINEL_ID ? 'id' : 'legacyId') + (f ? ' ' + f : '');
       let lista = [];
       try {
-        lista = await paginar(p => api('GET', `/v1/${PRODUTO_PAINEL_ID}/members?page=${p}&pageSize=200${v ? '&' + v : ''}`), 100);
-      } catch (err) { tentativas[v || 'sem filtro'] = 'erro: ' + err.message.slice(0, 80); continue; }
-      tentativas[v || 'sem filtro'] = lista.length;
+        lista = await paginar(p => api('GET', `/v1/${encodeURIComponent(ref)}/members?page=${p}&pageSize=200${f ? '&' + f : ''}`), 100);
+      } catch (err) { tentativas[rotulo] = 'erro: ' + err.message.slice(0, 120); continue; }
+      tentativas[rotulo] = lista.length;
       for (const m of lista) {
         const email = String(m.email || '').toLowerCase().trim();
         if (!email) continue;
