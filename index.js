@@ -49,6 +49,8 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'milhas.json',
   // Pedidos de Planejamento Estratégico (e-mail, gastos, saldos, viagem): repo privado.
   'consultorias.json',
+  // Assinaturas da Hubla (nome, e-mail, telefone, início/fim): repo privado.
+  'hubla-assinaturas.json',
 ]);
 // Arquivos que saíram do painel-cdv: na 1ª leitura sem cópia no repo de dados,
 // o proxy copia a versão do repo público para lá (uma vez por arquivo).
@@ -4557,6 +4559,14 @@ app.post('/webhook/hubla-membros', async (req, res) => {
 
   if (!email) return res.status(400).json({ ok: false, erro: 'E-mail não encontrado no payload' });
 
+  const r = await aplicarAcessoMembroHubla({ type, isMemberAdded, isMemberRemoved, email, nome, produto, assinaturaId, event });
+  return res.status(r.status).json(r.body);
+});
+
+// Libera/retira o acesso ao painel em membros.json a partir de um evento de
+// acesso da Hubla. Usada pelo webhook antigo (/webhook/hubla-membros) e pelo
+// novo (/webhook/hubla-assinaturas, que só chama para ofertas que liberam o painel).
+async function aplicarAcessoMembroHubla({ type, isMemberAdded, isMemberRemoved, email, nome, produto, assinaturaId, event }) {
   let acao = isMemberAdded ? 'adicionado' : 'removido';
   for (let tentativa = 1; tentativa <= 4; tentativa++) {
     try {
@@ -4599,7 +4609,7 @@ app.post('/webhook/hubla-membros', async (req, res) => {
             // Remoção de uma assinatura que não é a(s) ativa(s) registrada(s)
             // (ex.: a antiga expirou depois de o aluno assinar de novo): ignora.
             console.log(`[hubla-membros] remoção ignorada: ${email} assinatura ${assinaturaId} não está em [${subs.join(', ')}]`);
-            return res.json({ ok: true, type, email, acao: 'ignorado', motivo: 'assinatura_nao_ativa' });
+            return { status: 200, body: { ok: true, type, email, acao: 'ignorado', motivo: 'assinatura_nao_ativa' } };
           }
           // Membro legado (sem assinaturas registradas): ignora a remoção de uma
           // assinatura cuja última ativação é anterior ao início do acesso atual
@@ -4615,7 +4625,7 @@ app.post('/webhook/hubla-membros', async (req, res) => {
             const UM_DIA = 24 * 60 * 60 * 1000;
             if (refAcesso && ultimaAtivacao && (new Date(ultimaAtivacao).getTime() < new Date(refAcesso).getTime() - UM_DIA)) {
               console.log(`[hubla-membros] remoção ignorada: ${email} assinatura ${assinaturaId} (ativada ${ultimaAtivacao}) é anterior ao acesso atual (${refAcesso})`);
-              return res.json({ ok: true, type, email, acao: 'ignorado', motivo: 'assinatura_anterior_ao_acesso' });
+              return { status: 200, body: { ok: true, type, email, acao: 'ignorado', motivo: 'assinatura_anterior_ao_acesso' } };
             }
           }
           const restantes = assinaturaId ? subs.filter(s => s !== assinaturaId) : [];
@@ -4635,7 +4645,7 @@ app.post('/webhook/hubla-membros', async (req, res) => {
       }
 
       await ghPutJson(MEMBROS_PATH, { atualizadoEm: agora, total: membros.filter(m => m.status === 'ativo').length, membros }, dados.sha, 'webhook: atualiza membros');
-      return res.json({ ok: true, type, email, acao });
+      return { status: 200, body: { ok: true, type, email, acao } };
 
     } catch (err) {
       const isShaConflict = err.message && err.message.includes('but expected');
@@ -4645,10 +4655,147 @@ app.post('/webhook/hubla-membros', async (req, res) => {
         continue;
       }
       console.error('[webhook-hubla-membros]', err.message);
-      return res.status(500).json({ ok: false, erro: err.message });
+      return { status: 500, body: { ok: false, erro: err.message } };
     }
   }
+  return { status: 500, body: { ok: false, erro: 'falha ao gravar membros.json' } };
+}
+
+
+// ── Webhook Hubla v2: assinaturas + acesso (desde 29/10/2026) ────────────────
+// Uma regra só na Hubla (todos os produtos, todas as ofertas) com os eventos
+// subscription.*, customer.member_added/removed e invoice.payment_succeeded/refunded.
+// - Toda assinatura vai para hubla-assinaturas.json (início, fim, status), dê ou
+//   não acesso ao painel.
+// - Acesso ao painel (membros.json) só para as ofertas de OFERTAS_PAINEL em
+//   hubla-assinaturas.js — a decisão saiu dos filtros da Hubla e veio para cá.
+const hublaAss = require('./hubla-assinaturas');
+const hublaAssinaturas = hublaAss.criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch });
+const _hublaIdempotencia = new Map(); // x-hubla-idempotency → quando (evita reprocessar reenvio)
+let _hublaAcessoFila = Promise.resolve(); // um evento de acesso por vez (membros.json)
+
+app.post('/webhook/hubla-assinaturas', async (req, res) => {
+  const tokenRecebido = req.headers['x-hubla-token'] || req.headers['authorization'];
+  if (HUBLA_TOKEN && tokenRecebido !== HUBLA_TOKEN) {
+    return res.status(401).json({ ok: false, erro: 'Token inválido' });
+  }
+  const { type, event } = req.body || {};
+  if (!type || !event) return res.status(400).json({ ok: false, erro: 'Payload inválido' });
+
+  const idem = String(req.headers['x-hubla-idempotency'] || '');
+  if (idem && _hublaIdempotencia.has(idem)) return res.json({ ok: true, duplicado: true, type });
+
+  const isMemberAdded   = type === 'customer.member_added'   || type === 'member.granted';
+  const isMemberRemoved = type === 'customer.member_removed' || type === 'member.revoked';
+  const user   = event.user || event.subscription?.payer || event.invoice?.payer || event.member || event.customer || {};
+  const email  = (user.email || '').toLowerCase().trim();
+  const nome   = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.fullName || user.name || email;
+  const produto = event.products?.[0] || event.product || {};
+  const po = hublaAss.produtoOfertaDoEvento(event);
+  const liberaPainel = hublaAss.ofertaLiberaPainel(po.produtoId, po.produtoNome, po.ofertaNome);
+  const assinaturaId = String(
+    event.subscription?.id || event.subscriptionId || event.member?.subscriptionId || event.invoice?.subscriptionId || ''
+  ).trim();
+
+  registrarWebhookHubla({ recebidoEm: new Date().toISOString(), type, email, assinaturaId, liberaPainel, event });
+
+  const resposta = { ok: true, type, email, oferta: po.ofertaNome, liberaPainel };
+
+  // Acesso ao painel primeiro (é o que o membro sente); a gravação da assinatura
+  // vai em segundo plano para a Hubla receber o 200 rápido (ela manda vários
+  // eventos de uma vez numa compra). Falhou? A conferência diária pela API corrige.
+  if ((isMemberAdded || isMemberRemoved) && email) {
+    if (!liberaPainel) {
+      resposta.acesso = 'ignorado_oferta_sem_painel';
+    } else {
+      const tarefa = _hublaAcessoFila.then(() => aplicarAcessoMembroHubla({
+        type, isMemberAdded, isMemberRemoved, email, nome, produto, assinaturaId, event,
+      }));
+      _hublaAcessoFila = tarefa.catch(() => {});
+      const r = await tarefa;
+      if (r.status !== 200) return res.status(r.status).json(r.body);
+      resposta.acesso = r.body.acao;
+      if (r.body.motivo) resposta.motivo = r.body.motivo;
+    }
+  }
+
+  hublaAssinaturas.registrarEvento(type, event)
+    .catch(err => console.error('[hubla-assinaturas] registrar', type, assinaturaId, err.message));
+
+  if (idem) {
+    _hublaIdempotencia.set(idem, Date.now());
+    if (_hublaIdempotencia.size > 2000) {
+      for (const k of [..._hublaIdempotencia.keys()].slice(0, 500)) _hublaIdempotencia.delete(k);
+    }
+  }
+  return res.json(resposta);
 });
+
+// Lista as assinaturas (gestor-cdv / relatórios). X-CDV-Op.
+// ?situacao=vigente,teste,encerrada,pendente  ?painel=1  ?email=
+app.get('/hubla/assinaturas', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const r = await hublaAssinaturas.listar({ situacao: req.query.situacao, painel: req.query.painel, email: req.query.email });
+    res.json(Object.assign({ ok: true }, r));
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// Estado da integração e da última sincronização (sem dados pessoais). X-CDV-Op.
+app.get('/hubla/assinaturas/status', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const d = await hublaAssinaturas.ler();
+    res.json({
+      ok: true,
+      chaveApi: hublaAssinaturas.temChaveApi(),
+      ofertasPainel: hublaAss.OFERTAS_PAINEL,
+      totalAssinaturas: Object.keys(d.assinaturas).length,
+      atualizadoEm: d.atualizadoEm,
+      sincronizacao: d.sincronizacao,
+      progresso: hublaAssinaturas.progresso,
+    });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// Busca na API da Hubla todas as assinaturas (passadas e vigentes) e os acessos
+// atuais do produto do painel. Roda em segundo plano; acompanhar em /status. X-CDV-Op.
+async function hublaSincronizarComMembros() {
+  let ativos = null;
+  try {
+    const { data } = await ghGetJson(MEMBROS_PATH, null);
+    if (data && Array.isArray(data.membros)) {
+      ativos = data.membros.filter(m => m && m.status === 'ativo').map(m => String(m.email || '').toLowerCase().trim());
+    }
+  } catch (e) { /* relatório sai sem a comparação */ }
+  const r = await hublaAssinaturas.sincronizar({ membrosAtivos: ativos });
+  console.log('[hubla-sync]', r.ok ? JSON.stringify(r.contagem) : r.erro);
+  return r;
+}
+app.post('/hubla/assinaturas/sincronizar', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  if (!hublaAssinaturas.temChaveApi()) return res.status(503).json({ ok: false, erro: 'HUBLA_API_KEY não configurada no Railway' });
+  if (hublaAssinaturas.progresso.rodando) return res.json({ ok: true, jaRodando: true, progresso: hublaAssinaturas.progresso });
+  hublaSincronizarComMembros().catch(e => console.error('[hubla-sync]', e.message));
+  res.json({ ok: true, iniciado: true });
+});
+
+// Conferência diária às 04:30 (São Paulo): corrige webhook perdido e atualiza
+// as datas de fim. Uma vez por dia por processo.
+let _hublaSyncDia = null;
+setInterval(() => {
+  if (!hublaAssinaturas.temChaveApi() || hublaAssinaturas.progresso.rodando) return;
+  const agora = new Date();
+  const hoje = agora.toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
+  const hm = agora.toLocaleTimeString('en-GB', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' });
+  if (_hublaSyncDia === hoje || hm < '04:30' || hm > '06:00') return;
+  _hublaSyncDia = hoje;
+  hublaSincronizarComMembros().catch(e => console.error('[hubla-sync]', e.message));
+}, 10 * 60 * 1000);
 
 // ── Perfis: listar ────────────────────────────────────────────────────────────
 app.get('/perfis/listar', async (req, res) => {

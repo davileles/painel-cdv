@@ -117,7 +117,11 @@
         "function assinarSessaoConcierge(",
         "function registroMesmaCampanha(",
         "function sessaoConciergeValida(",
-        "function situacaoHistoricoTransferencia("
+        "function situacaoHistoricoTransferencia(",
+        "app.post('/webhook/hubla-assinaturas'",
+        "app.get('/hubla/assinaturas'",
+        "app.post('/hubla/assinaturas/sincronizar'",
+        "async function aplicarAcessoMembroHubla("
       ]
     },
     "index.html": {
@@ -321,6 +325,14 @@
         "async function fetchDirect",
         "async function main",
         "function norm"
+      ]
+    },
+    "hubla-assinaturas.js": {
+      "minLinhas": 250,
+      "obrigatorio": [
+        "function criarHublaAssinaturas(",
+        "function ofertaLiberaPainel(",
+        "const OFERTAS_PAINEL = ["
       ]
     }
   }
