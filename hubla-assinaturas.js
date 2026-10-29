@@ -88,8 +88,13 @@ function calcularSituacao(a, agora = Date.now()) {
   let fim = null;
   let situacao;
   if (st === 'active' || st === 'trial') {
-    fim = a.desativaEm || a.proximaCobranca
-      || (Number(a.creditos) > 0 ? new Date(agora + Number(a.creditos) * DIA).toISOString() : null);
+    // A Hubla mantém `deactivateEta` de ciclos antigos em assinaturas renovadas:
+    // só vale se ainda estiver no futuro. O fim do período pago é a próxima
+    // cobrança (bate com os créditos: 1 crédito = 1 dia).
+    const desativaFutura = a.desativaEm && new Date(a.desativaEm).getTime() > agora ? a.desativaEm : null;
+    const porCreditos = Number(a.creditos) > 0 ? new Date(agora + Number(a.creditos) * DIA).toISOString() : null;
+    fim = a.proximaCobranca || desativaFutura || porCreditos;
+    if (desativaFutura && fim && new Date(desativaFutura) < new Date(fim)) fim = desativaFutura;
     situacao = (st === 'trial' || a.teste) ? 'teste' : 'vigente';
     if (fim && new Date(fim).getTime() < agora - DIA && !a.renovacaoAutomatica) situacao = 'encerrada';
   } else if (st === 'incomplete') {
