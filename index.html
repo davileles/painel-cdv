@@ -2370,15 +2370,25 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   .rot-header{margin-bottom:14px}
   .rot-title{font-size:13px;font-weight:800;color:var(--cdv-coral);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
   .rot-sub{font-size:12px;color:var(--muted);line-height:1.6}
-  .rot-meus{display:none;margin-bottom:12px}
+  .rot-cols{flex:1;min-height:0;display:flex;gap:20px;align-items:stretch}
+  .rot-main{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column}
+  .rot-meus{display:none;flex:0 0 260px;min-height:0;overflow-y:auto;padding-right:2px}
   .rot-meus-title{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-  .rot-meus-cards{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .rot-meus-cards{display:flex;flex-direction:column;gap:8px}
   .rot-meus-card{flex:0 0 auto;max-width:240px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;transition:border-color .15s}
   .rot-meus-card:hover{border-color:var(--cdv-coral)}
   .rot-meus-card-titulo{font-size:12px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
   .rot-meus-card-data{font-size:10px;color:var(--muted)}
   .rot-meus-card-link{font-size:10px;color:var(--cdv-coral);font-weight:700;text-decoration:none}
   .rot-meus-card-link:hover{text-decoration:underline}
+  #tab-roteiros .rot-meus-card{max-width:none}
+  #tab-roteiros .rot-meus-card-titulo{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  @media (max-width:900px){
+    .rot-cols{flex-direction:column;gap:12px}
+    .rot-meus{order:-1;flex:none;overflow:visible}
+    .rot-meus-cards{flex-direction:row;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+    #tab-roteiros .rot-meus-card{flex:0 0 auto;max-width:240px}
+  }
   .rot-chat-box{flex:1;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
   .rot-msg{max-width:88%;font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word;border-radius:12px;padding:11px 14px}
   .rot-table-wrap{white-space:normal;overflow-x:auto;margin:8px 0;border:1px solid var(--border);border-radius:8px;-webkit-overflow-scrolling:touch}
@@ -2431,11 +2441,8 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
     <p class="rot-sub">Converse comigo sobre a viagem — vou perguntando os detalhes um de cada vez e monto o roteiro dia a dia com você.</p>
   </div>
 
-  <div class="rot-meus" id="rot-meus">
-    <div class="rot-meus-title">📂 Meus roteiros — clique em um para abrir e ajustar</div>
-    <div class="rot-meus-cards" id="rot-meus-cards"></div>
-  </div>
-
+  <div class="rot-cols">
+  <div class="rot-main">
   <div id="rot-chat-box" data-emoji class="rot-chat-box"></div>
 
   <p id="rot-erro" class="rot-fb"></p>
@@ -2452,6 +2459,13 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
     <button class="rot-publish-btn" id="rot-publish-btn" onclick="rotAbrirPublicar()">🔗 Gerar link do roteiro</button>
   </div>
   <div class="rot-publish-result" id="rot-publish-result"></div>
+  </div>
+
+  <aside class="rot-meus" id="rot-meus">
+    <div class="rot-meus-title">📂 Meus roteiros — clique para abrir e ajustar</div>
+    <div class="rot-meus-cards" id="rot-meus-cards"></div>
+  </aside>
+  </div>
 </div>
 
 <div class="rot-modal-overlay" id="rot-modal-overlay">
