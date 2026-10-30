@@ -9456,8 +9456,8 @@ REGRAS:
         if (!texto) return fim({ ok: false, erro: 'A IA nao retornou texto.' });
         texto = texto.replace(/```json|```/g, '').trim();
         // Recorta do primeiro { ao ultimo } (ignora texto antes/depois do JSON)
-        const ini = texto.indexOf('{'), fim = texto.lastIndexOf('}');
-        if (ini >= 0 && fim > ini) texto = texto.slice(ini, fim + 1);
+        const iniJ = texto.indexOf('{'), fimJ = texto.lastIndexOf('}');
+        if (iniJ >= 0 && fimJ > iniJ) texto = texto.slice(iniJ, fimJ + 1);
         let dados = null, erroParse = null;
         try { dados = JSON.parse(texto); } catch (e2) { erroParse = e2; }
         if (!dados) {
@@ -9490,8 +9490,8 @@ REGRAS:
         }
         return fim({ ok: true, dados });
       } catch (e) {
-        console.error('[ia/roteiro-extrair] parse error:', e.message, 'raw:', raw.slice(0, 300));
-        return fim({ ok: false, erro: 'Erro ao processar resposta da IA.' });
+        console.error('[ia/roteiro-extrair] parse error:', e.message, 'status:', apiRes.statusCode, 'raw:', raw.slice(0, 300));
+        return fim({ ok: false, erro: 'Erro ao processar resposta da IA (HTTP ' + apiRes.statusCode + ').' });
       }
     });
   });
