@@ -422,7 +422,7 @@ select.srt { padding:11px 13px; font-size:13.5px; font-weight:600; }
 .recl-loader { font-size:14px; padding:40px 0; }
 
 /* ── ROTEIROS ───────────────────────────────────────────────────────────── */
-.rot-wrap { max-width:1280px; padding:24px 24px 28px; height:calc(100vh - 120px); min-height:560px; }
+.rot-wrap { max-width:none; padding:20px 20px 24px; height:calc(100vh - 120px); min-height:560px; }
 .rot-title { font-size:24px; font-weight:800; color:var(--text); text-transform:none; letter-spacing:-.5px; margin-bottom:8px; }
 .rot-sub { font-size:14.5px; color:var(--muted); line-height:1.6; }
 .rot-meus-title { font-size:12px; font-weight:700; letter-spacing:.06em; color:var(--muted2); text-transform:uppercase; margin-bottom:10px; }
