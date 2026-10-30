@@ -221,7 +221,7 @@ const ROTAS_CONTEUDO_GET = new Set([
 const ROTAS_SO_MEMBRO = new Set(['/alerta']);
 const ROTAS_OPERADOR_POST = new Set([
   '/ofertas/aprovar', '/ofertas/aprovar-e-enviar', '/ofertas/enviar', '/ofertas/publicar',
-  '/ofertas/rejeitar', '/ofertas/rejeitar-todas', '/passagens/excluir',
+  '/ofertas/rejeitar', '/ofertas/rejeitar-todas', '/passagens/excluir', '/ofertas/prorrogar',
 ]);
 function negar(res, status, erro, motivo) {
   res.status(status).json({ ok: false, erro, motivo });
@@ -3159,6 +3159,171 @@ app.post('/ofertas/enviar', async (req, res) => {
   } catch(err) {
     res.status(502).json({ ok: false, erro: 'Baileys inacessível: ' + err.message });
   }
+});
+
+// ── PRORROGACAO DE OFERTA ENVIADA (desde 30/10/2026) ─────────────────────────
+// Promocao que o programa prorroga. O gestor lista as ofertas que sairam em
+// grupo (GET /ofertas/enviadas, vindas do baileys) e informa a nova data:
+// - ofertas.json: prazo novo (guarda prazoOriginal e prorrogacoes[]);
+// - historico-transferencias.json: ESTENDE o prazo do registro que ja tem a
+//   oferta (ofertaIds) — nunca cria registro novo, entao media e frequencia das
+//   campanhas nao mudam;
+// - baileys POST /radar/prorrogar: reenvia nos mesmos grupos com
+//   "🔁 PRORROGADO ATÉ DD/MM!" (opcional) e rearma o ACABA HOJE na data nova.
+function _prorrogaDatas(v) {
+  const s = String(v || '').trim();
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  let iso = m ? s : null;
+  if (!iso) {
+    m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (m) iso = `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+  }
+  if (!iso) return null;
+  const [a, mm, d] = iso.split('-').map(Number);
+  if (mm < 1 || mm > 12 || d < 1 || d > 31) return null;
+  return { iso, br: `${String(d).padStart(2, '0')}/${String(mm).padStart(2, '0')}/${a}` };
+}
+// Le, muda e grava um JSON do GitHub; em conflito de SHA rele e tenta de novo.
+async function _ghMutarJson(path, fallback, mutar, mensagem) {
+  let ultimoErro = null;
+  for (let t = 0; t < 3; t++) {
+    const atual = await ghGetJson(path, fallback);
+    const r = mutar(atual.data);
+    if (r === false) return { mudou: false };
+    try {
+      await ghPutJson(path, atual.data, atual.sha, mensagem);
+      return { mudou: true };
+    } catch (e) {
+      ultimoErro = e;
+      await new Promise((ok) => setTimeout(ok, 800 + t * 700));
+    }
+  }
+  throw ultimoErro || new Error('falha ao gravar ' + path);
+}
+
+// GET /ofertas/enviadas — ofertas do radar enviadas em grupo nos ultimos 60 dias,
+// com o prazo atual do ofertas.json. Operador (X-CDV-Op).
+app.get('/ofertas/enviadas', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const r = await fetch(BAILEYS_URL + '/radar/enviadas', { timeout: 20000 });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || !j.ok) return res.status(502).json({ ok: false, erro: j.erro || ('baileys respondeu ' + r.status) });
+    let ofertas = [];
+    try { ofertas = (await ghGetJson(OFERTAS_APROVADAS_PATH, { items: [] })).data.items || []; }
+    catch (e) { console.error('[Prorroga] leitura ofertas.json falhou:', e.message); }
+    const porId = new Map(ofertas.map((o) => [o.id, o]));
+    const itens = (j.itens || []).map((e) => {
+      const o = porId.get(e.id);
+      return {
+        ...e,
+        titulo: (o && o.titulo) || e.titulo,
+        emoji: (o && o.emoji) || '',
+        prazo: (o && o.prazo) || e.prazo || '',
+        prazoOriginal: (o && o.prazoOriginal) || '',
+        categoria: (o && o.categoria) || e.categoria || '',
+        programa: (o && o.programa) || '',
+        prorrogacoes: (o && Array.isArray(o.prorrogacoes) && o.prorrogacoes.length) ? o.prorrogacoes : (e.prorrogacoes || []),
+      };
+    });
+    res.json({ ok: true, itens });
+  } catch (e) {
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// POST /ofertas/prorrogar { id, novoPrazo:'DD/MM/AAAA'|'AAAA-MM-DD', reenviar?:true }
+app.post('/ofertas/prorrogar', async (req, res) => {
+  const { id } = req.body || {};
+  const reenviar = req.body?.reenviar !== false;
+  const idStr = String(id || '').trim();
+  if (!idStr) return res.status(400).json({ ok: false, erro: 'id obrigatório' });
+  const novo = _prorrogaDatas(req.body?.novoPrazo);
+  if (!novo) return res.status(400).json({ ok: false, erro: 'nova data inválida' });
+  const hojeIso = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
+  if (novo.iso < hojeIso) return res.status(400).json({ ok: false, erro: 'a nova data já passou' });
+  const ofertasPath = OFERTAS_APROVADAS_PATH;
+  const agoraIso = new Date().toISOString();
+  const resultado = { ok: true, id: idStr, novoPrazo: novo.br, reenviado: false, grupos: [], ofertas: 'sem_registro', historico: 'nao_se_aplica', avisos: [] };
+
+  // 1) Oferta no ofertas.json (prazo antigo sai daqui para o baileys trocar o texto).
+  let oferta = null;
+  try {
+    const r1 = await _ghMutarJson(ofertasPath, { geradoEm: null, items: [] }, (data) => {
+      const o = (data.items || []).find((x) => x.id === idStr);
+      if (!o) { oferta = null; return false; }
+      oferta = { ...o };
+      if (!o.prazoOriginal) o.prazoOriginal = o.prazo || '';
+      o.prorrogacoes = [...(Array.isArray(o.prorrogacoes) ? o.prorrogacoes : []), { de: o.prazo || '', para: novo.br, em: agoraIso, reenviado: reenviar }].slice(-10);
+      o.prazo = novo.br;
+      o.prorrogadaEm = agoraIso;
+      data.geradoEm = agoraIso;
+    }, `chore: prorroga oferta "${idStr}" até ${novo.br}`);
+    resultado.ofertas = r1.mudou ? 'atualizada' : 'sem_registro';
+  } catch (e) {
+    console.error('[Prorroga] ofertas.json:', e.message);
+    resultado.avisos.push('Não consegui gravar o prazo no Radar (ofertas.json): ' + e.message);
+  }
+
+  // 2) Baileys: reenvio nos grupos + ACABA HOJE na data nova.
+  try {
+    const r = await fetch(BAILEYS_URL + '/radar/prorrogar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CDV-Op': process.env.CAMPANHAS_KEY || '' },
+      body: JSON.stringify({ id: idStr, novoPrazo: novo.br, prazoAntigo: (oferta && oferta.prazo) || '', reenviar }),
+      timeout: 20000,
+    });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok && j.ok) {
+      resultado.reenviado = !!j.reenviado;
+      resultado.grupos = j.grupos || [];
+      resultado.previa = j.previa || null;
+    } else if (r.status === 404) {
+      resultado.avisos.push('Essa oferta não tem envio registrado em grupo nos últimos 60 dias: nada foi reenviado.');
+    } else {
+      resultado.avisos.push('O servidor do WhatsApp não aceitou a prorrogação: ' + (j.erro || ('status ' + r.status)));
+    }
+  } catch (e) {
+    resultado.avisos.push('Servidor do WhatsApp fora do ar: ' + e.message);
+  }
+
+  // 3) Historico de transferencias: estende o registro existente, sem criar novo.
+  try {
+    const r3 = await _ghMutarJson(HISTORICO_TRANSFERENCIAS_PATH, { items: [] }, (data) => {
+      const items = data.items || [];
+      let alvos = items.filter((h) => Array.isArray(h.ofertaIds) && h.ofertaIds.includes(idStr));
+      if (!alvos.length && oferta && oferta.categoria === 'transferencia') {
+        // Registro antigo sem o ofertaId: casa por origem->destino + prazo antigo.
+        const c = completarTransferencia({ ...oferta });
+        const prazoAntIso = prazoParaIso(oferta.prazo);
+        for (const org of transfHist.origensDaOferta({ ...oferta, ...c })) {
+          const mesma = registroMesmaCampanha(items, chaveHistorico(org, c.destino || oferta.destino), prazoAntIso);
+          if (mesma && !alvos.includes(mesma.registro)) alvos.push(mesma.registro);
+        }
+      }
+      if (!alvos.length) return false;
+      let mudou = false;
+      for (const h of alvos) {
+        if (!Array.isArray(h.ofertaIds)) h.ofertaIds = [];
+        if (!h.ofertaIds.includes(idStr)) h.ofertaIds.push(idStr);
+        if (!h.prazo || novo.iso > h.prazo) {
+          h.prorrogacoes = [...(Array.isArray(h.prorrogacoes) ? h.prorrogacoes : []), { de: h.prazo || '', para: novo.iso, em: agoraIso }].slice(-10);
+          if (!h.prazoOriginal) h.prazoOriginal = h.prazo || '';
+          h.prazo = novo.iso;
+          mudou = true;
+        }
+      }
+      if (!mudou) return false;
+      data.geradoEm = agoraIso;
+    }, `chore: prorroga campanha de transferência da oferta ${idStr} até ${novo.br}`);
+    resultado.historico = r3.mudou ? 'prazo_estendido' : (oferta && oferta.categoria === 'transferencia' ? 'sem_registro' : 'nao_se_aplica');
+  } catch (e) {
+    console.error('[Prorroga] histórico:', e.message);
+    resultado.avisos.push('Não consegui estender o histórico de transferências: ' + e.message);
+  }
+
+  console.log(`[Prorroga] ${idStr} até ${novo.br} — ofertas:${resultado.ofertas} historico:${resultado.historico} reenvio:${resultado.reenviado}`);
+  res.json(resultado);
 });
 
 // ── Publicar oferta diretamente no radar ──────────────────────────────────────

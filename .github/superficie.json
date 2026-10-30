@@ -102,6 +102,8 @@
         "app.post('/ofertas/aprovar'",
         "app.post('/ofertas/enviar'",
         "app.post('/ofertas/publicar'",
+        "app.post('/ofertas/prorrogar'",
+        "app.get('/ofertas/enviadas'",
         "app.post('/ofertas/rejeitar'",
         "app.post('/ofertas/rejeitar-todas'",
         "app.post('/parceiros/resolver-links'",
