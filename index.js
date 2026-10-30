@@ -205,7 +205,7 @@ function roteirosChaveValida(chave) {
 const ROTAS_MEMBRO = new Set([
   '/assinaturas/listar', '/assinaturas/salvar',
   '/cartoes/listar', '/cartoes/salvar',
-  '/ia/reclamacao', '/ia/roteiro-chat', '/ia/roteiro-extrair',
+  '/ia/reclamacao', '/ia/roteiro-chat', '/ia/roteiro-extrair', '/ia/roteiro-extrair/status',
   '/membros/tema',
   '/milhas/excluir', '/milhas/listar', '/milhas/salvar',
   '/perfis/listar', '/perfis/salvar',
@@ -9203,22 +9203,23 @@ MODO AJUSTE — o membro já possui um roteiro pronto e publicado; a primeira me
 // ── IA: Extrai ROTEIRO_DATA estruturado a partir da conversa do Assistente de Roteiros ──
 // Body: { messages: [{role,content}, ...] } — mesmo historico do /ia/roteiro-chat, ja finalizado
 // Devolve JSON pronto para ser injetado no template davileles/roteiros/template/index.html
-app.post('/ia/roteiro-extrair', (req, res) => {
+function extrairRoteiroIA(messages, fimCb) {
+  let feito = false;
+  const fim = (obj) => { if (feito) return; feito = true; try { fimCb(obj); } catch (e) { console.error('[ia/roteiro-extrair] fim:', e.message); } };
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
   if (!ANTHROPIC_API_KEY) {
-    return res.status(500).json({ ok: false, erro: 'ANTHROPIC_API_KEY nao configurada no servidor.' });
+    return fim({ ok: false, erro: 'ANTHROPIC_API_KEY nao configurada no servidor.' });
   }
 
-  const { messages } = req.body || {};
   if (!Array.isArray(messages) || !messages.length) {
-    return res.status(400).json({ ok: false, erro: 'Campo obrigatorio: messages (array nao vazio).' });
+    return fim({ ok: false, erro: 'Campo obrigatorio: messages (array nao vazio).' });
   }
 
   const historico = messages
     .filter(m => m && typeof m.content === 'string' && m.content.trim() && (m.role === 'user' || m.role === 'assistant'))
     .map(m => ({ role: m.role, content: m.content.trim() }));
   if (!historico.length) {
-    return res.status(400).json({ ok: false, erro: 'Historico vazio.' });
+    return fim({ ok: false, erro: 'Historico vazio.' });
   }
   // A extracao e sempre disparada por uma instrucao final do usuario
   historico.push({ role: 'user', content: 'Extraia agora o ROTEIRO_DATA completo em JSON, seguindo exatamente as instrucoes do system prompt. Responda SOMENTE com o JSON, sem markdown.' });
@@ -9285,9 +9286,9 @@ REGRAS:
       console.log('[ia/roteiro-extrair] status:', apiRes.statusCode, 'raw len:', raw.length);
       try {
         const parsed = JSON.parse(raw);
-        if (parsed.error) { console.error('[ia/roteiro-extrair] API error:', parsed.error); return res.json({ ok: false, erro: parsed.error.message }); }
+        if (parsed.error) { console.error('[ia/roteiro-extrair] API error:', parsed.error); return fim({ ok: false, erro: parsed.error.message }); }
         let texto = (parsed.content && parsed.content[0] && parsed.content[0].text) || '';
-        if (!texto) return res.json({ ok: false, erro: 'A IA nao retornou texto.' });
+        if (!texto) return fim({ ok: false, erro: 'A IA nao retornou texto.' });
         texto = texto.replace(/```json|```/g, '').trim();
         // Recorta do primeiro { ao ultimo } (ignora texto antes/depois do JSON)
         const ini = texto.indexOf('{'), fim = texto.lastIndexOf('}');
@@ -9318,23 +9319,53 @@ REGRAS:
         if (!dados) {
           const cortado = parsed.stop_reason === 'max_tokens';
           console.error('[ia/roteiro-extrair] JSON invalido:', erroParse && erroParse.message, 'stop:', parsed.stop_reason, 'len:', texto.length, 'fim:', texto.slice(-200));
-          return res.json({ ok: false, erro: cortado
+          return fim({ ok: false, erro: cortado
             ? 'O roteiro ficou longo demais para a IA montar de uma vez. Tente publicar de novo; se repetir, encurte a conversa (peça ao assistente um resumo final do roteiro) e publique.'
             : 'A IA nao retornou um JSON valido. Tente publicar de novo.' });
         }
-        return res.json({ ok: true, dados });
+        return fim({ ok: true, dados });
       } catch (e) {
         console.error('[ia/roteiro-extrair] parse error:', e.message, 'raw:', raw.slice(0, 300));
-        return res.json({ ok: false, erro: 'Erro ao processar resposta da IA.' });
+        return fim({ ok: false, erro: 'Erro ao processar resposta da IA.' });
       }
     });
   });
-  apiReq.on('error', (e) => { console.error('[ia/roteiro-extrair] req error:', e.message); res.json({ ok: false, erro: e.message }); });
-  apiReq.setTimeout(300000, () => { apiReq.destroy(); if (!res.headersSent) res.json({ ok: false, erro: 'Timeout ao chamar API Anthropic.' }); });
+  apiReq.on('error', (e) => { console.error('[ia/roteiro-extrair] req error:', e.message); fim({ ok: false, erro: e.message }); });
+  apiReq.setTimeout(300000, () => { apiReq.destroy(); fim({ ok: false, erro: 'Timeout ao chamar API Anthropic.' }); });
   apiReq.write(bodyPayload);
   apiReq.end();
-});
+}
 
+// Extração em segundo plano: o roteiro grande leva minutos para a IA montar e o
+// Safari/iPhone derruba a conexão longa ("Load failed"). Com {async:true} a rota
+// devolve um job na hora e o painel consulta /ia/roteiro-extrair/status.
+const ROTEIRO_JOBS = new Map();
+function roteiroJobsLimpar() {
+  const lim = Date.now() - 30 * 60 * 1000;
+  for (const [id, j] of ROTEIRO_JOBS) if (j.inicio < lim) ROTEIRO_JOBS.delete(id);
+}
+app.post('/ia/roteiro-extrair', (req, res) => {
+  const body = req.body || {};
+  if (body.async) {
+    roteiroJobsLimpar();
+    const id = 'rx-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+    const job = { email: body.email || '', inicio: Date.now(), status: 'rodando', resultado: null };
+    ROTEIRO_JOBS.set(id, job);
+    extrairRoteiroIA(body.messages, (r) => { job.status = 'pronto'; job.resultado = r; });
+    return res.json({ ok: true, job: id });
+  }
+  extrairRoteiroIA(body.messages, (r) => { if (!res.headersSent) res.json(r); });
+});
+app.get('/ia/roteiro-extrair/status', (req, res) => {
+  const id = String((req.query && req.query.job) || '');
+  const job = ROTEIRO_JOBS.get(id);
+  if (!job || (job.email && job.email !== (req.query.email || ''))) {
+    return res.json({ ok: false, perdido: true, erro: 'Extração interrompida (o servidor reiniciou). Tentando de novo…' });
+  }
+  if (job.status !== 'pronto') return res.json({ ok: true, status: 'rodando', segundos: Math.round((Date.now() - job.inicio) / 1000) });
+  ROTEIRO_JOBS.delete(id);
+  return res.json(Object.assign({ status: 'pronto' }, job.resultado));
+});
 // ══════════════════════════════════════════════════════════════════════════════
 //  COMPARADOR DE CARTOES
 //  Base curada a partir de fontes oficiais dos emissores e das bandeiras.

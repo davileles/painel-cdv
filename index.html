@@ -2870,13 +2870,39 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   // Usa o template real do repositório roteiros (o mesmo do Travel Concierge),
   // apenas trocando a marca para "Clube do Viajante" e injetando o ROTEIRO_DATA
   // extraído da conversa pela IA.
+  // Extração em segundo plano: pede um job e consulta a cada 4 s. Roteiro grande
+  // leva minutos; conexão longa única caía no Safari ("Load failed").
+  async function rotExtrairDados(){
+    var BASE = 'https://cdv-proxy-production.up.railway.app/ia/roteiro-extrair';
+    var btn = document.getElementById('rot-modal-confirm-btn');
+    for (var tentativa = 1; tentativa <= 3; tentativa++) {
+      var job = null;
+      for (var k = 0; k < 3 && !job; k++) {
+        try {
+          var r0 = await fetch(BASE, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: rotHistorico, async: true }) });
+          var j0 = await r0.json();
+          if (!j0.ok) return j0;
+          job = j0.job;
+        } catch (e) { if (k === 2) throw e; await new Promise(function(ok){ setTimeout(ok, 3000); }); }
+      }
+      var inicio = Date.now(), falhas = 0;
+      while (Date.now() - inicio < 10 * 60 * 1000) {
+        await new Promise(function(ok){ setTimeout(ok, 4000); });
+        var st;
+        try {
+          var r1 = await fetch(BASE + '/status?job=' + encodeURIComponent(job));
+          st = await r1.json(); falhas = 0;
+        } catch (e) { if (++falhas >= 8) throw e; continue; }
+        if (st.perdido) break;
+        if (st.status === 'pronto') return st;
+        if (btn) btn.textContent = 'Extraindo dados… ' + Math.floor((Date.now() - inicio) / 1000) + 's';
+      }
+    }
+    return { ok: false, erro: 'Não foi possível extrair os dados do roteiro. Tente de novo em alguns minutos.' };
+  }
+
   async function rotMontarHTML(titulo, slug, imagemCapa){
-    var respExtrair = await fetch('https://cdv-proxy-production.up.railway.app/ia/roteiro-extrair', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: rotHistorico })
-    });
-    var extraido = await respExtrair.json();
+    var extraido = await rotExtrairDados();
     if (!extraido.ok) throw new Error(extraido.erro || 'Erro ao extrair dados do roteiro');
 
     var dados = extraido.dados || {};
