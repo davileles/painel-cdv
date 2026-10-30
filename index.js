@@ -8052,15 +8052,32 @@ app.post('/roteiros/publicar', async (req, res) => {
     };
     if (shaBefore) putBody.sha = shaBefore;
 
-    const putRes = await fetch(`https://api.github.com/repos/${ROTEIROS_REPO}/contents/${caminho}`, {
-      method: 'PUT',
-      headers: ghHeaders,
-      body: JSON.stringify(putBody)
-    });
+    // O GitHub devolve 500/502/409 de vez em quando (instabilidade ou o commit
+    // da capa logo antes no mesmo repo). Tenta de novo com SHA fresco.
+    let putRes = null, putErrMsg = '';
+    for (let tentativa = 1; tentativa <= 4; tentativa++) {
+      if (tentativa > 1) {
+        await new Promise(r => setTimeout(r, 1500 * tentativa));
+        try {
+          const ck = await fetch(`https://api.github.com/repos/${ROTEIROS_REPO}/contents/${caminho}`, { headers: ghHeaders });
+          if (ck.ok) { const d = await ck.json(); if (d.sha) putBody.sha = d.sha; }
+        } catch (e) { /* segue com o SHA que tem */ }
+      }
+      putRes = await fetch(`https://api.github.com/repos/${ROTEIROS_REPO}/contents/${caminho}`, {
+        method: 'PUT',
+        headers: ghHeaders,
+        body: JSON.stringify(putBody)
+      });
+      if (putRes.ok) break;
+      const corpo = await putRes.text().catch(() => '');
+      let msg = ''; try { msg = (JSON.parse(corpo) || {}).message || ''; } catch (e) {}
+      putErrMsg = msg || `GitHub PUT falhou (${putRes.status})`;
+      console.warn('[roteiros/publicar] PUT tentativa', tentativa, 'status', putRes.status, corpo.slice(0, 200));
+      if (![409, 422, 500, 502, 503, 504].includes(putRes.status)) break;
+    }
 
-    if (!putRes.ok) {
-      const putErr = await putRes.json().catch(() => ({}));
-      throw new Error(putErr.message || `GitHub PUT falhou (${putRes.status})`);
+    if (!putRes || !putRes.ok) {
+      throw new Error(putErrMsg || 'GitHub PUT falhou');
     }
 
     const url = `${ROTEIROS_BASE_URL}/${slug}/`;
