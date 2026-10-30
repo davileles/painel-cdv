@@ -840455,11 +840455,11 @@
             },
             {
               "categoria": "Demais categorias",
-              "pts": 5,
+              "pts": 10,
               "principal": true
             }
           ],
-          "ptsBase": 5
+          "ptsBase": 10
         }
       },
       "links": {
@@ -845075,18 +845075,18 @@
         }
       }
     },
-    "airport park - guarulhos": {
+    "easy live entreterimento": {
       "programs": {
         "azul": {
-          "pts": 10,
+          "pts": 12,
           "dollar": false
         }
       }
     },
-    "easy live entreterimento": {
+    "airport park - guarulhos": {
       "programs": {
         "azul": {
-          "pts": 3,
+          "pts": 10,
           "dollar": false
         }
       }
@@ -845347,7 +845347,7 @@
     "outback steakhouse": {
       "programs": {
         "inter": {
-          "pts": 15,
+          "pts": 5,
           "dollar": false,
           "slug": "outback-steakhouse-1737"
         }
@@ -845765,7 +845765,7 @@
           "slug": "sorte-online-122"
         },
         "meliuz": {
-          "pts": 1.5,
+          "pts": 10,
           "dollar": false,
           "ate": false,
           "slug": "sorte-online"
@@ -845916,10 +845916,23 @@
           "slug": "renner-3644"
         },
         "meliuz": {
-          "pts": 3,
+          "pts": 8,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-renner"
+          "ate": true,
+          "slug": "cupom-renner",
+          "categorias": [
+            {
+              "categoria": "Produtos Vendidos e Entregues por Renner",
+              "pts": 8,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
         }
       },
       "links": {
