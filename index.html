@@ -2478,6 +2478,36 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   var rotTituloAtual = null;
   var rotImagemAtual = null;
   var rotModoAjuste = false; // true quando um roteiro publicado foi reaberto para edição
+  // Dados do template que o assistente já devolve junto de cada bloco de dias
+  // (<ROTEIRO_JSON> no /ia/roteiro-chat). Com eles a publicação não precisa
+  // da extração demorada pela IA.
+  var rotEstrutura = { meta: null, dias: {} };
+  function rotEstruturaReset(base){
+    rotEstrutura = { meta: null, dias: {} };
+    if (base && typeof base === 'object') {
+      var meta = {};
+      Object.keys(base).forEach(function(k){ if (k !== 'dias') meta[k] = base[k]; });
+      rotEstrutura.meta = meta;
+      (base.dias || []).forEach(function(d){ if (d && d.num) rotEstrutura.dias[d.num] = d; });
+    }
+  }
+  function rotEstruturaJuntar(e){
+    if (!e || typeof e !== 'object') return;
+    if (e.meta && typeof e.meta === 'object') rotEstrutura.meta = Object.assign({}, rotEstrutura.meta || {}, e.meta);
+    (Array.isArray(e.dias) ? e.dias : []).forEach(function(d){
+      var n = d && parseInt(d.num, 10);
+      if (n > 0) { d.num = n; rotEstrutura.dias[n] = d; }
+    });
+  }
+  // Pronta = tem os dados gerais e os dias 1..N sem buraco.
+  function rotEstruturaPronta(){
+    var nums = Object.keys(rotEstrutura.dias).map(Number).sort(function(a,b){ return a-b; });
+    if (!rotEstrutura.meta || !nums.length) return null;
+    for (var i = 0; i < nums.length; i++) if (nums[i] !== i + 1) return null;
+    var D = Object.assign({}, rotEstrutura.meta);
+    D.dias = nums.map(function(n){ return rotEstrutura.dias[n]; });
+    return D;
+  }
 
   function rotGetEmail(){
     try { var s = JSON.parse(localStorage.getItem('cdv_auth') || 'null'); return (s && s.email) || null; } catch(e){ return null; }
@@ -2622,6 +2652,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
     rotTituloAtual = null;
     rotImagemAtual = null;
     rotModoAjuste = false;
+    rotEstruturaReset(null);
     document.getElementById('rot-publish-row').style.display = 'none';
     document.getElementById('rot-publish-result').innerHTML = '';
     document.getElementById('rot-publish-btn').textContent = '🔗 Gerar link do roteiro';
@@ -2666,6 +2697,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
       if (!dados.ok) throw new Error(dados.erro || 'Erro desconhecido');
 
       rotHistorico.push({ role: 'assistant', content: dados.texto });
+      rotEstruturaJuntar(dados.estrutura);
       rotRenderMsg('assistant', dados.texto);
       rotChecarFinalizacao(dados.texto);
     } catch (e) {
@@ -2767,6 +2799,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
       rotAjustarAlturaInput();
 
       rotModoAjuste = true;
+      rotEstruturaReset(D);
       rotSlugAtual = r.slug;
       rotTituloAtual = titulo;
       rotImagemAtual = D.heroImage || '';
@@ -2902,10 +2935,15 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   }
 
   async function rotMontarHTML(titulo, slug, imagemCapa){
-    var extraido = await rotExtrairDados();
-    if (!extraido.ok) throw new Error(extraido.erro || 'Erro ao extrair dados do roteiro');
-
-    var dados = extraido.dados || {};
+    // Caminho rápido: dados que o assistente já devolveu na conversa.
+    // Sem eles (conversa antiga ou bloco faltando), cai na extração pela IA.
+    var dados = rotEstruturaPronta();
+    if (!dados) {
+      var extraido = await rotExtrairDados();
+      if (!extraido.ok) throw new Error(extraido.erro || 'Erro ao extrair dados do roteiro');
+      dados = extraido.dados || {};
+    }
+    dados = JSON.parse(JSON.stringify(dados));
     dados.titulo = titulo || dados.titulo || 'Minha Viagem';
     dados.heroImage = imagemCapa || dados.heroImage || '';
     dados.marcaTexto = 'Clube do Viajante';

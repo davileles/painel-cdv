@@ -9320,7 +9320,15 @@ Ao final de cada bloco de 2 dias pergunte: "Os dias ficaram bons? Quer ajustar a
 FINALIZAÇÃO — quando terminar TODOS os dias:
 1. Apresente tabela de resumo: Dia | Data | Resumo (até 65 caracteres)
 2. Apresente tabela de custos: Dia | Data | Motivo | Valor por pessoa em R$
-3. Encerre agradecendo e desejando uma ótima viagem. NÃO ofereça publicar, gerar HTML/PDF ou enviar o roteiro — isso não faz parte desta conversa.`;
+3. Encerre agradecendo e desejando uma ótima viagem. NÃO ofereça publicar, gerar HTML/PDF ou enviar o roteiro — isso não faz parte desta conversa.
+
+DADOS ESTRUTURADOS (invisíveis para o usuário — o painel usa para montar a página do roteiro):
+- Toda resposta que apresentar um ou mais dias completos (novos ou ajustados) deve terminar, depois de todo o texto, com um bloco exatamente assim:
+<ROTEIRO_JSON>{"dias":[...]}</ROTEIRO_JSON>
+- "dias" traz SÓ os dias apresentados nesta resposta, cada um com: {"num":1,"data":"texto da data","titulo":"título curto","resumo":"2-3 linhas","energia":"Leve|Moderado|Intenso","atividades":[{"horario":"HH:MM–HH:MM","nome":"atração","descricao":"2-3 linhas","dica":"dica prática ou vazio"}],"deslocamentos":["A → B: como ir, tempo, custo"],"custos":[{"label":"item","valor":"R$ valor"}],"custoTotal":"R$ valor"}
+- Na resposta de FINALIZAÇÃO (tabelas de resumo e custos), o bloco traz também "meta": {"titulo":"destino","subtitulo":"estilo/tema da viagem","eyebrow":"Clube do Viajante · Cidade, País","pills":["até 4 badges: datas, viajantes, estilo"],"visaoGeral":[{"label":"RÓTULO","value":"valor","variant":""}],"footerNote":"Cidade, País · Roteiro personalizado"} — "visaoGeral" com 4 a 6 cards (destino, datas, viajantes, orçamento, ritmo, tipo).
+- O conteúdo do JSON é o mesmo do texto (nada inventado). JSON válido, numa linha só, sem markdown, aspas internas escapadas. Respostas sem dias completos (perguntas, resumo inicial) NÃO têm o bloco.
+- Nunca mencione esse bloco ao usuário.`;
 
   // Modo ajuste: o membro reabriu um roteiro ja publicado (a primeira mensagem
   // do assistente na conversa contem o roteiro completo, reidratado do HTML).
@@ -9332,11 +9340,12 @@ MODO AJUSTE — o membro já possui um roteiro pronto e publicado; a primeira me
 - Ao aplicar um ajuste, reapresente APENAS os dias alterados, seguindo exatamente a ESTRUTURA OBRIGATÓRIA de cada dia definida acima.
 - Se o ajuste afetar dados gerais (hotel, datas, voos, viajantes), explique brevemente o impacto e reapresente os dias afetados.
 - Se precisar de alguma informação para executar o ajuste (ex: novo horário de voo), pergunte apenas o necessário, uma pergunta por vez.
-- Ao final de cada resposta com ajustes pergunte: "Quer ajustar mais alguma coisa? Quando estiver tudo certo, é só clicar em 🔄 Atualizar link do roteiro."`;
+- Ao final de cada resposta com ajustes pergunte: "Quer ajustar mais alguma coisa? Quando estiver tudo certo, é só clicar em 🔄 Atualizar link do roteiro."
+- Os dias reapresentados também levam o bloco <ROTEIRO_JSON> no fim (só os dias alterados; "meta" só se mudar dado geral como datas, hotel ou viajantes).`;
 
   const bodyPayload = JSON.stringify({
     model: 'claude-sonnet-4-6',
-    max_tokens: 4096,
+    max_tokens: 10000,
     system: modo === 'ajuste' ? systemPrompt + promptAjuste : systemPrompt,
     messages: historico
   });
@@ -9367,7 +9376,23 @@ MODO AJUSTE — o membro já possui um roteiro pronto e publicado; a primeira me
         if (!texto) return res.json({ ok: false, erro: 'A IA não retornou texto.' });
         // Remove linhas separadoras "---" (markdown hr), mantendo a linha em branco no lugar
         texto = texto.replace(/^[ \t]*-{3,}[ \t]*$/gm, '');
-        return res.json({ ok: true, texto });
+        // Bloco estruturado no fim da resposta: sai do texto e vai à parte,
+        // para o painel publicar sem precisar da extração demorada.
+        let estrutura = null;
+        const mJ = texto.match(/<ROTEIRO_JSON>([\s\S]*?)(?:<\/ROTEIRO_JSON>|$)/);
+        if (mJ) {
+          texto = texto.slice(0, mJ.index).trim();
+          let bruto = mJ[1].replace(/```json|```/g, '').trim();
+          const a = bruto.indexOf('{'), b = bruto.lastIndexOf('}');
+          if (a >= 0 && b > a) bruto = bruto.slice(a, b + 1);
+          try { estrutura = JSON.parse(bruto); }
+          catch (eJ) {
+            try { estrutura = JSON.parse(bruto.replace(/,\s*([}\]])/g, '$1')); }
+            catch (eJ2) { console.warn('[ia/roteiro-chat] ROTEIRO_JSON invalido:', eJ2.message, 'stop:', parsed.stop_reason); }
+          }
+          if (estrutura && !Array.isArray(estrutura.dias)) estrutura.dias = [];
+        }
+        return res.json({ ok: true, texto, estrutura });
       } catch (e) {
         console.error('[ia/roteiro-chat] parse error:', e.message, 'raw:', raw.slice(0, 300));
         return res.json({ ok: false, erro: 'Erro ao processar resposta da IA.' });
