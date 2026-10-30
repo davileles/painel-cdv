@@ -9254,11 +9254,12 @@ REGRAS:
 - Se algum campo opcional nao tiver informacao suficiente na conversa, retorne string vazia "" ou array vazio [], nunca invente.
 - "dias" deve conter TODOS os dias que apareceram na conversa, na ordem correta, numerados a partir de 1.
 - Se um mesmo dia aparecer mais de uma vez na conversa (versao original e versao ajustada depois), use SEMPRE a versao mais recente — a que aparece por ultimo.
-- Responda apenas com o JSON puro, comecando em { e terminando em }.`;
+- Responda apenas com o JSON puro, comecando em { e terminando em }.
+- Escreva o JSON compacto (sem indentacao nem quebras de linha entre campos) e nunca use quebra de linha dentro de um texto; aspas dentro de textos devem ser escapadas.`;
 
   const bodyPayload = JSON.stringify({
     model: 'claude-sonnet-4-6',
-    max_tokens: 8192,
+    max_tokens: 20000,
     system: systemPrompt,
     messages: historico
   });
@@ -9288,12 +9289,38 @@ REGRAS:
         let texto = (parsed.content && parsed.content[0] && parsed.content[0].text) || '';
         if (!texto) return res.json({ ok: false, erro: 'A IA nao retornou texto.' });
         texto = texto.replace(/```json|```/g, '').trim();
-        let dados;
-        try {
-          dados = JSON.parse(texto);
-        } catch (e2) {
-          console.error('[ia/roteiro-extrair] JSON invalido:', e2.message, 'texto:', texto.slice(0, 300));
-          return res.json({ ok: false, erro: 'A IA nao retornou um JSON valido.' });
+        // Recorta do primeiro { ao ultimo } (ignora texto antes/depois do JSON)
+        const ini = texto.indexOf('{'), fim = texto.lastIndexOf('}');
+        if (ini >= 0 && fim > ini) texto = texto.slice(ini, fim + 1);
+        let dados = null, erroParse = null;
+        try { dados = JSON.parse(texto); } catch (e2) { erroParse = e2; }
+        if (!dados) {
+          // Conserta os defeitos mais comuns: quebra de linha/tab crua dentro de
+          // string e virgula sobrando antes de } ou ]
+          let fixo = '', dentro = false, esc = false;
+          for (const ch of texto) {
+            if (dentro) {
+              if (esc) { esc = false; fixo += ch; continue; }
+              if (ch === '\\') { esc = true; fixo += ch; continue; }
+              if (ch === '"') { dentro = false; fixo += ch; continue; }
+              if (ch === '\n') { fixo += '\\n'; continue; }
+              if (ch === '\r') { continue; }
+              if (ch === '\t') { fixo += ' '; continue; }
+              fixo += ch;
+            } else {
+              if (ch === '"') dentro = true;
+              fixo += ch;
+            }
+          }
+          fixo = fixo.replace(/,\s*([}\]])/g, '$1');
+          try { dados = JSON.parse(fixo); } catch (e3) { erroParse = e3; }
+        }
+        if (!dados) {
+          const cortado = parsed.stop_reason === 'max_tokens';
+          console.error('[ia/roteiro-extrair] JSON invalido:', erroParse && erroParse.message, 'stop:', parsed.stop_reason, 'len:', texto.length, 'fim:', texto.slice(-200));
+          return res.json({ ok: false, erro: cortado
+            ? 'O roteiro ficou longo demais para a IA montar de uma vez. Tente publicar de novo; se repetir, encurte a conversa (peça ao assistente um resumo final do roteiro) e publique.'
+            : 'A IA nao retornou um JSON valido. Tente publicar de novo.' });
         }
         return res.json({ ok: true, dados });
       } catch (e) {
@@ -9303,7 +9330,7 @@ REGRAS:
     });
   });
   apiReq.on('error', (e) => { console.error('[ia/roteiro-extrair] req error:', e.message); res.json({ ok: false, erro: e.message }); });
-  apiReq.setTimeout(170000, () => { apiReq.destroy(); res.json({ ok: false, erro: 'Timeout ao chamar API Anthropic.' }); });
+  apiReq.setTimeout(300000, () => { apiReq.destroy(); if (!res.headersSent) res.json({ ok: false, erro: 'Timeout ao chamar API Anthropic.' }); });
   apiReq.write(bodyPayload);
   apiReq.end();
 });
