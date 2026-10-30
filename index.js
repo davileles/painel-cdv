@@ -9325,8 +9325,10 @@ FINALIZAÇÃO — quando terminar TODOS os dias:
 DADOS ESTRUTURADOS (invisíveis para o usuário — o painel usa para montar a página do roteiro):
 - Toda resposta que apresentar um ou mais dias completos (novos ou ajustados) deve terminar, depois de todo o texto, com um bloco exatamente assim:
 <ROTEIRO_JSON>{"dias":[...]}</ROTEIRO_JSON>
-- "dias" traz SÓ os dias apresentados nesta resposta, cada um com: {"num":1,"data":"texto da data","titulo":"título curto","resumo":"2-3 linhas","energia":"Leve|Moderado|Intenso","atividades":[{"horario":"HH:MM–HH:MM","nome":"atração","descricao":"2-3 linhas","dica":"dica prática ou vazio"}],"deslocamentos":["A → B: como ir, tempo, custo"],"custos":[{"label":"item","valor":"R$ valor"}],"custoTotal":"R$ valor"}
-- Na resposta de FINALIZAÇÃO (tabelas de resumo e custos), o bloco traz também "meta": {"titulo":"destino","subtitulo":"estilo/tema da viagem","eyebrow":"Clube do Viajante · Cidade, País","pills":["até 4 badges: datas, viajantes, estilo"],"visaoGeral":[{"label":"RÓTULO","value":"valor","variant":""}],"footerNote":"Cidade, País · Roteiro personalizado"} — "visaoGeral" com 4 a 6 cards (destino, datas, viajantes, orçamento, ritmo, tipo).
+- "dias" traz SÓ os dias apresentados nesta resposta, cada um com: {"num":1,"data":"AAAA-MM-DD (ou o texto da data se o ano/dia não foi informado)","titulo":"título curto","resumo":"2-3 linhas","energia":"Leve|Moderado|Intenso","atividades":[{"horario":"HH:MM–HH:MM","nome":"atração","descricao":"2-3 linhas","dica":"dica prática ou vazio"}],"deslocamentos":["A → B: como ir, tempo, custo"],"custos":[{"label":"item","valor":"R$ valor"}],"custoTotal":"R$ valor"}
+- Na resposta de FINALIZAÇÃO (tabelas de resumo e custos), o bloco traz também "meta": {"titulo":"destino","subtitulo":"estilo/tema da viagem","eyebrow":"Clube do Viajante · Cidade, País","pills":["até 4 badges: datas, viajantes, estilo"],"visaoGeral":[{"label":"RÓTULO","value":"valor","variant":""}],"footerNote":"Cidade, País · Roteiro personalizado","obs":"clima da época, o que reservar com antecedência e dicas gerais (pode usar <b> e <br>)","voos":[{"tipo":"ida|volta","origemIata":"GRU","origemNome":"São Paulo","destinoIata":"GIG","destinoNome":"Rio de Janeiro","data":"AAAA-MM-DD","dataChegada":"AAAA-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","cia":"companhia","nvoo":"número","classe":"","pnr":""}],"hospedagem":[{"nome":"hotel","cidade":"cidade","checkin":"AAAA-MM-DD","checkout":"AAAA-MM-DD","noites":2,"hospedes":"2"}],"servicos":[{"tipo":"passeio|ingresso|transporte|restaurante|outro","icon":"emoji","nome":"o que reservar","meta":"data · onde reservar","badge":"Reservar|Prioridade|Opcional"}],"documentos":[{"icon":"emoji","titulo":"Passaporte","meta":"detalhe","badge":"Obrigatório","badgeClass":"badge-coral"}]} — "visaoGeral" com 4 a 6 cards (destino, datas, viajantes, orçamento, ritmo, tipo).
+- "voos" só com voos que o usuário informou (sem voo informado = []); "hospedagem" com o hotel informado ou a sugestão de região/hotel ("Hotel a definir — bairro") com check-in/check-out; "servicos" = ingressos, passeios e restaurantes que pedem reserva antecipada citados no roteiro (badge "Reservar" ou "Prioridade"); "documentos" = 4 a 6 cartões da pasta de viagem que o viajante vai anexar (documento de identidade ou passaporte, passagens, voucher do hotel, seguro viagem quando fizer sentido, ingressos importantes), badgeClass "badge-coral" para obrigatório e "badge-gold" para os demais.
+- Em "dias", "data" vai em AAAA-MM-DD sempre que a data da viagem for conhecida.
 - O conteúdo do JSON é o mesmo do texto (nada inventado). JSON válido, numa linha só, sem markdown, aspas internas escapadas. Respostas sem dias completos (perguntas, resumo inicial) NÃO têm o bloco.
 - Nunca mencione esse bloco ao usuário.`;
 
@@ -9453,14 +9455,16 @@ function extrairRoteiroIA(messages, fimCb) {
       "custoTotal": "R$ valor total do dia"
     }
   ],
-  "footerNote": "string curta — ex: 'Rio de Janeiro, Brasil · Roteiro personalizado'"
+  "footerNote": "string curta — ex: 'Rio de Janeiro, Brasil · Roteiro personalizado'",
+  "obs":"clima da época, o que reservar com antecedência e dicas gerais (pode usar <b> e <br>)","voos":[{"tipo":"ida|volta","origemIata":"GRU","origemNome":"São Paulo","destinoIata":"GIG","destinoNome":"Rio de Janeiro","data":"AAAA-MM-DD","dataChegada":"AAAA-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","cia":"companhia","nvoo":"número","classe":"","pnr":""}],"hospedagem":[{"nome":"hotel","cidade":"cidade","checkin":"AAAA-MM-DD","checkout":"AAAA-MM-DD","noites":2,"hospedes":"2"}],"servicos":[{"tipo":"passeio|ingresso|transporte|restaurante|outro","icon":"emoji","nome":"o que reservar","meta":"data · onde reservar","badge":"Reservar|Prioridade|Opcional"}],"documentos":[{"icon":"emoji","titulo":"Passaporte","meta":"detalhe","badge":"Obrigatório","badgeClass":"badge-coral"}]
 }
 
 REGRAS:
 - Use SOMENTE informacoes que realmente aparecem na conversa. Nunca invente atracoes, precos ou dicas que nao foram mencionadas.
 - "visaoGeral" deve ter entre 4 e 6 cards com os principais dados da viagem (destino, datas, viajantes, orcamento, ritmo, tipo de viagem).
 - Se algum campo opcional nao tiver informacao suficiente na conversa, retorne string vazia "" ou array vazio [], nunca invente.
-- "dias" deve conter TODOS os dias que apareceram na conversa, na ordem correta, numerados a partir de 1.
+- "dias" deve conter TODOS os dias que apareceram na conversa, na ordem correta, numerados a partir de 1. "data" em AAAA-MM-DD quando a data for conhecida.
+- "voos" só com voos informados na conversa (senão []). "hospedagem" com o hotel informado ou a região sugerida ("Hotel a definir — bairro"). "servicos" = o que pede reserva antecipada no roteiro. "documentos" = 4 a 6 cartões da pasta de viagem (identidade/passaporte, passagens, voucher do hotel, seguro, ingressos), badgeClass "badge-coral" obrigatório, "badge-gold" demais.
 - Se um mesmo dia aparecer mais de uma vez na conversa (versao original e versao ajustada depois), use SEMPRE a versao mais recente — a que aparece por ultimo.
 - Responda apenas com o JSON puro, comecando em { e terminando em }.
 - Escreva o JSON compacto (sem indentacao nem quebras de linha entre campos) e nunca use quebra de linha dentro de um texto; aspas dentro de textos devem ser escapadas.`;
