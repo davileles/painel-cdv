@@ -7145,7 +7145,20 @@ function switchTab(tab){
   if(tab==='planejamento' && window.peInit) window.peInit();
   if(tab==='roteiros' && window.rotCarregarMeus) window.rotCarregarMeus();
   if (window.matchMedia('(max-width:900px)').matches) toggleSidebar(false);
-  try{localStorage.setItem('cdv_active_tab', tab);}catch(e){}
+  try{sessionStorage.setItem('cdv_active_tab', tab);}catch(e){}
+}
+
+// Aba a abrir ao carregar: a última aberta nesta aba do navegador (sobrevive ao F5),
+// desde que exista e esteja visível para este membro; senão, Início.
+function abaInicial(){
+  try{
+    const t=sessionStorage.getItem('cdv_active_tab');
+    if(!t) return 'inicio';
+    const btn=document.querySelector('.main-tab[data-tab="'+t+'"]');
+    const sec=document.getElementById('tab-'+t);
+    if(!btn||!sec||btn.style.display==='none') return 'inicio';
+    return t;
+  }catch(e){ return 'inicio'; }
 }
 
 // ══════════════════════════════════════════════════════
@@ -8593,8 +8606,7 @@ document.getElementById('main-tabs').addEventListener('click',e=>{
 // Restaurar aba ao carregar
 (function(){
   try{
-    const saved=localStorage.getItem('cdv_active_tab');
-    switchTab('inicio');
+    switchTab(abaInicial());
   }catch(e){ switchTab('inicio'); }
 })();
 
@@ -8917,8 +8929,8 @@ function mostrarPainel(sessao) {
   if (tabMilhas) tabMilhas.style.display = '';
   // Calculadoras, Salas VIP e Cartões disponíveis para todos os assinantes
   // (a sub-aba Admin do Comparador de Cartões continua restrita — ver ctInit())
-  // Renderiza aba Início ao carregar (garante que nome apareça imediatamente)
-  switchTab('inicio');
+  // Reabre a aba em que o membro estava antes de recarregar (ou Início)
+  switchTab(abaInicial());
 }
 // ── Tema claro/escuro ─────────────────────────────────────────────────────────
 function _aplicarTema(tema) {
