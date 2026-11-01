@@ -324,6 +324,13 @@ function normalizeHeading(txt) {
 }
 
 // Extrai { parceiro → pts } de uma página HTML do Comparemania
+// Nome de parceiro que é só texto de pontuação (sem marca): "De 3 a 11 pts", "até 8 pontos",
+// "5 pts/R$", "3 pontos por real", "cashback de 3 a 11 pts".
+function pareceRotuloDePontuacao(nome) {
+  const s = String(nome || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  return /^(cashback\s+)?((de|ate)\s+)?\d+([.,]\d+)?(\s*a\s*\d+([.,]\d+)?)?\s*(pts?|pontos?)(\s*(\/|por)\s*(r\$|real|reais|us\$|dolar))?\.?$/.test(s);
+}
+
 function parseComparemaniaPts(html, progId) {
   const result = {};
 
@@ -362,6 +369,12 @@ function parseComparemaniaPts(html, progId) {
       .replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ').replace(/&shy;/g, '')
       .trim();
     if (!name) continue;
+    // Descarta "lojas" que na verdade são rótulos de pontuação cadastrados por engano
+    // no Comparemania (ex.: "De 3 a 11 pts", "5 pontos por real") — viravam falso "Novo parceiro".
+    if (pareceRotuloDePontuacao(name)) {
+      console.warn(`[Parser] ${progId}: ignorado nome que parece pontuação, não loja: "${name}"`);
+      continue;
+    }
 
     const hrefMatch = aMatch[1].match(/href=["']([^"']+)["']/i);
     const rawHref = hrefMatch ? hrefMatch[1] : '';
