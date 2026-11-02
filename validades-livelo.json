@@ -1,6 +1,18 @@
 {
-  "coletadoEm": "2026-11-01T23:02:56.172Z",
+  "coletadoEm": "2026-11-02T09:04:16.397Z",
   "items": {
+    "asics": {
+      "id": "ACS",
+      "nome": "Asics",
+      "categorias": null,
+      "legalTerms": "Válido de 02 a 30/11/2026. Ganhe 5 pontos por real gasto exclusivo para assinantes Clube Livelo e 3 pontos por real para demais clientes. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-11-02",
+      "dateEnd": "2026-11-30",
+      "parity": 3,
+      "parityClub": 5,
+      "parityBau": 1,
+      "campanha": "PROMOTION_CLUB"
+    },
     "assistcardseguroviagem": {
       "id": "ASC",
       "nome": "Assist Card Seguro-Viagem",
@@ -23,6 +35,18 @@
       "parity": 8,
       "parityClub": 8,
       "parityBau": 2,
+      "campanha": "PROMOTION"
+    },
+    "bibicalcados": {
+      "id": "BBB",
+      "nome": "Bibi",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 02 a 09/11/2026. Ganhe 5 pontos a cada real gasto. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-11-02",
+      "dateEnd": "2026-11-09",
+      "parity": 5,
+      "parityClub": 5,
+      "parityBau": 1,
       "campanha": "PROMOTION"
     },
     "bradescoconsorcios": {
@@ -121,18 +145,6 @@
       "parityBau": 2,
       "campanha": "PROMOTION"
     },
-    "hoteiscom": {
-      "id": "HTC",
-      "nome": "Hoteis com",
-      "categorias": null,
-      "legalTerms": "Válido de 30/10 a 01/11/2026. 6 pontos por real para clientes Clube e 04 pontos por real demais, gasto com diárias de hotéis, mediante uso do cupom \"LIVELO46X\", com check-out até 31/03/2027. Consulte condições. Imagem Ilustrativa, taxas não inclusas.",
-      "dateStart": "2026-10-30",
-      "dateEnd": "2026-11-01",
-      "parity": 4,
-      "parityClub": 6,
-      "parityBau": 1,
-      "campanha": "PROMOTION_CLUB"
-    },
     "live": {
       "id": "LVE",
       "nome": "LIVE!",
@@ -155,6 +167,18 @@
       "parity": 6,
       "parityClub": 6,
       "parityBau": 3,
+      "campanha": "PROMOTION"
+    },
+    "mondaine": {
+      "id": "MDN",
+      "nome": "Mondaine",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 02 a 03/11/2026. Ganhe 5 pontos a cada real gasto em produtos selecionados e 2 pontos por real demais itens. Consulte o regulamento.",
+      "dateStart": "2026-11-02",
+      "dateEnd": "2026-11-03",
+      "parity": 5,
+      "parityClub": 5,
+      "parityBau": 2,
       "campanha": "PROMOTION"
     },
     "movida": {
@@ -192,6 +216,18 @@
       "parityClub": 22,
       "parityBau": 6,
       "campanha": "PROMOTION_CLUB"
+    },
+    "pneustore": {
+      "id": "CPX",
+      "nome": "PneuStore",
+      "categorias": null,
+      "legalTerms": "Campanha válida em 02/11/2026. Ganhe 2 pontos a cada real gasto em Pneus da marca Bridgestone e 1 ponto por real demais itens. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-11-02",
+      "dateEnd": "2026-11-02",
+      "parity": 2,
+      "parityClub": 2,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
     },
     "portoservico": {
       "id": "PTO",
