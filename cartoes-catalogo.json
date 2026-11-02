@@ -7,14 +7,14 @@
       "observacao": "Alíquota federal aplicada a todos os cartões. O que varia por cartão é se o emissor absorve o custo (campo iof_isento).",
       "fonte": "https://www.c6bank.com.br/blog/como-calcular-iof"
     },
-    "atualizado_em": "2026-10-26",
+    "atualizado_em": "2026-11-02",
     "total": 143,
-    "validado_em": "2026-10-26",
+    "validado_em": "2026-11-02",
     "emissores_normalizados_em": "2026-07-28",
     "regra_emissor": "Emissor gravado como nome comercial curto. Novas importações devem seguir a mesma normalização.",
     "coletor": "coletar-cartoes.js",
     "modelo_coleta": "claude-sonnet-5",
-    "conflitos_abertos": 4,
+    "conflitos_abertos": 8,
     "imputacao_planilha": {
       "arquivo": "cartoes-premium-comparativo.xlsx",
       "em": "2026-07-31",
@@ -308,7 +308,7 @@
       "isencao": {
         "tipo": "gasto_mensal",
         "valor": 3000,
-        "regra": "Ao atingir R$ 3 mil em compras no crédito no mês, a parcela mensal da anuidade do cartão (e dos adicionais) é zerada automaticamente. Não entram no cálculo pagamentos de contas, parcelas de anuidade, proteção ouro, saques no crédito, encargos, taxas e tarifas."
+        "regra": "Ao atingir R$ 3.000,00 em compras no crédito no mês (compras no débito, pagamentos de contas, saques e encargos não contam), a parcela mensal da anuidade é zerada automaticamente, valendo também para os cartões adicionais."
       },
       "renda_minima": null,
       "requisito_acesso": null,
@@ -336,41 +336,47 @@
       ],
       "beneficios_banco": [
         {
-          "titulo": "Crédito automático de milhas",
-          "descricao": "A cada fatura paga, o valor equivalente em dólar é convertido em milhas e transferido automaticamente para a conta Smiles, sem cobrança de tarifa."
+          "titulo": "Acúmulo de milhas Smiles",
+          "descricao": "Compras e o pagamento da fatura (incluindo a anuidade) geram milhas Smiles, transferidas automaticamente e sem tarifa para a conta Smiles do titular."
         },
         {
-          "titulo": "Bônus de aquisição",
-          "descricao": "Na contratação do cartão pelo primeiro titular, são creditadas 5.000 (cliente Smiles) ou 7.500 milhas (Clube Smiles/Diamante), em 4 parcelas, condicionadas ao pagamento das 4 primeiras anuidades."
+          "titulo": "Milhas de boas-vindas",
+          "descricao": "Na aquisição do cartão, clientes Smiles ganham 5.000 milhas e clientes Clube Smiles ou categoria Diamante ganham 7.500 milhas, creditadas em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades."
+        },
+        {
+          "titulo": "Usou, zerou",
+          "descricao": "Ao atingir R$ 3.000,00 em compras no crédito no mês, a parcela mensal da anuidade do titular e dos adicionais é zerada automaticamente."
+        },
+        {
+          "titulo": "Primeira bagagem gratuita",
+          "descricao": "Mediante apresentação do Cartão de crédito GOL Smiles, válido para todos os voos GOL."
         },
         {
           "titulo": "Cartões adicionais",
-          "descricao": "É possível solicitar até 4 cartões adicionais, cada um com custo de 50% da anuidade do titular; as milhas geradas pelas faturas dos adicionais são transferidas automaticamente para o cartão do titular."
-        },
-        {
-          "titulo": "Isenção por uso (Usou, zerou)",
-          "descricao": "Compras no crédito somando R$ 3 mil no mês zeram a parcela mensal da anuidade do titular e dos adicionais."
+          "descricao": "É possível solicitar até quatro cartões adicionais, cuja anuidade corresponde a 50% do valor da anuidade do cartão titular; as milhas geradas por eles são transferidas para a conta Smiles do titular."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-      "nota_curadoria": "A anuidade do BB Smiles Visa Gold é parcelada em 12x de R$ 35,67 (R$ 428,00/ano), mas pode ser zerada mensalmente com R$ 3 mil em compras no crédito. O benefício de acesso a salas VIP via VAC é exclusivo do Smiles Visa Infinite, não estando disponível na versão Gold. Não há informação oficial sobre renda mínima exigida nem sobre transferência das milhas Smiles para outros programas, já que o cartão credita diretamente na conta Smiles do titular.",
+      "nota_curadoria": "A anuidade de R$ 428,00 (12x R$ 35,67) pode ser zerada mensalmente com gasto mínimo de R$ 3.000,00 no crédito, mas a página não especifica a taxa de conversão de reais/dólares em milhas Smiles, por isso o campo 'pontos' ficou em branco. O benefício de salas VIP (GOL Premium Lounges e VAC) é exclusivo da categoria Infinite, não se aplicando ao Gold. Renda mínima, spread, IOF e requisitos de acesso não constam na fonte consultada.",
       "procedencia": {
         "anuidade": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "anuidade_parcelas": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "isencao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "adicionais_gratis": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "pontos": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "salas_vip": "planilha:cartoes-premium-comparativo.xlsx",
-        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito"
       },
       "fontes": [
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "planilha:arquivo_unificado_fuzzy.xlsx",
+        "planilha:cartoes-premium-comparativo.xlsx",
         "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
-      "verificado_em": "2026-07-31",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "renda_minima",
         "requisito_acesso",
@@ -378,19 +384,15 @@
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
         "link_solicitacao",
+        "pontos",
+        "salas_vip",
+        "spread",
         "validade_pontos"
-      ],
-      "origem_planilha": {
-        "campos": [
-          "cashback",
-          "salas_vip",
-          "spread"
-        ],
-        "arquivo": "cartoes-premium-comparativo.xlsx",
-        "em": "2026-07-31",
-        "par_planilha": "Banco do Brasil GOL Smiles Visa Gold"
-      }
+      ]
     },
     {
       "slug": "bb-smiles-visa-infinite",
@@ -403,7 +405,7 @@
       "isencao": {
         "tipo": "gasto_mensal",
         "valor": 15000,
-        "regra": "Programa 'Usou, zerou': ao atingir R$ 15 mil em compras no crédito no mês, a parcela mensal da anuidade do cartão titular e dos adicionais é zerada automaticamente. Não entram no cálculo pagamentos de contas, parcelas de anuidade, proteção ouro, saques no crédito, encargos, taxas e tarifas."
+        "regra": "Ao atingir R$ 15 mil em compras no crédito no mês (cartão Infinite), a parcela mensal da anuidade do titular e dos adicionais é zerada automaticamente. Não entram no cálculo pagamentos de contas, parcelas de anuidade, proteção ouro, saques no crédito, encargos, taxas e tarifas."
       },
       "renda_minima": null,
       "requisito_acesso": "Correntista ou não-correntista do Banco do Brasil, sujeito a análise de crédito",
@@ -412,7 +414,7 @@
         "nacional": null,
         "internacional": null,
         "unidade": "pts/USD",
-        "observacao": "Milhas Smiles creditadas automaticamente por dólar do valor pago na fatura: clientes Smiles ganham 3 milhas/USD e clientes Clube Smiles ou categoria Diamante ganham 5,5 milhas/USD. Há ainda milhas de renovação anual (5.000 para clientes Smiles ou 7.000 para Clube Smiles/Diamante) e milhas de aquisição do cartão (15.000 ou 20.000, conforme categoria), creditadas em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades."
+        "observacao": "O valor pago na fatura, convertido para dólar, gera pontos transferidos automática e exclusivamente para a conta Smiles, convertidos em Milhas Smiles conforme fator de conversão do Programa Smiles; o valor específico do fator não consta nas fontes analisadas."
       },
       "cashback": {
         "percentual": 0,
@@ -427,81 +429,80 @@
       "validade_pontos": "Nao expiram (compras e bonus, regra vigente desde 23/01/2023)",
       "salas_vip": [
         {
-          "programa": "GOL Premium Lounges",
-          "regra": "Acesso ilimitado do titular do cartão GOL Smiles Visa Infinite às salas GOL Premium Lounges."
+          "programa": "Visa Airport Companion (VAC)",
+          "regra": "4 acessos gratuitos por ano a salas VIP em aeroportos no Brasil e exterior, custeados pelo BB, mediante acesso via QR Code pelo aplicativo VAC."
         },
         {
-          "programa": "VAC (Visa Airport Companion)",
-          "regra": "4 visitas anuais gratuitas a salas VIP em aeroportos do mundo, válidas para clientes que adquirirem o bilhete de viagem pela GOL ou afiliadas, mediante apresentação do bilhete."
+          "programa": "GOL Premium Lounges",
+          "regra": "Acesso ilimitado ao titular do cartão nas salas GOL Premium Lounges, exigindo apresentação do bilhete de viagem adquirido pela GOL ou afiliadas."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Crédito automático de milhas",
-          "descricao": "Sempre que a fatura é paga, o valor equivalente em dólar é convertido em milhas Smiles e transferido automaticamente para a conta Smiles do titular, sem tarifa."
-        },
-        {
-          "titulo": "Milhas de aquisição do cartão",
-          "descricao": "20.000 milhas (Clube Smiles/Diamante) ou 15.000 milhas (Smiles) na aquisição do cartão Infinite pelo primeiro titular, creditadas em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades."
-        },
-        {
-          "titulo": "Programa Usou, zerou",
-          "descricao": "Zera a parcela mensal da anuidade do titular e dos adicionais ao atingir R$ 15 mil em compras no crédito no mês."
-        },
-        {
           "titulo": "Primeira bagagem gratuita",
-          "descricao": "Bagagem despachada gratuita mediante apresentação do cartão, válida para todos os voos GOL."
+          "descricao": "Primeira bagagem gratuita em voos GOL mediante apresentação do cartão de crédito GOL Smiles."
         },
         {
-          "titulo": "BB paga diferença de IOF",
-          "descricao": "Para clientes com Ourocard, o Banco do Brasil paga a diferença de IOF do cartão GOL Smiles Visa Infinite."
+          "titulo": "Milhas de aquisição",
+          "descricao": "Ganho de 15.000 a 20.000 milhas Smiles ao adquirir o cartão, conforme categoria do cliente no Programa Smiles (Diamante/Clube Smiles ou demais clientes Smiles)."
         },
         {
-          "titulo": "Milhas de renovação",
-          "descricao": "5.000 milhas (Smiles) ou 7.000 milhas (Clube Smiles/Diamante) creditadas na renovação anual, condicionadas ao pagamento da anuidade de renovação."
+          "titulo": "Acesso ilimitado a GOL Premium Lounges",
+          "descricao": "Titular tem acesso ilimitado às salas VIP GOL Premium Lounges."
+        },
+        {
+          "titulo": "4 acessos VAC a salas VIP",
+          "descricao": "4 visitas anuais gratuitas a salas VIP em aeroportos do mundo via Visa Airport Companion (VAC)."
+        },
+        {
+          "titulo": "Usou, zerou!",
+          "descricao": "Zera automaticamente a parcela mensal da anuidade do titular e adicionais ao atingir R$ 15 mil em compras no crédito no mês."
+        },
+        {
+          "titulo": "Visa Concierge e Visa Luxury Hotel Collection",
+          "descricao": "Serviços de concierge Visa e acesso à coleção de hotéis de luxo Visa Luxury Hotel Collection disponíveis para o cartão Infinite."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-      "nota_curadoria": "A anuidade de R$ 1.188/ano pode ser totalmente zerada via 'Usou, zerou' com R$ 15 mil em compras mensais no crédito, mas atenção: pagamentos de contas e encargos não contam para essa meta. As milhas de aquisição e renovação dependem do pagamento em dia das primeiras parcelas da anuidade, e os adicionais custam 50% da anuidade do titular, não sendo gratuitos. Renda mínima exigida não foi divulgada na fonte oficial consultada.",
+      "nota_curadoria": "A anuidade de R$ 1.188,00 pode ser zerada mensalmente ('Usou, zerou!') com gasto mínimo de R$ 15 mil/mês no crédito, mas não há confirmação de renda mínima exigida nem de requisito formal de convite ou relacionamento. O fator de conversão de pontos por dólar gasto em Milhas Smiles não é detalhado nas fontes oficiais consultadas, apenas o mecanismo geral de transferência automática para a conta Smiles. Cartões adicionais (até 4) pagam 50% da anuidade do titular, não sendo gratuitos.",
       "procedencia": {
         "anuidade": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "anuidade_parcelas": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "isencao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "adicionais_gratis": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "pontos": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "pontos": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
+        "transfere_para": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "salas_vip": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "transfere_para": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
-        "requisito_acesso": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
-        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "requisito_acesso": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito"
       },
       "fontes": [
-        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
+        "planilha:arquivo_unificado_fuzzy.xlsx",
+        "planilha:cartoes-premium-comparativo.xlsx",
         "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
-      "verificado_em": "2026-07-31",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "renda_minima"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
+        "cashback",
+        "iof",
         "link_solicitacao",
         "requisito_acesso",
-        "transfere_para",
+        "spread",
         "validade_pontos"
       ],
-      "bandeira_ref": "visa-infinite",
-      "origem_planilha": {
-        "campos": [
-          "cashback",
-          "spread"
-        ],
-        "arquivo": "cartoes-premium-comparativo.xlsx",
-        "em": "2026-07-31"
-      }
+      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "bb-smiles-visa-internacional",
@@ -540,40 +541,41 @@
       ],
       "beneficios_banco": [
         {
-          "titulo": "Crédito automático de milhas",
-          "descricao": "O valor pago na fatura é convertido automaticamente em milhas Smiles, com transferência isenta de tarifa."
-        },
-        {
-          "titulo": "Milhas de aquisição do cartão",
-          "descricao": "Bônus de 2.000 milhas (Smiles) ou 3.000 milhas (Clube Smiles/Diamante) na aquisição do cartão, creditadas em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades, exclusivo para o primeiro titular."
+          "titulo": "Milhas por fatura paga",
+          "descricao": "O equivalente em dólar ao valor pago na fatura é convertido em milhas Smiles, transferidas automaticamente e sem tarifa para a conta Smiles do titular."
         },
         {
           "titulo": "Primeira bagagem gratuita",
-          "descricao": "Bagagem gratuita mediante apresentação do cartão, válida para todos os voos GOL."
+          "descricao": "Mediante apresentação do cartão de crédito GOL Smiles, válido para todos os voos GOL."
+        },
+        {
+          "titulo": "Milhas de aquisição",
+          "descricao": "Bônus de milhas ao adquirir o cartão, creditado em 4 parcelas condicionadas ao pagamento das 4 primeiras parcelas da anuidade; exclusivo para o primeiro titular."
         },
         {
           "titulo": "Cartões adicionais",
-          "descricao": "Possibilidade de solicitar até quatro cartões adicionais, cobrados a 50% da anuidade do titular, com milhas das faturas pagas transferidas automaticamente ao titular."
+          "descricao": "Possível solicitar até quatro cartões adicionais, cada um com anuidade correspondente a 50% do valor da anuidade do titular; as milhas geradas por compras e anuidades dos adicionais são transferidas automaticamente para a conta do titular."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-      "nota_curadoria": "Cartão de entrada da linha Smiles, com acúmulo de 1,35 milha por dólar (ou 2 milhas para clientes Clube Smiles/Diamante), sem sala VIP nem mecanismo de isenção de anuidade por gasto (esse benefício só existe nas categorias Gold, Platinum e Infinite). A anuidade de R$312/ano é parcelada em 12x e o adicional custa 50% do valor do titular, não sendo gratuito. Não há informação oficial sobre renda mínima exigida para este cartão específico.",
+      "nota_curadoria": "A anuidade de R$ 312,00/ano (12x R$26,00) é referente ao cartão Smiles Internacional Visa/Mastercard, conforme tabela do próprio BB. O benefício de isenção 'Usou, zerou' e o acesso a salas VIP são exclusivos das categorias Gold, Platinum e Infinite, não se aplicando à versão Internacional. A fonte não detalha claramente a proporção de milhas por real/dólar gasto nem renda mínima exigida, por isso esses campos ficaram em branco.",
       "procedencia": {
         "anuidade": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "anuidade_parcelas": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "adicionais_gratis": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "pontos": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
         "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "transfere_para": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
         "salas_vip": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "transfere_para": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito"
       },
       "fontes": [
         "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "planilha:arquivo_unificado_fuzzy.xlsx",
         "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
-      "verificado_em": "2026-07-31",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "isencao",
         "renda_minima",
@@ -582,18 +584,15 @@
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
+        "adicionais_gratis",
+        "cashback",
+        "iof",
         "link_solicitacao",
+        "pontos",
+        "salas_vip",
         "transfere_para",
         "validade_pontos"
-      ],
-      "origem_planilha": {
-        "campos": [
-          "cashback",
-          "salas_vip"
-        ],
-        "arquivo": "arquivo_unificado_fuzzy.xlsx",
-        "em": "2026-07-31"
-      }
+      ]
     },
     {
       "slug": "bb-smiles-visa-platinum",
@@ -606,16 +605,16 @@
       "isencao": {
         "tipo": "gasto_mensal",
         "valor": 6000,
-        "regra": "Ao atingir R$ 6 mil em compras no crédito no mês, a parcela mensal da anuidade do cartão Platinum (e de seus adicionais) é zerada automaticamente. Não entram no cálculo pagamentos de contas, parcelas de anuidade, saques, encargos, taxas e tarifas."
+        "regra": "A parcela mensal da anuidade é zerada automaticamente quando o titular atinge R$ 6.000,00 em compras no crédito no mês; não entram no cálculo pagamentos de contas, parcelas de anuidade, proteção ouro, saques na função crédito, encargos financeiros, taxas e tarifas."
       },
       "renda_minima": null,
       "requisito_acesso": null,
       "adicionais_gratis": 0,
       "pontos": {
-        "nacional": 2.3,
-        "internacional": 2.3,
+        "nacional": 2,
+        "internacional": 2,
         "unidade": "pts/USD",
-        "observacao": "2,3 milhas por dólar gasto para clientes Smiles; 3,5 milhas por dólar para clientes Clube Smiles ou categoria Diamante. Milhas de renovação: 3.000 (Smiles) ou 4.000 (Clube Smiles/Diamante), condicionadas ao pagamento da anuidade de renovação. Milhas de aquisição (em 4 parcelas): 10.000 (Smiles) ou 15.000 (Clube Smiles/Diamante), condicionadas ao pagamento das 4 primeiras parcelas da anuidade."
+        "observacao": "Fator de conversão de 2,00 pontos para cada US$ 1,00 pago na fatura (valor convertido em dólar). Bônus de Aquisição de 10.000 pontos (creditados em 4 parcelas condicionadas ao pagamento das 4 primeiras anuidades) e Bônus de Renovação de 3.000 pontos a cada pagamento da anuidade de renovação."
       },
       "cashback": {
         "percentual": 0,
@@ -623,7 +622,7 @@
       },
       "programa_proprio": "Smiles",
       "transfere_para": [
-        "Smiles (GOL)"
+        "Smiles"
       ],
       "spread": 4,
       "iof": 1.1,
@@ -636,63 +635,82 @@
       ],
       "beneficios_banco": [
         {
-          "titulo": "Crédito automático de milhas",
-          "descricao": "A cada fatura paga, o valor equivalente em dólar é convertido em milhas e transferido automaticamente para a conta Smiles, sem tarifa."
+          "titulo": "Primeira bagagem gratuita",
+          "descricao": "Despacho da primeira bagagem gratuito em todos os voos GOL mediante apresentação do cartão de crédito GOL Smiles."
         },
         {
-          "titulo": "Usou, zerou",
-          "descricao": "Atingindo R$ 6 mil em compras no crédito no mês, a parcela mensal da anuidade é zerada automaticamente."
-        },
-        {
-          "titulo": "Milhas de aquisição do cartão",
-          "descricao": "Bônus de 10.000 ou 15.000 milhas (conforme categoria do cliente Smiles) creditado em 4 parcelas, exclusivo para o primeiro titular, condicionado ao pagamento das 4 primeiras parcelas da anuidade."
+          "titulo": "Pontuação automática no Smiles",
+          "descricao": "O valor pago da fatura é convertido em dólares e transferido automaticamente para a conta Smiles, sem necessidade de solicitação e sem cobrança de tarifa de transferência."
         },
         {
           "titulo": "Cartões adicionais",
-          "descricao": "Possibilidade de solicitar até quatro cartões adicionais, cujas faturas pagas também geram milhas transferidas automaticamente para o titular."
+          "descricao": "Possibilidade de solicitar até 4 cartões adicionais, cujas faturas também geram milhas transferidas para a conta Smiles do titular."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-      "nota_curadoria": "A anuidade de R$ 576 pode ser zerada mensalmente com gasto de R$ 6 mil no crédito, mas atenção: pagamentos de contas, saques e tarifas não contam para essa meta. O acúmulo de milhas é por dólar gasto (2,3 a 3,5 milhas/USD conforme categoria Smiles do cliente), e não há confirmação de acesso a salas VIP para a versão Platinum — esse benefício é explicitamente restrito ao Visa Infinite. Adicionais custam 50% da anuidade do titular, portanto não são gratuitos.",
+      "nota_curadoria": "A anuidade de R$ 576,00 é cobrada em 12x de R$ 48,00 e pode ser zerada mensalmente com R$ 6 mil em compras no crédito (regra 'Usou, zerou'). O cartão não oferece acesso a salas VIP (Lounge Key/VAC), benefício restrito às versões Visa Infinite e Altus da família BB. A pontuação segue fator fixo de 2 pontos por dólar pago na fatura, com bônus de aquisição e renovação condicionados ao pagamento das respectivas parcelas de anuidade; não há confirmação oficial de renda mínima exigida.",
       "procedencia": {
         "anuidade": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "anuidade_parcelas": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
         "isencao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "pontos": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "adicionais_gratis": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
-        "salas_vip": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "adicionais_gratis": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "pontos": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
         "transfere_para": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
-        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "salas_vip": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "validade_pontos": "https://www.smiles.com.br/portal/cartao-de-credito"
       },
       "fontes": [
-        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
         "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/ContratoSmiles150310.pdf",
+        "planilha:arquivo_unificado_fuzzy.xlsx",
+        "planilha:cartoes-premium-comparativo.xlsx",
         "https://www.smiles.com.br/portal/cartao-de-credito"
       ],
-      "verificado_em": "2026-07-31",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "renda_minima",
         "requisito_acesso"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
-        "adicionais_gratis",
-        "link_solicitacao",
+        "cashback",
+        "iof",
         "salas_vip",
-        "transfere_para",
+        "spread",
         "validade_pontos"
       ],
-      "origem_planilha": {
-        "campos": [
-          "cashback",
-          "spread"
-        ],
-        "arquivo": "cartoes-premium-comparativo.xlsx",
-        "em": "2026-07-31"
-      }
+      "conflitos": [
+        {
+          "campo": "pontos.nacional",
+          "antes": 2.3,
+          "depois": 2,
+          "variacao_pct": -13,
+          "fonte_antes": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+          "fonte_depois": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
+          "valor_mantido": "depois",
+          "motivo": null,
+          "detectado_em": "2026-11-02",
+          "resolvido": false
+        },
+        {
+          "campo": "pontos.internacional",
+          "antes": 2.3,
+          "depois": 2,
+          "variacao_pct": -13,
+          "fonte_antes": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/smiles-visa/",
+          "fonte_depois": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/contratosmiles.pdf",
+          "valor_mantido": "depois",
+          "motivo": null,
+          "detectado_em": "2026-11-02",
+          "resolvido": false
+        }
+      ]
     },
     {
       "slug": "bb-visa-gold",
@@ -764,23 +782,23 @@
       "slug": "bb-visa-infinite-altus-liv",
       "nome": "BB Visa Infinite Altus Liv",
       "emissor": "Banco do Brasil",
-      "bandeira": "Visa",
+      "bandeira": "Visa Infinite",
       "categoria": "Infinite",
       "anuidade": 3600,
       "anuidade_parcelas": null,
       "isencao": {
-        "tipo": "devolucao_parcial_ou_total",
+        "tipo": "outro",
         "valor": null,
-        "regra": "Possibilidade de devolução de 50% ou 100% da anuidade conforme volume de gastos mensais ou investimentos"
+        "regra": "Anuidade flexível, com possibilidade de devolução de 50% ou 100% do valor, conforme o volume de gastos mensais ou de investimentos do cliente."
       },
       "renda_minima": null,
-      "requisito_acesso": "Clientes do segmento Estilo do Banco do Brasil (convite/seleção)",
+      "requisito_acesso": "Cartão voltado a clientes de alta renda, com benefícios diferenciados destacados para clientes BB Private.",
       "adicionais_gratis": 7,
       "pontos": {
-        "nacional": null,
+        "nacional": 4,
         "internacional": 4,
         "unidade": "pts/USD",
-        "observacao": "Até 4 pontos por dólar no Programa Livelo. Pontos não expiram. A taxa nacional não está discriminada separadamente em fonte oficial consultada."
+        "observacao": "4 pontos por dólar gasto no exterior; no Brasil, pontuação também calculada em dólar e escalonada conforme fatura: 3,00 pts/USD até R$15 mil, 3,50 pts/USD de R$15 mil a R$25 mil, e 4,00 pts/USD acima de R$25 mil."
       },
       "cashback": {
         "nacional": null,
@@ -789,99 +807,83 @@
       },
       "programa_proprio": "Livelo",
       "transfere_para": [
-        "TudoAzul (Azul)",
-        "Smiles (Gol)",
-        "Latam Pass (Latam)",
-        "Miles&Go (TAP)",
         "Dotz"
       ],
       "spread": 4,
-      "iof": "0% em compras internacionais",
+      "iof": 0,
       "validade_pontos": "Não expiram",
       "salas_vip": [
         {
           "programa": "LoungeKey",
-          "regra": "Acesso gratuito e ilimitado exclusivo para portadores do cartão Ourocard Visa Altus"
+          "regra": "Acesso ilimitado para titular e adicionais, mais 12 visitas anuais gratuitas para acompanhantes."
         },
         {
           "programa": "Visa Airport Companion (VAC)",
-          "regra": "Acesso ilimitado para titular e acompanhantes; acesso via QR Code pelo aplicativo VAC"
+          "regra": "Acesso ilimitado a mais de 1.700 salas VIP ao redor do mundo, com 12 visitas anuais gratuitas para acompanhantes."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Pedágio automático",
-          "descricao": "Liberação automática em 100% das rodovias com cobrança de pedágio no Brasil, sem necessidade de parar."
-        },
-        {
-          "titulo": "Estacionamento automático",
-          "descricao": "Entrada e saída automáticas em estacionamentos, sem tickets ou filas."
-        },
-        {
           "titulo": "Concierge 24h",
-          "descricao": "Serviço de concierge para reservas em restaurantes, ingressos para eventos e experiências culturais exclusivas."
+          "descricao": "Auxilia em reservas de restaurantes, ingressos para eventos e experiências culturais exclusivas."
         },
         {
-          "titulo": "Seguros de viagem",
-          "descricao": "Cobertura para bagagem, cancelamento de viagem e assistência médica em viagens."
+          "titulo": "Pedágio e estacionamento automáticos",
+          "descricao": "Liberação automática em 100% das rodovias com cobrança no Brasil e entrada automática em estacionamentos, sem tickets ou filas."
         },
         {
           "titulo": "IOF zero em compras internacionais",
-          "descricao": "Isenção de IOF em compras feitas no exterior ou em sites internacionais, garantindo previsibilidade no valor da fatura."
+          "descricao": "Condição promocional que isenta o IOF em compras internacionais, mediante habilitação do cartão para uso internacional pelo app BB."
         },
         {
           "titulo": "Cartões adicionais gratuitos",
-          "descricao": "Possibilidade de incluir até 7 cartões adicionais sem custo, com gestão e acompanhamento de gastos pelo app."
+          "descricao": "Possibilidade de incluir até sete cartões adicionais gratuitos, com gestão de gastos em tempo real pelo app."
+        },
+        {
+          "titulo": "Pontos conversíveis em cashback ou investimento",
+          "descricao": "Os pontos Livelo acumulados podem ser convertidos em milhas, cashback na conta ou investimentos."
+        },
+        {
+          "titulo": "Desbloqueio por QR Code",
+          "descricao": "O cartão pode ser desbloqueado apontando a câmera do celular para o QR Code, além dos canais tradicionais."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/altus",
-      "nota_curadoria": "O Altus Liv é um cartão Visa Infinite de metal, voltado a clientes de alta renda (especialmente BB Private), com benefícios fortes em salas VIP e IOF zero em compras internacionais. A anuidade não tem valor numérico divulgado nas fontes oficiais — apenas a regra de devolução parcial ou total conforme gastos ou investimentos, o que exige confirmação direta com o banco antes de informar ao cliente. A pontuação de 4 pts/USD no Livelo e a isenção de expiração dos pontos são diferenciais confirmados, mas não há informação sobre parceiros de transferência de pontos nas fontes analisadas.",
-      "fontes": [
-        "https://blog.bb.com.br/cartoes-premium-viver-no-proprio-ritmo-tambem-e-uma-forma-de-luxo/",
-        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
-        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
-        "https://www.bb.com.br/site/estilo/cartoes/altus-liv/",
-        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
-        "planilha:cartoes-premium-comparativo.xlsx",
-        "https://www.bb.com.br/pbb/pagina-inicial/solucoes-digitais/como-fazer/transferir,-comprar-e-consultar-saldo-de-pontos-pelo-aplicativo"
-      ],
-      "verificado_em": "2026-08-10",
+      "nota_curadoria": "O valor exato da anuidade não é divulgado publicamente nas fontes oficiais, sendo tratado como 'flexível' com devolução de 50% ou 100% conforme gastos ou investimentos — vale confirmar com o gerente BB Private. O cartão é posicionado para clientela de alta renda/private, sem renda mínima explícita nas fontes consultadas. Destaque para IOF zero (condição promocional por tempo determinado) e acesso ilimitado a salas VIP via LoungeKey e Visa Airport Companion, com 12 visitas gratuitas anuais para acompanhantes.",
       "procedencia": {
-        "anuidade": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
         "isencao": "https://blog.bb.com.br/cartoes-premium-viver-no-proprio-ritmo-tambem-e-uma-forma-de-luxo/",
+        "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
         "adicionais_gratis": "https://blog.bb.com.br/cartoes-premium-viver-no-proprio-ritmo-tambem-e-uma-forma-de-luxo/",
-        "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
+        "pontos": "https://www.bb.com.br/site/estilo/cartoes/altus-liv/",
+        "programa_proprio": "https://www.bb.com.br/site/estilo/cartoes/altus-liv/",
+        "transfere_para": "https://www.bb.com.br/pbb/pagina-inicial/solucoes-digitais/como-fazer/transferir,-comprar-e-consultar-saldo-de-pontos-pelo-aplicativo",
+        "iof": "https://www.bb.com.br/site/estilo/cartoes/altus-liv/",
+        "salas_vip": "https://www.bb.com.br/site/estilo/cartoes/altus-liv/",
+        "anuidade": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
         "cashback": "https://blog.bb.com.br/cartoes-premium-viver-no-proprio-ritmo-tambem-e-uma-forma-de-luxo/",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "https://blog.bb.com.br/cartoes-premium-viver-no-proprio-ritmo-tambem-e-uma-forma-de-luxo/",
-        "salas_vip": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
-        "transfere_para": "https://www.bb.com.br/pbb/pagina-inicial/solucoes-digitais/como-fazer/transferir,-comprar-e-consultar-saldo-de-pontos-pelo-aplicativo",
-        "requisito_acesso": "https://www.bb.com.br/site/estilo/cartoes/altus-liv/",
         "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html"
       },
+      "fontes": [
+        "https://blog.bb.com.br/cartoes-premium-viver-no-proprio-ritmo-tambem-e-uma-forma-de-luxo/",
+        "https://www.bb.com.br/site/estilo/cartoes/altus-liv/",
+        "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "https://www.bb.com.br/pbb/pagina-inicial/solucoes-digitais/como-fazer/transferir,-comprar-e-consultar-saldo-de-pontos-pelo-aplicativo",
+        "planilha:cartoes-premium-comparativo.xlsx"
+      ],
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "anuidade_parcelas",
         "renda_minima"
       ],
-      "campos_rejeitados": [
-        "adicionais_gratis",
-        "iof",
-        "isencao",
-        "pontos",
-        "requisito_acesso",
-        "salas_vip"
-      ],
+      "campos_rejeitados": [],
       "campos_preservados": [
-        "adicionais_gratis",
         "anuidade",
         "cashback",
-        "iof",
-        "isencao",
-        "pontos",
-        "requisito_acesso",
-        "salas_vip",
+        "link_solicitacao",
         "spread",
-        "transfere_para",
         "validade_pontos"
       ],
       "bandeira_ref": "visa-infinite"
@@ -892,21 +894,21 @@
       "emissor": "Banco do Brasil",
       "bandeira": "Visa",
       "categoria": "Infinite",
-      "anuidade": 1800,
-      "anuidade_parcelas": null,
+      "anuidade": 4000,
+      "anuidade_parcelas": 12,
       "isencao": {
         "tipo": "gasto_mensal",
-        "valor": 25000,
-        "regra": "Gastos acima de R$ 25 mil/mês ou R$ 2 milhões investidos"
+        "valor": 40000,
+        "regra": "A partir de 13/07/2026: isenção de 100% da anuidade para gastos mensais a partir de R$ 40 mil, ou desconto de 50% para gastos mensais a partir de R$ 25 mil. Alternativamente, isenção total da anuidade para clientes com a partir de R$ 5 milhões em investimentos no Brasil no mesmo CPF do titular."
       },
       "renda_minima": null,
-      "requisito_acesso": "Cliente BB Private",
-      "adicionais_gratis": 7,
+      "requisito_acesso": "Cartão oferecido exclusivamente a clientes selecionados do segmento BB Private.",
+      "adicionais_gratis": 8,
       "pontos": {
-        "nacional": null,
-        "internacional": 4,
+        "nacional": 4,
+        "internacional": 5,
         "unidade": "pts/USD",
-        "observacao": "4 pontos a cada dólar transacionado; pontos não expiram"
+        "observacao": "Pontos nunca expiram. Bônus promocional (até 31/12/26): 0,5 ponto extra por US$ em gastos mensais entre R$ 25 mil e R$ 40 mil, e 1 ponto extra por US$ acima de R$ 40 mil, creditados em até 60 dias."
       },
       "cashback": {
         "percentual": 1.3,
@@ -916,85 +918,131 @@
       "transfere_para": [],
       "spread": 4,
       "iof": 0,
-      "validade_pontos": "Pontos não expiram",
+      "validade_pontos": "Pontos nunca expiram",
       "salas_vip": [
         {
-          "programa": "Não especificado",
-          "regra": "Visitas ilimitadas às salas VIPs dos principais aeroportos do mundo"
+          "programa": "LoungeKey",
+          "regra": "Acessos gratuitos e ilimitados exclusivos para o portador do cartão Ourocard Visa Altus."
+        },
+        {
+          "programa": "Visa Airport Companion (VAC)",
+          "regra": "Acesso ilimitado para titular e acompanhantes, conforme tabela de benefícios (acessos registrados até 31/12/2024)."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Cartão em metal encapsulado",
-          "descricao": "Design moderno e inovador, produzido em metal encapsulado."
+          "titulo": "Concierge exclusivo 24h",
+          "descricao": "Assistência pessoal 24 horas por dia para reservas de voos, hotéis, restaurantes, teatros e shows, além de entrega de documentos valiosos."
         },
         {
-          "titulo": "Salas VIP ilimitadas",
-          "descricao": "Visitas ilimitadas às salas VIP dos principais aeroportos do mundo."
+          "titulo": "Pontos que nunca expiram",
+          "descricao": "Diferente da maioria dos cartões, os pontos acumulados no Altus não possuem prazo de validade."
         },
         {
-          "titulo": "Pontos que não expiram",
-          "descricao": "Acúmulo de 4 pontos a cada dólar transacionado, sem prazo de validade."
+          "titulo": "IOF Zero no exterior",
+          "descricao": "Isenção de IOF em compras internacionais por tempo indeterminado."
         },
         {
-          "titulo": "Concierge",
-          "descricao": "Serviço de concierge disponível para o titular do cartão."
+          "titulo": "Cartões adicionais isentos",
+          "descricao": "Isenção de anuidade para até 8 cartões adicionais."
         },
         {
-          "titulo": "Seguro de garantia estendida",
-          "descricao": "Cobertura de garantia estendida para compras realizadas com o cartão."
+          "titulo": "Acesso ilimitado a salas VIP Lounge Key",
+          "descricao": "Portador do Altus tem acessos gratuitos e ilimitados às salas VIP da rede Lounge Key."
         },
         {
-          "titulo": "Coberturas extras para viagens",
-          "descricao": "Benefícios adicionais de proteção em viagens internacionais."
+          "titulo": "Bônus de pontuação por gasto",
+          "descricao": "Pontos extras por dólar transacionado conforme faixas de gasto mensal (0,5 a 1 ponto adicional por US$)."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/altus",
-      "nota_curadoria": "Cartão de nicho voltado exclusivamente a clientes BB Private, com poucos dados públicos sobre anuidade, renda mínima e programa de salas VIP específico. O grande atrativo é o acúmulo de 4 pontos por dólar sem expiração e acesso ilimitado a salas VIP, mas faltam detalhes oficiais sobre condições de isenção de anuidade e parceiros de transferência de pontos.",
+      "nota_curadoria": "O Altus é um produto exclusivo para clientes BB Private, com acesso restrito e sem renda mínima divulgada publicamente. A anuidade de R$ 4.000/ano só vale para novos cartões e ciclos a partir de 13/07/2026; cartões já existentes podem ter condições anteriores. A isenção pode ocorrer por gasto mensal (R$25 mil ou R$40 mil) ou por volume de investimentos (R$5 milhões), sendo importante confirmar qual regra se aplica ao cliente antes da oferta. Dados de salas VIP Lounge Key e VAC constam em tabela de benefícios com data de referência de 2025, recomendando confirmação de vigência atual com o banco.",
       "procedencia": {
-        "categoria": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
-        "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
-        "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
-        "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
-        "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
-        "anuidade": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
-        "programa_proprio": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
-        "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
+        "anuidade": "https://www.bb.com.br/site/private/cartoes/altus/",
+        "anuidade_parcelas": "https://www.bb.com.br/site/private/cartoes/altus/",
+        "isencao": "https://www.bb.com.br/site/private/cartoes/altus/",
+        "requisito_acesso": "https://www.bb.com.br/site/private/cartoes/altus/",
+        "adicionais_gratis": "https://www.bb.com.br/site/private/cartoes/altus/",
+        "pontos": "https://www.bb.com.br/site/private/cartoes/altus/",
+        "iof": "https://www.bb.com.br/site/private/cartoes/altus/",
+        "salas_vip": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "planilha:cartoes-premium-comparativo.xlsx",
-        "isencao": "planilha:cartoes-premium-comparativo.xlsx",
-        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "programa_proprio": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard"
       },
       "fontes": [
         "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
+        "https://www.bb.com.br/site/private/cartoes/altus/",
         "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
-        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard"
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "https://www.bb.com.br/site/private/altus/beneficios-altus/",
+        "planilha:arquivo_unificado_fuzzy.xlsx",
+        "planilha:cartoes-premium-comparativo.xlsx"
       ],
-      "verificado_em": "2026-07-31",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
-        "anuidade_parcelas",
         "renda_minima",
         "transfere_para"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
-        "anuidade",
+        "cashback",
         "link_solicitacao",
-        "programa_proprio"
+        "programa_proprio",
+        "spread"
       ],
       "bandeira_ref": "visa-infinite",
-      "origem_planilha": {
-        "campos": [
-          "adicionais_gratis",
-          "cashback",
-          "iof",
-          "isencao",
-          "spread"
-        ],
-        "arquivo": "arquivo_unificado_fuzzy.xlsx",
-        "em": "2026-07-31",
-        "par_planilha": "Banco do Brasil Altus Liv Visa Infinite"
-      }
+      "conflitos": [
+        {
+          "campo": "anuidade",
+          "antes": 1800,
+          "depois": 4000,
+          "variacao_pct": 122.2,
+          "fonte_antes": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+          "fonte_depois": "https://www.bb.com.br/site/private/cartoes/altus/",
+          "valor_mantido": "depois",
+          "motivo": null,
+          "detectado_em": "2026-11-02",
+          "resolvido": false
+        },
+        {
+          "campo": "adicionais_gratis",
+          "antes": 7,
+          "depois": 8,
+          "variacao_pct": 14.3,
+          "fonte_antes": "planilha:cartoes-premium-comparativo.xlsx",
+          "fonte_depois": "https://www.bb.com.br/site/private/cartoes/altus/",
+          "valor_mantido": "depois",
+          "motivo": null,
+          "detectado_em": "2026-11-02",
+          "resolvido": false
+        },
+        {
+          "campo": "isencao.valor",
+          "antes": 25000,
+          "depois": 40000,
+          "variacao_pct": 60,
+          "fonte_antes": "planilha:cartoes-premium-comparativo.xlsx",
+          "fonte_depois": "https://www.bb.com.br/site/private/cartoes/altus/",
+          "valor_mantido": "depois",
+          "motivo": null,
+          "detectado_em": "2026-11-02",
+          "resolvido": false
+        },
+        {
+          "campo": "pontos.internacional",
+          "antes": 4,
+          "depois": 5,
+          "variacao_pct": 25,
+          "fonte_antes": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/cartao-altus.html",
+          "fonte_depois": "https://www.bb.com.br/site/private/cartoes/altus/",
+          "valor_mantido": "depois",
+          "motivo": null,
+          "detectado_em": "2026-11-02",
+          "resolvido": false
+        }
+      ]
     },
     {
       "slug": "bb-visa-platinum",
@@ -1067,27 +1115,26 @@
       "nome": "Ourocard Elo Nanquim",
       "emissor": "Banco do Brasil",
       "bandeira": "Elo",
-      "categoria": "Nanquim (premium)",
+      "categoria": "Nanquim",
       "anuidade": 1056,
       "anuidade_parcelas": 12,
       "isencao": {
-        "tipo": "desconto_progressivo",
-        "valor": "até 100%",
-        "regra": "Desconto Progressivo de Anuidade (DPA): quanto mais o cartão é utilizado, menor a anuidade cobrada, podendo chegar a 100% de desconto com ou sem uso de pontos do programa Benefícios BB"
+        "tipo": "gasto_mensal",
+        "valor": 15000,
+        "regra": "Isenção automática da parcela mensal da anuidade do titular e dos adicionais ao atingir R$ 15 mil em compras no crédito no mês; alternativamente, clientes com R$ 250 mil ou mais em investimentos no BB têm o desconto automático na parcela, mesmo sem atingir o gasto mínimo mensal."
       },
       "renda_minima": null,
-      "requisito_acesso": "Segmento Private do Banco do Brasil (indicado pela URL bb.com.br/site/private/cartoes/ourocard-elo-nanquim/)",
+      "requisito_acesso": "Cartão oferecido a clientes do segmento Private do Banco do Brasil",
       "adicionais_gratis": 6,
       "pontos": {
-        "nacional": 2,
+        "nacional": 2.2,
         "internacional": 3,
         "unidade": "pts/USD",
-        "observacao": ""
+        "observacao": "Pontuação do programa Benefícios BB (até 3 pontos por US$1 em compras internacionais e 2,2 pontos em compras nacionais), convertida automaticamente em pontos Livelo, com opção de trocar para Dotz; o cliente pode optar por Cashback ou Investimento em vez de pontos."
       },
       "cashback": {
-        "nacional": null,
-        "internacional": null,
-        "observacao": "0,15% direto na conta corrente (opção no programa Benefícios BB, correntistas)"
+        "percentual": 1,
+        "regra": "Opção alternativa aos pontos: retorno de 1% das compras creditado diretamente na conta corrente em até três dias úteis após o pagamento da fatura."
       },
       "programa_proprio": "Benefícios BB",
       "transfere_para": [
@@ -1100,122 +1147,84 @@
       "salas_vip": [
         {
           "programa": "Priority Pass",
-          "regra": "2 acessos gratuitos por ano mediante apresentação do cartão; acompanhante conta na cota. Acessos adicionais ou acima de 1 acompanhante devem ser pagos."
-        },
-        {
-          "programa": "Sala VIP Elo em Congonhas",
-          "regra": "2 acessos gratuitos por ano com direito a 1 acompanhante, dentro da cota do Priority Pass."
+          "regra": "2 acessos gratuitos por ano às salas VIP do programa (titular e acompanhantes contam na mesma cota); a Sala VIP Elo Congonhas também está incluída nessa cota de acessos."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Elo Flex – até 6 benefícios flexíveis",
-          "descricao": "Titular pode escolher até 6 benefícios Elo Flex, incluindo Seguro Viagem, Assistência Pet, Sala VIP Priority Pass e outros, via plataforma elo.com.br/elo-flex-bb/"
+          "titulo": "Flexibilidade Pontos/Cashback/Investimento",
+          "descricao": "O cliente pode escolher entre acumular pontos Livelo/Dotz, receber 1% de cashback na conta corrente ou 1% em fundo de investimento, podendo trocar a opção quando quiser pelo app BB."
         },
         {
-          "titulo": "Assistência Residencial",
-          "descricao": "Assistência profissional para serviços e reparos no lar (modalidades Elo Grafite, Nanquim e Nanquim Diners Club)"
+          "titulo": "Investimento automático de 1%",
+          "descricao": "Retorno de 1% das compras aplicado em fundo de renda fixa específico, com crédito em até quatro dias úteis após o pagamento da fatura e resgate disponível a qualquer momento."
         },
         {
-          "titulo": "Assistência Veicular",
-          "descricao": "Serviços especializados para emergências com o veículo (modalidades Elo Grafite, Nanquim e Nanquim Diners Club)"
+          "titulo": "Plataforma Elo Flex",
+          "descricao": "Acesso a 9 benefícios no total, sendo 3 fixos e 6 flexíveis, que podem ser personalizados conforme a necessidade do portador."
         },
         {
-          "titulo": "Assistência de Bem-Estar",
-          "descricao": "Cuidado com bem-estar físico e emocional da família (modalidades Elo Grafite, Nanquim e Nanquim Diners Club)"
+          "titulo": "Isenção via Clube de Benefícios BB",
+          "descricao": "Clientes Private com assinatura dos Clubes Mais Que Digital podem obter isenção de anuidade por 6 a 12 meses em cartões novos ou na ativação da função crédito."
         },
         {
-          "titulo": "Garantia Estendida Original",
-          "descricao": "Dobra a garantia de compras com cartão no Brasil ou exterior (modalidades Elo Mais, Grafite, Nanquim e Nanquim Diners Club)"
+          "titulo": "Sala VIP Priority Pass",
+          "descricao": "2 acessos gratuitos por ano às salas VIP do programa Priority Pass, incluindo a Sala VIP Elo em Congonhas."
         },
         {
-          "titulo": "Proteção de Eletrodomésticos",
-          "descricao": "Eletrodomésticos protegidos contra roubos ou acidentes sem custo adicional (modalidades Elo Grafite, Nanquim e Nanquim Diners Club)"
-        },
-        {
-          "titulo": "Transfer Aeroporto",
-          "descricao": "Comodidade para ir e voltar dos principais aeroportos internacionais do Brasil"
-        },
-        {
-          "titulo": "Seguro Viagem",
-          "descricao": "Cobertura de viagem mediante emissão de Bilhete de Seguro no site da Elo e pagamento integral da compra com o cartão"
-        },
-        {
-          "titulo": "Programa Use Elo",
-          "descricao": "Descontos e ofertas em parceiros, promoções especiais e pré-venda de shows para todos os cartões Elo"
-        },
-        {
-          "titulo": "Investimento automático (opção Benefícios BB)",
-          "descricao": "Retorno de 0,15% do valor das compras aplicado automaticamente em fundo de renda fixa específico (opção para correntistas)"
-        },
-        {
-          "titulo": "Carteiras Digitais",
-          "descricao": "Pagamentos via Apple Pay, Samsung Pay e Google Pay"
-        },
-        {
-          "titulo": "Isenção de anuidade promocional para novos cartões",
-          "descricao": "Clientes Private: isenção de 6 meses para novos cartões ou ativação da função crédito; isenção adicional de 12 meses em algumas condições de Clube"
+          "titulo": "Usou, Zerou",
+          "descricao": "Zeragem automática da parcela mensal da anuidade do titular e adicionais ao atingir R$ 15 mil em compras no crédito no mês."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
-      "fontes": [
-        "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
-        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-elo-nanquim/",
-        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
-        "https://www.bb.com.br/docs/pub/trf/tarifasPFAnt.pdf",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
-        "https://www.bb.com.br/pbb/home-beneficios/beneficios-e-promocoes",
-        "https://www.bb.com.br/pbb/pagina-inicial/clube-de-beneficios/vantagens-financeiras",
-        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/tabjurosVarejo2.pdf",
-        "https://www.bb.com.br/site/agronegocios/ourocard-agronegocio/elo/"
-      ],
-      "campos_pendentes": [
-        "pontos.internacional",
-        "pontos.nacional",
-        "renda_minima"
-      ],
-      "nota_curadoria": "O cartão possui duas versões de página: segmento 'Pra Você' (bb.com.br/site/pra-voce) e segmento 'Private' (bb.com.br/site/private), o que indica que pode ser acessível a ambos os segmentos ou que a versão Private é a principal. A anuidade de R$ 1.056,00 foi confirmada na Tabela de Tarifas PF vigente (versão 02/2026, maio/2026). A taxa de acúmulo de pontos (pts/USD) não foi localizada em nenhum PDF ou página oficial do BB para o Nanquim especificamente — menções a '2,2 pts/USD' aparecem apenas em blog.bb.com.br, que não é fonte oficial aceita por este processo. O campo cashback se refere à opção disponível no programa Benefícios BB, não a cashback direto por bandeira.",
+      "nota_curadoria": "Cartão de alta anuidade (R$ 1.056/ano) voltado a clientes Private do BB, com isenção condicionada a R$ 15 mil de gasto mensal ou R$ 250 mil em investimentos — fora dessas condições a anuidade é cobrada integralmente. A pontuação, cashback ou investimento são mutuamente exclusivos e escolhidos pelo cliente, o que exige atenção na comparação com outros cartões Elo. O acesso a salas VIP é limitado a apenas 2 por ano via Priority Pass, compartilhado com a Sala Elo Congonhas, e não há confirmação oficial de spread, IOF ou renda mínima nas fontes consultadas.",
       "procedencia": {
-        "anuidade": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
-        "anuidade_parcelas": "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
-        "isencao": "https://www.bb.com.br/pbb/pagina-inicial/clube-de-beneficios/vantagens-financeiras",
-        "programa_proprio": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
-        "transfere_para": "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
-        "cashback": "https://www.bb.com.br/site/agronegocios/ourocard-agronegocio/elo/",
-        "salas_vip": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
-        "beneficios_banco": "https://www.bb.com.br/pbb/home-beneficios/beneficios-e-promocoes",
-        "nome": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
-        "emissor": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
-        "bandeira": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
-        "categoria": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
-        "requisito_acesso": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
-        "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "anuidade": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "anuidade_parcelas": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "isencao": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "requisito_acesso": "https://www.bb.com.br/pbb/pagina-inicial/clube-de-beneficios/vantagens-financeiras",
+        "pontos": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "cashback": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "transfere_para": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "salas_vip": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
         "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "planilha:cartoes-premium-comparativo.xlsx",
-        "pontos": "planilha:cartoes-premium-comparativo.xlsx"
+        "iof": "planilha:cartoes-premium-comparativo.xlsx"
       },
-      "vigencia_ate": null,
-      "analise": null,
-      "campos_rejeitados": [
-        "pontos"
+      "fontes": [
+        "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "https://www.bb.com.br/pbb/pagina-inicial/clube-de-beneficios/vantagens-financeiras",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
+        "planilha:cartoes-premium-comparativo.xlsx"
+      ],
+      "verificado_em": "2026-11-02",
+      "campos_pendentes": [
+        "renda_minima"
+      ],
+      "campos_rejeitados": [],
+      "campos_preservados": [
+        "adicionais_gratis",
+        "iof",
+        "spread",
+        "validade_pontos"
       ],
       "bandeira_ref": "elo-flex",
-      "verificado_em": "2026-07-28",
-      "origem_planilha": {
-        "campos": [
-          "adicionais_gratis",
-          "iof",
-          "pontos",
-          "spread",
-          "validade_pontos"
-        ],
-        "arquivo": "cartoes-premium-comparativo.xlsx",
-        "em": "2026-07-31",
-        "par_planilha": "Banco do Brasil ELO Nanquim Estilo Pontos"
-      }
+      "conflitos": [
+        {
+          "campo": "pontos.nacional",
+          "antes": 2,
+          "depois": 2.2,
+          "variacao_pct": 10,
+          "fonte_antes": "planilha:cartoes-premium-comparativo.xlsx",
+          "fonte_depois": "https://www.bb.com.br/site/private/cartoes/ourocard-elo-nanquim/",
+          "valor_mantido": "depois",
+          "motivo": null,
+          "detectado_em": "2026-11-02",
+          "resolvido": false
+        }
+      ]
     },
     {
       "slug": "bb-mastercard-black",
@@ -1244,7 +1253,7 @@
         "internacional": null,
         "observacao": "1% direto na conta corrente (opção exclusiva para correntistas BB, em substituição aos pontos)"
       },
-      "programa_proprio": "Benefícios BB (conversão automática para Livelo; alternativas: Dotz, Cashback ou Investimento)",
+      "programa_proprio": "Benefícios BB (conversão automática para Livelo, com opção de troca para Dotz)",
       "transfere_para": [
         "Livelo",
         "Dotz"
@@ -1260,64 +1269,81 @@
       ],
       "beneficios_banco": [
         {
-          "titulo": "Seguro viagem ampliado",
-          "descricao": "Cobertura ampliada de seguro viagem para o portador do cartão."
+          "titulo": "Concierge Mastercard Black",
+          "descricao": "Serviço de concierge para auxiliar em reservas, eventos e necessidades diversas do portador."
         },
         {
-          "titulo": "Proteção contra roubo em caixas eletrônicos",
-          "descricao": "Cobertura em caso de roubo durante saques em caixas eletrônicos."
-        },
-        {
-          "titulo": "Seguro para compras",
-          "descricao": "Proteção para compras realizadas com o cartão."
-        },
-        {
-          "titulo": "Concierge 24h",
-          "descricao": "Serviço de concierge para auxiliar em reservas, eventos e outras necessidades dos clientes."
-        },
-        {
-          "titulo": "Programas Mastercard Surpreenda e Priceless Cities",
-          "descricao": "Acesso a experiências exclusivas oferecidas pela Mastercard, como eventos e vivências especiais."
-        },
-        {
-          "titulo": "Parcelamento de compras à vista",
+          "titulo": "Parcelamento de compra à vista",
           "descricao": "Possibilidade de parcelar compras feitas à vista no cartão em até 12 vezes."
+        },
+        {
+          "titulo": "IOF reduzido",
+          "descricao": "IOF reduzido de 1,1% nas compras internacionais realizadas no crédito."
+        },
+        {
+          "titulo": "Priceless Cities e Surpreenda",
+          "descricao": "Acesso a experiências exclusivas da Mastercard e ofertas especiais em restaurantes e eventos."
+        },
+        {
+          "titulo": "Seguro viagem e proteção de compras",
+          "descricao": "MasterAssist Black (seguro médico em viagens, atende Tratado de Schengen), seguro compra protegida, garantia estendida original e proteção contra roubo em caixas eletrônicos."
+        },
+        {
+          "titulo": "Isenção de rolha",
+          "descricao": "Benefício de isenção de taxa de rolha em restaurantes parceiros do programa Mastercard."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
-      "nota_curadoria": "As condições de isenção de anuidade e o IOF reduzido citados na fonte parecem ser regras gerais aplicadas aos cartões black do BB (não exclusivas do Mastercard Black), então vale confirmar diretamente com o banco se há particularidades para este cartão. O valor da anuidade e a renda mínima não foram divulgados na fonte consultada, sendo necessário buscar essas informações em canais oficiais de contratação.",
-      "procedencia": {
-        "isencao": "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
-        "requisito_acesso": "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
-        "pontos": "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
-        "iof": "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
-        "salas_vip": "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
-        "anuidade": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
-        "anuidade_parcelas": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
-        "adicionais_gratis": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
-        "cashback": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
-        "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "transfere_para": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
-        "programa_proprio": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
-        "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/"
-      },
+      "nota_curadoria": "A anuidade de R$ 1.098,00/ano (12x R$ 91,50) pode ser zerada mensalmente com gasto de R$ 15 mil no cartão ou mantendo R$ 250 mil investidos no BB — regra bem mais exigente que a do Ourocard Estilo Mastercard Black (R$ 10 mil). O cartão é restrito a convidados, geralmente do segmento BB Estilo, sem renda mínima divulgada oficialmente. Acesso à sala VIP de Guarulhos é gratuito, mas o Lounge Key (Mastercard Airport Experiences) é pago por uso, diferente de outros cartões Black do mercado com acessos ilimitados gratuitos.",
       "fontes": [
-        "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
         "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
+        "https://www.bb.com.br/site/estilo/cartoes/ourocard-estilo-mastercard-black/",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/ourocard-mastercard-black",
         "planilha:cartoes-premium-comparativo.xlsx"
       ],
-      "verificado_em": "2026-09-21",
+      "verificado_em": "2026-11-02",
+      "procedencia": {
+        "anuidade": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "anuidade_parcelas": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "isencao": "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
+        "adicionais_gratis": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "pontos": "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
+        "cashback": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "iof": "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
+        "salas_vip": "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
+        "transfere_para": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/",
+        "requisito_acesso": "https://blog.bb.com.br/o-que-e-um-cartao-black-e-como-obter-um/",
+        "link_solicitacao": "https://www.bb.com.br/site/private/cartoes/ourocard-mastercard-black/"
+      },
       "campos_pendentes": [
         "renda_minima"
       ],
-      "campos_rejeitados": [],
+      "campos_rejeitados": [
+        "anuidade",
+        "anuidade_parcelas",
+        "cashback",
+        "iof",
+        "isencao",
+        "pontos",
+        "requisito_acesso",
+        "salas_vip",
+        "transfere_para"
+      ],
       "campos_preservados": [
         "adicionais_gratis",
         "anuidade",
         "anuidade_parcelas",
         "cashback",
+        "iof",
+        "isencao",
         "link_solicitacao",
-        "programa_proprio",
+        "pontos",
+        "requisito_acesso",
+        "salas_vip",
         "spread",
         "transfere_para",
         "validade_pontos"
@@ -1335,16 +1361,16 @@
       "isencao": {
         "tipo": "gasto_mensal",
         "valor": 15000,
-        "regra": "Zera a parcela mensal da anuidade (titular e adicionais) ao atingir R$ 15 mil em compras no crédito no mês; alternativamente, clientes com investimentos no BB a partir de R$ 250 mil têm o desconto automático mesmo sem atingir o gasto mensal."
+        "regra": "Zera automaticamente a parcela mensal da anuidade do titular e dos adicionais ao atingir R$ 15 mil em compras no crédito no mês. Alternativamente, mantendo investimentos no BB a partir de R$ 250 mil, o desconto automático na parcela é concedido mesmo sem atingir o gasto mínimo mensal. Pagamentos de contas, parcelas de anuidade, proteção ouro, saques na função crédito, encargos, taxas e tarifas não entram no cálculo do gasto."
       },
       "renda_minima": null,
-      "requisito_acesso": "Cartão oferecido por convite a um seleto grupo de clientes do Banco do Brasil",
+      "requisito_acesso": "Cartão oferecido por convite a um seleto grupo de clientes do Banco do Brasil.",
       "adicionais_gratis": 6,
       "pontos": {
-        "nacional": 2,
-        "internacional": 3,
+        "nacional": null,
+        "internacional": null,
         "unidade": "pts/USD",
-        "observacao": "Pontos do programa Benefícios BB são convertidos automaticamente em Livelo; o cliente pode optar por Dotz ou, se correntista, por Investimento ou Cashback."
+        "observacao": "Na função crédito, cada 1 dólar (ou equivalente em reais) pago na fatura gera 2 pontos no programa Ponto pra Você; na função débito, 2 pontos a cada 2 dólares gastos, conforme manual do cartão."
       },
       "cashback": {
         "percentual": 1,
@@ -1361,76 +1387,76 @@
       "salas_vip": [
         {
           "programa": "Visa Airport Companion (VAC)",
-          "regra": "4 acessos gratuitos por ano para titulares e adicionais do cartão"
+          "regra": "4 acessos gratuitos por ano, custeados pelo Banco do Brasil, para titular e acompanhantes, via QR Code pelo aplicativo VAC."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Segunda bandeira com desconto",
-          "descricao": "Possibilidade de obter uma segunda bandeira do cartão com até 90% de desconto na anuidade, bastando ter o Ourocard Visa Infinite ativo."
+          "titulo": "Visa Concierge / Visa Digital Concierge",
+          "descricao": "Serviço de concierge pessoal disponível para auxiliar em reservas, compras e organização de viagens."
         },
         {
-          "titulo": "Benefícios flexíveis",
-          "descricao": "Ao pagar a fatura, parte dos gastos pode ser convertida em investimento (1% em fundo de renda fixa), cashback (1% na conta corrente) ou pontos Livelo/Dotz."
+          "titulo": "Visa Luxury Hotel Collection",
+          "descricao": "Acesso a benefícios exclusivos em uma seleção de hotéis de luxo no Brasil e no exterior."
         },
         {
-          "titulo": "Tag BB",
-          "descricao": "Tag para pagamento automático de pedágios e estacionamentos vinculada ao cartão."
+          "titulo": "Desconto na anuidade da 2ª bandeira",
+          "descricao": "Ao manter o Ourocard Visa Infinite ativo, o cliente tem 90% de desconto na anuidade do Ourocard Elo Nanquim ou 80% de desconto na anuidade do Ourocard Mastercard Black."
         },
         {
-          "titulo": "Cartão virtual Ourocard-e",
-          "descricao": "Disponibilidade de cartão virtual para compras online com maior segurança."
+          "titulo": "Seguro de emergência médica internacional",
+          "descricao": "Cobertura via Visa Médico Online, atendendo às exigências do Tratado de Schengen, com reembolso de despesas médicas em viagem."
         },
         {
-          "titulo": "Isenção de IOF em compras internacionais",
-          "descricao": "O BB paga a diferença de IOF nas compras internacionais a crédito, reduzindo o custo efetivo para o cliente."
+          "titulo": "Assistência em viagens 24 horas",
+          "descricao": "Inclui assistência médica, jurídica de emergência, seguro de acidentes de viagem, seguro de aluguel de automóveis e indenização por perda de bagagem."
         },
         {
-          "titulo": "Pagamento por carteiras digitais",
-          "descricao": "Compatível com Apple Pay, Samsung Pay e Google Pay, além de Pulseira Ourocard e Cartão BB Voz."
+          "titulo": "Welcome Kit personalizado",
+          "descricao": "O cartão é enviado em um kit personalizado e permite customização visual do cartão."
         }
       ],
       "link_solicitacao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
-      "nota_curadoria": "Cartão de convite (não é possível solicitar livremente), destinado a clientes selecionados do BB. A isenção de anuidade exige R$ 15 mil em gastos mensais ou R$ 250 mil em investimentos no banco - condição relativamente alta comparada a outros infinites. Os benefícios de pontos, cashback e investimento são flexíveis e convertidos automaticamente, mas a renda mínima exigida não foi divulgada na fonte oficial.",
+      "nota_curadoria": "A anuidade de R$ 996,00 (12x R$ 83,00) pode ser totalmente zerada mês a mês com gasto mínimo de R$ 15 mil no cartão ou mantendo R$ 250 mil em investimentos no BB, mas é um cartão de convite, não de livre contratação. A sala VIP é limitada a 4 acessos anuais via Visa Airport Companion (VAC), bem mais restrita que Priority Pass ou Lounge Key ilimitado oferecidos a outros cartões Visa do BB como o Altus. Dados de renda mínima, cashback percentual, spread e IOF não constam nas fontes oficiais consultadas.",
       "procedencia": {
         "anuidade": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
         "anuidade_parcelas": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
         "isencao": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
         "requisito_acesso": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
-        "pontos": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
-        "cashback": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "pontos": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/livreto220210.pdf",
         "transfere_para": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
-        "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
-        "salas_vip": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "salas_vip": "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
         "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
-        "spread": "planilha:cartoes-premium-comparativo.xlsx"
+        "cashback": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "spread": "planilha:cartoes-premium-comparativo.xlsx",
+        "iof": "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/"
       },
       "fontes": [
-        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/"
+        "https://www.bb.com.br/docs/pub/trf/tarifasPF.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesBandeira.pdf",
+        "https://www.bb.com.br/pbb/pagina-inicial/voce/produtos-e-servicos/cartoes/beneficios/beneficios-ourocard",
+        "https://www.bb.com.br/site/pra-voce/cartoes-de-credito/todos-os-cartoes/ourocard-visa-infinite/",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/livreto220210.pdf",
+        "https://www.bb.com.br/docs/pub/siteEsp/dicar/dwn/CartoesAnuidade.pdf",
+        "planilha:cartoes-premium-comparativo.xlsx"
       ],
-      "verificado_em": "2026-07-31",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "renda_minima"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
-        "link_solicitacao"
+        "adicionais_gratis",
+        "cashback",
+        "iof",
+        "spread",
+        "validade_pontos"
       ],
-      "bandeira_ref": "visa-infinite",
-      "origem_planilha": {
-        "campos": [
-          "adicionais_gratis",
-          "spread",
-          "validade_pontos"
-        ],
-        "arquivo": "cartoes-premium-comparativo.xlsx",
-        "em": "2026-07-31",
-        "par_planilha": "Banco do Brasil Visa Infinite Pontos"
-      }
+      "bandeira_ref": "visa-infinite"
     },
     {
       "slug": "inter-win",
-      "nome": "Cartão Inter Win (Mastercard Black)",
+      "nome": "Cartão Inter Win",
       "emissor": "Banco Inter",
       "bandeira": "Mastercard",
       "categoria": "Black",
@@ -1438,17 +1464,17 @@
       "anuidade_parcelas": null,
       "isencao": {
         "tipo": "vitalicia",
-        "valor": null,
-        "regra": "O Cartão Win é sempre sem anuidade, sem necessidade de gasto mínimo ou negociação."
+        "valor": 0,
+        "regra": "Cartão Mastercard Win sem anuidade, oferecido gratuitamente a clientes do segmento Inter Win."
       },
       "renda_minima": null,
-      "requisito_acesso": "Elegibilidade ao segmento Inter Win exige carteira de investimentos a partir de R$1 milhão no Inter ou em outras instituições.",
+      "requisito_acesso": "Ser cliente do segmento Inter Win, que exige carteira de investimentos a partir de R$1 milhão (novos aportes ou ativos trazidos de outras instituições).",
       "adicionais_gratis": null,
       "pontos": {
         "nacional": 0.5,
-        "internacional": 0.5,
+        "internacional": null,
         "unidade": "pts/BRL",
-        "observacao": "Acúmulo de 1 ponto Loop a cada R$2,00 em compras no crédito; usando com recorrência, os pontos não expiram."
+        "observacao": "Acúmulo de 1 ponto Inter Loop a cada R$2,00 em compras no crédito; usando com recorrência, os pontos não expiram."
       },
       "cashback": {
         "nacional": null,
@@ -1465,47 +1491,51 @@
       "validade_pontos": "Pontos não expiram enquanto houver uso recorrente do cartão.",
       "salas_vip": [
         {
-          "programa": "Sala VIP Inter / Priority Pass",
-          "regra": "Acesso gratuito e ilimitado para titulares Win, incluindo acompanhante com cartão adicional válido."
+          "programa": "VIP Lounge Inter",
+          "regra": "Acesso gratuito e ilimitado para o titular Win; acompanhante com cartão adicional válido também tem acesso gratuito e ilimitado."
+        },
+        {
+          "programa": "Priority Pass",
+          "regra": "Acesso incluso via benefício Inter, restrito às salas VIP (sem outras experiências inclusas), mediante QR Code gerado no app e limite de crédito ativo."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Banker dedicado",
-          "descricao": "Atendimento exclusivo por um profissional de relacionamento dedicado ao cliente Win."
-        },
-        {
-          "titulo": "Acesso ilimitado a salas VIP",
-          "descricao": "Entrada gratuita e ilimitada nas Salas VIP Inter e parceiras Priority Pass, incluindo acompanhante."
+          "titulo": "Atendimento com Banker dedicado",
+          "descricao": "Clientes Win contam com atendimento exclusivo por um banker pessoal."
         },
         {
           "titulo": "Seguro médico no exterior",
-          "descricao": "Cobertura para emergências médicas durante viagens internacionais."
+          "descricao": "Cobertura de assistência médica durante viagens internacionais."
         },
         {
-          "titulo": "Proteção de bagagem",
-          "descricao": "Cobertura em caso de extravio ou dano à bagagem em viagens."
-        },
-        {
-          "titulo": "Cobertura por voos cancelados",
-          "descricao": "Proteção financeira em caso de cancelamento de voos."
+          "titulo": "Proteção de bagagem e cobertura por voos cancelados",
+          "descricao": "Benefícios de viagem incluídos para titulares do cartão Win."
         },
         {
           "titulo": "Seguro para carro locado",
-          "descricao": "Cobertura para aluguel de veículos durante viagens."
+          "descricao": "Cobertura para aluguel de veículos em viagens."
+        },
+        {
+          "titulo": "Proteção nas compras",
+          "descricao": "Proteção contra danos, roubo e furto, além de garantia estendida nas compras realizadas com o cartão."
+        },
+        {
+          "titulo": "Wealth Planning",
+          "descricao": "Planejamento patrimonial personalizado com portfólio de crédito, fundos exclusivos, carteiras administradas, offshore e câmbio."
         }
       ],
       "link_solicitacao": "https://inter.co/pra-voce/relacionamento/inter-win/",
-      "nota_curadoria": "O Cartão Win é sempre sem anuidade, mas o acesso ao segmento exige patrimônio investido a partir de R$1 milhão, o que o torna um produto de relacionamento e não de solicitação direta. Os benefícios de viagem (salas VIP, seguros) são amplos, mas alguns detalhes de cobertura dependem do regulamento Mastercard não coberto aqui. A pontuação segue o programa Inter Loop padrão (1 ponto a cada R$2), sem diferenciação clara entre gastos nacionais e internacionais nas fontes analisadas.",
+      "nota_curadoria": "O Cartão Inter Win é restrito a clientes do segmento Win, que exige carteira de investimentos a partir de R$1 milhão — não é um cartão de solicitação direta por renda. Não há anuidade, e o acesso a salas VIP (Inter e Priority Pass) é ilimitado para titular e acompanhante com adicional. A pontuação segue a regra geral do Inter Loop (R$2 = 1 ponto), sem diferenciação clara para gastos internacionais nas fontes oficiais consultadas.",
       "procedencia": {
-        "anuidade": "https://ajuda.bancointer.com.br/pt-BR/articles/1963873-o-inter-cobra-tarifas-dos-clientes-da-conta-digital",
-        "isencao": "https://inter.co/pra-voce/relacionamento/inter-win/",
+        "anuidade": "https://ajuda.inter.co/sobre-o-inter/quais-as-vantagens-de-ser-cliente-win",
+        "isencao": "https://ajuda.inter.co/sobre-o-inter/quais-as-vantagens-de-ser-cliente-win",
         "requisito_acesso": "https://inter.co/pra-voce/relacionamento/inter-win/",
         "pontos": "https://inter.co/pra-voce/relacionamento/inter-win/",
         "transfere_para": "https://inter.co/pra-voce/cartoes/programa-de-pontos/",
         "salas_vip": "https://inter.co/sala-vip/",
-        "validade_pontos": "https://inter.co/pra-voce/relacionamento/inter-win/",
-        "cashback": "https://inter.co/pra-voce/cartoes/programa-de-pontos/"
+        "cashback": "https://inter.co/pra-voce/cartoes/programa-de-pontos/",
+        "validade_pontos": "https://inter.co/pra-voce/relacionamento/inter-win/"
       },
       "fontes": [
         "https://ajuda.inter.co/sobre-o-inter/quais-as-vantagens-de-ser-cliente-win",
@@ -1514,7 +1544,7 @@
         "https://inter.co/sala-vip/",
         "https://ajuda.bancointer.com.br/pt-BR/articles/1963873-o-inter-cobra-tarifas-dos-clientes-da-conta-digital"
       ],
-      "verificado_em": "2026-08-24",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade_parcelas",
@@ -1525,7 +1555,8 @@
       "campos_rejeitados": [],
       "campos_preservados": [
         "cashback",
-        "link_solicitacao"
+        "link_solicitacao",
+        "validade_pontos"
       ],
       "bandeira_ref": "mastercard-black"
     },
@@ -1808,16 +1839,16 @@
       "isencao": {
         "tipo": "investimento",
         "valor": 500000,
-        "regra": "Isenção de anuidade para clientes com investimentos a partir de R$ 500 mil no Safra ou com gastos a partir de R$ 10 mil por fatura mensal."
+        "regra": "Isenção de anuidade com investimentos a partir de R$ 500 mil no Safra ou com gastos a partir de R$ 10 mil por fatura mensal."
       },
       "renda_minima": null,
-      "requisito_acesso": "Elegível para clientes que possuam R$ 300.000,00 ou mais investidos junto ao Banco Safra, sujeito a análise e aprovação de crédito.",
+      "requisito_acesso": "Elegível para clientes que possuam R$ 500.000,00 (quinhentos mil reais) ou mais investidos junto ao Safra, estando a emissão sujeita à análise e aprovação de crédito.",
       "adicionais_gratis": null,
       "pontos": {
         "nacional": null,
         "internacional": 3,
         "unidade": "pts/USD",
-        "observacao": "3 pontos por dólar gasto em compras internacionais quando a fatura for acima de R$ 20 mil; 2,5 pontos por dólar quando a fatura for abaixo de R$ 20 mil. Pontos expiram em 24 meses."
+        "observacao": "3 pontos por dólar gasto em compras internacionais e fatura acima de R$ 20 mil; 2,5 pontos por dólar gasto quando a fatura for abaixo de R$ 20 mil. Pontos expiram em 24 meses."
       },
       "cashback": null,
       "programa_proprio": "Safra Rewards",
@@ -1830,25 +1861,25 @@
       "salas_vip": [
         {
           "programa": "Espaço Banco Safra",
-          "regra": "Acesso ilimitado e gratuito, 24h todos os dias, com buffet completo e um acompanhante sem custo adicional, no aeroporto de Guarulhos."
+          "regra": "Acesso ilimitado e gratuito, 24h todos os dias, com buffet completo, refeição kosher e um acompanhante sem custo adicional."
         },
         {
-          "programa": "Dragon Pass",
-          "regra": "4 acessos gratuitos por ano a mais de 1.400 salas VIP no Brasil e no mundo, consultáveis pelo app Visa Airport Companion."
+          "programa": "Dragon Pass / Visa Airport Companion",
+          "regra": "4 acessos gratuitos por ano a mais de 1.400 salas VIP no Brasil e no mundo."
         }
       ],
       "beneficios_banco": [
         {
+          "titulo": "Espaço Banco Safra",
+          "descricao": "Acesso ilimitado e gratuito a uma das melhores salas VIP do Brasil, no aeroporto de Guarulhos."
+        },
+        {
           "titulo": "Visa Infinite Fast Pass",
-          "descricao": "Acesso prioritário à área de embarque nos aeroportos de Guarulhos e RIOgaleão."
+          "descricao": "Acesso prioritário à área de embarque nos aeroportos de Guarulhos e Riogaleão."
         },
         {
           "titulo": "Visa Concierge 24h",
-          "descricao": "Suporte completo para planejamento e durante as viagens."
-        },
-        {
-          "titulo": "Emergência médica internacional",
-          "descricao": "Seguro de emergência médica para viagens internacionais."
+          "descricao": "Suporte completo para planejamento e durante viagens."
         },
         {
           "titulo": "Visa Airport Companion",
@@ -1856,25 +1887,26 @@
         },
         {
           "titulo": "Visa Luxury Hotel Collection",
-          "descricao": "Experiências e benefícios em hotéis renomados."
+          "descricao": "Experiências em hotéis renomados ao redor do mundo."
         },
         {
-          "titulo": "Cartão com garantia de investimento",
-          "descricao": "O limite do cartão pode ser garantido por investimentos elegíveis no Safra, sem necessidade de comprovação tradicional de renda."
+          "titulo": "Seguro Proteção de Compra",
+          "descricao": "Proteção contra roubos ou danos acidentais pelo prazo de 60 dias a partir da data da compra."
         }
       ],
       "link_solicitacao": "https://www.safra.com.br/cartoes/",
-      "nota_curadoria": "A anuidade de R$ 1.500/ano (12x R$125) é isenta apenas com R$ 500 mil investidos no Safra ou fatura mensal acima de R$ 10 mil, critério mais rígido que o do Visa Infinite comum. Diferente do Visa Infinite tradicional (pontos sem validade), neste cartão os pontos expiram em 24 meses. O requisito de elegibilidade de R$ 300 mil investidos para solicitação não é o mesmo valor da isenção de anuidade, o que pode confundir o cliente.",
+      "nota_curadoria": "Cartão de limite garantido por investimento, com isenção de anuidade condicionada a R$ 500 mil aplicados no Safra ou fatura mensal acima de R$ 10 mil — sem isso, a anuidade é de R$ 1.500/ano em 12x. A pontuação de até 3 pts/USD e os 4 acessos anuais a salas VIP (rede com mais de 1.400 salas) são atrativos, mas a pontuação para gastos nacionais não é explicitada nas fontes oficiais. O acesso ao cartão em si já exige o patamar de investimento mínimo, tornando-o voltado a clientes de alta renda do banco.",
       "procedencia": {
         "anuidade": "https://www.safra.com.br/cartoes/",
         "anuidade_parcelas": "https://www.safra.com.br/cartoes/",
         "isencao": "https://www.safra.com.br/cartoes/",
         "requisito_acesso": "https://www.safra.com.br/abra-sua-conta.htm",
         "pontos": "https://www.safra.com.br/cartoes/",
-        "programa_proprio": "https://www.safra.com.br/cartoes/programa-safra-rewards/",
+        "programa_proprio": "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/programa-safra-rewards.htm",
         "transfere_para": "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/programa-safra-rewards.htm",
-        "validade_pontos": "https://www.safra.com.br/cartoes/",
+        "validade_pontos": "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/programa-safra-rewards.htm",
         "salas_vip": "https://www.safra.com.br/cartoes/",
+        "beneficios_banco": "https://www.safra.com.br/cartoes/",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
         "iof": "planilha:cartoes-premium-comparativo.xlsx"
       },
@@ -1886,7 +1918,7 @@
         "https://www.safra.com.br/external-files/servicos/pessoa-fisica/conta-corrente/tabela-de-tarifas-pf.pdf",
         "planilha:cartoes-premium-comparativo.xlsx"
       ],
-      "verificado_em": "2026-10-12",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "adicionais_gratis",
         "cashback",
@@ -2068,10 +2100,10 @@
       "isencao": {
         "tipo": "investimento",
         "valor": 500000,
-        "regra": "Isenção de anuidade com investimentos a partir de R$ 500 mil no Safra ou gastos a partir de R$ 10 mil por fatura mensal."
+        "regra": "Isenção de anuidade com investimentos a partir de R$ 500 mil no Safra ou com gastos a partir de R$ 10 mil por fatura mensal."
       },
       "renda_minima": null,
-      "requisito_acesso": "Elegível para clientes que possuam R$ 300.000,00 (trezentos mil reais) ou mais investidos junto ao Safra, sujeito à análise e aprovação de crédito.",
+      "requisito_acesso": "O cartão de crédito Safra é elegível para solicitação de clientes que possuam R$ 300.000,00 ou mais investidos junto ao Safra, sujeito a análise e aprovação de crédito.",
       "adicionais_gratis": null,
       "pontos": {
         "nacional": 2,
@@ -2088,15 +2120,15 @@
         "Livelo"
       ],
       "spread": 5.5,
-      "iof": 3.5,
-      "validade_pontos": "Nos cartões Safra Visa Infinite os pontos não têm validade.",
+      "iof": 0,
+      "validade_pontos": "Pontos não expiram",
       "salas_vip": [
         {
-          "programa": "Espaço Banco Safra",
-          "regra": "Acesso ilimitado e gratuito, 24h todos os dias, buffet completo e refeição kosher, com um acompanhante sem custo adicional (Guarulhos)."
+          "programa": "Espaço Banco Safra (Guarulhos)",
+          "regra": "Acesso gratuito e ilimitado, 24h todos os dias, buffet completo e refeição kosher, com um acompanhante sem custo adicional."
         },
         {
-          "programa": "Visa Airport Companion / Dragon Pass",
+          "programa": "Visa Airport Companion",
           "regra": "4 acessos gratuitos anuais para mais de 1.400 salas VIP no Brasil e no mundo."
         }
       ],
@@ -2107,40 +2139,38 @@
         },
         {
           "titulo": "Visa Concierge 24h",
-          "descricao": "Suporte completo para o planejamento e durante as viagens."
+          "descricao": "Suporte completo para planejamento e durante viagens."
         },
         {
-          "titulo": "Visa Luxury Hotel Collection",
-          "descricao": "Experiências em hotéis renomados ao redor do mundo."
+          "titulo": "Emergência médica internacional",
+          "descricao": "Seguro para viagens com cobertura médica internacional."
         },
         {
           "titulo": "Visa Airport Companion",
           "descricao": "Descontos em aeroportos em mais de 140 países."
         },
         {
-          "titulo": "Seguro Proteção de Compra",
-          "descricao": "Proteção contra roubos ou danos acidentais pelo prazo de 60 dias a partir da data da compra."
+          "titulo": "Visa Luxury Hotel Collection",
+          "descricao": "Experiências e benefícios em hotéis de luxo renomados."
         },
         {
-          "titulo": "Vai de Visa",
-          "descricao": "Ofertas em parceiros, ações de cashback e sorteios mediante cadastro."
+          "titulo": "Seguro Proteção de Compra",
+          "descricao": "Proteção contra roubos ou danos acidentais pelo prazo de 60 dias a partir da data da compra."
         }
       ],
       "link_solicitacao": "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/safra-visa-infinite.htm",
-      "nota_curadoria": "A anuidade de R$1.500/ano (12x R$125) pode ser isentada com investimentos a partir de R$500 mil no Safra ou gastos mensais de R$10 mil na fatura — condição relevante para clientes de alta renda. O acesso ao cartão em si já exige R$300 mil investidos no banco, tornando-o um produto de nicho. A pontuação varia conforme o volume da fatura (2 a 3 pts/USD) e os pontos do Visa Infinite não expiram, diferencial importante frente a outros cartões Safra. As salas VIP combinam acesso ilimitado ao Espaço Banco Safra em Guarulhos com apenas 4 acessos anuais gratuitos à rede global via Visa Airport Companion/Dragon Pass, o que pode surpreender quem espera acesso ilimitado internacional.",
+      "nota_curadoria": "A anuidade de R$ 1.500/ano (12x R$125) só é isenta com R$ 500 mil investidos no Safra ou gasto mínimo de R$ 10 mil por fatura — importante checar qual via o cliente usará. O acesso às salas VIP internacionais é limitado a 4 por ano e, segundo o site institucional, depende também de manter histórico de faturas em dia com gasto mínimo mensal de R$10 mil. A isenção de IOF em compras internacionais é uma campanha promocional válida apenas de 12/03/2026 a 31/08/2026, não uma condição permanente do cartão. Renda mínima exigida não é divulgada publicamente, apenas o critério de investimento mínimo.",
       "procedencia": {
-        "anuidade": "https://www.safra.com.br/cartoes/",
-        "anuidade_parcelas": "https://www.safra.com.br/cartoes/",
-        "isencao": "https://www.safra.com.br/cartoes/",
+        "anuidade": "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/safra-visa-infinite.htm",
+        "anuidade_parcelas": "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/safra-visa-infinite.htm",
+        "isencao": "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/safra-visa-infinite.htm",
         "requisito_acesso": "https://www.safra.com.br/",
-        "pontos": "https://www.safra.com.br/cartoes/",
+        "pontos": "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/safra-visa-infinite.htm",
+        "iof": "https://www.safra.com.br/cartoes/",
+        "salas_vip": "https://www.safra.com.br/servicos/pessoa-fisica/cartoes/safra-visa-infinite.htm",
         "transfere_para": "https://www.safra.com.br/cartoes/programa-safra-rewards/",
-        "validade_pontos": "https://www.safra.com.br/cartoes/programa-safra-rewards/",
-        "salas_vip": "https://www.safra.com.br/cartoes/",
-        "beneficios_banco": "https://www.safra.com.br/cartoes/",
         "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
-        "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "planilha:cartoes-premium-comparativo.xlsx"
+        "spread": "planilha:cartoes-premium-comparativo.xlsx"
       },
       "fontes": [
         "https://www.safra.com.br/cartoes/",
@@ -2151,7 +2181,7 @@
         "planilha:arquivo_unificado_fuzzy.xlsx",
         "planilha:cartoes-premium-comparativo.xlsx"
       ],
-      "verificado_em": "2026-10-26",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "adicionais_gratis",
         "renda_minima"
@@ -2159,11 +2189,23 @@
       "campos_rejeitados": [],
       "campos_preservados": [
         "cashback",
-        "iof",
-        "link_solicitacao",
         "spread"
       ],
-      "bandeira_ref": "visa-infinite"
+      "bandeira_ref": "visa-infinite",
+      "conflitos": [
+        {
+          "campo": "iof",
+          "antes": 3.5,
+          "depois": 0,
+          "variacao_pct": -100,
+          "fonte_antes": "planilha:cartoes-premium-comparativo.xlsx",
+          "fonte_depois": "https://www.safra.com.br/cartoes/",
+          "valor_mantido": "depois",
+          "motivo": null,
+          "detectado_em": "2026-11-02",
+          "resolvido": false
+        }
+      ]
     },
     {
       "slug": "safra-visa-platinum",
@@ -3303,7 +3345,7 @@
       "isencao": {
         "tipo": "outro",
         "valor": null,
-        "regra": "Isenção de anuidade por gastos ou investimentos, sem detalhamento de valores mínimos na fonte."
+        "regra": "Isenção de anuidade por gastos ou investimentos, sem valores específicos divulgados na fonte."
       },
       "renda_minima": null,
       "requisito_acesso": null,
@@ -3312,7 +3354,7 @@
         "nacional": null,
         "internacional": 3,
         "unidade": "pts/USD",
-        "observacao": "Até 3 pontos por dólar que não expiram, conforme linha 'Bradesco Principal'."
+        "observacao": "Até 3 pontos por dólar gasto, pontos que não expiram."
       },
       "cashback": {
         "percentual": 0,
@@ -3328,7 +3370,11 @@
       "salas_vip": [
         {
           "programa": "Bradesco Lounge",
-          "regra": "4 acessos a salas VIP com reserva antecipada; acesso a mais de 1.000 salas VIP ao redor do mundo."
+          "regra": "4 acessos a salas VIP privativas nos principais aeroportos do Brasil, com reserva antecipada."
+        },
+        {
+          "programa": "Salas VIP (rede internacional)",
+          "regra": "Acesso a mais de 1.000 salas VIP ao redor do mundo para mais conforto nas viagens."
         }
       ],
       "beneficios_banco": [
@@ -3338,7 +3384,7 @@
         },
         {
           "titulo": "Programa Menu",
-          "descricao": "Ganhe até 15% de desconto na conta e aproveite vantagens como mesa VIP e sobremesa em restaurantes premiados."
+          "descricao": "Até 15% de desconto na conta, mesa VIP e sobremesa em restaurantes premiados."
         },
         {
           "titulo": "Viagens & Concierge Bradesco",
@@ -3346,11 +3392,11 @@
         },
         {
           "titulo": "Ofertas especiais",
-          "descricao": "Condições diferenciadas nas melhores marcas, disponíveis no app Bradesco."
+          "descricao": "Condições diferenciadas em marcas selecionadas, disponíveis no app Bradesco."
         },
         {
           "titulo": "Pix com cartão de crédito",
-          "descricao": "Use o limite de saque do cartão para pagar e fazer transferências via Pix."
+          "descricao": "Uso do limite de saque do cartão para pagamentos e transferências via Pix."
         },
         {
           "titulo": "Parcelamento de compras internacionais",
@@ -3358,13 +3404,7 @@
         }
       ],
       "link_solicitacao": null,
-      "nota_curadoria": "A fonte oficial não traz valor exato de anuidade nem regras detalhadas de isenção, apenas menciona que ela pode ocorrer por gastos ou investimentos. Os benefícios de pontos (até 3 pts/USD) e salas VIP (4 acessos com reserva antecipada) são específicos da linha 'Bradesco Principal', mas não há confirmação de que sejam exclusivos da variante Visa Infinite. Recomenda-se checar condições comerciais atualizadas diretamente com o gerente antes de indicar ao cliente.",
-      "fontes": [
-        "https://banco.bradesco/html/principal/cartoes.html",
-        "planilha:cartoes-premium-comparativo.xlsx",
-        "planilha:arquivo_unificado_fuzzy.xlsx"
-      ],
-      "verificado_em": "2026-09-28",
+      "nota_curadoria": "A fonte não traz valores específicos de anuidade, renda mínima ou regras detalhadas de isenção, apenas menciona que é possível isentar por gastos ou investimentos. O acesso a salas VIP próprias (Bradesco Lounge) é limitado a 4 usos com reserva antecipada, enquanto o acesso à rede internacional de mais de 1.000 salas aparece como benefício genérico sem confirmação de regra de uso por titular. Pontuação de até 3 pts/USD sem expiração é o único dado quantitativo confirmado oficialmente.",
       "procedencia": {
         "isencao": "https://banco.bradesco/html/principal/cartoes.html",
         "pontos": "https://banco.bradesco/html/principal/cartoes.html",
@@ -3376,17 +3416,18 @@
         "iof": "planilha:cartoes-premium-comparativo.xlsx",
         "transfere_para": "https://banco.bradesco/html/principal/cartoes.html"
       },
+      "fontes": [
+        "https://banco.bradesco/html/principal/cartoes.html",
+        "planilha:cartoes-premium-comparativo.xlsx",
+        "planilha:arquivo_unificado_fuzzy.xlsx"
+      ],
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "anuidade_parcelas",
         "renda_minima",
         "requisito_acesso"
       ],
       "campos_rejeitados": [],
-      "campos_procedencia_inferida": [
-        "isencao",
-        "pontos",
-        "salas_vip"
-      ],
       "campos_preservados": [
         "adicionais_gratis",
         "anuidade",
@@ -4348,7 +4389,7 @@
         "nacional": 5,
         "internacional": 7,
         "unidade": "pts/USD",
-        "observacao": "Pontuação por dólar gasto; segundo matéria de fev/2023, compras nacionais geram 5 pontos por dólar e compras internacionais 7 pontos por dólar. No lançamento (2021), a regra divulgada era de 4 pontos por dólar em compras gerais, com bônus de 5 pontos por dólar nos primeiros 12 meses."
+        "observacao": "Em 2023 o BRB Dux Visa passou a oferecer 5 pontos por dólar em compras nacionais e 7 pontos por dólar em compras internacionais, sendo apontado como o cartão de maior pontuação do mercado nacional."
       },
       "cashback": {
         "nacional": null,
@@ -4359,70 +4400,71 @@
       "transfere_para": [
         "Latam Pass",
         "Smiles",
-        "InMais"
+        "InMais",
+        "TAP Miles&Go"
       ],
       "spread": 4,
       "iof": 3.5,
       "validade_pontos": "Pontos não expiram",
       "salas_vip": [
         {
-          "programa": "LoungeKey",
-          "regra": "Acessos ilimitados a milhares de salas VIP no Brasil e no exterior."
+          "programa": "Priority Pass",
+          "regra": "Acesso incluído; o Dux é citado como o único cartão do mercado a oferecer acesso a todos os programas de salas VIP (Priority Pass, LoungeKey e Visa Airport Companion)."
         },
         {
-          "programa": "Priority Pass",
-          "regra": "Acesso incluído; o Dux é citado como único cartão do mercado a oferecer acesso a todos os programas de salas VIP (Priority Pass, LoungeKey e Visa Airport Companion)."
+          "programa": "LoungeKey",
+          "regra": "Acesso ilimitado a milhares de salas VIP no Brasil e no exterior."
         },
         {
           "programa": "Visa Airport Companion",
-          "regra": "Acesso incluído como parte do conjunto completo de salas VIP oferecido pelo cartão."
+          "regra": "Incluído entre os programas de salas VIP disponíveis ao portador do Dux."
         },
         {
-          "programa": "Sala VIP BRB (Aeroporto de Brasília)",
-          "regra": "Uso ilimitado da sala VIP própria do BRB no Aeroporto Internacional de Brasília."
+          "programa": "Sala VIP própria BRB (Aeroporto de Brasília)",
+          "regra": "Uso ilimitado da sala VIP do BRB no Aeroporto Internacional de Brasília."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Concierge Dux Exclusivo",
-          "descricao": "Serviço de concierge especializado para consultoria, planejamento de viagens, reservas de passeios, hotéis, voos, locação de veículos de luxo e atividades culturais."
+          "descricao": "Serviço de concierge especializado para consultoria, planejamento de viagens, reservas de passeios, locação de veículos de luxo e entrega de documentos valiosos."
+        },
+        {
+          "titulo": "Reservas e experiências culturais",
+          "descricao": "Reservas nos melhores hotéis do mundo e acesso a atividades culturais como teatro, ópera, ballet, concertos e museus."
         },
         {
           "titulo": "Estacionamento BRB no Aeroporto de Brasília",
-          "descricao": "Acesso ao estacionamento BRB no Aeroporto Internacional de Brasília para portadores do cartão."
+          "descricao": "Acesso ao estacionamento exclusivo do BRB no Aeroporto Internacional de Brasília."
         },
         {
-          "titulo": "App exclusivo BRB DUX",
-          "descricao": "Gerenciamento totalmente digital do cartão por meio de aplicativo exclusivo, disponível para iOS e Android."
+          "titulo": "Aplicativo exclusivo BRB DUX",
+          "descricao": "Gerenciamento totalmente digital do cartão por meio de app exclusivo disponível para iOS e Android."
         },
         {
           "titulo": "Programas Vai de Visa e Curtaí",
-          "descricao": "Acesso a descontos e condições especiais em parceiros selecionados dentro dos programas Vai de Visa e Curtaí."
+          "descricao": "Acesso a descontos e condições especiais em parceiros selecionados por meio dos programas Vai de Visa e Curtaí."
         },
         {
-          "titulo": "Menus diferenciados em restaurantes renomados",
-          "descricao": "Acesso a menus exclusivos em restaurantes de alto padrão, incluindo parcerias como o Grupo Troisgros."
-        },
-        {
-          "titulo": "Transferência de pontos para TAP Miles&Go",
-          "descricao": "Assinantes do Clube de Pontos BRB (DUX) podem converter pontos em milhas TAP na proporção de 2 para 1, com transferência mínima de 10 mil pontos e limite semestral de 500 mil pontos por CPF."
+          "titulo": "Ofertas exclusivas em restaurantes e serviços premium",
+          "descricao": "Descontos em fretamento de aeronaves e helicópteros e acesso a menus diferenciados em restaurantes renomados, como o Grupo Troisgros."
         }
       ],
       "link_solicitacao": "https://brbcard.com.br/dux",
-      "nota_curadoria": "O BRB Dux é um cartão metálico premium voltado a clientes de alta renda, com forte apelo em pontuação (até 7 pontos por dólar em compras internacionais) e acesso simultâneo a LoungeKey, Priority Pass e Visa Airport Companion, algo raro no mercado. Não há informação oficial e explícita sobre valor de anuidade, renda mínima exigida ou política de isenção nas fontes analisadas, o que exige confirmação direta com o banco antes de orientar o cliente. A regra de pontuação mudou ao longo do tempo (de 4 pts/USD no lançamento para 5 e 7 pts/USD em matéria mais recente), então vale checar a condição vigente no momento da contratação.",
+      "nota_curadoria": "O BRB Dux Visa é um cartão metálico premium focado em alta renda, com destaque para pontuação elevada (5 pts/USD nacional e 7 pts/USD internacional segundo release de 2023, valor superior ao divulgado no lançamento em 2021). Nenhuma das fontes oficiais informa anuidade, renda mínima ou spread/IOF específicos do Dux — a tabela de tarifas do BRB só traz a anuidade do cartão básico (R$96/ano), não do Dux, então esse campo foi deixado em branco para evitar erro. A transferência de pontos para TAP Miles&Go exige assinatura do Clube de Pontos BRB (planos de 12 mil ou 20 mil pontos) com mínimo de 10 mil pontos por operação e limite semestral de 500 mil pontos por CPF.",
       "procedencia": {
         "pontos": "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/",
-        "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
-        "salas_vip": "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/",
         "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
+        "validade_pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
+        "transfere_para": "https://novo.brb.com.br/imprensa/brb-reafirma-compromisso-com-o-cliente-e-disponibiliza-novas-condicoes-de-transferencia-de-pontos-para-o-tap-milesgo/",
+        "salas_vip": "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/",
         "anuidade": "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
         "anuidade_parcelas": "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
         "isencao": "planilha:cartoes-premium-comparativo.xlsx",
         "adicionais_gratis": "planilha:cartoes-premium-comparativo.xlsx",
         "cashback": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
-        "iof": "planilha:cartoes-premium-comparativo.xlsx",
-        "transfere_para": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/lancamento-brb-dux-visa.html"
+        "iof": "planilha:cartoes-premium-comparativo.xlsx"
       },
       "fontes": [
         "https://novo.brb.com.br/imprensa/brb-dux-visa-e-eleito-melhor-cartao-de-credito-do-pais-pela-terceira-vez-consecutiva/",
@@ -4432,13 +4474,11 @@
         "https://novo.brb.com.br/imprensa/01-03-2021-brb-dux-visa-e-eleito-melhor-cartao-de-credito-de-2021/",
         "planilha:cartoes-premium-comparativo.xlsx"
       ],
-      "verificado_em": "2026-10-12",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "renda_minima"
       ],
-      "campos_rejeitados": [
-        "transfere_para"
-      ],
+      "campos_rejeitados": [],
       "campos_preservados": [
         "adicionais_gratis",
         "anuidade",
@@ -4446,8 +4486,8 @@
         "cashback",
         "iof",
         "isencao",
-        "spread",
-        "transfere_para"
+        "link_solicitacao",
+        "spread"
       ],
       "bandeira_ref": "visa-infinite"
     },
@@ -4484,40 +4524,33 @@
       "validade_pontos": "2 anos",
       "salas_vip": [
         {
-          "programa": "Visa Airport Companion",
-          "regra": "Mais de 1300 salas VIP disponíveis em aeroportos ao redor do mundo, benefício exclusivo para a categoria Visa Infinite."
-        },
-        {
           "programa": "Visa Infinite Lounge",
-          "regra": "Sala VIP exclusiva para clientes Visa Infinite no embarque internacional do Terminal 3 do Aeroporto Internacional de Guarulhos."
+          "regra": "Sala VIP exclusiva para clientes Visa Infinite, localizada no embarque internacional do Terminal 3 do Aeroporto Internacional de Guarulhos."
         },
         {
-          "programa": "Visa Infinite Fast Pass",
-          "regra": "Acesso exclusivo de embarque nos terminais 2 e 3 do Aeroporto de Guarulhos e nos embarques internacional e doméstico do RIOgaleão (Rio de Janeiro)."
+          "programa": "Visa Airport Companion",
+          "regra": "Mais de 1300 salas VIP disponíveis em aeroportos ao redor do mundo, benefício exclusivo para clientes Visa Infinite."
         }
       ],
       "beneficios_banco": [
         {
+          "titulo": "Visa Infinite Fast Pass",
+          "descricao": "Acesso exclusivo de embarque nos terminais 2 e 3 do Aeroporto de Guarulhos e no RIOgaleão, no Rio de Janeiro."
+        },
+        {
           "titulo": "Visa Concierge",
-          "descricao": "Assistência pessoal 24h para confirmar voos, reservar restaurantes, enviar presentes e outras solicitações."
+          "descricao": "Assistência pessoal 24h para confirmar voos, reservar em restaurantes, enviar presentes e mais."
         },
         {
-          "titulo": "Visa Luxury Hotel Collection",
-          "descricao": "Benefícios exclusivos em hospedagens selecionadas ao redor do mundo para clientes Visa Infinite."
-        },
-        {
-          "titulo": "Duty Free Visa-Dufry",
-          "descricao": "Parcelamento das compras em Duty Free em até 12x sem juros, com reserva antecipada e retirada na ida ou volta da viagem."
-        },
-        {
-          "titulo": "App Visa Airport Companion",
-          "descricao": "Aplicativo com experiências e benefícios em aeroportos para otimizar o tempo antes do embarque."
+          "titulo": "Programa Curtaí",
+          "descricao": "Clientes com cartão de crédito BRBCARD têm acesso ao marketplace de vantagens e descontos do programa de relacionamento Curtaí do BRB."
         }
       ],
       "link_solicitacao": "https://www.brbcard.com.br",
-      "nota_curadoria": "As fontes oficiais consultadas não trazem valor de anuidade, renda mínima, pontuação ou política de cashback específicos para o BRB Visa Infinite — a tabela de tarifas do BRB só detalha a anuidade do 'cartão básico' nacional, não a variante Infinite. Os benefícios de salas VIP (Visa Infinite Lounge, Fast Pass e Visa Airport Companion) são garantidos pela bandeira Visa para qualquer emissor da categoria Infinite, não sendo exclusividade do BRB. Recomenda-se confirmar diretamente com o BRB/BRBCARD a anuidade, a regra de isenção e a pontuação do programa Curtaí para este cartão específico antes de recomendar ao cliente.",
+      "nota_curadoria": "As fontes oficiais disponíveis não trazem dados específicos do BRB Visa Infinite sobre anuidade, renda mínima, pontuação ou cashback — a tabela de tarifas do BRB só detalha o cartão básico (anuidade de R$96/ano), não a variante Infinite. Os benefícios de salas VIP e concierge listados são padrão da bandeira Visa para a categoria Infinite, não exclusividade do BRB. Recomenda-se confirmar diretamente com o BRBCARD as condições comerciais específicas deste produto antes de recomendar ao cliente.",
       "procedencia": {
         "salas_vip": "https://www.visa.com.br/pague-com-visa/cartoes/cartoes-de-credito/detalhes-visa-infinite.html",
+        "programa_proprio": "https://novo.brb.com.br/para-voce/abra-sua-conta/",
         "anuidade": "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
         "anuidade_parcelas": "https://novo.brb.com.br/wp-content/uploads/2024/03/A4_TABELA-PF-2024.pdf",
         "isencao": "planilha:cartoes-premium-comparativo.xlsx",
@@ -4537,7 +4570,7 @@
         "planilha:cartoes-premium-comparativo.xlsx",
         "https://nbf.brb.com.br/wp-content/uploads/2025/02/REGULAMENTO-SALA-BRB-VIP-CLUB-NOVA-REGRA-GASTOS-VF-6.pdf"
       ],
-      "verificado_em": "2026-10-12",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "adicionais_gratis",
         "renda_minima",
@@ -8754,20 +8787,20 @@
       "isencao": {
         "tipo": "gasto_mensal",
         "valor": 8000,
-        "regra": "Isento da mensalidade de R$ 89 ao gastar acima de R$ 8 mil por mês no cartão de crédito ou enquanto possuir R$ 50 mil investidos ou guardados no Nubank; fora dessas condições, a mensalidade é de R$ 89."
+        "regra": "Isenção da mensalidade de R$89 para quem gasta acima de R$8 mil por mês no cartão de crédito ou mantém R$50 mil investidos ou guardados no Nubank; caso contrário, a mensalidade de R$89/mês (R$1.068/ano) é cobrada."
       },
       "renda_minima": null,
-      "requisito_acesso": "Não há exigência de renda mínima; o Nubank realiza análise de crédito automática no cadastro e mensalmente para liberar o cartão Ultravioleta.",
+      "requisito_acesso": "Não há regra de renda mínima fixa; o acesso depende de análise de crédito automática realizada no cadastro de novos clientes e, mensalmente, para quem já possui cartão Nubank.",
       "adicionais_gratis": 1,
       "pontos": {
-        "nacional": 2.2,
+        "nacional": null,
         "internacional": 2.2,
         "unidade": "pts/USD",
-        "observacao": "Acúmulo de 2,2 pontos por dólar gasto (ou equivalente em reais) em compras no crédito, com alternativa de 1,25% de cashback; pontos e cashback ficam disponíveis instantaneamente e não expiram."
+        "observacao": "Acumula a partir de 2,2 pontos por dólar gasto (ou 1,25% de cashback, à escolha do cliente); no Nu Viagens o ganho sobe para 9 pontos por dólar gasto ou 5% de cashback."
       },
       "cashback": {
         "percentual": 1.25,
-        "regra": "1,25% de cashback sobre o valor gasto em compras no crédito ou via NuPay, calculado em reais; não há cashback em saques, pagamentos de boletos, PIX, tributos, seguros ou na própria mensalidade do Ultravioleta."
+        "regra": "1,25% de cashback sobre compras feitas no crédito com o cartão Mastercard Black Ultravioleta ou via NuPay no crédito; não há cashback em saques, estornos, recarga de celular, tributos, boletos, PIX, seguros/assinaturas Nubank ou pagamento da mensalidade; limite de resgate mensal de R$7.500 por modalidade (pagamento de fatura, crédito em conta ou conversão em milhas/pontos)."
       },
       "programa_proprio": "Nubank Ultravioleta Pontos & Cashback",
       "transfere_para": [
@@ -8778,57 +8811,57 @@
       ],
       "spread": 3.5,
       "iof": 0,
-      "validade_pontos": "Saldo de pontos e cashback não expira e fica sempre disponível para uso.",
+      "validade_pontos": "Saldo de pontos e cashback não expira",
       "salas_vip": [
         {
           "programa": "Priority Pass",
-          "regra": "4 visitas gratuitas por ano para titular e acompanhantes em mais de 1.700 salas VIP ao redor do mundo."
+          "regra": "4 visitas gratuitas por ano, válidas para o titular e acompanhantes, em mais de 1.700 salas VIP ao redor do mundo."
         },
         {
           "programa": "Nubank Ultravioleta Lounge",
-          "regra": "Acesso ilimitado ao lounge próprio no Terminal 3 do Aeroporto de Guarulhos para titular e acompanhantes."
+          "regra": "Acesso ilimitado e gratuito ao espaço exclusivo no Terminal 3 do Aeroporto de Guarulhos, para titular e família, mediante geração do Ultravioleta Pass no app até 3 horas antes do voo."
         }
       ],
       "beneficios_banco": [
         {
-          "titulo": "Modo LATAM Pass",
-          "descricao": "Acumule 2,2 milhas LATAM Pass por dólar gasto, com 10% de bônus em envios automáticos e ganho de 1 Ponto Qualificável a cada 4 milhas."
-        },
-        {
           "titulo": "Nu Viagens",
-          "descricao": "Ganhe 9 pontos por dólar gasto ou 5% de cashback em reservas de passagens aéreas e hotéis pelo app, com Seguro Viagem Ultravioleta incluso."
+          "descricao": "Compra de passagens aéreas e hotéis pelo app com 9 pontos por dólar gasto ou 5% de cashback, alertas de preço e Seguro Viagem Ultravioleta incluso."
         },
         {
-          "titulo": "Conta Global Ultravioleta",
-          "descricao": "Spread zero via parceria com a Wise, permitindo gerenciar saldo em reais, dólar, euro e mais de 40 moedas pelo app."
+          "titulo": "Conta Global",
+          "descricao": "Em parceria com a Wise, permite gerenciar saldo em reais, dólar, euro e mais de 40 moedas com spread zero na cotação."
         },
         {
           "titulo": "eSIM Internacional de Viagem",
-          "descricao": "10GB de internet gratuitos em mais de 150 países, com renovação automática após 365 dias."
-        },
-        {
-          "titulo": "Cartão adicional gratuito",
-          "descricao": "Cartão Black adicional sem custo, que compartilha os benefícios Mastercard Black e gera pontos/cashback para o titular."
+          "descricao": "Conexão gratuita com 10GB em mais de 150 países, com renovação automática após 365 dias."
         },
         {
           "titulo": "NuTag",
-          "descricao": "Duas tags gratuitas de pedágio e estacionamento, com cobrança direta na fatura do cartão Ultravioleta."
+          "descricao": "Duas tags gratuitas de pedágio e estacionamento, sem mensalidade, com cobrança direto na fatura do cartão."
+        },
+        {
+          "titulo": "Concierge de experiências",
+          "descricao": "Assistente pessoal disponível 24 horas para ajudar em viagens, eventos e reservas especiais."
+        },
+        {
+          "titulo": "Cartão adicional sem custo",
+          "descricao": "Possibilidade de solicitar cartão adicional Mastercard Black sem custo, cujos gastos também contam para a isenção da mensalidade e geram cashback/pontos para o titular."
         }
       ],
-      "link_solicitacao": "https://nubank.com.br/ultravioleta",
-      "nota_curadoria": "Atenção à pegadinha da isenção: só fica livre da mensalidade de R$ 89 quem gasta acima de R$ 8 mil/mês no cartão ou mantém R$ 50 mil investidos/guardados no Nubank; sem isso, a cobrança é mensal e soma R$ 1.068/ano. Não há renda mínima formal, mas há análise de crédito contínua que pode bloquear o acesso. Os 4 acessos anuais ao Priority Pass são compartilhados entre titular e acompanhantes, enquanto o Lounge próprio em Guarulhos é ilimitado — vale confirmar regras de uso no app antes da viagem.",
+      "link_solicitacao": "https://nubank.com.br/ultravioleta/cartao-black",
+      "nota_curadoria": "A mensalidade de R$89 (R$1.068/ano) só é zerada com gasto mensal acima de R$8 mil ou R$50 mil investidos/guardados no Nubank; não há exigência formal de renda mínima, mas sim análise de crédito interna. O cartão oferece IOF zero e spread de 3,5% em compras internacionais, além de pontuação mista (pontos ou cashback) que pode ser transferida para LATAM, Azul, Smiles e Livelo. O acesso ao Ultravioleta Lounge em Guarulhos é ilimitado, mas o Priority Pass está limitado a 4 visitas por ano.",
       "procedencia": {
-        "anuidade": "https://nubank.com.br/ultravioleta",
-        "anuidade_parcelas": "https://nubank.com.br/ultravioleta",
-        "isencao": "https://nubank.com.br/ultravioleta",
+        "anuidade": "https://nubank.com.br/ultravioleta/cartao-black",
+        "anuidade_parcelas": "https://nubank.com.br/ultravioleta/cartao-black",
+        "isencao": "https://nubank.com.br/ultravioleta/cartao-black",
         "requisito_acesso": "https://nubank.com.br/ultravioleta",
-        "adicionais_gratis": "https://nubank.com.br/ultravioleta/cartao-black",
         "pontos": "https://nubank.com.br/ultravioleta/cartao-black/pontos-cashback",
         "cashback": "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta",
+        "transfere_para": "https://nubank.com.br/ultravioleta/cartao-black/pontos-cashback",
         "spread": "https://nubank.com.br/ultravioleta/cartao-black",
         "iof": "https://nubank.com.br/ultravioleta/cartao-black",
-        "salas_vip": "https://nubank.com.br/ultravioleta/cartao-black",
-        "transfere_para": "https://nubank.com.br/ultravioleta/cartao-black/pontos-cashback"
+        "salas_vip": "https://nubank.com.br/contratos/termos-e-condicoes-nubank-ultravioleta",
+        "adicionais_gratis": "https://nubank.com.br/ultravioleta/cartao-black"
       },
       "fontes": [
         "https://nubank.com.br/ultravioleta/cartao-black",
@@ -8838,12 +8871,13 @@
         "https://nubank.com.br/ultravioleta/beneficios",
         "https://nubank.com.br/ultravioleta/cartao-black/pontos-cashback"
       ],
-      "verificado_em": "2026-10-26",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "renda_minima"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
+        "adicionais_gratis",
         "programa_proprio"
       ],
       "bandeira_ref": "mastercard-black"
@@ -9971,16 +10005,16 @@
       "isencao": {
         "tipo": "investimento",
         "valor": 150000,
-        "regra": "Correntistas dos pacotes Conta Plus ou Select Plus com investimentos superiores a R$ 150 mil (poupança, depósito a prazo, previdência e/ou fundos, somados) têm 50% de desconto na parcela mensal da anuidade do AAdvantage® Black, benefício vigente a partir de 09/06/2024. Clientes do programa de relacionamento Select também têm 50% de redução na anuidade, mesmo sem atingir o valor mínimo de investimento."
+        "regra": "50% de desconto na parcela mensal da anuidade para correntistas Santander que mantiverem investimentos superiores a R$150 mil (Poupança, Depósito a Prazo, Previdência e Fundos, isolados ou somados), válido a partir de 09/06/2024."
       },
       "renda_minima": 12500,
-      "requisito_acesso": "Renda mínima de R$ 12.500 para correntistas Santander e R$ 20.000 para não correntistas.",
+      "requisito_acesso": "Renda mínima de R$12.500 para correntistas Santander e de R$20.000 para não correntistas. Para correntistas, o cartão é emitido na função múltipla (crédito e débito); para não correntistas, apenas na função crédito.",
       "adicionais_gratis": 2,
       "pontos": {
         "nacional": 2,
         "internacional": 2,
         "unidade": "pts/USD",
-        "observacao": "A cada US$ 1,00 em compras convencionais (nacionais ou internacionais, convertidas em dólar na data de fechamento da fatura), o cartão concede 2 milhas AAdvantage®. Em compras feitas diretamente com a American Airlines, o cliente recebe o dobro (4 milhas por US$ 1,00)."
+        "observacao": "O valor das compras em reais é convertido para dólar na data de fechamento da fatura; concede 2 milhas por US$1,00 em compras convencionais e mais 2 milhas extras por US$1,00 em compras feitas diretamente com a American Airlines. É possível dobrar o acúmulo com o Acelerador de Milhas, mediante acréscimo de 4% sobre as compras na fatura."
       },
       "cashback": {
         "percentual": 0,
@@ -9992,84 +10026,75 @@
       ],
       "spread": 6,
       "iof": 3.5,
-      "validade_pontos": "As milhas AAdvantage® expiram em 24 meses caso não haja nenhuma movimentação (compra, resgate ou acúmulo) na conta do Programa AAdvantage® nesse período.",
+      "validade_pontos": "As milhas expiram em 24 meses caso não haja nenhuma movimentação (compra, resgate ou acúmulo) na conta do Programa AAdvantage®.",
       "salas_vip": [
         {
           "programa": "LoungeKey (Mastercard Airport Experience)",
-          "regra": "4 acessos gratuitos por ano para o titular e acompanhantes; a partir do quinto acesso é cobrada uma tarifa de US$ 32 por entrada. Não dá acesso aos lounges do Admirals Club."
+          "regra": "4 acessos gratuitos por ano para titular e acompanhantes; a partir do 5º acesso é cobrada taxa de US$32 por acesso. Não concede acesso ao Admirals Club."
         }
       ],
       "beneficios_banco": [
         {
+          "titulo": "Milhas AAdvantage diretas",
+          "descricao": "Acúmulo de milhas diretamente no programa AAdvantage da American Airlines, sem conversão de pontos bancários, a 2 milhas por dólar gasto."
+        },
+        {
           "titulo": "Acelerador de Milhas",
-          "descricao": "Pagando um adicional de 4% sobre o valor das compras convencionais lançadas na fatura, o cliente dobra a quantidade de milhas acumuladas."
-        },
-        {
-          "titulo": "Bônus em compras internacionais",
-          "descricao": "A cada US$ 1,00 gasto em compras internacionais, o cliente recebe 1 milha extra, além da bonificação padrão do cartão."
-        },
-        {
-          "titulo": "Cartão múltiplo crédito e débito",
-          "descricao": "Para correntistas Santander, o AAdvantage® Black é emitido com função múltipla (crédito e débito); não correntistas recebem apenas a função crédito."
-        },
-        {
-          "titulo": "Adicionais gratuitos",
-          "descricao": "É possível solicitar até 5 cartões adicionais; os dois primeiros são isentos de anuidade, e a partir do terceiro a anuidade é isenta no primeiro ano e reduzida em 50% nos anos seguintes."
-        },
-        {
-          "titulo": "Assessoria Select",
-          "descricao": "Clientes do pacote Select Plus contam com assessoria especializada em gestão de patrimônio e atendimento personalizado nos espaços Santander Select."
+          "descricao": "Permite dobrar o acúmulo de milhas mediante pagamento adicional de 4% sobre o valor das compras convencionais lançadas na fatura."
         },
         {
           "titulo": "Mastercard Airport Experience",
-          "descricao": "Acesso automático ao programa de salas VIP em mais de 850 localidades, sem necessidade de cadastro adicional, disponível apenas para o cartão AAdvantage® Black."
+          "descricao": "Acesso a mais de 850 salas VIP em aeroportos ao redor do mundo, com 4 usos gratuitos por ano via LoungeKey."
+        },
+        {
+          "titulo": "Bônus em compras na American Airlines",
+          "descricao": "Dobro de milhas em compras feitas diretamente com a American Airlines (site, telefone ou lojas físicas)."
+        },
+        {
+          "titulo": "Cartões adicionais",
+          "descricao": "Até 5 cartões adicionais, com os dois primeiros isentos de anuidade e isenção no primeiro ano para os demais, com 50% de desconto nos anos seguintes."
         }
       ],
       "link_solicitacao": "https://www.santander.com.br/cartaoaa",
-      "nota_curadoria": "As fontes oficiais não trazem o valor exato da anuidade em reais, apenas as regras de desconto (50% para correntistas com mais de R$150 mil investidos ou vinculados ao programa Select), então o campo de anuidade ficou em branco por falta de dado explícito. A renda mínima varia entre R$ 12.500 (correntista) e R$ 20.000 (não correntista) — usamos o valor de correntista como referência. O acesso a salas VIP é limitado a 4 entradas gratuitas por ano via LoungeKey/Mastercard Airport Experience, não abrangendo o Admirals Club, e há divergência entre fontes sobre a validade das milhas (18 meses no FAQ vs. 24 meses no regulamento mais recente, que prevalece).",
+      "nota_curadoria": "Não há valor de anuidade cheia divulgado nas fontes oficiais consultadas, apenas descontos de 50% para correntistas Select ou com investimentos acima de R$150 mil — é preciso confirmar o valor integral antes de recomendar. A pontuação é feita diretamente em milhas AAdvantage (American Airlines), a 2 milhas por dólar, com conversão cambial no fechamento da fatura. Há divergência entre fontes sobre validade das milhas (FAQ cita 18 meses, regulamento mais recente cita 24 meses sem movimentação); prevaleceu o regulamento de 2024. O acesso a salas VIP é limitado a 4 usos anuais via LoungeKey/Mastercard Airport Experience, sem acesso ao Admirals Club.",
       "procedencia": {
         "isencao": "https://cms.santander.com.br/sites/WPS/documentos/arq-tarifas-e-pacotes-pessoa-fisica-lista3-conta-plus-select/25-12-24_140851_programa-de-bonificacao-conta-plus-e-select-3.pdf",
         "renda_minima": "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf",
+        "requisito_acesso": "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf",
         "adicionais_gratis": "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf",
         "pontos": "https://cms.santander.com.br/sites/WPS/documentos/arq-reg-aa-out4/24-10-28_161622_regulamento-cartoes-aadvantage-24-10-24.pdf",
         "salas_vip": "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf",
         "validade_pontos": "https://cms.santander.com.br/sites/WPS/documentos/arq-reg-aa-out4/24-10-28_161622_regulamento-cartoes-aadvantage-24-10-24.pdf",
         "anuidade": "https://www.santander.com.br/cartao-credito-santander/aadvantage-black",
         "anuidade_parcelas": "https://www.santander.com.br/cartao-credito-santander/aadvantage-black",
-        "transfere_para": "https://cms.santander.com.br/sites/WPS/documentos/arq-reg-aa-out4/24-10-28_161622_regulamento-cartoes-aadvantage-24-10-24.pdf",
-        "requisito_acesso": "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf",
-        "link_solicitacao": "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf",
+        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx",
         "spread": "planilha:cartoes-premium-comparativo.xlsx",
         "iof": "planilha:cartoes-premium-comparativo.xlsx",
-        "cashback": "planilha:arquivo_unificado_fuzzy.xlsx"
+        "transfere_para": "https://cms.santander.com.br/sites/WPS/documentos/arq-reg-aa-out4/24-10-28_161622_regulamento-cartoes-aadvantage-24-10-24.pdf",
+        "link_solicitacao": "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf"
       },
       "fontes": [
         "https://cms.santander.com.br/sites/WPS/documentos/arq-tarifas-e-pacotes-pessoa-fisica-lista3-conta-plus-select/25-12-24_140851_programa-de-bonificacao-conta-plus-e-select-3.pdf",
         "https://cms.santander.com.br/sites/WPS/documentos/arq-faq-aa/20-07-09_124445_faqaa_29052020.pdf",
         "https://cms.santander.com.br/sites/WPS/documentos/arq-reg-aa-out4/24-10-28_161622_regulamento-cartoes-aadvantage-24-10-24.pdf",
-        "https://www.santander.com.br/cartao-credito-santander/aadvantage-black"
+        "https://www.santander.com.br/cartao-credito-santander/aadvantage-black",
+        "planilha:arquivo_unificado_fuzzy.xlsx",
+        "planilha:cartoes-premium-comparativo.xlsx"
       ],
-      "verificado_em": "2026-07-31",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [],
       "campos_rejeitados": [],
       "campos_preservados": [
         "anuidade",
         "anuidade_parcelas",
+        "cashback",
+        "iof",
         "link_solicitacao",
-        "requisito_acesso",
+        "programa_proprio",
+        "spread",
         "transfere_para"
       ],
-      "bandeira_ref": "mastercard-black",
-      "origem_planilha": {
-        "campos": [
-          "cashback",
-          "iof",
-          "spread"
-        ],
-        "arquivo": "cartoes-premium-comparativo.xlsx",
-        "em": "2026-07-31",
-        "par_planilha": "Santander AAdvantage Mastercard Black"
-      }
+      "bandeira_ref": "mastercard-black"
     },
     {
       "slug": "santander-gol-smiles-visa-gold",
@@ -10749,16 +10774,16 @@
       "isencao": {
         "tipo": "gasto_anual",
         "valor": null,
-        "regra": "Pelo Programa Vantagem Progressiva, os gastos do titular e adicionais são convertidos em descontos na anuidade, podendo chegar à isenção total; os descontos são concedidos a partir do segundo ano de emissão do cartão, conforme avaliação do gerente de relacionamento."
+        "regra": "Pelo Programa Vantagem Progressiva, os gastos realizados pelo titular e adicionais são convertidos em descontos na anuidade a partir do segundo ano de emissão do cartão, podendo chegar à isenção total; condições específicas devem ser consultadas com o gerente de relacionamento."
       },
       "renda_minima": null,
       "requisito_acesso": "Ser cooperado de uma cooperativa filiada ao Sicoob. Cartão solicitado diretamente na cooperativa.",
       "adicionais_gratis": 0,
       "pontos": {
-        "nacional": null,
+        "nacional": 2.5,
         "internacional": 2.5,
         "unidade": "pts/USD",
-        "observacao": "No programa Coopera, cada dólar gasto na função crédito gera 2,5 pontos para o cartão Black Merit, um dos maiores retornos entre os cartões Sicoob."
+        "observacao": "Programa Coopera: compras na função crédito convertem em pontos à razão de US$ 1 = 2,5 pontos para o cartão Black Merit."
       },
       "cashback": null,
       "programa_proprio": "Coopera",
@@ -10771,47 +10796,47 @@
       "salas_vip": [
         {
           "programa": "LoungeKey (Mastercard Airport Experiences)",
-          "regra": "Acesso ilimitado a mais de 1.400 salas VIP em aeroportos ao redor do mundo, independentemente da companhia aérea ou tipo de bilhete."
+          "regra": "Acesso ilimitado a mais de 1.400 salas VIP em mais de 400 aeroportos ao redor do mundo."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Mastercard Black Concierge",
-          "descricao": "Assistente pessoal 24h para planejamento de viagens, ingressos para shows/eventos e indicação de restaurantes."
+          "descricao": "Assistente pessoal 24h para planejamento de viagens, ingressos e reservas em restaurantes."
         },
         {
-          "titulo": "Cotação do Dólar sem taxas adicionais",
-          "descricao": "Conversão de compras internacionais pelo dólar PTAX do dia, mais IOF, sem spread ou taxas extras."
+          "titulo": "Cartão Virtual",
+          "descricao": "Geração de cartão virtual de uso único ou recorrente para compras online mais seguras."
         },
         {
-          "titulo": "Seguro Proteção Perda ou Roubo",
-          "descricao": "Proteção contra roubo, perda, uso sob coação ou clonagem do cartão, mediante contratação."
+          "titulo": "Carteira Digital",
+          "descricao": "Compatibilidade com Apple Pay, Google Pay, Samsung Wallet e pagamentos via WhatsApp."
         },
         {
           "titulo": "Parcelamento de fatura",
-          "descricao": "Parcelamento da última fatura em até 12x diretamente pelo App Sicoob, com taxas de juros mais vantajosas."
+          "descricao": "Possibilidade de parcelar a última fatura em até 12x com taxas diferenciadas pelo App Sicoob."
+        },
+        {
+          "titulo": "Seguro Proteção Perda ou Roubo",
+          "descricao": "Cobertura contra roubo, perda, uso sob coação ou clonagem do cartão, mediante contratação."
         },
         {
           "titulo": "Programa Coopera",
-          "descricao": "Programa de fidelidade e marketplace que permite acumular pontos e trocá-los por milhas aéreas, produtos e serviços."
-        },
-        {
-          "titulo": "Salas VIP em aeroportos",
-          "descricao": "Acesso ilimitado a salas VIP Mastercard Airport Experiences (LoungeKey) em mais de 400 aeroportos no mundo."
+          "descricao": "Fidelidade e marketplace gratuito para acúmulo e troca de pontos por produtos, serviços e milhas aéreas."
         }
       ],
       "link_solicitacao": "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf",
-      "nota_curadoria": "A anuidade de R$ 1.320,00/ano (dividida em até 12 parcelas) pode ser reduzida ou zerada pelo Programa Vantagem Progressiva, mas somente a partir do segundo ano de uso, sem valor mínimo de gasto divulgado oficialmente. O cartão se destaca pela pontuação de 2,5 pontos por dólar no Coopera e pelo acesso ilimitado a salas VIP via LoungeKey, além de IOF reduzido (3,5%) e isenção de spread em compras internacionais. Não há confirmação oficial de renda mínima exigida nem de parceiros específicos para transferência de pontos a programas de milhagem.",
+      "nota_curadoria": "A anuidade de R$1.320 pode ser parcelada em até 12x, com possibilidade de desconto progressivo via Programa Vantagem Progressiva, mas o valor exato de isenção não é divulgado publicamente. O cartão oferece uma das maiores pontuações do mercado (2,5 pts/USD) e acesso ilimitado a salas VIP via LoungeKey, além de IOF reduzido (3,5%) e spread zero em compras internacionais, conforme nota oficial do Sicoob.",
       "procedencia": {
         "anuidade": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
         "anuidade_parcelas": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
         "isencao": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
-        "adicionais_gratis": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
         "pontos": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
         "spread": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
         "iof": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
         "validade_pontos": "https://www.sicoob.com.br/documents/1948589/203636812/Tarifas+Cart%C3%A3o+de+Cr%C3%A9dito+por+anuidade.pdf/51734e6f-70b2-3314-ab76-7537a1fd7dcc?t=1719403877410",
         "salas_vip": "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf",
+        "adicionais_gratis": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d?t=1765311852962&download=true",
         "transfere_para": "https://www.sicoob.com.br/web/sicoobagrorural/mastercard-black-pf",
         "requisito_acesso": "https://www.sicoob.com.br/web/sicoob/mastercard-black-merit-pf"
       },
@@ -10823,14 +10848,14 @@
         "https://www.sicoob.com.br/web/sicoobagrorural/mastercard-black-pf",
         "https://www.sicoob.com.br/documents/37087630/37302699/Cartoes+de+Credito+Diferenciados+PF+por+Valor+Anuidade.pdf/9dd0f9de-d1c5-0d93-e2c0-70af51d042b0?t=1631885857192&download=true"
       ],
-      "verificado_em": "2026-10-26",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "cashback",
         "renda_minima"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
-        "link_solicitacao",
+        "adicionais_gratis",
         "requisito_acesso",
         "transfere_para"
       ],
@@ -10845,9 +10870,9 @@
       "anuidade": 1790,
       "anuidade_parcelas": 12,
       "isencao": {
-        "tipo": "outro",
+        "tipo": "gasto_anual",
         "valor": null,
-        "regra": "Programa Vantagem Progressiva: gastos realizados pelo titular e adicionais são convertidos em descontos na anuidade, concedidos a partir do segundo ano de emissão do cartão; condições detalhadas sob consulta ao gerente de relacionamento."
+        "regra": "Pelo Programa Vantagem Progressiva, os gastos do titular e de adicionais são convertidos em descontos na anuidade, podendo chegar à isenção total; os descontos são concedidos a partir do segundo ano de emissão do cartão (valor exato de gasto necessário não divulgado publicamente)."
       },
       "renda_minima": null,
       "requisito_acesso": null,
@@ -10856,58 +10881,58 @@
         "nacional": null,
         "internacional": 4,
         "unidade": "pts/USD",
-        "observacao": "US$ 1 gasto = 4 Pontos Coopera, uma das maiores pontuações do mercado segundo o Sicoob."
+        "observacao": "Programa Coopera: 4 pontos por dólar gasto, uma das maiores pontuações do mercado para o cartão Zenith; não há informação divulgada sobre pontuação em compras nacionais."
       },
       "cashback": null,
       "programa_proprio": "Coopera",
       "transfere_para": [],
       "spread": 0,
       "iof": 3.5,
-      "validade_pontos": "24 meses a partir da data de aquisição/lançamento no extrato",
+      "validade_pontos": "24 meses",
       "salas_vip": [
         {
           "programa": "LoungeKey",
-          "regra": "Acesso ilimitado a salas VIP, com direito a 2 convidados gratuitos por visita (titular e adicionais); acesso excedente cobrado em USD 35 por pessoa para cartões Mastercard."
+          "regra": "Acesso ilimitado a salas VIP com até 2 convidados gratuitos por visita; acessos excedentes cobrados a USD 35 por pessoa para cartões Mastercard."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Concierge 24h",
-          "descricao": "Serviço de concierge para organizar viagens, comprar ingressos e fazer reservas em restaurantes."
-        },
-        {
-          "titulo": "Compras internacionais sem taxa extra",
-          "descricao": "Conversão pelo dólar PTAX do dia da compra, sem cobrança de spread adicional."
+          "descricao": "Serviço de concierge disponível 24 horas para organizar viagens, comprar ingressos e fazer reservas em restaurantes."
         },
         {
           "titulo": "Seguro de Assistência Médica Internacional",
-          "descricao": "Cobertura para emergências médicas durante viagens ao exterior."
+          "descricao": "Cobertura para viagens internacionais, oferecendo suporte em caso de imprevistos médicos no exterior."
         },
         {
-          "titulo": "Seguro contra atrasos em voos e proteção de bagagens",
-          "descricao": "Proteção financeira em caso de atraso de voo ou extravio/dano de bagagem."
+          "titulo": "Acesso ilimitado a salas VIP",
+          "descricao": "Entrada ilimitada em salas VIP do programa LoungeKey, com até 2 convidados gratuitos por visita."
         },
         {
-          "titulo": "Cartão Virtual",
-          "descricao": "Cartão exclusivo para compras online únicas ou recorrentes, com maior segurança."
+          "titulo": "Compras internacionais sem taxa extra",
+          "descricao": "Sem cobrança de spread nas operações internacionais, com conversão pelo dólar PTAX do dia da compra."
         },
         {
-          "titulo": "Shop Coopera",
-          "descricao": "Shopping virtual do programa Coopera para resgate de pontos por produtos e serviços, incluindo crédito na fatura e aportes em previdência/cota capital."
+          "titulo": "Isenção de rolha e experiências Priceless",
+          "descricao": "Benefícios exclusivos Mastercard como isenção de taxa de rolha em restaurantes parceiros e acesso a experiências Priceless."
+        },
+        {
+          "titulo": "Seguro Proteção Perda ou Roubo",
+          "descricao": "Camada extra de proteção em caso de perda, roubo ou furto do cartão."
         }
       ],
       "link_solicitacao": "https://www.sicoob.com.br/web/sicoob/mastercard-zenith",
-      "nota_curadoria": "O Zenith é o cartão topo de linha do Sicoob, lançado em agosto de 2026 com foco no público de alta renda, oferecendo 4 pontos por dólar (uma das maiores pontuações do mercado) e acesso ilimitado a salas VIP LoungeKey com 2 convidados gratuitos por visita. A anuidade de R$ 1.790,00/ano pode ser parcelada em até 12x e reduzida via Programa Vantagem Progressiva, mas as faixas exatas de desconto não são públicas, dependendo de consulta ao gerente. Não há confirmação oficial sobre renda mínima exigida, adicionais gratuitos ou transferência de pontos para programas aéreos — apenas menção genérica a 'outros programas de recompensa' no Coopera.",
+      "nota_curadoria": "A anuidade de R$ 1.790,00/ano é uma das mais altas do portfólio Sicoob, mas pode ser reduzida ou isentada pelo Programa Vantagem Progressiva, cujo valor exato de gasto necessário não é divulgado publicamente. Não há renda mínima oficial informada, apenas o posicionamento do cartão como 'voltado ao segmento de alta renda'. A pontuação de 4 pts/USD é destaque de mercado, mas aplica-se apenas a compras internacionais, sem confirmação de pontuação para gastos nacionais. Cartões adicionais não são gratuitos, custando 50% da anuidade do titular.",
       "procedencia": {
         "anuidade": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d",
         "anuidade_parcelas": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d",
         "isencao": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d",
+        "adicionais_gratis": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d",
         "pontos": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
         "spread": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
         "iof": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/307547791",
         "validade_pontos": "https://www.sicoob.com.br/web/sicoob/coopera",
-        "salas_vip": "https://www.sicoob.com.br/zenith/desbloqueio",
-        "adicionais_gratis": "https://www.sicoob.com.br/documents/46451716/76782614/5+-+Cart%C3%B5es+-+Revis%C3%A3o+10-2025+(Vigencia+01.12.2025).pdf/9a4345de-f224-30b1-763f-c8b29fb8a82d"
+        "salas_vip": "https://www.sicoob.com.br/zenith/desbloqueio"
       },
       "fontes": [
         "https://www.sicoob.com.br/web/sicoob/mastercard-zenith",
@@ -10917,7 +10942,7 @@
         "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/282563279",
         "https://www.sicoob.com.br/zenith/desbloqueio"
       ],
-      "verificado_em": "2026-10-19",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "cashback",
         "renda_minima",
@@ -10925,10 +10950,6 @@
         "transfere_para"
       ],
       "campos_rejeitados": [],
-      "campos_preservados": [
-        "adicionais_gratis",
-        "link_solicitacao"
-      ],
       "bandeira_ref": "mastercard-black",
       "vigencia_ate": "2025-11-30"
     },
@@ -10937,7 +10958,7 @@
       "nome": "Sicoob Visa Infinite Zenith",
       "emissor": "Sicoob",
       "bandeira": "Visa",
-      "categoria": "Infinite Zenith",
+      "categoria": "Infinite",
       "anuidade": 900,
       "anuidade_parcelas": 12,
       "isencao": {
@@ -10946,7 +10967,7 @@
         "regra": "Consumo mensal de R$ 10.000,00 garante 50% de desconto na mensalidade; consumo mensal de R$ 15.000,00 garante 100% de desconto (isenção total) na anuidade, conforme tabela de tarifas para cartões Visa Infinite."
       },
       "renda_minima": null,
-      "requisito_acesso": null,
+      "requisito_acesso": "Cartão voltado ao segmento de alta renda do Sicoob; não há valor de renda mínima divulgado publicamente nas fontes oficiais.",
       "adicionais_gratis": null,
       "pontos": {
         "nacional": 4,
@@ -10961,17 +10982,17 @@
       ],
       "spread": 0,
       "iof": 3.5,
-      "validade_pontos": "Os pontos Coopera vencem a cada 24 meses, contados a partir da data de aquisição (lançamento no extrato).",
+      "validade_pontos": "Os pontos do programa Coopera vencem 24 meses após a data de aquisição/lançamento no extrato.",
       "salas_vip": [
         {
           "programa": "LoungeKey",
-          "regra": "Acesso ilimitado para titular e adicionais, com +2 convidados gratuitos por visita; acesso excedente custa USD 32 para cartões Visa."
+          "regra": "Acesso ilimitado às salas VIP, com 2 convidados gratuitos por visita (inclusive para adicionais); acesso excedente além dos convidados cobrado em USD 32 por pessoa na fatura."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Visa Concierge",
-          "descricao": "Assistente pessoal disponível 24 horas para auxiliar o portador."
+          "descricao": "Assistente pessoal disponível 24 horas para auxiliar em reservas, viagens e solicitações diversas."
         },
         {
           "titulo": "Fast Pass",
@@ -10979,24 +11000,23 @@
         },
         {
           "titulo": "Visa Luxury Hotel Collection",
-          "descricao": "Seleção de hotéis de luxo com condições especiais de reserva usando o cartão."
+          "descricao": "Seleção de hotéis de luxo com condições especiais para reservas feitas com o cartão."
         },
         {
           "titulo": "Compras internacionais sem taxa extra",
-          "descricao": "Compras realizadas no exterior sem cobrança de taxa adicional."
+          "descricao": "O cartão oferece compras internacionais sem cobrança de taxa extra, segundo material oficial do Sicoob."
         },
         {
           "titulo": "Acesso ilimitado a salas VIP",
-          "descricao": "Entrada ilimitada em salas VIP do programa LoungeKey, com até 2 convidados gratuitos por visita."
+          "descricao": "Acesso ilimitado às salas VIP LoungeKey, com 2 convidados gratuitos por visita."
         }
       ],
       "link_solicitacao": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
-      "nota_curadoria": "O cartão foi lançado recentemente (a partir de 6 de agosto) como o novo topo de linha do Sicoob, substituindo em posicionamento o antigo Visa Infinite; por isso não há ainda tabela oficial de anuidade, renda mínima ou regra de isenção publicada especificamente para o Zenith - os valores encontrados na tabela de tarifas (Credfaz) referem-se ao produto 'Visa Infinite' anterior e não foram usados para evitar erro de procedência. A pontuação de 4 pts/USD no Coopera e o acesso ilimitado a salas VIP LoungeKey com 2 convidados grátis são os diferenciais confirmados oficialmente, assim como a validade de 24 meses dos pontos.",
+      "nota_curadoria": "O Sicoob Zenith foi anunciado para lançamento em agosto de 2026 como o novo topo de linha do banco, disponível em Visa e Mastercard, mas as fontes oficiais consultadas não trazem valor de anuidade, renda mínima ou regra de isenção específicos para este cartão — a tabela de tarifas disponível (2024) refere-se ao antigo 'Sicoobcard Visa Infinite', que pode não corresponder exatamente ao novo produto Zenith. A pontuação de 4 pontos Coopera por dólar e o acesso ilimitado a salas VIP com 2 convidados gratuitos por visita (LoungeKey) são os diferenciais confirmados oficialmente. Recomenda-se confirmar anuidade e critérios de elegibilidade diretamente com o gerente Sicoob antes de divulgar ao cliente.",
       "procedencia": {
         "pontos": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
         "salas_vip": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
-        "validade_pontos": "https://www.sicoob.com.br/web/sicoob/coopera",
-        "beneficios_banco": "https://www.sicoob.com.br/web/sicoob/visa-zenith",
+        "requisito_acesso": "https://www.sicoob.com.br/web/sicoob/noticias/-/asset_publisher/xAioIawpOI5S/content/id/282563279",
         "anuidade": "https://www.sicoob.com.br/documents/56793504/105115028/sicoob_credfaz_tabela_de_tarifas_pf.pdf",
         "anuidade_parcelas": "https://www.sicoob.com.br/documents/56793504/105115028/sicoob_credfaz_tabela_de_tarifas_pf.pdf",
         "isencao": "https://www.sicoob.com.br/documents/56793504/105115028/sicoob_credfaz_tabela_de_tarifas_pf.pdf",
@@ -11013,12 +11033,11 @@
         "https://www.sicoob.com.br/documents/2204538/138978214/Tabela+de+Tarifas+nov-2025.pdf/9b3d5594-06cf-9814-0a93-193e5584f598?t=1763141556627",
         "planilha:cartoes-premium-comparativo.xlsx"
       ],
-      "verificado_em": "2026-10-26",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "adicionais_gratis",
         "cashback",
-        "renda_minima",
-        "requisito_acesso"
+        "renda_minima"
       ],
       "campos_rejeitados": [],
       "campos_preservados": [
@@ -11048,7 +11067,7 @@
         "nacional": 2,
         "internacional": 2,
         "unidade": "pts/USD",
-        "observacao": "Pontuação por reciprocidade baseada no valor total da fatura mensal convertido em dólar: até R$10 mil = 2,0 pts/USD; de R$10 mil a R$20 mil = 2,3 pts/USD; acima de R$20 mil = 2,5 pts/USD. Não há diferenciação entre compras nacionais e internacionais, apenas pelo volume total da fatura."
+        "observacao": "Pontuação por reciprocidade conforme valor total da fatura mensal (convertido em dólar): 2 pts/USD até R$10 mil, 2,3 pts/USD de R$10 mil a R$20 mil, 2,5 pts/USD acima de R$20 mil."
       },
       "cashback": {
         "nacional": null,
@@ -11058,8 +11077,8 @@
       "programa_proprio": "Programa de Recompensas Sicredi",
       "transfere_para": [
         "Smiles",
-        "LATAM Pass",
-        "Azul Fidelidade"
+        "Azul",
+        "LatamPass"
       ],
       "spread": 1,
       "iof": 3.5,
@@ -11067,21 +11086,21 @@
       "salas_vip": [
         {
           "programa": "LoungeKey",
-          "regra": "12 acessos gratuitos por ano por cartão (titular e adicional), incluindo acompanhantes; a partir do 13º acesso há cobrança por pessoa na fatura do titular. Necessário habilitar uso do cartão no exterior no app."
+          "regra": "12 acessos gratuitos por ano por cartão (titular e adicional), incluindo acompanhantes, em mais de 100 países; a partir do 13º acesso é cobrado valor vigente por pessoa na fatura do titular."
         },
         {
-          "programa": "Sala VIP Mastercard Black (Guarulhos T3)",
-          "regra": "Acesso gratuito e ilimitado ao titular e dependentes de até 12 anos; cada portador pode levar até 3 acompanhantes por visita, com custo de R$200,00 por pessoa cobrado na fatura. Não consome os acessos do LoungeKey."
+          "programa": "Sala VIP Mastercard Black (Terminal 3 - Aeroporto de Guarulhos)",
+          "regra": "Acesso gratuito e ilimitado para o titular; cada portador pode levar até 3 acompanhantes por visita, com custo de R$200,00 por pessoa lançado na fatura do titular. Não consome os 12 acessos anuais do LoungeKey."
         }
       ],
       "beneficios_banco": [
         {
           "titulo": "Concierge 24h",
-          "descricao": "Assistência personalizada para reservas em restaurantes, compra de ingressos, organização de viagens e envio de presentes, disponível 24h por dia."
+          "descricao": "Assistência personalizada 24 horas para reservas em restaurantes, compra de ingressos e organização de experiências exclusivas."
         },
         {
           "titulo": "Seguro Viagem MasterAssist Black",
-          "descricao": "Cobertura internacional para titular e dependentes em viagens de até 60 dias consecutivos, incluindo traslado médico, despesas médicas e hospedagem."
+          "descricao": "Cobertura internacional para titular e dependentes em viagens de até 60 dias consecutivos, incluindo traslado médico e despesas hospitalares."
         },
         {
           "titulo": "Seguro para veículo locado",
@@ -11089,24 +11108,24 @@
         },
         {
           "titulo": "Mastercard Global Services",
-          "descricao": "Upgrades de quarto, café da manhã gratuito e check-out tardio em hotéis e resorts parceiros ao redor do mundo."
+          "descricao": "Upgrades, café da manhã gratuito e check-out tardio em hotéis parceiros ao redor do mundo."
+        },
+        {
+          "titulo": "Seguro Bagagem",
+          "descricao": "Cobertura para despesas por atraso (4h+) ou extravio de bagagem, com assistência especializada."
         },
         {
           "titulo": "Mastercard Travel Rewards",
           "descricao": "Cashback automático em compras realizadas em estabelecimentos parceiros no exterior, sem necessidade de cadastro prévio."
-        },
-        {
-          "titulo": "Airport Concierge",
-          "descricao": "Agente pessoal para acompanhamento no aeroporto em chegadas, partidas e conexões, com processo acelerado em segurança e imigração em mais de 450 destinos."
         }
       ],
       "link_solicitacao": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/",
-      "nota_curadoria": "A anuidade, renda mínima e requisitos de acesso não constam explicitamente nas fontes oficiais analisadas, o que exige confirmação direta com o Sicredi antes de orientar o cliente. A pontuação é progressiva conforme o volume total da fatura (2 a 2,5 pts/USD), não havendo diferenciação entre gastos nacionais e internacionais. Vale destacar o diferencial da sala VIP exclusiva da Mastercard Black em Guarulhos, que é ilimitada e separada dos 12 acessos anuais do LoungeKey, embora leve a cobrança por acompanhante acima de 3 pessoas.",
+      "nota_curadoria": "O valor da anuidade e a renda mínima exigida não constam nas páginas oficiais analisadas, portanto não foram preenchidos. A pontuação é escalonada conforme o gasto mensal (2 a 2,5 pts/USD) e os pontos expiram em 2 anos, diferente do Sicredi Visa Infinite. A sala VIP exclusiva em Guarulhos é separada do pacote LoungeKey e permite acompanhantes mediante taxa, o que pode gerar confusão para o associado.",
       "procedencia": {
         "pontos": "https://www.sicredi.com.br/site/cartoes/cartao-sicredi-mastercard-black/",
         "programa_proprio": "https://www.sicredi.com.br/site/cartoes/programa-de-recompensa/",
         "transfere_para": "https://www.sicredi.com.br/site/cartoes/programa-de-recompensa/",
-        "validade_pontos": "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-mastercard-black/",
+        "validade_pontos": "https://www.sicredi.com.br/site/cartoes/programa-de-recompensa/",
         "salas_vip": "https://www.sicredi.com.br/site/cartoes/onboarding-sicredi-mastercard-black/",
         "beneficios_banco": "https://www.sicredi.com.br/site/blog/vantagens-mastercard/conheca-todos-os-beneficios-do-cartao-sicredi-mastercard-black/",
         "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
@@ -11124,7 +11143,7 @@
         "https://www.sicredi.com.br/site/solucoes-exclusivas/",
         "planilha:cartoes-premium-comparativo.xlsx"
       ],
-      "verificado_em": "2026-10-12",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade_parcelas",
@@ -11136,7 +11155,6 @@
         "anuidade",
         "cashback",
         "iof",
-        "link_solicitacao",
         "requisito_acesso",
         "spread"
       ],
@@ -11756,13 +11774,13 @@
       "anuidade_parcelas": null,
       "isencao": null,
       "renda_minima": null,
-      "requisito_acesso": "Ser cooperado de uma cooperativa do Sistema Unicred; pessoas físicas ou jurídicas podem se associar desde que atendam aos critérios da cooperativa de sua região.",
+      "requisito_acesso": "É necessário ser cooperado da Unicred para solicitar o cartão.",
       "adicionais_gratis": null,
       "pontos": {
         "nacional": 2.2,
-        "internacional": 2.2,
+        "internacional": null,
         "unidade": "pts/USD",
-        "observacao": "1 dólar gasto = 2,2 pontos; a pontuação sobe para 2,5 pontos por dólar quando o gasto mensal no cartão atinge R$ 15 mil."
+        "observacao": "1 dólar gasto = 2,2 pontos; a pontuação sobe para 2,5 pontos por dólar quando o gasto mensal atinge R$ 15 mil."
       },
       "cashback": {
         "nacional": null,
@@ -11778,7 +11796,7 @@
       ],
       "spread": 0,
       "iof": 3.5,
-      "validade_pontos": "36 meses para os cartões Infinite e Platinum",
+      "validade_pontos": "36 meses para o Unicred Visa Infinite",
       "salas_vip": [
         {
           "programa": "Não especificado",
@@ -11787,32 +11805,32 @@
       ],
       "beneficios_banco": [
         {
-          "titulo": "Spread zero em compras internacionais",
-          "descricao": "Compras internacionais são convertidas pela cotação comercial do dólar (PTAX), sem acréscimo de taxas de custos operacionais do emissor."
+          "titulo": "Concierge",
+          "descricao": "Serviço de concierge disponível para o portador do cartão."
         },
         {
           "titulo": "Seguro de garantia estendida",
-          "descricao": "Cobertura adicional de garantia para produtos elegíveis comprados com o cartão."
+          "descricao": "Extensão de garantia para produtos elegíveis comprados com o cartão."
         },
         {
-          "titulo": "Concierge",
-          "descricao": "Serviço de assistente pessoal disponível para o portador do cartão."
-        },
-        {
-          "titulo": "Acesso a salas VIP de aeroportos",
-          "descricao": "Acesso a salas VIP em aeroportos no Brasil e no mundo, incluído entre os benefícios premium do cartão."
+          "titulo": "Acesso a salas VIP",
+          "descricao": "Acesso às salas VIP dos principais aeroportos do mundo (sem especificação de rede ou quantidade)."
         },
         {
           "titulo": "Coberturas extras para viagens",
-          "descricao": "Seguros e coberturas adicionais voltadas para viagens internacionais e nacionais."
+          "descricao": "Coberturas adicionais de seguro voltadas para viagens internacionais."
         },
         {
-          "titulo": "Programa Único de Fidelidade",
-          "descricao": "Pontuação automática em compras no crédito, com resgate em produtos, passagens, cashback ou aportes na previdência privada Precaver."
+          "titulo": "Spread zero em compras internacionais",
+          "descricao": "Compras no exterior são convertidas pela cotação comercial do dólar, sem taxa de spread adicional."
+        },
+        {
+          "titulo": "Programa de fidelidade Único",
+          "descricao": "Adesão automática ao programa Único, com pontos acumulados por dólar gasto e validade de 36 meses para o cartão Infinite."
         }
       ],
       "link_solicitacao": "https://www.unicred.com.br/solucoes/cartoes",
-      "nota_curadoria": "O Unicred Visa Infinite só pode ser solicitado por quem já é cooperado de alguma cooperativa Unicred, o que pode limitar o acesso dependendo da região. Seu grande diferencial é o spread zero em compras internacionais (cotação comercial do dólar), mantendo-se competitivo mesmo com o IOF de 3,5% sobre compras no exterior. Não há informação oficial sobre valor de anuidade, isenção, renda mínima ou parceiros de transferência de pontos para o cartão Infinite padrão (diferente do Infinite Privilege, que tem página própria com benefícios mais detalhados). A quantidade e o programa de salas VIP não foram especificados com clareza para esta variante.",
+      "nota_curadoria": "As fontes oficiais detalham bem os benefícios gerais do Unicred Visa Infinite (concierge, garantia estendida, spread zero, pontuação diferenciada), mas não confirmam valor de anuidade, renda mínima, quantidade de acessos a salas VIP nem os parceiros de transferência de pontos para esse tier específico — essas informações aparecem apenas para a variante superior 'Visa Infinite Privilege', que é um produto distinto e não deve ser confundido com o Infinite padrão. O IOF de 3,5% é uma alíquota geral de mercado (Decreto 12.466/2025), não exclusiva do cartão, mas foi citada pela Unicred como referência de comparação. A assessoria deve confirmar anuidade e condições de acesso diretamente com a cooperativa, pois a elegibilidade depende do perfil de cooperado.",
       "procedencia": {
         "requisito_acesso": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
         "pontos": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
@@ -11820,7 +11838,6 @@
         "spread": "https://unicred.com.br/blog/produtos-e-servicos/novas-regras-do-iof-unicred-visa-e-o-melhor-cartao-internacional-para-compras/",
         "iof": "https://unicred.com.br/blog/produtos-e-servicos/novas-regras-do-iof-unicred-visa-e-o-melhor-cartao-internacional-para-compras/",
         "validade_pontos": "https://www.unicred.com.br/solucoes/unico",
-        "beneficios_banco": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
         "anuidade": "planilha:cartoes-premium-comparativo.xlsx",
         "cashback": "https://materiais.unicred.com.br/visa-unicred",
         "salas_vip": "https://www.visa.com.br/sobre-a-visa/noticias-visa/nova-sala-de-imprensa/unicred-lanca-cartoes-visa.html",
@@ -11837,7 +11854,7 @@
         "https://materiais.unicred.com.br/visa-unicred",
         "https://www.unicred.com.br/solucoes/cartoes"
       ],
-      "verificado_em": "2026-10-26",
+      "verificado_em": "2026-11-02",
       "campos_pendentes": [
         "adicionais_gratis",
         "anuidade_parcelas",
