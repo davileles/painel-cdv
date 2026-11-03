@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-11-03T12:02:41.286Z",
+  "coletadoEm": "2026-11-03T13:02:41.576Z",
   "items": {
     "asics": {
       "id": "ACS",
@@ -59,6 +59,18 @@
       "parity": 30,
       "parityClub": 30,
       "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
+    "cea": {
+      "id": "CEA",
+      "nome": "CEA",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 30/10 a 02/11/2026. Ganhe 7 pontos por real gasto. Consulte o regulamento.",
+      "dateStart": "2026-10-30",
+      "dateEnd": "2026-11-03",
+      "parity": 7,
+      "parityClub": 7,
+      "parityBau": 2,
       "campanha": "PROMOTION"
     },
     "carrefourmercado": {
@@ -178,6 +190,27 @@
       "dateEnd": "2026-11-03",
       "parity": 6,
       "parityClub": 6,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
+    "mercadolivre": {
+      "id": "MCL",
+      "nome": "Mercado Livre",
+      "categorias": [
+        {
+          "nome": "Beleza",
+          "pts": 2
+        },
+        {
+          "nome": "Cosméticos",
+          "pts": 2
+        }
+      ],
+      "legalTerms": "Campanha válida de 02 a 08/11/2026. Ganhe 2 pontos por real gasto nos produtos da categoria de Beleza \\u0026amp; Cosméticos; 1 ponto a cada 2 reais nas demais categorias, exceto Alimentos e Bebidas. Consulte o regulamento.",
+      "dateStart": "2026-11-03",
+      "dateEnd": "2026-11-08",
+      "parity": 2,
+      "parityClub": 2,
       "parityBau": 1,
       "campanha": "PROMOTION"
     },

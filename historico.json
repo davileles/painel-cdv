@@ -864505,18 +864505,6 @@
         }
       }
     },
-    "cea": {
-      "programs": {
-        "livelo": {
-          "pts": 10,
-          "dollar": false
-        },
-        "esfera": {
-          "pts": 1,
-          "dollar": false
-        }
-      }
-    },
     "mobills": {
       "programs": {
         "livelo": {
@@ -864574,6 +864562,18 @@
       "programs": {
         "livelo": {
           "pts": 8,
+          "dollar": false
+        }
+      }
+    },
+    "cea": {
+      "programs": {
+        "livelo": {
+          "pts": 7,
+          "dollar": false
+        },
+        "esfera": {
+          "pts": 1,
           "dollar": false
         }
       }
@@ -866150,6 +866150,23 @@
         }
       }
     },
+    "mercado livre": {
+      "programs": {
+        "livelo": {
+          "pts": 2,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 1.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-desconto-mercado-livre"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-desconto-mercado-livre"
+      }
+    },
     "monte carlo": {
       "programs": {
         "livelo": {
@@ -866242,7 +866259,7 @@
           "slug": "nike-1740"
         },
         "meliuz": {
-          "pts": 2,
+          "pts": 6,
           "dollar": false,
           "ate": false,
           "slug": "cupom-de-desconto-nike"
@@ -866618,28 +866635,10 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 9,
+          "pts": 1.5,
           "dollar": false,
-          "ate": true,
-          "slug": "cupom-zeedog",
-          "categorias": [
-            {
-              "categoria": "Clientes que nunca compraram em Zeedog e Clientes que nunca compraram no app de Zeedog",
-              "pts": 9,
-              "principal": false
-            },
-            {
-              "categoria": "Cliente que já compraram no app de Zeedog, Clientes que já compraram em Zeedog e Clientes que já compraram no app de Zeedog",
-              "pts": 7,
-              "principal": false
-            },
-            {
-              "categoria": "Demais categorias",
-              "pts": 1.5,
-              "principal": true
-            }
-          ],
-          "ptsBase": 1.5
+          "ate": false,
+          "slug": "cupom-zeedog"
         }
       },
       "links": {
@@ -867180,6 +867179,10 @@
       "programs": {
         "livelo": {
           "pts": 1,
+          "dollar": false
+        },
+        "esfera": {
+          "pts": 3,
           "dollar": false
         },
         "azul": {
@@ -867853,23 +867856,6 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/zeenow"
-      }
-    },
-    "mercado livre": {
-      "programs": {
-        "livelo": {
-          "pts": 1,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 1.5,
-          "dollar": false,
-          "ate": false,
-          "slug": "cupom-desconto-mercado-livre"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-desconto-mercado-livre"
       }
     },
     "bankei": {
@@ -870027,7 +870013,7 @@
           "slug": "sorte-online-122"
         },
         "meliuz": {
-          "pts": 1.5,
+          "pts": 10,
           "dollar": false,
           "ate": false,
           "slug": "sorte-online"
