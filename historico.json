@@ -866420,7 +866420,7 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 2.5,
+          "pts": 3.5,
           "dollar": false,
           "ate": false,
           "slug": "seculus"
@@ -868335,17 +868335,17 @@
           "slug": "cupom-adidas",
           "categorias": [
             {
-              "categoria": "Calçados de Corrida, Calçados de Corrida2, Calçados de Corrida3 e Calçados de Corrida4",
+              "categoria": "Todos calçados de corrida",
               "pts": 12,
               "principal": false
             },
             {
               "categoria": "Demais categorias",
-              "pts": 8,
+              "pts": 3,
               "principal": true
             }
           ],
-          "ptsBase": 8
+          "ptsBase": 3
         }
       },
       "links": {
@@ -868845,10 +868845,23 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 0.5,
+          "pts": 15,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-madeiramadeira"
+          "ate": true,
+          "slug": "cupom-madeiramadeira",
+          "categorias": [
+            {
+              "categoria": "Móveis - Produtos selecionados",
+              "pts": 15,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 0.5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 0.5
         }
       },
       "links": {
