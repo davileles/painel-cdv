@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-11-04T12:03:51.179Z",
+  "coletadoEm": "2026-11-04T13:02:51.643Z",
   "items": {
     "abcdaconstrucao": {
       "id": "ABC",
@@ -169,6 +169,18 @@
       "parityBau": 1,
       "campanha": "PROMOTION"
     },
+    "carters": {
+      "id": "CTS",
+      "nome": "Carters",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 03 a 05/11/2026. Ganhe 5 pontos por real gasto. Utilize o cupom LIVELO. Consulte o regulamento",
+      "dateStart": "2026-11-03",
+      "dateEnd": "2026-11-05",
+      "parity": 5,
+      "parityClub": 5,
+      "parityBau": 3,
+      "campanha": "PROMOTION"
+    },
     "ciclicsegurocelular": {
       "id": "CEL",
       "nome": "Ciclic Seguro Celular",
@@ -281,7 +293,7 @@
       "id": "ELX",
       "nome": "Electrolux",
       "categorias": null,
-      "legalTerms": "Campanha válida de 04 a 05/11/2026. Ganhe 10 pontos por real gasto exclusivo para assinantes Clube Livelo e 1 ponto por real para demais clientes. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "legalTerms": "Campanha válida de 04 a 05/11/2026. Ganhe 4 pontos por real gasto exclusivo para assinantes Clube Livelo e 1 ponto por real para demais clientes em produtos vendidos e entregues por Electrolux. Consulte o regulamento.",
       "dateStart": "2026-11-04",
       "dateEnd": "2026-11-05",
       "parity": 1,
@@ -740,6 +752,18 @@
       "parity": 5,
       "parityClub": 5,
       "parityBau": 2,
+      "campanha": "PROMOTION"
+    },
+    "riachuelo": {
+      "id": "RCH",
+      "nome": "Riachuelo",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 03 a 05/11/2026. Ganhe 5 pontos por real gasto. Utilize o cupom LIVELO. Não válido para categorias de eletrônicos, eletroportáteis, beleza e produtos que não são vendidos e entregues por Riachuelo. Consulte o regulamento.",
+      "dateStart": "2026-11-03",
+      "dateEnd": "2026-11-05",
+      "parity": 5,
+      "parityClub": 5,
+      "parityBau": 3,
       "campanha": "PROMOTION"
     },
     "samsclub": {
