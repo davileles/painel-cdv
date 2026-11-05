@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-11-04T23:08:22.378Z",
+  "coletadoEm": "2026-11-05T09:04:21.282Z",
   "items": {
     "abcdaconstrucao": {
       "id": "ABC",
@@ -169,6 +169,18 @@
       "parityBau": 1,
       "campanha": "PROMOTION"
     },
+    "carrefourshopping": {
+      "id": "CRF",
+      "nome": "Carrefour Shopping",
+      "categorias": null,
+      "legalTerms": "Campanha válida em 05/11/2026. Ganhe 4 pontos por real gasto exclusivo para assinantes Clube Livelo e 2 pontos por real para demais clientes. Utilize o cupom LIVELO. Não é válido para gift card. Consulte o regulamento.",
+      "dateStart": "2026-11-05",
+      "dateEnd": "2026-11-05",
+      "parity": 2,
+      "parityClub": 4,
+      "parityBau": 1,
+      "campanha": "PROMOTION_CLUB"
+    },
     "carters": {
       "id": "CTS",
       "nome": "Carters",
@@ -179,6 +191,18 @@
       "parity": 5,
       "parityClub": 5,
       "parityBau": 3,
+      "campanha": "PROMOTION"
+    },
+    "centauro": {
+      "id": "CEN",
+      "nome": "Centauro",
+      "categorias": null,
+      "legalTerms": "Campanha válida em 05/11/2026. Ganhe 8 pontos por real gasto em produtos selecionados e 2 pontos por real nos demais itens. Consulte o regulamento.",
+      "dateStart": "2026-11-05",
+      "dateEnd": "2026-11-05",
+      "parity": 8,
+      "parityClub": 8,
+      "parityBau": 2,
       "campanha": "PROMOTION"
     },
     "ciclicsegurocelular": {
@@ -252,18 +276,6 @@
       "parityClub": 10,
       "parityBau": 5,
       "campanha": "PROMOTION_ONLY_CLUB"
-    },
-    "decathlon": {
-      "id": "DCH",
-      "nome": "Decathlon",
-      "categorias": null,
-      "legalTerms": "Campanha válida de 03 a 04/11/2026. Ganhe 4 pontos por real gasto. Utilize o cupom LIVELO. Consulte o regulamento.",
-      "dateStart": "2026-11-03",
-      "dateEnd": "2026-11-04",
-      "parity": 4,
-      "parityClub": 4,
-      "parityBau": 2,
-      "campanha": "PROMOTION"
     },
     "divvino": {
       "id": "AGN",
@@ -360,6 +372,18 @@
       "parityClub": 10,
       "parityBau": 2,
       "campanha": "PROMOTION_ONLY_CLUB"
+    },
+    "giulianaflores": {
+      "id": "GFL",
+      "nome": "Giuliana Flores",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 05 a 09/11/2026. Ganhe 6 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo e 4 pontos por real demais clientes. Consulte o regulamento.",
+      "dateStart": "2026-11-05",
+      "dateEnd": "2026-11-09",
+      "parity": 4,
+      "parityClub": 6,
+      "parityBau": 3,
+      "campanha": "PROMOTION_CLUB"
     },
     "hertz": {
       "id": "SGV",
@@ -682,6 +706,18 @@
       "parityBau": 3,
       "campanha": "PROMOTION_ONLY_CLUB"
     },
+    "olympikus": {
+      "id": "OVC",
+      "nome": "Olympikus",
+      "categorias": null,
+      "legalTerms": "Campanha válida em 05/11/2026. Ganhe 10 pontos por real gasto no tênis Corre 5 com a Guaraná Antártica e 1 ponto por real nos demais produtos. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "dateStart": "2026-11-05",
+      "dateEnd": "2026-11-05",
+      "parity": 10,
+      "parityClub": 10,
+      "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
     "petlovesaude": {
       "id": "PVS",
       "nome": "Petlove Saúde",
@@ -751,18 +787,6 @@
       "dateEnd": "2026-11-05",
       "parity": 8,
       "parityClub": 8,
-      "parityBau": 2,
-      "campanha": "PROMOTION"
-    },
-    "reserva": {
-      "id": "RES",
-      "nome": "Reserva",
-      "categorias": null,
-      "legalTerms": "Campanha válida de 03 a 04/11/2026. Ganhe 5 pontos a cada real gasto em produtos selecionados e 2 pontos por real demais itens. Consulte o regulamento.",
-      "dateStart": "2026-11-03",
-      "dateEnd": "2026-11-04",
-      "parity": 5,
-      "parityClub": 5,
       "parityBau": 2,
       "campanha": "PROMOTION"
     },
