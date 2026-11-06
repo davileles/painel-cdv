@@ -883684,12 +883684,12 @@
           "slug": "cupom-magazine-luiza",
           "categorias": [
             {
-              "categoria": "Games vendidos e entregues por Magalu, Móveis vendidos e entregues por Magalu, Celulares e Smartphones vendido e entregue por Magalu, Bebês vendidos e entregues por Magalu, Brinquedos vendidos e entregues por Magalu, Eletrodomésticos vendidos e entregues por Magalu, Eletroportáteis vendidos e entregues por Magalu, Esporte e Lazer vendido e entregue por Magalu, Informática vendido e entregue por Magalu, Utilidades Domésticas vendido e entregue por Magalu e Tablets, iPads e E-reader vendidos e entregues por Magalu",
+              "categoria": "Todos os produtos vendidos e entregues por Magalu exceto Mercado",
               "pts": 10,
               "principal": false
             },
             {
-              "categoria": "Produtos vendidos por outras lojas em Magalu",
+              "categoria": "Todos os produtos vendidos e entregues por outras lojas",
               "pts": 5,
               "principal": false
             },
@@ -885028,7 +885028,16 @@
         "livelo": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 0.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-beach-park-ingressos"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-beach-park-ingressos"
       }
     },
     "beep": {
@@ -887580,7 +887589,7 @@
     "app store": {
       "programs": {
         "inter": {
-          "pts": 7,
+          "pts": 10,
           "dollar": false,
           "slug": "app-store-1627"
         }
