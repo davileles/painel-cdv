@@ -888170,6 +888170,10 @@
         "azul": {
           "pts": 27,
           "dollar": false
+        },
+        "latam": {
+          "pts": 6,
+          "dollar": true
         }
       }
     },
@@ -888483,6 +888487,10 @@
           "pts": 1,
           "dollar": false
         },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
         "azul": {
           "pts": 2,
           "dollar": false
@@ -888695,6 +888703,10 @@
           "pts": 5,
           "dollar": false
         },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
         "meliuz": {
           "pts": 5,
           "dollar": false,
@@ -888836,6 +888848,10 @@
           "pts": 4,
           "dollar": false
         },
+        "latam": {
+          "pts": 6,
+          "dollar": true
+        },
         "meliuz": {
           "pts": 3.5,
           "dollar": false,
@@ -888860,6 +888876,10 @@
         "livelo": {
           "pts": 4,
           "dollar": false
+        },
+        "latam": {
+          "pts": 6,
+          "dollar": true
         },
         "meliuz": {
           "pts": 1,
@@ -888888,6 +888908,10 @@
         },
         "esfera": {
           "pts": 2,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
           "dollar": false
         },
         "azul": {
@@ -889547,6 +889571,10 @@
           "pts": 2,
           "dollar": false
         },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
         "meliuz": {
           "pts": 3,
           "dollar": false,
@@ -889786,6 +889814,10 @@
           "pts": 2,
           "dollar": false
         },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
         "azul": {
           "pts": 2,
           "dollar": false
@@ -889808,6 +889840,10 @@
         },
         "esfera": {
           "pts": 1,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
           "dollar": false
         },
         "azul": {
@@ -889922,6 +889958,10 @@
         },
         "esfera": {
           "pts": 3,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
           "dollar": false
         },
         "azul": {
@@ -890175,6 +890215,10 @@
           "pts": 1,
           "dollar": false
         },
+        "latam": {
+          "pts": 0.5,
+          "dollar": false
+        },
         "meliuz": {
           "pts": 1,
           "dollar": false,
@@ -890418,6 +890462,10 @@
         "livelo": {
           "pts": 1,
           "dollar": false
+        },
+        "latam": {
+          "pts": 1,
+          "dollar": false
         }
       }
     },
@@ -890506,10 +890554,16 @@
           "dollar": false,
           "ate": false,
           "slug": "cupom-carrefour"
+        },
+        "inter": {
+          "pts": 7,
+          "dollar": false,
+          "slug": "carrefour-1958"
         }
       },
       "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-carrefour"
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-carrefour",
+        "inter": "https://shopping.inter.co/gift-card/carrefour-1958"
       }
     },
     "carrefour mercado": {
@@ -890524,6 +890578,10 @@
       "programs": {
         "livelo": {
           "pts": 1,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
           "dollar": false
         },
         "azul": {
@@ -890738,6 +890796,10 @@
       "programs": {
         "livelo": {
           "pts": 1,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
           "dollar": false
         },
         "azul": {
@@ -891220,6 +891282,10 @@
           "pts": 1,
           "dollar": false
         },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
         "azul": {
           "pts": 2,
           "dollar": false
@@ -891230,6 +891296,10 @@
       "programs": {
         "livelo": {
           "pts": 1,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
           "dollar": false
         },
         "azul": {
@@ -891547,6 +891617,10 @@
       "programs": {
         "esfera": {
           "pts": 5,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
           "dollar": false
         },
         "meliuz": {
@@ -892558,6 +892632,10 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
         }
       }
     },
@@ -892802,6 +892880,30 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-drogaria-araujo"
       }
     },
+    "diageo": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
+    "top store": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
+    "tramontina": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
     "easy live vouchers": {
       "programs": {
         "azul": {
@@ -892841,6 +892943,54 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/estoque"
+      }
+    },
+    "nomad": {
+      "programs": {
+        "latam": {
+          "pts": 5,
+          "dollar": true
+        }
+      }
+    },
+    "revo": {
+      "programs": {
+        "latam": {
+          "pts": 3,
+          "dollar": false
+        }
+      }
+    },
+    "ifriend": {
+      "programs": {
+        "latam": {
+          "pts": 2,
+          "dollar": false
+        }
+      }
+    },
+    "rappi": {
+      "programs": {
+        "latam": {
+          "pts": 2,
+          "dollar": true
+        }
+      }
+    },
+    "picpay": {
+      "programs": {
+        "latam": {
+          "pts": 0.5,
+          "dollar": false
+        }
+      }
+    },
+    "elite internacional realty": {
+      "programs": {
+        "latam": {
+          "pts": 0.07,
+          "dollar": true
+        }
       }
     },
     "sony playstation": {
@@ -894245,10 +894395,16 @@
           "dollar": false,
           "ate": false,
           "slug": "cupom-americanas"
+        },
+        "inter": {
+          "pts": 2,
+          "dollar": false,
+          "slug": "americanas-1957"
         }
       },
       "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-americanas"
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-americanas",
+        "inter": "https://shopping.inter.co/gift-card/americanas-1957"
       }
     },
     "biscoitê": {
@@ -894606,6 +894762,42 @@
       },
       "links": {
         "inter": "https://shopping.inter.co/gift-card/free-fire-1659"
+      }
+    },
+    "atacadão": {
+      "programs": {
+        "inter": {
+          "pts": 7,
+          "dollar": false,
+          "slug": "atacadao-4226"
+        }
+      },
+      "links": {
+        "inter": "https://shopping.inter.co/gift-card/atacadao-4226"
+      }
+    },
+    "bacio di latte": {
+      "programs": {
+        "inter": {
+          "pts": 3,
+          "dollar": false,
+          "slug": "bacio-di-latte-1734"
+        }
+      },
+      "links": {
+        "inter": "https://shopping.inter.co/gift-card/bacio-di-latte-1734"
+      }
+    },
+    "kopenhagen": {
+      "programs": {
+        "inter": {
+          "pts": 12,
+          "dollar": false,
+          "slug": "kopenhagen-1649"
+        }
+      },
+      "links": {
+        "inter": "https://shopping.inter.co/gift-card/kopenhagen-1649"
       }
     }
   }
