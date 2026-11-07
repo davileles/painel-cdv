@@ -133,6 +133,40 @@ function membroAtivo(m, agora = Date.now()) {
   return !m.removidoEm || new Date(m.removidoEm).getTime() > agora;
 }
 
+// Acesso ao painel que continua válido além da assinatura `assinaturaId` que
+// está saindo (ex.: o teste Experimental acabou, mas a pessoa tem a Escola do
+// Viajante liberada até 2027). Devolve o motivo ou null. Usada antes de
+// desativar alguém em membros.json (desde 07/11/2026).
+//  1. outra assinatura de oferta do painel vigente, em teste ou vitalícia;
+//  2. acesso gratuito COM PRAZO ativo no produto do painel (último censo da
+//     API), com mais de 1 dia pela frente, E uma oferta do painel (que não seja
+//     o teste Experimental) já registrada no cadastro do membro. O produto tem
+//     ofertas sem painel (Básico, ex-alunos, membros antigos), por isso o acesso
+//     sozinho não basta; o vitalício gratuito é o lote antigo de ex-alunos, que
+//     não dá painel (decisão de 07/11/2026).
+function outroAcessoPainel(base, email, assinaturaId, membro, agora = Date.now()) {
+  const e = String(email || '').toLowerCase().trim();
+  if (!e) return null;
+  for (const a of Object.values((base && base.assinaturas) || {})) {
+    if (!a || String(a.email || '').toLowerCase().trim() !== e) continue;
+    if (assinaturaId && a.id === assinaturaId) continue;
+    if (!a.liberaPainel) continue;
+    const { situacao } = calcularSituacao(a, agora);
+    if (situacao === 'vigente' || situacao === 'teste' || situacao === 'vitalicio') {
+      return `assinatura_vigente: ${a.ofertaNome || a.id}`;
+    }
+  }
+  const ac = ((base && base.acessos) || {})[e];
+  const acessoComPrazo = ac && membroAtivo(ac, agora) && ac.tipo === 'free' && !ac.vitalicio
+    && ac.removidoEm && new Date(ac.removidoEm).getTime() > agora + DIA;
+  if (acessoComPrazo) {
+    const ofertaPainel = ((membro && membro.produtos) || [])
+      .find(p => p && !/experimental/i.test(p.oferta || '') && ofertaLiberaPainel(p.produtoId, p.produtoNome, p.oferta));
+    if (ofertaPainel) return `acesso_hubla_ativo: ${ofertaPainel.oferta}`;
+  }
+  return null;
+}
+
 // Converte o objeto de assinatura (webhook ou API) para o registro interno.
 // Sem dado pessoal além de nome, e-mail e telefone (CPF não é guardado).
 function camposDaAssinatura(sub) {
@@ -488,7 +522,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
   }
 
   // Só a etapa de membros + resumo (rápida), sem refazer faturas e assinaturas.
-  async function sincronizarMembros({ membrosAtivos } = {}) {
+  async function sincronizarMembros({ membrosAtivos, membrosInativos } = {}) {
     if (progresso.rodando) return { ok: false, erro: 'sincronização já em andamento', progresso };
     if (!apiKey()) return { ok: false, erro: 'HUBLA_API_KEY não configurada no Railway' };
     Object.assign(progresso, { rodando: true, etapa: 'membros', inicio: new Date().toISOString(), fim: null, erro: null, contagem: {} });
@@ -499,7 +533,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
       await salvar(base => {
         base.acessos = acessos;
         base.acessosPorProduto = acessosPorProduto;
-        resumo = resumir(base, membrosAtivos);
+        resumo = resumir(base, membrosAtivos, membrosInativos);
         base.sincronizacao = Object.assign({}, base.sincronizacao, { membrosEm: new Date().toISOString(), resumo,
           contagem: Object.assign({}, (base.sincronizacao && base.sincronizacao.contagem) || {}, progresso.contagem) });
       }, 'hubla: sincroniza membros do produto do painel');
@@ -514,7 +548,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     }
   }
 
-  async function sincronizar({ membrosAtivos, retomar } = {}) {
+  async function sincronizar({ membrosAtivos, membrosInativos, retomar } = {}) {
     if (progresso.rodando) return { ok: false, erro: 'sincronização já em andamento', progresso };
     if (!apiKey()) return { ok: false, erro: 'HUBLA_API_KEY não configurada no Railway' };
     Object.assign(progresso, { rodando: true, etapa: 'iniciando', inicio: new Date().toISOString(), fim: null, erro: null, contagem: {} });
@@ -563,7 +597,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
       await salvar(base => {
         base.acessos = acessos;
         base.acessosPorProduto = acessosPorProduto;
-        resumo = resumir(base, membrosAtivos);
+        resumo = resumir(base, membrosAtivos, membrosInativos);
         base.sincronizacao = { ultimaEm: new Date().toISOString(), inicio: progresso.inicio, contagem: Object.assign({}, progresso.contagem), resumo };
       }, 'hubla: sincronização concluída');
       progresso.etapa = 'concluida';
@@ -580,7 +614,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
 
   // Assinaturas do painel por e-mail + divergências com membros.json (só relata,
   // nunca muda acesso sozinho).
-  function resumir(base, membrosAtivos) {
+  function resumir(base, membrosAtivos, membrosInativos) {
     const agora = Date.now();
     const porSituacao = {};
     const vigentesPainel = new Set();
@@ -596,6 +630,13 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
       const acessoAtivo = e => membroAtivo(acessos[e], agora);
       out.ativosNoPainelSemAssinaturaVigente = [...ativos].filter(e => !vigentesPainel.has(e) && !acessoAtivo(e)).sort();
       out.assinaturaVigenteSemPainel = [...vigentesPainel].filter(e => !ativos.has(e)).sort();
+    }
+    // Inativos no painel que ainda têm acesso válido (outra assinatura do
+    // painel ou acesso gratuito/vitalício com oferta do painel no cadastro).
+    if (Array.isArray(membrosInativos)) {
+      out.inativosNoPainelComAcessoValido = membrosInativos
+        .filter(m => m && m.email && outroAcessoPainel(base, m.email, null, m, agora))
+        .map(m => String(m.email).toLowerCase().trim()).sort();
     }
     return out;
   }
@@ -645,6 +686,6 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
 }
 
 module.exports = {
-  criarHublaAssinaturas, ofertaLiberaPainel, produtoOfertaDoEvento, calcularSituacao, membroAtivo,
+  criarHublaAssinaturas, ofertaLiberaPainel, produtoOfertaDoEvento, calcularSituacao, membroAtivo, outroAcessoPainel,
   camposDaAssinatura, mesclarRegistro, OFERTAS_PAINEL, PRODUTO_PAINEL_ID, ARQUIVO_HUBLA_ASSINATURAS: ARQUIVO,
 };

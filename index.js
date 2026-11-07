@@ -4726,11 +4726,23 @@ async function aplicarAcessoMembroHubla({ type, isMemberAdded, isMemberRemoved, 
             membros[idx].assinaturasHubla = restantes;
             acao = 'assinatura_removida_mantido_ativo';
           } else {
-            // Sem ID no payload ou membro legado sem assinaturas registradas:
-            // comportamento anterior (desativa pelo e-mail).
+            // Antes de desativar: a pessoa ainda tem outro acesso válido ao
+            // painel? (ex.: o teste Experimental acabou, mas a Escola do Viajante
+            // segue liberada). Desde 07/11/2026; antes, o fim do teste derrubava tudo.
+            let outro = null;
+            try {
+              const base = (await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {})).data || {};
+              outro = hublaAss.outroAcessoPainel(base, email, assinaturaId, membros[idx]);
+            } catch (e) { console.warn('[hubla-membros] conferência de outro acesso falhou:', e.message); }
             if (assinaturaId) membros[idx].assinaturasHubla = [];
-            membros[idx].status     = 'inativo';
-            membros[idx].removidoEm = agora;
+            if (outro) {
+              console.log(`[hubla-membros] remoção ignorada: ${email} assinatura ${assinaturaId || '-'} — ainda tem ${outro}`);
+              acao = 'assinatura_removida_mantido_ativo';
+            } else {
+              // Sem outro acesso: desativa pelo e-mail (comportamento anterior).
+              membros[idx].status     = 'inativo';
+              membros[idx].removidoEm = agora;
+            }
           }
         }
       }
@@ -4900,16 +4912,17 @@ app.get('/hubla/assinaturas/progresso', (req, res) => {
 // Busca na API da Hubla todas as assinaturas (passadas e vigentes) e os acessos
 // atuais do produto do painel. Roda em segundo plano; acompanhar em /status. X-CDV-Op.
 async function hublaSincronizarComMembros(soMembros) {
-  let ativos = null;
+  let ativos = null, inativos = null;
   try {
     const { data } = await ghGetJson(MEMBROS_PATH, null);
     if (data && Array.isArray(data.membros)) {
       ativos = data.membros.filter(m => m && m.status === 'ativo').map(m => String(m.email || '').toLowerCase().trim());
+      inativos = data.membros.filter(m => m && m.status !== 'ativo' && m.email);
     }
   } catch (e) { /* relatório sai sem a comparação */ }
   const r = soMembros
-    ? await hublaAssinaturas.sincronizarMembros({ membrosAtivos: ativos })
-    : await hublaAssinaturas.sincronizar({ membrosAtivos: ativos });
+    ? await hublaAssinaturas.sincronizarMembros({ membrosAtivos: ativos, membrosInativos: inativos })
+    : await hublaAssinaturas.sincronizar({ membrosAtivos: ativos, membrosInativos: inativos });
   console.log('[hubla-sync]', r.ok ? JSON.stringify(r.contagem) : r.erro);
   return r;
 }
