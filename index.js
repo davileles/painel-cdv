@@ -51,6 +51,8 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'consultorias.json',
   // Assinaturas da Hubla (nome, e-mail, telefone, início/fim): repo privado.
   'hubla-assinaturas.json',
+  // Tokens de usuário do Méliuz (access + refresh rotacionado): repo privado.
+  'meliuz-token.json',
 ]);
 // Arquivos que saíram do painel-cdv: na 1ª leitura sem cópia no repo de dados,
 // o proxy copia a versão do repo público para lá (uma vez por arquivo).
@@ -1966,20 +1968,34 @@ async function meliuzTokenAnonimo() {
 }
 
 // ── Token de usuário (cashback promocional/turbinado) ─────────────────────────
-// O cashback-offers exige token de usuário. O access token (mzsync) dura ~11h,
-// então renovamos sozinhos usando o refresh token (mzsync-r), que vive semanas.
-// Fluxo espelha o do bundle do Méliuz: POST /oauth/token com grant_type
-// refresh_token e client_id do client-seo (sem client_secret). O refresh token
-// pode rotacionar a cada uso — guardamos o mais recente em memória para não
-// depender de reescrever a env a cada renovação.
+// O cashback-offers exige token de usuário. O access token (cookie mzsync) dura
+// ~11h; renovamos sozinhos com o refresh token (cookie mzsync-r).
+// Desde nov/2026 o Méliuz removeu o POST api-seo/oauth/refresh-token (404 em
+// qualquer corpo). O site passou a renovar pela rota própria
+// GET www.meliuz.com.br/oauth/website, que lê os cookies mzsync/mzsync-r e
+// devolve customer_token + refresh_token (rotacionado). O proxy faz o mesmo.
+// O refresh rotaciona a cada uso, então o par atual é gravado em
+// meliuz-token.json (repo privado de dados) — sem isso, todo deploy/reinício
+// voltava ao MELIUZ_MZSYNC_R da env, que já tinha sido trocado, e a renovação
+// morria. Se a env for trocada à mão (cookie novo), ela vence o arquivo.
 //   MELIUZ_MZSYNC   — access token inicial (opcional; serve até o 1º refresh)
 //   MELIUZ_MZSYNC_R — refresh token (obrigatório para renovação automática)
+const MELIUZ_TOKEN_PATH = 'meliuz-token.json';
+const MELIUZ_ENV_ACCESS = (process.env.MELIUZ_MZSYNC || '').trim() || null;
+const MELIUZ_ENV_REFRESH = (process.env.MELIUZ_MZSYNC_R || '').trim() || null;
+// Impressão da env (não o token): diz se o arquivo nasceu desta mesma env.
+const MELIUZ_ENV_ORIGEM = MELIUZ_ENV_REFRESH
+  ? crypto.createHash('sha256').update('meliuz-env|' + MELIUZ_ENV_REFRESH).digest('hex').slice(0, 16)
+  : null;
 let meliuzUserCache = {
-  access: (process.env.MELIUZ_MZSYNC || '').trim() || null,
-  refresh: (process.env.MELIUZ_MZSYNC_R || '').trim() || null,
+  access: MELIUZ_ENV_ACCESS,
+  refresh: MELIUZ_ENV_REFRESH,
   accessExpira: 0, // epoch ms; 0 = desconhecido, força validação pelo exp do JWT
   ultimoRefreshErro: null,
+  fonte: 'env',
 };
+let _meliuzCarregado = null;
+let _meliuzRenovando = null;
 
 function jwtExp(tok) {
   try {
@@ -1990,55 +2006,112 @@ function jwtExp(tok) {
   }
 }
 
-async function meliuzRenovarAccess() {
-  if (!meliuzUserCache.refresh) {
-    meliuzUserCache.ultimoRefreshErro = 'sem_refresh_token';
-    return null;
+// Lê o par salvo no repo de dados uma vez por processo. Só usa o arquivo se
+// ele veio da MESMA env atual; env trocada à mão = cookie novo, vence o arquivo.
+function meliuzCarregarSalvo() {
+  if (!_meliuzCarregado) {
+    _meliuzCarregado = (async () => {
+      try {
+        const { data } = await ghGetJson(MELIUZ_TOKEN_PATH, null);
+        if (data && data.refresh && data.origemEnv && data.origemEnv === MELIUZ_ENV_ORIGEM) {
+          meliuzUserCache.refresh = data.refresh;
+          if (data.access) {
+            meliuzUserCache.access = data.access;
+            meliuzUserCache.accessExpira = jwtExp(data.access) || 0;
+          }
+          meliuzUserCache.fonte = 'arquivo';
+          console.log('[Méliuz] token carregado de ' + MELIUZ_TOKEN_PATH + ' (atualizado ' + (data.atualizadoEm || '?') + ')');
+        }
+      } catch (e) {
+        console.error('[Méliuz] falha ao ler ' + MELIUZ_TOKEN_PATH + ':', e.message);
+      }
+    })();
   }
+  return _meliuzCarregado;
+}
+
+async function meliuzSalvarToken() {
   try {
-    // Endpoint dedicado do client-seo: /oauth/refresh-token, body só com o
-    // refresh_token (sem client_id/secret). Espelha exatamente o fluxo do
-    // bundle logado do Méliuz. Resposta em data.accessToken/data.refreshToken,
-    // com rotação do refresh (o novo vale ~90 dias).
-    const r = await fetch('https://api-seo.meliuz.com.br/oauth/refresh-token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': MELIUZ_UA,
-        'Accept': 'application/json',
-        'Origin': 'https://www.meliuz.com.br',
-        'Referer': 'https://www.meliuz.com.br/',
-      },
-      body: JSON.stringify({ refresh_token: meliuzUserCache.refresh }),
-      signal: AbortSignal.timeout(15000),
-    });
-    if (!r.ok) {
-      const corpo = await r.text().catch(() => '');
-      meliuzUserCache.ultimoRefreshErro = `http_${r.status}: ${corpo.slice(0, 150)}`;
-      return null;
-    }
-    const j = await r.json();
-    const d = j.data || j; // resposta oficial vem em data.*
-    const novoAccess  = d.accessToken  || d.access_token;
-    const novoRefresh = d.refreshToken || d.refresh_token;
-    if (!novoAccess) {
-      meliuzUserCache.ultimoRefreshErro = 'resposta_sem_access_token';
-      return null;
-    }
-    meliuzUserCache.access = novoAccess;
-    if (novoRefresh) meliuzUserCache.refresh = novoRefresh; // rotação
-    const exp = jwtExp(novoAccess);
-    meliuzUserCache.accessExpira = exp || (Date.now() + 10 * 60 * 60 * 1000);
-    meliuzUserCache.ultimoRefreshErro = null;
-    return novoAccess;
+    const { sha } = await ghGetJson(MELIUZ_TOKEN_PATH, null);
+    await ghPutJson(MELIUZ_TOKEN_PATH, {
+      access: meliuzUserCache.access,
+      refresh: meliuzUserCache.refresh,
+      origemEnv: MELIUZ_ENV_ORIGEM,
+      atualizadoEm: new Date().toISOString(),
+    }, sha, 'chore: méliuz renova token de usuário');
+    meliuzUserCache.fonte = 'arquivo';
   } catch (e) {
-    meliuzUserCache.ultimoRefreshErro = 'excecao: ' + e.message;
-    return null;
+    console.error('[Méliuz] falha ao salvar ' + MELIUZ_TOKEN_PATH + ':', e.message);
   }
+}
+
+// Valor de um cookie num cabeçalho set-cookie (node-fetch v2: raw()).
+function meliuzCookieResposta(r, nome) {
+  const lista = (r.headers.raw && r.headers.raw()['set-cookie']) || [];
+  for (const linha of lista) {
+    const m = String(linha).match(new RegExp('^' + nome.replace(/[-]/g, '\\-') + '=([^;]*)'));
+    if (m && m[1]) return decodeURIComponent(m[1]);
+  }
+  return null;
+}
+
+async function meliuzRenovarAccess() {
+  if (_meliuzRenovando) return _meliuzRenovando; // uma renovação por vez
+  _meliuzRenovando = (async () => {
+    await meliuzCarregarSalvo();
+    if (!meliuzUserCache.refresh) {
+      meliuzUserCache.ultimoRefreshErro = 'sem_refresh_token';
+      return null;
+    }
+    try {
+      // Access ainda válido vai junto (o site manda os dois); expirado, só o refresh.
+      const expAtual = jwtExp(meliuzUserCache.access) || 0;
+      const cookies = ['mzsync-r=' + meliuzUserCache.refresh];
+      if (meliuzUserCache.access && expAtual > Date.now()) cookies.unshift('mzsync=' + meliuzUserCache.access);
+      const r = await fetch('https://www.meliuz.com.br/oauth/website', {
+        headers: {
+          'User-Agent': MELIUZ_UA,
+          'Accept': 'application/json',
+          'Referer': 'https://www.meliuz.com.br/',
+          'Cookie': cookies.join('; '),
+        },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) {
+        const corpo = await r.text().catch(() => '');
+        meliuzUserCache.ultimoRefreshErro = `http_${r.status}: ${corpo.slice(0, 150)}`;
+        return null;
+      }
+      const d = await r.json();
+      if (!d.is_customer_logged) {
+        meliuzUserCache.ultimoRefreshErro = 'refresh_recusado: o Méliuz não reconheceu o mzsync-r (sessão encerrada ou cookie vencido)';
+        return null;
+      }
+      const novoAccess = d.customer_token || meliuzCookieResposta(r, 'mzsync');
+      const novoRefresh = d.refresh_token || meliuzCookieResposta(r, 'mzsync-r');
+      if (!novoAccess) {
+        meliuzUserCache.ultimoRefreshErro = 'resposta_sem_access_token';
+        return null;
+      }
+      const mudou = novoAccess !== meliuzUserCache.access || (novoRefresh && novoRefresh !== meliuzUserCache.refresh);
+      meliuzUserCache.access = novoAccess;
+      if (novoRefresh) meliuzUserCache.refresh = novoRefresh; // rotação
+      const exp = jwtExp(novoAccess);
+      meliuzUserCache.accessExpira = exp || (Date.now() + 10 * 60 * 60 * 1000);
+      meliuzUserCache.ultimoRefreshErro = null;
+      if (mudou) await meliuzSalvarToken();
+      return novoAccess;
+    } catch (e) {
+      meliuzUserCache.ultimoRefreshErro = 'excecao: ' + e.message;
+      return null;
+    }
+  })();
+  try { return await _meliuzRenovando; } finally { _meliuzRenovando = null; }
 }
 
 // Retorna um access token de usuário válido, renovando se estiver perto de expirar.
 async function meliuzTokenUsuario() {
+  await meliuzCarregarSalvo();
   const MARGEM = 5 * 60 * 1000; // renova 5 min antes de expirar
   const exp = meliuzUserCache.accessExpira || jwtExp(meliuzUserCache.access) || 0;
   if (meliuzUserCache.access && exp && Date.now() < exp - MARGEM) {
@@ -2119,6 +2192,7 @@ function meliuzEstadoToken() {
     accessExpiraEm: expAccess ? new Date(expAccess).toISOString() : null,
     refreshExpiraEm: expRefresh ? new Date(expRefresh).toISOString() : null,
     ultimoRefreshErro: meliuzUserCache.ultimoRefreshErro,
+    fonte: meliuzUserCache.fonte,
   };
 }
 
