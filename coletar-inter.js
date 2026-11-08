@@ -36,6 +36,7 @@ const PARCEIROS_TIER1_INTER = new Set([
   'cupom 99 food',
   'cupom 99 mobilidade',
   'coco bambu',
+  'google play',
 ]);
 
 // Complemento fixo no título de parceiros com uso específico (chave = normalizarChave)
