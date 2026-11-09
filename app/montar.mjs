@@ -45,6 +45,7 @@ copyFileSync(join(AQUI, 'node_modules/chart.js/dist/chart.umd.js'), join(WWW, 'c
 const MODS = ['core/dist/capacitor.js', 'app', 'browser', 'share', 'status-bar', 'splash-screen', 'haptics', 'preferences']
   .map((m) => '@capacitor/' + (m.includes('/') ? m : `${m}/dist/plugin.js`));
 // Plugins de terceiros (build IIFE em dist/plugin.js): Face ID/digital.
+MODS.push('@capacitor/push-notifications/dist/plugin.js');
 MODS.push('@capgo/capacitor-native-biometric/dist/plugin.js');
 const bundle = MODS.map((m) => {
   const cod = readFileSync(join(AQUI, 'node_modules', m), 'utf8').replace(/\/\/# sourceMappingURL=.*$/gm, '');

@@ -332,6 +332,7 @@
         localStorage.setItem(CHAVE_SESSAO, JSON.stringify({ email: r.email, nome: r.nome || '', token: r.token, ts: Date.now() }));
         if (!tinhaSessao) { location.reload(); return; }
         esconderTrava();
+        setTimeout(iniciarPush, 800);
         return;
       }
       var motivo = r && r.motivo;
@@ -464,6 +465,83 @@
     nome: function () { return bioNome; },
   };
 
+  /* ── 7c. Notificações push (alertas do membro) ─────────────────────────── */
+  // Só iPhone por enquanto (APNs direto do proxy). No Android o push depende do
+  // Firebase (google-services.json), ainda não configurado: não registra lá.
+  // Permissão: pedida quando o membro cria um alerta (window.cdvPushPedir, chamado
+  // pelo index.html) ou na 1ª abertura logada; se já liberada, registra a cada
+  // abertura (o token pode mudar) e manda ao proxy (/membros/dispositivo/push).
+  var Push = plugin('capacitorPushNotifications', 'PushNotifications');
+  var PUSH_ATIVO = !!Push && PLATAFORMA === 'ios';
+  var pushTokenEnviado = '';
+  function enviarTokenPush(token) {
+    if (!token || !sessaoAtual()) return;
+    var chave = token + '|' + ((sessaoAtual() || {}).email || '');
+    if (pushTokenEnviado === chave) return;
+    postProxy('/membros/dispositivo/push', { id: bioInfo ? bioInfo.id : '', plataforma: PLATAFORMA, pushToken: token })
+      .then(function (r) { if (r && r.ok) pushTokenEnviado = chave; })
+      .catch(function () {});
+  }
+  function registrarPush() {
+    if (!PUSH_ATIVO) return Promise.resolve(false);
+    return Push.register().then(function () { return true; }).catch(function () { return false; });
+  }
+  function pedirPush() {
+    if (!PUSH_ATIVO || !sessaoAtual()) return Promise.resolve(false);
+    return Push.checkPermissions().then(function (st) {
+      if (st.receive === 'granted') return registrarPush();
+      if (st.receive === 'denied') return false;
+      return Push.requestPermissions().then(function (r) {
+        return r.receive === 'granted' ? registrarPush() : false;
+      });
+    }).catch(function () { return false; });
+  }
+  window.cdvPushPedir = pedirPush;
+  if (PUSH_ATIVO) {
+    Push.addListener('registration', function (t) { enviarTokenPush(t && t.value); });
+    Push.addListener('registrationError', function () {});
+    // Toque na notificação: abre a aba do alerta (passagens, radar, comparador).
+    Push.addListener('pushNotificationActionPerformed', function (ev) {
+      var d = (ev && ev.notification && ev.notification.data) || {};
+      var aba = d.aba;
+      if (!aba) return;
+      var abrir = function () { if (typeof window.switchTab === 'function') window.switchTab(aba); };
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(abrir, 400); });
+      else abrir();
+    });
+    // Com o app aberto o sistema não mostra o banner: mostra um aviso no rodapé.
+    Push.addListener('pushNotificationReceived', function (n) {
+      if (n && (n.title || n.body) && document.body) aviso((n.title || '') + (n.body ? ' — ' + n.body : ''));
+    });
+  }
+  function iniciarPush() {
+    if (!PUSH_ATIVO || !sessaoAtual()) return;
+    Push.checkPermissions().then(function (st) {
+      if (st.receive === 'granted') { registrarPush(); return; }
+      if (st.receive === 'denied' || !Preferences) return;
+      // Pergunta uma vez, com explicação antes do pedido do sistema.
+      Preferences.get({ key: 'cdv_push_perguntado' }).then(function (r) {
+        if (r && r.value) return;
+        Preferences.set({ key: 'cdv_push_perguntado', value: '1' });
+        setTimeout(convitePush, 1500);
+      }).catch(function () {});
+    }).catch(function () {});
+  }
+  function convitePush() {
+    if (document.getElementById('cdv-bio-convite')) { setTimeout(convitePush, 4000); return; }
+    var fundo;
+    function fechar() { if (fundo) fundo.remove(); }
+    fundo = el('div', { id: 'cdv-bio-convite' }, [
+      el('div', { 'class': 'cdv-bio-caixa' }, [
+        el('div', { 'class': 'cdv-bio-titulo', text: 'Receber avisos no celular?' }),
+        el('div', { 'class': 'cdv-bio-sub', text: 'Avisamos aqui quando aparecer a passagem, a transferência ou a pontuação que você pediu nos seus alertas.' }),
+        el('button', { 'class': 'cdv-bio-btn', type: 'button', text: 'Ativar avisos', onclick: function () { fechar(); pedirPush(); } }),
+        el('button', { 'class': 'cdv-bio-link', type: 'button', text: 'Agora não', onclick: fechar }),
+      ]),
+    ]);
+    document.body.appendChild(fundo);
+  }
+
   /* ── 8. Sem internet ───────────────────────────────────────────────────── */
   function avisoRede() {
     var el = document.getElementById('cdv-offline');
@@ -484,6 +562,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     ajustarBarra();
     iniciarBiometria();
+    setTimeout(iniciarPush, 1200);
     if (!navigator.onLine) avisoRede();
     if (SplashScreen) setTimeout(function () { falhaSilenciosa(SplashScreen.hide()); }, 150);
   });

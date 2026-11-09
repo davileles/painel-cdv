@@ -116,6 +116,18 @@ jobs:
             archive | tail -40
           test "${PIPESTATUS[0]}" = 0
 
+      # O arquivo sai sem assinatura, e o export assina copiando os entitlements
+      # que estão no binário. Sem isso o push (aps-environment) não entra no app:
+      # assina "ad-hoc" com App.entitlements para o export herdar a permissão.
+      - name: Entitlements do app (push)
+        if: env.TEM_APPLE == 'true'
+        working-directory: app/ios/App
+        run: |
+          APP=$(ls -d "$RUNNER_TEMP"/CDV.xcarchive/Products/Applications/*.app | head -1)
+          codesign --force --sign - --deep "$APP"
+          codesign --force --sign - --entitlements App/App.entitlements --generate-entitlement-der "$APP"
+          codesign -d --entitlements - "$APP" 2>/dev/null | head -20
+
       - name: Envia ao TestFlight
         if: env.TEM_APPLE == 'true'
         working-directory: app/ios/App
@@ -145,6 +157,12 @@ jobs:
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID" | tail -40
           test "${PIPESTATUS[0]}" = 0
+          IPA=$(ls "$RUNNER_TEMP"/export/*.ipa 2>/dev/null | head -1)
+          if [ -n "$IPA" ]; then
+            mkdir -p "$RUNNER_TEMP/ipa" && unzip -q -o "$IPA" -d "$RUNNER_TEMP/ipa"
+            echo "Entitlements do app enviado:"
+            codesign -d --entitlements - "$RUNNER_TEMP"/ipa/Payload/*.app 2>/dev/null | grep -A1 aps-environment || echo "⚠️ sem aps-environment (push não vai funcionar)"
+          fi
           echo "Enviado: versão $VERSAO_APP (build $VERSAO_CODIGO). Aparece no TestFlight em 5–30 min."
 
       - name: Apaga a chave
