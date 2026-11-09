@@ -100,6 +100,17 @@ td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowra
 .count{font:400 13px var(--mono);color:var(--muted)}
 .note{font-size:13px;color:var(--muted);max-width:76ch;display:grid;gap:6px}
 .note p{margin:0}
+.iberia{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--esfera);border-radius:10px;padding:18px 20px;display:grid;gap:14px}
+.iberia p{margin:0;max-width:72ch}
+.ib-tl{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;min-width:560px}
+.ib-y{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:center}
+.ib-y>span{font:500 13px var(--mono);color:var(--muted)}
+.ib-m{height:30px;border-radius:4px;background:var(--soft);font:500 11px/30px var(--mono);text-align:center;color:var(--muted);position:relative}
+.ib-m.on{background:var(--esfera);color:#fff}
+.ib-m.nov{outline:2px dashed var(--today);outline-offset:-2px}
+.ib-head .ib-m{background:transparent;height:auto;line-height:1.4}
+.ib-rows{display:grid;gap:4px}
+.ib-last{font:500 14px var(--body)}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
 .legend i{display:inline-block;width:22px;height:10px;border-radius:3px;vertical-align:middle;margin-right:6px}
 </style>
@@ -120,6 +131,17 @@ td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowra
   <div><div class="eyebrow">Daqui até 30/11</div><h2>O que novembro de 2025 sugere para as próximas semanas</h2></div>
   <p class="sub">Janelas tiradas do histórico do ano passado. Black Friday cai em 28/11/2025 e em 27/11/2026, então as datas da reta final devem andar um dia para trás.</p>
   <div class="exp" id="exp"></div>
+</section>
+
+<section>
+  <div><div class="eyebrow">A mais procurada</div><h2>Iberia: não precisa esperar por novembro</h2></div>
+  <div class="iberia">
+    <p>Em novembro de 2025 <strong>não houve bônus para a Iberia</strong>. A campanha veio antes, de 28 a 30 de outubro: Esfera → Iberia Club com 30% para assinantes do Clube Esfera e 15% para os demais. Em 2023 e 2024 ela tinha caído em novembro, perto da Black Friday; em 2025 foi antecipada para outubro.</p>
+    <p>A Iberia só recebe bônus vindo da <strong>Esfera</strong>, e as campanhas aparecem a cada 2 a 4 meses, com 20% a 30%. Quem está juntando Avios não deve contar com a Black Friday: a campanha costuma vir quando passa esse intervalo desde a última.</p>
+    <p class="ib-last" id="ibLast"></p>
+    <div style="overflow-x:auto"><div class="ib-rows" id="ibTl"></div></div>
+    <div class="legend"><span><i style="background:var(--esfera)"></i>Mês com bônus Esfera → Iberia (percentual no quadro)</span><span><i style="outline:2px dashed var(--today);outline-offset:-2px;background:transparent"></i>Novembro</span></div>
+  </div>
 </section>
 
 <section>
@@ -251,11 +273,35 @@ function gantt(){
   document.getElementById('cAte').textContent=dd(C_ATE)+'/11';
 })();
 
+// Iberia: histórico fixo até 2025 + 2026 ao vivo
+const IB_FIXO=[['2023-11-23','2023-11-24',30],['2024-03-12','2024-03-14',30],['2024-06-03','2024-06-05',30],['2024-09-16','2024-09-18',30],['2024-10-09','2024-10-09',30],['2024-11-25','2024-11-27',30],['2025-03-12','2025-03-14',20],['2025-05-27','2025-05-29',30],['2025-07-14','2025-07-16',20],['2025-09-22','2025-09-24',30],['2025-10-28','2025-10-30',30],['2026-01-29','2026-01-31',20],['2026-03-24','2026-03-26',20],['2026-06-15','2026-06-17',25],['2026-09-21','2026-09-22',25]];
+let IB=IB_FIXO.slice();
+function iberia(){
+  const M=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  let h=`<div class="ib-y ib-head"><span></span><div class="ib-tl">${M.map(m=>`<div class="ib-m">${m}</div>`).join('')}</div></div>`;
+  for(const y of [2023,2024,2025,2026]){
+    h+=`<div class="ib-y"><span>${y}</span><div class="ib-tl">`+M.map((m,i)=>{
+      const c=IB.filter(r=>+r[0].slice(0,4)===y&&+r[0].slice(5,7)===i+1);
+      const v=c.length?Math.max(...c.map(r=>r[2])):0;
+      const dias=c.map(r=>r[0].slice(8,10)+(r[1]!==r[0]?'–'+r[1].slice(8,10):'')+'/'+r[0].slice(5,7)).join(', ');
+      return `<div class="ib-m ${v?'on':''} ${i===10?'nov':''}" title="${v?`${dias}/${y}: até ${v}%`:''}">${v?v+'%':''}</div>`;
+    }).join('')+'</div></div>';
+  }
+  document.getElementById('ibTl').innerHTML=h;
+  const ult=IB.slice().sort((a,b)=>a[0]<b[0]?-1:1).at(-1);
+  const hoje=new Date(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date())+'T12:00:00');
+  const dias=Math.round((hoje-new Date(ult[0]+'T12:00:00'))/864e5);
+  document.getElementById('ibLast').textContent=`Última campanha: ${ult[0].slice(8,10)}/${ult[0].slice(5,7)}/${ult[0].slice(0,4)}, com até ${ult[2]}% (há ${dias} dias).`;
+}
+iberia();
+
 // Transferências de 2026 ao vivo, a partir do histórico publicado
 resumo();gantt();
 fetch('historico-transferencias.json?t='+Date.now(),{cache:'no-cache'}).then(r=>r.ok?r.json():Promise.reject()).then(j=>{
   const it=(j.items||[]).map(r=>({a:r.origem,b:r.destino,v:r.bonusMax,ini:r.dataInicio,fim:r.prazo||r.dataInicio})).filter(r=>r.ini&&r.ini<='2026-11-30'&&r.fim>='2026-11-01');
   if(it.length){D.t26=it.sort((a,b)=>a.ini<b.ini?-1:1);resumo();gantt();}
+  const ib=(j.items||[]).filter(r=>/iberia/i.test(r.destino||'')&&r.dataInicio>='2026-01-01').map(r=>[r.dataInicio,r.prazo||r.dataInicio,r.bonusMax]);
+  if(ib.length){IB=IB_FIXO.filter(r=>r[0]<'2026-01-01').concat(ib);iberia();}
 }).catch(()=>{});
 
 // Tabela
