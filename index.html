@@ -1899,8 +1899,8 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 
       <div class="pe-sec">✈️ A viagem</div>
       <div class="pe-row2">
-        <div class="pe-field"><label class="pe-label">Origem</label><input class="pe-input" id="pe-origem" placeholder="Ex: Belo Horizonte (CNF)"/></div>
-        <div class="pe-field"><label class="pe-label">Destino(s)</label><input class="pe-input" id="pe-destino" placeholder="Ex: Lisboa; ou Roma + Paris"/></div>
+        <div class="pe-field alm-auto"><label class="pe-label">Origem</label><input class="pe-input" id="pe-origem" placeholder="Ex: Belo Horizonte (CNF)" autocomplete="off" oninput="cdvCidadeSugerir(this,{iata:true})" onfocus="cdvCidadeSugerir(this,{iata:true})" onblur="almFecharSug(this)"/><div class="alm-sug"></div></div>
+        <div class="pe-field alm-auto"><label class="pe-label">Destino(s)</label><input class="pe-input" id="pe-destino" placeholder="Ex: Lisboa; ou Roma + Paris" autocomplete="off" oninput="cdvCidadeSugerir(this,{iata:true,varios:true})" onfocus="cdvCidadeSugerir(this,{iata:true,varios:true})" onblur="almFecharSug(this)"/><div class="alm-sug"></div></div>
       </div>
       <div class="pe-field">
         <label class="pe-label">Datas</label>
@@ -12308,7 +12308,7 @@ function bvCopiarTudo(btn) {
 /* Alertas pessoais do membro: passagem (aba Passagens) e transferência
    bonificada (Comparador → Transferências). Proxy: /membros/alertas/* —
    quem casa e avisa (push no app; sem push, e-mail) é membro-app.js. */
-let almTipo = 'passagem', almDados = null, almProgSel = new Set(), almIdaVolta = false, almCidades = [];
+let almTipo = 'passagem', almDados = null, almProgSel = new Set(), almIdaVolta = false;
 function almEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function almPts(n){ return Number(n||0).toLocaleString('pt-BR'); }
 function almData(iso){ const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||''); return m?m[3]+'/'+m[2]+'/'+m[1]:''; }
@@ -12355,14 +12355,11 @@ function almRender(){
   h += meus.length ? meus.map(ehPass?almListaPassagem:almListaTransf).join('') : '<div class="alm-vazio">Nenhum alerta ainda.</div>';
   h += '<div class="alm-secao">Novo alerta</div>';
   if (ehPass) {
-    // Cidades que aparecem nas emissões, das mais frequentes para as menos.
-    const freq = {};
-    passagensData.forEach(p=>[p.origem,p.destino].forEach(x=>{ x=String(x||'').trim(); if(x) freq[x]=(freq[x]||0)+1; }));
-    almCidades = Object.keys(freq).sort((a,b)=>freq[b]-freq[a]||a.localeCompare(b,'pt-BR')).map(n=>({n, k:almChave(n), q:freq[n]}));
+    _cdvCidadesCache = null; // recalcula com as emissões carregadas
     const progs = [...new Set(passagensData.map(p=>p.programa).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
     h += '<div class="alm-grade">'
-      + '<div class="alm-campo alm-auto"><label>Origem</label><input id="alm-origem" placeholder="Ex.: Belo Horizonte" autocomplete="off" autocapitalize="words" oninput="almSugerir(this)" onfocus="almSugerir(this)" onblur="almFecharSug(this)"><div class="alm-sug"></div></div>'
-      + '<div class="alm-campo alm-auto"><label>Destino</label><input id="alm-destino" placeholder="Ex.: Lisboa" autocomplete="off" autocapitalize="words" oninput="almSugerir(this)" onfocus="almSugerir(this)" onblur="almFecharSug(this)"><div class="alm-sug"></div></div>'
+      + '<div class="alm-campo alm-auto"><label>Origem</label><input id="alm-origem" placeholder="Ex.: Belo Horizonte" autocomplete="off" autocapitalize="words" oninput="cdvCidadeSugerir(this)" onfocus="cdvCidadeSugerir(this)" onblur="almFecharSug(this)"><div class="alm-sug"></div></div>'
+      + '<div class="alm-campo alm-auto"><label>Destino</label><input id="alm-destino" placeholder="Ex.: Lisboa" autocomplete="off" autocapitalize="words" oninput="cdvCidadeSugerir(this)" onfocus="cdvCidadeSugerir(this)" onblur="almFecharSug(this)"><div class="alm-sug"></div></div>'
       + '</div>';
     h += '<div class="alm-tipo"><button type="button" class="alm-chip on" id="alm-so-ida" onclick="almSetIdaVolta(false)">Só ida</button><button type="button" class="alm-chip" id="alm-ida-volta" onclick="almSetIdaVolta(true)">Ida e volta</button></div>';
     h += '<div class="alm-campo" style="margin-top:10px"><label>Programas (nenhum marcado = qualquer)</label><div class="alm-chips" id="alm-progs">'
@@ -12400,18 +12397,51 @@ function almSetIdaVolta(sim){
   document.getElementById('alm-ida-volta').classList.toggle('on',almIdaVolta);
   document.querySelectorAll('.alm-volta').forEach(e=>e.style.display=almIdaVolta?'':'none');
 }
-// Autocompletar de cidade (o datalist do iPhone não mostra lista): começo do
-// nome primeiro, depois "contém", sem acento.
-function almSugerir(inp){
+// Autocompletar de cidade (o datalist do iPhone não mostra lista). Fonte:
+// cidades das emissões (das mais frequentes), mais as cidades brasileiras da
+// base de aeroportos; com {iata:true} entram todos os aeroportos ("Cidade (CÓD)").
+// {varios:true}: completa só o trecho depois do último ";", "," ou "+".
+let _cdvCidadesCache = null;
+function cdvCidades(){
+  if(_cdvCidadesCache) return _cdvCidadesCache;
+  const freq = {};
+  (typeof passagensData!=='undefined' && Array.isArray(passagensData) ? passagensData : [])
+    .forEach(p=>[p.origem,p.destino].forEach(x=>{ x=String(x||'').trim(); if(x) freq[x]=(freq[x]||0)+1; }));
+  const l = Object.keys(freq).sort((a,b)=>freq[b]-freq[a]||a.localeCompare(b,'pt-BR'))
+    .map(n=>({n, k:almChave(n), info: freq[n]+' emiss'+(freq[n]===1?'ão':'ões')}));
+  const ja = new Set(l.map(x=>x.k));
+  (typeof IATA_AIRPORTS!=='undefined' ? IATA_AIRPORTS : []).forEach(a=>{
+    if(!/\(Brazil\)$/.test(a.label)) return;
+    const cid = a.label.split(' – ')[0].trim(), k = almChave(cid);
+    if(cid && !ja.has(k)){ ja.add(k); l.push({n:cid, k, info:''}); }
+  });
+  return (_cdvCidadesCache = l);
+}
+let _cdvAeroportos = null;
+function cdvAeroportos(){
+  if(_cdvAeroportos) return _cdvAeroportos;
+  return (_cdvAeroportos = (typeof IATA_AIRPORTS!=='undefined' ? IATA_AIRPORTS : []).map(a=>{
+    const cid = a.label.split(' – ')[0].trim();
+    const pais = (a.label.match(/\(([^()]*)\)\s*$/)||[])[1]||'';
+    return { n: cid+' ('+a.code+')', k: almChave(cid+' '+a.code), info: pais==='Brazil'?'':pais };
+  }));
+}
+function cdvCidadeSugerir(inp, op){
+  op = op || {};
   const box=inp.parentElement.querySelector('.alm-sug'); if(!box) return;
-  const q=almChave(inp.value);
-  let l = q ? almCidades.filter(c=>c.k.startsWith(q)).concat(almCidades.filter(c=>!c.k.startsWith(q)&&c.k.includes(q))) : almCidades;
-  l=l.slice(0,8);
+  let prefixo='', termo=inp.value;
+  if(op.varios){ const m=termo.match(/^(.*[;,+]\s*)([^;,+]*)$/); if(m){ prefixo=m[1]; termo=m[2]; } }
+  const q=almChave(termo);
+  if(op.iata && q.length<2){ box.classList.remove('on'); box.innerHTML=''; return; }
+  let base=cdvCidades();
+  if(op.iata){ const ja=new Set(base.map(x=>x.k)); base=base.concat(cdvAeroportos().filter(x=>!ja.has(x.k))); }
+  const comeca=base.filter(c=>c.k.startsWith(q)), contem=q?base.filter(c=>!c.k.startsWith(q)&&c.k.includes(q)):[];
+  const l=(q?comeca.concat(contem):base).slice(0,8);
   if(!l.length || (l.length===1 && l[0].k===q)){ box.classList.remove('on'); box.innerHTML=''; return; }
-  box.innerHTML=l.map(c=>'<button type="button" data-v="'+almEsc(c.n)+'">'+almEsc(c.n)+'<small>'+c.q+' emiss'+(c.q===1?'ão':'ões')+'</small></button>').join('');
+  box.innerHTML=l.map(c=>'<button type="button" data-v="'+almEsc(c.n)+'">'+almEsc(c.n)+(c.info?'<small>'+almEsc(c.info)+'</small>':'')+'</button>').join('');
   box.querySelectorAll('button').forEach(b=>{
     b.addEventListener('mousedown',ev=>ev.preventDefault()); // não tira o foco no computador
-    b.addEventListener('click',()=>{ inp.value=b.dataset.v; box.classList.remove('on'); });
+    b.addEventListener('click',()=>{ inp.value=prefixo+b.dataset.v; box.classList.remove('on'); inp.dispatchEvent(new Event('change',{bubbles:true})); });
   });
   box.classList.add('on');
 }
