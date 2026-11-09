@@ -66,3 +66,42 @@
   transform: translateY(-140%); transition: transform .25s ease;
 }
 #cdv-offline.on { transform: none; }
+
+/* Entrar com Face ID / digital (nativo.js, seção 7b). */
+#cdv-bio-trava, #cdv-bio-convite {
+  position: fixed; inset: 0; z-index: 100001;
+  display: flex; align-items: center; justify-content: center;
+  padding: calc(24px + var(--cdv-sat, 0px)) 24px calc(24px + var(--cdv-sab, 0px));
+  font-family: 'Montserrat', system-ui, sans-serif;
+}
+#cdv-bio-trava { background: var(--bg, #f2f5fa); }
+#cdv-bio-convite { background: rgba(23, 32, 58, .55); backdrop-filter: blur(3px); }
+.cdv-bio-caixa {
+  width: 100%; max-width: 360px; background: var(--surface, #fff); color: var(--text, #17203a);
+  border: 1px solid var(--border, #e3e7f0); border-radius: 18px; padding: 28px 22px 18px;
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px;
+  box-shadow: 0 18px 50px rgba(23, 32, 58, .18);
+}
+.cdv-bio-logo { width: 56px; height: 56px; border-radius: 14px; margin-bottom: 4px; }
+.cdv-bio-titulo { font-size: 18px; font-weight: 800; letter-spacing: -.3px; }
+.cdv-bio-sub { font-size: 13px; color: var(--muted, #6b7590); line-height: 1.45; margin-bottom: 10px; }
+.cdv-bio-btn {
+  width: 100%; border: none; border-radius: 12px; padding: 14px; margin-top: 4px;
+  background: var(--accent, #ff585e); color: #fff; font: 800 14.5px 'Montserrat', system-ui, sans-serif; cursor: pointer;
+}
+.cdv-bio-btn:disabled { opacity: .6; }
+.cdv-bio-link {
+  background: none; border: none; color: var(--muted, #6b7590); padding: 10px;
+  font: 700 12.5px 'Montserrat', system-ui, sans-serif; cursor: pointer;
+}
+.cdv-bio-msg { min-height: 16px; font-size: 12px; color: var(--muted, #6b7590); }
+#cdv-bio-login { width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 8px; }
+#cdv-bio-login .cdv-bio-link { margin-top: -6px; }
+.cdv-bio-ou { font-size: 11.5px; color: var(--muted2, #8a93a8); margin: 6px 0 4px; }
+.cdv-bio-toast {
+  position: fixed; left: 16px; right: 16px; bottom: calc(96px + var(--cdv-sab, 0px)); z-index: 100002;
+  background: #262e42; color: #fff; border-radius: 12px; padding: 12px 14px; text-align: center;
+  font: 600 13px/1.35 'Montserrat', system-ui, sans-serif;
+  opacity: 0; transform: translateY(10px); transition: all .25s ease;
+}
+.cdv-bio-toast.on { opacity: 1; transform: none; }

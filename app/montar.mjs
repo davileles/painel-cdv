@@ -43,10 +43,12 @@ copyFileSync(join(AQUI, 'node_modules/chart.js/dist/chart.umd.js'), join(WWW, 'c
 
 // 3) Capacitor sem bundler: core + plugins em build IIFE, num arquivo só
 const MODS = ['core/dist/capacitor.js', 'app', 'browser', 'share', 'status-bar', 'splash-screen', 'haptics', 'preferences']
-  .map((m) => (m.includes('/') ? m : `${m}/dist/plugin.js`));
+  .map((m) => '@capacitor/' + (m.includes('/') ? m : `${m}/dist/plugin.js`));
+// Plugins de terceiros (build IIFE em dist/plugin.js): Face ID/digital.
+MODS.push('@capgo/capacitor-native-biometric/dist/plugin.js');
 const bundle = MODS.map((m) => {
-  const cod = readFileSync(join(AQUI, 'node_modules/@capacitor', m), 'utf8').replace(/\/\/# sourceMappingURL=.*$/gm, '');
-  return `/* ── @capacitor/${m} ── */\n${cod}`;
+  const cod = readFileSync(join(AQUI, 'node_modules', m), 'utf8').replace(/\/\/# sourceMappingURL=.*$/gm, '');
+  return `/* ── ${m} ── */\n${cod}`;
 }).join('\n;\n');
 writeFileSync(join(WWW, 'capacitor-plugins.js'), bundle);
 

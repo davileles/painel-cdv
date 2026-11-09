@@ -53,6 +53,10 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'hubla-assinaturas.json',
   // Tokens de usuário do Méliuz (access + refresh rotacionado): repo privado.
   'meliuz-token.json',
+  // Celulares dos membros (chave do Face ID/digital em hash + token de push): repo privado.
+  'dispositivos.json',
+  // Alertas pessoais de passagem e de transferência bonificada (e-mail): repo privado.
+  'alertas-membros.json',
 ]);
 // Arquivos que saíram do painel-cdv: na 1ª leitura sem cópia no repo de dados,
 // o proxy copia a versão do repo público para lá (uma vez por arquivo).
@@ -213,6 +217,9 @@ const ROTAS_MEMBRO = new Set([
   '/perfis/listar', '/perfis/salvar',
   '/roteiros/meus',
   '/consultoria/meus', '/consultoria/enviar', '/consultoria/listar', '/consultoria/responder',
+  // Celulares (Face ID/digital, push) e alertas pessoais — membro-app.js
+  '/membros/dispositivo/registrar', '/membros/dispositivo/remover', '/membros/dispositivo/push',
+  '/membros/alertas/listar', '/membros/alertas/salvar', '/membros/alertas/excluir',
 ]);
 // Conteúdo do painel (o que o membro paga para ver): membro logado OU operador.
 // GET em todas; o e-mail não é sobrescrito (as rotas não dependem dele).
@@ -3033,6 +3040,8 @@ async function aprovarOfertaPendente(id, edits) {
   } catch (errAl) {
     console.error('[Alertas concierge] Falha ao verificar palavras-chave:', errAl.message);
   }
+  // Alertas de transferência dos membros (push/e-mail), sem segurar a aprovação.
+  membroApp.avaliarTransferencia(item).catch((e) => console.error('[alertas membro] transferência:', e.message));
 
   return { ok: true, item };
 }
@@ -3481,6 +3490,8 @@ app.post('/ofertas/publicar', async (req, res) => {
         catch (e) { console.error('[Histórico transferências] Falha ao atualizar (publicar):', e.message); }
         try { await verificarAlertasTransferencia(item); }
         catch (e) { console.error('[Alertas concierge] transferências (publicar):', e.message); }
+        try { await membroApp.avaliarTransferencia(item); }
+        catch (e) { console.error('[alertas membro] transferência (publicar):', e.message); }
       })();
     }
     // Alertas do concierge por palavra-chave (best-effort, depois da resposta)
@@ -3732,6 +3743,8 @@ app.post('/passagens/registrar', async (req, res) => {
     // gravar as datas normalizadas triplicaria passagens.json (1,17 -> 3,48 MB)
     // e o valor e 100% derivavel de datas_ida via normalizarDatas().
     res.json({ ok: true, id, hist180: hist180Stats, ida: resumirDatas(datas_ida, agora) });
+    // Alertas de passagem dos membros (push/e-mail), depois da resposta.
+    membroApp.avaliarPassagem(novaPassagem).catch((e) => console.error('[alertas membro] passagem:', e.message));
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }
@@ -4453,6 +4466,14 @@ app.post('/membros/verificar-codigo', (req, res) => {
   const token = assinarSessaoMembro(emailNorm);
   if (!token) return res.status(500).json({ ok: false, erro: 'Segredo de sessão não configurado no servidor' });
   res.json({ ok: true, acesso: true, nome: entrada.nome, email: emailNorm, produtos: entrada.produtos, token });
+});
+
+// ── Celulares do membro (Face ID/digital, push) e alertas pessoais ───────────
+// Rotas /membros/dispositivo/*, /membros/alertas/*, /push/* — ver membro-app.js.
+const membroApp = require('./membro-app.js')(app, {
+  ghGetJson, ghPutJson, membroAtivo, assinarSessaoMembro, opAutorizado, fetch, MEMBROS_PATH,
+  chaveTexto, normalizarCidade, normalizarDatas,
+  normalizarChaveHist, origensDaOferta: (item) => transfHist.origensDaOferta(item),
 });
 
 // ── ADMIN OTP: acesso restrito (TSP + Concierge) ─────────────────────────────

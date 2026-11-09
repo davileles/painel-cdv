@@ -7159,7 +7159,9 @@ function switchTab(tab){
 // desde que exista e esteja visível para este membro; senão, Início.
 function abaInicial(){
   try{
-    const t=sessionStorage.getItem('cdv_active_tab');
+    // ?aba=passagens (links dos e-mails de alerta e das notificações) vence a última aba aberta.
+    const daUrl=new URLSearchParams(location.search).get('aba');
+    const t=daUrl||sessionStorage.getItem('cdv_active_tab');
     if(!t) return 'inicio';
     const btn=document.querySelector('.main-tab[data-tab="'+t+'"]');
     const sec=document.getElementById('tab-'+t);
@@ -9035,6 +9037,8 @@ async function verificarCodigo() {
     const data = await res.json();
     if (data.ok && data.acesso) {
       salvarSessao({ email: data.email, nome: data.nome, token: data.token });
+      // No app: depois de recarregar, oferece entrar com Face ID/digital (app/src/nativo.js).
+      try { sessionStorage.setItem('cdv_bio_oferecer', '1'); } catch (e) {}
       // Recarrega para que o conteúdo (comparador, histórico) venha com o token:
       // ele começa a carregar antes do login e, sem sessão, o proxy recusa.
       location.reload();
