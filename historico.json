@@ -901133,7 +901133,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 1,
+          "pts": 3,
           "dollar": false
         },
         "inter": {
@@ -902616,7 +902616,7 @@
         "meliuz": {
           "pts": 7,
           "dollar": false,
-          "ate": true,
+          "ate": false,
           "slug": "cupom-hoteiscom",
           "categorias": [
             {
@@ -902626,7 +902626,7 @@
             },
             {
               "categoria": "Demais categorias",
-              "pts": 3,
+              "pts": 7,
               "principal": true
             }
           ],
@@ -903347,14 +903347,6 @@
         }
       }
     },
-    "world wine": {
-      "programs": {
-        "esfera": {
-          "pts": 20,
-          "dollar": false
-        }
-      }
-    },
     "multi": {
       "programs": {
         "esfera": {
@@ -903424,6 +903416,14 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/polishop"
+      }
+    },
+    "world wine": {
+      "programs": {
+        "esfera": {
+          "pts": 10,
+          "dollar": false
+        }
       }
     },
     "emma": {
@@ -906233,7 +906233,7 @@
     "call of duty modern warfare 4": {
       "programs": {
         "inter": {
-          "pts": 5,
+          "pts": 10,
           "dollar": false,
           "slug": "call-of-duty-modern-warfare-4-4563"
         }
@@ -906521,10 +906521,16 @@
           "dollar": false,
           "ate": false,
           "slug": "cupom-boticario"
+        },
+        "inter": {
+          "pts": 4,
+          "dollar": false,
+          "slug": "o-boticario-3988"
         }
       },
       "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-boticario"
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-boticario",
+        "inter": "https://shopping.inter.co/gift-card/o-boticario-3988"
       }
     },
     "omio": {
