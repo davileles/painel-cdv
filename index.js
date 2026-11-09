@@ -2147,7 +2147,9 @@ async function meliuzTaxasAoVivo(out) {
   if (!tok) return { ok: false, status: 'token_falhou', refreshErro: meliuzUserCache.ultimoRefreshErro };
   const fonteToken = tokUser ? 'usuario' : 'anonimo';
   const expiraEm = jwtExpiraEm(tok);
-  const r = await fetch(`https://api-seo.meliuz.com.br/partners/cashback-offers?ids=${ids.join(',')}`, {
+  // Desde nov/2026 a API do client-seo vive sob /seo (a rota antiga sem /seo
+  // responde 404 "Partner not found"). Mesmo endereço do partner-logged.js do site.
+  const r = await fetch(`https://api-seo.meliuz.com.br/seo/partners/cashback-offers?ids=${[...new Set(ids)].join(',')}`, {
     headers: {
       'Authorization': `Bearer ${tok}`,
       'User-Agent': MELIUZ_UA,
