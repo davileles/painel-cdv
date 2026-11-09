@@ -1,0 +1,152 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# app-ios.yml — compila o app iPhone do Painel do Viajante (pasta app/) numa
+# máquina Mac do GitHub. Ninguém precisa de Mac nem de Xcode.
+#
+# Sem os secrets da Apple: só confere que o app compila (para o simulador).
+#
+# Com os secrets: assina, gera o .ipa e envia ao TestFlight. A assinatura é
+# automática pela chave de API do App Store Connect (o Xcode cria certificado
+# e perfil sozinho) — não há certificado .p12 para guardar.
+#   APPLE_TEAM_ID       Team ID (10 letras/números, em developer.apple.com → Membership)
+#   ASC_KEY_ID          ID da chave de API (App Store Connect → Usuários e acesso → Integrações)
+#   ASC_ISSUER_ID       Issuer ID da mesma tela
+#   ASC_KEY_P8          conteúdo do arquivo AuthKey_XXXX.p8 (texto inteiro, com BEGIN/END)
+# A chave precisa da função "Admin" (para criar o certificado de distribuição).
+# O app precisa existir no App Store Connect com o identificador
+# br.com.clubedoviajante.app antes do primeiro envio.
+#
+# Roda sozinho quando muda o app ou o painel, e pelo botão "Run workflow".
+# ═══════════════════════════════════════════════════════════════════════════
+name: App iPhone
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'index.html'
+      - 'cdv-redesign.css'
+      - 'cdv-redesign.js'
+      - 'iata.js'
+      - '.github/workflows/app-ios.yml'
+
+concurrency:
+  group: app-ios
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    runs-on: macos-15
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: app
+    env:
+      VERSAO_CODIGO: ${{ github.run_number }}
+      TEM_APPLE: ${{ secrets.ASC_KEY_P8 != '' && secrets.APPLE_TEAM_ID != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Xcode
+        run: |
+          # A App Store exige o SDK do iOS 26 (Xcode 26) desde abr/2026.
+          X=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | grep -v -i beta | sort -V | tail -1)
+          [ -n "$X" ] || X=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+
+      - name: Versão
+        run: |
+          V=$(node -p "require('./package.json').version")
+          echo "VERSAO_APP=$V" >> "$GITHUB_ENV"
+          echo "App $V (build $VERSAO_CODIGO) · assinatura Apple: $TEM_APPLE"
+
+      - name: Dependências
+        run: npm ci
+
+      - name: Monta o painel dentro do app
+        run: node montar.mjs && npx cap sync ios
+
+      - name: Compila (conferência, sem assinatura)
+        if: env.TEM_APPLE != 'true'
+        working-directory: app/ios/App
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/dd" \
+            CODE_SIGNING_ALLOWED=NO \
+            MARKETING_VERSION="$VERSAO_APP" CURRENT_PROJECT_VERSION="$VERSAO_CODIGO" \
+            build | tail -40
+          test "${PIPESTATUS[0]}" = 0
+
+      - name: Chave de API da Apple
+        if: env.TEM_APPLE == 'true'
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+        run: |
+          printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/AuthKey_$ASC_KEY_ID.p8"
+          echo "ASC_KEY_PATH=$RUNNER_TEMP/AuthKey_$ASC_KEY_ID.p8" >> "$GITHUB_ENV"
+
+      - name: Gera o arquivo assinado
+        if: env.TEM_APPLE == 'true'
+        working-directory: app/ios/App
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/CDV.xcarchive" \
+            -derivedDataPath "$RUNNER_TEMP/dd" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" CODE_SIGN_STYLE=Automatic \
+            MARKETING_VERSION="$VERSAO_APP" CURRENT_PROJECT_VERSION="$VERSAO_CODIGO" \
+            archive | tail -40
+          test "${PIPESTATUS[0]}" = 0
+
+      - name: Envia ao TestFlight
+        if: env.TEM_APPLE == 'true'
+        working-directory: app/ios/App
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          cat > "$RUNNER_TEMP/export.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$APPLE_TEAM_ID</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+            <key>uploadSymbols</key><true/>
+          </dict></plist>
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/CDV.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/export.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" | tail -40
+          test "${PIPESTATUS[0]}" = 0
+          echo "Enviado: versão $VERSAO_APP (build $VERSAO_CODIGO). Aparece no TestFlight em 5–30 min."
+
+      - name: Apaga a chave
+        if: always()
+        run: rm -f "$RUNNER_TEMP"/AuthKey_*.p8
