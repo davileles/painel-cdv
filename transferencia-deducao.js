@@ -20,7 +20,7 @@
 // historico ganha um registro por banco (oferta 17dsmmp, 15 bancos -> LATAM).
 const ORIGEM_ESPECIAIS = ['Todos', 'Bancos selecionados'];
 const ORIGEM_TRANSFERENCIA_OPTIONS = ['Todos','Bancos selecionados','Alloyal','Azul Fidelidade','Banco do Brasil','Banco do Nordeste','Banco Industrial','Banco Mercantil','Banestes','Banpará','Banrisul','BRB','BTG','BV','C6','Caixa','Credicard','Esfera','Inter','Itaú','LATAM Pass','Livelo','Nubank','PicPay','Porto Seguro','Premmia','Revolut','Sicoob','Sicredi','Sisprime','Smiles','Unicred','XP'];
-const DESTINO_TRANSFERENCIA_OPTIONS = ['AAdvantage','ALL Accor','Azul Fidelidade','Connect Miles','Flying Blue','Hilton Honors','Iberia Plus','IHG','LATAM Pass','Livelo','Smiles','TAP Miles&Go'];
+const DESTINO_TRANSFERENCIA_OPTIONS = ['AAdvantage','ALL Accor','Azul Fidelidade','Connect Miles','Flying Blue','Hilton Honors','Iberia Plus','IHG','LATAM Pass','Livelo','Privilege Club','Smiles','TAP Miles&Go'];
 
 const ALIAS_PROGRAMAS = {
   'Azul Fidelidade': ['azul fidelidade','pontos azul','azul'],
@@ -29,6 +29,9 @@ const ALIAS_PROGRAMAS = {
   'Connect Miles': ['connect miles','connectmiles'],
   'TAP Miles&Go': ['tap miles&go','tap miles e go','miles&go'],
   'Iberia Plus': ['iberia plus','iberia'],
+  // Qatar: o radar manda "Privilege Club" em `programa` e "Qatar Airways" no titulo
+  // (oferta 09/11/2026 Livelo -> Qatar 35% caiu como origem/destino indefinidos).
+  'Privilege Club': ['qatar airways privilege club','privilege club','qatar airways','qatar'],
   'Hilton Honors': ['hilton honors','hilton'],
   'Porto Seguro': ['porto seguro','porto bank','porto'],
   'C6': ['c6 bank','c6'],
