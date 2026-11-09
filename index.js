@@ -4471,7 +4471,7 @@ app.post('/membros/verificar-codigo', (req, res) => {
 // ── Celulares do membro (Face ID/digital, push) e alertas pessoais ───────────
 // Rotas /membros/dispositivo/*, /membros/alertas/*, /push/* — ver membro-app.js.
 const membroApp = require('./membro-app.js')(app, {
-  ghGetJson, ghPutJson, membroAtivo, assinarSessaoMembro, opAutorizado, fetch, MEMBROS_PATH,
+  ghGetJson, ghPutJson, membroAtivo, assinarSessaoMembro, opAutorizado, fetch, MEMBROS_PATH, lerConteudo,
   chaveTexto, normalizarCidade, normalizarDatas,
   normalizarChaveHist, origensDaOferta: (item) => transfHist.origensDaOferta(item),
 });

@@ -51,7 +51,7 @@ function grupoCabine(c) {
 const NOME_CABINE = { economica: 'Econômica', executiva: 'Executiva', premium: 'Premium Economy', primeira: 'Primeira' };
 
 module.exports = function montarMembroApp(app, d) {
-  const { ghGetJson, ghPutJson, membroAtivo, assinarSessaoMembro, opAutorizado, fetch, MEMBROS_PATH } = d;
+  const { ghGetJson, ghPutJson, membroAtivo, assinarSessaoMembro, opAutorizado, fetch, MEMBROS_PATH, lerConteudo } = d;
 
   async function mutar(path, fallback, fn, msg) {
     let erro = null;
@@ -304,9 +304,12 @@ module.exports = function montarMembroApp(app, d) {
       programas: (Array.isArray(a.programas) ? a.programas : []).map((p) => String(p).trim().slice(0, 40)).filter(Boolean).slice(0, 12),
       cabine: ['economica', 'executiva', 'premium', 'primeira'].includes(a.cabine) ? a.cabine : '',
       maxPontos: Math.max(0, Math.round(Number(a.maxPontos) || 0)),
+      idaVolta: !!a.idaVolta,
       idaDe: ida(a.idaDe), idaAte: ida(a.idaAte),
+      voltaDe: a.idaVolta ? ida(a.voltaDe) : '', voltaAte: a.idaVolta ? ida(a.voltaAte) : '',
     };
     if (r.idaDe && r.idaAte && r.idaAte < r.idaDe) [r.idaDe, r.idaAte] = [r.idaAte, r.idaDe];
+    if (r.voltaDe && r.voltaAte && r.voltaAte < r.voltaDe) [r.voltaDe, r.voltaAte] = [r.voltaAte, r.voltaDe];
     return r;
   }
   function limparTransferencia(a) {
@@ -357,7 +360,13 @@ module.exports = function montarMembroApp(app, d) {
       }, `chore: alerta de ${tipo === 'passagens' ? 'passagem' : 'transferência'} de membro`);
       if (limite) return res.json({ ok: false, erro: `Limite de ${MAX_ALERTAS_POR_TIPO} alertas deste tipo. Apague algum para criar outro.` });
       invalidar(ALERTAS_PATH);
-      res.json({ ok: true, id: idFinal });
+      // Já existe passagem recente / campanha vigente que bate? Avisa agora.
+      let encontrados = 0;
+      try {
+        const alerta = { id: idFinal, email, ...campos, avisos: [] };
+        encontrados = tipo === 'passagens' ? await conferirPassagensRecentes(alerta) : await conferirTransferenciasVigentes(alerta);
+      } catch (e) { console.warn('[alertas/salvar] conferência inicial:', e.message); }
+      res.json({ ok: true, id: idFinal, encontrados });
     } catch (e) {
       console.error('[alertas/salvar]', e.message);
       res.status(500).json({ ok: false, erro: 'Não foi possível salvar o alerta agora.' });
@@ -400,54 +409,87 @@ module.exports = function montarMembroApp(app, d) {
   }
 
   // ── Casamento: passagem registrada ────────────────────────────────────────
+  // Registro de passagens.json: pontos = por trecho e por pessoa; datas_volta =
+  // datas da volta (destino → origem) pelo mesmo valor, quando a emissão tem volta.
+  const cidade = (c) => d.chaveTexto(d.normalizarCidade(c));
+  function bateDatas(texto, ref, de0, ate0, cache, chave) {
+    if (!de0 && !ate0) return true;
+    if (!cache[chave]) {
+      const r = d.normalizarDatas(texto, ref || new Date().toISOString());
+      cache[chave] = r.status === 'ok' ? r : { datas: [], precisao: null };
+    }
+    const datas = cache[chave];
+    const de = de0 || '0000-01-01', ate = ate0 || '9999-12-31';
+    return datas.datas.some((x) => (datas.precisao === 'mes'
+      ? x.slice(0, 7) >= de.slice(0, 7) && x.slice(0, 7) <= ate.slice(0, 7)
+      : x >= de && x <= ate));
+  }
+  function passagemBate(a, p, cache) {
+    if (cidade(a.origem) !== cidade(p.origem) || cidade(a.destino) !== cidade(p.destino)) return false;
+    if (a.programas && a.programas.length && !a.programas.some((x) => d.chaveTexto(x) === d.chaveTexto(p.programa))) return false;
+    const cab = grupoCabine(p.cabine);
+    if (a.cabine && a.cabine !== cab) return false;
+    if (a.maxPontos && Number(p.pontos) > a.maxPontos) return false;
+    if (!bateDatas(p.datas_ida, p.enviadoEm, a.idaDe, a.idaAte, cache, 'ida')) return false;
+    if (a.idaVolta) {
+      if (!String(p.datas_volta || '').trim()) return false;
+      if (!bateDatas(p.datas_volta, p.enviadoEm, a.voltaDe, a.voltaAte, cache, 'volta')) return false;
+    }
+    return true;
+  }
+
+  async function avisarPassagem(a, p, extras) {
+    const titulo = `${p.origem} → ${p.destino}: ${fmtPts(p.pontos)} pts`;
+    const corpo = [extras ? `${extras + 1} emissões recentes batem com seu alerta` : '', p.programa, p.cabine || '',
+      p.datas_ida ? '🛫 ' + p.datas_ida : '', a.idaVolta && p.datas_volta ? '🛬 ' + p.datas_volta : '']
+      .filter(Boolean).join(' · ').slice(0, 178);
+    const r = await pushParaEmail(a.email, { titulo, corpo, dados: { aba: 'passagens', passagem: p.id }, grupo: 'passagens' });
+    if (!r.entregues) {
+      await enviarEmail(a.email, `✈️ Alerta: ${p.origem} → ${p.destino} por ${fmtPts(p.pontos)} pts`, `${p.origem} → ${p.destino} por ${fmtPts(p.pontos)} pontos o trecho`, [
+        extras ? `<b>${extras + 1} emissões recentes</b> batem com seu alerta; esta é a de menor pontuação.` : '',
+        `<b>Programa:</b> ${esc(p.programa)}${p.cia ? ' · ' + esc(p.cia) : ''}`,
+        p.cabine ? `<b>Cabine:</b> ${esc(p.cabine)}` : '',
+        p.datas_ida ? `<b>🛫 Ida:</b> ${esc(p.datas_ida)}` : '',
+        p.datas_volta ? `<b>🛬 Volta:</b> ${esc(p.datas_volta)}` : '',
+        `Seu alerta: ${esc(a.origem)} → ${esc(a.destino)}${a.idaVolta ? ' (ida e volta)' : ''}${a.maxPontos ? ' até ' + fmtPts(a.maxPontos) + ' pts o trecho' : ''}.`,
+      ].filter(Boolean), { texto: 'Ver no painel', url: 'https://painel.clubedoviajante.com.br/?aba=passagens' });
+    }
+  }
+
+  // Ao criar o alerta: emissões dos últimos 7 dias que já batem → um aviso só.
+  async function conferirPassagensRecentes(a) {
+    if (!lerConteudo) return 0;
+    const bruto = JSON.parse((await lerConteudo('passagens.json')).texto);
+    const lista = Array.isArray(bruto) ? bruto : (bruto.items || []);
+    const corte = Date.now() - 7 * 864e5;
+    const achadas = lista.filter((p) => p && p.id && new Date(p.enviadoEm || 0).getTime() >= corte && passagemBate(a, p, {}))
+      .sort((x, z) => Number(x.pontos) - Number(z.pontos));
+    if (!achadas.length) return 0;
+    await avisarPassagem(a, achadas[0], achadas.length - 1);
+    await mutar(ALERTAS_PATH, VAZIO_AL, (al) => {
+      const x = (al.passagens || []).find((y) => y.id === a.id);
+      if (!x) return false;
+      x.avisos = achadas.map((p) => p.id).concat(x.avisos || []).slice(0, 30);
+      x.ultimoAviso = new Date().toISOString();
+    }, 'chore: avisos de alerta de passagem (conferência inicial)');
+    invalidar(ALERTAS_PATH);
+    return achadas.length;
+  }
+
   // p = registro gravado em passagens.json (origem/destino já normalizados).
   async function avaliarPassagem(p) {
     if (!p || !p.id) return;
     const al = await ler(ALERTAS_PATH, VAZIO_AL);
     const lista = al.passagens || [];
     if (!lista.length) return;
-    const cidade = (c) => d.chaveTexto(d.normalizarCidade(c));
-    const o = cidade(p.origem), de = cidade(p.destino), prog = d.chaveTexto(p.programa);
-    const cab = grupoCabine(p.cabine);
-    let datas = null; // calculadas só se algum alerta pedir data
-    const atingidos = lista.filter((a) => {
-      if ((a.avisos || []).includes(p.id)) return false;
-      if (cidade(a.origem) !== o || cidade(a.destino) !== de) return false;
-      if (a.programas && a.programas.length && !a.programas.some((x) => d.chaveTexto(x) === prog)) return false;
-      if (a.cabine && cab && a.cabine !== cab) return false;
-      if (a.cabine && !cab) return false;
-      if (a.maxPontos && Number(p.pontos) > a.maxPontos) return false;
-      if (a.idaDe || a.idaAte) {
-        if (!datas) {
-          const r = d.normalizarDatas(p.datas_ida, p.enviadoEm || new Date().toISOString());
-          datas = r.status === 'ok' ? r : { datas: [], precisao: null };
-        }
-        const de0 = a.idaDe || '0000-01-01', ate = a.idaAte || '9999-12-31';
-        const bate = datas.datas.some((x) => {
-          if (datas.precisao === 'mes') return x.slice(0, 7) >= de0.slice(0, 7) && x.slice(0, 7) <= ate.slice(0, 7);
-          return x >= de0 && x <= ate;
-        });
-        if (!bate) return false;
-      }
-      return true;
-    });
+    const cache = {};
+    const atingidos = lista.filter((a) => !(a.avisos || []).includes(p.id) && passagemBate(a, p, cache));
     if (!atingidos.length) return;
 
     const marcados = [];
     for (const a of atingidos) {
-      const titulo = `${p.origem} → ${p.destino}: ${fmtPts(p.pontos)} pts`;
-      const corpo = [p.programa, p.cabine || '', p.datas_ida ? '🛫 ' + p.datas_ida : ''].filter(Boolean).join(' · ').slice(0, 170);
       try {
-        const r = await pushParaEmail(a.email, { titulo, corpo, dados: { aba: 'passagens', passagem: p.id }, grupo: 'passagens' });
-        if (!r.entregues) {
-          await enviarEmail(a.email, `✈️ Alerta: ${p.origem} → ${p.destino} por ${fmtPts(p.pontos)} pts`, `${p.origem} → ${p.destino} por ${fmtPts(p.pontos)} pontos`, [
-            `<b>Programa:</b> ${esc(p.programa)}${p.cia ? ' · ' + esc(p.cia) : ''}`,
-            p.cabine ? `<b>Cabine:</b> ${esc(p.cabine)}` : '',
-            p.datas_ida ? `<b>🛫 Ida:</b> ${esc(p.datas_ida)}` : '',
-            p.datas_volta ? `<b>🛬 Volta:</b> ${esc(p.datas_volta)}` : '',
-            `Seu alerta: ${esc(a.origem)} → ${esc(a.destino)}${a.maxPontos ? ' até ' + fmtPts(a.maxPontos) + ' pts' : ''}${a.idaDe || a.idaAte ? ' · ida ' + (fmtData(a.idaDe) || '…') + ' a ' + (fmtData(a.idaAte) || '…') : ''}.`,
-          ].filter(Boolean), { texto: 'Ver no painel', url: 'https://painel.clubedoviajante.com.br/?aba=passagens' });
-        }
+        await avisarPassagem(a, p, 0);
         marcados.push({ id: a.id, ref: p.id });
       } catch (e) {
         console.error('[alerta passagem]', a.id, e.message);
@@ -458,39 +500,68 @@ module.exports = function montarMembroApp(app, d) {
   }
 
   // ── Casamento: transferência bonificada aprovada/publicada ────────────────
+  const refTransf = (item) => item.id || (d.normalizarChaveHist(item.origem) + '>' + d.normalizarChaveHist(item.destino) + '>' + (item.prazo || ''));
+  function transferenciaBate(a, item) {
+    const n = d.normalizarChaveHist;
+    const bonus = Number(item.bonusMax);
+    if (!item.destino || !(bonus > 0)) return false;
+    if (n(a.destino) !== n(item.destino)) return false;
+    const oa = n(a.origem), origem = n(item.origem);
+    if (oa && oa !== 'todos' && origem !== 'todos' && !d.origensDaOferta(item).map(n).includes(oa)) return false;
+    return bonus >= Number(a.bonusMin || 0);
+  }
+  async function avisarTransferencia(a, item) {
+    const bonus = Number(item.bonusMax);
+    const de = (item.origem === 'Bancos selecionados' && a.origem) ? a.origem : item.origem;
+    const titulo = `${bonus}% de bônus: ${de || 'Transferência'} → ${item.destino}`;
+    const corpo = [item.titulo || '', item.prazo ? '⏳ até ' + item.prazo : ''].filter(Boolean).join(' · ').slice(0, 170);
+    const r = await pushParaEmail(a.email, { titulo, corpo, dados: { aba: 'radar', oferta: item.id || '' }, grupo: 'transferencias' });
+    if (!r.entregues) {
+      await enviarEmail(a.email, `🔁 ${titulo}`, titulo, [
+        item.titulo ? esc(item.titulo) : '',
+        item.prazo ? `<b>Prazo:</b> ${esc(item.prazo)}` : '',
+        `Seu alerta: ${esc(a.origem || 'qualquer origem')} → ${esc(a.destino)} com bônus a partir de ${a.bonusMin}%.`,
+      ].filter(Boolean), { texto: 'Ver no Radar', url: 'https://painel.clubedoviajante.com.br/?aba=radar' });
+    }
+  }
+  // Prazo "dd/mm/aaaa" ainda não passou (sem prazo: publicada nos últimos 7 dias).
+  function vigente(item) {
+    const m = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(String(item.prazo || ''));
+    if (m) return new Date(`${m[3]}-${m[2]}-${m[1]}T23:59:59-03:00`).getTime() >= Date.now();
+    return Date.now() - new Date(item.publicadoEm || 0).getTime() <= 7 * 864e5;
+  }
+  // Ao criar o alerta: campanha vigente que já bate → avisa a de maior bônus.
+  async function conferirTransferenciasVigentes(a) {
+    if (!lerConteudo) return 0;
+    const bruto = JSON.parse((await lerConteudo('ofertas.json')).texto);
+    const lista = Array.isArray(bruto) ? bruto : (bruto.items || []);
+    const achadas = lista.filter((x) => x && x.categoria === 'transferencia' && vigente(x) && transferenciaBate(a, x))
+      .sort((x, z) => Number(z.bonusMax) - Number(x.bonusMax));
+    if (!achadas.length) return 0;
+    await avisarTransferencia(a, achadas[0]);
+    await mutar(ALERTAS_PATH, VAZIO_AL, (al) => {
+      const x = (al.transferencias || []).find((y) => y.id === a.id);
+      if (!x) return false;
+      x.avisos = achadas.map(refTransf).concat(x.avisos || []).slice(0, 30);
+      x.ultimoAviso = new Date().toISOString();
+    }, 'chore: avisos de alerta de transferência (conferência inicial)');
+    invalidar(ALERTAS_PATH);
+    return achadas.length;
+  }
+
   async function avaliarTransferencia(item) {
     if (!item || item.categoria !== 'transferencia' || !item.destino) return;
-    const bonus = Number(item.bonusMax);
-    if (!(bonus > 0)) return;
+    if (!(Number(item.bonusMax) > 0)) return;
     const al = await ler(ALERTAS_PATH, VAZIO_AL);
     const lista = al.transferencias || [];
     if (!lista.length) return;
-    const n = d.normalizarChaveHist;
-    const destino = n(item.destino), origem = n(item.origem);
-    const origens = d.origensDaOferta(item).map(n);
-    const ref = item.id || (origem + '>' + destino + '>' + (item.prazo || ''));
-    const atingidos = lista.filter((a) => {
-      if ((a.avisos || []).includes(ref)) return false;
-      if (n(a.destino) !== destino) return false;
-      const oa = n(a.origem);
-      if (oa && oa !== 'todos' && origem !== 'todos' && !origens.includes(oa)) return false;
-      return bonus >= Number(a.bonusMin || 0);
-    });
+    const ref = refTransf(item);
+    const atingidos = lista.filter((a) => !(a.avisos || []).includes(ref) && transferenciaBate(a, item));
     if (!atingidos.length) return;
     const marcados = [];
     for (const a of atingidos) {
-      const de = (item.origem === 'Bancos selecionados' && a.origem) ? a.origem : item.origem;
-      const titulo = `${bonus}% de bônus: ${de || 'Transferência'} → ${item.destino}`;
-      const corpo = [item.titulo || '', item.prazo ? '⏳ até ' + item.prazo : ''].filter(Boolean).join(' · ').slice(0, 170);
       try {
-        const r = await pushParaEmail(a.email, { titulo, corpo, dados: { aba: 'radar', oferta: item.id || '' }, grupo: 'transferencias' });
-        if (!r.entregues) {
-          await enviarEmail(a.email, `🔁 ${titulo}`, titulo, [
-            item.titulo ? esc(item.titulo) : '',
-            item.prazo ? `<b>Prazo:</b> ${esc(item.prazo)}` : '',
-            `Seu alerta: ${esc(a.origem || 'qualquer origem')} → ${esc(a.destino)} com bônus a partir de ${a.bonusMin}%.`,
-          ].filter(Boolean), { texto: 'Ver no Radar', url: 'https://painel.clubedoviajante.com.br/?aba=radar' });
-        }
+        await avisarTransferencia(a, item);
         marcados.push({ id: a.id, ref });
       } catch (e) {
         console.error('[alerta transferência]', a.id, e.message);

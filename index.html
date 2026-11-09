@@ -12291,20 +12291,31 @@ function bvCopiarTudo(btn) {
   .alm-salvar:disabled{opacity:.6}
   .alm-fb{font-size:12.5px;font-weight:700;text-align:center;min-height:16px;margin-top:8px}
   .alm-nota{font-size:11.5px;color:var(--muted);line-height:1.45;margin-top:10px;text-align:center}
-  @media(max-width:600px){ .alm-grade{grid-template-columns:1fr 1fr} }
+  .alm-campo input[type=date]{-webkit-appearance:none;appearance:none;display:block;min-width:0;max-width:100%;height:44px;line-height:normal;text-align:left}
+  .alm-campo input[type=date]::-webkit-date-and-time-value{text-align:left}
+  .alm-modal{max-height:calc(100dvh - 40px)}
+  .app-nativo .alm-modal{max-height:calc(100dvh - 40px - var(--cdv-sat,0px) - var(--cdv-sab,0px))}
+  .alm-auto{position:relative}
+  .alm-sug{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;background:var(--surface);border:1px solid var(--border-ctrl);border-radius:12px;box-shadow:0 12px 30px rgba(23,32,58,.18);max-height:220px;overflow-y:auto;display:none}
+  .alm-sug.on{display:block}
+  .alm-sug button{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid var(--border);padding:10px 12px;font:600 13.5px 'Montserrat',sans-serif;color:var(--text);cursor:pointer}
+  .alm-sug button:last-child{border-bottom:none}
+  .alm-sug button small{color:var(--muted);font-weight:600;margin-left:6px}
+  .alm-tipo{display:flex;gap:6px;margin-top:10px}
+  .alm-tipo .alm-chip{flex:1;text-align:center}
 </style>
 <script>
 /* Alertas pessoais do membro: passagem (aba Passagens) e transferência
    bonificada (Comparador → Transferências). Proxy: /membros/alertas/* —
    quem casa e avisa (push no app; sem push, e-mail) é membro-app.js. */
-let almTipo = 'passagem', almDados = null, almProgSel = new Set();
+let almTipo = 'passagem', almDados = null, almProgSel = new Set(), almIdaVolta = false, almCidades = [];
 function almEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function almPts(n){ return Number(n||0).toLocaleString('pt-BR'); }
 function almData(iso){ const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||''); return m?m[3]+'/'+m[2]+'/'+m[1]:''; }
 const ALM_CABINES = [['economica','Econômica'],['executiva','Executiva'],['premium','Premium Economy'],['primeira','Primeira']];
 function almFechar(){ document.getElementById('alm-overlay').classList.remove('open'); }
 async function almAbrir(tipo){
-  almTipo = tipo; almProgSel = new Set();
+  almTipo = tipo; almProgSel = new Set(); almIdaVolta = false;
   const ov = document.getElementById('alm-overlay');
   document.getElementById('alm-conteudo').innerHTML = '<div class="alm-titulo">'+(tipo==='passagem'?'Alertas de passagem':'Alertas de transferência bonificada')+'</div><div class="status-box" style="padding:30px 0"><div class="spinner"></div></div>';
   ov.classList.add('open');
@@ -12321,8 +12332,10 @@ function almListaPassagem(a){
   const det = [];
   det.push(a.programas&&a.programas.length ? a.programas.join(', ') : 'Qualquer programa');
   const cab = ALM_CABINES.find(x=>x[0]===a.cabine); det.push(cab?cab[1]:'Qualquer cabine');
-  if (a.maxPontos) det.push('até '+almPts(a.maxPontos)+' pts');
+  det.push(a.idaVolta?'Ida e volta':'Só ida');
+  if (a.maxPontos) det.push('até '+almPts(a.maxPontos)+' pts o trecho');
   if (a.idaDe||a.idaAte) det.push('🛫 '+(almData(a.idaDe)||'…')+' a '+(almData(a.idaAte)||'…'));
+  if (a.idaVolta&&(a.voltaDe||a.voltaAte)) det.push('🛬 '+(almData(a.voltaDe)||'…')+' a '+(almData(a.voltaAte)||'…'));
   return '<div class="alm-item"><div class="alm-item-txt"><div class="alm-item-rota">'+almEsc(a.origem)+' → '+almEsc(a.destino)+'</div><div class="alm-item-det">'+almEsc(det.join(' · '))+(a.totalAvisos?' · '+a.totalAvisos+' aviso(s)':'')+'</div></div><button class="alm-del" type="button" title="Apagar" onclick="almExcluir(\''+a.id+'\')">🗑</button></div>';
 }
 function almListaTransf(a){
@@ -12342,21 +12355,27 @@ function almRender(){
   h += meus.length ? meus.map(ehPass?almListaPassagem:almListaTransf).join('') : '<div class="alm-vazio">Nenhum alerta ainda.</div>';
   h += '<div class="alm-secao">Novo alerta</div>';
   if (ehPass) {
-    const cidades = almOpcoes(passagensData.flatMap(p=>[p.origem,p.destino]));
+    // Cidades que aparecem nas emissões, das mais frequentes para as menos.
+    const freq = {};
+    passagensData.forEach(p=>[p.origem,p.destino].forEach(x=>{ x=String(x||'').trim(); if(x) freq[x]=(freq[x]||0)+1; }));
+    almCidades = Object.keys(freq).sort((a,b)=>freq[b]-freq[a]||a.localeCompare(b,'pt-BR')).map(n=>({n, k:almChave(n), q:freq[n]}));
     const progs = [...new Set(passagensData.map(p=>p.programa).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
-    h += '<datalist id="alm-cidades">'+cidades+'</datalist>';
     h += '<div class="alm-grade">'
-      + '<div class="alm-campo"><label>Origem</label><input id="alm-origem" list="alm-cidades" placeholder="Ex.: Belo Horizonte" autocomplete="off"></div>'
-      + '<div class="alm-campo"><label>Destino</label><input id="alm-destino" list="alm-cidades" placeholder="Ex.: Lisboa" autocomplete="off"></div>'
+      + '<div class="alm-campo alm-auto"><label>Origem</label><input id="alm-origem" placeholder="Ex.: Belo Horizonte" autocomplete="off" autocapitalize="words" oninput="almSugerir(this)" onfocus="almSugerir(this)" onblur="almFecharSug(this)"><div class="alm-sug"></div></div>'
+      + '<div class="alm-campo alm-auto"><label>Destino</label><input id="alm-destino" placeholder="Ex.: Lisboa" autocomplete="off" autocapitalize="words" oninput="almSugerir(this)" onfocus="almSugerir(this)" onblur="almFecharSug(this)"><div class="alm-sug"></div></div>'
       + '</div>';
+    h += '<div class="alm-tipo"><button type="button" class="alm-chip on" id="alm-so-ida" onclick="almSetIdaVolta(false)">Só ida</button><button type="button" class="alm-chip" id="alm-ida-volta" onclick="almSetIdaVolta(true)">Ida e volta</button></div>';
     h += '<div class="alm-campo" style="margin-top:10px"><label>Programas (nenhum marcado = qualquer)</label><div class="alm-chips" id="alm-progs">'
       + progs.map(p=>'<button type="button" class="alm-chip" data-prog="'+almEsc(p)+'" onclick="almToggleProg(this)">'+almEsc(p)+'</button>').join('') + '</div></div>';
     h += '<div class="alm-grade" style="margin-top:10px">'
       + '<div class="alm-campo"><label>Cabine</label><select id="alm-cabine"><option value="">Qualquer cabine</option>'+ALM_CABINES.map(x=>'<option value="'+x[0]+'">'+x[1]+'</option>').join('')+'</select></div>'
-      + '<div class="alm-campo"><label>Até quantos pontos</label><input id="alm-max" type="number" inputmode="numeric" min="0" step="1000" placeholder="Ex.: 90000"></div>'
+      + '<div class="alm-campo"><label>Até quantos pontos (por trecho)</label><input id="alm-max" type="number" inputmode="numeric" min="0" step="1000" placeholder="Ex.: 90000"></div>'
       + '<div class="alm-campo"><label>🛫 Ida a partir de</label><input id="alm-ida-de" type="date"></div>'
       + '<div class="alm-campo"><label>🛫 Ida até</label><input id="alm-ida-ate" type="date" data-data-de="alm-ida-de"></div>'
-      + '</div>';
+      + '<div class="alm-campo alm-volta" style="display:none"><label>🛬 Volta a partir de</label><input id="alm-volta-de" type="date" data-data-de="alm-ida-de"></div>'
+      + '<div class="alm-campo alm-volta" style="display:none"><label>🛬 Volta até</label><input id="alm-volta-ate" type="date" data-data-de="alm-volta-de"></div>'
+      + '</div>'
+      + '<div class="alm-nota" style="text-align:left;margin-top:8px">Pontos por trecho e por pessoa, como nas emissões. Em "Ida e volta" só avisamos emissões que trazem datas de volta pelo mesmo valor.</div>';
   } else {
     const it = (typeof historicoTransferencias!=='undefined' && historicoTransferencias && historicoTransferencias.items) || [];
     h += '<datalist id="alm-origens">'+almOpcoes(it.map(x=>x.origem).filter(o=>o&&o!=='Todos'&&o!=='Bancos selecionados'))+'</datalist>';
@@ -12374,13 +12393,36 @@ function almRender(){
     : 'Você recebe por e-mail em '+almEsc(sess.email||'')+'. No app do Clube do Viajante chega também como notificação.')+'</div>';
   document.getElementById('alm-conteudo').innerHTML = h;
 }
+function almChave(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
+function almSetIdaVolta(sim){
+  almIdaVolta=!!sim;
+  document.getElementById('alm-so-ida').classList.toggle('on',!almIdaVolta);
+  document.getElementById('alm-ida-volta').classList.toggle('on',almIdaVolta);
+  document.querySelectorAll('.alm-volta').forEach(e=>e.style.display=almIdaVolta?'':'none');
+}
+// Autocompletar de cidade (o datalist do iPhone não mostra lista): começo do
+// nome primeiro, depois "contém", sem acento.
+function almSugerir(inp){
+  const box=inp.parentElement.querySelector('.alm-sug'); if(!box) return;
+  const q=almChave(inp.value);
+  let l = q ? almCidades.filter(c=>c.k.startsWith(q)).concat(almCidades.filter(c=>!c.k.startsWith(q)&&c.k.includes(q))) : almCidades;
+  l=l.slice(0,8);
+  if(!l.length || (l.length===1 && l[0].k===q)){ box.classList.remove('on'); box.innerHTML=''; return; }
+  box.innerHTML=l.map(c=>'<button type="button" data-v="'+almEsc(c.n)+'">'+almEsc(c.n)+'<small>'+c.q+' emiss'+(c.q===1?'ão':'ões')+'</small></button>').join('');
+  box.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('mousedown',ev=>ev.preventDefault()); // não tira o foco no computador
+    b.addEventListener('click',()=>{ inp.value=b.dataset.v; box.classList.remove('on'); });
+  });
+  box.classList.add('on');
+}
+function almFecharSug(inp){ setTimeout(()=>{ const box=inp.parentElement.querySelector('.alm-sug'); if(box) box.classList.remove('on'); },300); }
 function almToggleProg(b){ const p=b.dataset.prog; if(almProgSel.has(p)){almProgSel.delete(p);b.classList.remove('on');}else{almProgSel.add(p);b.classList.add('on');} }
 async function almSalvar(){
   const fb=document.getElementById('alm-fb'), btn=document.getElementById('alm-salvar');
   const v=id=>(document.getElementById(id)||{}).value||'';
   let alerta;
   if (almTipo==='passagem') {
-    alerta={ origem:v('alm-origem').trim(), destino:v('alm-destino').trim(), programas:[...almProgSel], cabine:v('alm-cabine'), maxPontos:Number(v('alm-max'))||0, idaDe:v('alm-ida-de'), idaAte:v('alm-ida-ate') };
+    alerta={ origem:v('alm-origem').trim(), destino:v('alm-destino').trim(), programas:[...almProgSel], cabine:v('alm-cabine'), maxPontos:Number(v('alm-max'))||0, idaVolta:almIdaVolta, idaDe:v('alm-ida-de'), idaAte:v('alm-ida-ate'), voltaDe:almIdaVolta?v('alm-volta-de'):'', voltaAte:almIdaVolta?v('alm-volta-ate'):'' };
     if(!alerta.origem||!alerta.destino){ fb.style.color='#f87171'; fb.textContent='Informe origem e destino.'; return; }
   } else {
     alerta={ origem:v('alm-t-origem').trim(), destino:v('alm-t-destino').trim(), bonusMin:Number(v('alm-t-bonus'))||0 };
@@ -12392,7 +12434,15 @@ async function almSalvar(){
     const j=await r.json();
     if(!j.ok){ fb.style.color='#f87171'; fb.textContent=j.erro||'Não foi possível salvar.'; btn.disabled=false; return; }
     await almAbrir(almTipo);
-    const fb2=document.getElementById('alm-fb'); if(fb2){ fb2.style.color='#34d399'; fb2.textContent='✓ Alerta criado.'; }
+    const fb2=document.getElementById('alm-fb');
+    if(fb2){
+      fb2.style.color='#34d399';
+      const n=j.encontrados||0;
+      fb2.textContent = !n ? '✓ Alerta criado. Avisamos quando aparecer.'
+        : almTipo==='passagem'
+          ? '✓ Alerta criado. Já '+(n===1?'tem 1 emissão recente que bate':'tem '+n+' emissões recentes que batem')+' — enviamos o aviso.'
+          : '✓ Alerta criado. Já tem campanha no ar com esse bônus — enviamos o aviso.';
+    }
     if (window.cdvPushPedir) window.cdvPushPedir();
   }catch(e){ fb.style.color='#f87171'; fb.textContent='Erro de conexão. Tente de novo.'; btn.disabled=false; }
 }
