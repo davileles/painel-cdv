@@ -1019,6 +1019,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 <div class="controls">
   <div style="position:relative;flex:1;min-width:180px;max-width:340px" id="compras-search-wrap"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="search" placeholder="Buscar parceiro ou categoria…" oninput="render()" style="width:100%;padding-left:34px"></div>
   <div style="position:relative;flex:1;min-width:180px;max-width:340px;display:none" id="transf-search-wrap"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="transf-search" placeholder="Buscar destino…" oninput="renderTransferencias()" style="width:100%;padding-left:34px"></div>
+  <div class="comp-acoes">
   <button id="comp-toggle-compras" class="comp-toggle-btn active" onclick="setComparadorView('compras')">🛍️ Compras</button>
   <button id="comp-toggle-transferencias" class="comp-toggle-btn" onclick="setComparadorView('transferencias')">🔁 Transferências</button>
   <button class="fbtn-fire" id="btn-acima-media" onclick="toggleAcimaMedia()">🔥 Acima da média</button>
@@ -1028,6 +1029,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
     <option value="pts_asc">Menor pontuação</option>
     <option value="name">A → Z</option>
   </select>
+  </div>
 </div>
 
 <div id="comparador-compras-view">
@@ -6660,6 +6662,7 @@ function renderPassagens() {
     const hist180 = grupoCompleto.filter(h => new Date(h.enviadoEm).getTime() >= corteMs180);
 
     let histHtml = '';
+    let resumoCel = ''; // versão de uma linha do mín./média, usada no celular
     let isAtualMin = false;
     // ── média e mínimo 180 dias ────────────────────────────────────────────────
     if (hist180.length >= 2) {
@@ -6678,6 +6681,10 @@ function renderPassagens() {
       const minTag = isAtualMin
         ? `<div class="pass-stat-atual-min">★ Mínimo histórico!</div>`
         : `<div class="pass-stat-sub">${fmtData(minItem?.enviadoEm||'')}</div>`;
+      const tendCel = diffMedia < 0
+        ? `<span class="pass-stat-atual-min">↓ ${pctMedia}%</span>`
+        : diffMedia > 0 ? `<span class="pass-stat-atual-caro">↑ ${pctMedia}%</span>` : '';
+      resumoCel = `<div class="pass-resumo-cel">Mín. 180d <b class="r-min">${minPts.toLocaleString('pt-BR')}</b> · Média <b class="r-med">${mediaPts.toLocaleString('pt-BR')}</b> ${tendCel}</div>`;
       histHtml = `<div class="pass-hist"><div class="pass-hist-stats">
         <div class="pass-stat-pill minimo">
           <div class="pass-stat-label">🏆 Mín. 180d</div>
@@ -6697,19 +6704,19 @@ function renderPassagens() {
 
     const bdColor = isAtualMin ? 'rgba(251,191,36,.4)' : 'var(--border)';
     return `<div class="pass-card" onclick="abrirPassagemModal('${p.id}')" style="cursor:pointer;border-color:${bdColor}">
-      ${isAtualMin ? '<div style=\'display:inline-flex;align-items:center;gap:5px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.35);color:#fbbf24;font-size:9.5px;font-weight:800;padding:3px 9px;border-radius:6px;letter-spacing:.4px;width:fit-content;text-transform:uppercase;margin-bottom:4px\'>🔥 Mínimo histórico</div>' : ''}
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      ${isAtualMin ? '<div class=\'pass-badge\' style=\'display:inline-flex;align-items:center;gap:5px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.35);color:#fbbf24;font-size:9.5px;font-weight:800;padding:3px 9px;border-radius:6px;letter-spacing:.4px;width:fit-content;text-transform:uppercase;margin-bottom:4px\'>🔥 Mínimo histórico</div>' : ''}
+      <div class="pass-topo" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
         <div class="pass-rota" style="font-size:17px;font-weight:900;line-height:1.2">${p.origem} <span style="color:#ff585e">→</span> ${p.destino}</div>
         ${p.cabine ? `<span style="font-size:9.5px;font-weight:800;color:var(--muted);background:var(--card);border-radius:5px;padding:3px 7px;white-space:nowrap">${normalizarCabine(p.cabine)}</span>` : ''}
       </div>
-      <div style="display:flex;align-items:baseline;gap:4px">
+      <div class="pass-ptsrow" style="display:flex;align-items:baseline;gap:4px">
         <span class="pass-pts">${(p.pontos||0).toLocaleString('pt-BR')}</span>
         <span class="pass-pts-lbl">pts</span>
       </div>
       <div class="pass-info-col" style="font-size:11px;color:var(--muted);font-weight:600">
-        ${p.programa ? `🎟️ ${p.programa}` : ''}${p.cia ? ` · ✈️ ${p.cia}` : ''}
+        ${p.programa ? `🎟️ ${p.programa}` : ''}${p.cia ? ` · ✈️ ${p.cia}` : ''}${p.cabine ? `<span class="pass-cab-cel"> · ${normalizarCabine(p.cabine)}</span>` : ''}
       </div>
-      ${histHtml}
+      ${histHtml}${resumoCel}
     </div>`;
   }).join('');
   // Animação escalonada nos pass-cards

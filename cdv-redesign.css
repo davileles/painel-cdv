@@ -554,3 +554,52 @@ select.srt { padding:11px 13px; font-size:13.5px; font-weight:600; }
   .lv-modal-body { padding:18px; }
   .milhas-table th, .milhas-table td { padding:12px 10px; }
 }
+
+/* ── Celular: filtros compactos no Comparador e lista densa de Passagens (09/11/2026) ──
+   No computador nada muda (.comp-acoes é display:contents). */
+.comp-acoes { display:contents; }
+.pass-resumo-cel, .pass-cab-cel { display:none; }
+@media (max-width:900px) {
+  /* Comparador: busca numa linha; Compras/Transferências/Acima da média/ordem numa faixa que rola para o lado */
+  #tab-comparador .controls { flex-wrap:wrap; gap:8px; padding-top:10px; padding-bottom:10px; }
+  #tab-comparador #compras-search-wrap, #tab-comparador #transf-search-wrap { flex:1 1 100%; max-width:none; min-width:0; }
+  .comp-acoes { display:flex; flex:1 1 100%; flex-wrap:nowrap; gap:8px; overflow-x:auto; scrollbar-width:none; margin:0 -16px; padding:0 16px; -webkit-overflow-scrolling:touch; }
+  .comp-acoes::-webkit-scrollbar { display:none; }
+  .comp-acoes > * { flex:0 0 auto; margin:0 !important; }
+  .comp-acoes .comp-toggle-btn, .comp-acoes .fbtn-fire, .comp-acoes select.srt { padding:8px 12px; font-size:12.5px; white-space:nowrap; }
+  /* Programas e categorias (Comparador e Radar): uma linha cada, rolando para o lado */
+  .prog-bar, .cat-bar { flex-wrap:nowrap !important; overflow-x:auto; scrollbar-width:none; padding-top:8px !important; padding-bottom:8px !important; gap:6px; -webkit-overflow-scrolling:touch; }
+  .prog-bar::-webkit-scrollbar, .cat-bar::-webkit-scrollbar { display:none; }
+  .prog-bar > *, .cat-bar > * { flex:0 0 auto; white-space:nowrap; }
+
+  /* Passagens: busca numa linha, os dois seletores lado a lado */
+  #tab-passagens .passagens-controls { gap:8px !important; padding-top:10px !important; padding-bottom:8px !important; }
+  #tab-passagens .passagens-controls > div:first-child { flex:1 1 100% !important; max-width:none !important; }
+  #tab-passagens .passagens-controls select.srt { flex:1 1 0; min-width:0; padding:8px 10px; font-size:12.5px; }
+  #tab-passagens #pass-stats { flex:1 1 100%; margin:0 !important; }
+  /* Passagens: um voo por linha — rota e programa à esquerda, pontos à direita, mín./média embaixo */
+  #pass-grid { grid-template-columns:1fr !important; gap:8px; }
+  #pass-grid .pass-card { display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"badge badge" "topo pts" "info pts" "hist hist"; column-gap:12px; row-gap:3px; padding:12px 14px; border-radius:12px; align-items:center; }
+  #pass-grid .pass-badge { grid-area:badge; margin-bottom:2px; }
+  #pass-grid .pass-topo { grid-area:topo; justify-content:flex-start !important; flex-wrap:wrap; gap:6px !important; }
+  #pass-grid .pass-rota { font-size:15px !important; }
+  #pass-grid .pass-ptsrow { grid-area:pts; justify-self:end; }
+  #pass-grid .pass-pts { font-size:22px; letter-spacing:-.5px; }
+  #pass-grid .pass-pts-lbl { font-size:11px; }
+  #pass-grid .pass-cab-cel { display:inline; }
+  #pass-grid .pass-info-col { grid-area:info; display:block; margin-top:0; font-size:11.5px !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #pass-grid .pass-topo > span { display:none; }   /* cabine vai para a linha do programa */
+  #pass-grid .pass-hist { display:none; }           /* no celular: resumo em uma linha */
+  #pass-grid .pass-resumo-cel { grid-area:hist; display:block; margin-top:6px; padding-top:7px; border-top:1px solid var(--border); font-size:11.5px; font-weight:600; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #pass-grid .pass-resumo-cel b { font-weight:800; font-variant-numeric:tabular-nums; }
+  #pass-grid .pass-resumo-cel .r-min { color:var(--green); }
+  #pass-grid .pass-resumo-cel .r-med { color:var(--blue); }
+  #pass-grid .pass-resumo-cel .pass-stat-atual-min, #pass-grid .pass-resumo-cel .pass-stat-atual-caro { font-weight:800; margin-left:4px; }
+  #pass-grid .pass-hist { grid-area:hist; margin-top:6px; padding-top:8px; }
+  #pass-grid .pass-hist-stats { flex-wrap:wrap; gap:6px; }
+  #pass-grid .pass-stat-pill { flex:0 1 auto; min-width:0; flex-direction:row; align-items:baseline; flex-wrap:wrap; gap:2px 6px; padding:5px 9px; border-radius:8px; }
+  #pass-grid .pass-stat-label { font-size:11px; }
+  #pass-grid .pass-stat-val { font-size:13px; }
+  #pass-grid .pass-stat-sub { display:none; }
+  #pass-grid .pass-stat-atual-min, #pass-grid .pass-stat-atual-caro { font-size:11px; }
+}
