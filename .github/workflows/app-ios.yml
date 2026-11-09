@@ -95,7 +95,10 @@ jobs:
           printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/AuthKey_$ASC_KEY_ID.p8"
           echo "ASC_KEY_PATH=$RUNNER_TEMP/AuthKey_$ASC_KEY_ID.p8" >> "$GITHUB_ENV"
 
-      - name: Gera o arquivo assinado
+      # O arquivo sai SEM assinatura: assinar aqui pediria perfil de desenvolvimento
+      # (exige iPhone cadastrado). Quem assina é o passo seguinte, já com o
+      # certificado e o perfil de distribuição da App Store, criados sozinhos.
+      - name: Gera o arquivo do app
         if: env.TEM_APPLE == 'true'
         working-directory: app/ios/App
         env:
@@ -107,11 +110,8 @@ jobs:
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/CDV.xcarchive" \
             -derivedDataPath "$RUNNER_TEMP/dd" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$ASC_KEY_PATH" \
-            -authenticationKeyID "$ASC_KEY_ID" \
-            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             DEVELOPMENT_TEAM="$APPLE_TEAM_ID" CODE_SIGN_STYLE=Automatic \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             MARKETING_VERSION="$VERSAO_APP" CURRENT_PROJECT_VERSION="$VERSAO_CODIGO" \
             archive | tail -40
           test "${PIPESTATUS[0]}" = 0
