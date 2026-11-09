@@ -531,7 +531,8 @@ select.srt { padding:11px 13px; font-size:13.5px; font-weight:600; }
   .cdv-bottom-nav button.on { color:var(--accent); }
   body { padding-bottom:82px; }
   .side-toggle { display:none !important; }
-  :root { --stick-top:56px; }
+  /* :root:root vence o :root{--stick-top:113px} do index.html (que ainda contava a barra "Menu", escondida aqui) */
+  :root:root { --stick-top:56px; }
   header { padding:10px 14px; }
   .controls, .prog-bar, .cat-bar, .stats, .radar-search-wrap, .passagens-controls, .lv-search-wrap { padding-left:16px; padding-right:16px; }
   .grid { padding:16px; gap:10px; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); }
