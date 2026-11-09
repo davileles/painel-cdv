@@ -1,0 +1,26 @@
+{
+  "appId": "br.com.clubedoviajante.app",
+  "appName": "Clube do Viajante",
+  "webDir": "www",
+  "backgroundColor": "#262e42",
+  "android": {
+    "allowMixedContent": false
+  },
+  "ios": {
+    "contentInset": "never",
+    "scheme": "Clube do Viajante",
+    "limitsNavigationsToAppBoundDomains": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "launchAutoHide": true,
+      "backgroundColor": "#262e42",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "overlaysWebView": true,
+      "style": "DARK"
+    }
+  }
+}

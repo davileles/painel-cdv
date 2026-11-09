@@ -1,0 +1,68 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   nativo.css — ajustes do painel quando ele roda dentro do app (Android/iOS).
+   Só vale com a classe .app-nativo no <html> (posta pelo nativo.js), então
+   não muda nada no site painel.clubedoviajante.com.br.
+
+   O app desenha por baixo da barra de status e da barra de gestos (edge to
+   edge). --cdv-sat / --cdv-sab são essas alturas: env() no iOS e no Chrome
+   novo; --safe-area-inset-* é o que o Capacitor injeta no Android antigo.
+   ════════════════════════════════════════════════════════════════════════════ */
+:root.app-nativo {
+  --cdv-sat: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px));
+  --cdv-sab: max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px));
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Cabeçalho fixo: cresce para baixo do relógio/entalhe, com a mesma cor. */
+.app-nativo header { padding-top: calc(11px + var(--cdv-sat)) !important; }
+.app-nativo body { scroll-padding-top: calc(var(--stick-top) + var(--cdv-sat) + 24px); }
+
+/* Tudo que gruda logo abaixo do cabeçalho desce junto. */
+.app-nativo .controls,
+.app-nativo .passagens-controls,
+.app-nativo .radar-search-wrap,
+.app-nativo #milhas-controls-bar { top: calc(var(--stick-top) + var(--cdv-sat)) !important; }
+
+@media (max-width: 900px) {
+  .app-nativo header { padding-top: calc(10px + var(--cdv-sat)) !important; }
+  .app-nativo .side-toggle { top: calc(var(--stick-top) + var(--cdv-sat)) !important; }
+  .app-nativo .main-tabs { padding-top: calc(18px + var(--cdv-sat)) !important; }
+  .app-nativo .cdv-bottom-nav { padding-bottom: calc(10px + var(--cdv-sab)) !important; }
+  .app-nativo body { padding-bottom: calc(82px + var(--cdv-sab)); }
+}
+@media (min-width: 901px) {
+  .app-nativo .main-tabs {
+    top: calc(var(--stick-top) + var(--cdv-sat)) !important;
+    height: calc(100vh - var(--stick-top) - var(--cdv-sat)) !important;
+  }
+}
+
+/* Tela de login e janelas: nada embaixo do relógio nem da barra de gestos. */
+.app-nativo #login-screen {
+  padding-top: calc(24px + var(--cdv-sat));
+  padding-bottom: calc(24px + var(--cdv-sab));
+}
+.app-nativo .modal-overlay,
+.app-nativo .lv-modal-overlay,
+.app-nativo .rot-modal-overlay,
+.app-nativo #comp-overlay {
+  padding-top: calc(16px + var(--cdv-sat)) !important;
+  padding-bottom: calc(16px + var(--cdv-sab)) !important;
+}
+
+/* Coisas de navegador que não fazem sentido no app. */
+.app-nativo #bv-abrir-aviso { display: none !important; }
+.app-nativo * { -webkit-touch-callout: none; }
+.app-nativo input, .app-nativo textarea, .app-nativo [contenteditable] { -webkit-touch-callout: default; }
+
+/* Aviso de sem internet. */
+#cdv-offline {
+  position: fixed; left: 12px; right: 12px; z-index: 100000;
+  top: calc(8px + var(--cdv-sat, 0px));
+  background: #262e42; color: #fff; border: 1px solid #ff585e;
+  border-radius: 12px; padding: 10px 14px;
+  font: 600 13px/1.35 'Montserrat', system-ui, sans-serif;
+  box-shadow: 0 6px 24px rgba(0,0,0,.25);
+  transform: translateY(-140%); transition: transform .25s ease;
+}
+#cdv-offline.on { transform: none; }

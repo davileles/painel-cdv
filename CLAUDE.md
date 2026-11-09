@@ -194,6 +194,13 @@ flush de cliques (10 min), `ggSincronizar` + validação de convites (4 min / 6 
 - Sessão em `localStorage['cdv_auth']` = `{email, nome, token, ts}` (7 dias; sessão sem `token` é descartada). Wrapper de `fetch` no topo do `index.html` injeta `X-CDV-Membro` em toda chamada ao proxy; 401 em rota de membro → volta ao login. `_BASE` fixo no proxy de produção. Chart.js 4.4.1, Montserrat, Phosphor.
 - `PROGRAMS[].cashback:true` exclui o programa da disputa de "melhor opção".
 
+**App nativo Android/iOS (`app/`, desde 08/11/2026)**
+- Capacitor 8 sobre o próprio `index.html`: **não há cópia do painel no app**. `app/montar.mjs` gera `app/www` a cada compilação a partir de `index.html`, `cdv-redesign.*`, `iata.js`, `logocdv.png`, `cidades-coords.json` (Chart.js local; `cidades-coords.json` lido do site; `viewport-fit=cover`; injeta `capacitor-plugins.js` + `nativo.js` + `nativo.css`). As trocas exigem **exatamente 1 ocorrência** do trecho original — se mudar a tag do viewport, do Chart.js, o `<link>` do `cdv-redesign.css` ou o `fetch('cidades-coords.json?`, o build do app quebra de propósito: ajustar `montar.mjs` junto.
+- `app/src/nativo.js` (só roda dentro do app; classe `app-nativo` no `<html>`): links externos no navegador do app (WhatsApp/Instagram/Telegram/YouTube/mailto/tel vão para fora), `window.open` interceptado, `navigator.share` nativo, botão voltar do Android (janela → menu → Início → minimiza), cor da barra de status pelo tema, vibração leve na barra inferior, sessão `cdv_auth` espelhada no armazenamento nativo (Preferences), aviso de sem internet. `app/src/nativo.css`: áreas seguras (`--cdv-sat/--cdv-sab`) no cabeçalho, nos `sticky` com `--stick-top`, no menu, nas janelas e na barra inferior.
+- Identificador `br.com.clubedoviajante.app` (**não mudar depois de publicar**). Ícones: `npm run icones` (logo sem o fundo branco sobre #262e42).
+- `.github/workflows/app-android.yml`: roda em push de `app/**`, `index.html`, `cdv-redesign.*`, `iata.js` e manual; artefato `app-android-<nº>` com APK de teste. Com os secrets `ANDROID_KEYSTORE_BASE64/PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` gera também o `.aab` assinado do Google Play. `versionCode` = nº da execução.
+- Pendente: build iOS (TestFlight) quando houver conta Apple; push (Firebase/APNs + rota no proxy); entrada por Face ID/digital; atualização do painel sem nova versão na loja.
+
 **Workflows**
 | Workflow | Gatilho | Faz |
 |---|---|---|
