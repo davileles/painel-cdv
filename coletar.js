@@ -425,6 +425,31 @@ function decodeEntities(s) {
 }
 
 // ── Alerta por e-mail via Resend ──────────────────────────────────────────────
+// Push no celular do membro (best-effort). Sem CDV_OP_KEY ou sem celular com
+// notificação, não faz nada — o e-mail de dispararAlerta já saiu.
+async function pushAlertaCompra(alerta, parceiro, pts) {
+  const chave = process.env.CDV_OP_KEY;
+  if (!chave || !alerta || !alerta.email) return;
+  try {
+    const PROXY = process.env.CDV_PROXY_URL || 'https://cdv-proxy-production.up.railway.app';
+    const r = await fetch(`${PROXY}/push/notificar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CDV-Op': chave },
+      body: JSON.stringify({
+        email: alerta.email,
+        titulo: `${parceiro}: ${pts} pts/R$ no ${alerta.programa}`,
+        corpo: `Sua meta de ${alerta.minPts} pts/R$ foi atingida. Toque para ver no Comparador.`,
+        dados: { aba: 'comparador' },
+        grupo: 'compras',
+      }),
+    });
+    const j = await r.json().catch(() => ({}));
+    if (j && j.entregues) console.log(`[Histórico] Push enviado (${j.entregues}) para ${alerta.email}`);
+  } catch (e) {
+    console.warn('[Histórico] Push do alerta falhou:', e.message);
+  }
+}
+
 async function dispararAlerta(alerta, parceiro, pts) {
   if (!RESEND_API_KEY) return;
   try {
@@ -1451,8 +1476,10 @@ async function main() {
     const progData = snap.programs[alerta.programa];
     const pts = typeof progData === 'object' ? progData.pts : progData;
     if (pts && pts >= alerta.minPts) {
-      // Alertas do painel de membros → e-mail via Resend
+      // Alertas do painel de membros → e-mail via Resend + push no app (se o
+      // membro tiver o app com notificações; ver membro-app.js no proxy)
       await dispararAlerta(alerta, alerta.parceiro, pts);
+      await pushAlertaCompra(alerta, alerta.parceiro, pts);
       // Não adiciona de volta — alerta consumido após envio
       console.log(`[Histórico] Alerta removido após envio: ${alerta.email} / ${alerta.parceiro} / ${alerta.programa}`);
     } else {

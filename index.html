@@ -729,7 +729,7 @@
    sessão expirada ou assinatura cancelada → volta para o login. */
 (function(){
   var PROXY = 'https://cdv-proxy-production.up.railway.app';
-  var ROTAS = ['/alerta','/assinaturas/','/cartoes/listar','/cartoes/salvar','/conteudo/','/ia/','/membros/tema','/milhas/','/passagens/comportamento','/passagens/panorama','/perfis/','/roteiros/meus','/roteiros/publicar','/passagens/excluir'];
+  var ROTAS = ['/alerta','/assinaturas/','/cartoes/listar','/cartoes/salvar','/conteudo/','/ia/','/membros/alertas/','/membros/tema','/milhas/','/passagens/comportamento','/passagens/panorama','/perfis/','/roteiros/meus','/roteiros/publicar','/passagens/excluir'];
   var _orig = window.fetch.bind(window);
   var _saindo = false;
   function token(){
@@ -1024,6 +1024,7 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   <button id="comp-toggle-transferencias" class="comp-toggle-btn" onclick="setComparadorView('transferencias')">🔁 Transferências</button>
   <button class="fbtn-fire" id="btn-acima-media" onclick="toggleAcimaMedia()">🔥 Acima da média</button>
   <button class="fbtn-fire" id="btn-transf-ativas" onclick="toggleTransfSoAtivas()" style="display:none">🔥 Só ativas agora</button>
+  <button class="alm-abrir" id="btn-transf-alertas" type="button" onclick="almAbrir('transferencia')" style="display:none">🔔 Alertas de bônus</button>
   <select class="srt" id="sort" onchange="render()">
     <option value="pts_desc">Maior pontuação</option>
     <option value="pts_asc">Menor pontuação</option>
@@ -4923,6 +4924,7 @@ async function ctSalvar(i){
       <option value="pts_asc">Menor pontuação</option>
       <option value="pts_desc">Maior pontuação</option>
     </select>
+    <button class="alm-abrir" type="button" onclick="almAbrir('passagem')">🔔 Alertas de passagem</button>
     <div class="stats" id="pass-stats" style="margin-left:auto;border:none;padding:0;font-size:12px;color:var(--muted)"></div>
   </div>
   <div class="grid" id="pass-grid">
@@ -5216,6 +5218,8 @@ function setComparadorView(view){
   viewTransf.style.display = isCompras ? 'none' : '';
   acaoCompras.style.display = isCompras ? '' : 'none';
   acaoTransf.style.display = isCompras ? 'none' : '';
+  const alertaTransf = document.getElementById('btn-transf-alertas');
+  if (alertaTransf) alertaTransf.style.display = isCompras ? 'none' : '';
   buscaCompras.style.display = isCompras ? '' : 'none';
   buscaTransf.style.display = isCompras ? 'none' : '';
   sortEl.style.display = isCompras ? '' : 'none';
@@ -6460,7 +6464,7 @@ async function salvarAlerta(){
     const data=await res.json();
     if(data.ok){
       fb.style.color='#34d399';
-      fb.textContent='✓ Alerta salvo! Você receberá um email quando atingir '+minPts+' pts.';
+      fb.textContent='✓ Alerta salvo! Quando atingir '+minPts+' pts você recebe um e-mail'+(window.CDV_APP?' e uma notificação no app':'')+'.';
       document.getElementById('alerta-email').value='';
       document.getElementById('alerta-min-pts').value='';
     } else {
@@ -12254,6 +12258,152 @@ function bvCopiarTudo(btn) {
     <div id="pass-modal-content"></div>
   </div>
 </div>
+<!-- MODAL ALERTAS DO MEMBRO (passagem e transferência bonificada) -->
+<div class="modal-overlay" id="alm-overlay" onclick="if(event.target===this)almFechar()">
+  <div class="modal alm-modal">
+    <button class="modal-close" type="button" onclick="almFechar()">×</button>
+    <div id="alm-conteudo"></div>
+  </div>
+</div>
+<style>
+  .alm-abrir{background:var(--surface);border:1px solid var(--border-ctrl);color:var(--text);border-radius:10px;padding:8px 12px;font:700 12.5px 'Montserrat',sans-serif;cursor:pointer;white-space:nowrap}
+  .alm-abrir:hover{border-color:var(--cdv-coral);color:var(--cdv-coral)}
+  .alm-modal{max-width:480px}
+  .alm-titulo{font-size:18px;font-weight:800;letter-spacing:-.3px;padding-right:36px}
+  .alm-sub{font-size:12.5px;color:var(--muted);line-height:1.5;margin:4px 0 14px}
+  .alm-secao{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted2,var(--muted));margin:16px 0 8px}
+  .alm-item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:6px}
+  .alm-item-txt{flex:1;min-width:0}
+  .alm-item-rota{font-size:13.5px;font-weight:800}
+  .alm-item-det{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+  .alm-del{background:transparent;border:1px solid var(--border-ctrl);color:var(--muted);border-radius:8px;padding:6px 9px;cursor:pointer;font-size:12px}
+  .alm-del:hover{border-color:#f87171;color:#f87171}
+  .alm-vazio{font-size:12.5px;color:var(--muted);padding:6px 0}
+  .alm-grade{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .alm-campo{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .alm-campo label{font-size:11.5px;font-weight:700;color:var(--muted)}
+  .alm-campo input,.alm-campo select{width:100%;min-width:0;box-sizing:border-box;background:var(--surface);border:1px solid var(--border-ctrl);border-radius:10px;color:var(--text);font:600 13.5px 'Montserrat',sans-serif;padding:10px 11px;outline:none}
+  .alm-campo input:focus,.alm-campo select:focus{border-color:var(--cdv-coral)}
+  .alm-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .alm-chip{background:var(--surface);border:1px solid var(--border-ctrl);color:var(--muted);border-radius:999px;padding:6px 11px;font:700 12px 'Montserrat',sans-serif;cursor:pointer}
+  .alm-chip.on{background:rgba(255,88,94,.12);border-color:var(--cdv-coral);color:var(--cdv-coral)}
+  .alm-salvar{width:100%;margin-top:14px;background:var(--cdv-coral);border:none;color:#fff;border-radius:12px;padding:13px;font:800 14px 'Montserrat',sans-serif;cursor:pointer}
+  .alm-salvar:disabled{opacity:.6}
+  .alm-fb{font-size:12.5px;font-weight:700;text-align:center;min-height:16px;margin-top:8px}
+  .alm-nota{font-size:11.5px;color:var(--muted);line-height:1.45;margin-top:10px;text-align:center}
+  @media(max-width:600px){ .alm-grade{grid-template-columns:1fr 1fr} }
+</style>
+<script>
+/* Alertas pessoais do membro: passagem (aba Passagens) e transferência
+   bonificada (Comparador → Transferências). Proxy: /membros/alertas/* —
+   quem casa e avisa (push no app; sem push, e-mail) é membro-app.js. */
+let almTipo = 'passagem', almDados = null, almProgSel = new Set();
+function almEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function almPts(n){ return Number(n||0).toLocaleString('pt-BR'); }
+function almData(iso){ const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||''); return m?m[3]+'/'+m[2]+'/'+m[1]:''; }
+const ALM_CABINES = [['economica','Econômica'],['executiva','Executiva'],['premium','Premium Economy'],['primeira','Primeira']];
+function almFechar(){ document.getElementById('alm-overlay').classList.remove('open'); }
+async function almAbrir(tipo){
+  almTipo = tipo; almProgSel = new Set();
+  const ov = document.getElementById('alm-overlay');
+  document.getElementById('alm-conteudo').innerHTML = '<div class="alm-titulo">'+(tipo==='passagem'?'Alertas de passagem':'Alertas de transferência bonificada')+'</div><div class="status-box" style="padding:30px 0"><div class="spinner"></div></div>';
+  ov.classList.add('open');
+  if (tipo==='transferencia' && typeof carregarHistoricoTransferencias==='function') { try { await carregarHistoricoTransferencias(); } catch(e){} }
+  if (tipo==='passagem' && typeof loadPassagens==='function') { try { await loadPassagens(); } catch(e){} }
+  try {
+    const r = await fetch(CDV_PROXY_AUTH + '/membros/alertas/listar');
+    almDados = await r.json();
+    if (!almDados.ok) throw new Error(almDados.erro||'falha');
+  } catch(e) { almDados = { passagens:[], transferencias:[], erro:true }; }
+  almRender();
+}
+function almListaPassagem(a){
+  const det = [];
+  det.push(a.programas&&a.programas.length ? a.programas.join(', ') : 'Qualquer programa');
+  const cab = ALM_CABINES.find(x=>x[0]===a.cabine); det.push(cab?cab[1]:'Qualquer cabine');
+  if (a.maxPontos) det.push('até '+almPts(a.maxPontos)+' pts');
+  if (a.idaDe||a.idaAte) det.push('🛫 '+(almData(a.idaDe)||'…')+' a '+(almData(a.idaAte)||'…'));
+  return '<div class="alm-item"><div class="alm-item-txt"><div class="alm-item-rota">'+almEsc(a.origem)+' → '+almEsc(a.destino)+'</div><div class="alm-item-det">'+almEsc(det.join(' · '))+(a.totalAvisos?' · '+a.totalAvisos+' aviso(s)':'')+'</div></div><button class="alm-del" type="button" title="Apagar" onclick="almExcluir(\''+a.id+'\')">🗑</button></div>';
+}
+function almListaTransf(a){
+  return '<div class="alm-item"><div class="alm-item-txt"><div class="alm-item-rota">'+almEsc(a.origem||'Qualquer origem')+' → '+almEsc(a.destino)+'</div><div class="alm-item-det">bônus a partir de '+a.bonusMin+'%'+(a.totalAvisos?' · '+a.totalAvisos+' aviso(s)':'')+'</div></div><button class="alm-del" type="button" title="Apagar" onclick="almExcluir(\''+a.id+'\')">🗑</button></div>';
+}
+function almOpcoes(lista){ return [...new Set(lista.filter(Boolean).map(s=>String(s).trim()))].sort((a,b)=>a.localeCompare(b,'pt-BR')).map(v=>'<option value="'+almEsc(v)+'">').join(''); }
+function almRender(){
+  const d = almDados || {};
+  const ehPass = almTipo==='passagem';
+  const meus = (ehPass ? d.passagens : d.transferencias) || [];
+  let h = '<div class="alm-titulo">'+(ehPass?'Alertas de passagem':'Alertas de transferência bonificada')+'</div>';
+  h += '<div class="alm-sub">'+(ehPass
+    ? 'Avisamos quando aparecer uma emissão que bata com o que você pediu.'
+    : 'Avisamos quando sair uma transferência com o bônus que você quer.')+'</div>';
+  if (d.erro) h += '<div class="alm-vazio" style="color:#f87171">Não foi possível carregar seus alertas agora.</div>';
+  h += '<div class="alm-secao">Seus alertas</div>';
+  h += meus.length ? meus.map(ehPass?almListaPassagem:almListaTransf).join('') : '<div class="alm-vazio">Nenhum alerta ainda.</div>';
+  h += '<div class="alm-secao">Novo alerta</div>';
+  if (ehPass) {
+    const cidades = almOpcoes(passagensData.flatMap(p=>[p.origem,p.destino]));
+    const progs = [...new Set(passagensData.map(p=>p.programa).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    h += '<datalist id="alm-cidades">'+cidades+'</datalist>';
+    h += '<div class="alm-grade">'
+      + '<div class="alm-campo"><label>Origem</label><input id="alm-origem" list="alm-cidades" placeholder="Ex.: Belo Horizonte" autocomplete="off"></div>'
+      + '<div class="alm-campo"><label>Destino</label><input id="alm-destino" list="alm-cidades" placeholder="Ex.: Lisboa" autocomplete="off"></div>'
+      + '</div>';
+    h += '<div class="alm-campo" style="margin-top:10px"><label>Programas (nenhum marcado = qualquer)</label><div class="alm-chips" id="alm-progs">'
+      + progs.map(p=>'<button type="button" class="alm-chip" data-prog="'+almEsc(p)+'" onclick="almToggleProg(this)">'+almEsc(p)+'</button>').join('') + '</div></div>';
+    h += '<div class="alm-grade" style="margin-top:10px">'
+      + '<div class="alm-campo"><label>Cabine</label><select id="alm-cabine"><option value="">Qualquer cabine</option>'+ALM_CABINES.map(x=>'<option value="'+x[0]+'">'+x[1]+'</option>').join('')+'</select></div>'
+      + '<div class="alm-campo"><label>Até quantos pontos</label><input id="alm-max" type="number" inputmode="numeric" min="0" step="1000" placeholder="Ex.: 90000"></div>'
+      + '<div class="alm-campo"><label>🛫 Ida a partir de</label><input id="alm-ida-de" type="date"></div>'
+      + '<div class="alm-campo"><label>🛫 Ida até</label><input id="alm-ida-ate" type="date" data-data-de="alm-ida-de"></div>'
+      + '</div>';
+  } else {
+    const it = (typeof historicoTransferencias!=='undefined' && historicoTransferencias && historicoTransferencias.items) || [];
+    h += '<datalist id="alm-origens">'+almOpcoes(it.map(x=>x.origem).filter(o=>o&&o!=='Todos'&&o!=='Bancos selecionados'))+'</datalist>';
+    h += '<datalist id="alm-destinos">'+almOpcoes(it.map(x=>x.destino))+'</datalist>';
+    h += '<div class="alm-grade">'
+      + '<div class="alm-campo"><label>De (vazio = qualquer)</label><input id="alm-t-origem" list="alm-origens" placeholder="Ex.: Livelo" autocomplete="off"></div>'
+      + '<div class="alm-campo"><label>Para</label><input id="alm-t-destino" list="alm-destinos" placeholder="Ex.: Smiles" autocomplete="off"></div>'
+      + '<div class="alm-campo"><label>Bônus mínimo (%)</label><input id="alm-t-bonus" type="number" inputmode="numeric" min="1" max="500" placeholder="Ex.: 80"></div>'
+      + '</div>';
+  }
+  h += '<button class="alm-salvar" id="alm-salvar" type="button" onclick="almSalvar()">🔔 Criar alerta</button><div class="alm-fb" id="alm-fb"></div>';
+  const sess = (typeof lerSessao==='function' && lerSessao()) || {};
+  h += '<div class="alm-nota">'+(window.CDV_APP
+    ? 'Você recebe uma notificação neste celular'+(d.temPush?'':' (assim que as notificações forem liberadas no app)')+' ou um e-mail em '+almEsc(sess.email||'')+'.'
+    : 'Você recebe por e-mail em '+almEsc(sess.email||'')+'. No app do Clube do Viajante chega também como notificação.')+'</div>';
+  document.getElementById('alm-conteudo').innerHTML = h;
+}
+function almToggleProg(b){ const p=b.dataset.prog; if(almProgSel.has(p)){almProgSel.delete(p);b.classList.remove('on');}else{almProgSel.add(p);b.classList.add('on');} }
+async function almSalvar(){
+  const fb=document.getElementById('alm-fb'), btn=document.getElementById('alm-salvar');
+  const v=id=>(document.getElementById(id)||{}).value||'';
+  let alerta;
+  if (almTipo==='passagem') {
+    alerta={ origem:v('alm-origem').trim(), destino:v('alm-destino').trim(), programas:[...almProgSel], cabine:v('alm-cabine'), maxPontos:Number(v('alm-max'))||0, idaDe:v('alm-ida-de'), idaAte:v('alm-ida-ate') };
+    if(!alerta.origem||!alerta.destino){ fb.style.color='#f87171'; fb.textContent='Informe origem e destino.'; return; }
+  } else {
+    alerta={ origem:v('alm-t-origem').trim(), destino:v('alm-t-destino').trim(), bonusMin:Number(v('alm-t-bonus'))||0 };
+    if(!alerta.destino||!alerta.bonusMin){ fb.style.color='#f87171'; fb.textContent='Informe o programa de destino e o bônus mínimo.'; return; }
+  }
+  btn.disabled=true; fb.style.color='var(--muted)'; fb.textContent='Salvando…';
+  try{
+    const r=await fetch(CDV_PROXY_AUTH+'/membros/alertas/salvar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo:almTipo,alerta})});
+    const j=await r.json();
+    if(!j.ok){ fb.style.color='#f87171'; fb.textContent=j.erro||'Não foi possível salvar.'; btn.disabled=false; return; }
+    await almAbrir(almTipo);
+    const fb2=document.getElementById('alm-fb'); if(fb2){ fb2.style.color='#34d399'; fb2.textContent='✓ Alerta criado.'; }
+    if (window.cdvPushPedir) window.cdvPushPedir();
+  }catch(e){ fb.style.color='#f87171'; fb.textContent='Erro de conexão. Tente de novo.'; btn.disabled=false; }
+}
+async function almExcluir(id){
+  if(!confirm('Apagar este alerta?')) return;
+  try{
+    await fetch(CDV_PROXY_AUTH+'/membros/alertas/excluir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo:almTipo,id})});
+  }catch(e){}
+  almAbrir(almTipo);
+}
+</script>
 <!-- MODAL OFERTA -->
 <div class="modal-overlay" id="oferta-modal-overlay">
   <div class="modal oferta-modal">
