@@ -7042,9 +7042,9 @@ function openOfertaModal(id){
   if(o.bonus) fatos.push(['Bônus / Ganho',o.bonus]);
   if(o.prazo) fatos.push(['Prazo',formatPrazoLimpo(o.prazo)+(encerrada?' (encerrada)':'')]);
   if(o.programa) fatos.push(['Programa',o.programa]);
-  if(o.loja) fatos.push(['Loja',o.loja]);
+  // Loja igual ao programa e categoria (já na linha de cima) só repetiam informação
+  if(o.loja && String(o.loja).trim().toLowerCase()!==String(o.programa||'').trim().toLowerCase()) fatos.push(['Loja',o.loja]);
   if(o.cupom) fatos.push(['Cupom',o.cupom]);
-  if(o.categoria) fatos.push(['Categoria',OFERTA_CAT_LABELS[o.categoria]||o.categoria]);
   document.getElementById('oferta-modal-fatos').innerHTML=fatos.map(([label,val])=>
     `<div class="oferta-fato"><div class="oferta-fato-label">${label}</div><div class="oferta-fato-val">${val}</div></div>`
   ).join('');

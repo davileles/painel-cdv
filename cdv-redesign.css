@@ -603,3 +603,77 @@ select.srt { padding:11px 13px; font-size:13.5px; font-weight:600; }
   #pass-grid .pass-stat-sub { display:none; }
   #pass-grid .pass-stat-atual-min, #pass-grid .pass-stat-atual-caro { font-size:11px; }
 }
+
+/* ── Ajustes de 09/11/2026: cabeçalho numa linha, Radar em lista, janela de oferta e Milhas mais densos ── */
+/* Pontuação total sai do cabeçalho: o saldo fica só na aba Gestão de Milhas. */
+#header-saldo-total { display:none !important; }
+/* Radar: só o título no cartão (o resumo fica na janela da oferta) e a categoria nunca vaza do cartão. */
+#radar-grid .oferta-resumo-mini { display:none; }
+#radar-grid .oferta-card { min-width:0; overflow:hidden; }
+#radar-grid .oferta-card-top { min-width:0; }
+#radar-grid .oferta-card-top > span:last-child { min-width:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+#oferta-modal-meta { margin-bottom:12px; }
+@media (max-width:900px) {
+  /* Nada mais largo que a tela: o WebView do iPhone diminuía a página inteira (cabeçalho "pulava" e encolhia no Radar). */
+  html, body { overflow-x:clip; max-width:100%; }
+
+  /* Cabeçalho em uma linha: logo + marca à esquerda, nome/tema/Sair à direita */
+  header { flex-wrap:nowrap !important; gap:10px; }
+  header .logo-row { gap:10px; min-width:0; flex:1 1 auto; }
+  header .logo-bird { width:32px; height:32px; }
+  header .brand { min-width:0; }
+  header .brand-name, header .brand-sub { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  header > div:last-child { gap:6px !important; flex-shrink:0; }
+  #header-nome-membro { max-width:72px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12.5px !important; }
+  #btn-tema, header button { padding:7px 10px; font-size:12.5px; }
+
+  /* Radar: uma oferta por linha, como em Passagens */
+  #radar-grid { grid-template-columns:1fr !important; gap:8px; }
+  #radar-grid .oferta-card {
+    display:grid; grid-template-columns:36px minmax(0,1fr); grid-template-areas:"ico cat" "ico titulo" "ico foot";
+    column-gap:12px; row-gap:3px; padding:12px 14px; border-radius:12px; align-items:start;
+  }
+  #radar-grid .oferta-card-top { display:contents; }
+  #radar-grid .oferta-card-top > span:first-child { grid-area:ico; width:36px !important; height:36px !important; font-size:18px !important; align-self:center; }
+  #radar-grid .oferta-card-top > span:last-child { grid-area:cat; justify-self:start; font-size:9.5px !important; padding:2px 7px !important; }
+  #radar-grid .oferta-titulo { grid-area:titulo; font-size:14.5px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  #radar-grid .oferta-card-foot { grid-area:foot; border-top:none; padding-top:0; margin-top:1px; justify-content:flex-start; gap:8px; }
+  #radar-grid .oferta-card-foot > span:first-child { font-size:11.5px !important; }
+  #radar-grid .oferta-encerrada-badge { font-size:10px; padding:2px 8px; }
+
+  /* Janela da oferta: folha presa embaixo, menor e mais compacta */
+  #oferta-modal-overlay, :root.app-nativo #oferta-modal-overlay { align-items:flex-end; padding:0 !important; }
+  .oferta-modal {
+    width:100%; max-width:100% !important; max-height:80vh; margin:0;
+    border-radius:18px 18px 0 0 !important; border-bottom:none;
+    padding:18px 18px calc(18px + var(--cdv-sab, env(safe-area-inset-bottom, 0px))) !important;
+  }
+  .oferta-modal-emoji { font-size:22px; margin-bottom:4px; }
+  #oferta-modal-titulo { font-size:17px; line-height:1.3; padding-right:36px; }
+  #oferta-modal-meta { font-size:12px; margin-bottom:10px; }
+  .oferta-modal-section, .oferta-modal-restricoes li { font-size:13.5px; line-height:1.55; }
+  .oferta-modal-grid { grid-template-columns:1fr 1fr !important; gap:6px; margin-top:12px; }
+  .oferta-fato { padding:8px 10px; border-radius:10px; }
+  .oferta-fato-label { font-size:10.5px; }
+  .oferta-fato-val { font-size:13.5px; }
+  .oferta-modal .modal-close { top:12px; right:12px; }
+  .oferta-modal .modal-url { padding:11px; font-size:13.5px; margin-top:12px; }
+
+  /* Gestão de Milhas: mais informação por tela */
+  #perfis-bar { padding:8px 16px !important; gap:6px !important; flex-wrap:nowrap !important; overflow-x:auto; scrollbar-width:none; }
+  #perfis-bar::-webkit-scrollbar { display:none; }
+  #perfis-bar > *, #perfis-chips > * { flex-shrink:0; }
+  #perfis-chips { flex-wrap:nowrap !important; }
+  #milhas-dashboard { padding:12px 16px 0 !important; }
+  #milhas-visao-geral { padding:10px 16px 14px !important; }
+  #milhas-kpis, #geral-kpis, .milhas-kpi-grid { gap:8px !important; margin-bottom:12px !important; }
+  #tab-milhas .milhas-kpi { padding:10px 12px; border-radius:12px; gap:1px; }
+  #tab-milhas .milhas-kpi-label { font-size:10.5px; letter-spacing:.04em; }
+  #tab-milhas .milhas-kpi-val { font-size:19px !important; letter-spacing:-.4px; white-space:nowrap; }
+  #tab-milhas .milhas-kpi-val span { font-size:11px !important; }
+  #tab-milhas .milhas-kpi-sub { font-size:11px; line-height:1.3; }
+  #milhas-kpis > .milhas-kpi:last-child:nth-child(odd), #geral-kpis > .milhas-kpi:last-child:nth-child(odd) { grid-column:1 / -1; }
+  #milhas-charts-row { gap:8px !important; margin-bottom:12px !important; }
+  #milhas-charts-row > div { padding:12px !important; }
+  #milhas-charts-row canvas { height:180px !important; max-height:180px !important; }
+}
