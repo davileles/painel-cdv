@@ -912025,11 +912025,26 @@
               "pct": 1.5
             }
           ]
+        },
+        "tcbus": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "accorhotels",
+          "pais": "us",
+          "categorias": [
+            {
+              "grupo": "ALL - Accor Live Limitless",
+              "nome": "Completed Stays",
+              "pct": 1
+            }
+          ]
         }
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-accor-hoteis",
-        "tcbuk": "https://www.topcashback.co.uk/all-accor-live-limitless/"
+        "tcbuk": "https://www.topcashback.co.uk/all-accor-live-limitless/",
+        "tcbus": "https://www.topcashback.com/accorhotels/"
       }
     },
     "americanas": {
@@ -912131,11 +912146,26 @@
               "pct": 7
             }
           ]
+        },
+        "tcbus": {
+          "pts": 7,
+          "dollar": false,
+          "ate": false,
+          "slug": "getyourguide",
+          "pais": "us",
+          "categorias": [
+            {
+              "grupo": "GetYourGuide",
+              "nome": "Online Purchase",
+              "pct": 7
+            }
+          ]
         }
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-get-your-guide",
-        "tcbuk": "https://www.topcashback.co.uk/getyourguide/"
+        "tcbuk": "https://www.topcashback.co.uk/getyourguide/",
+        "tcbus": "https://www.topcashback.com/getyourguide/"
       }
     },
     "integral médica": {
@@ -912226,11 +912256,36 @@
               "pct": 2
             }
           ]
+        },
+        "tcbus": {
+          "pts": 4,
+          "dollar": false,
+          "ate": true,
+          "slug": "omio",
+          "pais": "us",
+          "categorias": [
+            {
+              "grupo": "Omio",
+              "nome": "Train",
+              "pct": 4
+            },
+            {
+              "grupo": "Omio",
+              "nome": "Bus",
+              "pct": 3
+            },
+            {
+              "grupo": "Omio",
+              "nome": "Flight",
+              "pct": 2
+            }
+          ]
         }
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/omio",
-        "tcbuk": "https://www.topcashback.co.uk/omio/"
+        "tcbuk": "https://www.topcashback.co.uk/omio/",
+        "tcbus": "https://www.topcashback.com/omio/"
       }
     },
     "plié": {
@@ -912298,11 +912353,31 @@
               "pct": 12
             }
           ]
+        },
+        "tcbus": {
+          "pts": 15,
+          "dollar": false,
+          "ate": true,
+          "slug": "viator",
+          "pais": "us",
+          "categorias": [
+            {
+              "grupo": "Viator",
+              "nome": "New Viator Customer Purchase",
+              "pct": 15
+            },
+            {
+              "grupo": "Viator",
+              "nome": "Existing Viator Customer Purchase",
+              "pct": 10
+            }
+          ]
         }
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-viator",
-        "tcbuk": "https://www.topcashback.co.uk/viator-a-tripadvisor-company/"
+        "tcbuk": "https://www.topcashback.co.uk/viator-a-tripadvisor-company/",
+        "tcbus": "https://www.topcashback.com/viator/"
       }
     },
     "yamamura": {
