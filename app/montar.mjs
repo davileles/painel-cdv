@@ -61,7 +61,7 @@ copyFileSync(join(AQUI, 'src/nativo.css'), join(WWW, 'nativo.css'));
 let h = readFileSync(join(PAINEL, 'index.html'), 'utf8');
 h = trocarUmaVez(h,
   '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
-  '<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">\n' +
+  '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">\n' +
   '<script src="capacitor-plugins.js"></script>\n<script src="nativo.js"></script>',
   'meta viewport');
 h = trocarUmaVez(h,
