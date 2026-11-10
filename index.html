@@ -719,6 +719,8 @@
   #tab-buscavoos .bv-linha:first-child>#bv-volta-campo{grid-column:2/-1}
   .bv-prog-nome{white-space:normal}
 }
+  /* iOS: campos com fonte < 16px disparam zoom automático ao focar (desconfigura o layout e esconde o menu inferior) */
+  @media (hover:none) and (pointer:coarse){input:not([type=checkbox]):not([type=radio]):not([type=range]):not(#login-codigo):not(.bv-iata input),select,textarea{font-size:16px!important}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link rel="stylesheet" href="cdv-redesign.css">
