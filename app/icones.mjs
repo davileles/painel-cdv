@@ -1,5 +1,5 @@
 // icones.mjs — monta as imagens-fonte de ícone e abertura do app a partir do
-// logocdv.png do painel (pássaro sobre o azul-marinho da marca). Depois o
+// logocdv.png do painel (ícone: pássaro sobre o azul CDV; abertura: azul-marinho). Depois o
 // @capacitor/assets gera todos os tamanhos de Android e iOS (npm run icones).
 import sharp from 'sharp';
 import { mkdirSync } from 'node:fs';
@@ -11,6 +11,7 @@ const LOGO = join(AQUI, '..', 'logocdv.png');
 const OUT = join(AQUI, 'assets');
 const NAVY = '#262e42';
 const NAVY_ESCURO = '#1c2333';
+const AZUL = '#126eff'; // fundo do ícone: azul CDV (no navy a cabeça do pássaro sumia)
 mkdirSync(OUT, { recursive: true });
 
 const fundo = (lado, cor) => sharp({ create: { width: lado, height: lado, channels: 4, background: cor } });
@@ -32,9 +33,9 @@ async function comLogo(lado, cor, proporcao, arquivo) {
   await fundo(lado, cor).composite([{ input: await logo(l), left: off, top: off }]).png().toFile(join(OUT, arquivo));
 }
 
-await comLogo(1024, NAVY, 0.86, 'icon-only.png');            // iOS (sem transparência)
+await comLogo(1024, AZUL, 0.86, 'icon-only.png');            // iOS (sem transparência)
 await comLogo(1024, '#00000000', 0.62, 'icon-foreground.png'); // Android adaptativo
-await fundo(1024, NAVY).png().toFile(join(OUT, 'icon-background.png'));
+await fundo(1024, AZUL).png().toFile(join(OUT, 'icon-background.png'));
 await comLogo(2732, NAVY, 0.22, 'splash.png');
 await comLogo(2732, NAVY_ESCURO, 0.22, 'splash-dark.png');
 console.log('icones: assets/ pronto');
