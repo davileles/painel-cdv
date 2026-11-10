@@ -905706,7 +905706,29 @@
         "azul": {
           "pts": 20,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 7,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-insider-store",
+          "categorias": [
+            {
+              "categoria": "Compra de produtos com uso de cupom Méliuz ou sem o uso de cupom",
+              "pts": 7,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1.5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1.5
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-insider-store"
       }
     },
     "adcos": {
@@ -905714,7 +905736,16 @@
         "livelo": {
           "pts": 11,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 6,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-adcos"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-adcos"
       }
     },
     "aramis": {
@@ -905722,7 +905753,16 @@
         "livelo": {
           "pts": 11,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4,
+          "dollar": false,
+          "ate": false,
+          "slug": "aramis"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/aramis"
       }
     },
     "beleza na web": {
@@ -905734,7 +905774,34 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 12,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-beleza-na-web",
+          "categorias": [
+            {
+              "categoria": "Todos os produtos da marca Eudora, Todos os produtos da marca O Boticário, Todos os produtos da marca quem disse, berenice?, Todos os produtos da marca Vult e Todos os produtos da marca OUI",
+              "pts": 12,
+              "principal": false
+            },
+            {
+              "categoria": "Perfumes",
+              "pts": 10,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-beleza-na-web"
       }
     },
     "bibi calçados": {
@@ -905742,7 +905809,16 @@
         "livelo": {
           "pts": 11,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-bibi"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-bibi"
       }
     },
     "bombay herbs & spices": {
@@ -905763,14 +905839,25 @@
           "pts": 1,
           "dollar": false
         },
+        "azul": {
+          "pts": 2,
+          "dollar": false
+        },
         "inter": {
           "pts": 2,
           "dollar": false,
           "slug": "camicado-3639"
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-camicado"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/camicado-3639"
+        "inter": "https://shopping.inter.co/gift-card/camicado-3639",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-camicado"
       }
     },
     "carters": {
@@ -905802,7 +905889,16 @@
         "esfera": {
           "pts": 7,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 11,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-centauro"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-centauro"
       }
     },
     "coffee mais": {
@@ -905814,7 +905910,16 @@
         "esfera": {
           "pts": 11,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-coffee-mais"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-coffee-mais"
       }
     },
     "consórcio embracon": {
@@ -905850,7 +905955,39 @@
         "esfera": {
           "pts": 10,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 20,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-decolarcom",
+          "categorias": [
+            {
+              "categoria": "Seguros",
+              "pts": 20,
+              "principal": false
+            },
+            {
+              "categoria": "Hotéis",
+              "pts": 4,
+              "principal": false
+            },
+            {
+              "categoria": "Pacotes",
+              "pts": 3,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-decolarcom"
       }
     },
     "elbo": {
@@ -905858,7 +905995,16 @@
         "livelo": {
           "pts": 11,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-elbo"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-elbo"
       }
     },
     "euro": {
@@ -905890,7 +906036,16 @@
         "livelo": {
           "pts": 11,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-giuliana-flores"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-giuliana-flores"
       }
     },
     "hope": {
@@ -905910,7 +906065,16 @@
         "esfera": {
           "pts": 4,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 6,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-hoteiscom"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-hoteiscom"
       }
     },
     "klabin": {
@@ -905930,7 +906094,16 @@
         "esfera": {
           "pts": 6,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-live"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-live"
       }
     },
     "loccitane au bresil": {
@@ -905978,7 +906151,16 @@
         "livelo": {
           "pts": 11,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-torra"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-torra"
       }
     },
     "malwee": {
@@ -905986,7 +906168,16 @@
         "livelo": {
           "pts": 11,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 6,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-malwee"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-malwee"
       }
     },
     "max titanium": {
@@ -905998,7 +906189,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-max-titanium"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-max-titanium"
       }
     },
     "meia sola": {
@@ -906014,7 +906214,16 @@
         "livelo": {
           "pts": 11,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-midea-store"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-midea-store"
       }
     },
     "mistral": {
@@ -906026,7 +906235,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-mistral"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-mistral"
       }
     },
     "mondaine": {
@@ -906034,7 +906252,16 @@
         "livelo": {
           "pts": 11,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "mondaine"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/mondaine"
       }
     },
     "morana": {
@@ -906058,7 +906285,16 @@
         "azul": {
           "pts": 4,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 10,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-natura"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-natura"
       }
     },
     "petlove saúde": {
@@ -906094,7 +906330,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-posthaus"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-posthaus"
       }
     },
     "probiótica": {
@@ -906106,7 +906351,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupoom-probiotica"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupoom-probiotica"
       }
     },
     "riachuelo": {
@@ -906127,10 +906381,30 @@
           "pts": 15,
           "dollar": false,
           "slug": "riachuelo-1686"
+        },
+        "meliuz": {
+          "pts": 15,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-riachuelo",
+          "categorias": [
+            {
+              "categoria": "Feminino e Masculino",
+              "pts": 15,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/riachuelo-1686"
+        "inter": "https://shopping.inter.co/gift-card/riachuelo-1686",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-riachuelo"
       }
     },
     "seculus": {
@@ -906138,7 +906412,16 @@
         "livelo": {
           "pts": 11,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "seculus"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/seculus"
       }
     },
     "technos": {
@@ -906151,10 +906434,17 @@
           "pts": 5,
           "dollar": false,
           "slug": "technos-3212"
+        },
+        "meliuz": {
+          "pts": 5,
+          "dollar": false,
+          "ate": false,
+          "slug": "technos"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/technos-3212"
+        "inter": "https://shopping.inter.co/gift-card/technos-3212",
+        "meliuz": "https://www.meliuz.com.br/desconto/technos"
       }
     },
     "tia sônia": {
@@ -906162,7 +906452,16 @@
         "livelo": {
           "pts": 11,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-tia-sonia"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-tia-sonia"
       }
     },
     "tokio marine seguros": {
@@ -906226,7 +906525,16 @@
         "livelo": {
           "pts": 8,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-divvino"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-divvino"
       }
     },
     "o.u.i paris": {
@@ -906234,7 +906542,16 @@
         "livelo": {
           "pts": 8,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 8,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-oui-paris"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-oui-paris"
       }
     },
     "truss": {
@@ -906242,7 +906559,16 @@
         "livelo": {
           "pts": 8,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 8,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-truss"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-truss"
       }
     },
     "medsênior": {
@@ -906258,7 +906584,16 @@
         "livelo": {
           "pts": 7,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-sephora"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-sephora"
       }
     },
     "assinatura coffee mais": {
@@ -906278,7 +906613,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-avon"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-avon"
       }
     },
     "claro": {
@@ -906311,10 +906655,17 @@
           "pts": 6,
           "dollar": false,
           "slug": "eudora-1857"
+        },
+        "meliuz": {
+          "pts": 15,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-eudora"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/eudora-1857"
+        "inter": "https://shopping.inter.co/gift-card/eudora-1857",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-eudora"
       }
     },
     "hertz": {
@@ -906330,7 +906681,16 @@
         "livelo": {
           "pts": 6,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 10,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-quem-disse-berenice"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-quem-disse-berenice"
       }
     },
     "sulamérica plano odonto": {
@@ -906358,7 +906718,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "asics"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/asics"
       }
     },
     "avis": {
@@ -906402,7 +906771,38 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "azul": {
+          "pts": 1,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 10,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-magazine-luiza",
+          "categorias": [
+            {
+              "categoria": "Todos os produtos vendidos e entregues por Magalu exceto os produtos da categoria Mercado vendidos e entregues por Magalu",
+              "pts": 10,
+              "principal": false
+            },
+            {
+              "categoria": "Todos os produtos vendidos e entregues por outras lojas",
+              "pts": 5,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 2,
+              "principal": true
+            }
+          ],
+          "ptsBase": 2
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-magazine-luiza"
       }
     },
     "maltacor": {
@@ -906426,7 +906826,16 @@
         "azul": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-movida"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-movida"
       }
     },
     "puket": {
@@ -906450,7 +906859,16 @@
         "azul": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-rent-cars"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-rent-cars"
       }
     },
     "tripchip": {
@@ -906486,7 +906904,16 @@
         "esfera": {
           "pts": 4,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-booking"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-booking"
       }
     },
     "ciclic seguro celular": {
@@ -906506,7 +906933,16 @@
         "esfera": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-fast-shop"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-fast-shop"
       }
     },
     "grupo dreams": {
@@ -906522,7 +906958,16 @@
         "livelo": {
           "pts": 4,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-localiza"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-localiza"
       }
     },
     "localiza assinatura": {
@@ -906542,7 +906987,16 @@
         "esfera": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-reserva"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-reserva"
       }
     },
     "scudoo seguro celular": {
@@ -906594,7 +907048,16 @@
         "esfera": {
           "pts": 1,
           "dollar": true
+        },
+        "meliuz": {
+          "pts": 10,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-aliexpress"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-aliexpress"
       }
     },
     "beyoung": {
@@ -906610,7 +907073,16 @@
         "livelo": {
           "pts": 3,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "bobo"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/bobo"
       }
     },
     "boticário": {
@@ -906638,7 +907110,16 @@
         "livelo": {
           "pts": 3,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cestas-michelli"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cestas-michelli"
       }
     },
     "hering": {
@@ -906646,7 +907127,16 @@
         "livelo": {
           "pts": 3,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-hering"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-hering"
       }
     },
     "imaginarium": {
@@ -906722,7 +907212,16 @@
         "livelo": {
           "pts": 3,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 6,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-shiseido"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-shiseido"
       }
     },
     "yvy": {
@@ -906770,7 +907269,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-american-tourister"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-american-tourister"
       }
     },
     "beach park hospedagens": {
@@ -906827,10 +907335,17 @@
           "pts": 2,
           "dollar": false,
           "slug": "buser-141"
+        },
+        "meliuz": {
+          "pts": 6,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-buser"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/buser-141"
+        "inter": "https://shopping.inter.co/gift-card/buser-141",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-buser"
       }
     },
     "cartão de todos": {
@@ -906862,7 +907377,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-desconto-converse"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-desconto-converse"
       }
     },
     "decathlon": {
@@ -906879,10 +907403,17 @@
           "pts": 3,
           "dollar": false,
           "slug": "decathlon-110"
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-decathlon"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/decathlon-110"
+        "inter": "https://shopping.inter.co/gift-card/decathlon-110",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-decathlon"
       }
     },
     "democrata": {
@@ -906895,10 +907426,17 @@
           "pts": 3,
           "dollar": false,
           "slug": "democrata-1340"
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-democrata"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/democrata-1340"
+        "inter": "https://shopping.inter.co/gift-card/democrata-1340",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-democrata"
       }
     },
     "dudalina": {
@@ -906906,7 +907444,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-dudalina"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-dudalina"
       }
     },
     "ellus": {
@@ -906926,7 +907473,16 @@
         "esfera": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-epoca-cosmeticos"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-epoca-cosmeticos"
       }
     },
     "faber-castell": {
@@ -906946,7 +907502,16 @@
         "esfera": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-fila"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-fila"
       }
     },
     "forever liss": {
@@ -906954,7 +907519,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-foreverliss"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-foreverliss"
       }
     },
     "gazin": {
@@ -906962,7 +907536,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-gazin"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-gazin"
       }
     },
     "go case": {
@@ -906974,7 +907557,16 @@
         "esfera": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "gocase"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/gocase"
       }
     },
     "guess": {
@@ -906982,7 +907574,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4,
+          "dollar": false,
+          "ate": false,
+          "slug": "guess"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/guess"
       }
     },
     "havaianas": {
@@ -906990,7 +907591,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-havaianas"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-havaianas"
       }
     },
     "hope resort": {
@@ -906998,7 +907608,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "hope-resort"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/hope-resort"
       }
     },
     "john john": {
@@ -907018,7 +907637,16 @@
         "esfera": {
           "pts": 10,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-lacoste"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-lacoste"
       }
     },
     "le lis": {
@@ -907026,7 +907654,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-le-lis-blanc"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-le-lis-blanc"
       }
     },
     "luxury loyalty": {
@@ -907042,7 +907679,29 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-desconto-mercado-livre",
+          "categorias": [
+            {
+              "categoria": "Categoria Esportes e Fitness",
+              "pts": 3,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1.5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1.5
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-desconto-mercado-livre"
       }
     },
     "monte carlo": {
@@ -907075,14 +907734,43 @@
           "pts": 3,
           "dollar": false
         },
+        "azul": {
+          "pts": 16,
+          "dollar": false
+        },
         "inter": {
           "pts": 4,
           "dollar": false,
           "slug": "netshoes-2055"
+        },
+        "meliuz": {
+          "pts": 8,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-netshoes",
+          "categorias": [
+            {
+              "categoria": "Todos os produtos vendidos e entregues por Netshoes",
+              "pts": 8,
+              "principal": false
+            },
+            {
+              "categoria": "Tênis New Balance 1000 vendidos e entregues por Netshoes ou lojas parceiras em Nstyle",
+              "pts": 6.5,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 5
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/netshoes-2055"
+        "inter": "https://shopping.inter.co/gift-card/netshoes-2055",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-netshoes"
       }
     },
     "new balance": {
@@ -907094,7 +907782,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "new-balance"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/new-balance"
       }
     },
     "nike": {
@@ -907106,7 +907803,29 @@
         "esfera": {
           "pts": 8,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 15,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-de-desconto-nike",
+          "categorias": [
+            {
+              "categoria": "Tênis P-6000, Tênis Precision, Todos os produtos do Corinthians, Tênis Revolution e Tênis Dunk",
+              "pts": 15,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 2,
+              "principal": true
+            }
+          ],
+          "ptsBase": 2
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-de-desconto-nike"
       }
     },
     "oceane": {
@@ -907114,7 +907833,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-oceane"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-oceane"
       }
     },
     "osklen": {
@@ -907122,7 +907850,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-osklen"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-osklen"
       }
     },
     "oxford": {
@@ -907146,7 +907883,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-pet-love"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-pet-love"
       }
     },
     "petz": {
@@ -907158,7 +907904,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-petz"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-petz"
       }
     },
     "portallar": {
@@ -907198,7 +907953,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-samsonite"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-samsonite"
       }
     },
     "shoestock": {
@@ -907218,7 +907982,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-shopee"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-shopee"
       }
     },
     "studio z": {
@@ -907242,7 +908015,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-trocafy"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-trocafy"
       }
     },
     "umbro": {
@@ -907250,7 +908032,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-umbro"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-umbro"
       }
     },
     "unidas": {
@@ -907290,7 +908081,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-xtrem"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-xtrem"
       }
     },
     "zattini": {
@@ -907311,10 +908111,17 @@
           "pts": 5,
           "dollar": false,
           "slug": "zattini-128"
+        },
+        "meliuz": {
+          "pts": 4.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-zattini"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/zattini-128"
+        "inter": "https://shopping.inter.co/gift-card/zattini-128",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-zattini"
       }
     },
     "zee dog": {
@@ -907322,7 +908129,16 @@
         "livelo": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-zeedog"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-zeedog"
       }
     },
     "abc da construção": {
@@ -907342,7 +908158,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 11,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-alura"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-alura"
       }
     },
     "amobeleza": {
@@ -907350,7 +908175,16 @@
         "livelo": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-amo-beleza"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-amo-beleza"
       }
     },
     "angeloni": {
@@ -907394,7 +908228,16 @@
         "livelo": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 0.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-beach-park-ingressos"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-beach-park-ingressos"
       }
     },
     "beep": {
@@ -907414,7 +908257,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 7,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-brastemp"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-brastemp"
       }
     },
     "cabana magazine": {
@@ -907434,13 +908286,39 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 10,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-carrefour",
+          "categorias": [
+            {
+              "categoria": "Eletroportáteis - vendido e entregue por Carrefour",
+              "pts": 10,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-carrefour"
       }
     },
     "casas bahia": {
       "programs": {
         "livelo": {
           "pts": 1,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 2,
           "dollar": false
         }
       }
@@ -907502,7 +908380,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "dafiti"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/dafiti"
       }
     },
     "drogal": {
@@ -907514,7 +908401,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4,
+          "dollar": false,
+          "ate": false,
+          "slug": "drogal"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/drogal"
       }
     },
     "drogaria sao paulo": {
@@ -907538,7 +908434,16 @@
         "livelo": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-dufrio"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-dufrio"
       }
     },
     "easy live": {
@@ -907558,7 +908463,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-electrolux"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-electrolux"
       }
     },
     "estapar": {
@@ -907573,6 +908487,10 @@
       "programs": {
         "livelo": {
           "pts": 1,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 2,
           "dollar": false
         }
       }
@@ -907599,10 +908517,17 @@
           "pts": 3,
           "dollar": false,
           "slug": "granado-1738"
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-granado"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/granado-1738"
+        "inter": "https://shopping.inter.co/gift-card/granado-1738",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-granado"
       }
     },
     "hering outlet": {
@@ -907642,7 +908567,16 @@
         "livelo": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-individual"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-individual"
       }
     },
     "kabum!": {
@@ -907651,14 +908585,25 @@
           "pts": 1,
           "dollar": false
         },
+        "esfera": {
+          "pts": 1,
+          "dollar": false
+        },
         "inter": {
           "pts": 7,
           "dollar": false,
           "slug": "kabum-4131"
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-kabum"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/kabum-4131"
+        "inter": "https://shopping.inter.co/gift-card/kabum-4131",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-kabum"
       }
     },
     "lego": {
@@ -907675,10 +908620,17 @@
           "pts": 3,
           "dollar": false,
           "slug": "lego-3652"
+        },
+        "meliuz": {
+          "pts": 5,
+          "dollar": false,
+          "ate": false,
+          "slug": "lego-brasil"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/lego-3652"
+        "inter": "https://shopping.inter.co/gift-card/lego-3652",
+        "meliuz": "https://www.meliuz.com.br/desconto/lego-brasil"
       }
     },
     "liga vitória seguro auto": {
@@ -907706,7 +908658,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-liz"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-liz"
       }
     },
     "loja do mecânico": {
@@ -907714,7 +908675,16 @@
         "livelo": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-loja-do-mecanico"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-loja-do-mecanico"
       }
     },
     "loungerie": {
@@ -907763,10 +908733,17 @@
           "pts": 2,
           "dollar": false,
           "slug": "mizuno-3989"
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-mizuno"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/mizuno-3989"
+        "inter": "https://shopping.inter.co/gift-card/mizuno-3989",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-mizuno"
       }
     },
     "mobifácil": {
@@ -907774,7 +908751,16 @@
         "livelo": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-mobifacil"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-mobifacil"
       }
     },
     "nespresso": {
@@ -907786,7 +908772,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-nespresso"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-nespresso"
       }
     },
     "oficina": {
@@ -907819,10 +908814,17 @@
           "pts": 3,
           "dollar": false,
           "slug": "olympikus-3990"
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-olympikus"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/olympikus-3990"
+        "inter": "https://shopping.inter.co/gift-card/olympikus-3990",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-olympikus"
       }
     },
     "outback": {
@@ -907854,13 +908856,26 @@
         "livelo": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 0.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-pneustore"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-pneustore"
       }
     },
     "ponto": {
       "programs": {
         "livelo": {
           "pts": 1,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 2,
           "dollar": false
         }
       }
@@ -907914,7 +908929,16 @@
         "livelo": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-shein"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-shein"
       }
     },
     "sixt": {
@@ -907935,10 +908959,17 @@
           "pts": 3.5,
           "dollar": false,
           "slug": "spicy-1722"
+        },
+        "meliuz": {
+          "pts": 5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-spicy"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/spicy-1722"
+        "inter": "https://shopping.inter.co/gift-card/spicy-1722",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-spicy"
       }
     },
     "telhanorte": {
@@ -907987,15 +909018,26 @@
           "pts": 3,
           "dollar": false,
           "slug": "under-armour-3991"
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-under-armour-brasil"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/under-armour-3991"
+        "inter": "https://shopping.inter.co/gift-card/under-armour-3991",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-under-armour-brasil"
       }
     },
     "vivara": {
       "programs": {
         "livelo": {
+          "pts": 1,
+          "dollar": false
+        },
+        "esfera": {
           "pts": 1,
           "dollar": false
         },
@@ -908014,7 +909056,16 @@
         "livelo": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "zeenow"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/zeenow"
       }
     },
     "bankei": {
@@ -908078,7 +909129,16 @@
         "esfera": {
           "pts": 16,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-multilaser"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-multilaser"
       }
     },
     "utensílios do chef": {
@@ -908094,7 +909154,16 @@
         "esfera": {
           "pts": 10,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-decor-colors"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-decor-colors"
       }
     },
     "localiza meoo": {
@@ -908110,7 +909179,16 @@
         "esfera": {
           "pts": 10,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 0.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "polishop"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/polishop"
       }
     },
     "world wine": {
@@ -908126,7 +909204,16 @@
         "esfera": {
           "pts": 5,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "emma"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/emma"
       }
     },
     "karsten": {
@@ -908134,7 +909221,16 @@
         "esfera": {
           "pts": 5,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 12,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-karsten"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-karsten"
       }
     },
     "trussardi": {
@@ -908142,7 +909238,16 @@
         "esfera": {
           "pts": 5,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 12,
+          "dollar": false,
+          "ate": false,
+          "slug": "trussardi"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/trussardi"
       }
     },
     "iherb": {
@@ -908150,7 +909255,16 @@
         "esfera": {
           "pts": 3,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-iherb"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-iherb"
       }
     },
     "mobly": {
@@ -908158,7 +909272,16 @@
         "esfera": {
           "pts": 3,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 7,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-mobly"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-mobly"
       }
     },
     "temu": {
@@ -908166,7 +909289,16 @@
         "esfera": {
           "pts": 3,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 25,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-temu"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-temu"
       }
     },
     "babystock": {
@@ -908206,7 +909338,16 @@
         "esfera": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-compre-oculos"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-compre-oculos"
       }
     },
     "disney+": {
@@ -908214,7 +909355,16 @@
         "esfera": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 12,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-disney"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-disney"
       }
     },
     "highstil": {
@@ -908302,7 +909452,16 @@
         "esfera": {
           "pts": 2,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-soldiers-nutrition-br"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-soldiers-nutrition-br"
       }
     },
     "wala place": {
@@ -908334,7 +909493,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 8,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-adidas"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-adidas"
       }
     },
     "agaxtur viagens e turismo": {
@@ -908350,7 +909518,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-animale"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-animale"
       }
     },
     "artwalk": {
@@ -908358,7 +909535,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-artwalk"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-artwalk"
       }
     },
     "authentic feet": {
@@ -908366,7 +909552,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-authentic-feet"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-authentic-feet"
       }
     },
     "brinox shop": {
@@ -908382,7 +909577,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-britania"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-britania"
       }
     },
     "café l'or": {
@@ -908406,7 +909610,34 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-cobasi",
+          "categorias": [
+            {
+              "categoria": "Clientes que nunca compraram em Cobasi e Clientes que nunca compraram no App da Cobasi",
+              "pts": 4,
+              "principal": false
+            },
+            {
+              "categoria": "Clientes que já compraram em Cobasi e Cliente que já compraram no App da Cobasi",
+              "pts": 2,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 2,
+              "principal": true
+            }
+          ],
+          "ptsBase": 2
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-cobasi"
       }
     },
     "dolcegusto": {
@@ -908430,7 +909661,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-drogaria-venancio"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-drogaria-venancio"
       }
     },
     "dutra máquinas": {
@@ -908438,7 +909678,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "dutra-maquinas"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/dutra-maquinas"
       }
     },
     "elens": {
@@ -908446,7 +909695,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-e-lens"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-e-lens"
       }
     },
     "eótica": {
@@ -908454,7 +909712,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-eotica"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-eotica"
       }
     },
     "evino": {
@@ -908467,10 +909734,17 @@
           "pts": 3,
           "dollar": false,
           "slug": "evino-125"
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-evino"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/evino-125"
+        "inter": "https://shopping.inter.co/gift-card/evino-125",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-evino"
       }
     },
     "extrafarma": {
@@ -908478,7 +909752,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "extrafarma"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/extrafarma"
       }
     },
     "farm rio": {
@@ -908486,7 +909769,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-farm"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-farm"
       }
     },
     "flixbus": {
@@ -908499,10 +909791,17 @@
           "pts": 2,
           "dollar": false,
           "slug": "flixbus-4228"
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-flixbus"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/flixbus-4228"
+        "inter": "https://shopping.inter.co/gift-card/flixbus-4228",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-flixbus"
       }
     },
     "fut fanatics": {
@@ -908510,7 +909809,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-fut-fanatics"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-fut-fanatics"
       }
     },
     "grand cru": {
@@ -908518,7 +909826,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-grandcru"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-grandcru"
       }
     },
     "iguatemi 365": {
@@ -908526,7 +909843,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-iguatemi365"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-iguatemi365"
       }
     },
     "jbl": {
@@ -908534,7 +909860,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "jbl"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/jbl"
       }
     },
     "jo malone": {
@@ -908542,7 +909877,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "jo-malone"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/jo-malone"
       }
     },
     "kipling": {
@@ -908550,7 +909894,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "kipling"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/kipling"
       }
     },
     "leroy merlin": {
@@ -908558,7 +909911,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 6,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-leroy-merlin"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-leroy-merlin"
       }
     },
     "lg": {
@@ -908566,7 +909928,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-lg"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-lg"
       }
     },
     "luuna": {
@@ -908574,7 +909945,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-luuna"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-luuna"
       }
     },
     "mac cosméticos": {
@@ -908590,7 +909970,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-madeiramadeira"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-madeiramadeira"
       }
     },
     "magic feet": {
@@ -908598,7 +909987,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-magicfeet"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-magicfeet"
       }
     },
     "oqvestir": {
@@ -908606,7 +910004,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-oqvestir"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-oqvestir"
       }
     },
     "pague menos": {
@@ -908619,10 +910026,17 @@
           "pts": 2,
           "dollar": false,
           "slug": "pague-menos-172"
+        },
+        "meliuz": {
+          "pts": 5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-pague-menos"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/pague-menos-172"
+        "inter": "https://shopping.inter.co/gift-card/pague-menos-172",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-pague-menos"
       }
     },
     "philco": {
@@ -908630,7 +910044,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-philco-club"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-philco-club"
       }
     },
     "pilão": {
@@ -908638,7 +910061,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 5,
+          "dollar": false,
+          "ate": false,
+          "slug": "pilao"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/pilao"
       }
     },
     "positivo": {
@@ -908646,7 +910078,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "positivo"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/positivo"
       }
     },
     "puma": {
@@ -908654,7 +910095,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4,
+          "dollar": false,
+          "ate": false,
+          "slug": "puma"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/puma"
       }
     },
     "qualidoc": {
@@ -908662,7 +910112,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-qualidoc"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-qualidoc"
       }
     },
     "santander shopping": {
@@ -908686,7 +910145,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-shop2gether"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-shop2gether"
       }
     },
     "stanley": {
@@ -908702,7 +910170,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-avianca"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-avianca"
       }
     },
     "consul": {
@@ -908710,7 +910187,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 0.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-consul"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-consul"
       }
     },
     "efácil": {
@@ -908718,7 +910204,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-efacil"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-efacil"
       }
     },
     "gol": {
@@ -908726,7 +910221,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 0.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-gol"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-gol"
       }
     },
     "iplace": {
@@ -908734,7 +910238,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-loja-iplace"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-loja-iplace"
       }
     },
     "latam airlines": {
@@ -908750,7 +910263,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-lenovo"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-lenovo"
       }
     },
     "motorola": {
@@ -908758,7 +910280,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 6,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-motorola"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-motorola"
       }
     },
     "qatar airways": {
@@ -908774,7 +910305,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-samsung"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-samsung"
       }
     },
     "dell": {
@@ -908782,7 +910322,29 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-dell",
+          "categorias": [
+            {
+              "categoria": "Primeira compra em Dell",
+              "pts": 2,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-dell"
       }
     },
     "privalia": {
@@ -908790,7 +910352,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-privalia"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-privalia"
       }
     },
     "azul viagens": {
@@ -908806,7 +910377,16 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 0.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-drogaria-araujo"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-drogaria-araujo"
       }
     },
     "easy live vouchers": {
@@ -908838,7 +910418,16 @@
         "azul": {
           "pts": 1,
           "dollar": false
+        },
+        "meliuz": {
+          "pts": 4.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "estoque"
         }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/estoque"
       }
     },
     "sony playstation": {
@@ -909051,10 +910640,17 @@
           "pts": 2,
           "dollar": false,
           "slug": "st-marche-126"
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-st-marche"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/st-marche-126"
+        "inter": "https://shopping.inter.co/gift-card/st-marche-126",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-st-marche"
       }
     },
     "ea sports fc 27 - xbox": {
@@ -909255,10 +910851,17 @@
           "pts": 3,
           "dollar": false,
           "slug": "sorte-online-122"
+        },
+        "meliuz": {
+          "pts": 1.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "sorte-online"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/sorte-online-122"
+        "inter": "https://shopping.inter.co/gift-card/sorte-online-122",
+        "meliuz": "https://www.meliuz.com.br/desconto/sorte-online"
       }
     },
     "mcdonald's": {
@@ -909351,10 +910954,30 @@
           "pts": 2,
           "dollar": false,
           "slug": "renner-3644"
+        },
+        "meliuz": {
+          "pts": 6,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-renner",
+          "categorias": [
+            {
+              "categoria": "Produtos Vendidos e Entregues por Renner",
+              "pts": 6,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/renner-3644"
+        "inter": "https://shopping.inter.co/gift-card/renner-3644",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-renner"
       }
     },
     "nintendo switch online": {
@@ -910203,10 +911826,17 @@
           "pts": 3,
           "dollar": false,
           "slug": "fever-4182"
+        },
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-fever-up"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/fever-4182"
+        "inter": "https://shopping.inter.co/gift-card/fever-4182",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-fever-up"
       }
     },
     "cupom ingresso.com": {
@@ -910327,6 +911957,365 @@
       },
       "links": {
         "inter": "https://shopping.inter.co/gift-card/santa-lolla-2586"
+      }
+    },
+    "all accor": {
+      "programs": {
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-accor-hoteis"
+        },
+        "tcbuk": {
+          "pts": 8,
+          "dollar": false,
+          "ate": true,
+          "slug": "all-accor-live-limitless",
+          "pais": "uk",
+          "categorias": [
+            {
+              "grupo": "Silver, Gold, Platinum, Diamond & Limitless ALL - Accor Members",
+              "nome": "Adagio Premium, Grand Mercure, Mövenpick, Pullman, The Sebel, Art Series, Peppers, 21C Museum Hotels, Hyde, Swissôtel, Mantis",
+              "pct": 3
+            },
+            {
+              "grupo": "Silver, Gold, Platinum, Diamond & Limitless ALL - Accor Members",
+              "nome": "Adagio, Handwritten, Mama Shelter, Mercure, Novotel, Novotel Suite, Tribe, Mantra",
+              "pct": 3
+            },
+            {
+              "grupo": "Silver, Gold, Platinum, Diamond & Limitless ALL - Accor Members",
+              "nome": "Adagio Access, Greet, Ibis, Ibis Styles, Breakfree, Jo&Joe",
+              "pct": 3
+            },
+            {
+              "grupo": "Silver, Gold, Platinum, Diamond & Limitless ALL - Accor Members",
+              "nome": "Fairmont, Raffles, SBE, Mondrian, SLS, Sofitel, Sofitel Legend, Mgallery By Sofitel, SO, Rixos Hotel",
+              "pct": 3
+            },
+            {
+              "grupo": "Silver, Gold, Platinum, Diamond & Limitless ALL - Accor Members",
+              "nome": "Hotel F1, Ibis Budget",
+              "pct": 1.5
+            },
+            {
+              "grupo": "New Customers + Classic ALL Accor Members",
+              "nome": "Adagio Premium, Grand Mercure, Mövenpick, Pullman, The Sebel, Art Series, Peppers, 21C Museum Hotels, Hyde, Swissôtel, Mantis",
+              "pct": 8
+            },
+            {
+              "grupo": "New Customers + Classic ALL Accor Members",
+              "nome": "Adagio, Handwritten, Mama Shelter, Mercure, Novotel, Novotel Suite, Tribe, Mantra",
+              "pct": 6
+            },
+            {
+              "grupo": "New Customers + Classic ALL Accor Members",
+              "nome": "Adagio Access, Greet, Ibis, Ibis Styles, Breakfree, Jo&Joe",
+              "pct": 3
+            },
+            {
+              "grupo": "New Customers + Classic ALL Accor Members",
+              "nome": "Fairmont, Raffles, SBE, Mondrian, SLS, Sofitel, Sofitel Legend, Mgallery By Sofitel, SO, Rixos Hotel",
+              "pct": 3
+            },
+            {
+              "grupo": "New Customers + Classic ALL Accor Members",
+              "nome": "Hotel F1, Ibis Budget",
+              "pct": 1.5
+            }
+          ]
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-accor-hoteis",
+        "tcbuk": "https://www.topcashback.co.uk/all-accor-live-limitless/"
+      }
+    },
+    "americanas": {
+      "programs": {
+        "meliuz": {
+          "pts": 4,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-americanas"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-americanas"
+      }
+    },
+    "biscoitê": {
+      "programs": {
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-biscoite"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-biscoite"
+      }
+    },
+    "clinique": {
+      "programs": {
+        "meliuz": {
+          "pts": 3.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-clinique"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-clinique"
+      }
+    },
+    "eclock": {
+      "programs": {
+        "meliuz": {
+          "pts": 4.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "eclock"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/eclock"
+      }
+    },
+    "esteé lauder": {
+      "programs": {
+        "meliuz": {
+          "pts": 6,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-estee-lauder"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-estee-lauder"
+      }
+    },
+    "fossil": {
+      "programs": {
+        "meliuz": {
+          "pts": 5,
+          "dollar": false,
+          "ate": false,
+          "slug": "fossil"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/fossil"
+      }
+    },
+    "getyourguide": {
+      "programs": {
+        "meliuz": {
+          "pts": 3.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-get-your-guide"
+        },
+        "tcbuk": {
+          "pts": 7,
+          "dollar": false,
+          "ate": false,
+          "slug": "getyourguide",
+          "pais": "uk",
+          "categorias": [
+            {
+              "grupo": "GetYourGuide",
+              "nome": "Online Purchase",
+              "pct": 7
+            }
+          ]
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-get-your-guide",
+        "tcbuk": "https://www.topcashback.co.uk/getyourguide/"
+      }
+    },
+    "integral médica": {
+      "programs": {
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-integral-medica"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-integral-medica"
+      }
+    },
+    "lojas colombo": {
+      "programs": {
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-lojas-colombo"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-lojas-colombo"
+      }
+    },
+    "mascavo": {
+      "programs": {
+        "meliuz": {
+          "pts": 4.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-mascavo"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-mascavo"
+      }
+    },
+    "o boticário": {
+      "programs": {
+        "meliuz": {
+          "pts": 9,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-boticario"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-boticario"
+      }
+    },
+    "omio": {
+      "programs": {
+        "meliuz": {
+          "pts": 1,
+          "dollar": false,
+          "ate": false,
+          "slug": "omio"
+        },
+        "tcbuk": {
+          "pts": 5,
+          "dollar": false,
+          "ate": true,
+          "slug": "omio",
+          "pais": "uk",
+          "categorias": [
+            {
+              "grupo": "Omio Travel GmbH",
+              "nome": "Ferry",
+              "pct": 5
+            },
+            {
+              "grupo": "Omio Travel GmbH",
+              "nome": "Train",
+              "pct": 4
+            },
+            {
+              "grupo": "Omio Travel GmbH",
+              "nome": "Bus",
+              "pct": 3
+            },
+            {
+              "grupo": "Omio Travel GmbH",
+              "nome": "Flight",
+              "pct": 2
+            }
+          ]
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/omio",
+        "tcbuk": "https://www.topcashback.co.uk/omio/"
+      }
+    },
+    "plié": {
+      "programs": {
+        "meliuz": {
+          "pts": 3,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-plie"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-plie"
+      }
+    },
+    "sestini": {
+      "programs": {
+        "meliuz": {
+          "pts": 3.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "sestini"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/sestini"
+      }
+    },
+    "tok&stok": {
+      "programs": {
+        "meliuz": {
+          "pts": 7,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-tok-stok"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-tok-stok"
+      }
+    },
+    "viator": {
+      "programs": {
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-viator"
+        },
+        "tcbuk": {
+          "pts": 12,
+          "dollar": false,
+          "ate": true,
+          "slug": "viator-a-tripadvisor-company",
+          "pais": "uk",
+          "categorias": [
+            {
+              "grupo": "Viator - A TripAdvisor Company",
+              "nome": "Theme Park Attraction Ticket Purchase",
+              "pct": 1
+            },
+            {
+              "grupo": "Viator - A TripAdvisor Company",
+              "nome": "Other Online Purchase",
+              "pct": 12
+            }
+          ]
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-viator",
+        "tcbuk": "https://www.topcashback.co.uk/viator-a-tripadvisor-company/"
+      }
+    },
+    "yamamura": {
+      "programs": {
+        "meliuz": {
+          "pts": 2.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-yamamura"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-yamamura"
       }
     }
   }
