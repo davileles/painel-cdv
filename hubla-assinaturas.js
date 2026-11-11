@@ -154,6 +154,21 @@ function calcularSituacao(a, agora = Date.now()) {
 
 // Membro com acesso? A leitura sem filtro da API não preenche o status de quem
 // está ativo (vem vazio); desativado vem "deactivate".
+// Turmas do membro, se a API devolver (o painel da Hubla mostra a coluna
+// "Turma", que é o mais perto da oferta). Aceita os formatos mais comuns.
+function turmasDoMembro(m) {
+  if (!m) return undefined;
+  const fontes = [m.cohorts, m.cohort, m.classes, m.groups, m.cohortNames, m.cohortName];
+  const out = [];
+  for (const f of fontes) {
+    for (const x of (Array.isArray(f) ? f : (f ? [f] : []))) {
+      const n = typeof x === 'string' ? x : (x && (x.name || x.title || x.label));
+      if (n && !out.includes(String(n))) out.push(String(n));
+    }
+  }
+  return out.length ? out : undefined;
+}
+
 function membroAtivo(m, agora = Date.now()) {
   if (!m) return false;
   if (m.status === 'active') return true;
@@ -503,7 +518,8 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
         if (!email) continue;
         const ant = acessos[email];
         const novo = { nome: m.name || '', telefone: m.phone || '', tipo: m.type || '', status: m.status || '',
-          removidoEm: iso(m.removalAt), vitalicio: !!m.isLifetime };
+          removidoEm: iso(m.removalAt), vitalicio: !!m.isLifetime,
+          turmas: turmasDoMembro(m), entrouEm: iso(m.createdAt || m.joinedAt || m.grantedAt) };
         // Mesmo e-mail em duas listas: vale o acesso ativo.
         if (!ant || (ant.status !== 'active' && novo.status === 'active')) acessos[email] = novo;
       }
@@ -529,12 +545,14 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
         try {
           lista = await paginar(p => api('GET', `/v1/${encodeURIComponent(ref)}/members?page=${p}&pageSize=200${f ? '&' + f : ''}`), 100);
         } catch (err) { contagem[pr.name] = 'erro: ' + err.message.slice(0, 80); continue; }
+        if (lista[0] && !progresso.contagem.camposMembro) progresso.contagem.camposMembro = Object.keys(lista[0]).sort();
         for (const m of lista) {
           const email = String(m.email || '').toLowerCase().trim();
           if (!email) continue;
           const novo = { nome: m.name || '', telefone: m.phone || '', tipo: m.type || '',
             status: m.status || (f ? 'deactivate' : 'active'),
-            removidoEm: iso(m.removalAt), vitalicio: !!m.isLifetime };
+            removidoEm: iso(m.removalAt), vitalicio: !!m.isLifetime,
+            turmas: turmasDoMembro(m), entrouEm: iso(m.createdAt || m.joinedAt || m.grantedAt) };
           const ant = membros[email];
           if (!ant || (ant.status !== 'active' && novo.status === 'active')) membros[email] = novo;
         }
@@ -674,28 +692,51 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     const d = await ler();
     const agora = Date.now();
     let lista = Object.values(d.assinaturas).map(a => Object.assign({}, a, calcularSituacao(a, agora), { liberaPainel: assinaturaLiberaPainel(a) }));
-    // Quem tem acesso ao produto do painel sem assinatura paga dele (grátis,
-    // convite, vitalício): entra como linha de "acesso", com o fim que a Hubla
-    // informa (removalAt). Assinatura gratuita não gera fatura, por isso não
-    // aparece na descoberta pelas faturas.
-    // Acesso ativo só fica de fora se já houver assinatura ATIVA do produto (uma
-    // assinatura antiga vencida não pode esconder um acesso grátis/vitalício atual).
-    const doProduto = lista.filter(a => a.produtoId === PRODUTO_PAINEL_ID && a.email);
-    const comAssinaturaDoProduto = new Set(doProduto.map(a => a.email));
-    const comAssinaturaAtivaDoProduto = new Set(doProduto
-      .filter(a => a.situacao === 'vigente' || a.situacao === 'teste' || a.situacao === 'vitalicio').map(a => a.email));
-    for (const [em, ac] of Object.entries(d.acessos || {})) {
-      const ativo = membroAtivo(ac, agora);
-      if (comAssinaturaAtivaDoProduto.has(em) || (!ativo && comAssinaturaDoProduto.has(em))) continue;
-      const fim = ac.removidoEm || null;
-      const situacao = ativo ? (ac.vitalicio ? 'vitalicio' : 'vigente') : 'encerrada';
-      lista.push({
-        id: 'acesso:' + em, fonte: 'acesso', email: em, nome: ac.nome, telefone: ac.telefone,
-        produtoId: PRODUTO_PAINEL_ID, produtoNome: PRODUTO_PAINEL_NOME,
-        ofertaNome: ac.vitalicio ? 'Acesso vitalício (sem assinatura paga)' : (ac.tipo === 'free' ? 'Acesso gratuito / convite' : 'Acesso ao produto (sem fatura)'),
-        tipo: ac.tipo, liberaPainel: false, situacao, fim,
-        diasRestantes: ativo && fim && !ac.vitalicio ? Math.ceil((new Date(fim).getTime() - agora) / DIA) : null,
-      });
+    // Quem tem acesso a um produto sem assinatura paga dele (grátis, convite,
+    // vitalício): entra como linha de "acesso", com o fim que a Hubla informa
+    // (removalAt). Desde 11/11/2026 vale para TODOS os produtos
+    // (acessosPorProduto, gravado na sincronização diária), não só o do painel.
+    // Assinatura gratuita não gera fatura, por isso não aparece na descoberta
+    // pelas faturas. Acesso ativo só fica de fora se já houver assinatura ATIVA
+    // do mesmo produto (uma assinatura antiga vencida não pode esconder um
+    // acesso grátis/vitalício atual). A oferta vem da assinatura gratuita do
+    // mesmo produto/e-mail, quando a Hubla tiver criado uma (a lista de membros
+    // da API não diz a oferta).
+    for (const a of lista) a.gratuito = a.tipo === 'free';
+    const porProduto = Object.assign({}, d.acessosPorProduto || {});
+    if (d.acessos && Object.keys(d.acessos).length) {
+      porProduto[PRODUTO_PAINEL_ID] = Object.assign({}, porProduto[PRODUTO_PAINEL_ID] || {}, { nome: PRODUTO_PAINEL_NOME, membros: d.acessos });
+    }
+    const assPorProdEmail = {};
+    for (const a of lista) {
+      if (!a.produtoId || !a.email) continue;
+      (assPorProdEmail[a.produtoId + '|' + a.email] = assPorProdEmail[a.produtoId + '|' + a.email] || []).push(a);
+    }
+    const t = x => (x ? new Date(x).getTime() : 0);
+    for (const [pid, prod] of Object.entries(porProduto)) {
+      const nomeProduto = (prod && prod.nome) || (pid === PRODUTO_PAINEL_ID ? PRODUTO_PAINEL_NOME : pid);
+      for (const [em, ac] of Object.entries((prod && prod.membros) || {})) {
+        const ativo = membroAtivo(ac, agora);
+        const doEmail = assPorProdEmail[pid + '|' + em] || [];
+        if (doEmail.some(a => a.situacao === 'vigente' || a.situacao === 'teste' || a.situacao === 'vitalicio')) continue;
+        if (!ativo && doEmail.length) continue;
+        const fim = ac.removidoEm || null;
+        const situacao = ativo ? (ac.vitalicio ? 'vitalicio' : 'vigente') : 'encerrada';
+        const gratis = doEmail.filter(a => a.tipo === 'free').sort((x, y) => t(y.inicio || y.criadaEm) - t(x.inicio || x.criadaEm))[0];
+        const rotulo = ac.vitalicio
+          ? (ac.tipo === 'free' ? 'Acesso vitalício gratuito' : 'Acesso vitalício (sem assinatura paga)')
+          : (ac.tipo === 'free' ? 'Acesso gratuito / convite' : 'Acesso ao produto (sem fatura)');
+        lista.push({
+          id: 'acesso:' + pid + ':' + em, fonte: 'acesso', email: em, nome: ac.nome, telefone: ac.telefone,
+          produtoId: pid, produtoNome: nomeProduto,
+          ofertaNome: gratis && gratis.ofertaNome ? gratis.ofertaNome : rotulo,
+          ofertaConfirmada: !!(gratis && gratis.ofertaNome),
+          turmas: Array.isArray(ac.turmas) && ac.turmas.length ? ac.turmas : undefined,
+          tipo: ac.tipo, gratuito: ac.tipo === 'free', doPainel: pid === PRODUTO_PAINEL_ID,
+          liberaPainel: false, situacao, fim, inicio: ac.entrouEm || undefined,
+          diasRestantes: ativo && fim && !ac.vitalicio ? Math.ceil((new Date(fim).getTime() - agora) / DIA) : null,
+        });
+      }
     }
     if (painel === '1' || painel === true) lista = lista.filter(a => a.liberaPainel);
     if (situacao) {
