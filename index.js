@@ -59,6 +59,8 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'alertas-membros.json',
   // Exceções de acesso ao painel sem assinatura vigente (e-mail + justificativa): repo privado.
   'painel-excecoes.json',
+  // Regras de quais ofertas da Hubla liberam o painel (decididas no gestor): repo privado.
+  'painel-regras-acesso.json',
 ]);
 // Arquivos que saíram do painel-cdv: na 1ª leitura sem cópia no repo de dados,
 // o proxy copia a versão do repo público para lá (uma vez por arquivo).
@@ -4878,6 +4880,24 @@ async function aplicarAcessoMembroHubla({ type, isMemberAdded, isMemberRemoved, 
 //   hubla-assinaturas.js — a decisão saiu dos filtros da Hubla e veio para cá.
 const hublaAss = require('./hubla-assinaturas');
 const hublaAssinaturas = hublaAss.criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch });
+// Regras de acesso ao painel decididas no gestor (painel-regras-acesso.json).
+// Sem o arquivo valem as regras de fábrica de hubla-assinaturas.js. Recarrega
+// no boot, a cada 5 min (outra instância/edição manual) e logo após salvar.
+const PAINEL_REGRAS_PATH = 'painel-regras-acesso.json';
+async function carregarRegrasAcesso() {
+  try {
+    const { data, sha } = await ghGetJson(PAINEL_REGRAS_PATH, null);
+    // Leitura falha (limite da API) também devolve vazio: não apaga regras já carregadas.
+    if (!data && hublaAss.regrasAcessoAtivas()) return { data: null, sha, total: null, mantidas: true };
+    const r = hublaAss.definirRegrasAcesso(data || null);
+    return { data: data || null, sha, total: r.total };
+  } catch (e) {
+    console.warn('[regras-acesso] leitura falhou (mantém as regras atuais):', e.message);
+    return null;
+  }
+}
+setTimeout(carregarRegrasAcesso, 5000);
+setInterval(carregarRegrasAcesso, 5 * 60 * 1000);
 const _hublaIdempotencia = new Map(); // x-hubla-idempotency → quando (evita reprocessar reenvio)
 let _hublaAcessoFila = Promise.resolve(); // um evento de acesso por vez (membros.json)
 
@@ -4900,14 +4920,14 @@ app.post('/webhook/hubla-assinaturas', async (req, res) => {
   const po = hublaAss.produtoOfertaDoEvento(event);
   // Para membros.json: o produto/oferta que libera o painel (order bump pode vir junto).
   const produto = { id: po.produtoId, name: po.produtoNome, offers: [{ id: po.ofertaId, name: po.ofertaNome }] };
-  let liberaPainel = hublaAss.ofertaLiberaPainel(po.produtoId, po.produtoNome, po.ofertaNome);
+  let liberaPainel = hublaAss.ofertaLiberaPainel(po.produtoId, po.produtoNome, po.ofertaNome, po.ofertaId);
   const assinaturaId = String(
     event.subscription?.id || event.subscriptionId || event.member?.subscriptionId || event.invoice?.subscriptionId || ''
   ).trim();
   // Oferta de outro produto que só dá painel com prazo (Escola do Viajante,
   // 11/11/2026): vitalícia (≥ 3650 créditos) não libera. Créditos do evento;
   // sem eles, os da assinatura já gravada.
-  if (liberaPainel && hublaAss.ofertaPainelExigePrazo(po.produtoId, po.produtoNome, po.ofertaNome)) {
+  if (liberaPainel && hublaAss.ofertaPainelExigePrazo(po.produtoId, po.produtoNome, po.ofertaNome, po.ofertaId)) {
     let creditos = typeof event.subscription?.credits === 'number' ? event.subscription.credits : null;
     if (creditos === null && assinaturaId) {
       try {
@@ -5181,6 +5201,206 @@ app.post('/hubla/painel/retirar-acesso', async (req, res) => {
         }
         console.log(`[painel-acesso] retirado de ${removidos.length}; ignorados ${ignorados.length}`);
         return res.json({ ok: true, removidos, ignorados });
+      } catch (e) {
+        if (t < 4 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 400)); continue; }
+        throw e;
+      }
+    }
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+
+// ── Regras de acesso ao painel (desde 11/11/2026) ───────────────────────────
+// Gestão global: TODAS as ofertas de TODOS os produtos da Hubla aparecem, e o
+// Davi escolhe em cada uma libera / só com prazo / não libera. O proxy aplica a
+// regra em todo lugar que decide painel (webhook, sem-assinatura, outro acesso).
+const _situacaoAtiva = s => s === 'vigente' || s === 'teste' || s === 'vitalicio';
+function _ofertasDaBase(base) {
+  const out = {};
+  for (const [id, o] of Object.entries((base && base.ofertas) || {})) {
+    if (!o || o.ehProduto) continue;
+    out[id] = { ofertaId: id, ofertaNome: o.nome || '', produtoId: o.produtoId || '', produtoNome: o.produtoNome || '', arquivada: !!o.arquivada };
+  }
+  // Ofertas que só aparecem em assinaturas (removidas da Hubla ou sem id no catálogo).
+  for (const a of Object.values((base && base.assinaturas) || {})) {
+    if (!a || !a.ofertaId || out[a.ofertaId]) continue;
+    out[a.ofertaId] = { ofertaId: a.ofertaId, ofertaNome: a.ofertaNome || '', produtoId: a.produtoId || '', produtoNome: a.produtoNome || '(sem produto)', arquivada: false, soEmAssinaturas: true };
+  }
+  return out;
+}
+// Por e-mail: as assinaturas ativas (vigente/teste/vitalício) que liberam o
+// painel com o índice de regras dado (null = regras de fábrica).
+function _liberadosPorEmail(base, regras, agora) {
+  const out = new Map();
+  for (const a of Object.values((base && base.assinaturas) || {})) {
+    if (!a || !a.email) continue;
+    const { situacao } = hublaAss.calcularSituacao(a, agora);
+    if (!_situacaoAtiva(situacao)) continue;
+    if (!hublaAss.assinaturaLiberaPainel(a, agora, regras)) continue;
+    const e = _emailNorm(a.email);
+    const x = out.get(e) || { email: e, nome: a.nome || '', telefone: a.telefone || '', ofertas: [], assinaturas: [] };
+    if (!x.nome && a.nome) x.nome = a.nome;
+    const rot = (a.produtoNome ? a.produtoNome + ' · ' : '') + (a.ofertaNome || '');
+    if (!x.ofertas.includes(rot)) x.ofertas.push(rot);
+    x.assinaturas.push({ id: a.id, ofertaId: a.ofertaId, produtoId: a.produtoId, produtoNome: a.produtoNome, ofertaNome: a.ofertaNome });
+    out.set(e, x);
+  }
+  return out;
+}
+function _normalizarRegrasPedidas(corpo, ofertasBase) {
+  const pedido = (corpo && corpo.ofertas) || {};
+  const ofertas = {};
+  for (const [id, regra] of Object.entries(pedido)) {
+    const r = typeof regra === 'string' ? regra : (regra && regra.regra);
+    if (!hublaAss.REGRAS_ACESSO.includes(r)) continue;
+    const o = ofertasBase[id];
+    if (!o) continue; // só ofertas conhecidas
+    ofertas[id] = { regra: r, produtoId: o.produtoId, produtoNome: o.produtoNome, ofertaNome: o.ofertaNome };
+  }
+  return ofertas;
+}
+app.get('/hubla/regras-acesso', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const [{ data: base }, regrasArq, { data: mdata }] = await Promise.all([
+      ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}),
+      carregarRegrasAcesso(),
+      ghGetJson(MEMBROS_PATH, { membros: [] }),
+    ]);
+    const agora = Date.now();
+    const ofertas = _ofertasDaBase(base);
+    const salvas = (regrasArq && regrasArq.data && regrasArq.data.ofertas) || {};
+    const ativosPainel = new Set(((mdata && mdata.membros) || []).filter(m => m && m.status === 'ativo').map(m => _emailNorm(m.email)));
+    const cont = {};
+    for (const a of Object.values((base && base.assinaturas) || {})) {
+      if (!a || !a.ofertaId || !ofertas[a.ofertaId]) continue;
+      const c = cont[a.ofertaId] = cont[a.ofertaId] || { total: 0, ativas: new Set(), vitalicias: new Set(), noPainel: new Set() };
+      c.total++;
+      const { situacao } = hublaAss.calcularSituacao(a, agora);
+      if (!_situacaoAtiva(situacao) || !a.email) continue;
+      const e = _emailNorm(a.email);
+      c.ativas.add(e);
+      if (situacao === 'vitalicio') c.vitalicias.add(e);
+      if (ativosPainel.has(e)) c.noPainel.add(e);
+    }
+    const lista = Object.values(ofertas).map(o => {
+      const c = cont[o.ofertaId] || { total: 0, ativas: new Set(), vitalicias: new Set(), noPainel: new Set() };
+      const padrao = hublaAss.regraPadraoAcesso(o.produtoId, o.produtoNome, o.ofertaNome);
+      return Object.assign({}, o, {
+        regraPadrao: padrao,
+        regraSalva: (salvas[o.ofertaId] && salvas[o.ofertaId].regra) || null,
+        regra: hublaAss.regraAcesso(o.produtoId, o.produtoNome, o.ofertaNome, o.ofertaId),
+        assinaturas: c.total, pessoasAtivas: c.ativas.size, vitalicias: c.vitalicias.size, ativasNoPainel: c.noPainel.size,
+      });
+    });
+    lista.sort((a, z) => a.produtoNome.localeCompare(z.produtoNome, 'pt-BR') || a.ofertaNome.localeCompare(z.ofertaNome, 'pt-BR'));
+    res.json({ ok: true, regrasSalvas: !!(regrasArq && regrasArq.data), atualizadoEm: (regrasArq && regrasArq.data && regrasArq.data.atualizadoEm) || null,
+      baseAtualizadaEm: (base && base.atualizadoEm) || null, ofertas: lista });
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+// Prévia: {ofertas:{id:regra}} → quem ganha e quem perde o direito ao painel.
+async function _previaRegras(corpo) {
+  const [{ data: base }, { data: mdata }, exc] = await Promise.all([
+    ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}),
+    ghGetJson(MEMBROS_PATH, { membros: [] }),
+    lerExcecoesPainel(),
+  ]);
+  const agora = Date.now();
+  const ofertas = _normalizarRegrasPedidas(corpo, _ofertasDaBase(base));
+  const novo = hublaAss.indiceRegras({ ofertas });
+  const antes = _liberadosPorEmail(base, undefined, agora);
+  const depois = _liberadosPorEmail(base, novo, agora);
+  const porEmail = new Map(((mdata && mdata.membros) || []).map(m => [_emailNorm(m.email), m]));
+  const admins = new Set(ADMIN_EMAILS.map(_emailNorm));
+  const linha = (x, perde) => {
+    const m = porEmail.get(x.email);
+    const out = { email: x.email, nome: x.nome || (m && m.nome) || '', ofertas: x.ofertas, statusPainel: m ? m.status : 'sem_cadastro' };
+    if (perde) Object.assign(out, { excecao: exc.mapa.has(x.email), admin: admins.has(x.email) });
+    return out;
+  };
+  const ganham = [...depois.values()].filter(x => !antes.has(x.email)).map(x => linha(x));
+  const perdem = [...antes.values()].filter(x => !depois.has(x.email)).map(x => linha(x, true));
+  const ord = (a, z) => (a.nome || a.email).localeCompare(z.nome || z.email, 'pt-BR');
+  ganham.sort(ord); perdem.sort(ord);
+  return { ofertas, ganham, perdem, liberadosAntes: antes.size, liberadosDepois: depois.size };
+}
+app.post('/hubla/regras-acesso/simular', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const r = await _previaRegras(req.body);
+    res.json({ ok: true, ganham: r.ganham, perdem: r.perdem, liberadosAntes: r.liberadosAntes, liberadosDepois: r.liberadosDepois });
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+// Salva {ofertas:{id:regra}} (todas as ofertas mostradas na tela). Não mexe em
+// membros.json: liberar quem ganhou é "Aplicar"; retirar quem perdeu continua
+// sendo a visão "Acesso ao painel · Exceções" (exceções e admins nunca saem).
+app.post('/hubla/regras-acesso', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const { data: base } = await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {});
+    const ofertas = _normalizarRegrasPedidas(req.body, _ofertasDaBase(base));
+    if (!Object.keys(ofertas).length) return res.status(400).json({ ok: false, erro: 'nenhuma regra válida' });
+    for (let t = 1; t <= 4; t++) {
+      try {
+        const { sha } = await ghGetJson(PAINEL_REGRAS_PATH, null);
+        const arquivo = { atualizadoEm: new Date().toISOString(), ofertas };
+        await ghPutJson(PAINEL_REGRAS_PATH, arquivo, sha, 'painel: regras de acesso por oferta da Hubla');
+        hublaAss.definirRegrasAcesso(arquivo);
+        _membrosAtivos.prod.ts = 0;
+        const libera = Object.values(ofertas).filter(o => o.regra !== 'nao').length;
+        console.log(`[regras-acesso] salvas ${Object.keys(ofertas).length} ofertas (${libera} liberam o painel)`);
+        return res.json({ ok: true, total: Object.keys(ofertas).length, liberam: libera });
+      } catch (e) {
+        if (t < 4 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 400)); continue; }
+        throw e;
+      }
+    }
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+// Libera o painel para quem tem assinatura ativa de oferta que libera (pelas
+// regras salvas) e não está ativo em membros.json. Sem {confirmar:true} só
+// devolve a lista (prévia). Uma gravação só em membros.json.
+app.post('/hubla/regras-acesso/aplicar', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const confirmar = !!(req.body && req.body.confirmar === true);
+  try {
+    await carregarRegrasAcesso();
+    for (let t = 1; t <= 4; t++) {
+      try {
+        const [{ data: base }, { data: mdata, sha }] = await Promise.all([
+          ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}),
+          ghGetJson(MEMBROS_PATH, { atualizadoEm: null, total: 0, membros: [] }),
+        ]);
+        const agora = Date.now();
+        const membros = (mdata && mdata.membros) || [];
+        const porEmail = new Map(membros.map(m => [_emailNorm(m.email), m]));
+        const liberados = _liberadosPorEmail(base, undefined, agora);
+        const alvo = [...liberados.values()].filter(x => { const m = porEmail.get(x.email); return !m || m.status !== 'ativo'; })
+          .map(x => Object.assign({}, x, { statusPainel: porEmail.has(x.email) ? porEmail.get(x.email).status : 'sem_cadastro' }))
+          .sort((a, z) => (a.nome || a.email).localeCompare(z.nome || z.email, 'pt-BR'));
+        const publico = alvo.map(x => ({ email: x.email, nome: x.nome, ofertas: x.ofertas, statusPainel: x.statusPainel }));
+        if (!confirmar || !alvo.length) return res.json({ ok: true, previa: !confirmar, total: alvo.length, pessoas: publico, ativados: [] });
+        const iso = new Date(agora).toISOString();
+        for (const x of alvo) {
+          const s = x.assinaturas[0];
+          const entrada = { oferta: s.ofertaNome || s.produtoNome || '', produtoId: s.produtoId || '', produtoNome: s.produtoNome || '' };
+          let m = porEmail.get(x.email);
+          if (!m) {
+            m = { nome: x.nome || x.email, email: x.email, status: 'ativo', produtos: [], adicionadoEm: iso, origem: 'regras_acesso' };
+            membros.push(m);
+          }
+          m.status = 'ativo'; m.ativadoEm = iso; m.atualizadoEm = iso;
+          delete m.removidoEm; delete m.removidoMotivo;
+          if (!Array.isArray(m.produtos)) m.produtos = [];
+          if (!m.produtos.some(p => p && p.produtoId === entrada.produtoId && p.oferta === entrada.oferta)) m.produtos.push(entrada);
+          const subs = Array.isArray(m.assinaturasHubla) ? m.assinaturasHubla : [];
+          for (const a of x.assinaturas) if (a.id && !subs.includes(a.id)) subs.push(a.id);
+          m.assinaturasHubla = subs;
+        }
+        await ghPutJson(MEMBROS_PATH, Object.assign({}, mdata, { atualizadoEm: iso, total: membros.filter(m => m.status === 'ativo').length, membros }),
+          sha, `painel: libera acesso de ${alvo.length} pelas regras de acesso`);
+        _membrosAtivos.prod.ts = 0;
+        console.log(`[regras-acesso] painel liberado para ${alvo.length}`);
+        return res.json({ ok: true, previa: false, total: alvo.length, pessoas: publico, ativados: alvo.map(x => x.email) });
       } catch (e) {
         if (t < 4 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 400)); continue; }
         throw e;

@@ -124,7 +124,11 @@
         "app.get('/hubla/assinaturas'",
         "app.post('/hubla/assinaturas/sincronizar'",
         "async function aplicarAcessoMembroHubla(",
-        "app.get('/hubla/grupos-auditoria'"
+        "app.get('/hubla/grupos-auditoria'",
+        "app.get('/hubla/regras-acesso'",
+        "app.post('/hubla/regras-acesso'",
+        "app.post('/hubla/regras-acesso/aplicar'",
+        "async function carregarRegrasAcesso("
       ]
     },
     "index.html": {
@@ -335,7 +339,9 @@
       "obrigatorio": [
         "function criarHublaAssinaturas(",
         "function ofertaLiberaPainel(",
-        "const OFERTAS_PAINEL = ["
+        "const OFERTAS_PAINEL = [",
+        "function definirRegrasAcesso(",
+        "function regraAcesso("
       ]
     },
     "hubla-grupos-auditoria.js": {

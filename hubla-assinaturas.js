@@ -52,24 +52,82 @@ function _outroProdutoPainel(produtoId, produtoNome, ofertaNome) {
   return OFERTAS_PAINEL_OUTROS_PRODUTOS.find(x =>
     (produtoId ? produtoId === x.produtoId : norm(produtoNome) === norm(x.produtoNome)) && norm(ofertaNome) === norm(x.oferta)) || null;
 }
-function ofertaLiberaPainel(produtoId, produtoNome, ofertaNome) {
-  if (produtoEhDoPainel(produtoId, produtoNome) && _ofertasPainelNorm.has(norm(ofertaNome))) return true;
-  return !!_outroProdutoPainel(produtoId, produtoNome, ofertaNome);
+// ── Regras de acesso editáveis (desde 11/11/2026) ────────────────────────────
+// O Davi decide no gestor, oferta por oferta de TODOS os produtos, o que dá
+// painel. Arquivo `painel-regras-acesso.json` (repo de dados):
+//   { atualizadoEm, ofertas: { <ofertaId>: { regra, produtoId, produtoNome, ofertaNome } } }
+// regra: 'libera' | 'prazo' (só enquanto tiver prazo; vitalício não) | 'nao'.
+// Oferta fora do arquivo (ou arquivo inexistente) segue a regra padrão abaixo
+// (as 7 ofertas de OFERTAS_PAINEL + OFERTAS_PAINEL_OUTROS_PRODUTOS). index.js
+// carrega o arquivo e chama definirRegrasAcesso().
+const REGRAS = ['libera', 'prazo', 'nao'];
+let _regras = null; // { porId: Map, porNome: Map, atualizadoEm }
+function _chaveNome(produtoId, produtoNome, ofertaNome) {
+  return [produtoId ? 'id:' + produtoId : 'nome:' + norm(produtoNome), norm(ofertaNome)].join('|');
+}
+function definirRegrasAcesso(arquivo) {
+  const ofertas = (arquivo && arquivo.ofertas) || {};
+  const porId = new Map(), porNome = new Map();
+  const peso = { libera: 3, prazo: 2, nao: 1 };
+  for (const [id, r] of Object.entries(ofertas)) {
+    if (!r || !REGRAS.includes(r.regra)) continue;
+    porId.set(id, r.regra);
+    // Índice por nome, para o cadastro do membro (membros.json só guarda o
+    // nome da oferta). Duas ofertas de mesmo nome no mesmo produto: vale a mais
+    // aberta (as duas "Clube do Viajante (Premium)" liberam juntas).
+    for (const k of [_chaveNome(r.produtoId, '', r.ofertaNome), _chaveNome('', r.produtoNome, r.ofertaNome)]) {
+      if (!r.ofertaNome || (!r.produtoId && k.startsWith('id:'))) continue;
+      const ant = porNome.get(k);
+      if (!ant || peso[r.regra] > peso[ant]) porNome.set(k, r.regra);
+    }
+  }
+  _regras = porId.size ? { porId, porNome, atualizadoEm: (arquivo && arquivo.atualizadoEm) || null } : null;
+  return { total: porId.size };
+}
+function regrasAcessoAtivas() { return !!_regras; }
+// Regra de fábrica (antes do arquivo de regras).
+function regraPadraoAcesso(produtoId, produtoNome, ofertaNome) {
+  if (produtoEhDoPainel(produtoId, produtoNome) && _ofertasPainelNorm.has(norm(ofertaNome))) return 'libera';
+  const x = _outroProdutoPainel(produtoId, produtoNome, ofertaNome);
+  if (x) return x.semVitalicio ? 'prazo' : 'libera';
+  return 'nao';
+}
+// Regra efetiva: id da oferta → nome da oferta no produto → padrão.
+function regraAcesso(produtoId, produtoNome, ofertaNome, ofertaId, regras = _regras) {
+  if (regras) {
+    if (ofertaId && regras.porId.has(ofertaId)) return regras.porId.get(ofertaId);
+    const k1 = produtoId ? _chaveNome(produtoId, '', ofertaNome) : null;
+    if (k1 && regras.porNome.has(k1)) return regras.porNome.get(k1);
+    const k2 = _chaveNome('', produtoNome, ofertaNome);
+    if (produtoNome && regras.porNome.has(k2)) return regras.porNome.get(k2);
+  }
+  return regraPadraoAcesso(produtoId, produtoNome, ofertaNome);
+}
+function ofertaLiberaPainel(produtoId, produtoNome, ofertaNome, ofertaId) {
+  return regraAcesso(produtoId, produtoNome, ofertaNome, ofertaId) !== 'nao';
 }
 // A oferta libera o painel só quando NÃO é vitalícia?
-function ofertaPainelExigePrazo(produtoId, produtoNome, ofertaNome) {
-  if (produtoEhDoPainel(produtoId, produtoNome)) return false;
-  const x = _outroProdutoPainel(produtoId, produtoNome, ofertaNome);
-  return !!(x && x.semVitalicio);
+function ofertaPainelExigePrazo(produtoId, produtoNome, ofertaNome, ofertaId) {
+  return regraAcesso(produtoId, produtoNome, ofertaNome, ofertaId) === 'prazo';
 }
 // Recalcula na leitura (o campo gravado em hubla-assinaturas.json fica velho
-// quando a lista de ofertas muda, até a próxima sincronização).
-function assinaturaLiberaPainel(a, agora = Date.now()) {
+// quando as regras mudam, até a próxima sincronização). `regras` opcional:
+// simula um conjunto de regras ainda não salvo (prévia do gestor).
+function assinaturaLiberaPainel(a, agora = Date.now(), regras) {
   if (!a) return false;
-  if (!(a.ofertaNome || a.produtoNome)) return !!a.liberaPainel;
-  if (!ofertaLiberaPainel(a.produtoId, a.produtoNome, a.ofertaNome)) return false;
-  if (ofertaPainelExigePrazo(a.produtoId, a.produtoNome, a.ofertaNome) && calcularSituacao(a, agora).situacao === 'vitalicio') return false;
+  if (!(a.ofertaNome || a.produtoNome || a.ofertaId)) return !!a.liberaPainel;
+  const r = regraAcesso(a.produtoId, a.produtoNome, a.ofertaNome, a.ofertaId, regras === undefined ? _regras : regras);
+  if (r === 'nao') return false;
+  if (r === 'prazo' && calcularSituacao(a, agora).situacao === 'vitalicio') return false;
   return true;
+}
+// Monta o índice de um arquivo de regras sem ativá-lo (para a prévia).
+function indiceRegras(arquivo) {
+  const salvo = _regras;
+  definirRegrasAcesso(arquivo);
+  const r = _regras;
+  _regras = salvo;
+  return r;
 }
 
 // Produto e oferta de um payload de webhook v2. Venda com order bump chega num
@@ -91,7 +149,7 @@ function produtoOfertaDoEvento(event) {
       });
     }
   }
-  return pares.find(x => ofertaLiberaPainel(x.produtoId, x.produtoNome, x.ofertaNome)) || pares[0];
+  return pares.find(x => ofertaLiberaPainel(x.produtoId, x.produtoNome, x.ofertaNome, x.ofertaId)) || pares[0];
 }
 
 // ── Datas e situação ─────────────────────────────────────────────────────────
@@ -372,7 +430,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
         venda: iso(fatura.saleDate || fatura.createdAt), vencimento: iso(fatura.dueDate), pagaEm: iso(fatura.paidAt),
       };
     }
-    if (po.ofertaNome || po.produtoNome) novo.liberaPainel = ofertaLiberaPainel(po.produtoId, po.produtoNome, po.ofertaNome);
+    if (po.ofertaNome || po.produtoNome) novo.liberaPainel = ofertaLiberaPainel(po.produtoId, po.produtoNome, po.ofertaNome, po.ofertaId);
 
     // Completa pela API (próxima cobrança e data de desativação não vêm no webhook).
     if (apiKey()) {
@@ -389,7 +447,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
       if (po.ofertaId) {
         base.ofertas[po.ofertaId] = Object.assign({}, base.ofertas[po.ofertaId], {
           nome: po.ofertaNome, produtoId: po.produtoId, produtoNome: po.produtoNome,
-          liberaPainel: ofertaLiberaPainel(po.produtoId, po.produtoNome, po.ofertaNome),
+          liberaPainel: ofertaLiberaPainel(po.produtoId, po.produtoNome, po.ofertaNome, po.ofertaId),
         });
       }
     }, `hubla: ${type} ${subId.slice(0, 8)}`);
@@ -436,7 +494,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
       const lista = await paginar(p => api('GET', `/v1/products/${encodeURIComponent(pr.id)}/offers?page=${p}&pageSize=100`), 10);
       for (const of of lista) {
         ofertas[of.id] = { nome: of.name, produtoId: pr.id, produtoNome: pr.name,
-          liberaPainel: ofertaLiberaPainel(pr.id, pr.name, of.name), arquivada: !!of.isArchived };
+          liberaPainel: ofertaLiberaPainel(pr.id, pr.name, of.name, of.id), arquivada: !!of.isArchived };
       }
     }
     progresso.contagem.produtos = produtos.length;
@@ -473,7 +531,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
       }
     }
     for (const x of Object.values(porSub)) {
-      if (x.ofertaNome || x.produtoNome) x.liberaPainel = ofertaLiberaPainel(x.produtoId, x.produtoNome, x.ofertaNome);
+      if (x.ofertaNome || x.produtoNome) x.liberaPainel = ofertaLiberaPainel(x.produtoId, x.produtoNome, x.ofertaNome, x.ofertaId);
     }
     const pendentes = Object.keys(porSub);
     progresso.contagem.assinaturas = pendentes.length;
@@ -755,6 +813,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
 }
 
 module.exports = {
-  criarHublaAssinaturas, ofertaLiberaPainel, assinaturaLiberaPainel, ofertaPainelExigePrazo, OFERTAS_PAINEL_OUTROS_PRODUTOS, produtoOfertaDoEvento, calcularSituacao, membroAtivo, outroAcessoPainel,
+  criarHublaAssinaturas, ofertaLiberaPainel, assinaturaLiberaPainel,
+  definirRegrasAcesso, regrasAcessoAtivas, regraPadraoAcesso, regraAcesso, indiceRegras, REGRAS_ACESSO: REGRAS, ofertaPainelExigePrazo, OFERTAS_PAINEL_OUTROS_PRODUTOS, produtoOfertaDoEvento, calcularSituacao, membroAtivo, outroAcessoPainel,
   camposDaAssinatura, mesclarRegistro, OFERTAS_PAINEL, PRODUTO_PAINEL_ID, ARQUIVO_HUBLA_ASSINATURAS: ARQUIVO,
 };
