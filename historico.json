@@ -916306,10 +916306,23 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 2,
+          "pts": 20,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-samsung"
+          "ate": true,
+          "slug": "cupom-samsung",
+          "categorias": [
+            {
+              "categoria": "TV's Samsung l Exceto Combo e Acessórios",
+              "pts": 20,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 2,
+              "principal": true
+            }
+          ],
+          "ptsBase": 2
         }
       },
       "links": {
