@@ -57,6 +57,8 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'dispositivos.json',
   // Alertas pessoais de passagem e de transferência bonificada (e-mail): repo privado.
   'alertas-membros.json',
+  // Exceções de acesso ao painel sem assinatura vigente (e-mail + justificativa): repo privado.
+  'painel-excecoes.json',
 ]);
 // Arquivos que saíram do painel-cdv: na 1ª leitura sem cópia no repo de dados,
 // o proxy copia a versão do repo público para lá (uma vez por arquivo).
@@ -4831,6 +4833,11 @@ async function aplicarAcessoMembroHubla({ type, isMemberAdded, isMemberRemoved, 
               const base = (await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {})).data || {};
               outro = hublaAss.outroAcessoPainel(base, email, assinaturaId, membros[idx]);
             } catch (e) { console.warn('[hubla-membros] conferência de outro acesso falhou:', e.message); }
+            if (!outro) {
+              // Exceção cadastrada no gestor (aba Assinaturas → Exceções): fica com acesso.
+              try { if ((await lerExcecoesPainel()).mapa.has(String(email || '').toLowerCase().trim())) outro = 'excecao_do_painel'; }
+              catch (e) { console.warn('[hubla-membros] leitura das exceções falhou:', e.message); }
+            }
             if (assinaturaId) membros[idx].assinaturasHubla = [];
             if (outro) {
               console.log(`[hubla-membros] remoção ignorada: ${email} assinatura ${assinaturaId || '-'} — ainda tem ${outro}`);
@@ -4997,6 +5004,175 @@ app.get('/hubla/grupos-auditoria', async (req, res) => {
   } catch (err) {
     res.status(502).json({ ok: false, erro: err.message });
   }
+});
+
+// ── Exceções e retirada de acesso ao painel (desde 11/11/2026) ──────────────
+// painel-excecoes.json (repo de dados) = quem fica com acesso ao painel mesmo
+// sem assinatura vigente, com a justificativa. A retirada só desativa quem está,
+// AGORA, ativo em membros.json sem assinatura vigente/teste/vitalícia de oferta
+// do painel, sem acesso ativo na Hubla, sem outro acesso válido e fora das
+// exceções e dos admins — o mesmo critério de "Ativos no painel sem assinatura
+// vigente", recalculado na hora (nunca confia numa lista vinda do navegador).
+const PAINEL_EXCECOES_PATH = 'painel-excecoes.json';
+async function lerExcecoesPainel() {
+  const { data, sha } = await ghGetJson(PAINEL_EXCECOES_PATH, { excecoes: [] });
+  const excecoes = Array.isArray(data && data.excecoes) ? data.excecoes : [];
+  const mapa = new Map(excecoes.map(x => [String(x.email || '').toLowerCase().trim(), x]));
+  return { excecoes, mapa, sha, data: data || { excecoes: [] } };
+}
+function _emailNorm(e) { return String(e || '').toLowerCase().trim(); }
+async function painelSemAssinatura() {
+  const [{ data: mdata, sha: msha }, { data: base }, exc] = await Promise.all([
+    ghGetJson(MEMBROS_PATH, { membros: [] }),
+    ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}),
+    lerExcecoesPainel(),
+  ]);
+  const agora = Date.now();
+  const b = base || {};
+  const vigentes = new Set();
+  for (const a of Object.values(b.assinaturas || {})) {
+    if (!a || !a.liberaPainel || !a.email) continue;
+    const { situacao } = hublaAss.calcularSituacao(a, agora);
+    if (situacao === 'vigente' || situacao === 'teste' || situacao === 'vitalicio') vigentes.add(_emailNorm(a.email));
+  }
+  const admins = new Set(ADMIN_EMAILS.map(_emailNorm));
+  const lista = [];
+  for (const m of ((mdata && mdata.membros) || [])) {
+    if (!m || m.status !== 'ativo' || !m.email) continue;
+    const e = _emailNorm(m.email);
+    if (vigentes.has(e)) continue;
+    if (hublaAss.membroAtivo((b.acessos || {})[e], agora)) continue;
+    const outro = hublaAss.outroAcessoPainel(b, e, null, m, agora);
+    if (outro) continue;
+    const x = exc.mapa.get(e);
+    lista.push({
+      email: e, nome: m.nome || '', ativadoEm: m.ativadoEm || m.adicionadoEm || null,
+      produtos: (m.produtos || []).map(p => p && (p.oferta || p.produtoNome)).filter(Boolean),
+      admin: admins.has(e), excecao: x ? { justificativa: x.justificativa || '', criadoEm: x.criadoEm || null } : null,
+    });
+  }
+  lista.sort((a, z) => a.email.localeCompare(z.email));
+  return { lista, membros: mdata, sha: msha, excecoes: exc.excecoes, baseAtualizadaEm: b.atualizadoEm || null,
+    ultimaSincronizacao: (b.sincronizacao && (b.sincronizacao.ultimaEm || b.sincronizacao.membrosEm)) || null };
+}
+app.get('/hubla/painel/sem-assinatura', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const r = await painelSemAssinatura();
+    res.json({ ok: true, total: r.lista.length, retirar: r.lista.filter(p => !p.excecao && !p.admin).length,
+      baseAtualizadaEm: r.baseAtualizadaEm, ultimaSincronizacao: r.ultimaSincronizacao, pessoas: r.lista });
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+app.get('/hubla/painel/excecoes', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const { excecoes } = await lerExcecoesPainel();
+    const { data: md } = await ghGetJson(MEMBROS_PATH, { membros: [] });
+    const porEmail = new Map(((md && md.membros) || []).map(m => [_emailNorm(m.email), m]));
+    res.json({ ok: true, excecoes: excecoes.map(x => {
+      const m = porEmail.get(_emailNorm(x.email));
+      return Object.assign({}, x, { nomeMembro: (m && m.nome) || '', statusPainel: m ? m.status : 'sem_cadastro' });
+    }) });
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+// {email, justificativa, nome?} — inclui ou atualiza. Se a pessoa está inativa em
+// membros.json, reativa (a exceção é para ela ter acesso ao painel).
+app.post('/hubla/painel/excecoes', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const email = _emailNorm(req.body && req.body.email);
+  const justificativa = String((req.body && req.body.justificativa) || '').trim().slice(0, 500);
+  const nome = String((req.body && req.body.nome) || '').trim().slice(0, 120);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ ok: false, erro: 'e-mail inválido' });
+  if (!justificativa) return res.status(400).json({ ok: false, erro: 'justificativa obrigatória' });
+  try {
+    for (let t = 1; t <= 4; t++) {
+      try {
+        const exc = await lerExcecoesPainel();
+        const agora = new Date().toISOString();
+        const lista = exc.excecoes.filter(x => _emailNorm(x.email) !== email);
+        const ant = exc.mapa.get(email);
+        lista.push({ email, nome: nome || (ant && ant.nome) || '', justificativa, criadoEm: (ant && ant.criadoEm) || agora, atualizadoEm: agora });
+        lista.sort((a, z) => a.email.localeCompare(z.email));
+        await ghPutJson(PAINEL_EXCECOES_PATH, { atualizadoEm: agora, excecoes: lista }, exc.sha, 'painel: exceção de acesso');
+        break;
+      } catch (e) {
+        if (t < 4 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 400)); continue; }
+        throw e;
+      }
+    }
+    // Garante o acesso no painel.
+    let reativado = false, criado = false;
+    for (let t = 1; t <= 4; t++) {
+      try {
+        const agora = new Date().toISOString();
+        const { data, sha } = await ghGetJson(MEMBROS_PATH, { membros: [] });
+        const membros = (data && data.membros) || [];
+        const m = membros.find(x => _emailNorm(x.email) === email);
+        if (m && m.status === 'ativo') break;
+        if (m) { m.status = 'ativo'; m.ativadoEm = agora; m.atualizadoEm = agora; m.origem = m.origem || 'excecao'; delete m.removidoEm; delete m.removidoMotivo; reativado = true; }
+        else { membros.push({ nome, email, status: 'ativo', produtos: [], adicionadoEm: agora, ativadoEm: agora, atualizadoEm: agora, origem: 'excecao' }); criado = true; }
+        await ghPutJson(MEMBROS_PATH, Object.assign({}, data, { atualizadoEm: agora, total: membros.filter(x => x.status === 'ativo').length, membros }), sha, 'painel: exceção ativa acesso');
+        break;
+      } catch (e) {
+        if (t < 4 && String(e.message).includes('but expected')) { reativado = criado = false; await new Promise(r => setTimeout(r, t * 400)); continue; }
+        throw e;
+      }
+    }
+    res.json({ ok: true, email, reativado, criado });
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+app.post('/hubla/painel/excecoes/excluir', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const email = _emailNorm(req.body && req.body.email);
+  try {
+    for (let t = 1; t <= 4; t++) {
+      try {
+        const exc = await lerExcecoesPainel();
+        if (!exc.mapa.has(email)) return res.json({ ok: true, email, removida: false });
+        const lista = exc.excecoes.filter(x => _emailNorm(x.email) !== email);
+        await ghPutJson(PAINEL_EXCECOES_PATH, { atualizadoEm: new Date().toISOString(), excecoes: lista }, exc.sha, 'painel: remove exceção de acesso');
+        return res.json({ ok: true, email, removida: true });
+      } catch (e) {
+        if (t < 4 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 400)); continue; }
+        throw e;
+      }
+    }
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+// {emails:[...]} — desativa só quem está na lista E continua sem assinatura
+// vigente pelo critério acima (exceções e admins nunca saem).
+app.post('/hubla/painel/retirar-acesso', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const pedidos = new Set(((req.body && req.body.emails) || []).map(_emailNorm).filter(Boolean));
+  if (!pedidos.size) return res.status(400).json({ ok: false, erro: 'nenhum e-mail' });
+  try {
+    for (let t = 1; t <= 4; t++) {
+      try {
+        const r = await painelSemAssinatura();
+        const alvo = new Set(r.lista.filter(p => !p.excecao && !p.admin && pedidos.has(p.email)).map(p => p.email));
+        const agora = new Date().toISOString();
+        const membros = (r.membros && r.membros.membros) || [];
+        const removidos = [];
+        for (const m of membros) {
+          const e = _emailNorm(m && m.email);
+          if (!alvo.has(e) || m.status !== 'ativo') continue;
+          m.status = 'inativo'; m.removidoEm = agora; m.atualizadoEm = agora; m.removidoMotivo = 'sem_assinatura_vigente';
+          removidos.push(e);
+        }
+        const ignorados = [...pedidos].filter(e => !removidos.includes(e));
+        if (removidos.length) {
+          await ghPutJson(MEMBROS_PATH, Object.assign({}, r.membros, { atualizadoEm: agora, total: membros.filter(x => x.status === 'ativo').length, membros }),
+            r.sha, `painel: retira acesso de ${removidos.length} sem assinatura vigente`);
+          _membrosAtivos.prod.ts = 0; // a sessão de quem saiu cai na próxima chamada
+        }
+        console.log(`[painel-acesso] retirado de ${removidos.length}; ignorados ${ignorados.length}`);
+        return res.json({ ok: true, removidos, ignorados });
+      } catch (e) {
+        if (t < 4 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 400)); continue; }
+        throw e;
+      }
+    }
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
 });
 
 // Andamento da sincronização, sem dado pessoal (aberto, para diagnóstico).
