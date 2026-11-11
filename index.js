@@ -5084,7 +5084,7 @@ app.get('/hubla/grupos-auditoria', async (req, res) => {
 // Quem sai (candidatosRemocao em hubla-grupos-auditoria.js): grupo com regra de
 // grupos salva, pessoa com cadastro na Hubla, vencida há carenciaDias ou mais
 // (ou "sem direito", se ligado). Nunca: sem cadastro, exceção do painel, admin
-// do CDV ou do grupo, cliente do concierge, número da casa, Executiva/Operador.
+// do CDV ou do grupo, cliente do concierge, número da casa, Grupo Operador.
 // Ritmo: uma pessoa por rodada (20 min), só na janela, teto diário de remoções
 // (cada grupo conta 1), 20–40 s entre grupos (baileys), rodízio entre ticos com
 // teto por tico no baileys. Conta que cai ou limite do WhatsApp = pausa até o

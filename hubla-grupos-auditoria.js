@@ -23,9 +23,11 @@
 // CommonJS. Usa as regras de situação de hubla-assinaturas.js.
 const { calcularSituacao, membroAtivo } = require('./hubla-assinaturas');
 
-// Grupos fora da conferência (nome, sem acento/caixa). Emissões em executiva tem
-// clientes do concierge sem cadastro na Hubla (decisão do Davi, 29/10/2026).
-const GRUPOS_IGNORADOS = [/executiva/, /grupo operador/];
+// Grupos fora da conferência (nome, sem acento/caixa): só o Grupo Operador.
+// Desde 11/11/2026 os grupos de executiva entram na conferência e na regra de
+// grupos por oferta (decisão do Davi); os clientes do concierge que estão lá
+// sem Hubla ficam como "concierge" e nunca são removidos.
+const GRUPOS_IGNORADOS = [/grupo operador/];
 const DIA = 86400000;
 
 function norm(s) {
