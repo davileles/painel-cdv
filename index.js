@@ -4900,10 +4900,24 @@ app.post('/webhook/hubla-assinaturas', async (req, res) => {
   const po = hublaAss.produtoOfertaDoEvento(event);
   // Para membros.json: o produto/oferta que libera o painel (order bump pode vir junto).
   const produto = { id: po.produtoId, name: po.produtoNome, offers: [{ id: po.ofertaId, name: po.ofertaNome }] };
-  const liberaPainel = hublaAss.ofertaLiberaPainel(po.produtoId, po.produtoNome, po.ofertaNome);
+  let liberaPainel = hublaAss.ofertaLiberaPainel(po.produtoId, po.produtoNome, po.ofertaNome);
   const assinaturaId = String(
     event.subscription?.id || event.subscriptionId || event.member?.subscriptionId || event.invoice?.subscriptionId || ''
   ).trim();
+  // Oferta de outro produto que só dá painel com prazo (Escola do Viajante,
+  // 11/11/2026): vitalícia (≥ 3650 créditos) não libera. Créditos do evento;
+  // sem eles, os da assinatura já gravada.
+  if (liberaPainel && hublaAss.ofertaPainelExigePrazo(po.produtoId, po.produtoNome, po.ofertaNome)) {
+    let creditos = typeof event.subscription?.credits === 'number' ? event.subscription.credits : null;
+    if (creditos === null && assinaturaId) {
+      try {
+        const base = (await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {})).data || {};
+        const a = (base.assinaturas || {})[assinaturaId];
+        if (a && typeof a.creditos === 'number') creditos = a.creditos;
+      } catch (e) { console.warn('[hubla-assinaturas] leitura de créditos falhou:', e.message); }
+    }
+    if (creditos !== null && creditos >= 3650) liberaPainel = false;
+  }
 
   registrarWebhookHubla({ recebidoEm: new Date().toISOString(), type, email, assinaturaId, liberaPainel, event });
 
@@ -5031,7 +5045,7 @@ async function painelSemAssinatura() {
   const b = base || {};
   const vigentes = new Set();
   for (const a of Object.values(b.assinaturas || {})) {
-    if (!a || !a.liberaPainel || !a.email) continue;
+    if (!a || !hublaAss.assinaturaLiberaPainel(a, agora) || !a.email) continue;
     const { situacao } = hublaAss.calcularSituacao(a, agora);
     if (situacao === 'vigente' || situacao === 'teste' || situacao === 'vitalicio') vigentes.add(_emailNorm(a.email));
   }

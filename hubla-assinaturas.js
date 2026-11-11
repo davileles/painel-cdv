@@ -40,8 +40,36 @@ function produtoEhDoPainel(produtoId, produtoNome) {
   if (produtoId) return produtoId === PRODUTO_PAINEL_ID;
   return norm(produtoNome) === norm(PRODUTO_PAINEL_NOME);
 }
+// Ofertas de OUTROS produtos que também liberam o painel (desde 11/11/2026:
+// a "Escola do Viajante" vendida como produto próprio). Casa pelo id do produto
+// ou, sem id, pelo nome do produto; a oferta sempre pelo nome.
+// semVitalicio: só libera enquanto a assinatura tiver prazo — a Escola
+// vitalícia (curso comprado para sempre) NÃO dá painel (decisão de 11/11/2026).
+const OFERTAS_PAINEL_OUTROS_PRODUTOS = [
+  { produtoId: '9WymDJ2TYmaj6VY3KP3E', produtoNome: 'Escola do Viajante', oferta: 'Escola do Viajante', semVitalicio: true },
+];
+function _outroProdutoPainel(produtoId, produtoNome, ofertaNome) {
+  return OFERTAS_PAINEL_OUTROS_PRODUTOS.find(x =>
+    (produtoId ? produtoId === x.produtoId : norm(produtoNome) === norm(x.produtoNome)) && norm(ofertaNome) === norm(x.oferta)) || null;
+}
 function ofertaLiberaPainel(produtoId, produtoNome, ofertaNome) {
-  return produtoEhDoPainel(produtoId, produtoNome) && _ofertasPainelNorm.has(norm(ofertaNome));
+  if (produtoEhDoPainel(produtoId, produtoNome) && _ofertasPainelNorm.has(norm(ofertaNome))) return true;
+  return !!_outroProdutoPainel(produtoId, produtoNome, ofertaNome);
+}
+// A oferta libera o painel só quando NÃO é vitalícia?
+function ofertaPainelExigePrazo(produtoId, produtoNome, ofertaNome) {
+  if (produtoEhDoPainel(produtoId, produtoNome)) return false;
+  const x = _outroProdutoPainel(produtoId, produtoNome, ofertaNome);
+  return !!(x && x.semVitalicio);
+}
+// Recalcula na leitura (o campo gravado em hubla-assinaturas.json fica velho
+// quando a lista de ofertas muda, até a próxima sincronização).
+function assinaturaLiberaPainel(a, agora = Date.now()) {
+  if (!a) return false;
+  if (!(a.ofertaNome || a.produtoNome)) return !!a.liberaPainel;
+  if (!ofertaLiberaPainel(a.produtoId, a.produtoNome, a.ofertaNome)) return false;
+  if (ofertaPainelExigePrazo(a.produtoId, a.produtoNome, a.ofertaNome) && calcularSituacao(a, agora).situacao === 'vitalicio') return false;
+  return true;
 }
 
 // Produto e oferta de um payload de webhook v2. Venda com order bump chega num
@@ -150,7 +178,7 @@ function outroAcessoPainel(base, email, assinaturaId, membro, agora = Date.now()
   for (const a of Object.values((base && base.assinaturas) || {})) {
     if (!a || String(a.email || '').toLowerCase().trim() !== e) continue;
     if (assinaturaId && a.id === assinaturaId) continue;
-    if (!a.liberaPainel) continue;
+    if (!assinaturaLiberaPainel(a, agora)) continue;
     const { situacao } = calcularSituacao(a, agora);
     if (situacao === 'vigente' || situacao === 'teste' || situacao === 'vitalicio') {
       return `assinatura_vigente: ${a.ofertaNome || a.id}`;
@@ -621,7 +649,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     for (const a of Object.values(base.assinaturas || {})) {
       const { situacao } = calcularSituacao(a, agora);
       porSituacao[situacao] = (porSituacao[situacao] || 0) + 1;
-      if (a.liberaPainel && (situacao === 'vigente' || situacao === 'teste' || situacao === 'vitalicio') && a.email) vigentesPainel.add(a.email);
+      if (assinaturaLiberaPainel(a) && (situacao === 'vigente' || situacao === 'teste' || situacao === 'vitalicio') && a.email) vigentesPainel.add(a.email);
     }
     const out = { porSituacao, membrosComAssinaturaPainelVigente: vigentesPainel.size };
     if (membrosAtivos) {
@@ -645,7 +673,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
   async function listar({ situacao, painel, email } = {}) {
     const d = await ler();
     const agora = Date.now();
-    let lista = Object.values(d.assinaturas).map(a => Object.assign({}, a, calcularSituacao(a, agora)));
+    let lista = Object.values(d.assinaturas).map(a => Object.assign({}, a, calcularSituacao(a, agora), { liberaPainel: assinaturaLiberaPainel(a) }));
     // Quem tem acesso ao produto do painel sem assinatura paga dele (grátis,
     // convite, vitalício): entra como linha de "acesso", com o fim que a Hubla
     // informa (removalAt). Assinatura gratuita não gera fatura, por isso não
@@ -686,6 +714,6 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
 }
 
 module.exports = {
-  criarHublaAssinaturas, ofertaLiberaPainel, produtoOfertaDoEvento, calcularSituacao, membroAtivo, outroAcessoPainel,
+  criarHublaAssinaturas, ofertaLiberaPainel, assinaturaLiberaPainel, ofertaPainelExigePrazo, OFERTAS_PAINEL_OUTROS_PRODUTOS, produtoOfertaDoEvento, calcularSituacao, membroAtivo, outroAcessoPainel,
   camposDaAssinatura, mesclarRegistro, OFERTAS_PAINEL, PRODUTO_PAINEL_ID, ARQUIVO_HUBLA_ASSINATURAS: ARQUIVO,
 };
