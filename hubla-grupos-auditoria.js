@@ -172,28 +172,53 @@ function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, ago
 }
 
 // Quem o Tico tira, a partir do detalhe da auditoria. Só em grupo com regra de
-// grupos (mapeado), só quem tem cadastro (o telefone casou com a Hubla) e:
+// grupos (mapeado), só com telefone conhecido (LID sem telefone nunca sai) e:
 //   - vencido há pelo menos carenciaDias; ou
-//   - sem_direito, se incluirSemDireito (tem assinatura, mas nenhuma oferta dá o grupo).
-// Sem cadastro, exceção, concierge, admin e número da casa nunca saem.
-// Devolve uma linha por pessoa com os grupos de onde sai.
-function candidatosRemocao(aud, { carenciaDias = 3, incluirSemDireito = false } = {}) {
+//   - sem_direito, se incluirSemDireito (tem assinatura, mas nenhuma oferta dá o grupo); ou
+//   - sem_cadastro, se incluirSemCadastro (desde 11/11/2026: o telefone não casa
+//     com a Hubla nem com o concierge — quem entrou pelo link sem ser aluno),
+//     só depois de esperaSemCadastroH horas desde que o sistema o viu no grupo
+//     (vistos = { 'jid|chave': ISO }, ver atualizarVistos).
+// Exceção (do painel, dos admins ou por telefone), concierge, admin e número da
+// casa nunca saem. Devolve uma linha por pessoa com os grupos de onde sai.
+function candidatosRemocao(aud, { carenciaDias = 3, incluirSemDireito = false, incluirSemCadastro = false,
+  esperaSemCadastroH = 24, vistos = null, agora = Date.now() } = {}) {
   const porPessoa = new Map();
   for (const d of ((aud && aud.detalhe) || [])) {
     if (!d.mapeado || !d.chave || !d.telefone) continue;
-    let motivo = null;
+    let motivo = null, desde = null;
     if (d.situacao === 'vencido') {
       if (d.diasDesdeVencimento === null || d.diasDesdeVencimento < carenciaDias) continue;
       motivo = 'vencido';
     } else if (d.situacao === 'sem_direito' && incluirSemDireito) {
       motivo = 'sem_direito';
+    } else if (d.situacao === 'sem_cadastro' && incluirSemCadastro) {
+      desde = (vistos && vistos[d.jid + '|' + d.chave]) || null;
+      if (!desde || agora - new Date(desde).getTime() < esperaSemCadastroH * 3600e3) continue;
+      motivo = 'sem_cadastro';
     } else continue;
     const x = porPessoa.get(d.chave) || { chave: d.chave, telefone: d.telefone, nome: d.nome, email: d.email, grupos: [], motivos: [] };
-    x.grupos.push({ jid: d.jid, nome: d.grupo, motivo, venceuEm: d.venceuEm, dias: d.diasDesdeVencimento });
+    x.grupos.push({ jid: d.jid, nome: d.grupo, motivo, venceuEm: d.venceuEm, dias: d.diasDesdeVencimento, vistoDesde: desde });
     if (!x.motivos.includes(motivo)) x.motivos.push(motivo);
     porPessoa.set(d.chave, x);
   }
   return [...porPessoa.values()].sort((a, b) => String(a.nome || a.telefone).localeCompare(String(b.nome || b.telefone), 'pt-BR'));
 }
 
-module.exports = { auditar, candidatosRemocao, chaveTelefone, grupoIgnorado, GRUPOS_IGNORADOS };
+// Quando o sistema viu cada pessoa sem cadastro em cada grupo com regra pela
+// primeira vez. Mantém a data de quem continua lá; quem saiu some (se voltar,
+// a contagem recomeça). Devolve { vistos, mudou }.
+function atualizarVistos(aud, antigos, agora = Date.now()) {
+  const ant = antigos && typeof antigos === 'object' ? antigos : {};
+  const vistos = {};
+  for (const d of ((aud && aud.detalhe) || [])) {
+    if (d.situacao !== 'sem_cadastro' || !d.mapeado || !d.chave) continue;
+    const k = d.jid + '|' + d.chave;
+    vistos[k] = ant[k] || new Date(agora).toISOString();
+  }
+  const ka = Object.keys(ant), kn = Object.keys(vistos);
+  const mudou = ka.length !== kn.length || kn.some(k => ant[k] !== vistos[k]);
+  return { vistos, mudou };
+}
+
+module.exports = { auditar, candidatosRemocao, atualizarVistos, chaveTelefone, grupoIgnorado, GRUPOS_IGNORADOS };

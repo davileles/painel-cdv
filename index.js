@@ -5059,11 +5059,18 @@ function chavesExcecao(base, excecoes) {
 }
 async function montarAuditoriaGrupos({ forcar = false, gruposRegras } = {}) {
   const bruto = await coletarGruposCdv(forcar);
-  const [{ data: hubla }, exc] = await Promise.all([ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}), lerExcecoesPainel()]);
+  const [{ data: hubla }, exc, { data: rem }] = await Promise.all([ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}), lerExcecoesPainel(),
+    ghGetJson('grupos-remocao.json', null)]);
   let clientes = [];
   try { clientes = (await getConciergeFile('clientes.json')).content || []; } catch (e) { /* sem concierge, segue */ }
+  // Exceções dos grupos por telefone (grupos-remocao.json → excecoesTelefone): para
+  // quem não tem cadastro na Hubla e deve ficar (desde 11/11/2026).
+  const excecoes = chavesExcecao(hubla, exc.excecoes);
+  for (const x of ((rem && Array.isArray(rem.excecoesTelefone)) ? rem.excecoesTelefone : [])) {
+    const k = hublaAuditoria.chaveTelefone(x && x.telefone); if (k) excecoes.add(k);
+  }
   const aud = hublaAuditoria.auditar({ hubla, grupos: bruto.grupos, clientesConcierge: clientes,
-    gruposRegras: gruposRegras || hublaAss.gruposAcesso(), excecoes: chavesExcecao(hubla, exc.excecoes) });
+    gruposRegras: gruposRegras || hublaAss.gruposAcesso(), excecoes });
   aud.gruposLidosEm = new Date(bruto.em).toISOString();
   return aud;
 }
@@ -5083,21 +5090,26 @@ app.get('/hubla/grupos-auditoria', async (req, res) => {
 // assinatura inválida para aquele grupo. SÓ REMOÇÃO — ninguém é incluído.
 // Quem sai (candidatosRemocao em hubla-grupos-auditoria.js): grupo com regra de
 // grupos salva, pessoa com cadastro na Hubla, vencida há carenciaDias ou mais
-// (ou "sem direito", se ligado). Nunca: sem cadastro, exceção do painel, admin
-// do CDV ou do grupo, cliente do concierge, número da casa, Grupo Operador.
+// (ou "sem direito", se ligado) e, desde 11/11/2026, sem cadastro (se ligado,
+// depois de esperaSemCadastroH horas desde que foi visto no grupo — `vistos`).
+// Nunca: exceção do painel ou por telefone (excecoesTelefone), admin do CDV ou
+// do grupo, cliente do concierge, número da casa, LID sem telefone, Grupo Operador.
 // Ritmo: uma pessoa por rodada (20 min), só na janela, teto diário de remoções
 // (cada grupo conta 1), 20–40 s entre grupos (baileys), rodízio entre ticos com
 // teto por tico no baileys. Conta que cai ou limite do WhatsApp = pausa até o
 // Davi retomar. Modos: off · sombra (só lista quem sairia) · on.
 // Estado em grupos-remocao.json (repo de dados).
 const GRUPOS_REMOCAO_PATH = 'grupos-remocao.json';
-const REMOCAO_PADRAO = { modo: 'sombra', carenciaDias: 3, limiteDia: 10, incluirSemDireito: false, janelaIni: 9, janelaFim: 20 };
+const REMOCAO_PADRAO = { modo: 'sombra', carenciaDias: 3, limiteDia: 10, incluirSemDireito: false,
+  incluirSemCadastro: false, esperaSemCadastroH: 24, janelaIni: 9, janelaFim: 20 };
 function _remCfg(estado) {
   const c = Object.assign({}, REMOCAO_PADRAO, (estado && estado.config) || {});
   c.modo = ['off', 'sombra', 'on'].includes(c.modo) ? c.modo : 'sombra';
   c.carenciaDias = Math.max(0, Math.min(60, parseInt(c.carenciaDias, 10) || 0));
   c.limiteDia = Math.max(1, Math.min(40, parseInt(c.limiteDia, 10) || REMOCAO_PADRAO.limiteDia));
   c.incluirSemDireito = c.incluirSemDireito === true;
+  c.incluirSemCadastro = c.incluirSemCadastro === true;
+  c.esperaSemCadastroH = Math.max(1, Math.min(168, parseInt(c.esperaSemCadastroH, 10) || REMOCAO_PADRAO.esperaSemCadastroH));
   c.janelaIni = Math.max(0, Math.min(23, parseInt(c.janelaIni, 10) || REMOCAO_PADRAO.janelaIni));
   c.janelaFim = Math.max(c.janelaIni + 1, Math.min(24, parseInt(c.janelaFim, 10) || REMOCAO_PADRAO.janelaFim));
   return c;
@@ -5108,6 +5120,8 @@ async function lerEstadoRemocao() {
   const { data, sha } = await ghGetJson(GRUPOS_REMOCAO_PATH, null);
   const e = data || {};
   e.historico = Array.isArray(e.historico) ? e.historico : [];
+  e.excecoesTelefone = Array.isArray(e.excecoesTelefone) ? e.excecoesTelefone : [];
+  e.vistos = e.vistos && typeof e.vistos === 'object' ? e.vistos : {};
   if (!e.hoje || e.hoje.dia !== _diaSP()) e.hoje = { dia: _diaSP(), remocoes: 0, pessoas: 0 };
   return { estado: e, sha, cfg: _remCfg(e) };
 }
@@ -5135,8 +5149,9 @@ async function candidatosRemocaoAgora(estado, cfg, forcar) {
     const idade = agora - new Date(h.em).getTime();
     if (h.chave && (idade < 6 * 3600e3 || (idade < 24 * 3600e3 && h.feitos > 0))) recentes.add(h.chave);
   }
-  const lista = hublaAuditoria.candidatosRemocao(aud, cfg).filter(x => !recentes.has(x.chave));
-  return { lista, aud };
+  const { vistos, mudou } = hublaAuditoria.atualizarVistos(aud, estado.vistos, agora);
+  const lista = hublaAuditoria.candidatosRemocao(aud, Object.assign({}, cfg, { vistos, agora })).filter(x => !recentes.has(x.chave));
+  return { lista, aud, vistos, vistosMudou: mudou };
 }
 let _remRodando = false;
 async function cicloRemocaoGrupos({ manual = false } = {}) {
@@ -5151,18 +5166,23 @@ async function cicloRemocaoGrupos({ manual = false } = {}) {
     // Em sombra basta conferir de 2 em 2 h (cada conferência relê os grupos no WhatsApp).
     const ult = estado.ultimaRodada && new Date(estado.ultimaRodada.em).getTime();
     if (!manual && cfg.modo === 'sombra' && ult && Date.now() - ult < 2 * 3600e3) return { ok: true, pulado: 'sombra: conferida há pouco' };
-    const { lista } = await candidatosRemocaoAgora(estado, cfg, false);
+    const { lista, vistos, vistosMudou } = await candidatosRemocaoAgora(estado, cfg, false);
+    // Grava quando cada pessoa sem cadastro foi vista no grupo (conta a espera).
+    const gravarVistos = e => { if (vistosMudou) e.vistos = vistos; };
     if (cfg.modo === 'sombra' || !lista.length) {
-      await salvarEstadoRemocao(e => { e.ultimaRodada = { em: new Date().toISOString(), modo: cfg.modo, candidatos: lista.length, acao: null }; },
+      await salvarEstadoRemocao(e => { gravarVistos(e); e.ultimaRodada = { em: new Date().toISOString(), modo: cfg.modo, candidatos: lista.length, acao: null }; },
         `grupos: remoção (${cfg.modo}) — ${lista.length} candidato(s)`);
       return { ok: true, modo: cfg.modo, candidatos: lista.length };
     }
     const resta = cfg.limiteDia - (estado.hoje.remocoes || 0);
-    if (resta <= 0) return { ok: true, pulado: 'teto do dia atingido' };
+    if (resta <= 0) {
+      if (vistosMudou) await salvarEstadoRemocao(gravarVistos, 'grupos: remoção — atualiza quem entrou sem cadastro');
+      return { ok: true, pulado: 'teto do dia atingido' };
+    }
     // Trava: o baileys-server precisa ter a remoção só pelos ticos (soTico). Sem
     // ela, a tarefa usaria qualquer conta admin, inclusive a principal.
     if (!(_gruposBrutos && _gruposBrutos.remocaoSoTico)) {
-      await salvarEstadoRemocao(e => { e.ultimaRodada = { em: new Date().toISOString(), modo: 'on', candidatos: lista.length, acao: null,
+      await salvarEstadoRemocao(e => { gravarVistos(e); e.ultimaRodada = { em: new Date().toISOString(), modo: 'on', candidatos: lista.length, acao: null,
         aviso: 'o baileys-server ainda não tem a remoção só pelo Tico — ninguém foi removido' }; }, 'grupos: remoção aguardando o baileys-server');
       return { ok: true, pulado: 'baileys-server sem remoção só pelo Tico' };
     }
@@ -5196,6 +5216,7 @@ async function cicloRemocaoGrupos({ manual = false } = {}) {
     else if (/rate|overlimit|429|limite do whatsapp/i.test(textoFalhas)) pausar = 'o WhatsApp limitou as ações de grupo';
     const nomes = new Map(grupos.map(g => [g.jid, g]));
     await salvarEstadoRemocao(e => {
+      gravarVistos(e);
       e.hoje.remocoes = (e.hoje.remocoes || 0) + feitos;
       e.hoje.pessoas = (e.hoje.pessoas || 0) + (feitos ? 1 : 0);
       e.ultimaRodada = { em: new Date().toISOString(), modo: 'on', candidatos: lista.length, acao: alvo.nome || alvo.telefone };
@@ -5230,7 +5251,8 @@ app.get('/hubla/grupos-remocao', async (req, res) => {
     }
     res.json({ ok: true, config: cfg, pausado: estado.pausado || null, hoje: estado.hoje, ultimaRodada: estado.ultimaRodada || null,
       gruposComRegra: hublaAss.gruposAcesso().mapeados.size, rodando: _remRodando,
-      historico: estado.historico.slice(0, 60), candidatos, erroPrevia });
+      historico: estado.historico.slice(0, 60), candidatos, erroPrevia,
+      excecoesTelefone: estado.excecoesTelefone, semCadastroVistos: Object.keys(estado.vistos || {}).length });
   } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
 });
 app.post('/hubla/grupos-remocao/config', async (req, res) => {
@@ -5240,7 +5262,7 @@ app.post('/hubla/grupos-remocao/config', async (req, res) => {
     const e = await salvarEstadoRemocao(est => {
       const atual = _remCfg(est);
       const novo = Object.assign({}, atual);
-      for (const k of ['modo', 'carenciaDias', 'limiteDia', 'incluirSemDireito', 'janelaIni', 'janelaFim']) if (b[k] !== undefined) novo[k] = b[k];
+      for (const k of ['modo', 'carenciaDias', 'limiteDia', 'incluirSemDireito', 'incluirSemCadastro', 'esperaSemCadastroH', 'janelaIni', 'janelaFim']) if (b[k] !== undefined) novo[k] = b[k];
       est.config = _remCfg({ config: novo });
     }, 'grupos: configuração da remoção pelo Tico');
     console.log('[remocao-grupos] config:', JSON.stringify(e.config));
@@ -5252,6 +5274,25 @@ app.post('/hubla/grupos-remocao/retomar', async (req, res) => {
   try {
     await salvarEstadoRemocao(e => { delete e.pausado; }, 'grupos: retoma a remoção pelo Tico');
     res.json({ ok: true });
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+// Exceção de grupo por telefone (quem não tem cadastro na Hubla e deve ficar).
+// Body { telefone, nome?, justificativa } para incluir; { telefone, remover:true } para tirar.
+app.post('/hubla/grupos-remocao/excecao', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const b = req.body || {};
+    const tel = String(b.telefone || '').replace(/\D/g, '');
+    const k = hublaAuditoria.chaveTelefone(tel);
+    if (!k || tel.length < 10) return res.status(400).json({ ok: false, erro: 'telefone inválido' });
+    const just = String(b.justificativa || '').trim().slice(0, 300);
+    if (!b.remover && !just) return res.status(400).json({ ok: false, erro: 'justificativa obrigatória' });
+    const e = await salvarEstadoRemocao(est => {
+      const resto = est.excecoesTelefone.filter(x => hublaAuditoria.chaveTelefone(x.telefone) !== k);
+      if (!b.remover) resto.push({ telefone: tel, nome: String(b.nome || '').trim().slice(0, 120), justificativa: just, criadoEm: new Date().toISOString() });
+      est.excecoesTelefone = resto.sort((a, z) => String(a.nome || a.telefone).localeCompare(String(z.nome || z.telefone), 'pt-BR'));
+    }, b.remover ? 'grupos: tira exceção por telefone' : 'grupos: exceção por telefone');
+    res.json({ ok: true, excecoesTelefone: e.excecoesTelefone });
   } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
 });
 // Roda uma rodada agora (fora da espera de 20 min; respeita modo, pausa e teto).
