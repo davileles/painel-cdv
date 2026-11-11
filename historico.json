@@ -915755,7 +915755,7 @@
           "slug": "evino-125"
         },
         "meliuz": {
-          "pts": 2,
+          "pts": 3.5,
           "dollar": false,
           "ate": false,
           "slug": "cupom-evino"
@@ -916009,10 +916009,23 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 8,
+          "pts": 15,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-madeiramadeira"
+          "ate": true,
+          "slug": "cupom-madeiramadeira",
+          "categorias": [
+            {
+              "categoria": "Ofertas 11.11: móveis selecionados",
+              "pts": 15,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 5
         }
       },
       "links": {
@@ -917299,7 +917312,7 @@
           "slug": "mcafee-1654"
         },
         "meliuz": {
-          "pts": 25,
+          "pts": 45,
           "dollar": false,
           "ate": false,
           "slug": "cupom-mcafee"
@@ -918504,6 +918517,18 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-yamamura"
+      }
+    },
+    "the legend of zelda ocarina of time": {
+      "programs": {
+        "inter": {
+          "pts": 4,
+          "dollar": false,
+          "slug": "the-legend-of-zelda-ocarina-of-time-4596"
+        }
+      },
+      "links": {
+        "inter": "https://shopping.inter.co/gift-card/the-legend-of-zelda-ocarina-of-time-4596"
       }
     }
   }
