@@ -5692,7 +5692,7 @@ app.post('/ia/extrair-reserva', (req, res) => {
       : 'Analise este documento (' + (docs[0].kind === 'texto' ? 'texto extraído de um arquivo HTML' : (docs[0].kind === 'pdf' ? 'PDF' : 'imagem')) + ') de ' + (tipoCampos || 'reserva de viagem') + '. ') +
     'Extraia os dados REAIS do documento e retorne SOMENTE um JSON válido (sem markdown). ' +
     'Use exatamente esta estrutura JSON (substitua pelos valores reais): ' +
-    '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","dataChegada":"YYYY-MM-DD","cabine":"cabine exata","cia":"companhia aerea","assento":""}],"pnr":"","pax":0,"passageiros":["NOME DO PASSAGEIRO EXATAMENTE COMO IMPRESSO"],"programa":"","milhasTotal":0,"valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","subtipo":"transfer","transferOrigem":"","transferDestino":"","transferData":"","transferHora":"","transferPax":"","transferOp":"","transferVeiculo":"","transferConf":"","transferValor":"","transferVoltaOrigem":"","transferVoltaDestino":"","transferVoltaData":"","transferVoltaHora":"","transferVoltaHoraChegada":"","transferVoltaOp":"","transferVoltaConf":"","transferVoltaCategoria":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","seguradora":"","seguroPlano":"","seguroApolice":"","seguroCartao":"","seguroInicio":"","seguroFim":"","seguroModalidade":"","seguroDias":"","seguroTerritorio":"","seguroCobertura":"","seguroPax":"","seguroValor":"","seguroEmergencia":"","obs":"","bilhetes":[],"tarifa":"","taxas":"","bagagem":{"pessoal":"","mao":"","despachada":""},"regrasTarifa":"","hotelEndereco":"","horaCheckin":"","horaCheckout":"","cancelamento":""} ' +
+    '{"tipo":"voo","trechos":[{"nvoo":"numero do voo","origem":"IATA","destino":"IATA","data":"YYYY-MM-DD","horaPartida":"HH:MM","horaChegada":"HH:MM","dataChegada":"YYYY-MM-DD","cabine":"cabine exata","cia":"companhia aerea","assento":""}],"pnr":"","pax":0,"passageiros":["NOME DO PASSAGEIRO EXATAMENTE COMO IMPRESSO"],"programa":"","milhasTotal":0,"tipoEmissao":"","valorParteDinheiro":"","valor":"","hotelNome":"","hotelDestino":"","hotelQuarto":"","checkin":"","checkout":"","noites":"","hospedes":"","hotelConf":"","regime":"","hotelValor":"","subtipo":"transfer","transferOrigem":"","transferDestino":"","transferData":"","transferHora":"","transferPax":"","transferOp":"","transferVeiculo":"","transferConf":"","transferValor":"","transferVoltaOrigem":"","transferVoltaDestino":"","transferVoltaData":"","transferVoltaHora":"","transferVoltaHoraChegada":"","transferVoltaOp":"","transferVoltaConf":"","transferVoltaCategoria":"","locadora":"","carroCat":"","retLocal":"","devLocal":"","retData":"","devData":"","carroConf":"","carroValor":"","passeioNome":"","passeioDest":"","passeioOp":"","passeioData":"","passeioHora":"","passeioPax":"","passeioConf":"","passeioValor":"","seguradora":"","seguroPlano":"","seguroApolice":"","seguroCartao":"","seguroInicio":"","seguroFim":"","seguroModalidade":"","seguroDias":"","seguroTerritorio":"","seguroCobertura":"","seguroPax":"","seguroValor":"","seguroEmergencia":"","obs":"","bilhetes":[],"tarifa":"","taxas":"","bagagem":{"pessoal":"","mao":"","despachada":""},"regrasTarifa":"","hotelEndereco":"","horaCheckin":"","horaCheckout":"","cancelamento":""} ' +
     'REGRAS: ' +
     '1) trechos[]: um objeto por segmento de voo na ordem do itinerário. ' +
     '2) Em cada trecho, cia = nome da companhia aérea operadora (ex: LATAM, Azul, Gol, TAP, KLM). ' +
@@ -5704,6 +5704,12 @@ app.post('/ia/extrair-reserva', (req, res) => {
     'porque e esse nome que sera exigido no check-in. Se a mesma pessoa aparecer com grafias diferentes em documentos distintos, use a grafia do bilhete que contem o localizador. ' +
     'passageiros deve ter o mesmo tamanho de pax. Se nenhum nome estiver legivel no documento, retorne passageiros como array vazio. ' +
     '4) milhasTotal = total bruto de milhas do documento inteiro, sem dividir. ' +
+    '4.1) tipoEmissao (so voo): "pontos_dinheiro" quando a passagem foi paga com milhas/pontos E com uma parte em dinheiro alem das taxas ' +
+    '(ex: "Milhas + Dinheiro", "Smiles & Money", "pontos + R$", "Pontos + Dinheiro", "Clube + dinheiro", "parte em pontos, parte em reais"); ' +
+    '"milhas" quando foi paga so com milhas/pontos, mesmo que as taxas de embarque tenham sido cobradas em dinheiro; vazio nos demais casos ou na duvida. ' +
+    'Taxas de embarque, taxa de servico e IOF NUNCA fazem de uma emissao "pontos_dinheiro". ' +
+    'valorParteDinheiro = so quando tipoEmissao="pontos_dinheiro": valor total em reais pago junto com os pontos, de todos os passageiros, SEM as taxas de embarque, ' +
+    'no formato brasileiro sem "R$" (ex: "1.250,00"); se o documento so trouxer o valor por passageiro, multiplique por pax. Vazio nos demais casos. ' +
     '5) Para hotel, preencha os campos hotel* e trechos=[]. ' +
     '6) Para qualquer transporte terrestre ou aquático: use tipo=\"carro\" e defina subtipo conforme abaixo. ' +
     '   - Transfer/traslado (van, táxi, shuttle, ponto a ponto sem devolução): subtipo=\"transfer\". ' +
@@ -5964,6 +5970,14 @@ app.post('/ia/extrair-reserva', (req, res) => {
         d.conexaoVolta = conexoesDe(trechosVolta);
       }
     }
+
+    // Tipo de emissao: so os dois que a leitura sabe distinguir; pontos + dinheiro
+    // sem milhas ou sem a parte em R$ nao se sustenta e vira "milhas" / vazio.
+    if (d.tipoEmissao !== 'milhas' && d.tipoEmissao !== 'pontos_dinheiro') d.tipoEmissao = '';
+    if (!d.milhasTotal) d.tipoEmissao = '';
+    if (d.tipoEmissao === 'pontos_dinheiro' && !String(d.valorParteDinheiro || '').replace(/[^\d]/g, '').replace(/^0+/, '')) d.tipoEmissao = 'milhas';
+    if (d.tipoEmissao !== 'pontos_dinheiro') d.valorParteDinheiro = '';
+    else d.valorParteDinheiro = String(d.valorParteDinheiro).replace(/R\$\s*/i, '').trim();
 
     // Milhas por passageiro
     if (d.milhasTotal && d.pax) {
