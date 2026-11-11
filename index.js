@@ -5445,6 +5445,8 @@ function _ofertasDaBase(base) {
     if (!a || !a.ofertaId || out[a.ofertaId]) continue;
     out[a.ofertaId] = { ofertaId: a.ofertaId, ofertaNome: a.ofertaNome || '', produtoId: a.produtoId || '', produtoNome: a.produtoNome || '(sem produto)', arquivada: false, soEmAssinaturas: true };
   }
+  // Produto excluído na Hubla: a oferta continua (histórico e regra), o gestor esconde.
+  for (const o of Object.values(out)) o.produtoExcluido = hublaAss.produtoExcluidoNaHubla(base, o.produtoId, o.produtoNome === '(sem produto)' ? '' : o.produtoNome);
   return out;
 }
 // Por e-mail: as assinaturas ativas (vigente/teste/vitalício) que liberam o

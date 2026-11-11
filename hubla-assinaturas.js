@@ -362,6 +362,20 @@ function mesclarRegistro(atual, novo) {
   return r;
 }
 
+// Produto excluído na Hubla (desde 11/11/2026): a sincronização grava em
+// `produtosHubla` os produtos que a API ainda devolve. Assinatura/oferta cujo
+// produto não está mais lá (nem pelo id nem pelo nome) = produto excluído. O
+// histórico fica guardado; as telas só escondem. Sem lista gravada ou sem
+// produto conhecido na linha, nunca marca.
+function produtoExcluidoNaHubla(base, produtoId, produtoNome) {
+  const ph = base && base.produtosHubla;
+  if (!ph || !Array.isArray(ph.ids) || !ph.ids.length) return false;
+  if (!produtoId && !produtoNome) return false;
+  if (produtoId && ph.ids.includes(produtoId)) return false;
+  if (produtoNome && (ph.nomes || []).includes(norm(produtoNome))) return false;
+  return true;
+}
+
 function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
   const apiKey = () => process.env.HUBLA_API_KEY || process.env.HUBLA_PUBLIC_API_KEY || process.env.HUBLA_API_TOKEN || '';
 
@@ -397,6 +411,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     const d = data && typeof data === 'object' ? data : {};
     return { ofertas: d.ofertas || {}, assinaturas: d.assinaturas || {}, acessos: d.acessos || {},
       acessosPorProduto: d.acessosPorProduto || {},
+      produtosHubla: d.produtosHubla || null,
       sincronizacao: d.sincronizacao || null, atualizadoEm: d.atualizadoEm || null };
   }
 
@@ -562,6 +577,12 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     progresso.etapa = 'gravando';
     await salvar(base => {
       Object.assign(base.ofertas, ofertas);
+      // Produtos que ainda existem na Hubla (a lista veio inteira: erro da API interrompe antes daqui).
+      if (produtos.length) {
+        base.produtosHubla = { em: new Date().toISOString(),
+          ids: [...new Set(produtos.flatMap(pr => pr ? [pr.id, pr.legacyId] : []).filter(Boolean))],
+          nomes: [...new Set(produtos.map(pr => pr && norm(pr.name)).filter(Boolean))] };
+      }
       for (const [sid, novo] of Object.entries(porSub)) base.assinaturas[sid] = mesclarRegistro(base.assinaturas[sid], novo);
       base.sincronizacao = Object.assign({}, base.sincronizacao, {
         emAndamento: { inicio: progresso.inicio, total: pendentes.length, pendentes, contagem: Object.assign({}, progresso.contagem) },
@@ -820,6 +841,11 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
         });
       }
     }
+    const excluidos = new Set();
+    for (const a of lista) {
+      a.produtoExcluido = produtoExcluidoNaHubla(d, a.produtoId, a.produtoNome);
+      if (a.produtoExcluido && a.produtoNome) excluidos.add(a.produtoNome);
+    }
     if (painel === '1' || painel === true) lista = lista.filter(a => a.liberaPainel);
     if (situacao) {
       const quer = new Set(String(situacao).split(','));
@@ -827,7 +853,9 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     }
     if (email) lista = lista.filter(a => a.email === String(email).toLowerCase().trim());
     lista.sort((a, b) => String(a.fim || '9999').localeCompare(String(b.fim || '9999')));
-    return { total: lista.length, atualizadoEm: d.atualizadoEm, sincronizacao: d.sincronizacao, assinaturas: lista };
+    return { total: lista.length, atualizadoEm: d.atualizadoEm, sincronizacao: d.sincronizacao,
+      produtosHublaEm: (d.produtosHubla && d.produtosHubla.em) || null,
+      produtosExcluidos: [...excluidos].sort((a, b) => a.localeCompare(b, 'pt-BR')), assinaturas: lista };
   }
 
   return {
@@ -837,7 +865,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
 }
 
 module.exports = {
-  criarHublaAssinaturas, ofertaLiberaPainel, assinaturaLiberaPainel,
+  criarHublaAssinaturas, ofertaLiberaPainel, assinaturaLiberaPainel, produtoExcluidoNaHubla,
   definirRegrasAcesso, regrasAcessoAtivas, gruposAcesso, indiceGrupos, regraPadraoAcesso, regraAcesso, indiceRegras, REGRAS_ACESSO: REGRAS, ofertaPainelExigePrazo, OFERTAS_PAINEL_OUTROS_PRODUTOS, produtoOfertaDoEvento, calcularSituacao, membroAtivo, outroAcessoPainel,
   camposDaAssinatura, mesclarRegistro, OFERTAS_PAINEL, PRODUTO_PAINEL_ID, ARQUIVO_HUBLA_ASSINATURAS: ARQUIVO,
 };
