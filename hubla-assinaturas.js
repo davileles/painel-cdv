@@ -61,7 +61,28 @@ function _outroProdutoPainel(produtoId, produtoNome, ofertaNome) {
 // (as 7 ofertas de OFERTAS_PAINEL + OFERTAS_PAINEL_OUTROS_PRODUTOS). index.js
 // carrega o arquivo e chama definirRegrasAcesso().
 const REGRAS = ['libera', 'prazo', 'nao'];
-let _regras = null; // { porId: Map, porNome: Map, atualizadoEm }
+let _regras = null; // { porId: Map, porNome: Map, atualizadoEm, grupos }
+// Grupos de WhatsApp (jid) que cada oferta libera (desde 11/11/2026). Índice
+// separado das regras do painel: uma oferta pode dar grupo sem dar painel.
+//   porOferta: Map ofertaId → Set(jid) · porProduto: Map produtoId → Set(jid)
+//   (união das ofertas do produto, para acesso sem fatura) · mapeados: Set(jid)
+let _grupos = { porOferta: new Map(), porProduto: new Map(), mapeados: new Set() };
+function _indiceGrupos(arquivo) {
+  const g = { porOferta: new Map(), porProduto: new Map(), mapeados: new Set() };
+  for (const [id, r] of Object.entries((arquivo && arquivo.ofertas) || {})) {
+    const lista = Array.isArray(r && r.grupos) ? r.grupos.filter(j => /@g\.us$/.test(String(j))) : [];
+    if (!lista.length) continue;
+    g.porOferta.set(id, new Set(lista));
+    if (r.produtoId) {
+      const s = g.porProduto.get(r.produtoId) || new Set();
+      lista.forEach(j => s.add(j));
+      g.porProduto.set(r.produtoId, s);
+    }
+    lista.forEach(j => g.mapeados.add(j));
+  }
+  return g;
+}
+function gruposAcesso() { return _grupos; }
 function _chaveNome(produtoId, produtoNome, ofertaNome) {
   return [produtoId ? 'id:' + produtoId : 'nome:' + norm(produtoNome), norm(ofertaNome)].join('|');
 }
@@ -82,7 +103,8 @@ function definirRegrasAcesso(arquivo) {
     }
   }
   _regras = porId.size ? { porId, porNome, atualizadoEm: (arquivo && arquivo.atualizadoEm) || null } : null;
-  return { total: porId.size };
+  _grupos = _indiceGrupos(arquivo);
+  return { total: porId.size, grupos: _grupos.mapeados.size };
 }
 function regrasAcessoAtivas() { return !!_regras; }
 // Regra de fábrica (antes do arquivo de regras).
@@ -123,12 +145,14 @@ function assinaturaLiberaPainel(a, agora = Date.now(), regras) {
 }
 // Monta o índice de um arquivo de regras sem ativá-lo (para a prévia).
 function indiceRegras(arquivo) {
-  const salvo = _regras;
+  const salvo = _regras, salvoG = _grupos;
   definirRegrasAcesso(arquivo);
   const r = _regras;
-  _regras = salvo;
+  if (r) r.grupos = _grupos; // a prévia também usa os grupos novos
+  _regras = salvo; _grupos = salvoG;
   return r;
 }
+function indiceGrupos(arquivo) { return _indiceGrupos(arquivo); }
 
 // Produto e oferta de um payload de webhook v2. Venda com order bump chega num
 // evento só, com vários produtos (modo "Integração recomendada" da Hubla): vale
@@ -814,6 +838,6 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
 
 module.exports = {
   criarHublaAssinaturas, ofertaLiberaPainel, assinaturaLiberaPainel,
-  definirRegrasAcesso, regrasAcessoAtivas, regraPadraoAcesso, regraAcesso, indiceRegras, REGRAS_ACESSO: REGRAS, ofertaPainelExigePrazo, OFERTAS_PAINEL_OUTROS_PRODUTOS, produtoOfertaDoEvento, calcularSituacao, membroAtivo, outroAcessoPainel,
+  definirRegrasAcesso, regrasAcessoAtivas, gruposAcesso, indiceGrupos, regraPadraoAcesso, regraAcesso, indiceRegras, REGRAS_ACESSO: REGRAS, ofertaPainelExigePrazo, OFERTAS_PAINEL_OUTROS_PRODUTOS, produtoOfertaDoEvento, calcularSituacao, membroAtivo, outroAcessoPainel,
   camposDaAssinatura, mesclarRegistro, OFERTAS_PAINEL, PRODUTO_PAINEL_ID, ARQUIVO_HUBLA_ASSINATURAS: ARQUIVO,
 };

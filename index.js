@@ -61,6 +61,8 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'painel-excecoes.json',
   // Regras de quais ofertas da Hubla liberam o painel (decididas no gestor): repo privado.
   'painel-regras-acesso.json',
+  // Remoção dos grupos pelo Tico (configuração + histórico com telefone/nome): repo privado.
+  'grupos-remocao.json',
 ]);
 // Arquivos que saíram do painel-cdv: na 1ª leitura sem cópia no repo de dados,
 // o proxy copia a versão do repo público para lá (uma vez por arquivo).
@@ -5009,35 +5011,253 @@ app.get('/hubla/assinaturas/status', async (req, res) => {
 // (cache dele, sem forçar consulta ao WhatsApp), cruza pelo telefone com
 // hubla-assinaturas.json e os clientes do concierge. Cache de 10 min. X-CDV-Op.
 const hublaAuditoria = require('./hubla-grupos-auditoria');
-let _audCache = null, _audEmVoo = null;
-async function montarAuditoriaGrupos() {
-  const rg = await fetch(`${BAILEYS_URL}/grupos-gestao/grupos?operacao=cdv`, { timeout: 60000 });
-  const dg = await rg.json().catch(() => ({}));
-  if (!rg.ok || !dg.ok) throw new Error('baileys-server: ' + (dg.erro || ('HTTP ' + rg.status)));
-  const grupos = [];
-  for (const g of (dg.grupos || [])) {
-    const r = await fetch(`${BAILEYS_URL}/grupos-gestao/membros?jid=${encodeURIComponent(g.jid)}`, { timeout: 60000 });
-    const d = await r.json().catch(() => ({}));
-    grupos.push({ jid: g.jid, nome: g.nome, membros: d.ok ? (d.membros || []) : [] });
-    await new Promise(res => setTimeout(res, 600));
-  }
-  const { data: hubla } = await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {});
+// Grupos e participantes lidos no baileys (cache de 10 min). A conta da
+// auditoria (quem está ativo em cada grupo) é refeita na hora a partir disto,
+// com as regras de grupos atuais — ou com regras ainda não salvas, na prévia.
+let _gruposBrutos = null, _gruposBrutosEmVoo = null;
+async function coletarGruposCdv(forcar) {
+  if (!forcar && _gruposBrutos && Date.now() - _gruposBrutos.em < 10 * 60 * 1000) return _gruposBrutos;
+  if (_gruposBrutosEmVoo) return _gruposBrutosEmVoo;
+  _gruposBrutosEmVoo = (async () => {
+    const rg = await fetch(`${BAILEYS_URL}/grupos-gestao/grupos?operacao=cdv`, { timeout: 60000 });
+    const dg = await rg.json().catch(() => ({}));
+    if (!rg.ok || !dg.ok) throw new Error('baileys-server: ' + (dg.erro || ('HTTP ' + rg.status)));
+    const grupos = [];
+    for (const g of (dg.grupos || [])) {
+      const r = await fetch(`${BAILEYS_URL}/grupos-gestao/membros?jid=${encodeURIComponent(g.jid)}`, { timeout: 60000 });
+      const d = await r.json().catch(() => ({}));
+      grupos.push({ jid: g.jid, nome: g.nome, membros: d.ok ? (d.membros || []) : [], executores: g.executores || [] });
+      await new Promise(res => setTimeout(res, 600));
+    }
+    _gruposBrutos = { em: Date.now(), grupos, remocaoSoTico: dg.remocaoSoTico === true };
+    return _gruposBrutos;
+  })().finally(() => { _gruposBrutosEmVoo = null; });
+  return _gruposBrutosEmVoo;
+}
+// Lista leve dos grupos do CDV (nome + jid) para a tela de regras.
+let _gruposListaCache = null;
+async function listaGruposCdv() {
+  if (_gruposBrutos) return _gruposBrutos.grupos.map(g => ({ jid: g.jid, nome: g.nome }));
+  if (_gruposListaCache && Date.now() - _gruposListaCache.em < 10 * 60 * 1000) return _gruposListaCache.lista;
+  try {
+    const rg = await fetch(`${BAILEYS_URL}/grupos-gestao/grupos?operacao=cdv`, { timeout: 30000 });
+    const dg = await rg.json().catch(() => ({}));
+    if (!rg.ok || !dg.ok) return (_gruposListaCache && _gruposListaCache.lista) || [];
+    const lista = (dg.grupos || []).map(g => ({ jid: g.jid, nome: g.nome || g.jid }));
+    _gruposListaCache = { em: Date.now(), lista };
+    return lista;
+  } catch (e) { return (_gruposListaCache && _gruposListaCache.lista) || []; }
+}
+// Telefones (chave 55+DDD+8) das exceções do painel e dos admins: nunca saem de grupo.
+function chavesExcecao(base, excecoes) {
+  const emails = new Set([...(excecoes || []).map(x => _emailNorm(x.email)), ...ADMIN_EMAILS.map(_emailNorm)]);
+  const out = new Set();
+  const ver = (email, tel) => { if (tel && emails.has(_emailNorm(email))) { const k = hublaAuditoria.chaveTelefone(tel); if (k) out.add(k); } };
+  for (const a of Object.values((base && base.assinaturas) || {})) ver(a.email, a.telefone);
+  for (const p of Object.values((base && base.acessosPorProduto) || {})) for (const [e, m] of Object.entries(p.membros || {})) ver(e, m.telefone);
+  return out;
+}
+async function montarAuditoriaGrupos({ forcar = false, gruposRegras } = {}) {
+  const bruto = await coletarGruposCdv(forcar);
+  const [{ data: hubla }, exc] = await Promise.all([ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}), lerExcecoesPainel()]);
   let clientes = [];
   try { clientes = (await getConciergeFile('clientes.json')).content || []; } catch (e) { /* sem concierge, segue */ }
-  return hublaAuditoria.auditar({ hubla, grupos, clientesConcierge: clientes });
+  const aud = hublaAuditoria.auditar({ hubla, grupos: bruto.grupos, clientesConcierge: clientes,
+    gruposRegras: gruposRegras || hublaAss.gruposAcesso(), excecoes: chavesExcecao(hubla, exc.excecoes) });
+  aud.gruposLidosEm = new Date(bruto.em).toISOString();
+  return aud;
 }
 app.get('/hubla/grupos-auditoria', async (req, res) => {
   if (!opAutorizado(req, res)) return;
   try {
-    const forcar = req.query.forcar === '1';
-    if (!forcar && _audCache && Date.now() - _audCache.em < 10 * 60 * 1000) return res.json(Object.assign({ ok: true, cache: true }, _audCache.dados));
-    if (!_audEmVoo) _audEmVoo = montarAuditoriaGrupos().finally(() => { _audEmVoo = null; });
-    const dados = await _audEmVoo;
-    _audCache = { em: Date.now(), dados };
-    res.json(Object.assign({ ok: true }, dados));
+    const aud = await montarAuditoriaGrupos({ forcar: req.query.forcar === '1' });
+    const { detalhe, ...resto } = aud; // detalhe só serve à remoção
+    res.json(Object.assign({ ok: true }, resto));
   } catch (err) {
     res.status(502).json({ ok: false, erro: err.message });
   }
+});
+
+// ── Remoção pelo Tico (desde 11/11/2026) ─────────────────────────────────────
+// O Tico (tico-02/03/04…, nunca a principal) tira do grupo quem ficou com a
+// assinatura inválida para aquele grupo. SÓ REMOÇÃO — ninguém é incluído.
+// Quem sai (candidatosRemocao em hubla-grupos-auditoria.js): grupo com regra de
+// grupos salva, pessoa com cadastro na Hubla, vencida há carenciaDias ou mais
+// (ou "sem direito", se ligado). Nunca: sem cadastro, exceção do painel, admin
+// do CDV ou do grupo, cliente do concierge, número da casa, Executiva/Operador.
+// Ritmo: uma pessoa por rodada (20 min), só na janela, teto diário de remoções
+// (cada grupo conta 1), 20–40 s entre grupos (baileys), rodízio entre ticos com
+// teto por tico no baileys. Conta que cai ou limite do WhatsApp = pausa até o
+// Davi retomar. Modos: off · sombra (só lista quem sairia) · on.
+// Estado em grupos-remocao.json (repo de dados).
+const GRUPOS_REMOCAO_PATH = 'grupos-remocao.json';
+const REMOCAO_PADRAO = { modo: 'sombra', carenciaDias: 3, limiteDia: 10, incluirSemDireito: false, janelaIni: 9, janelaFim: 20 };
+function _remCfg(estado) {
+  const c = Object.assign({}, REMOCAO_PADRAO, (estado && estado.config) || {});
+  c.modo = ['off', 'sombra', 'on'].includes(c.modo) ? c.modo : 'sombra';
+  c.carenciaDias = Math.max(0, Math.min(60, parseInt(c.carenciaDias, 10) || 0));
+  c.limiteDia = Math.max(1, Math.min(40, parseInt(c.limiteDia, 10) || REMOCAO_PADRAO.limiteDia));
+  c.incluirSemDireito = c.incluirSemDireito === true;
+  c.janelaIni = Math.max(0, Math.min(23, parseInt(c.janelaIni, 10) || REMOCAO_PADRAO.janelaIni));
+  c.janelaFim = Math.max(c.janelaIni + 1, Math.min(24, parseInt(c.janelaFim, 10) || REMOCAO_PADRAO.janelaFim));
+  return c;
+}
+function _diaSP(t = Date.now()) { return new Date(t - 3 * 3600e3).toISOString().slice(0, 10); }
+function _horaSP(t = Date.now()) { return new Date(t - 3 * 3600e3).getUTCHours(); }
+async function lerEstadoRemocao() {
+  const { data, sha } = await ghGetJson(GRUPOS_REMOCAO_PATH, null);
+  const e = data || {};
+  e.historico = Array.isArray(e.historico) ? e.historico : [];
+  if (!e.hoje || e.hoje.dia !== _diaSP()) e.hoje = { dia: _diaSP(), remocoes: 0, pessoas: 0 };
+  return { estado: e, sha, cfg: _remCfg(e) };
+}
+async function salvarEstadoRemocao(alterar, mensagem) {
+  for (let t = 1; t <= 4; t++) {
+    try {
+      const { estado, sha } = await lerEstadoRemocao();
+      alterar(estado);
+      estado.historico = estado.historico.slice(0, 300);
+      estado.atualizadoEm = new Date().toISOString();
+      await ghPutJson(GRUPOS_REMOCAO_PATH, estado, sha, mensagem);
+      return estado;
+    } catch (e) {
+      if (t < 4 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 400)); continue; }
+      throw e;
+    }
+  }
+}
+// Candidatos agora, já sem quem foi tratado há pouco (24 h se saiu; 6 h se falhou).
+async function candidatosRemocaoAgora(estado, cfg, forcar) {
+  const aud = await montarAuditoriaGrupos({ forcar: !!forcar });
+  const agora = Date.now();
+  const recentes = new Set();
+  for (const h of (estado.historico || [])) {
+    const idade = agora - new Date(h.em).getTime();
+    if (h.chave && (idade < 6 * 3600e3 || (idade < 24 * 3600e3 && h.feitos > 0))) recentes.add(h.chave);
+  }
+  const lista = hublaAuditoria.candidatosRemocao(aud, cfg).filter(x => !recentes.has(x.chave));
+  return { lista, aud };
+}
+let _remRodando = false;
+async function cicloRemocaoGrupos({ manual = false } = {}) {
+  if (_remRodando) return { ok: false, erro: 'rodada em andamento' };
+  _remRodando = true;
+  try {
+    const { estado, cfg } = await lerEstadoRemocao();
+    if (cfg.modo === 'off') return { ok: true, pulado: 'desligada' };
+    if (estado.pausado) return { ok: true, pulado: 'pausada: ' + estado.pausado.motivo };
+    const h = _horaSP();
+    if (h < cfg.janelaIni || h >= cfg.janelaFim) return { ok: true, pulado: 'fora da janela' };
+    // Em sombra basta conferir de 2 em 2 h (cada conferência relê os grupos no WhatsApp).
+    const ult = estado.ultimaRodada && new Date(estado.ultimaRodada.em).getTime();
+    if (!manual && cfg.modo === 'sombra' && ult && Date.now() - ult < 2 * 3600e3) return { ok: true, pulado: 'sombra: conferida há pouco' };
+    const { lista } = await candidatosRemocaoAgora(estado, cfg, false);
+    if (cfg.modo === 'sombra' || !lista.length) {
+      await salvarEstadoRemocao(e => { e.ultimaRodada = { em: new Date().toISOString(), modo: cfg.modo, candidatos: lista.length, acao: null }; },
+        `grupos: remoção (${cfg.modo}) — ${lista.length} candidato(s)`);
+      return { ok: true, modo: cfg.modo, candidatos: lista.length };
+    }
+    const resta = cfg.limiteDia - (estado.hoje.remocoes || 0);
+    if (resta <= 0) return { ok: true, pulado: 'teto do dia atingido' };
+    // Trava: o baileys-server precisa ter a remoção só pelos ticos (soTico). Sem
+    // ela, a tarefa usaria qualquer conta admin, inclusive a principal.
+    if (!(_gruposBrutos && _gruposBrutos.remocaoSoTico)) {
+      await salvarEstadoRemocao(e => { e.ultimaRodada = { em: new Date().toISOString(), modo: 'on', candidatos: lista.length, acao: null,
+        aviso: 'o baileys-server ainda não tem a remoção só pelo Tico — ninguém foi removido' }; }, 'grupos: remoção aguardando o baileys-server');
+      return { ok: true, pulado: 'baileys-server sem remoção só pelo Tico' };
+    }
+    const alvo = lista[0];
+    const grupos = alvo.grupos.slice(0, resta);
+    const telefone = String(alvo.telefone).replace(/\D/g, '');
+    const rp = await fetch(`${BAILEYS_URL}/grupos-gestao/participante`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, timeout: 30000,
+      body: JSON.stringify({ acao: 'remove', telefone, jids: grupos.map(g => g.jid), soTico: true, origem: 'assinatura-invalida', operacao: 'cdv' }),
+    });
+    const dp = await rp.json().catch(() => ({}));
+    if (rp.status === 409) return { ok: true, pulado: 'outra tarefa de grupos em andamento' };
+    let tarefa = null, erro = null;
+    if (!rp.ok || !dp.ok) erro = dp.erro || ('HTTP ' + rp.status);
+    else {
+      const ate = Date.now() + 20 * 60 * 1000;
+      while (Date.now() < ate) {
+        await new Promise(r => setTimeout(r, 10000));
+        const rt = await fetch(`${BAILEYS_URL}/grupos-gestao/tarefa/${encodeURIComponent(dp.jobId)}`, { timeout: 15000 }).catch(() => null);
+        const dt = rt ? await rt.json().catch(() => ({})) : {};
+        if (dt.ok && dt.tarefa && dt.tarefa.estado !== 'rodando') { tarefa = dt.tarefa; break; }
+        if (rt && rt.status === 404) { erro = 'o baileys-server reiniciou no meio da tarefa'; break; }
+      }
+      if (!tarefa && !erro) erro = 'tarefa não terminou em 20 min';
+    }
+    const resultados = (tarefa && tarefa.resultados) || [];
+    const feitos = resultados.filter(r => r.estado === 'ok').length;
+    const textoFalhas = [tarefa && tarefa.erro, ...resultados.filter(r => r.estado === 'falha').map(r => String(r.detalhe || ''))].join(' ');
+    let pausar = null;
+    if (/caiu/i.test(textoFalhas)) pausar = 'uma conta do Tico caiu durante a remoção';
+    else if (/rate|overlimit|429|limite do whatsapp/i.test(textoFalhas)) pausar = 'o WhatsApp limitou as ações de grupo';
+    const nomes = new Map(grupos.map(g => [g.jid, g]));
+    await salvarEstadoRemocao(e => {
+      e.hoje.remocoes = (e.hoje.remocoes || 0) + feitos;
+      e.hoje.pessoas = (e.hoje.pessoas || 0) + (feitos ? 1 : 0);
+      e.ultimaRodada = { em: new Date().toISOString(), modo: 'on', candidatos: lista.length, acao: alvo.nome || alvo.telefone };
+      e.historico.unshift({ em: new Date().toISOString(), chave: alvo.chave, telefone: alvo.telefone, nome: alvo.nome, email: alvo.email,
+        motivos: alvo.motivos, feitos, erro: erro || (tarefa && tarefa.erro) || null,
+        grupos: (resultados.length ? resultados : grupos.map(g => ({ jid: g.jid, nome: g.nome, estado: 'nao-tentado' }))).map(r => ({
+          jid: r.jid, nome: r.nome || (nomes.get(r.jid) || {}).nome, estado: r.estado, por: r.por || null, detalhe: r.detalhe || null,
+          motivo: (nomes.get(r.jid) || {}).motivo || null })) });
+      if (pausar) e.pausado = { em: new Date().toISOString(), motivo: pausar };
+    }, `grupos: Tico removeu ${feitos} (${alvo.motivos.join('/')})`);
+    if (feitos) _gruposBrutos = null; // relê os participantes na próxima rodada
+    console.log(`[remocao-grupos] ${alvo.telefone}: ${feitos}/${grupos.length} removido(s)${erro ? ' — ' + erro : ''}${pausar ? ' — PAUSADA: ' + pausar : ''}`);
+    return { ok: true, removidos: feitos, erro, pausado: pausar };
+  } catch (err) {
+    console.error('[remocao-grupos]', err.message);
+    return { ok: false, erro: err.message };
+  } finally {
+    _remRodando = false;
+  }
+}
+setTimeout(() => cicloRemocaoGrupos().catch(() => {}), 4 * 60 * 1000);
+setInterval(() => cicloRemocaoGrupos().catch(() => {}), 20 * 60 * 1000);
+
+app.get('/hubla/grupos-remocao', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const { estado, cfg } = await lerEstadoRemocao();
+    let candidatos = null, erroPrevia = null;
+    if (req.query.previa !== '0') {
+      try { candidatos = (await candidatosRemocaoAgora(estado, cfg, req.query.forcar === '1')).lista; }
+      catch (e) { erroPrevia = e.message; }
+    }
+    res.json({ ok: true, config: cfg, pausado: estado.pausado || null, hoje: estado.hoje, ultimaRodada: estado.ultimaRodada || null,
+      gruposComRegra: hublaAss.gruposAcesso().mapeados.size, rodando: _remRodando,
+      historico: estado.historico.slice(0, 60), candidatos, erroPrevia });
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+app.post('/hubla/grupos-remocao/config', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const b = req.body || {};
+    const e = await salvarEstadoRemocao(est => {
+      const atual = _remCfg(est);
+      const novo = Object.assign({}, atual);
+      for (const k of ['modo', 'carenciaDias', 'limiteDia', 'incluirSemDireito', 'janelaIni', 'janelaFim']) if (b[k] !== undefined) novo[k] = b[k];
+      est.config = _remCfg({ config: novo });
+    }, 'grupos: configuração da remoção pelo Tico');
+    console.log('[remocao-grupos] config:', JSON.stringify(e.config));
+    res.json({ ok: true, config: e.config });
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+app.post('/hubla/grupos-remocao/retomar', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    await salvarEstadoRemocao(e => { delete e.pausado; }, 'grupos: retoma a remoção pelo Tico');
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+// Roda uma rodada agora (fora da espera de 20 min; respeita modo, pausa e teto).
+app.post('/hubla/grupos-remocao/rodar', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  res.json(await cicloRemocaoGrupos({ manual: true }));
 });
 
 // ── Exceções e retirada de acesso ao painel (desde 11/11/2026) ──────────────
@@ -5246,7 +5466,9 @@ function _liberadosPorEmail(base, regras, agora) {
   }
   return out;
 }
-function _normalizarRegrasPedidas(corpo, ofertasBase) {
+// {ofertas:{id: regra | {regra, grupos:[jid]}}}. Sem `grupos` no pedido, ficam
+// os grupos já salvos da oferta (salvas = ofertas do arquivo atual).
+function _normalizarRegrasPedidas(corpo, ofertasBase, salvas) {
   const pedido = (corpo && corpo.ofertas) || {};
   const ofertas = {};
   for (const [id, regra] of Object.entries(pedido)) {
@@ -5254,17 +5476,22 @@ function _normalizarRegrasPedidas(corpo, ofertasBase) {
     if (!hublaAss.REGRAS_ACESSO.includes(r)) continue;
     const o = ofertasBase[id];
     if (!o) continue; // só ofertas conhecidas
+    let grupos = regra && typeof regra === 'object' && Array.isArray(regra.grupos) ? regra.grupos
+      : ((salvas && salvas[id] && salvas[id].grupos) || []);
+    grupos = [...new Set(grupos.map(String).filter(j => /@g\.us$/.test(j)))].sort();
     ofertas[id] = { regra: r, produtoId: o.produtoId, produtoNome: o.produtoNome, ofertaNome: o.ofertaNome };
+    if (grupos.length) ofertas[id].grupos = grupos;
   }
   return ofertas;
 }
 app.get('/hubla/regras-acesso', async (req, res) => {
   if (!opAutorizado(req, res)) return;
   try {
-    const [{ data: base }, regrasArq, { data: mdata }] = await Promise.all([
+    const [{ data: base }, regrasArq, { data: mdata }, gruposCdv] = await Promise.all([
       ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}),
       carregarRegrasAcesso(),
       ghGetJson(MEMBROS_PATH, { membros: [] }),
+      listaGruposCdv(),
     ]);
     const agora = Date.now();
     const ofertas = _ofertasDaBase(base);
@@ -5289,12 +5516,16 @@ app.get('/hubla/regras-acesso', async (req, res) => {
         regraPadrao: padrao,
         regraSalva: (salvas[o.ofertaId] && salvas[o.ofertaId].regra) || null,
         regra: hublaAss.regraAcesso(o.produtoId, o.produtoNome, o.ofertaNome, o.ofertaId),
+        grupos: (salvas[o.ofertaId] && salvas[o.ofertaId].grupos) || [],
         assinaturas: c.total, pessoasAtivas: c.ativas.size, vitalicias: c.vitalicias.size, ativasNoPainel: c.noPainel.size,
       });
     });
     lista.sort((a, z) => a.produtoNome.localeCompare(z.produtoNome, 'pt-BR') || a.ofertaNome.localeCompare(z.ofertaNome, 'pt-BR'));
     res.json({ ok: true, regrasSalvas: !!(regrasArq && regrasArq.data), atualizadoEm: (regrasArq && regrasArq.data && regrasArq.data.atualizadoEm) || null,
-      baseAtualizadaEm: (base && base.atualizadoEm) || null, ofertas: lista });
+      baseAtualizadaEm: (base && base.atualizadoEm) || null, ofertas: lista,
+      grupos: gruposCdv.filter(g => !hublaAuditoria.grupoIgnorado(g.nome))
+        .sort((a, z) => String(a.nome).localeCompare(String(z.nome), 'pt-BR')),
+      gruposIgnorados: gruposCdv.filter(g => hublaAuditoria.grupoIgnorado(g.nome)).map(g => g.nome) });
   } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
 });
 // Prévia: {ofertas:{id:regra}} → quem ganha e quem perde o direito ao painel.
@@ -5305,7 +5536,9 @@ async function _previaRegras(corpo) {
     lerExcecoesPainel(),
   ]);
   const agora = Date.now();
-  const ofertas = _normalizarRegrasPedidas(corpo, _ofertasDaBase(base));
+  const regrasArq = await carregarRegrasAcesso();
+  const salvas = (regrasArq && regrasArq.data && regrasArq.data.ofertas) || {};
+  const ofertas = _normalizarRegrasPedidas(corpo, _ofertasDaBase(base), salvas);
   const novo = hublaAss.indiceRegras({ ofertas });
   const antes = _liberadosPorEmail(base, undefined, agora);
   const depois = _liberadosPorEmail(base, novo, agora);
@@ -5321,13 +5554,30 @@ async function _previaRegras(corpo) {
   const perdem = [...antes.values()].filter(x => !depois.has(x.email)).map(x => linha(x, true));
   const ord = (a, z) => (a.nome || a.email).localeCompare(z.nome || z.email, 'pt-BR');
   ganham.sort(ord); perdem.sort(ord);
-  return { ofertas, ganham, perdem, liberadosAntes: antes.size, liberadosDepois: depois.size };
+  // Grupos: quantos ficam sem direito em cada grupo, hoje × com as regras novas.
+  // Usa os participantes já lidos (cache de 10 min); sem leitura recente, pula.
+  let grupos = null;
+  if (_gruposBrutos) {
+    try {
+      const audAntes = await montarAuditoriaGrupos({});
+      const audDepois = await montarAuditoriaGrupos({ gruposRegras: hublaAss.indiceGrupos({ ofertas }) });
+      const porJid = new Map(audAntes.grupos.map(g => [g.jid, g]));
+      grupos = audDepois.grupos.map(g => {
+        const a = porJid.get(g.jid) || {};
+        const fora = x => (x.vencido || 0) + (x.semDireito || 0) + (x.semCadastro || 0);
+        return { jid: g.jid, nome: g.nome, mapeadoAntes: !!a.mapeado, mapeado: g.mapeado, participantes: g.participantes,
+          foraAntes: fora(a), fora: fora(g), vencido: g.vencido, semDireito: g.semDireito, semCadastro: g.semCadastro };
+      }).filter(g => g.mapeado || g.mapeadoAntes)
+        .sort((a, z) => String(a.nome).localeCompare(String(z.nome), 'pt-BR'));
+    } catch (e) { console.warn('[regras-acesso] prévia de grupos falhou:', e.message); }
+  }
+  return { ofertas, ganham, perdem, liberadosAntes: antes.size, liberadosDepois: depois.size, grupos };
 }
 app.post('/hubla/regras-acesso/simular', async (req, res) => {
   if (!opAutorizado(req, res)) return;
   try {
     const r = await _previaRegras(req.body);
-    res.json({ ok: true, ganham: r.ganham, perdem: r.perdem, liberadosAntes: r.liberadosAntes, liberadosDepois: r.liberadosDepois });
+    res.json({ ok: true, ganham: r.ganham, perdem: r.perdem, liberadosAntes: r.liberadosAntes, liberadosDepois: r.liberadosDepois, grupos: r.grupos });
   } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
 });
 // Salva {ofertas:{id:regra}} (todas as ofertas mostradas na tela). Não mexe em
@@ -5337,7 +5587,8 @@ app.post('/hubla/regras-acesso', async (req, res) => {
   if (!opAutorizado(req, res)) return;
   try {
     const { data: base } = await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {});
-    const ofertas = _normalizarRegrasPedidas(req.body, _ofertasDaBase(base));
+    const atualArq = await carregarRegrasAcesso();
+    const ofertas = _normalizarRegrasPedidas(req.body, _ofertasDaBase(base), (atualArq && atualArq.data && atualArq.data.ofertas) || {});
     if (!Object.keys(ofertas).length) return res.status(400).json({ ok: false, erro: 'nenhuma regra válida' });
     for (let t = 1; t <= 4; t++) {
       try {
