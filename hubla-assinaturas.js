@@ -424,6 +424,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     return { ofertas: d.ofertas || {}, assinaturas: d.assinaturas || {}, acessos: d.acessos || {},
       acessosPorProduto: d.acessosPorProduto || {},
       produtosHubla: d.produtosHubla || null, sondagemApi: d.sondagemApi || null,
+      ofertasAcesso: d.ofertasAcesso || {},
       sincronizacao: d.sincronizacao || null, atualizadoEm: d.atualizadoEm || null };
   }
 
@@ -456,6 +457,48 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
   }
   const buscarAssinaturaApi = (id) => api('GET', `/v1/subscriptions/${encodeURIComponent(id)}`);
 
+  // ── Oferta do acesso (produto+e-mail) ──────────────────────────────────────
+  // `ofertasAcesso` = { '<produtoId>|<email>': {ofertaId, ofertaNome, produtoNome, em, fonte} }.
+  // Fontes: webhook customer.member_added e importação (POST /hubla/acessos/ofertas).
+  async function registrarOfertaAcessoDoEvento(e) {
+    const pessoa = pessoaDe(e.user || e.member || e.customer || (e.subscription && e.subscription.payer));
+    if (!pessoa.email) return;
+    const produtos = (Array.isArray(e.products) && e.products.length) ? e.products : [e.product || {}];
+    const itens = [];
+    for (const p of produtos) {
+      const of = (p && Array.isArray(p.offers) && p.offers[0]) || null;
+      if (p && p.id && of && of.name) itens.push({ email: pessoa.email, produtoId: p.id, produtoNome: p.name || '', ofertaId: of.id || '', ofertaNome: of.name });
+    }
+    if (itens.length) await gravarOfertasAcesso(itens, 'webhook');
+  }
+  async function gravarOfertasAcesso(itens, fonte) {
+    const validos = (itens || []).map(x => ({
+      email: String((x && x.email) || '').toLowerCase().trim(),
+      produtoId: String((x && x.produtoId) || '').trim(), produtoNome: String((x && x.produtoNome) || '').trim(),
+      ofertaId: String((x && x.ofertaId) || '').trim(), ofertaNome: String((x && x.ofertaNome) || '').trim(),
+    })).filter(x => x.email && x.ofertaNome && (x.produtoId || x.produtoNome));
+    if (!validos.length) return { gravados: 0, ignorados: (itens || []).length };
+    let gravados = 0, semProduto = 0;
+    await salvar(base => {
+      base.ofertasAcesso = base.ofertasAcesso || {};
+      const prods = Object.entries(base.acessosPorProduto || {});
+      for (const x of validos) {
+        let pid = x.produtoId;
+        if (!pid) { const m = prods.find(([, p]) => p && norm(p.nome) === norm(x.produtoNome)); pid = m ? m[0] : ''; }
+        if (!pid) { semProduto++; continue; }
+        if (!x.ofertaId) {
+          const o = Object.entries(base.ofertas || {}).find(([, o]) => o && !o.ehProduto && o.produtoId === pid && norm(o.nome) === norm(x.ofertaNome));
+          if (o) x.ofertaId = o[0];
+        }
+        base.ofertasAcesso[pid + '|' + x.email] = { ofertaId: x.ofertaId || null, ofertaNome: x.ofertaNome,
+          produtoNome: x.produtoNome || ((base.acessosPorProduto || {})[pid] || {}).nome || '', em: new Date().toISOString(), fonte };
+        gravados++;
+      }
+      if (!gravados) return false;
+    }, `hubla: oferta do acesso (${fonte}, ${validos.length})`);
+    return { gravados, semProduto, ignorados: (itens || []).length - validos.length };
+  }
+
   // ── Webhook ────────────────────────────────────────────────────────────────
   // Registra/atualiza a assinatura do evento. Devolve o registro mesclado (ou null).
   async function registrarEvento(type, event) {
@@ -463,6 +506,12 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     const sub = e.subscription || null;
     const fatura = e.invoice || null;
     const subId = String((sub && sub.id) || e.subscriptionId || (fatura && (fatura.subscriptionId || (fatura.subscriptionIds || [])[0])) || '').trim();
+    // Membro incluído/removido: guarda a oferta do acesso por produto+e-mail
+    // (desde 12/11/2026). A lista de membros da API não diz a oferta; assim o
+    // acesso sem assinatura também fica com ela.
+    if (/^customer\.member_added/.test(type)) {
+      try { await registrarOfertaAcessoDoEvento(e); } catch (err) { log.warn('[hubla-assinaturas] oferta do acesso', err.message); }
+    }
     if (!subId) return null;
     // "Testar configuração" da Hubla manda IDs fictícios terminados em -tester: não grava.
     if (/-tester$/.test(subId)) return null;
@@ -996,6 +1045,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
         const recorrente = ac.vitalicio
           ? doEmail.filter(a => a.tipo === 'recurring').sort((x, y) => t(y.inicio || y.criadaEm) - t(x.inicio || x.criadaEm))[0]
           : null;
+        const oa = (d.ofertasAcesso || {})[pid + '|' + em] || null;
         const gratis = doEmail.filter(a => a.tipo === 'free').sort((x, y) => t(y.inicio || y.criadaEm) - t(x.inicio || x.criadaEm))[0];
         const rotulo = ac.vitalicio
           ? (ac.tipo === 'free' ? 'Acesso vitalício gratuito' : 'Acesso vitalício (sem assinatura paga)')
@@ -1003,8 +1053,9 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
         lista.push({
           id: 'acesso:' + pid + ':' + em, fonte: 'acesso', email: em, nome: ac.nome, telefone: ac.telefone,
           produtoId: pid, produtoNome: nomeProduto,
-          ofertaNome: gratis && gratis.ofertaNome ? gratis.ofertaNome : rotulo,
-          ofertaConfirmada: !!(gratis && gratis.ofertaNome),
+          ofertaNome: gratis && gratis.ofertaNome ? gratis.ofertaNome : (oa ? oa.ofertaNome : rotulo),
+          ofertaConfirmada: !!((gratis && gratis.ofertaNome) || oa),
+          ofertaFonte: gratis && gratis.ofertaNome ? 'assinatura gratuita' : (oa ? oa.fonte : undefined),
           turmas: Array.isArray(ac.turmas) && ac.turmas.length ? ac.turmas : undefined,
           tipo: ac.tipo, gratuito: ac.tipo === 'free', doPainel: pid === PRODUTO_PAINEL_ID,
           liberaPainel: false, situacao, fim, inicio: ac.entrouEm || undefined,
@@ -1032,7 +1083,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
   }
 
   return {
-    registrarEvento, sincronizar, sincronizarMembros, listar, ler, resumir, progresso, sondarApi,
+    registrarEvento, sincronizar, sincronizarMembros, listar, ler, resumir, progresso, sondarApi, gravarOfertasAcesso,
     temChaveApi: () => !!apiKey(),
   };
 }

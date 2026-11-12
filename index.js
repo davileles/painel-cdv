@@ -4987,6 +4987,19 @@ app.get('/hubla/assinaturas', async (req, res) => {
   }
 });
 
+// Importa a oferta de acessos sem assinatura (desde 12/11/2026). X-CDV-Op.
+// Corpo: {itens:[{email, produtoId|produtoNome, ofertaNome, ofertaId?}]} (até 5.000).
+// Grava em `ofertasAcesso` (hubla-assinaturas.json); não muda acesso a nada.
+app.post('/hubla/acessos/ofertas', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const itens = Array.isArray(req.body && req.body.itens) ? req.body.itens.slice(0, 5000) : [];
+  if (!itens.length) return res.status(400).json({ ok: false, erro: 'itens vazio' });
+  try {
+    const r = await hublaAssinaturas.gravarOfertasAcesso(itens, 'importacao');
+    res.json(Object.assign({ ok: true }, r));
+  } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
 // Estado da integração e da última sincronização (sem dados pessoais). X-CDV-Op.
 app.get('/hubla/assinaturas/status', async (req, res) => {
   if (!opAutorizado(req, res)) return;
