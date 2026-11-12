@@ -5397,6 +5397,9 @@ async function executarRemocaoTico({ alvo, grupos, invasor = false, total = 1, g
 // rodada) e esperam a rodada/outra tarefa do baileys terminar (até ~15 min).
 let _invFila = Promise.resolve();
 async function removerInvasoresNaHora(jid, telefones) {
+  // O baileys avisa entradas de todo grupo que não é do TSP: grupo sem regra de
+  // grupos sai aqui, antes de qualquer leitura no GitHub.
+  if (!hublaAss.gruposAcesso().mapeados.has(jid)) return { pulado: 'grupo sem regra' };
   const { estado, cfg } = await lerEstadoRemocao();
   if (cfg.modo === 'off' || !cfg.invasorImediato) return { pulado: 'desligado' };
   if (estado.pausado) { console.log('[invasor] pausada — ' + estado.pausado.motivo); return { pulado: 'pausada' }; }
