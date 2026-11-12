@@ -11,8 +11,9 @@
 //     Map produtoId→Set(jid), mapeados: Set(jid) } — quais grupos cada oferta dá
 //     (painel-regras-acesso.json). Grupo que nenhuma oferta marca segue a regra
 //     antiga: qualquer assinatura ativa vale.
-//   - excecoes (opcional): Set de chaves de telefone que ficam (exceções do
-//     painel e admins do CDV).
+//   - excecoes (opcional): Map chave de telefone → null (fica em todos os grupos:
+//     admins e exceção sem oferta) ou [{ofertaId, produtoId}] (fica só nos grupos
+//     que essas ofertas dão; grupo sem regra aceita). Set ainda vale (= todos).
 // Cruzamento pelo telefone: DDI 55 + DDD + últimos 8 dígitos (o 9º dígito do
 // celular às vezes falta no WhatsApp ou no cadastro).
 //
@@ -106,7 +107,14 @@ function situacaoNoGrupo(regs, jid, regras) {
 function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, agora = Date.now() }) {
   const porChave = indicePorTelefone(hubla, agora);
   const regras = gruposRegras || null;
-  const exc = excecoes instanceof Set ? excecoes : new Set();
+  const exc = excecoes instanceof Map ? excecoes
+    : new Map([...(excecoes instanceof Set ? excecoes : [])].map(k => [k, null]));
+  const excVale = (k, jid) => {
+    if (!k || !exc.has(k)) return false;
+    const v = exc.get(k);
+    if (v === null) return true;
+    return v.some(o => registroDaGrupo({ tipo: 'assinatura', ofertaId: o.ofertaId, produtoId: o.produtoId }, jid, regras));
+  };
   const concierge = new Map();
   for (const c of (Array.isArray(clientesConcierge) ? clientesConcierge : [])) {
     const k = chaveTelefone(c && c.tel);
@@ -129,7 +137,7 @@ function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, ago
       const regs = k ? porChave.get(k) : null;
       let s = situacaoNoGrupo(regs, g.jid, regras);
       if (s.situacao !== 'ativo') {
-        if (k && exc.has(k)) s = { situacao: 'excecao' };
+        if (excVale(k, g.jid)) s = { situacao: 'excecao' };
         else if (k && concierge.has(k)) s = { situacao: 'concierge' };
       }
       const situacao = s.situacao;

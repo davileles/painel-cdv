@@ -5061,11 +5061,31 @@ async function listaGruposCdv() {
     return lista;
   } catch (e) { return (_gruposListaCache && _gruposListaCache.lista) || []; }
 }
-// Telefones (chave 55+DDD+8) das exceções do painel e dos admins: nunca saem de grupo.
+// Exceções nos grupos, por telefone (chave 55+DDD+8): Map chave → null (todos os
+// grupos: admins e exceção sem oferta) ou [{ofertaId, produtoId}] (só os grupos
+// que a oferta dá; grupo sem regra aceita). Telefone vem da própria exceção e,
+// para quem tem e-mail, dos cadastros da Hubla. Exceção vencida não entra.
 function chavesExcecao(base, excecoes) {
-  const emails = new Set([...(excecoes || []).map(x => _emailNorm(x.email)), ...ADMIN_EMAILS.map(_emailNorm)]);
-  const out = new Set();
-  const ver = (email, tel) => { if (tel && emails.has(_emailNorm(email))) { const k = hublaAuditoria.chaveTelefone(tel); if (k) out.add(k); } };
+  const agora = Date.now();
+  const porEmail = new Map(); // e-mail → null | [ofertas]
+  const out = new Map();
+  const juntar = (mapa, k, v) => {
+    if (!k) return;
+    if (v === null || mapa.get(k) === null) { mapa.set(k, null); return; }
+    const l = mapa.get(k) || []; l.push(v); mapa.set(k, l);
+  };
+  const valor = x => excecaoTemOferta(x) ? { ofertaId: x.ofertaId || '', produtoId: x.produtoId || '' } : null;
+  for (const e of ADMIN_EMAILS) juntar(porEmail, _emailNorm(e), null);
+  for (const x of (excecoes || [])) {
+    if (!excecaoValida(x, agora)) continue;
+    if (x.email) juntar(porEmail, _emailNorm(x.email), valor(x));
+    if (x.telefone) juntar(out, hublaAuditoria.chaveTelefone(x.telefone), valor(x));
+  }
+  const ver = (email, tel) => {
+    const e = _emailNorm(email); if (!tel || !porEmail.has(e)) return;
+    const k = hublaAuditoria.chaveTelefone(tel); const v = porEmail.get(e);
+    if (v === null) juntar(out, k, null); else v.forEach(o => juntar(out, k, o));
+  };
   for (const a of Object.values((base && base.assinaturas) || {})) ver(a.email, a.telefone);
   for (const p of Object.values((base && base.acessosPorProduto) || {})) for (const [e, m] of Object.entries(p.membros || {})) ver(e, m.telefone);
   return out;
@@ -5076,12 +5096,9 @@ async function montarAuditoriaGrupos({ forcar = false, gruposRegras } = {}) {
     ghGetJson('grupos-remocao.json', null)]);
   let clientes = [];
   try { clientes = (await getConciergeFile('clientes.json')).content || []; } catch (e) { /* sem concierge, segue */ }
-  // Exceções dos grupos por telefone (grupos-remocao.json → excecoesTelefone): para
-  // quem não tem cadastro na Hubla e deve ficar (desde 11/11/2026).
+  // Lista única de exceções (inclui as antigas por telefone do grupos-remocao.json).
+  void rem;
   const excecoes = chavesExcecao(hubla, exc.excecoes);
-  for (const x of ((rem && Array.isArray(rem.excecoesTelefone)) ? rem.excecoesTelefone : [])) {
-    const k = hublaAuditoria.chaveTelefone(x && x.telefone); if (k) excecoes.add(k);
-  }
   const aud = hublaAuditoria.auditar({ hubla, grupos: bruto.grupos, clientesConcierge: clientes,
     gruposRegras: gruposRegras || hublaAss.gruposAcesso(), excecoes });
   aud.gruposLidosEm = new Date(bruto.em).toISOString();
@@ -5265,7 +5282,7 @@ app.get('/hubla/grupos-remocao', async (req, res) => {
     res.json({ ok: true, config: cfg, pausado: estado.pausado || null, hoje: estado.hoje, ultimaRodada: estado.ultimaRodada || null,
       gruposComRegra: hublaAss.gruposAcesso().mapeados.size, rodando: _remRodando,
       historico: estado.historico.slice(0, 60), candidatos, erroPrevia,
-      excecoesTelefone: estado.excecoesTelefone, semCadastroVistos: Object.keys(estado.vistos || {}).length });
+      excecoesTelefone: (await lerExcecoesPainel().catch(() => ({ excecoes: estado.excecoesTelefone }))).excecoes.filter(x => x.telefone), semCadastroVistos: Object.keys(estado.vistos || {}).length });
   } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
 });
 app.post('/hubla/grupos-remocao/config', async (req, res) => {
@@ -5300,12 +5317,18 @@ app.post('/hubla/grupos-remocao/excecao', async (req, res) => {
     if (!k || tel.length < 10) return res.status(400).json({ ok: false, erro: 'telefone inválido' });
     const just = String(b.justificativa || '').trim().slice(0, 300);
     if (!b.remover && !just) return res.status(400).json({ ok: false, erro: 'justificativa obrigatória' });
-    const e = await salvarEstadoRemocao(est => {
-      const resto = est.excecoesTelefone.filter(x => hublaAuditoria.chaveTelefone(x.telefone) !== k);
-      if (!b.remover) resto.push({ telefone: tel, nome: String(b.nome || '').trim().slice(0, 120), justificativa: just, criadoEm: new Date().toISOString() });
-      est.excecoesTelefone = resto.sort((a, z) => String(a.nome || a.telefone).localeCompare(String(z.nome || z.telefone), 'pt-BR'));
-    }, b.remover ? 'grupos: tira exceção por telefone' : 'grupos: exceção por telefone');
-    res.json({ ok: true, excecoesTelefone: e.excecoesTelefone });
+    // Desde 12/11/2026 grava na lista única de Exceções (sem oferta = todos os grupos).
+    const agora = new Date().toISOString();
+    await salvarExcecoes(lista => {
+      const idx = lista.findIndex(x => x.telefone && hublaAuditoria.chaveTelefone(x.telefone) === k);
+      if (b.remover) { if (idx < 0) return false; lista.splice(idx, 1); return; }
+      if (idx >= 0) { Object.assign(lista[idx], { justificativa: just, atualizadoEm: agora }); return; }
+      lista.push({ id: _excId(), nome: String(b.nome || '').trim().slice(0, 120), email: '', telefone: tel, ofertaId: '', ofertaNome: '', produtoId: '', produtoNome: '',
+        fim: '', justificativa: just, criadoEm: agora, atualizadoEm: agora });
+    }, b.remover ? 'exceções: remove (grupos)' : 'exceções: não remover dos grupos');
+    await tirarExcecaoTelefoneAntiga(k);
+    const { excecoes } = await lerExcecoesPainel();
+    res.json({ ok: true, excecoesTelefone: excecoes.filter(x => x.telefone) });
   } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
 });
 // Roda uma rodada agora (fora da espera de 20 min; respeita modo, pausa e teto).
@@ -5322,11 +5345,77 @@ app.post('/hubla/grupos-remocao/rodar', async (req, res) => {
 // exceções e dos admins — o mesmo critério de "Ativos no painel sem assinatura
 // vigente", recalculado na hora (nunca confia numa lista vinda do navegador).
 const PAINEL_EXCECOES_PATH = 'painel-excecoes.json';
+// Desde 12/11/2026 a exceção é uma lista só (visão "Exceções" do gestor): cada
+// item = {id, nome, email?, telefone?, ofertaId?, ofertaNome, produtoId,
+// produtoNome, fim? (AAAA-MM-DD, vale até o fim do dia em SP), justificativa}.
+// Com oferta, a pessoa ganha o que a oferta dá nas Regras de acesso: painel se a
+// regra for "libera" (ou "prazo" com data de fim) e os grupos marcados nela.
+// Sem oferta (exceções antigas, e as "Não remover" do Tico sem oferta) = acesso
+// total: painel (com e-mail) e todos os grupos, como antes.
+// As exceções antigas por telefone (grupos-remocao.json → excecoesTelefone)
+// entram na lista com id "tel:<chave>" até serem editadas ou removidas.
+function _excId() { return 'exc-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function _excFimMs(fim) { return /^\d{4}-\d{2}-\d{2}$/.test(String(fim || '')) ? new Date(fim + 'T23:59:59-03:00').getTime() : null; }
+function excecaoValida(x, agora = Date.now()) { const f = _excFimMs(x && x.fim); return f === null || f >= agora; }
+function excecaoTemOferta(x) { return !!(x && (x.ofertaId || x.ofertaNome)); }
+function excecaoRegra(x) { return excecaoTemOferta(x) ? hublaAss.regraAcesso(x.produtoId || '', x.produtoNome || '', x.ofertaNome || '', x.ofertaId || '') : null; }
+// A exceção dá o painel agora?
+function excecaoDaPainel(x, agora = Date.now()) {
+  if (!x || !x.email || !excecaoValida(x, agora)) return false;
+  if (!excecaoTemOferta(x)) return true;
+  const r = excecaoRegra(x);
+  return r === 'libera' || (r === 'prazo' && !!x.fim);
+}
 async function lerExcecoesPainel() {
-  const { data, sha } = await ghGetJson(PAINEL_EXCECOES_PATH, { excecoes: [] });
-  const excecoes = Array.isArray(data && data.excecoes) ? data.excecoes : [];
-  const mapa = new Map(excecoes.map(x => [String(x.email || '').toLowerCase().trim(), x]));
-  return { excecoes, mapa, sha, data: data || { excecoes: [] } };
+  const [{ data, sha }, rem] = await Promise.all([ghGetJson(PAINEL_EXCECOES_PATH, { excecoes: [] }),
+    ghGetJson(GRUPOS_REMOCAO_PATH, null).catch(() => ({ data: null }))]);
+  const proprias = (Array.isArray(data && data.excecoes) ? data.excecoes : []).map(x => Object.assign({}, x, { id: x.id || ('e:' + _emailNorm(x.email)), origem: 'excecoes' }));
+  const chaves = new Set(proprias.map(x => hublaAuditoria.chaveTelefone(x.telefone)).filter(Boolean));
+  const antigas = [];
+  for (const x of ((rem.data && Array.isArray(rem.data.excecoesTelefone)) ? rem.data.excecoesTelefone : [])) {
+    const k = hublaAuditoria.chaveTelefone(x && x.telefone);
+    if (!k || chaves.has(k)) continue;
+    chaves.add(k);
+    antigas.push({ id: 'tel:' + k, telefone: String(x.telefone || '').replace(/\D/g, ''), nome: x.nome || '', justificativa: x.justificativa || '', criadoEm: x.criadoEm || null, origem: 'telefone' });
+  }
+  const excecoes = proprias.concat(antigas);
+  const agora = Date.now();
+  // mapa = e-mails com exceção que dá o painel AGORA (sem-assinatura, retirada, webhook)
+  const mapa = new Map(excecoes.filter(x => excecaoDaPainel(x, agora)).map(x => [_emailNorm(x.email), x]));
+  return { excecoes, proprias, mapa, sha, data: data || { excecoes: [] } };
+}
+// Grava painel-excecoes.json (só as próprias; as antigas por telefone ficam no
+// grupos-remocao.json até serem movidas). alterar(lista) muda a lista no lugar.
+async function salvarExcecoes(alterar, mensagem) {
+  for (let t = 1; t <= 4; t++) {
+    try {
+      const { data, sha } = await ghGetJson(PAINEL_EXCECOES_PATH, { excecoes: [] });
+      const lista = (Array.isArray(data && data.excecoes) ? data.excecoes : []).map(x => Object.assign({}, x));
+      const r = alterar(lista);
+      if (r === false) return lista;
+      lista.sort((a, z) => String(a.nome || a.email || a.telefone || '').localeCompare(String(z.nome || z.email || z.telefone || ''), 'pt-BR'));
+      await ghPutJson(PAINEL_EXCECOES_PATH, { atualizadoEm: new Date().toISOString(), excecoes: lista }, sha, mensagem);
+      return lista;
+    } catch (e) {
+      if (t < 4 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 400)); continue; }
+      throw e;
+    }
+  }
+}
+async function tirarExcecaoTelefoneAntiga(chave) {
+  if (!chave) return;
+  await salvarEstadoRemocao(est => {
+    est.excecoesTelefone = est.excecoesTelefone.filter(x => hublaAuditoria.chaveTelefone(x.telefone) !== chave);
+  }, 'grupos: exceção por telefone movida para Exceções');
+}
+// Ofertas para o seletor da tela de Exceções (ordem alfabética produto · oferta).
+function ofertasParaExcecao(base) {
+  const g = hublaAss.gruposAcesso();
+  return Object.values(_ofertasDaBase(base || {})).filter(o => !o.produtoExcluido).map(o => ({
+    ofertaId: o.ofertaId, ofertaNome: o.ofertaNome, produtoId: o.produtoId, produtoNome: o.produtoNome, arquivada: !!o.arquivada,
+    regra: hublaAss.regraAcesso(o.produtoId, o.produtoNome, o.ofertaNome, o.ofertaId),
+    grupos: g.porOferta.has(o.ofertaId) ? [...g.porOferta.get(o.ofertaId)] : [],
+  })).sort((a, z) => (a.produtoNome + ' · ' + a.ofertaNome).localeCompare(z.produtoNome + ' · ' + z.ofertaNome, 'pt-BR'));
 }
 function _emailNorm(e) { return String(e || '').toLowerCase().trim(); }
 async function painelSemAssinatura() {
@@ -5374,77 +5463,106 @@ app.get('/hubla/painel/sem-assinatura', async (req, res) => {
 app.get('/hubla/painel/excecoes', async (req, res) => {
   if (!opAutorizado(req, res)) return;
   try {
-    const { excecoes } = await lerExcecoesPainel();
-    const { data: md } = await ghGetJson(MEMBROS_PATH, { membros: [] });
+    const [{ excecoes }, { data: md }, { data: base }] = await Promise.all([lerExcecoesPainel(),
+      ghGetJson(MEMBROS_PATH, { membros: [] }), ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {})]);
     const porEmail = new Map(((md && md.membros) || []).map(m => [_emailNorm(m.email), m]));
-    res.json({ ok: true, excecoes: excecoes.map(x => {
-      const m = porEmail.get(_emailNorm(x.email));
-      return Object.assign({}, x, { nomeMembro: (m && m.nome) || '', statusPainel: m ? m.status : 'sem_cadastro' });
+    const agora = Date.now();
+    let grupos = [];
+    try { grupos = await listaGruposCdv(); } catch (e) { /* sem baileys, segue sem nomes */ }
+    res.json({ ok: true, ofertas: ofertasParaExcecao(base), grupos, excecoes: excecoes.map(x => {
+      const m = x.email ? porEmail.get(_emailNorm(x.email)) : null;
+      return Object.assign({}, x, { nomeMembro: (m && m.nome) || '', statusPainel: !x.email ? 'sem_email' : (m ? m.status : 'sem_cadastro'),
+        valida: excecaoValida(x, agora), regra: excecaoRegra(x), daPainel: excecaoDaPainel(x, agora),
+        grupos: excecaoTemOferta(x) ? (hublaAss.gruposAcesso().porOferta.get(x.ofertaId) ? [...hublaAss.gruposAcesso().porOferta.get(x.ofertaId)] : []) : null });
     }) });
   } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
 });
-// {email, justificativa, nome?} — inclui ou atualiza. Se a pessoa está inativa em
-// membros.json, reativa (a exceção é para ela ter acesso ao painel).
+// {id?, nome, email?, telefone?, ofertaId?, fim?, justificativa} — inclui ou
+// atualiza (por id; sem id, pelo e-mail ou pelo telefone). E-mail ou telefone é
+// obrigatório. Se a exceção dá o painel e a pessoa está inativa em membros.json,
+// reativa (ou cria).
 app.post('/hubla/painel/excecoes', async (req, res) => {
   if (!opAutorizado(req, res)) return;
-  const email = _emailNorm(req.body && req.body.email);
-  const justificativa = String((req.body && req.body.justificativa) || '').trim().slice(0, 500);
-  const nome = String((req.body && req.body.nome) || '').trim().slice(0, 120);
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ ok: false, erro: 'e-mail inválido' });
+  const b = req.body || {};
+  const email = _emailNorm(b.email);
+  const telefone = String(b.telefone || '').replace(/\D/g, '');
+  const chave = telefone ? hublaAuditoria.chaveTelefone(telefone) : null;
+  const justificativa = String(b.justificativa || '').trim().slice(0, 500);
+  const nome = String(b.nome || '').trim().slice(0, 120);
+  const fim = String(b.fim || '').trim();
+  const idPedido = String(b.id || '').trim();
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ ok: false, erro: 'e-mail inválido' });
+  if (telefone && telefone.length < 10) return res.status(400).json({ ok: false, erro: 'telefone inválido (DDD + número)' });
+  if (!email && !telefone) return res.status(400).json({ ok: false, erro: 'informe o e-mail ou o telefone' });
   if (!justificativa) return res.status(400).json({ ok: false, erro: 'justificativa obrigatória' });
+  if (fim && _excFimMs(fim) === null) return res.status(400).json({ ok: false, erro: 'data de fim inválida' });
   try {
-    for (let t = 1; t <= 4; t++) {
-      try {
-        const exc = await lerExcecoesPainel();
-        const agora = new Date().toISOString();
-        const lista = exc.excecoes.filter(x => _emailNorm(x.email) !== email);
-        const ant = exc.mapa.get(email);
-        lista.push({ email, nome: nome || (ant && ant.nome) || '', justificativa, criadoEm: (ant && ant.criadoEm) || agora, atualizadoEm: agora });
-        lista.sort((a, z) => a.email.localeCompare(z.email));
-        await ghPutJson(PAINEL_EXCECOES_PATH, { atualizadoEm: agora, excecoes: lista }, exc.sha, 'painel: exceção de acesso');
-        break;
-      } catch (e) {
-        if (t < 4 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 400)); continue; }
-        throw e;
-      }
+    let oferta = null;
+    if (b.ofertaId) {
+      const { data: base } = await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {});
+      oferta = _ofertasDaBase(base || {})[String(b.ofertaId)];
+      if (!oferta) return res.status(400).json({ ok: false, erro: 'oferta não encontrada na Hubla' });
     }
-    // Garante o acesso no painel.
+    const agora = new Date().toISOString();
+    let salvo = null;
+    await salvarExcecoes(lista => {
+      let idx = -1;
+      if (idPedido && !idPedido.startsWith('tel:')) idx = lista.findIndex(x => (x.id || ('e:' + _emailNorm(x.email))) === idPedido);
+      if (idx < 0 && email) idx = lista.findIndex(x => x.email && _emailNorm(x.email) === email);
+      if (idx < 0 && chave) idx = lista.findIndex(x => x.telefone && hublaAuditoria.chaveTelefone(x.telefone) === chave);
+      const ant = idx >= 0 ? lista[idx] : null;
+      const novo = { id: (ant && ant.id) || _excId(), nome: nome || (ant && ant.nome) || '', email: email || '', telefone,
+        ofertaId: oferta ? oferta.ofertaId : '', ofertaNome: oferta ? oferta.ofertaNome : '', produtoId: oferta ? oferta.produtoId : '', produtoNome: oferta ? oferta.produtoNome : '',
+        fim: fim || '', justificativa, criadoEm: (ant && ant.criadoEm) || agora, atualizadoEm: agora };
+      if (idx >= 0) lista[idx] = novo; else lista.push(novo);
+      salvo = novo;
+    }, 'exceções: inclui/atualiza');
+    // Era uma exceção antiga por telefone? Sai do grupos-remocao.json.
+    if (idPedido.startsWith('tel:')) await tirarExcecaoTelefoneAntiga(idPedido.slice(4));
+    else if (chave) await tirarExcecaoTelefoneAntiga(chave).catch(() => {});
+    // Garante o acesso no painel quando a exceção dá o painel.
     let reativado = false, criado = false;
-    for (let t = 1; t <= 4; t++) {
-      try {
-        const agora = new Date().toISOString();
-        const { data, sha } = await ghGetJson(MEMBROS_PATH, { membros: [] });
-        const membros = (data && data.membros) || [];
-        const m = membros.find(x => _emailNorm(x.email) === email);
-        if (m && m.status === 'ativo') break;
-        if (m) { m.status = 'ativo'; m.ativadoEm = agora; m.atualizadoEm = agora; m.origem = m.origem || 'excecao'; delete m.removidoEm; delete m.removidoMotivo; reativado = true; }
-        else { membros.push({ nome, email, status: 'ativo', produtos: [], adicionadoEm: agora, ativadoEm: agora, atualizadoEm: agora, origem: 'excecao' }); criado = true; }
-        await ghPutJson(MEMBROS_PATH, Object.assign({}, data, { atualizadoEm: agora, total: membros.filter(x => x.status === 'ativo').length, membros }), sha, 'painel: exceção ativa acesso');
-        break;
-      } catch (e) {
-        if (t < 4 && String(e.message).includes('but expected')) { reativado = criado = false; await new Promise(r => setTimeout(r, t * 400)); continue; }
-        throw e;
+    if (excecaoDaPainel(salvo)) {
+      for (let t = 1; t <= 4; t++) {
+        try {
+          const ag = new Date().toISOString();
+          const { data, sha } = await ghGetJson(MEMBROS_PATH, { membros: [] });
+          const membros = (data && data.membros) || [];
+          const m = membros.find(x => _emailNorm(x.email) === email);
+          if (m && m.status === 'ativo') break;
+          if (m) { m.status = 'ativo'; m.ativadoEm = ag; m.atualizadoEm = ag; m.origem = m.origem || 'excecao'; delete m.removidoEm; delete m.removidoMotivo; reativado = true; }
+          else { membros.push({ nome, email, status: 'ativo', produtos: [], adicionadoEm: ag, ativadoEm: ag, atualizadoEm: ag, origem: 'excecao' }); criado = true; }
+          await ghPutJson(MEMBROS_PATH, Object.assign({}, data, { atualizadoEm: ag, total: membros.filter(x => x.status === 'ativo').length, membros }), sha, 'painel: exceção ativa acesso');
+          _membrosAtivos.prod.ts = 0;
+          break;
+        } catch (e) {
+          if (t < 4 && String(e.message).includes('but expected')) { reativado = criado = false; await new Promise(r => setTimeout(r, t * 400)); continue; }
+          throw e;
+        }
       }
     }
-    res.json({ ok: true, email, reativado, criado });
+    res.json({ ok: true, excecao: salvo, daPainel: excecaoDaPainel(salvo), reativado, criado });
   } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
 });
+// {id} (ou {email}, compatibilidade). Não retira o acesso agora: a pessoa volta a
+// aparecer em "sem assinatura vigente" / Grupos × acesso se não tiver assinatura.
 app.post('/hubla/painel/excecoes/excluir', async (req, res) => {
   if (!opAutorizado(req, res)) return;
+  const id = String((req.body && req.body.id) || '').trim();
   const email = _emailNorm(req.body && req.body.email);
   try {
-    for (let t = 1; t <= 4; t++) {
-      try {
-        const exc = await lerExcecoesPainel();
-        if (!exc.mapa.has(email)) return res.json({ ok: true, email, removida: false });
-        const lista = exc.excecoes.filter(x => _emailNorm(x.email) !== email);
-        await ghPutJson(PAINEL_EXCECOES_PATH, { atualizadoEm: new Date().toISOString(), excecoes: lista }, exc.sha, 'painel: remove exceção de acesso');
-        return res.json({ ok: true, email, removida: true });
-      } catch (e) {
-        if (t < 4 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 400)); continue; }
-        throw e;
+    if (id.startsWith('tel:')) { await tirarExcecaoTelefoneAntiga(id.slice(4)); return res.json({ ok: true, id, removida: true }); }
+    let removida = false;
+    await salvarExcecoes(lista => {
+      const antes = lista.length;
+      for (let i = lista.length - 1; i >= 0; i--) {
+        const x = lista[i];
+        if ((id && (x.id || ('e:' + _emailNorm(x.email))) === id) || (!id && email && _emailNorm(x.email) === email)) lista.splice(i, 1);
       }
-    }
+      removida = lista.length !== antes;
+      return removida ? undefined : false;
+    }, 'exceções: remove');
+    res.json({ ok: true, id: id || email, removida });
   } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
 });
 // {emails:[...]} — desativa só quem está na lista E continua sem assinatura
@@ -5641,7 +5759,7 @@ app.post('/hubla/regras-acesso/simular', async (req, res) => {
 });
 // Salva {ofertas:{id:regra}} (todas as ofertas mostradas na tela). Não mexe em
 // membros.json: liberar quem ganhou é "Aplicar"; retirar quem perdeu continua
-// sendo a visão "Acesso ao painel · Exceções" (exceções e admins nunca saem).
+// sendo a visão "Exceções" (exceções e admins nunca saem).
 app.post('/hubla/regras-acesso', async (req, res) => {
   if (!opAutorizado(req, res)) return;
   try {
