@@ -4471,7 +4471,7 @@ app.post('/membros/verificar-codigo', (req, res) => {
   otpStore.delete(emailNorm);
   const token = assinarSessaoMembro(emailNorm);
   if (!token) return res.status(500).json({ ok: false, erro: 'Segredo de sessão não configurado no servidor' });
-  res.json({ ok: true, acesso: true, nome: entrada.nome, email: emailNorm, produtos: entrada.produtos, token });
+  res.json({ ok: true, acesso: true, nome: hublaAss.nomeProprio(entrada.nome), email: emailNorm, produtos: entrada.produtos, token });
 });
 
 // ── Celulares do membro (Face ID/digital, push) e alertas pessoais ───────────
@@ -4762,6 +4762,14 @@ app.post('/webhook/hubla-membros', async (req, res) => {
 // novo (/webhook/hubla-assinaturas, que só chama para ofertas que liberam o painel).
 async function aplicarAcessoMembroHubla({ type, isMemberAdded, isMemberRemoved, email, nome, produto, assinaturaId, event }) {
   let acao = isMemberAdded ? 'adicionado' : 'removido';
+  nome = hublaAss.nomeProprio(nome);
+  // Ajustes de cadastro: o e-mail do painel acompanha o e-mail da Hubla (desde 12/11/2026).
+  let ajustesDoEmail = [], excPainel = new Map();
+  try {
+    const ex = await lerExcecoesPainel();
+    excPainel = ex.mapa;
+    ajustesDoEmail = ex.ajustes.filter(a => a.emailPainel && _emailNorm(a.emailHubla) === _emailNorm(email) && _emailNorm(a.emailPainel) !== _emailNorm(email));
+  } catch (e) { console.warn('[hubla-membros] leitura dos ajustes falhou:', e.message); }
   for (let tentativa = 1; tentativa <= 4; tentativa++) {
     try {
       acao = isMemberAdded ? 'adicionado' : 'removido';
@@ -4855,6 +4863,21 @@ async function aplicarAcessoMembroHubla({ type, isMemberAdded, isMemberRemoved, 
         }
       }
 
+      const hub = membros.find(m => m.email === email);
+      if (hub && ajustesDoEmail.length) {
+        for (const aj of ajustesDoEmail) {
+          const ep = _emailNorm(aj.emailPainel);
+          let m = membros.find(x => _emailNorm(x.email) === ep);
+          if (hub.status === 'ativo') {
+            if (!m) { m = { nome: hub.nome || aj.nome || '', email: ep, status: 'ativo', produtos: [], adicionadoEm: agora, ativadoEm: agora, origem: 'ajuste' }; membros.push(m); }
+            else if (m.status !== 'ativo') { m.status = 'ativo'; m.ativadoEm = agora; delete m.removidoEm; delete m.removidoMotivo; }
+            m.produtos = (hub.produtos || []).slice(); m.emailHubla = email; m.atualizadoEm = agora;
+          } else if (m && m.status === 'ativo' && !excPainel.has(ep)) {
+            m.status = 'inativo'; m.removidoEm = agora; m.atualizadoEm = agora; m.removidoMotivo = 'ajuste_assinatura_encerrada';
+          }
+        }
+        acao += ' +ajuste';
+      }
       await ghPutJson(MEMBROS_PATH, { atualizadoEm: agora, total: membros.filter(m => m.status === 'ativo').length, membros }, dados.sha, 'webhook: atualiza membros');
       return { status: 200, body: { ok: true, type, email, acao } };
 
@@ -4981,6 +5004,7 @@ app.get('/hubla/assinaturas', async (req, res) => {
   if (!opAutorizado(req, res)) return;
   try {
     const r = await hublaAssinaturas.listar({ situacao: req.query.situacao, painel: req.query.painel, email: req.query.email });
+    for (const a of ((r && r.assinaturas) || [])) if (a && a.nome) a.nome = hublaAss.nomeProprio(a.nome);
     res.json(Object.assign({ ok: true }, r));
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
@@ -5099,7 +5123,7 @@ async function montarAuditoriaGrupos({ forcar = false, gruposRegras } = {}) {
   // Lista única de exceções (inclui as antigas por telefone do grupos-remocao.json).
   void rem;
   const excecoes = chavesExcecao(hubla, exc.excecoes);
-  const aud = hublaAuditoria.auditar({ hubla, grupos: bruto.grupos, clientesConcierge: clientes,
+  const aud = hublaAuditoria.auditar({ hubla, grupos: bruto.grupos, clientesConcierge: clientes, telefonesExtras: ajusteTelefones(exc.ajustes),
     gruposRegras: gruposRegras || hublaAss.gruposAcesso(), excecoes });
   aud.gruposLidosEm = new Date(bruto.em).toISOString();
   return aud;
@@ -5382,7 +5406,55 @@ async function lerExcecoesPainel() {
   const agora = Date.now();
   // mapa = e-mails com exceção que dá o painel AGORA (sem-assinatura, retirada, webhook)
   const mapa = new Map(excecoes.filter(x => excecaoDaPainel(x, agora)).map(x => [_emailNorm(x.email), x]));
-  return { excecoes, proprias, mapa, sha, data: data || { excecoes: [] } };
+  const ajustes = (Array.isArray(data && data.ajustes) ? data.ajustes : []).filter(a => a && a.emailHubla);
+  return { excecoes, proprias, mapa, ajustes, sha, data: data || { excecoes: [] } };
+}
+// ── Ajustes de cadastro (desde 12/11/2026) ──
+// Quem TEM assinatura na Hubla, mas usa outro e-mail no painel ou outro telefone
+// nos grupos. Não é exceção: vale enquanto a assinatura da Hubla valer, com as
+// mesmas regras (oferta, prazo, grupos). Ficam em painel-excecoes.json → ajustes
+// = [{id, nome, emailHubla, emailPainel?, telefone?, justificativa?, criadoEm, atualizadoEm}].
+// - painel: emailPainel herda a situação de emailHubla (sem-assinatura, webhook espelha
+//   ativação/desativação em membros.json);
+// - grupos: os registros de emailHubla contam também no telefone novo (auditoria).
+function ajusteAliasPainel(ajustes) {
+  const m = new Map();
+  for (const a of (ajustes || [])) if (a.emailPainel && _emailNorm(a.emailPainel) !== _emailNorm(a.emailHubla)) m.set(_emailNorm(a.emailPainel), _emailNorm(a.emailHubla));
+  return m;
+}
+function ajusteTelefones(ajustes) {
+  const m = new Map();
+  for (const a of (ajustes || [])) {
+    if (!a.telefone) continue;
+    const e = _emailNorm(a.emailHubla); const l = m.get(e) || []; l.push(String(a.telefone)); m.set(e, l);
+  }
+  return m;
+}
+// O e-mail (da Hubla) dá o painel agora? Mesmo critério de "sem assinatura vigente".
+function emailHublaDaPainel(base, email, membro, agora = Date.now()) {
+  const e = _emailNorm(email); const b = base || {};
+  for (const a of Object.values(b.assinaturas || {})) {
+    if (!a || _emailNorm(a.email) !== e || !hublaAss.assinaturaLiberaPainel(a, agora)) continue;
+    const { situacao } = hublaAss.calcularSituacao(a, agora);
+    if (situacao === 'vigente' || situacao === 'teste' || situacao === 'vitalicio') return true;
+  }
+  if (hublaAss.membroAtivo((b.acessos || {})[e], agora)) return true;
+  return !!hublaAss.outroAcessoPainel(b, e, null, membro || null, agora);
+}
+async function salvarAjustes(alterar, mensagem) {
+  for (let t = 1; t <= 4; t++) {
+    try {
+      const { data, sha } = await ghGetJson(PAINEL_EXCECOES_PATH, { excecoes: [] });
+      const lista = (Array.isArray(data && data.ajustes) ? data.ajustes : []).map(x => Object.assign({}, x));
+      if (alterar(lista) === false) return lista;
+      lista.sort((a, z) => String(a.nome || a.emailHubla).localeCompare(String(z.nome || z.emailHubla), 'pt-BR'));
+      await ghPutJson(PAINEL_EXCECOES_PATH, Object.assign({}, data || {}, { atualizadoEm: new Date().toISOString(), ajustes: lista }), sha, mensagem);
+      return lista;
+    } catch (e) {
+      if (t < 4 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 400)); continue; }
+      throw e;
+    }
+  }
 }
 // Grava painel-excecoes.json (só as próprias; as antigas por telefone ficam no
 // grupos-remocao.json até serem movidas). alterar(lista) muda a lista no lugar.
@@ -5394,7 +5466,7 @@ async function salvarExcecoes(alterar, mensagem) {
       const r = alterar(lista);
       if (r === false) return lista;
       lista.sort((a, z) => String(a.nome || a.email || a.telefone || '').localeCompare(String(z.nome || z.email || z.telefone || ''), 'pt-BR'));
-      await ghPutJson(PAINEL_EXCECOES_PATH, { atualizadoEm: new Date().toISOString(), excecoes: lista }, sha, mensagem);
+      await ghPutJson(PAINEL_EXCECOES_PATH, Object.assign({}, data || {}, { atualizadoEm: new Date().toISOString(), excecoes: lista }), sha, mensagem);
       return lista;
     } catch (e) {
       if (t < 4 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 400)); continue; }
@@ -5433,17 +5505,23 @@ async function painelSemAssinatura() {
     if (situacao === 'vigente' || situacao === 'teste' || situacao === 'vitalicio') vigentes.add(_emailNorm(a.email));
   }
   const admins = new Set(ADMIN_EMAILS.map(_emailNorm));
+  const alias = ajusteAliasPainel(exc.ajustes);
+  const membrosLista = (mdata && mdata.membros) || [];
+  const porEmailM = new Map(membrosLista.map(m => [_emailNorm(m && m.email), m]));
   const lista = [];
-  for (const m of ((mdata && mdata.membros) || [])) {
+  for (const m of membrosLista) {
     if (!m || m.status !== 'ativo' || !m.email) continue;
-    const e = _emailNorm(m.email);
+    const e0 = _emailNorm(m.email);
+    // Ajuste de cadastro: o e-mail do painel vale pela assinatura do e-mail da Hubla.
+    const e = alias.get(e0) || e0;
+    const mRef = e === e0 ? m : (porEmailM.get(e) || m);
     if (vigentes.has(e)) continue;
     if (hublaAss.membroAtivo((b.acessos || {})[e], agora)) continue;
-    const outro = hublaAss.outroAcessoPainel(b, e, null, m, agora);
+    const outro = hublaAss.outroAcessoPainel(b, e, null, mRef, agora);
     if (outro) continue;
-    const x = exc.mapa.get(e);
+    const x = exc.mapa.get(e0);
     lista.push({
-      email: e, nome: m.nome || '', ativadoEm: m.ativadoEm || m.adicionadoEm || null,
+      email: e0, emailHubla: e !== e0 ? e : undefined, nome: hublaAss.nomeProprio(m.nome || ''), ativadoEm: m.ativadoEm || m.adicionadoEm || null,
       produtos: (m.produtos || []).map(p => p && (p.oferta || p.produtoNome)).filter(Boolean),
       admin: admins.has(e), excecao: x ? { justificativa: x.justificativa || '', criadoEm: x.criadoEm || null } : null,
     });
@@ -5471,7 +5549,7 @@ app.get('/hubla/painel/excecoes', async (req, res) => {
     try { grupos = await listaGruposCdv(); } catch (e) { /* sem baileys, segue sem nomes */ }
     res.json({ ok: true, ofertas: ofertasParaExcecao(base), grupos, excecoes: excecoes.map(x => {
       const m = x.email ? porEmail.get(_emailNorm(x.email)) : null;
-      return Object.assign({}, x, { nomeMembro: (m && m.nome) || '', statusPainel: !x.email ? 'sem_email' : (m ? m.status : 'sem_cadastro'),
+      return Object.assign({}, x, { nome: hublaAss.nomeProprio(x.nome), nomeMembro: hublaAss.nomeProprio((m && m.nome) || ''), statusPainel: !x.email ? 'sem_email' : (m ? m.status : 'sem_cadastro'),
         valida: excecaoValida(x, agora), regra: excecaoRegra(x), daPainel: excecaoDaPainel(x, agora),
         grupos: excecaoTemOferta(x) ? (hublaAss.gruposAcesso().porOferta.get(x.ofertaId) ? [...hublaAss.gruposAcesso().porOferta.get(x.ofertaId)] : []) : null });
     }) });
@@ -5488,7 +5566,7 @@ app.post('/hubla/painel/excecoes', async (req, res) => {
   const telefone = String(b.telefone || '').replace(/\D/g, '');
   const chave = telefone ? hublaAuditoria.chaveTelefone(telefone) : null;
   const justificativa = String(b.justificativa || '').trim().slice(0, 500);
-  const nome = String(b.nome || '').trim().slice(0, 120);
+  const nome = hublaAss.nomeProprio(String(b.nome || '').trim().slice(0, 120));
   const fim = String(b.fim || '').trim();
   const idPedido = String(b.id || '').trim();
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ ok: false, erro: 'e-mail inválido' });
@@ -5565,6 +5643,94 @@ app.post('/hubla/painel/excecoes/excluir', async (req, res) => {
     res.json({ ok: true, id: id || email, removida });
   } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
 });
+// ── Ajustes de cadastro: rotas (X-CDV-Op) ──
+app.get('/hubla/painel/ajustes', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const [exc, { data: md }, { data: base }] = await Promise.all([lerExcecoesPainel(),
+      ghGetJson(MEMBROS_PATH, { membros: [] }), ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {})]);
+    const porEmail = new Map(((md && md.membros) || []).map(m => [_emailNorm(m.email), m]));
+    const agora = Date.now();
+    res.json({ ok: true, ajustes: exc.ajustes.map(a => {
+      const eh = _emailNorm(a.emailHubla), ep = _emailNorm(a.emailPainel);
+      const ativas = Object.values((base && base.assinaturas) || {}).filter(s => s && _emailNorm(s.email) === eh).map(s => {
+        const { situacao, fim } = hublaAss.calcularSituacao(s, agora);
+        return { ofertaNome: s.ofertaNome || '', produtoNome: s.produtoNome || '', situacao, fim: fim || null, liberaPainel: hublaAss.assinaturaLiberaPainel(s, agora) };
+      }).filter(s => s.situacao === 'vigente' || s.situacao === 'teste' || s.situacao === 'vitalicio');
+      const mp = ep ? porEmail.get(ep) : null;
+      return Object.assign({}, a, { nome: hublaAss.nomeProprio(a.nome || (porEmail.get(eh) || {}).nome || ''), assinaturasAtivas: ativas,
+        daPainel: emailHublaDaPainel(base, eh, porEmail.get(eh), agora), statusPainel: ep ? (mp ? mp.status : 'sem_cadastro') : null,
+        emailHublaNaBase: Object.values((base && base.assinaturas) || {}).some(s => s && _emailNorm(s.email) === eh) || !!((base && base.acessos) || {})[eh] });
+    }) });
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+// {id?, nome?, emailHubla, emailPainel?, telefone?, justificativa?}. Se o e-mail da
+// Hubla dá o painel agora, ativa (ou cria) o e-mail do painel em membros.json.
+app.post('/hubla/painel/ajustes', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const b = req.body || {};
+  const emailHubla = _emailNorm(b.emailHubla), emailPainel = _emailNorm(b.emailPainel);
+  const telefone = String(b.telefone || '').replace(/\D/g, '');
+  const valido = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+  if (!valido(emailHubla)) return res.status(400).json({ ok: false, erro: 'e-mail da Hubla inválido' });
+  if (emailPainel && !valido(emailPainel)) return res.status(400).json({ ok: false, erro: 'e-mail do painel inválido' });
+  if (emailPainel === emailHubla) return res.status(400).json({ ok: false, erro: 'o e-mail do painel é igual ao da Hubla' });
+  if (telefone && telefone.length < 10) return res.status(400).json({ ok: false, erro: 'telefone inválido (DDD + número)' });
+  if (!emailPainel && !telefone) return res.status(400).json({ ok: false, erro: 'informe o e-mail do painel ou o telefone novo' });
+  try {
+    const exc = await lerExcecoesPainel();
+    const outro = exc.ajustes.find(a => a.emailPainel && _emailNorm(a.emailPainel) === emailPainel && _emailNorm(a.emailHubla) !== emailHubla && a.id !== b.id);
+    if (emailPainel && outro) return res.status(400).json({ ok: false, erro: 'esse e-mail do painel já está ajustado para ' + outro.emailHubla });
+    const agora = new Date().toISOString();
+    let salvo = null;
+    await salvarAjustes(lista => {
+      let idx = b.id ? lista.findIndex(x => x.id === b.id) : -1;
+      if (idx < 0) idx = lista.findIndex(x => _emailNorm(x.emailHubla) === emailHubla);
+      const ant = idx >= 0 ? lista[idx] : null;
+      salvo = { id: (ant && ant.id) || ('aj-' + Date.now().toString(36)), nome: hublaAss.nomeProprio(String(b.nome || (ant && ant.nome) || '').trim().slice(0, 120)),
+        emailHubla, emailPainel, telefone: telefone ? (telefone.length <= 11 ? '55' + telefone : telefone) : '',
+        justificativa: String(b.justificativa || '').trim().slice(0, 300), criadoEm: (ant && ant.criadoEm) || agora, atualizadoEm: agora };
+      if (idx >= 0) lista[idx] = salvo; else lista.push(salvo);
+    }, 'ajustes: inclui/atualiza');
+    // Ativa o e-mail do painel se a assinatura da Hubla dá o painel agora.
+    let ativado = false, daPainel = false;
+    if (emailPainel) {
+      for (let t = 1; t <= 4; t++) {
+        try {
+          const ag = new Date().toISOString();
+          const [{ data, sha }, { data: base }] = await Promise.all([ghGetJson(MEMBROS_PATH, { membros: [] }), ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {})]);
+          const membros = (data && data.membros) || [];
+          const hub = membros.find(x => _emailNorm(x.email) === emailHubla);
+          daPainel = emailHublaDaPainel(base, emailHubla, hub, Date.now());
+          if (!daPainel) break;
+          let m = membros.find(x => _emailNorm(x.email) === emailPainel);
+          if (m && m.status === 'ativo' && m.emailHubla === emailHubla) break;
+          if (!m) { m = { nome: salvo.nome || (hub && hub.nome) || '', email: emailPainel, status: 'ativo', produtos: [], adicionadoEm: ag, ativadoEm: ag, origem: 'ajuste' }; membros.push(m); }
+          else if (m.status !== 'ativo') { m.status = 'ativo'; m.ativadoEm = ag; delete m.removidoEm; delete m.removidoMotivo; }
+          m.emailHubla = emailHubla; m.produtos = ((hub && hub.produtos) || m.produtos || []).slice(); m.atualizadoEm = ag;
+          await ghPutJson(MEMBROS_PATH, Object.assign({}, data, { atualizadoEm: ag, total: membros.filter(x => x.status === 'ativo').length, membros }), sha, 'painel: ajuste de cadastro ativa e-mail');
+          _membrosAtivos.prod.ts = 0; ativado = true;
+          break;
+        } catch (e) {
+          if (t < 4 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 400)); continue; }
+          throw e;
+        }
+      }
+    }
+    res.json({ ok: true, ajuste: salvo, daPainel, ativado });
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+// {id}. Não desativa agora: o e-mail do painel passa a aparecer em "sem assinatura vigente".
+app.post('/hubla/painel/ajustes/excluir', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const id = String((req.body && req.body.id) || '');
+  try {
+    let removido = false;
+    await salvarAjustes(lista => { const i = lista.findIndex(x => x.id === id); if (i < 0) return false; lista.splice(i, 1); removido = true; }, 'ajustes: remove');
+    res.json({ ok: true, removido });
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+
 // {emails:[...]} — desativa só quem está na lista E continua sem assinatura
 // vigente pelo critério acima (exceções e admins nunca saem).
 app.post('/hubla/painel/retirar-acesso', async (req, res) => {

@@ -22,7 +22,7 @@
 // dele dá este grupo) · sem_cadastro.
 //
 // CommonJS. Usa as regras de situação de hubla-assinaturas.js.
-const { calcularSituacao, membroAtivo } = require('./hubla-assinaturas');
+const { calcularSituacao, membroAtivo, nomeProprio } = require('./hubla-assinaturas');
 
 // Grupos fora da conferência (nome, sem acento/caixa): só o Grupo Operador.
 // Desde 11/11/2026 os grupos de executiva entram na conferência e na regra de
@@ -50,9 +50,18 @@ function grupoIgnorado(nome) { const n = norm(nome); return GRUPOS_IGNORADOS.som
 
 // Registros por telefone: cada assinatura/acesso com produto, oferta, se está
 // ativo e quando acabou (só datas passadas).
-function indicePorTelefone(hubla, agora) {
+// telefonesExtras (opcional): Map e-mail da Hubla → [telefones] dos Ajustes de
+// cadastro (gestor → Exceções): os registros desse e-mail contam também nesses
+// telefones (a pessoa trocou de número e a Hubla não sabe).
+function indicePorTelefone(hubla, agora, telefonesExtras) {
   const porChave = new Map();
-  const add = (k, r) => { if (!k) return; const l = porChave.get(k) || []; l.push(r); porChave.set(k, l); };
+  const extras = telefonesExtras instanceof Map ? telefonesExtras : new Map();
+  const add0 = (k, r) => { if (!k) return; const l = porChave.get(k) || []; if (!l.includes(r)) l.push(r); porChave.set(k, l); };
+  const add = (k, r) => {
+    add0(k, r);
+    const e = String(r.email || '').toLowerCase().trim();
+    for (const t of (extras.get(e) || [])) { const k2 = chaveTelefone(t); if (k2 && k2 !== k) add0(k2, r); }
+  };
   for (const [pid, p] of Object.entries((hubla && hubla.acessosPorProduto) || {})) {
     for (const [email, m] of Object.entries(p.membros || {})) {
       const ativo = membroAtivo(m, agora);
@@ -104,8 +113,8 @@ function situacaoNoGrupo(regs, jid, regras) {
   return { situacao: 'sem_cadastro' };
 }
 
-function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, agora = Date.now() }) {
-  const porChave = indicePorTelefone(hubla, agora);
+function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, telefonesExtras, agora = Date.now() }) {
+  const porChave = indicePorTelefone(hubla, agora, telefonesExtras);
   const regras = gruposRegras || null;
   const exc = excecoes instanceof Map ? excecoes
     : new Map([...(excecoes instanceof Set ? excecoes : [])].map(k => [k, null]));
@@ -145,7 +154,7 @@ function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, ago
       r[campo]++;
       if (situacao === 'ativo') continue;
       const qualquer = (regs || [])[0] || {};
-      const nome = situacao === 'concierge' ? concierge.get(k) : (qualquer.nome || '');
+      const nome = nomeProprio(situacao === 'concierge' ? concierge.get(k) : (qualquer.nome || ''));
       const email = qualquer.email || '';
       const produtos = [...new Set((s.registros || []).map(x => x.produto).filter(Boolean))].sort();
       const diasDesde = s.venceuEm ? Math.floor((agora - new Date(s.venceuEm).getTime()) / DIA) : null;

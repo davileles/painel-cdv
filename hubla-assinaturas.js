@@ -339,12 +339,25 @@ function camposDaAssinatura(sub) {
   return out;
 }
 
+// Nome de aluno com a primeira letra de cada nome em maiúscula ("DAVI LELES",
+// "davi leles" → "Davi Leles"); partículas (da, de, do, das, dos, e) em
+// minúscula fora do início; numeral romano (II, III, IV) em maiúscula. Desde 12/11/2026.
+const _PARTICULAS = new Set(['da', 'das', 'de', 'do', 'dos', 'e', "d'"]);
+function nomeProprio(s) {
+  const t = String(s || '').replace(/\s+/g, ' ').trim();
+  if (!t || t.includes('@')) return t;
+  return t.toLocaleLowerCase('pt-BR').split(' ').map((w, i) => {
+    if (i > 0 && _PARTICULAS.has(w)) return w;
+    if (i > 0 && /^(ii|iii|iv|vi|vii|viii)$/.test(w)) return w.toUpperCase();
+    return w.replace(/(^|[-'’.])(\p{L})/gu, (m, a, b) => a + b.toLocaleUpperCase('pt-BR'));
+  }).join(' ');
+}
 function pessoaDe(obj) {
   const p = obj || {};
   const nome = [p.firstName, p.lastName].filter(Boolean).join(' ') || p.fullName || p.name || '';
   return {
     email: String(p.email || '').toLowerCase().trim(),
-    nome: nome.trim(),
+    nome: nomeProprio(nome),
     telefone: p.phone || '',
   };
 }
@@ -681,7 +694,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
         const email = String(m.email || '').toLowerCase().trim();
         if (!email) continue;
         const ant = acessos[email];
-        const novo = { nome: m.name || '', telefone: m.phone || '', tipo: m.type || '', status: m.status || '',
+        const novo = { nome: nomeProprio(m.name), telefone: m.phone || '', tipo: m.type || '', status: m.status || '',
           removidoEm: iso(m.removalAt), vitalicio: !!m.isLifetime,
           turmas: turmasDoMembro(m), entrouEm: iso(m.createdAt || m.joinedAt || m.grantedAt) };
         // Mesmo e-mail em duas listas: vale o acesso ativo.
@@ -713,7 +726,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
         for (const m of lista) {
           const email = String(m.email || '').toLowerCase().trim();
           if (!email) continue;
-          const novo = { nome: m.name || '', telefone: m.phone || '', tipo: m.type || '',
+          const novo = { nome: nomeProprio(m.name), telefone: m.phone || '', tipo: m.type || '',
             status: m.status || (f ? 'deactivate' : 'active'),
             removidoEm: iso(m.removalAt), vitalicio: !!m.isLifetime,
             turmas: turmasDoMembro(m), entrouEm: iso(m.createdAt || m.joinedAt || m.grantedAt) };
@@ -1051,7 +1064,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
           ? (ac.tipo === 'free' ? 'Acesso vitalício gratuito' : 'Acesso vitalício (sem assinatura paga)')
           : (ac.tipo === 'free' ? 'Acesso gratuito / convite' : 'Acesso ao produto (sem fatura)');
         lista.push({
-          id: 'acesso:' + pid + ':' + em, fonte: 'acesso', email: em, nome: ac.nome, telefone: ac.telefone,
+          id: 'acesso:' + pid + ':' + em, fonte: 'acesso', email: em, nome: nomeProprio(ac.nome), telefone: ac.telefone,
           produtoId: pid, produtoNome: nomeProduto,
           ofertaNome: gratis && gratis.ofertaNome ? gratis.ofertaNome : (oa ? oa.ofertaNome : rotulo),
           ofertaConfirmada: !!((gratis && gratis.ofertaNome) || oa),
@@ -1089,7 +1102,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
 }
 
 module.exports = {
-  criarHublaAssinaturas, ofertaLiberaPainel, assinaturaLiberaPainel, produtoExcluidoNaHubla,
+  criarHublaAssinaturas, nomeProprio, ofertaLiberaPainel, assinaturaLiberaPainel, produtoExcluidoNaHubla,
   definirRegrasAcesso, regrasAcessoAtivas, gruposAcesso, indiceGrupos, regraPadraoAcesso, regraAcesso, indiceRegras, REGRAS_ACESSO: REGRAS, ofertaPainelExigePrazo, OFERTAS_PAINEL_OUTROS_PRODUTOS, produtoOfertaDoEvento, calcularSituacao, membroAtivo, outroAcessoPainel, origemVitalicio,
   camposDaAssinatura, mesclarRegistro, OFERTAS_PAINEL, PRODUTO_PAINEL_ID, ARQUIVO_HUBLA_ASSINATURAS: ARQUIVO,
 };
