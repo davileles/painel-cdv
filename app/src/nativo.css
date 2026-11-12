@@ -82,7 +82,7 @@
   display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px;
   box-shadow: 0 18px 50px rgba(23, 32, 58, .18);
 }
-.cdv-bio-logo { width: 56px; height: 56px; border-radius: 14px; margin-bottom: 4px; }
+.cdv-bio-logo { width: auto; height: 64px; border-radius: 14px; margin-bottom: 4px; }
 .cdv-bio-titulo { font-size: 18px; font-weight: 800; letter-spacing: -.3px; }
 .cdv-bio-sub { font-size: 13px; color: var(--muted, #6b7590); line-height: 1.45; margin-bottom: 10px; }
 .cdv-bio-btn {

@@ -103,7 +103,9 @@ header {
   box-shadow:var(--shadow-1); padding:11px 24px; gap:14px;
 }
 [data-theme="light"] header, :root header { box-shadow:var(--shadow-1); }
-.logo-bird { width:36px; height:36px; border-radius:9px; }
+.logo-bird { width:auto; height:40px; border-radius:9px; }
+/* logocdv.png já traz "clube do viajante": o nome em texto ao lado sai do cabeçalho */
+header .brand-name { display:none; }
 .brand-name { font-size:15px; font-weight:800; letter-spacing:-.2px; }
 .brand-sub { font-size:11px; font-weight:600; color:var(--muted2); letter-spacing:0; text-transform:none; }
 #header-saldo-total {
@@ -501,7 +503,7 @@ select.srt { padding:11px 13px; font-size:13.5px; font-weight:600; }
 /* ── LOGIN ──────────────────────────────────────────────────────────────── */
 #login-screen { background:var(--bg); }
 .login-box, [data-theme="light"] .login-box { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:36px 32px; max-width:400px; box-shadow:var(--shadow-3); }
-.login-logo { width:56px; height:56px; border-radius:14px; margin-bottom:18px; }
+.login-logo { width:auto; height:72px; border-radius:14px; margin-bottom:18px; }
 .login-title { font-size:22px; font-weight:800; letter-spacing:-.4px; }
 .login-sub { font-size:14px; color:var(--muted); line-height:1.5; margin-bottom:24px; }
 .login-label { font-size:13px; font-weight:700; color:var(--muted); text-transform:none; letter-spacing:0; }
@@ -620,7 +622,7 @@ select.srt { padding:11px 13px; font-size:13.5px; font-weight:600; }
   /* Cabeçalho em uma linha: logo + marca à esquerda, nome/tema/Sair à direita */
   header { flex-wrap:nowrap !important; gap:10px; }
   header .logo-row { gap:10px; min-width:0; flex:1 1 auto; }
-  header .logo-bird { width:32px; height:32px; }
+  header .logo-bird { width:auto; height:34px; }
   header .brand { min-width:0; }
   header .brand-name, header .brand-sub { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   header > div:last-child { gap:6px !important; flex-shrink:0; }

@@ -1,5 +1,6 @@
 // icones.mjs — monta as imagens-fonte de ícone e abertura do app a partir do
-// logocdv.png do painel (ícone: pássaro sobre o azul CDV; abertura: azul-marinho). Depois o
+// logocdv.png do painel (logo completa: pássaro + "clube do viajante", fundo branco).
+// Ícone e abertura em fundo branco, como a logo foi desenhada. Depois o
 // @capacitor/assets gera todos os tamanhos de Android e iOS (npm run icones).
 import sharp from 'sharp';
 import { mkdirSync } from 'node:fs';
@@ -9,33 +10,33 @@ import { fileURLToPath } from 'node:url';
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const LOGO = join(AQUI, '..', 'logocdv.png');
 const OUT = join(AQUI, 'assets');
-const NAVY = '#262e42';
-const NAVY_ESCURO = '#1c2333';
-const AZUL = '#126eff'; // fundo do ícone: azul CDV (no navy a cabeça do pássaro sumia)
+const BRANCO = '#ffffff';
 mkdirSync(OUT, { recursive: true });
 
 const fundo = (lado, cor) => sharp({ create: { width: lado, height: lado, channels: 4, background: cor } });
-// O logocdv.png tem fundo branco: branco puro vira transparente (o corpo do
-// pássaro é cinza #ededed e fica; os contornos brancos passam a mostrar o fundo).
-async function logoSemFundo() {
-  const { data, info } = await sharp(LOGO).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+// Logo ajustada (sem distorcer) a uma largura; fundo transparente onde é branco puro
+// só quando pedido (ícone adaptativo do Android, que tem camada de fundo própria).
+async function logo(largura, semFundo) {
+  let img = sharp(LOGO).ensureAlpha().resize({ width: largura, kernel: 'lanczos3' });
+  if (!semFundo) return img.png().toBuffer();
+  const { data, info } = await img.raw().toBuffer({ resolveWithObject: true });
   for (let i = 0; i < data.length; i += 4) {
     if (data[i] >= 248 && data[i + 1] >= 248 && data[i + 2] >= 248) data[i + 3] = 0;
   }
   return sharp(data, { raw: info }).png().toBuffer();
 }
-const LOGO_SEM_FUNDO = await logoSemFundo();
-const logo = (lado) => sharp(LOGO_SEM_FUNDO).resize(lado, lado, { kernel: 'lanczos3' }).png().toBuffer();
 
-async function comLogo(lado, cor, proporcao, arquivo) {
-  const l = Math.round(lado * proporcao);
-  const off = Math.round((lado - l) / 2);
-  await fundo(lado, cor).composite([{ input: await logo(l), left: off, top: off }]).png().toFile(join(OUT, arquivo));
+async function comLogo(lado, cor, proporcao, arquivo, semFundo = false) {
+  const buf = await logo(Math.round(lado * proporcao), semFundo);
+  const { width, height } = await sharp(buf).metadata();
+  await fundo(lado, cor)
+    .composite([{ input: buf, left: Math.round((lado - width) / 2), top: Math.round((lado - height) / 2) }])
+    .png().toFile(join(OUT, arquivo));
 }
 
-await comLogo(1024, AZUL, 0.86, 'icon-only.png');            // iOS (sem transparência)
-await comLogo(1024, '#00000000', 0.62, 'icon-foreground.png'); // Android adaptativo
-await fundo(1024, AZUL).png().toFile(join(OUT, 'icon-background.png'));
-await comLogo(2732, NAVY, 0.22, 'splash.png');
-await comLogo(2732, NAVY_ESCURO, 0.22, 'splash-dark.png');
+await comLogo(1024, BRANCO, 0.78, 'icon-only.png');                 // iOS (sem transparência)
+await comLogo(1024, '#00000000', 0.6, 'icon-foreground.png', true); // Android adaptativo (área segura)
+await fundo(1024, BRANCO).png().toFile(join(OUT, 'icon-background.png'));
+await comLogo(2732, BRANCO, 0.34, 'splash.png');
+await comLogo(2732, BRANCO, 0.34, 'splash-dark.png');
 console.log('icones: assets/ pronto');
