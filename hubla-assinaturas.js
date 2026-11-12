@@ -423,7 +423,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     const d = data && typeof data === 'object' ? data : {};
     return { ofertas: d.ofertas || {}, assinaturas: d.assinaturas || {}, acessos: d.acessos || {},
       acessosPorProduto: d.acessosPorProduto || {},
-      produtosHubla: d.produtosHubla || null,
+      produtosHubla: d.produtosHubla || null, sondagemApi: d.sondagemApi || null,
       sincronizacao: d.sincronizacao || null, atualizadoEm: d.atualizadoEm || null };
   }
 
@@ -682,6 +682,129 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     return porProduto;
   }
 
+  // ── Sondagem da API (desde 12/11/2026) ─────────────────────────────────────
+  // A lista de membros não traz oferta nem turma. Testa rotas e filtros que
+  // podem trazer isso para quem entrou antes, e grava em `sondagemApi` SÓ
+  // código HTTP, nomes de campos e contagens (nenhum dado pessoal). Roda uma
+  // vez por SONDA_VERSAO, no boot do proxy.
+  const SONDA_VERSAO = 1;
+  async function apiBruta(metodo, caminho, corpo) {
+    const espera = 700 - (Date.now() - _ultimaChamada);
+    if (espera > 0) await new Promise(r => setTimeout(r, espera));
+    _ultimaChamada = Date.now();
+    try {
+      const r = await fetch(API_BASE + caminho, {
+        method: metodo,
+        headers: { Authorization: apiKey(), 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: corpo ? JSON.stringify(corpo) : undefined, timeout: 30000,
+      });
+      const txt = await r.text();
+      let j = null; try { j = JSON.parse(txt); } catch (e) {}
+      return { status: r.status, j };
+    } catch (err) { return { status: 0, erro: err.message.slice(0, 80) }; }
+  }
+  function chavesDe(o, prefixo = '', fora = new Set(), nivel = 0) {
+    if (!o || typeof o !== 'object' || nivel > 3) return fora;
+    if (Array.isArray(o)) { for (const x of o.slice(0, 5)) chavesDe(x, prefixo + '[].', fora, nivel + 1); return fora; }
+    for (const [k, v] of Object.entries(o)) { fora.add(prefixo + k); chavesDe(v, prefixo + k + '.', fora, nivel + 1); }
+    return fora;
+  }
+  function resumoResposta(r, baseEmails) {
+    const out = { status: r.status };
+    if (r.erro) out.erro = r.erro;
+    const j = r.j;
+    if (!j || typeof j !== 'object') return out;
+    const itens = Array.isArray(j) ? j : (j.items || j.data || null);
+    const topo = Array.isArray(j) ? [] : Object.keys(j).filter(k => !['items', 'data'].includes(k));
+    out.topo = topo;
+    for (const k of ['total', 'totalItems', 'count', 'lastPage', 'page', 'pageSize']) if (typeof j[k] === 'number') out[k] = j[k];
+    if (j.pagination && typeof j.pagination === 'object') out.pagination = j.pagination;
+    if (Array.isArray(itens)) {
+      out.itens = itens.length;
+      out.camposItem = [...chavesDe(itens)].sort().slice(0, 80);
+      if (baseEmails) {
+        const em = itens.map(m => String((m && m.email) || '').toLowerCase()).filter(Boolean);
+        out.emComumComSemFiltro = em.filter(e => baseEmails.has(e)).length;
+      }
+    } else {
+      out.campos = [...chavesDe(j)].sort().slice(0, 80);
+    }
+    if (typeof j.message === 'string') out.mensagem = j.message.slice(0, 120);
+    return out;
+  }
+  async function sondarApi({ forcar = false } = {}) {
+    if (!apiKey()) return null;
+    const d = await ler();
+    if (!forcar && d.sondagemApi && d.sondagemApi.versao === SONDA_VERSAO) return d.sondagemApi;
+    const res = {};
+    // Produto do painel: id público e interno (legacyId).
+    const prods = await apiBruta('POST', '/v1/products/list', { page: 1, pageSize: 100 });
+    const lp = (prods.j && (prods.j.items || prods.j.data)) || [];
+    const pr = lp.find(x => x && (x.id === PRODUTO_PAINEL_ID || norm(x.name) === norm(PRODUTO_PAINEL_NOME))) || {};
+    const pid = pr.id || PRODUTO_PAINEL_ID;
+    const ref = pr.legacyId || pid;
+    res.produtoCampos = [...chavesDe(pr)].sort();
+    // Ofertas do produto: alguma traz turmas (cohorts) com nome?
+    const ofs = await apiBruta('GET', `/v1/products/${encodeURIComponent(pid)}/offers?page=1&pageSize=100`);
+    res['GET products/:id/offers'] = resumoResposta(ofs);
+    const listaOf = (ofs.j && (ofs.j.items || ofs.j.data)) || [];
+    res.ofertasComTurma = listaOf.filter(o => o && Array.isArray(o.cohorts) && o.cohorts.length).length;
+    // Ids de oferta e turma: das ofertas da API ou do log de webhooks (member_added).
+    let ofertaId = null, turmaId = null;
+    for (const o of listaOf) {
+      if (!ofertaId && /premium\)?$/i.test(String(o.name || '')) ) ofertaId = o.id;
+      if (!turmaId && Array.isArray(o.cohorts) && o.cohorts[0]) turmaId = o.cohorts[0].id;
+    }
+    try {
+      const logw = (await ghGetJson('hubla-webhooks-log.json', { eventos: [] })).data || {};
+      for (const ev of (logw.eventos || [])) {
+        for (const p of ((ev && ev.event && ev.event.products) || [])) for (const o of (p.offers || [])) {
+          if (!ofertaId && o.id) ofertaId = o.id;
+          if (!turmaId && o.cohorts && o.cohorts[0]) turmaId = o.cohorts[0].id;
+        }
+      }
+    } catch (e) {}
+    if (!ofertaId) ofertaId = (Object.entries(d.ofertas || {}).find(([, o]) => o && o.produtoId === PRODUTO_PAINEL_ID) || [])[0] || null;
+    res.temOfertaId = !!ofertaId; res.temTurmaId = !!turmaId;
+    // Membros sem filtro (referência).
+    const base = await apiBruta('GET', `/v1/${encodeURIComponent(ref)}/members?page=1&pageSize=200`);
+    res['GET :ref/members'] = resumoResposta(base);
+    const baseItens = (base.j && (base.j.items || base.j.data)) || [];
+    const baseEmails = new Set(baseItens.map(m => String((m && m.email) || '').toLowerCase()).filter(Boolean));
+    const membroId = (baseItens[0] && baseItens[0].id) || null;
+    // Filtros na lista de membros: se o total/itens mudar, o filtro existe.
+    const filtros = [];
+    if (ofertaId) for (const k of ['offerId', 'offerIds', 'offer', 'offersIds']) filtros.push(`${k}=${encodeURIComponent(ofertaId)}`);
+    if (turmaId) for (const k of ['cohortId', 'cohortIds', 'cohort', 'cohortsIds']) filtros.push(`${k}=${encodeURIComponent(turmaId)}`);
+    filtros.push('include=cohorts', 'include=offers', 'expand=cohorts');
+    for (const f of filtros) {
+      const r = await apiBruta('GET', `/v1/${encodeURIComponent(ref)}/members?page=1&pageSize=200&${f}`);
+      res['GET :ref/members?' + f.split('=')[0] + (f.startsWith('include') || f.startsWith('expand') ? '=' + f.split('=')[1] : '')] = resumoResposta(r, baseEmails);
+    }
+    // Rotas candidatas.
+    const rotas = [
+      ['GET', `/v1/${ref}/cohorts`, ':ref/cohorts'],
+      ['GET', `/v1/products/${pid}/cohorts`, 'products/:id/cohorts'],
+      ofertaId && ['GET', `/v1/offers/${ofertaId}`, 'offers/:id'],
+      ofertaId && ['GET', `/v1/offers/${ofertaId}/cohorts`, 'offers/:id/cohorts'],
+      ofertaId && ['GET', `/v1/offers/${ofertaId}/members?page=1&pageSize=50`, 'offers/:id/members'],
+      ofertaId && ['GET', `/v1/products/${pid}/offers/${ofertaId}`, 'products/:id/offers/:id'],
+      turmaId && ['GET', `/v1/cohorts/${turmaId}`, 'cohorts/:id'],
+      turmaId && ['GET', `/v1/cohorts/${turmaId}/members?page=1&pageSize=50`, 'cohorts/:id/members'],
+      turmaId && ['GET', `/v1/${ref}/cohorts/${turmaId}/members?page=1&pageSize=50`, ':ref/cohorts/:id/members'],
+      membroId && ['GET', `/v1/${ref}/members/${membroId}`, ':ref/members/:id'],
+      membroId && ['GET', `/v1/members/${membroId}`, 'members/:id'],
+      ['POST', '/v1/members/list', 'POST members/list', { page: 1, pageSize: 50, productId: pid }],
+    ].filter(Boolean);
+    for (const [m, cam, rot, corpo] of rotas) {
+      const r = await apiBruta(m, cam.replace(/\/v1\/([^/?]+)/, (s, x) => '/v1/' + encodeURIComponent(x)), corpo);
+      res[(m === 'GET' ? 'GET ' : '') + rot] = resumoResposta(r, baseEmails);
+    }
+    const sondagem = { versao: SONDA_VERSAO, em: new Date().toISOString(), resultados: res };
+    await salvar(b => { b.sondagemApi = sondagem; }, 'hubla: sondagem da API (oferta/turma por membro)');
+    return sondagem;
+  }
+
   // Só a etapa de membros + resumo (rápida), sem refazer faturas e assinaturas.
   async function sincronizarMembros({ membrosAtivos, membrosInativos } = {}) {
     if (progresso.rodando) return { ok: false, erro: 'sincronização já em andamento', progresso };
@@ -895,7 +1018,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
   }
 
   return {
-    registrarEvento, sincronizar, sincronizarMembros, listar, ler, resumir, progresso,
+    registrarEvento, sincronizar, sincronizarMembros, listar, ler, resumir, progresso, sondarApi,
     temChaveApi: () => !!apiKey(),
   };
 }

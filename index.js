@@ -5758,6 +5758,14 @@ setTimeout(async () => {
   } catch (e) { console.error('[hubla-sync] boot', e.message); }
 }, 30 * 1000);
 
+// Sondagem da API da Hubla (oferta/turma por membro), uma vez por versão, 90 s
+// depois do boot. Grava só códigos HTTP, campos e contagens em `sondagemApi`.
+setTimeout(() => {
+  if (!hublaAssinaturas.temChaveApi()) return;
+  hublaAssinaturas.sondarApi().then(s => s && console.log('[hubla-sondagem] ok', s.em))
+    .catch(e => console.error('[hubla-sondagem]', e.message));
+}, 90 * 1000);
+
 // Conferência diária às 04:30 (São Paulo): corrige webhook perdido e atualiza
 // as datas de fim. Uma vez por dia por processo.
 let _hublaSyncDia = null;
