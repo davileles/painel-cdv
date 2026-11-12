@@ -687,7 +687,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
   // podem trazer isso para quem entrou antes, e grava em `sondagemApi` SÓ
   // código HTTP, nomes de campos e contagens (nenhum dado pessoal). Roda uma
   // vez por SONDA_VERSAO, no boot do proxy.
-  const SONDA_VERSAO = 1;
+  const SONDA_VERSAO = 2;
   async function apiBruta(metodo, caminho, corpo) {
     const espera = 700 - (Date.now() - _ultimaChamada);
     if (espera > 0) await new Promise(r => setTimeout(r, espera));
@@ -722,6 +722,9 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     if (Array.isArray(itens)) {
       out.itens = itens.length;
       out.camposItem = [...chavesDe(itens)].sort().slice(0, 80);
+      const tipos = {};
+      for (const it of itens) { const t = it && (it.type || it.subscriptionType); if (t) tipos[t] = (tipos[t] || 0) + 1; }
+      if (Object.keys(tipos).length) out.porTipo = tipos;
       if (baseEmails) {
         const em = itens.map(m => String((m && m.email) || '').toLowerCase()).filter(Boolean);
         out.emComumComSemFiltro = em.filter(e => baseEmails.has(e)).length;
@@ -772,6 +775,7 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     const baseItens = (base.j && (base.j.items || base.j.data)) || [];
     const baseEmails = new Set(baseItens.map(m => String((m && m.email) || '').toLowerCase()).filter(Boolean));
     const membroId = (baseItens[0] && baseItens[0].id) || null;
+    const subGratis = (Object.values(d.assinaturas || {}).find(a => a && a.tipo === 'free' && a.ofertaNome) || {}).id || null;
     // Filtros na lista de membros: se o total/itens mudar, o filtro existe.
     const filtros = [];
     if (ofertaId) for (const k of ['offerId', 'offerIds', 'offer', 'offersIds']) filtros.push(`${k}=${encodeURIComponent(ofertaId)}`);
@@ -795,6 +799,16 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
       membroId && ['GET', `/v1/${ref}/members/${membroId}`, ':ref/members/:id'],
       membroId && ['GET', `/v1/members/${membroId}`, 'members/:id'],
       ['POST', '/v1/members/list', 'POST members/list', { page: 1, pageSize: 50, productId: pid }],
+      // v2: lista de assinaturas (as gratuitas não geram fatura).
+      ['POST', '/v1/subscriptions/list', 'POST subscriptions/list (pagination)', { pagination: { page: 1, pageSize: 50 } }],
+      ['POST', '/v1/subscriptions/list', 'POST subscriptions/list (page)', { page: 1, pageSize: 50 }],
+      ['POST', '/v1/subscriptions/list', 'POST subscriptions/list (filtros)', {
+        filters: { dateStart: '2018-01-01T00:00:00.000Z', dateEnd: new Date().toISOString(), dateRangeBy: 'createdAt', orderBy: 'createdAt', orderDir: 'ASC' },
+        pagination: { page: 1, pageSize: 50 } }],
+      ['GET', '/v1/subscriptions?page=1&pageSize=50', 'subscriptions?page'],
+      ['GET', `/v1/products/${pid}/subscriptions?page=1&pageSize=50`, 'products/:id/subscriptions'],
+      ['GET', `/v1/${ref}/subscriptions?page=1&pageSize=50`, ':ref/subscriptions'],
+      subGratis && ['GET', `/v1/subscriptions/${subGratis}`, 'subscriptions/:id (gratuita)'],
     ].filter(Boolean);
     for (const [m, cam, rot, corpo] of rotas) {
       const r = await apiBruta(m, cam.replace(/\/v1\/([^/?]+)/, (s, x) => '/v1/' + encodeURIComponent(x)), corpo);
