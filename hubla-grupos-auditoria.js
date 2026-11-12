@@ -62,11 +62,18 @@ function indicePorTelefone(hubla, agora, telefonesExtras) {
     const e = String(r.email || '').toLowerCase().trim();
     for (const t of (extras.get(e) || [])) { const k2 = chaveTelefone(t); if (k2 && k2 !== k) add0(k2, r); }
   };
+  // Oferta do acesso, quando conhecida (ofertasAcesso, lida do painel da Hubla):
+  // o acesso vale só nos grupos dessa oferta. Sem ela, vale o produto inteiro
+  // (12/11/2026 — ex.: "Escola do Viajante (acesso vitalício ao conteúdo
+  // gravado)", gratuito no produto do Clube, liberava os grupos do Premium).
+  const ofAcesso = (hubla && hubla.ofertasAcesso) || {};
   for (const [pid, p] of Object.entries((hubla && hubla.acessosPorProduto) || {})) {
     for (const [email, m] of Object.entries(p.membros || {})) {
       const ativo = membroAtivo(m, agora);
       const fim = !ativo && m.removidoEm && new Date(m.removidoEm).getTime() <= agora ? m.removidoEm : null;
-      add(chaveTelefone(m.telefone), { tipo: 'acesso', produtoId: pid, ofertaId: null, produto: p.nome, nome: m.nome, email, ativo, fim, conta: true });
+      const oa = ofAcesso[pid + '|' + email] || null;
+      add(chaveTelefone(m.telefone), { tipo: 'acesso', produtoId: pid, ofertaId: (oa && oa.ofertaId) || null, produto: p.nome,
+        oferta: (oa && oa.ofertaNome) || undefined, nome: m.nome, email, ativo, fim, conta: true });
     }
   }
   for (const a of Object.values((hubla && hubla.assinaturas) || {})) {
@@ -90,7 +97,7 @@ function indicePorTelefone(hubla, agora, telefonesExtras) {
 function registroDaGrupo(r, jid, regras) {
   if (!regras || !regras.mapeados || !regras.mapeados.has(jid)) return true; // grupo sem regra: qualquer cadastro vale
   if (r.ofertaId && regras.porOferta.has(r.ofertaId)) return regras.porOferta.get(r.ofertaId).has(jid);
-  if (r.tipo === 'acesso' || !r.ofertaId) { const s = regras.porProduto.get(r.produtoId); return !!(s && s.has(jid)); }
+  if (!r.ofertaId) { const s = regras.porProduto.get(r.produtoId); return !!(s && s.has(jid)); }
   return false;
 }
 
