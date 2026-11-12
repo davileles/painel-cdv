@@ -5638,6 +5638,27 @@ function injetarProgramasCashback(){
   console.log('[CDV] Programas cashback injetados:', progsCashback.map(p=>p.id).join(', '));
 }
 
+// Reserva do Comparador: quando a consulta ao vivo de um programa falha (ex.: o
+// Comparemania recusa o IP do proxy no Railway com 500), monta os itens a partir do
+// snapshot mais recente do historico.json que contenha o programa (até 7 dias).
+// O historico.json é coletado pelo GitHub Actions (coletar.js), que roda de outro IP.
+function itensDoHistorico(progId){
+  const datas=Object.keys(historico||{}).sort().reverse().slice(0,7);
+  for(const d of datas){
+    const snap=historico[d]||{};
+    const out=[];
+    for(const [chave,dados] of Object.entries(snap)){
+      const pd=dados&&dados.programs&&dados.programs[progId];
+      if(!pd||!pd.pts) continue;
+      const nome=decodeHistKey(chave);
+      const name=nome.charAt(0).toUpperCase()+nome.slice(1);
+      out.push({name,pts:pd.pts,per:1,ate:!!pd.ate,dollar:!!pd.dollar,cat:categorize(nome),url:(dados.links&&dados.links[progId])||'',prog:progId});
+    }
+    if(out.length) return {data:d,itens:out};
+  }
+  return null;
+}
+
 async function loadData(){
   document.getElementById('grid').innerHTML='<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px" id="load-msg">Iniciando consulta…</div></div>';
   document.getElementById('cat-bar').innerHTML='';
@@ -5657,15 +5678,30 @@ async function loadData(){
       if(r.status==='fulfilled') allData[prog.id]=r.value;
       else{ allData[prog.id]=[]; falhas.push(prog.name); console.warn('[CDV] Comparador:',r.reason&&r.reason.message); }
     });
+    await carregarHistorico();
+    // Programas que falharam ao vivo usam o último snapshot coletado (historico.json)
+    const doHistorico=[];
+    for(const nome of falhas.slice()){
+      const prog=progsPontos.find(p=>p.name===nome);
+      const r=prog&&itensDoHistorico(prog.id);
+      if(!r) continue;
+      allData[prog.id]=r.itens;
+      falhas.splice(falhas.indexOf(nome),1);
+      doHistorico.push({nome,data:r.data});
+    }
     if(falhas.length===progsPontos.length) throw new Error('Não foi possível consultar os programas agora. Tente novamente em instantes.');
     partners=mergePartners(allData);
     if(!partners.length) throw new Error('Nenhum parceiro encontrado.');
 
-    await carregarHistorico();
     carregarHistoricoTransferencias(); // não bloqueia — grid de transferências só é montado ao abrir o toggle
     // Injeta dados do Inter (e demais programas cashback) vindos do historico.json
     injetarProgramasCashback();
     buildCatBar();buildProgFilters();render();
+    if(doHistorico.length){
+      const g=document.getElementById('grid');
+      const datas=[...new Set(doHistorico.map(x=>x.data.split('-').reverse().slice(0,2).join('/')))].join(', ');
+      if(g) g.insertAdjacentHTML('afterbegin',`<div class="error-box" style="grid-column:1/-1;opacity:.85">ℹ️ ${doHistorico.map(x=>x.nome).join(', ')}: exibindo a última coleta (${datas}). <a href="#" onclick="loadData();return false">Atualizar</a></div>`);
+    }
     if(falhas.length){
       const g=document.getElementById('grid');
       if(g) g.insertAdjacentHTML('afterbegin',`<div class="error-box" style="grid-column:1/-1">⚠️ Sem dados de ${falhas.join(', ')} no momento — os demais programas estão atualizados. <a href="#" onclick="loadData();return false">Tentar de novo</a></div>`);
