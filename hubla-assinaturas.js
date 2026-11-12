@@ -234,6 +234,18 @@ function calcularSituacao(a, agora = Date.now()) {
   return { situacao, fim, diasRestantes };
 }
 
+// Origem do vitalício (desde 12/11/2026), conferida na base real:
+// - 'vendido': o produto/oferta foi vendido como vitalício — assinatura
+//   `one_time` paga com 10.000 créditos, ou membro `buyer` com isLifetime;
+// - 'concedido': acesso vitalício liberado à mão (assinatura `free` com
+//   10.000 créditos ou membro `free` com isLifetime), inclusive em produto cuja
+//   oferta normal tem prazo (ex.: Clube do Viajante (Premium), anual).
+// Sem vitalício devolve null.
+function origemVitalicio(reg, situacao) {
+  if (!reg || situacao !== 'vitalicio') return null;
+  return reg.tipo === 'free' ? 'concedido' : 'vendido';
+}
+
 // Membro com acesso? A leitura sem filtro da API não preenche o status de quem
 // está ativo (vem vazio); desativado vem "deactivate".
 // Turmas do membro, se a API devolver (o painel da Hubla mostra a coluna
@@ -805,10 +817,26 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     // acesso grátis/vitalício atual). A oferta vem da assinatura gratuita do
     // mesmo produto/e-mail, quando a Hubla tiver criado uma (a lista de membros
     // da API não diz a oferta).
-    for (const a of lista) a.gratuito = a.tipo === 'free';
+    for (const a of lista) {
+      a.gratuito = a.tipo === 'free';
+      const ov = origemVitalicio(a, a.situacao);
+      if (ov) a.vitalicioOrigem = ov;
+    }
     const porProduto = Object.assign({}, d.acessosPorProduto || {});
     if (d.acessos && Object.keys(d.acessos).length) {
       porProduto[PRODUTO_PAINEL_ID] = Object.assign({}, porProduto[PRODUTO_PAINEL_ID] || {}, { nome: PRODUTO_PAINEL_NOME, membros: d.acessos });
+    }
+    // Assinatura com prazo (recorrente) de quem a Hubla tem como membro
+    // VITALÍCIO do mesmo produto: o acesso foi liberado como vitalício à mão.
+    // A situação da assinatura não muda (cobrança e fim seguem os da Hubla);
+    // só ganha a marca para o gestor separar (desde 12/11/2026).
+    for (const a of lista) {
+      if (a.situacao !== 'vigente' && a.situacao !== 'teste') continue;
+      const m = (((porProduto[a.produtoId] || {}).membros) || {})[a.email];
+      if (m && m.vitalicio && membroAtivo(m, agora)) {
+        a.acessoVitalicio = true;
+        a.vitalicioOrigem = 'concedido';
+      }
     }
     const assPorProdEmail = {};
     for (const a of lista) {
@@ -825,6 +853,12 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
         if (!ativo && doEmail.length) continue;
         const fim = ac.removidoEm || null;
         const situacao = ativo ? (ac.vitalicio ? 'vitalicio' : 'vigente') : 'encerrada';
+        // Vitalício concedido num produto cujas ofertas têm prazo: guarda a
+        // oferta recorrente que a pessoa teve (a mais recente), para o gestor
+        // mostrar "concedido · oferta com prazo: X".
+        const recorrente = ac.vitalicio
+          ? doEmail.filter(a => a.tipo === 'recurring').sort((x, y) => t(y.inicio || y.criadaEm) - t(x.inicio || x.criadaEm))[0]
+          : null;
         const gratis = doEmail.filter(a => a.tipo === 'free').sort((x, y) => t(y.inicio || y.criadaEm) - t(x.inicio || x.criadaEm))[0];
         const rotulo = ac.vitalicio
           ? (ac.tipo === 'free' ? 'Acesso vitalício gratuito' : 'Acesso vitalício (sem assinatura paga)')
@@ -837,6 +871,8 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
           turmas: Array.isArray(ac.turmas) && ac.turmas.length ? ac.turmas : undefined,
           tipo: ac.tipo, gratuito: ac.tipo === 'free', doPainel: pid === PRODUTO_PAINEL_ID,
           liberaPainel: false, situacao, fim, inicio: ac.entrouEm || undefined,
+          vitalicioOrigem: origemVitalicio(ac, situacao) || undefined,
+          ofertaComPrazo: recorrente ? (recorrente.ofertaNome || recorrente.produtoNome) : undefined,
           diasRestantes: ativo && fim && !ac.vitalicio ? Math.ceil((new Date(fim).getTime() - agora) / DIA) : null,
         });
       }
@@ -866,6 +902,6 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
 
 module.exports = {
   criarHublaAssinaturas, ofertaLiberaPainel, assinaturaLiberaPainel, produtoExcluidoNaHubla,
-  definirRegrasAcesso, regrasAcessoAtivas, gruposAcesso, indiceGrupos, regraPadraoAcesso, regraAcesso, indiceRegras, REGRAS_ACESSO: REGRAS, ofertaPainelExigePrazo, OFERTAS_PAINEL_OUTROS_PRODUTOS, produtoOfertaDoEvento, calcularSituacao, membroAtivo, outroAcessoPainel,
+  definirRegrasAcesso, regrasAcessoAtivas, gruposAcesso, indiceGrupos, regraPadraoAcesso, regraAcesso, indiceRegras, REGRAS_ACESSO: REGRAS, ofertaPainelExigePrazo, OFERTAS_PAINEL_OUTROS_PRODUTOS, produtoOfertaDoEvento, calcularSituacao, membroAtivo, outroAcessoPainel, origemVitalicio,
   camposDaAssinatura, mesclarRegistro, OFERTAS_PAINEL, PRODUTO_PAINEL_ID, ARQUIVO_HUBLA_ASSINATURAS: ARQUIVO,
 };

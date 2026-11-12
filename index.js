@@ -5543,24 +5543,27 @@ app.get('/hubla/regras-acesso', async (req, res) => {
     const cont = {};
     for (const a of Object.values((base && base.assinaturas) || {})) {
       if (!a || !a.ofertaId || !ofertas[a.ofertaId]) continue;
-      const c = cont[a.ofertaId] = cont[a.ofertaId] || { total: 0, ativas: new Set(), vitalicias: new Set(), noPainel: new Set() };
+      const c = cont[a.ofertaId] = cont[a.ofertaId] || { total: 0, ativas: new Set(), vitalicias: new Set(), vitConcedidas: new Set(), noPainel: new Set() };
       c.total++;
       const { situacao } = hublaAss.calcularSituacao(a, agora);
       if (!_situacaoAtiva(situacao) || !a.email) continue;
       const e = _emailNorm(a.email);
       c.ativas.add(e);
-      if (situacao === 'vitalicio') c.vitalicias.add(e);
+      if (situacao === 'vitalicio') {
+        c.vitalicias.add(e);
+        if (hublaAss.origemVitalicio(a, situacao) === 'concedido') c.vitConcedidas.add(e);
+      }
       if (ativosPainel.has(e)) c.noPainel.add(e);
     }
     const lista = Object.values(ofertas).map(o => {
-      const c = cont[o.ofertaId] || { total: 0, ativas: new Set(), vitalicias: new Set(), noPainel: new Set() };
+      const c = cont[o.ofertaId] || { total: 0, ativas: new Set(), vitalicias: new Set(), vitConcedidas: new Set(), noPainel: new Set() };
       const padrao = hublaAss.regraPadraoAcesso(o.produtoId, o.produtoNome, o.ofertaNome);
       return Object.assign({}, o, {
         regraPadrao: padrao,
         regraSalva: (salvas[o.ofertaId] && salvas[o.ofertaId].regra) || null,
         regra: hublaAss.regraAcesso(o.produtoId, o.produtoNome, o.ofertaNome, o.ofertaId),
         grupos: (salvas[o.ofertaId] && salvas[o.ofertaId].grupos) || [],
-        assinaturas: c.total, pessoasAtivas: c.ativas.size, vitalicias: c.vitalicias.size, ativasNoPainel: c.noPainel.size,
+        assinaturas: c.total, pessoasAtivas: c.ativas.size, vitalicias: c.vitalicias.size, vitaliciasConcedidas: c.vitConcedidas.size, ativasNoPainel: c.noPainel.size,
       });
     });
     lista.sort((a, z) => a.produtoNome.localeCompare(z.produtoNome, 'pt-BR') || a.ofertaNome.localeCompare(z.ofertaNome, 'pt-BR'));
