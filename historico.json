@@ -918146,7 +918146,25 @@
           "pts": 10,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-electrolux"
+          "slug": "cupom-electrolux",
+          "categorias": [
+            {
+              "categoria": "Eletroportáteis",
+              "pts": 10,
+              "principal": false
+            },
+            {
+              "categoria": "Eletrodomésticos",
+              "pts": 5,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 0.5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 0.5
         }
       },
       "links": {
@@ -918477,7 +918495,7 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 20,
+          "pts": 2,
           "dollar": false,
           "ate": false,
           "slug": "cupom-nespresso"
