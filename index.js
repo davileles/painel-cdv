@@ -63,6 +63,8 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'painel-regras-acesso.json',
   // Remoção dos grupos pelo Tico (configuração + histórico com telefone/nome): repo privado.
   'grupos-remocao.json',
+  // Grupos do Clube: qual grupo do WhatsApp é cada produto e os grupos aposentados: repo privado.
+  'grupos-clube.json',
 ]);
 // Arquivos que saíram do painel-cdv: na 1ª leitura sem cópia no repo de dados,
 // o proxy copia a versão do repo público para lá (uma vez por arquivo).
@@ -5051,6 +5053,53 @@ const hublaAuditoria = require('./hubla-grupos-auditoria');
 // Grupos e participantes lidos no baileys (cache de 10 min). A conta da
 // auditoria (quem está ativo em cada grupo) é refeita na hora a partir disto,
 // com as regras de grupos atuais — ou com regras ainda não salvas, na prévia.
+// ── Grupos do Clube (desde 12/11/2026) ─────────────────────────────────────
+// Qual grupo do WhatsApp é cada produto do clube. Arquivo `grupos-clube.json`
+// (repo de dados) = {atualizadoEm, papeis:{<papel>: jid}, aposentados:{<jid>:
+// {nome, papel, substituto, em}}}. Grupo aposentado (banido ou trocado) some das
+// Regras de acesso, da conferência Grupos × acesso e da remoção pelo Tico; ao
+// trocar o grupo de um produto, as ofertas que davam o antigo passam a dar o
+// novo (painel-regras-acesso.json). Editado em Config → Grupos do Clube do gestor.
+const GRUPOS_CLUBE_PATH = 'grupos-clube.json';
+const PAPEIS_CLUBE = [
+  { id: 'balcao', rotulo: 'Balcão' },
+  { id: 'comunidade', rotulo: 'Comunidade' },
+  { id: 'emissoes', rotulo: 'Emissões' },
+  { id: 'executiva', rotulo: 'Emissões em executiva' },
+  { id: 'news', rotulo: 'News' },
+  { id: 'superpromos', rotulo: 'Super Promos' },
+];
+let _gruposClube = { papeis: {}, aposentados: {}, atualizadoEm: null }, _gruposClubeEm = 0;
+async function carregarGruposClube(forcar) {
+  if (!forcar && _gruposClubeEm && Date.now() - _gruposClubeEm < 60 * 1000) return _gruposClube;
+  try {
+    const { data, sha } = await ghGetJson(GRUPOS_CLUBE_PATH, null);
+    if (data) _gruposClube = { papeis: data.papeis || {}, aposentados: data.aposentados || {}, atualizadoEm: data.atualizadoEm || null };
+    _gruposClube.sha = sha || null;
+    _gruposClubeEm = Date.now();
+  } catch (e) { console.warn('[grupos-clube] leitura falhou (mantém o que tinha):', e.message); }
+  return _gruposClube;
+}
+function grupoAposentado(jid) { return !!(_gruposClube.aposentados || {})[jid]; }
+// Aposentado → grupo que ficou no lugar (segue a cadeia: News antigo → News novo).
+function substitutoGrupo(jid) {
+  let j = jid;
+  for (let n = 0; n < 6 && _gruposClube.aposentados[j]; n++) {
+    const s = _gruposClube.aposentados[j].substituto;
+    if (!s || s === j) return null;
+    j = s;
+  }
+  return j;
+}
+function papelDoGrupo(jid) { return PAPEIS_CLUBE.find(p => jid && _gruposClube.papeis[p.id] === jid) || null; }
+function gruposSemAposentados(lista) {
+  const out = [];
+  for (const j of (lista || [])) {
+    const s = grupoAposentado(j) ? substitutoGrupo(j) : j;
+    if (s && !out.includes(s)) out.push(s);
+  }
+  return out;
+}
 let _gruposBrutos = null, _gruposBrutosEmVoo = null;
 async function coletarGruposCdv(forcar) {
   if (!forcar && _gruposBrutos && Date.now() - _gruposBrutos.em < 10 * 60 * 1000) return _gruposBrutos;
@@ -5060,7 +5109,9 @@ async function coletarGruposCdv(forcar) {
     const dg = await rg.json().catch(() => ({}));
     if (!rg.ok || !dg.ok) throw new Error('baileys-server: ' + (dg.erro || ('HTTP ' + rg.status)));
     const grupos = [];
+    await carregarGruposClube();
     for (const g of (dg.grupos || [])) {
+      if (grupoAposentado(g.jid)) continue; // banido/trocado: fora da conferência e da remoção
       const r = await fetch(`${BAILEYS_URL}/grupos-gestao/membros?jid=${encodeURIComponent(g.jid)}`, { timeout: 60000 });
       const d = await r.json().catch(() => ({}));
       grupos.push({ jid: g.jid, nome: g.nome, membros: d.ok ? (d.membros || []) : [], executores: g.executores || [] });
@@ -5074,6 +5125,10 @@ async function coletarGruposCdv(forcar) {
 // Lista leve dos grupos do CDV (nome + jid) para a tela de regras.
 let _gruposListaCache = null;
 async function listaGruposCdv() {
+  await carregarGruposClube();
+  return (await _listaGruposCdvBruta()).filter(g => !grupoAposentado(g.jid));
+}
+async function _listaGruposCdvBruta() {
   if (_gruposBrutos) return _gruposBrutos.grupos.map(g => ({ jid: g.jid, nome: g.nome }));
   if (_gruposListaCache && Date.now() - _gruposListaCache.em < 10 * 60 * 1000) return _gruposListaCache.lista;
   try {
@@ -5818,7 +5873,7 @@ function _normalizarRegrasPedidas(corpo, ofertasBase, salvas) {
     if (!o) continue; // só ofertas conhecidas
     let grupos = regra && typeof regra === 'object' && Array.isArray(regra.grupos) ? regra.grupos
       : ((salvas && salvas[id] && salvas[id].grupos) || []);
-    grupos = [...new Set(grupos.map(String).filter(j => /@g\.us$/.test(j)))].sort();
+    grupos = gruposSemAposentados([...new Set(grupos.map(String).filter(j => /@g\.us$/.test(j)))]).sort();
     ofertas[id] = { regra: r, produtoId: o.produtoId, produtoNome: o.produtoNome, ofertaNome: o.ofertaNome };
     if (grupos.length) ofertas[id].grupos = grupos;
   }
@@ -5859,16 +5914,103 @@ app.get('/hubla/regras-acesso', async (req, res) => {
         regraPadrao: padrao,
         regraSalva: (salvas[o.ofertaId] && salvas[o.ofertaId].regra) || null,
         regra: hublaAss.regraAcesso(o.produtoId, o.produtoNome, o.ofertaNome, o.ofertaId),
-        grupos: (salvas[o.ofertaId] && salvas[o.ofertaId].grupos) || [],
+        grupos: gruposSemAposentados((salvas[o.ofertaId] && salvas[o.ofertaId].grupos) || []),
         assinaturas: c.total, pessoasAtivas: c.ativas.size, vitalicias: c.vitalicias.size, vitaliciasConcedidas: c.vitConcedidas.size, ativasNoPainel: c.noPainel.size,
       });
     });
     lista.sort((a, z) => a.produtoNome.localeCompare(z.produtoNome, 'pt-BR') || a.ofertaNome.localeCompare(z.ofertaNome, 'pt-BR'));
     res.json({ ok: true, regrasSalvas: !!(regrasArq && regrasArq.data), atualizadoEm: (regrasArq && regrasArq.data && regrasArq.data.atualizadoEm) || null,
       baseAtualizadaEm: (base && base.atualizadoEm) || null, ofertas: lista,
+      // Produtos do clube primeiro (rótulo do papel), depois o resto (estados).
       grupos: gruposCdv.filter(g => !hublaAuditoria.grupoIgnorado(g.nome))
-        .sort((a, z) => String(a.nome).localeCompare(String(z.nome), 'pt-BR')),
+        .map(g => { const p = papelDoGrupo(g.jid); return p ? Object.assign({}, g, { papel: p.id, papelRotulo: p.rotulo }) : g; })
+        .sort((a, z) => (a.papel ? 0 : 1) - (z.papel ? 0 : 1)
+          || String(a.papelRotulo || a.nome).localeCompare(String(z.papelRotulo || z.nome), 'pt-BR')),
       gruposIgnorados: gruposCdv.filter(g => hublaAuditoria.grupoIgnorado(g.nome)).map(g => g.nome) });
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+// Grupos do Clube: GET devolve papéis, aposentados e os grupos do CDV para escolher.
+app.get('/hubla/grupos-clube', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const gc = await carregarGruposClube(true);
+    const grupos = (await _listaGruposCdvBruta()).sort((a, z) => String(a.nome).localeCompare(String(z.nome), 'pt-BR'));
+    res.json({ ok: true, papeis: gc.papeis, aposentados: gc.aposentados, atualizadoEm: gc.atualizadoEm, rotulos: PAPEIS_CLUBE, grupos });
+  } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
+});
+// POST {papeis:{<papel>: jid}, trocas?:[{de, para}]}. Papel que mudou de grupo
+// aposenta o antigo (substituto = o novo); `trocas` cobre grupo que não é papel
+// (ex.: Networking → Comunidade). As ofertas das Regras de acesso que davam o
+// grupo antigo passam a dar o novo. Grupo escolhido de novo deixa de ser aposentado.
+app.post('/hubla/grupos-clube', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const ehJid = j => /^[0-9-]+@g\.us$/.test(String(j || ''));
+    const pedido = (req.body && req.body.papeis) || {};
+    const nomes = new Map((await _listaGruposCdvBruta()).map(g => [g.jid, g.nome]));
+    let resultado = null;
+    for (let t = 1; t <= 4 && !resultado; t++) {
+      try {
+        const gc = await carregarGruposClube(true);
+        const papeis = Object.assign({}, gc.papeis);
+        const aposentados = Object.assign({}, gc.aposentados);
+        const trocas = [];
+        for (const p of PAPEIS_CLUBE) {
+          if (!(p.id in pedido)) continue;
+          const novo = String(pedido[p.id] || '').trim();
+          if (novo && !ehJid(novo)) throw new Error('grupo inválido em ' + p.rotulo);
+          const antigo = papeis[p.id] || '';
+          if (novo === antigo) continue;
+          if (antigo && novo) trocas.push({ de: antigo, para: novo, papel: p.id });
+          if (novo) papeis[p.id] = novo; else delete papeis[p.id];
+        }
+        for (const x of ((req.body && req.body.trocas) || [])) {
+          if (x && ehJid(x.de) && ehJid(x.para) && x.de !== x.para) trocas.push({ de: x.de, para: x.para, papel: null });
+        }
+        const emUso = new Set(Object.values(papeis));
+        for (const x of trocas) {
+          if (emUso.has(x.de)) continue; // ainda é o grupo de outro produto
+          aposentados[x.de] = { nome: nomes.get(x.de) || (aposentados[x.de] && aposentados[x.de].nome) || '', papel: x.papel, substituto: x.para, em: new Date().toISOString() };
+        }
+        for (const j of emUso) delete aposentados[j];
+        const arquivo = { atualizadoEm: new Date().toISOString(), papeis, aposentados };
+        await ghPutJson(GRUPOS_CLUBE_PATH, arquivo, gc.sha, 'painel: grupos do clube');
+        _gruposClube = { papeis, aposentados, atualizadoEm: arquivo.atualizadoEm, sha: null };
+        _gruposClubeEm = 0;
+        resultado = { trocas, aposentados };
+      } catch (e) {
+        if (t < 4 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 400)); continue; }
+        throw e;
+      }
+    }
+    // Regras de acesso: troca os grupos antigos pelos novos em todas as ofertas.
+    let ofertasMigradas = 0;
+    if (resultado.trocas.length) {
+      for (let t = 1; t <= 4; t++) {
+        try {
+          const { data, sha } = await ghGetJson(PAINEL_REGRAS_PATH, null);
+          if (!data || !data.ofertas) break;
+          await carregarGruposClube(true);
+          for (const o of Object.values(data.ofertas)) {
+            if (!Array.isArray(o.grupos) || !o.grupos.some(grupoAposentado)) continue;
+            o.grupos = gruposSemAposentados(o.grupos).sort();
+            ofertasMigradas++;
+          }
+          if (ofertasMigradas) {
+            data.atualizadoEm = new Date().toISOString();
+            await ghPutJson(PAINEL_REGRAS_PATH, data, sha, 'painel: regras de acesso — grupos trocados nos Grupos do Clube');
+            hublaAss.definirRegrasAcesso(data);
+          }
+          break;
+        } catch (e) {
+          if (t < 4 && String(e.message).includes('but expected')) { ofertasMigradas = 0; await new Promise(r => setTimeout(r, t * 400)); continue; }
+          throw e;
+        }
+      }
+    }
+    _gruposBrutos = null; // a conferência relê os grupos sem os aposentados
+    console.log(`[grupos-clube] salvo; ${resultado.trocas.length} troca(s), ${ofertasMigradas} oferta(s) migrada(s)`);
+    res.json({ ok: true, papeis: _gruposClube.papeis, aposentados: resultado.aposentados, trocas: resultado.trocas, ofertasMigradas });
   } catch (err) { res.status(500).json({ ok: false, erro: err.message }); }
 });
 // Prévia: {ofertas:{id:regra}} → quem ganha e quem perde o direito ao painel.
