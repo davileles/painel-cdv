@@ -5209,8 +5209,17 @@ app.get('/hubla/grupos-auditoria', async (req, res) => {
 // Davi retomar. Modos: off · sombra (só lista quem sairia) · on.
 // Estado em grupos-remocao.json (repo de dados).
 const GRUPOS_REMOCAO_PATH = 'grupos-remocao.json';
+// Invasor (desde 12/11/2026, pedido do Davi: "quem invade sai imediatamente"):
+// quem está num grupo com regra SEM cadastro (telefone não casa com Hubla nem
+// concierge) ou, com incluirSemDireito, com cadastro mas sem oferta que dê o
+// grupo. Com invasorImediato (padrão ligado) o invasor sai sem espera, fora da
+// janela e fora do limiteDia: o baileys avisa cada entrada na hora
+// (POST /hubla/grupos-remocao/entrada) e a rodada de 20 min pega o que escapar.
+// Continuam valendo: modo (on/sombra/off), pausa, exceções/admins/concierge/
+// casa e o teto diário POR TICO do baileys (proteção das contas).
+const MOTIVOS_INVASOR = new Set(['sem_cadastro', 'sem_direito']);
 const REMOCAO_PADRAO = { modo: 'sombra', carenciaDias: 3, limiteDia: 10, incluirSemDireito: false,
-  incluirSemCadastro: false, esperaSemCadastroH: 24, janelaIni: 9, janelaFim: 20 };
+  incluirSemCadastro: false, esperaSemCadastroH: 24, janelaIni: 9, janelaFim: 20, invasorImediato: true };
 function _remCfg(estado) {
   const c = Object.assign({}, REMOCAO_PADRAO, (estado && estado.config) || {});
   c.modo = ['off', 'sombra', 'on'].includes(c.modo) ? c.modo : 'sombra';
@@ -5221,6 +5230,7 @@ function _remCfg(estado) {
   c.esperaSemCadastroH = Math.max(1, Math.min(168, parseInt(c.esperaSemCadastroH, 10) || REMOCAO_PADRAO.esperaSemCadastroH));
   c.janelaIni = Math.max(0, Math.min(23, parseInt(c.janelaIni, 10) || REMOCAO_PADRAO.janelaIni));
   c.janelaFim = Math.max(c.janelaIni + 1, Math.min(24, parseInt(c.janelaFim, 10) || REMOCAO_PADRAO.janelaFim));
+  c.invasorImediato = c.invasorImediato !== false;
   return c;
 }
 function _diaSP(t = Date.now()) { return new Date(t - 3 * 3600e3).toISOString().slice(0, 10); }
@@ -5250,17 +5260,35 @@ async function salvarEstadoRemocao(alterar, mensagem) {
   }
 }
 // Candidatos agora, já sem quem foi tratado há pouco (24 h se saiu; 6 h se falhou).
+// Invasor imediato: vale só para quem ENTROU depois que o recurso foi ligado
+// (estado.invasorDesde; quem já estava nos grupos segue as regras antigas:
+// incluirSemCadastro + espera + janela + limiteDia). Esse invasor sai sem espera
+// e só fica de fora se a última tentativa com ele falhou há menos de 30 min.
+function _ehInvasor(x) { return !!(x && x.invasorNovo); }
 async function candidatosRemocaoAgora(estado, cfg, forcar) {
   const aud = await montarAuditoriaGrupos({ forcar: !!forcar });
   const agora = Date.now();
-  const recentes = new Set();
+  const recentes = new Set(), falhouAgora = new Set();
   for (const h of (estado.historico || [])) {
     const idade = agora - new Date(h.em).getTime();
     if (h.chave && (idade < 6 * 3600e3 || (idade < 24 * 3600e3 && h.feitos > 0))) recentes.add(h.chave);
+    if (h.chave && idade < 30 * 60e3 && !h.feitos) falhouAgora.add(h.chave);
   }
   const { vistos, mudou } = hublaAuditoria.atualizarVistos(aud, estado.vistos, agora);
-  const lista = hublaAuditoria.candidatosRemocao(aud, Object.assign({}, cfg, { vistos, agora })).filter(x => !recentes.has(x.chave));
-  return { lista, aud, vistos, vistosMudou: mudou };
+  let novoDesde = null, inv = [];
+  if (cfg.invasorImediato) {
+    if (!estado.invasorDesde) novoDesde = new Date(agora).toISOString(); // quem está lá agora fica de fora (> estrito)
+    const desde = new Date(estado.invasorDesde || novoDesde).getTime();
+    inv = hublaAuditoria.candidatosRemocao(aud, Object.assign({}, cfg, { carenciaDias: 1e9, incluirSemDireito: false,
+      incluirSemCadastro: true, esperaSemCadastroH: 0, vistos, agora }))
+      .map(x => Object.assign({}, x, { motivos: ['sem_cadastro'], invasorNovo: true,
+        grupos: x.grupos.filter(g => g.vistoDesde && new Date(g.vistoDesde).getTime() > desde) }))
+      .filter(x => x.grupos.length && !falhouAgora.has(x.chave));
+  }
+  const chavesInv = new Set(inv.map(x => x.chave));
+  const normal = hublaAuditoria.candidatosRemocao(aud, Object.assign({}, cfg, { vistos, agora }))
+    .filter(x => !recentes.has(x.chave) && !chavesInv.has(x.chave));
+  return { lista: [...inv, ...normal], aud, vistos, vistosMudou: mudou, novoDesde };
 }
 let _remRodando = false;
 async function cicloRemocaoGrupos({ manual = false } = {}) {
@@ -5271,20 +5299,26 @@ async function cicloRemocaoGrupos({ manual = false } = {}) {
     if (cfg.modo === 'off') return { ok: true, pulado: 'desligada' };
     if (estado.pausado) return { ok: true, pulado: 'pausada: ' + estado.pausado.motivo };
     const h = _horaSP();
-    if (h < cfg.janelaIni || h >= cfg.janelaFim) return { ok: true, pulado: 'fora da janela' };
+    const foraJanela = h < cfg.janelaIni || h >= cfg.janelaFim;
+    // Fora da janela só o invasor sai (com invasorImediato); vencido espera.
+    if (foraJanela && !(cfg.invasorImediato && cfg.modo === 'on')) return { ok: true, pulado: 'fora da janela' };
     // Em sombra basta conferir de 2 em 2 h (cada conferência relê os grupos no WhatsApp).
     const ult = estado.ultimaRodada && new Date(estado.ultimaRodada.em).getTime();
     if (!manual && cfg.modo === 'sombra' && ult && Date.now() - ult < 2 * 3600e3) return { ok: true, pulado: 'sombra: conferida há pouco' };
-    const { lista, vistos, vistosMudou } = await candidatosRemocaoAgora(estado, cfg, false);
+    let { lista, vistos, vistosMudou, novoDesde } = await candidatosRemocaoAgora(estado, cfg, false);
+    if (foraJanela) lista = lista.filter(_ehInvasor);
+    if (novoDesde) vistosMudou = true; // força gravar o marco do invasor imediato
     // Grava quando cada pessoa sem cadastro foi vista no grupo (conta a espera).
-    const gravarVistos = e => { if (vistosMudou) e.vistos = vistos; };
+    const gravarVistos = e => { e.vistos = vistos; if (novoDesde && !e.invasorDesde) e.invasorDesde = novoDesde; };
     if (cfg.modo === 'sombra' || !lista.length) {
       await salvarEstadoRemocao(e => { gravarVistos(e); e.ultimaRodada = { em: new Date().toISOString(), modo: cfg.modo, candidatos: lista.length, acao: null }; },
         `grupos: remoção (${cfg.modo}) — ${lista.length} candidato(s)`);
       return { ok: true, modo: cfg.modo, candidatos: lista.length };
     }
+    // limiteDia vale só para vencido/sem direito antigo; invasor (imediato) não conta.
     const resta = cfg.limiteDia - (estado.hoje.remocoes || 0);
-    if (resta <= 0) {
+    if (resta <= 0) lista = lista.filter(_ehInvasor);
+    if (!lista.length) {
       if (vistosMudou) await salvarEstadoRemocao(gravarVistos, 'grupos: remoção — atualiza quem entrou sem cadastro');
       return { ok: true, pulado: 'teto do dia atingido' };
     }
@@ -5296,14 +5330,28 @@ async function cicloRemocaoGrupos({ manual = false } = {}) {
       return { ok: true, pulado: 'baileys-server sem remoção só pelo Tico' };
     }
     const alvo = lista[0];
-    const grupos = alvo.grupos.slice(0, resta);
+    const invasor = _ehInvasor(alvo);
+    const grupos = invasor ? alvo.grupos : alvo.grupos.slice(0, Math.max(1, resta));
+    return await executarRemocaoTico({ alvo, grupos, invasor, total: lista.length, gravarVistos });
+  } catch (err) {
+    console.error('[remocao-grupos]', err.message);
+    return { ok: false, erro: err.message };
+  } finally {
+    _remRodando = false;
+  }
+}
+// Remove UMA pessoa dos grupos indicados pelo Tico (soTico) e grava o resultado.
+// Usada pela rodada de 20 min e pela entrada na hora (invasor). Invasor não soma
+// em hoje.remocoes (conta em hoje.invasores).
+async function executarRemocaoTico({ alvo, grupos, invasor = false, total = 1, gravarVistos = () => {}, imediata = false }) {
+  {
     const telefone = String(alvo.telefone).replace(/\D/g, '');
     const rp = await fetch(`${BAILEYS_URL}/grupos-gestao/participante`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, timeout: 30000,
       body: JSON.stringify({ acao: 'remove', telefone, jids: grupos.map(g => g.jid), soTico: true, origem: 'assinatura-invalida', operacao: 'cdv' }),
     });
     const dp = await rp.json().catch(() => ({}));
-    if (rp.status === 409) return { ok: true, pulado: 'outra tarefa de grupos em andamento' };
+    if (rp.status === 409) return { ok: true, pulado: 'outra tarefa de grupos em andamento', ocupado: true };
     let tarefa = null, erro = null;
     if (!rp.ok || !dp.ok) erro = dp.erro || ('HTTP ' + rp.status);
     else {
@@ -5326,26 +5374,81 @@ async function cicloRemocaoGrupos({ manual = false } = {}) {
     const nomes = new Map(grupos.map(g => [g.jid, g]));
     await salvarEstadoRemocao(e => {
       gravarVistos(e);
-      e.hoje.remocoes = (e.hoje.remocoes || 0) + feitos;
+      if (invasor) e.hoje.invasores = (e.hoje.invasores || 0) + feitos;
+      else e.hoje.remocoes = (e.hoje.remocoes || 0) + feitos;
       e.hoje.pessoas = (e.hoje.pessoas || 0) + (feitos ? 1 : 0);
-      e.ultimaRodada = { em: new Date().toISOString(), modo: 'on', candidatos: lista.length, acao: alvo.nome || alvo.telefone };
+      e.ultimaRodada = { em: new Date().toISOString(), modo: 'on', candidatos: total, acao: alvo.nome || alvo.telefone, imediata };
       e.historico.unshift({ em: new Date().toISOString(), chave: alvo.chave, telefone: alvo.telefone, nome: alvo.nome, email: alvo.email,
-        motivos: alvo.motivos, feitos, erro: erro || (tarefa && tarefa.erro) || null,
+        motivos: alvo.motivos, invasor, imediata, feitos, erro: erro || (tarefa && tarefa.erro) || null,
         grupos: (resultados.length ? resultados : grupos.map(g => ({ jid: g.jid, nome: g.nome, estado: 'nao-tentado' }))).map(r => ({
           jid: r.jid, nome: r.nome || (nomes.get(r.jid) || {}).nome, estado: r.estado, por: r.por || null, detalhe: r.detalhe || null,
           motivo: (nomes.get(r.jid) || {}).motivo || null })) });
       if (pausar) e.pausado = { em: new Date().toISOString(), motivo: pausar };
     }, `grupos: Tico removeu ${feitos} (${alvo.motivos.join('/')})`);
     if (feitos) _gruposBrutos = null; // relê os participantes na próxima rodada
-    console.log(`[remocao-grupos] ${alvo.telefone}: ${feitos}/${grupos.length} removido(s)${erro ? ' — ' + erro : ''}${pausar ? ' — PAUSADA: ' + pausar : ''}`);
+    console.log(`[remocao-grupos] ${invasor ? 'INVASOR ' : ''}${alvo.telefone}: ${feitos}/${grupos.length} removido(s)${imediata ? ' (na hora)' : ''}${erro ? ' — ' + erro : ''}${pausar ? ' — PAUSADA: ' + pausar : ''}`);
     return { ok: true, removidos: feitos, erro, pausado: pausar };
-  } catch (err) {
-    console.error('[remocao-grupos]', err.message);
-    return { ok: false, erro: err.message };
-  } finally {
-    _remRodando = false;
   }
 }
+
+// Entrada na hora (desde 12/11/2026): o baileys avisa quem entrou num grupo do
+// CDV; se for invasor, o Tico tira na hora — sem espera, fora da janela e fora do
+// limiteDia. Os avisos entram numa fila única (uma remoção por vez, como a
+// rodada) e esperam a rodada/outra tarefa do baileys terminar (até ~15 min).
+let _invFila = Promise.resolve();
+async function removerInvasoresNaHora(jid, telefones) {
+  const { estado, cfg } = await lerEstadoRemocao();
+  if (cfg.modo === 'off' || !cfg.invasorImediato) return { pulado: 'desligado' };
+  if (estado.pausado) { console.log('[invasor] pausada — ' + estado.pausado.motivo); return { pulado: 'pausada' }; }
+  const bruto = await coletarGruposCdv(false);
+  const g = (bruto.grupos || []).find(x => x.jid === jid);
+  if (!g) return { pulado: 'grupo fora da conferência' };
+  // Põe quem acabou de entrar na foto em cache do grupo (a foto tem até 10 min).
+  const chaves = new Set();
+  for (const t of (telefones || [])) {
+    const tel = String(t || '').replace(/\D/g, ''); const k = hublaAuditoria.chaveTelefone(tel);
+    if (!k) continue; chaves.add(k);
+    if (!g.membros.some(m => hublaAuditoria.chaveTelefone(m.telefone) === k)) g.membros.push({ id: tel + '@s.whatsapp.net', telefone: tel, admin: null, conta: null });
+  }
+  if (!chaves.size) return { pulado: 'sem telefone' };
+  const aud = await montarAuditoriaGrupos({ forcar: false });
+  const alvos = new Map();
+  for (const d of (aud.detalhe || [])) {
+    if (d.jid !== jid || !d.mapeado || !d.telefone || !chaves.has(d.chave)) continue;
+    if (!(d.situacao === 'sem_cadastro' || (d.situacao === 'sem_direito' && cfg.incluirSemDireito))) continue;
+    alvos.set(d.chave, { chave: d.chave, telefone: d.telefone, nome: d.nome, email: d.email, motivos: [d.situacao],
+      grupos: [{ jid, nome: d.grupo, motivo: d.situacao }] });
+  }
+  if (!alvos.size) return { invasores: 0 };
+  if (cfg.modo !== 'on') { console.log(`[invasor] sombra: ${alvos.size} invasor(es) em ${g.nome} — ninguém removido`); return { sombra: alvos.size }; }
+  if (!bruto.remocaoSoTico) return { pulado: 'baileys-server sem remoção só pelo Tico' };
+  let removidos = 0;
+  for (const alvo of alvos.values()) {
+    for (let t = 0; t < 45; t++) {
+      while (_remRodando) await new Promise(r => setTimeout(r, 5000));
+      _remRodando = true;
+      let r;
+      try { r = await executarRemocaoTico({ alvo, grupos: alvo.grupos, invasor: true, imediata: true }); }
+      finally { _remRodando = false; }
+      if (r && r.ocupado) { await new Promise(res => setTimeout(res, 20000)); continue; }
+      removidos += (r && r.removidos) || 0;
+      if (r && r.pausado) return { removidos, pausado: r.pausado };
+      break;
+    }
+  }
+  if (removidos) _gruposBrutos = null;
+  return { removidos };
+}
+app.post('/hubla/grupos-remocao/entrada', (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const jid = String((req.body || {}).jid || '').trim();
+  const telefones = Array.isArray((req.body || {}).telefones) ? req.body.telefones.slice(0, 50) : [];
+  if (!jid.endsWith('@g.us') || !telefones.length) return res.status(400).json({ ok: false, erro: 'informe jid e telefones' });
+  res.status(202).json({ ok: true });
+  _invFila = _invFila.then(() => removerInvasoresNaHora(jid, telefones))
+    .then(r => { if (r && (r.removidos || r.sombra)) console.log('[invasor] ' + jid + ' →', JSON.stringify(r)); })
+    .catch(e => console.error('[invasor]', e.message));
+});
 setTimeout(() => cicloRemocaoGrupos().catch(() => {}), 4 * 60 * 1000);
 setInterval(() => cicloRemocaoGrupos().catch(() => {}), 20 * 60 * 1000);
 
