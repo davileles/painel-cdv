@@ -88,6 +88,11 @@ function situacaoNoGrupo(regs, jid, regras) {
   const validos = (regs || []).filter(r => r.conta);
   const dao = validos.filter(r => registroDaGrupo(r, jid, regras));
   if (dao.some(r => r.ativo)) return { situacao: 'ativo' };
+  // Tem assinatura/acesso ativo em outra oferta, que não dá este grupo: é
+  // "sem direito", não "vencido" (12/11/2026 — ex.: ex-aluno com renovação em
+  // dia aparecia vencido por causa de uma oferta antiga do Clube encerrada em
+  // 2024; vencido entra na remoção pelo Tico, sem direito só se ligado).
+  if (validos.some(r => r.ativo)) return { situacao: 'sem_direito', registros: validos.filter(r => r.ativo) };
   const vencidos = dao.filter(r => !r.ativo);
   if (vencidos.length) {
     let venceuEm = null;
