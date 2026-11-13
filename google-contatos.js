@@ -17,8 +17,10 @@
 //     recente); sem nenhuma ativa, a que terminou por último;
 //   - exceção com oferta (gestor → Exceções) só vale se a pessoa não tiver nenhuma
 //     assinatura ativa que conte (a extensão/bônus não esconde o Premium pago);
-//   - Balcão (BAL) e Comunidade (COM) só aparecem para quem não tem outro produto
-//     ativo (são complementos de um grupo só, comprados junto com o Clube);
+//   - Balcão (BAL), Comunidade (COM), Direto aos Pontos (DAP) e Tudo Sobre
+//     Emissões (TSE) são complementos: só aparecem para quem não tem outro
+//     produto ativo (DAP e TSE entram mesmo sem dar grupo, e só para quem não tem
+//     nenhum outro produto, nem vencido);
 //   - vitalício sai com "VIT" no lugar da data.
 //
 // CommonJS. Usa as regras de situação de hubla-assinaturas.js.
@@ -34,12 +36,17 @@ const SIGLAS = [
   { re: /consultoria individual/, sigla: 'CIN' }, // Consultoria Individual
   { re: /balcao/, sigla: 'BAL' },                // Balcão CDV
   { re: /comunidade do viajante/, sigla: 'COM' }, // Comunidade do Viajante
+  { re: /direto aos pontos/, sigla: 'DAP' },     // Direto aos Pontos (não dá grupo)
+  { re: /tudo sobre emissoes/, sigla: 'TSE' },   // Tudo Sobre Emissões (não dá grupo)
   { re: /escola do viajante|clube \+ escola/, sigla: 'EDV' }, // Escola do Viajante, Combo Especial - Clube + Escola
   { re: /premium/, sigla: 'CDVP' },              // Clube do Viajante Premium (todas as variações)
   { re: /clube do viajante|tudo sobre promos|ex.?alunos|membros antigos/, sigla: 'CDV' },
 ];
-const SECUNDARIAS = new Set(['BAL', 'COM']);
-const SIGLAS_CONHECIDAS = ['BAL', 'CDV', 'CDVP', 'CIN', 'COM', 'EDV', 'TRC'];
+const SECUNDARIAS = new Set(['BAL', 'COM', 'DAP', 'TSE']);
+// Produtos que entram no nome mesmo sem dar grupo (decisão do Davi, 13/11/2026);
+// como complementos, só aparecem para quem não tem produto principal ativo.
+const SEM_GRUPO_CONTA = new Set(['DAP', 'TSE']);
+const SIGLAS_CONHECIDAS = ['BAL', 'CDV', 'CDVP', 'CIN', 'COM', 'DAP', 'EDV', 'TRC', 'TSE'];
 // Nunca dá nome, mesmo se alguém marcar grupo nela por engano.
 const NUNCA = /conteudo gravado/;
 // Teste GRATUITO (Premium Experimental sem pagamento) não entra: o nome fica no
@@ -99,8 +106,8 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, agora = Date.
     let daGrupo;
     if (rec.ofertaId) daGrupo = gruposDaOferta.has(rec.ofertaId);
     else daGrupo = gruposDoProduto.has(rec.produtoId);
-    if (!daGrupo) return '';
     const s = siglaDe(rec.ofertaId, rec.ofertaNome, rec.produtoNome);
+    if (!daGrupo && !SEM_GRUPO_CONTA.has(s)) return '';
     if (!s) {
       const k = (rec.produtoNome || '') + ' · ' + (rec.ofertaNome || '');
       semSigla.set(k, (semSigla.get(k) || 0) + 1);
@@ -198,7 +205,11 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, agora = Date.
   }
 
   const contatos = [];
-  for (const lista of grupos.values()) {
+  for (const lista0 of grupos.values()) {
+    // DAP/TSE (cursos sem grupo) só dão nome a quem não tem nenhum outro registro:
+    // um curso vitalício não pode esconder a data do Clube vencido.
+    const comGrupo = lista0.filter(r => !SEM_GRUPO_CONTA.has(r.sigla));
+    const lista = comGrupo.length ? comGrupo : lista0;
     const reais = lista.filter(r => r.fonte !== 'excecao');
     const excs = lista.filter(r => r.fonte === 'excecao');
     const ordAtivo = (a, b) => (ms(b.inicio) - ms(a.inicio)) || ((b.vitalicio ? Infinity : ms(b.fim)) - (a.vitalicio ? Infinity : ms(a.fim)));
@@ -217,8 +228,8 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, agora = Date.
     // Nome: o do registro escolhido; sem nome, o de qualquer outro.
     const nome = nomeProprio((escolhido.nome && !String(escolhido.nome).includes('@') ? escolhido.nome : '')
       || (lista.find(r => r.nome && !String(r.nome).includes('@')) || {}).nome || '');
-    const telefones = [...new Set(lista.flatMap(r => [r.telefone, ...(extrasTel.get(String(r.email || '').toLowerCase().trim()) || [])]).map(soDigitos).filter(t => t.length >= 10))];
-    const emails = [...new Set(lista.flatMap(r => { const e = String(r.email || '').toLowerCase().trim(); return e ? [e, ...(extrasEmail.get(e) || [])] : []; }))];
+    const telefones = [...new Set(lista0.flatMap(r => [r.telefone, ...(extrasTel.get(String(r.email || '').toLowerCase().trim()) || [])]).map(soDigitos).filter(t => t.length >= 10))];
+    const emails = [...new Set(lista0.flatMap(r => { const e = String(r.email || '').toLowerCase().trim(); return e ? [e, ...(extrasEmail.get(e) || [])] : []; }))];
     if (!telefones.length && !emails.length) continue;
     const quando = escolhido.vitalicio ? 'VIT' : dataCurta(escolhido.fim);
     const sufixo = [escolhido.sigla, quando].filter(Boolean).join(' ');

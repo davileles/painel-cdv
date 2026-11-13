@@ -8,7 +8,8 @@ Assinaturas → **Google Contatos**.
 
 Siglas: Travel Concierge **TRC** · Consultoria Individual **CIN** · Escola do Viajante **EDV** ·
 Clube do Viajante **CDV** · Clube do Viajante Premium **CDVP** · Balcão CDV **BAL** · Comunidade do
-Viajante **COM** (BAL e COM só para quem não tem outro produto ativo) · vitalício sai com **VIT** no lugar da data.
+Viajante **COM** · Direto aos Pontos **DAP** · Tudo Sobre Emissões **TSE** (esses quatro só para quem
+não tem outro produto ativo) · vitalício sai com **VIT** no lugar da data.
 
 ## Instalação (uma vez, tudo pelo navegador)
 
