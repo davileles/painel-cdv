@@ -105,3 +105,9 @@
   opacity: 0; transform: translateY(10px); transition: all .25s ease;
 }
 .cdv-bio-toast.on { opacity: 1; transform: none; }
+
+/* Lojas (App Store / Google Play): o app não vende nem leva à página de compra
+   (regra 3.1 da Apple). O botão "Quero fazer parte…" do login some no app;
+   no site continua. */
+.app-nativo a[href*="hub.la"],
+.app-nativo a[href*="hubla"] { display: none !important; }

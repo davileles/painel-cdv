@@ -182,7 +182,22 @@ function emailDoTokenMembro(token) {
 // cache anterior = deixa passar (o token já prova a identidade; só não dá para
 // conferir cancelamento naquele minuto).
 const _membrosAtivos = { prod: { set: null, ts: 0 }, dev: { set: null, ts: 0 } };
+// Conta de revisão das lojas (App Store / Google Play): o revisor não recebe o
+// e-mail do código, então REVISAO_EMAIL entra com o código fixo REVISAO_CODIGO
+// (≥ 6 dígitos) sem envio de e-mail e conta como membro ativo. Sem as duas env
+// (ou código curto), fica desligada. Tirar as env depois da aprovação.
+function revisaoLoja() {
+  const email = String(process.env.REVISAO_EMAIL || '').toLowerCase().trim();
+  const codigo = String(process.env.REVISAO_CODIGO || '').trim();
+  if (!email || !/^\d{6,}$/.test(codigo)) return null;
+  return { email, codigo };
+}
+function ehContaRevisao(email) {
+  const r = revisaoLoja();
+  return !!r && String(email || '').toLowerCase().trim() === r.email;
+}
 async function membroAtivo(email, devMode) {
+  if (ehContaRevisao(email)) return true;
   const c = _membrosAtivos[devMode ? 'dev' : 'prod'];
   if (!c.set || Date.now() - c.ts > 5 * 60 * 1000) {
     try {
@@ -4403,6 +4418,12 @@ function gerarCodigo() {
 app.post('/membros/enviar-codigo', async (req, res) => {
   const email = ((req.body || {}).email || '').toLowerCase().trim();
   if (!email) return res.status(400).json({ ok: false, erro: 'E-mail obrigatório' });
+  if (ehContaRevisao(email)) {
+    // Conta de revisão das lojas: código fixo, sem e-mail (ver revisaoLoja).
+    otpStore.set(email, { codigo: revisaoLoja().codigo, expira: Date.now() + OTP_TTL, enviadoEm: Date.now(), tentativas: 0, nome: 'Revisão App', produtos: [] });
+    console.log('[revisao-loja] pedido de código da conta de revisão');
+    return res.json({ ok: true });
+  }
   try {
     const devMode = res.locals.isDevMode;
     const dados = await ghGetJsonDev(MEMBROS_PATH, { membros: [] }, devMode);
