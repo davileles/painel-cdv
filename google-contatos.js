@@ -11,7 +11,8 @@
 //     ofertas[id].grupos) e que têm sigla (SIGLAS abaixo ou ofertas[id].sigla);
 //     ex.: o acesso vitalício ao conteúdo gravado não dá grupo, então nunca entra
 //     — vale a outra assinatura da pessoa que dá grupo, mesmo que seja anterior;
-//     Escola do Viajante vitalícia (e oferta "Só com prazo" vitalícia) também não conta;
+//     Escola do Viajante vitalícia (e oferta "Só com prazo" vitalícia) também não conta,
+//     nem o teste gratuito (Premium Experimental);
 //   - entre as que contam, vale a ÚLTIMA: primeiro as ativas (a de início mais
 //     recente); sem nenhuma ativa, a que terminou por último;
 //   - exceção com oferta (gestor → Exceções) só vale se a pessoa não tiver nenhuma
@@ -40,7 +41,9 @@ const SIGLAS = [
 const SECUNDARIAS = new Set(['BAL', 'COM']);
 const SIGLAS_CONHECIDAS = ['BAL', 'CDV', 'CDVP', 'CIN', 'COM', 'EDV', 'TRC'];
 // Nunca dá nome, mesmo se alguém marcar grupo nela por engano.
-const NUNCA = /conteudo gravado/;
+// Teste gratuito (Premium Experimental) também não entra: o nome fica no último
+// produto de verdade (decisão do Davi, 13/11/2026).
+const NUNCA = /conteudo gravado|experimental/;
 
 function norm(s) {
   return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
