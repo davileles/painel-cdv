@@ -16,6 +16,8 @@
 //     recente); sem nenhuma ativa, a que terminou por último;
 //   - exceção com oferta (gestor → Exceções) só vale se a pessoa não tiver nenhuma
 //     assinatura ativa que conte (a extensão/bônus não esconde o Premium pago);
+//   - Balcão (BAL) e Comunidade (COM) só aparecem para quem não tem outro produto
+//     ativo (são complementos de um grupo só, comprados junto com o Clube);
 //   - vitalício sai com "VIT" no lugar da data.
 //
 // CommonJS. Usa as regras de situação de hubla-assinaturas.js.
@@ -28,11 +30,15 @@ const { chaveTelefone } = require('./hubla-grupos-auditoria');
 // painel-regras-acesso.json (vence esta tabela).
 const SIGLAS = [
   { re: /concierge/, sigla: 'TRC' },             // Travel Concierge
+  { re: /consultoria individual/, sigla: 'CIN' }, // Consultoria Individual
+  { re: /balcao/, sigla: 'BAL' },                // Balcão CDV
+  { re: /comunidade do viajante/, sigla: 'COM' }, // Comunidade do Viajante
   { re: /escola do viajante|clube \+ escola/, sigla: 'EDV' }, // Escola do Viajante, Combo Especial - Clube + Escola
   { re: /premium/, sigla: 'CDVP' },              // Clube do Viajante Premium (todas as variações)
   { re: /clube do viajante|tudo sobre promos|ex.?alunos|membros antigos/, sigla: 'CDV' },
 ];
-const SIGLAS_CONHECIDAS = ['TRC', 'EDV', 'CDVP', 'CDV'];
+const SECUNDARIAS = new Set(['BAL', 'COM']);
+const SIGLAS_CONHECIDAS = ['BAL', 'CDV', 'CDVP', 'CIN', 'COM', 'EDV', 'TRC'];
 // Nunca dá nome, mesmo se alguém marcar grupo nela por engano.
 const NUNCA = /conteudo gravado/;
 
@@ -190,9 +196,16 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, agora = Date.
     const excs = lista.filter(r => r.fonte === 'excecao');
     const ordAtivo = (a, b) => (ms(b.inicio) - ms(a.inicio)) || ((b.vitalicio ? Infinity : ms(b.fim)) - (a.vitalicio ? Infinity : ms(a.fim)));
     const ordFim = (a, b) => ms(b.fim) - ms(a.fim);
-    const escolhido = reais.filter(r => r.ativo).sort(ordAtivo)[0]
-      || excs.filter(r => r.ativo).sort(ordAtivo)[0]
-      || lista.filter(r => !r.ativo).sort(ordFim)[0];
+    // Balcão e Comunidade dão um grupo só e costumam vir junto com o Clube:
+    // ficam atrás de qualquer produto principal (só aparecem no nome de quem
+    // não tem outro ativo; entre encerradas, só se acabaram 30+ dias depois).
+    const princ = r => !SECUNDARIAS.has(r.sigla);
+    const encerradas = lista.filter(r => !r.ativo).sort(ordFim);
+    const encP = encerradas.find(princ), encS = encerradas.find(r => !princ(r));
+    const escolhido = reais.filter(r => r.ativo && princ(r)).sort(ordAtivo)[0]
+      || excs.filter(r => r.ativo && princ(r)).sort(ordAtivo)[0]
+      || lista.filter(r => r.ativo).sort(ordAtivo)[0]
+      || (encP && encS && ms(encS.fim) - ms(encP.fim) > 30 * 86400000 ? encS : (encP || encS));
     if (!escolhido) continue;
     // Nome: o do registro escolhido; sem nome, o de qualquer outro.
     const nome = nomeProprio((escolhido.nome && !String(escolhido.nome).includes('@') ? escolhido.nome : '')
