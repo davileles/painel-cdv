@@ -5,8 +5,7 @@
  * do CDV (GET /hubla/contatos) e deixa o nome de cada um como
  *     "<Nome> <SIGLA> <dd/mm/aa>"      ex.: "William Camargo CDV 16/09/27"
  * - acha o contato pelo telefone (DDD + 8 últimos dígitos) ou pelo e-mail;
- * - contato que já existe: troca só o fim do nome (sigla + data) e mantém o nome
- *   que você deu a ele;
+ * - contato que já existe: o nome passa a ser o do sistema (Hubla) + sigla + data;
  * - aluno que não está na agenda: cria o contato (nome, telefone, e-mail);
  * - marca cada aluno com "Alunos CDV · Ativos" ou "Alunos CDV · Vencidos";
  * - nunca apaga contato e nunca mexe em quem não é aluno.
@@ -94,7 +93,9 @@ function rodar_(modo) {
       usados[p.resourceName] = al.nomeContato;
       rotulo[p.resourceName] = al.ativo ? 'ativos' : 'vencidos';
       const atual = nomeDe_(p);
-      let base = atual.replace(reSufixo, '').trim();
+      // Nome do sistema (Hubla) por padrão; com usarNomeDoSistema:false o proxy
+      // manda manter o nome da agenda (só troca sigla e data).
+      let base = dados.usarNomeDoSistema === false ? atual.replace(reSufixo, '').trim() : al.nome;
       if (!base || reInvalido.test(base)) base = al.nome;
       const novo = (base + ' ' + al.sufixo).trim();
       if (novo === atual) { iguais++; return; }

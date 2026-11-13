@@ -33,7 +33,7 @@ não tem outro produto ativo) · vitalício sai com **VIT** no lugar da data.
 ## Como decide
 
 - Acha o contato pelo telefone (DDD + 8 últimos dígitos, com ou sem o 9) ou pelo e-mail.
-- Contato existente: troca só o fim do nome (sigla + data); o nome que você deu fica.
+- Contato existente: o nome fica igual ao do sistema (Hubla) + sigla + data.
 - Aluno que não está na agenda: cria o contato com nome, telefone e e-mail.
 - Marca cada aluno com "Alunos CDV · Ativos" ou "Alunos CDV · Vencidos".
 - Nunca apaga contato e nunca mexe em quem não é aluno.
