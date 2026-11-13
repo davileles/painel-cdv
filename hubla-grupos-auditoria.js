@@ -46,6 +46,21 @@ function maisRecente(a, b) {
   if (!b) return a;
   return new Date(a) >= new Date(b) ? a : b;
 }
+// Escola do Viajante PAGA que a Hubla gravou como vitalícia (vendas até
+// ago/2024, antes de a oferta passar a 1 ano) vale 1 ano a partir da compra
+// (decisão do Davi, 13/11/2026). Só passa a valer nos grupos a partir de
+// 16/11/2026, depois do prazo dado aos alunos para renovar.
+const ESCOLA_UM_ANO_DESDE = Date.parse('2026-11-16T00:00:00-03:00');
+const ESCOLA_PAGA = /escola do viajante|clube \+ escola/;
+// Devolve o fim (ms) quando a assinatura é Escola paga vitalícia; senão null.
+function fimEscolaUmAno(a, situacao, agora) {
+  if (agora < ESCOLA_UM_ANO_DESDE || situacao !== 'vitalicio' || !a) return null;
+  if (a.tipo === 'free' || !(Number(a.faturasPagas) > 0 || a.ultimoPagamento)) return null;
+  const n = norm(a.ofertaNome);
+  if (!ESCOLA_PAGA.test(n) || /conteudo gravado/.test(n)) return null;
+  const ini = Date.parse(a.primeiraAtivacao || a.ativadaEm || a.ultimoPagamento || a.inicio || a.criadaEm || '');
+  return ini ? ini + 365 * DIA : null;
+}
 function grupoIgnorado(nome) { const n = norm(nome); return GRUPOS_IGNORADOS.some(re => re.test(n)); }
 
 // Registros por telefone: cada assinatura/acesso com produto, oferta, se está
@@ -62,6 +77,27 @@ function indicePorTelefone(hubla, agora, telefonesExtras) {
     const e = String(r.email || '').toLowerCase().trim();
     for (const t of (extras.get(e) || [])) { const k2 = chaveTelefone(t); if (k2 && k2 !== k) add0(k2, r); }
   };
+  const escolaVencida = new Map(); // produto|e-mail → fim (Escola paga convertida e já vencida)
+  for (const a of Object.values((hubla && hubla.assinaturas) || {})) {
+    const sit = calcularSituacao(a, agora).situacao;
+    let ativo = sit === 'vigente' || sit === 'teste' || sit === 'vitalicio';
+    const fimEscola = fimEscolaUmAno(a, sit, agora);
+    if (fimEscola) {
+      ativo = fimEscola >= agora;
+      if (!ativo && a.email) escolaVencida.set(String(a.produtoId || '') + '|' + String(a.email).toLowerCase().trim(), new Date(fimEscola).toISOString());
+    }
+    // Como antes: só conta como "já teve" a assinatura cancelada/inativa (pendente
+    // e desconhecida não dizem nada).
+    const conta = ativo || !!fimEscola || a.status === 'inactive' || a.status === 'canceled';
+    let fim = null;
+    if (fimEscola && !ativo) fim = new Date(fimEscola).toISOString();
+    else if (!ativo) {
+      const f = a.inativadaEm || a.canceladaEm || a.modificadaEm;
+      if (f && new Date(f).getTime() <= agora) fim = f;
+    }
+    add(chaveTelefone(a.telefone), { tipo: 'assinatura', produtoId: a.produtoId || '', ofertaId: a.ofertaId || '', produto: a.produtoNome,
+      oferta: a.ofertaNome, nome: a.nome, email: a.email, ativo, fim, conta });
+  }
   // Oferta do acesso, quando conhecida (ofertasAcesso, lida do painel da Hubla):
   // o acesso vale só nos grupos dessa oferta. Sem ela, vale o produto inteiro
   // (12/11/2026 — ex.: "Escola do Viajante (acesso vitalício ao conteúdo
@@ -69,26 +105,15 @@ function indicePorTelefone(hubla, agora, telefonesExtras) {
   const ofAcesso = (hubla && hubla.ofertasAcesso) || {};
   for (const [pid, p] of Object.entries((hubla && hubla.acessosPorProduto) || {})) {
     for (const [email, m] of Object.entries(p.membros || {})) {
-      const ativo = membroAtivo(m, agora);
-      const fim = !ativo && m.removidoEm && new Date(m.removidoEm).getTime() <= agora ? m.removidoEm : null;
+      let ativo = membroAtivo(m, agora);
+      let fim = !ativo && m.removidoEm && new Date(m.removidoEm).getTime() <= agora ? m.removidoEm : null;
+      // O acesso vitalício que veio da compra da Escola convertida para 1 ano acaba junto.
+      const ev = m.vitalicio ? escolaVencida.get(pid + '|' + String(email).toLowerCase().trim()) : null;
+      if (ev) { ativo = false; fim = ev; }
       const oa = ofAcesso[pid + '|' + email] || null;
       add(chaveTelefone(m.telefone), { tipo: 'acesso', produtoId: pid, ofertaId: (oa && oa.ofertaId) || null, produto: p.nome,
         oferta: (oa && oa.ofertaNome) || undefined, nome: m.nome, email, ativo, fim, conta: true });
     }
-  }
-  for (const a of Object.values((hubla && hubla.assinaturas) || {})) {
-    const sit = calcularSituacao(a, agora).situacao;
-    const ativo = sit === 'vigente' || sit === 'teste' || sit === 'vitalicio';
-    // Como antes: só conta como "já teve" a assinatura cancelada/inativa (pendente
-    // e desconhecida não dizem nada).
-    const conta = ativo || a.status === 'inactive' || a.status === 'canceled';
-    let fim = null;
-    if (!ativo) {
-      const f = a.inativadaEm || a.canceladaEm || a.modificadaEm;
-      if (f && new Date(f).getTime() <= agora) fim = f;
-    }
-    add(chaveTelefone(a.telefone), { tipo: 'assinatura', produtoId: a.produtoId || '', ofertaId: a.ofertaId || '', produto: a.produtoNome,
-      oferta: a.ofertaNome, nome: a.nome, email: a.email, ativo, fim, conta });
   }
   return porChave;
 }
