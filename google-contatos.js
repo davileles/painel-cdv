@@ -252,6 +252,9 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, agora = Date.
     // (sigla de 2 a 8 letras, com ou sem "+", para limpar também siglas antigas;
     // data d/m/aa até dd/mm/aaaa, com / . ou -). Ex.: "CDVE 11/8/2026".
     padraoSufixo: '(\\s+[A-Z+]{2,8}\\s+(\\d{1,2}[/.-]\\d{1,2}[/.-]\\d{2,4}|VIT))+\\s*$',
+    // Nome do contato que não vale como nome (erro de planilha "#REF!", "#N/A",
+    // só número de telefone, e-mail): o script troca pelo nome da Hubla.
+    padraoNomeInvalido: '^\\s*(#|[+\\d\\s().-]+$|\\S+@\\S+$)',
     ofertasSemSigla: [...semSigla.entries()].map(([oferta, registros]) => ({ oferta, registros })),
     contatos,
   };

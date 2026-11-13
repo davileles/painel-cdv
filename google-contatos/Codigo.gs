@@ -55,6 +55,8 @@ function rodar_(modo) {
   if (r.getResponseCode() !== 200) throw new Error('Proxy respondeu ' + r.getResponseCode() + ': ' + r.getContentText().slice(0, 300));
   const dados = JSON.parse(r.getContentText());
   const reSufixo = new RegExp(dados.padraoSufixo);
+  // Nome que não é nome ("#REF!", só telefone, e-mail): vira o nome da Hubla.
+  const reInvalido = new RegExp(dados.padraoNomeInvalido || '^\\s*(#|[+\\d\\s().-]+$|\\S+@\\S+$)');
 
   // 1. Agenda inteira
   const pessoas = [];
@@ -92,7 +94,8 @@ function rodar_(modo) {
       usados[p.resourceName] = al.nomeContato;
       rotulo[p.resourceName] = al.ativo ? 'ativos' : 'vencidos';
       const atual = nomeDe_(p);
-      const base = atual.replace(reSufixo, '').trim() || al.nome;
+      let base = atual.replace(reSufixo, '').trim();
+      if (!base || reInvalido.test(base)) base = al.nome;
       const novo = (base + ' ' + al.sufixo).trim();
       if (novo === atual) { iguais++; return; }
       atualizar.push({ rn: p.resourceName, etag: p.etag, de: atual, para: novo });
