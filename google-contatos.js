@@ -12,7 +12,7 @@
 //     ex.: o acesso vitalício ao conteúdo gravado não dá grupo, então nunca entra
 //     — vale a outra assinatura da pessoa que dá grupo, mesmo que seja anterior;
 //     Escola do Viajante vitalícia (e oferta "Só com prazo" vitalícia) também não conta,
-//     nem o teste gratuito (Premium Experimental);
+//     nem o teste gratuito (Premium Experimental sem pagamento; o pago conta);
 //   - entre as que contam, vale a ÚLTIMA: primeiro as ativas (a de início mais
 //     recente); sem nenhuma ativa, a que terminou por último;
 //   - exceção com oferta (gestor → Exceções) só vale se a pessoa não tiver nenhuma
@@ -41,9 +41,11 @@ const SIGLAS = [
 const SECUNDARIAS = new Set(['BAL', 'COM']);
 const SIGLAS_CONHECIDAS = ['BAL', 'CDV', 'CDVP', 'CIN', 'COM', 'EDV', 'TRC'];
 // Nunca dá nome, mesmo se alguém marcar grupo nela por engano.
-// Teste gratuito (Premium Experimental) também não entra: o nome fica no último
-// produto de verdade (decisão do Davi, 13/11/2026).
-const NUNCA = /conteudo gravado|experimental/;
+const NUNCA = /conteudo gravado/;
+// Teste GRATUITO (Premium Experimental sem pagamento) não entra: o nome fica no
+// último produto de verdade. Experimental pago (ex.: R$ 597 com 1 ano) conta
+// normal como Premium (decisões do Davi, 13/11/2026).
+const TESTE = /experimental/;
 
 function norm(s) {
   return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
@@ -89,6 +91,7 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, agora = Date.
   // Conta para o nome? Devolve a sigla ('' = não conta).
   function siglaSeConta(rec, vitalicio) {
     if (NUNCA.test(norm(rec.ofertaNome)) || NUNCA.test(norm(rec.produtoNome))) return '';
+    if (rec.gratuito && TESTE.test(norm(rec.ofertaNome))) return '';
     // Escola do Viajante vitalícia = conteúdo gravado, sem grupo; o mesmo vale para
     // qualquer oferta marcada "Só com prazo" nas Regras de acesso.
     if (vitalicio && (/escola/.test(norm(rec.ofertaNome) + ' ' + norm(rec.produtoNome))
@@ -114,7 +117,8 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, agora = Date.
     const { situacao, fim } = calcularSituacao(a, agora);
     if (situacao === 'pendente' || situacao === 'desconhecida') continue;
     if (a.produtoId && a.email) temAss.add(a.produtoId + '|' + String(a.email).toLowerCase().trim());
-    const rec = { fonte: 'assinatura', ofertaId: a.ofertaId || '', produtoId: a.produtoId || '', ofertaNome: a.ofertaNome || '', produtoNome: a.produtoNome || '' };
+    const rec = { fonte: 'assinatura', ofertaId: a.ofertaId || '', produtoId: a.produtoId || '', ofertaNome: a.ofertaNome || '', produtoNome: a.produtoNome || '',
+      gratuito: a.tipo === 'free' || !(Number(a.faturasPagas) > 0 || a.ultimoPagamento) };
     rec.sigla = siglaSeConta(rec, situacao === 'vitalicio');
     if (!rec.sigla) continue;
     rec.ativo = situacao === 'vigente' || situacao === 'teste' || situacao === 'vitalicio';
@@ -135,7 +139,7 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, agora = Date.
       // Vitalício sem oferta conhecida é, quase sempre, o conteúdo gravado: fora.
       if (m.vitalicio && !oa) continue;
       const rec = { fonte: 'acesso', ofertaId: (oa && oa.ofertaId) || '', produtoId: pid,
-        ofertaNome: (oa && oa.ofertaNome) || '', produtoNome: (p && p.nome) || '' };
+        ofertaNome: (oa && oa.ofertaNome) || '', produtoNome: (p && p.nome) || '', gratuito: m.tipo !== 'buyer' };
       rec.sigla = siglaSeConta(rec, !!m.vitalicio && membroAtivo(m, agora));
       if (!rec.sigla) continue;
       rec.ativo = membroAtivo(m, agora);
@@ -148,7 +152,7 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, agora = Date.
   }
   for (const x of (Array.isArray(excecoes) ? excecoes : [])) {
     if (!x || !(x.ofertaId || x.ofertaNome) || !(x.email || x.telefone)) continue;
-    const rec = { fonte: 'excecao', ofertaId: x.ofertaId || '', produtoId: x.produtoId || '', ofertaNome: x.ofertaNome || '', produtoNome: x.produtoNome || '' };
+    const rec = { fonte: 'excecao', ofertaId: x.ofertaId || '', produtoId: x.produtoId || '', ofertaNome: x.ofertaNome || '', produtoNome: x.produtoNome || '', gratuito: true };
     const fimMs = /^\d{4}-\d{2}-\d{2}$/.test(String(x.fim || '')) ? new Date(x.fim + 'T23:59:59-03:00').getTime() : null;
     rec.sigla = siglaSeConta(rec, fimMs === null);
     if (!rec.sigla) continue;
