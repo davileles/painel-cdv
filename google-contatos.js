@@ -254,6 +254,9 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, agora = Date.
     padraoSufixo: '(\\s+[A-Z+]{2,8}\\s+(\\d{1,2}[/.-]\\d{1,2}[/.-]\\d{2,4}|VIT))+\\s*$',
     // Nome do contato que não vale como nome (erro de planilha "#REF!", "#N/A",
     // só número de telefone, e-mail): o script troca pelo nome da Hubla.
+    // Decisão do Davi (13/11/2026): o nome do contato é sempre o do sistema
+    // (Hubla); o script não guarda o nome que estava na agenda.
+    usarNomeDoSistema: true,
     padraoNomeInvalido: '^\\s*(#|[+\\d\\s().-]+$|\\S+@\\S+$)',
     ofertasSemSigla: [...semSigla.entries()].map(([oferta, registros]) => ({ oferta, registros })),
     contatos,
