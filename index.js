@@ -5117,7 +5117,8 @@ async function coletarGruposCdv(forcar) {
       grupos.push({ jid: g.jid, nome: g.nome, membros: d.ok ? (d.membros || []) : [], executores: g.executores || [] });
       await new Promise(res => setTimeout(res, 600));
     }
-    _gruposBrutos = { em: Date.now(), grupos, remocaoSoTico: dg.remocaoSoTico === true };
+    _gruposBrutos = { em: Date.now(), grupos, remocaoSoTico: dg.remocaoSoTico === true,
+      contas: (dg.contas || []).map(c => String(c.numero || '').replace(/\D/g, '')).filter(Boolean) };
     return _gruposBrutos;
   })().finally(() => { _gruposBrutosEmVoo = null; });
   return _gruposBrutosEmVoo;
@@ -5407,13 +5408,19 @@ async function removerInvasoresNaHora(jid, telefones) {
   const g = (bruto.grupos || []).find(x => x.jid === jid);
   if (!g) return { pulado: 'grupo fora da conferência' };
   // Põe quem acabou de entrar na foto em cache do grupo (a foto tem até 10 min).
+  // Número nosso (principal, ticos, camp-*/aviso-*) nunca entra como invasor: o
+  // aviso do baileys não filtra a casa, e um tico novo entrando no grupo (fila
+  // lenta de adesão) cairia como "sem cadastro".
+  const casa = new Set((bruto.contas || []).map(n => hublaAuditoria.chaveTelefone(n)).filter(Boolean));
+  for (const gg of (bruto.grupos || [])) for (const m of (gg.membros || [])) if (m.conta) { const k = hublaAuditoria.chaveTelefone(m.telefone); if (k) casa.add(k); }
   const chaves = new Set();
   for (const t of (telefones || [])) {
     const tel = String(t || '').replace(/\D/g, ''); const k = hublaAuditoria.chaveTelefone(tel);
-    if (!k) continue; chaves.add(k);
+    if (!k || casa.has(k)) continue; chaves.add(k);
     if (!g.membros.some(m => hublaAuditoria.chaveTelefone(m.telefone) === k)) g.membros.push({ id: tel + '@s.whatsapp.net', telefone: tel, admin: null, conta: null });
   }
-  if (!chaves.size) return { pulado: 'sem telefone' };
+  if (!chaves.size) return { pulado: 'sem telefone ou número da casa' };
+  if (!casa.size) return { pulado: 'sem a lista de números da casa — fica para a rodada' };
   const aud = await montarAuditoriaGrupos({ forcar: false });
   const alvos = new Map();
   for (const d of (aud.detalhe || [])) {
