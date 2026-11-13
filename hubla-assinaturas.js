@@ -83,6 +83,87 @@ function _indiceGrupos(arquivo) {
   return g;
 }
 function gruposAcesso() { return _grupos; }
+// ── Tempo de acesso por oferta (desde 13/11/2026) ────────────────────────────
+// O prazo de quem PAGOU passa a ser decidido aqui, não pela Hubla (a Hubla grava
+// o "tempo de acesso" que a oferta tinha no dia da compra e não corrige quem
+// comprou antes de uma mudança — ex.: Escola vendida como vitalícia até ago/2024,
+// Premium Experimental de 9 dias em 13/10/2026). Em painel-regras-acesso.json:
+//   ofertas[id].tempo = { tipo: 'ciclo'|'dias'|'meses'|'anos'|'vitalicio'|'hubla', valor }
+// 'ciclo' = o período pago da assinatura recorrente (mensal, trimestral, anual);
+// 'hubla' (ou sem tempo) = continua valendo o prazo da Hubla. Fim = último
+// pagamento + tempo; renovação paga recomeça a conta; reembolso do último
+// pagamento encerra. Vale SEMPRE o do sistema, mesmo que a Hubla dê mais
+// (decisão do Davi, 13/11/2026). Acesso gratuito (liberado à mão) segue a Hubla.
+const TEMPOS = ['ciclo', 'dias', 'meses', 'anos', 'vitalicio', 'hubla'];
+let _tempos = new Map(); // ofertaId → {tipo, valor}
+function normalizarTempo(t) {
+  if (!t || typeof t !== 'object' || !TEMPOS.includes(t.tipo)) return null;
+  if (t.tipo === 'hubla') return null;
+  if (['dias', 'meses', 'anos'].includes(t.tipo)) {
+    const v = parseInt(t.valor, 10);
+    if (!(v > 0 && v <= 3650)) return null;
+    return { tipo: t.tipo, valor: v };
+  }
+  return { tipo: t.tipo };
+}
+function _indiceTempos(arquivo) {
+  const m = new Map();
+  for (const [id, r] of Object.entries((arquivo && arquivo.ofertas) || {})) {
+    const t = normalizarTempo(r && r.tempo);
+    if (t) m.set(id, t);
+  }
+  return m;
+}
+function temposAcesso() { return _tempos; }
+function _somarTempo(ms, t, cicloMeses) {
+  const d = new Date(ms);
+  if (t.tipo === 'dias') return ms + t.valor * DIA;
+  const meses = t.tipo === 'anos' ? t.valor * 12 : t.tipo === 'meses' ? t.valor : (Number(cicloMeses) || 0);
+  if (!meses) return null;
+  const dia = d.getUTCDate();
+  d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() + meses);
+  const ultimo = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+  d.setUTCDate(Math.min(dia, ultimo));
+  return d.getTime();
+}
+// Situação pelo tempo do sistema; null quando não se aplica (sem tempo
+// configurado, acesso gratuito, nunca pagou, ou 'ciclo' sem ciclo conhecido).
+function situacaoPeloTempo(a, agora, tempos) {
+  if (!a || !a.ofertaId || !tempos || !tempos.size) return null;
+  const t = tempos.get(a.ofertaId);
+  if (!t) return null;
+  if (a.tipo === 'free') return null;
+  // Último pagamento: o mais recente entre ultimoPagamento e a última fatura paga
+  // (a renovação paga às vezes chega na fatura antes de atualizar ultimoPagamento).
+  const uf0 = a.ultimaFatura || {};
+  const vendaPaga = uf0.status === 'paid' ? Date.parse(uf0.venda || '') : NaN;
+  const pagoCampo = Date.parse(a.ultimoPagamento || '');
+  const pago = isNaN(vendaPaga) ? pagoCampo : (isNaN(pagoCampo) ? vendaPaga : Math.max(pagoCampo, vendaPaga));
+  if (!(Number(a.faturasPagas) > 0) && isNaN(pago)) return null;
+  const base = !isNaN(pago) ? pago : Date.parse(a.ativadaEm || a.inicio || '');
+  if (isNaN(base)) return null;
+  // Reembolso do último pagamento: acaba na data do reembolso.
+  const uf = a.ultimaFatura || {};
+  if (uf.status === 'refunded') {
+    const venda = Date.parse(uf.venda || '');
+    if (isNaN(venda) || isNaN(pago) || Math.abs(venda - pago) < 2 * DIA) {
+      const fim = a.modificadaEm || a.inativadaEm || new Date(agora).toISOString();
+      return { situacao: 'encerrada', fim, diasRestantes: null, prazoDoSistema: true };
+    }
+  }
+  if (t.tipo === 'vitalicio') return { situacao: 'vitalicio', fim: null, diasRestantes: null, prazoDoSistema: true };
+  if (t.tipo === 'ciclo' && a.tipo !== 'recurring') return null;
+  const fimMs = _somarTempo(base, t, a.cicloMeses);
+  if (!fimMs) return null;
+  const fim = new Date(fimMs).toISOString();
+  // Renovação automática ligada: 7 dias de folga para a cobrança da renovação
+  // (a Hubla tenta o cartão de novo nos dias seguintes).
+  const st = String(a.status || '').toLowerCase();
+  const folga = a.tipo === 'recurring' && a.renovacaoAutomatica && st === 'active' ? 7 * DIA : 0;
+  if (fimMs + folga < agora) return { situacao: 'encerrada', fim, diasRestantes: null, prazoDoSistema: true };
+  const teste = st === 'trial' || a.teste;
+  return { situacao: teste ? 'teste' : 'vigente', fim, diasRestantes: Math.ceil((fimMs - agora) / DIA), prazoDoSistema: true };
+}
 function _chaveNome(produtoId, produtoNome, ofertaNome) {
   return [produtoId ? 'id:' + produtoId : 'nome:' + norm(produtoNome), norm(ofertaNome)].join('|');
 }
@@ -104,7 +185,8 @@ function definirRegrasAcesso(arquivo) {
   }
   _regras = porId.size ? { porId, porNome, atualizadoEm: (arquivo && arquivo.atualizadoEm) || null } : null;
   _grupos = _indiceGrupos(arquivo);
-  return { total: porId.size, grupos: _grupos.mapeados.size };
+  _tempos = _indiceTempos(arquivo);
+  return { total: porId.size, grupos: _grupos.mapeados.size, tempos: _tempos.size };
 }
 function regrasAcessoAtivas() { return !!_regras; }
 // Regra de fábrica (antes do arquivo de regras).
@@ -140,16 +222,16 @@ function assinaturaLiberaPainel(a, agora = Date.now(), regras) {
   if (!(a.ofertaNome || a.produtoNome || a.ofertaId)) return !!a.liberaPainel;
   const r = regraAcesso(a.produtoId, a.produtoNome, a.ofertaNome, a.ofertaId, regras === undefined ? _regras : regras);
   if (r === 'nao') return false;
-  if (r === 'prazo' && calcularSituacao(a, agora).situacao === 'vitalicio') return false;
+  if (r === 'prazo' && calcularSituacao(a, agora, regras && regras.tempos).situacao === 'vitalicio') return false;
   return true;
 }
 // Monta o índice de um arquivo de regras sem ativá-lo (para a prévia).
 function indiceRegras(arquivo) {
-  const salvo = _regras, salvoG = _grupos;
+  const salvo = _regras, salvoG = _grupos, salvoT = _tempos;
   definirRegrasAcesso(arquivo);
   const r = _regras;
-  if (r) r.grupos = _grupos; // a prévia também usa os grupos novos
-  _regras = salvo; _grupos = salvoG;
+  if (r) { r.grupos = _grupos; r.tempos = _tempos; } // a prévia também usa os grupos e tempos novos
+  _regras = salvo; _grupos = salvoG; _tempos = salvoT;
   return r;
 }
 function indiceGrupos(arquivo) { return _indiceGrupos(arquivo); }
@@ -193,7 +275,9 @@ const DIA = 24 * 60 * 60 * 1000;
 // - vigente/teste: fim = desativaEm (Hubla já sabe quando desliga) → próxima
 //   cobrança → hoje + créditos (1 crédito = 1 dia).
 // - encerrada: fim = inativação → cancelamento → última modificação.
-function calcularSituacao(a, agora = Date.now()) {
+function calcularSituacao(a, agora = Date.now(), tempos) {
+  const peloTempo = situacaoPeloTempo(a, agora, tempos || _tempos);
+  if (peloTempo) return peloTempo;
   const st = String(a.status || '').toLowerCase();
   const creditos = Number(a.creditos) || 0;
   // Créditos = dias pagos que restam (1 crédito = 1 dia), contados a partir da
@@ -1103,6 +1187,6 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
 
 module.exports = {
   criarHublaAssinaturas, nomeProprio, ofertaLiberaPainel, assinaturaLiberaPainel, produtoExcluidoNaHubla,
-  definirRegrasAcesso, regrasAcessoAtivas, gruposAcesso, indiceGrupos, regraPadraoAcesso, regraAcesso, indiceRegras, REGRAS_ACESSO: REGRAS, ofertaPainelExigePrazo, OFERTAS_PAINEL_OUTROS_PRODUTOS, produtoOfertaDoEvento, calcularSituacao, membroAtivo, outroAcessoPainel, origemVitalicio,
+  definirRegrasAcesso, regrasAcessoAtivas, temposAcesso, normalizarTempo, situacaoPeloTempo, TEMPOS_ACESSO: TEMPOS, gruposAcesso, indiceGrupos, regraPadraoAcesso, regraAcesso, indiceRegras, REGRAS_ACESSO: REGRAS, ofertaPainelExigePrazo, OFERTAS_PAINEL_OUTROS_PRODUTOS, produtoOfertaDoEvento, calcularSituacao, membroAtivo, outroAcessoPainel, origemVitalicio,
   camposDaAssinatura, mesclarRegistro, OFERTAS_PAINEL, PRODUTO_PAINEL_ID, ARQUIVO_HUBLA_ASSINATURAS: ARQUIVO,
 };

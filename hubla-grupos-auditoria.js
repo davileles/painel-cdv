@@ -46,21 +46,6 @@ function maisRecente(a, b) {
   if (!b) return a;
   return new Date(a) >= new Date(b) ? a : b;
 }
-// Escola do Viajante PAGA que a Hubla gravou como vitalícia (vendas até
-// ago/2024, antes de a oferta passar a 1 ano) vale 1 ano a partir da compra
-// (decisão do Davi, 13/11/2026). Só passa a valer nos grupos a partir de
-// 16/11/2026, depois do prazo dado aos alunos para renovar.
-const ESCOLA_UM_ANO_DESDE = Date.parse('2026-11-16T00:00:00-03:00');
-const ESCOLA_PAGA = /escola do viajante|clube \+ escola/;
-// Devolve o fim (ms) quando a assinatura é Escola paga vitalícia; senão null.
-function fimEscolaUmAno(a, situacao, agora) {
-  if (agora < ESCOLA_UM_ANO_DESDE || situacao !== 'vitalicio' || !a) return null;
-  if (a.tipo === 'free' || !(Number(a.faturasPagas) > 0 || a.ultimoPagamento)) return null;
-  const n = norm(a.ofertaNome);
-  if (!ESCOLA_PAGA.test(n) || /conteudo gravado/.test(n)) return null;
-  const ini = Date.parse(a.primeiraAtivacao || a.ativadaEm || a.ultimoPagamento || a.inicio || a.criadaEm || '');
-  return ini ? ini + 365 * DIA : null;
-}
 function grupoIgnorado(nome) { const n = norm(nome); return GRUPOS_IGNORADOS.some(re => re.test(n)); }
 
 // Registros por telefone: cada assinatura/acesso com produto, oferta, se está
@@ -68,7 +53,7 @@ function grupoIgnorado(nome) { const n = norm(nome); return GRUPOS_IGNORADOS.som
 // telefonesExtras (opcional): Map e-mail da Hubla → [telefones] dos Ajustes de
 // cadastro (gestor → Exceções): os registros desse e-mail contam também nesses
 // telefones (a pessoa trocou de número e a Hubla não sabe).
-function indicePorTelefone(hubla, agora, telefonesExtras) {
+function indicePorTelefone(hubla, agora, telefonesExtras, tempos) {
   const porChave = new Map();
   const extras = telefonesExtras instanceof Map ? telefonesExtras : new Map();
   const add0 = (k, r) => { if (!k) return; const l = porChave.get(k) || []; if (!l.includes(r)) l.push(r); porChave.set(k, l); };
@@ -77,20 +62,20 @@ function indicePorTelefone(hubla, agora, telefonesExtras) {
     const e = String(r.email || '').toLowerCase().trim();
     for (const t of (extras.get(e) || [])) { const k2 = chaveTelefone(t); if (k2 && k2 !== k) add0(k2, r); }
   };
-  const escolaVencida = new Map(); // produto|e-mail → fim (Escola paga convertida e já vencida)
+  // Produto|e-mail de quem tem assinatura PAGA com tempo de acesso do sistema:
+  // o acesso de comprador (buyer) da lista de membros repete essa compra com o
+  // prazo da Hubla, então não conta (vale o prazo do sistema — 13/11/2026).
+  const comTempo = new Set();
   for (const a of Object.values((hubla && hubla.assinaturas) || {})) {
-    const sit = calcularSituacao(a, agora).situacao;
-    let ativo = sit === 'vigente' || sit === 'teste' || sit === 'vitalicio';
-    const fimEscola = fimEscolaUmAno(a, sit, agora);
-    if (fimEscola) {
-      ativo = fimEscola >= agora;
-      if (!ativo && a.email) escolaVencida.set(String(a.produtoId || '') + '|' + String(a.email).toLowerCase().trim(), new Date(fimEscola).toISOString());
-    }
+    const cs = calcularSituacao(a, agora, tempos);
+    const sit = cs.situacao;
+    const ativo = sit === 'vigente' || sit === 'teste' || sit === 'vitalicio';
+    if (cs.prazoDoSistema && a.email) comTempo.add(String(a.produtoId || '') + '|' + String(a.email).toLowerCase().trim());
     // Como antes: só conta como "já teve" a assinatura cancelada/inativa (pendente
     // e desconhecida não dizem nada).
-    const conta = ativo || !!fimEscola || a.status === 'inactive' || a.status === 'canceled';
+    const conta = ativo || !!cs.prazoDoSistema || a.status === 'inactive' || a.status === 'canceled';
     let fim = null;
-    if (fimEscola && !ativo) fim = new Date(fimEscola).toISOString();
+    if (cs.prazoDoSistema && !ativo) fim = cs.fim;
     else if (!ativo) {
       const f = a.inativadaEm || a.canceladaEm || a.modificadaEm;
       if (f && new Date(f).getTime() <= agora) fim = f;
@@ -105,11 +90,9 @@ function indicePorTelefone(hubla, agora, telefonesExtras) {
   const ofAcesso = (hubla && hubla.ofertasAcesso) || {};
   for (const [pid, p] of Object.entries((hubla && hubla.acessosPorProduto) || {})) {
     for (const [email, m] of Object.entries(p.membros || {})) {
-      let ativo = membroAtivo(m, agora);
-      let fim = !ativo && m.removidoEm && new Date(m.removidoEm).getTime() <= agora ? m.removidoEm : null;
-      // O acesso vitalício que veio da compra da Escola convertida para 1 ano acaba junto.
-      const ev = m.vitalicio ? escolaVencida.get(pid + '|' + String(email).toLowerCase().trim()) : null;
-      if (ev) { ativo = false; fim = ev; }
+      if (m.tipo === 'buyer' && comTempo.has(pid + '|' + String(email).toLowerCase().trim())) continue;
+      const ativo = membroAtivo(m, agora);
+      const fim = !ativo && m.removidoEm && new Date(m.removidoEm).getTime() <= agora ? m.removidoEm : null;
       const oa = ofAcesso[pid + '|' + email] || null;
       add(chaveTelefone(m.telefone), { tipo: 'acesso', produtoId: pid, ofertaId: (oa && oa.ofertaId) || null, produto: p.nome,
         oferta: (oa && oa.ofertaNome) || undefined, nome: m.nome, email, ativo, fim, conta: true });
@@ -145,8 +128,8 @@ function situacaoNoGrupo(regs, jid, regras) {
   return { situacao: 'sem_cadastro' };
 }
 
-function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, telefonesExtras, agora = Date.now() }) {
-  const porChave = indicePorTelefone(hubla, agora, telefonesExtras);
+function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, telefonesExtras, tempos, agora = Date.now() }) {
+  const porChave = indicePorTelefone(hubla, agora, telefonesExtras, tempos);
   const regras = gruposRegras || null;
   const exc = excecoes instanceof Map ? excecoes
     : new Map([...(excecoes instanceof Set ? excecoes : [])].map(k => [k, null]));

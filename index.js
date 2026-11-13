@@ -5230,7 +5230,7 @@ function chavesExcecao(base, excecoes) {
   for (const p of Object.values((base && base.acessosPorProduto) || {})) for (const [e, m] of Object.entries(p.membros || {})) ver(e, m.telefone);
   return out;
 }
-async function montarAuditoriaGrupos({ forcar = false, gruposRegras } = {}) {
+async function montarAuditoriaGrupos({ forcar = false, gruposRegras, tempos } = {}) {
   const bruto = await coletarGruposCdv(forcar);
   const [{ data: hubla }, exc, { data: rem }] = await Promise.all([ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}), lerExcecoesPainel(),
     ghGetJson('grupos-remocao.json', null)]);
@@ -5240,7 +5240,7 @@ async function montarAuditoriaGrupos({ forcar = false, gruposRegras } = {}) {
   void rem;
   const excecoes = chavesExcecao(hubla, exc.excecoes);
   const aud = hublaAuditoria.auditar({ hubla, grupos: bruto.grupos, clientesConcierge: clientes, telefonesExtras: ajusteTelefones(exc.ajustes),
-    gruposRegras: gruposRegras || hublaAss.gruposAcesso(), excecoes });
+    gruposRegras: gruposRegras || hublaAss.gruposAcesso(), excecoes, tempos });
   aud.gruposLidosEm = new Date(bruto.em).toISOString();
   return aud;
 }
@@ -6021,7 +6021,7 @@ function _liberadosPorEmail(base, regras, agora) {
   const out = new Map();
   for (const a of Object.values((base && base.assinaturas) || {})) {
     if (!a || !a.email) continue;
-    const { situacao } = hublaAss.calcularSituacao(a, agora);
+    const { situacao } = hublaAss.calcularSituacao(a, agora, regras && regras.tempos);
     if (!_situacaoAtiva(situacao)) continue;
     if (!hublaAss.assinaturaLiberaPainel(a, agora, regras)) continue;
     const e = _emailNorm(a.email);
@@ -6049,6 +6049,10 @@ function _normalizarRegrasPedidas(corpo, ofertasBase, salvas) {
     grupos = gruposSemAposentados([...new Set(grupos.map(String).filter(j => /@g\.us$/.test(j)))]).sort();
     ofertas[id] = { regra: r, produtoId: o.produtoId, produtoNome: o.produtoNome, ofertaNome: o.ofertaNome };
     if (grupos.length) ofertas[id].grupos = grupos;
+    // Tempo de acesso (13/11/2026). Sem `tempo` no pedido, fica o salvo.
+    const tPedido = regra && typeof regra === 'object' && 'tempo' in regra ? regra.tempo : (salvas && salvas[id] && salvas[id].tempo);
+    const t = hublaAss.normalizarTempo(tPedido);
+    if (t) ofertas[id].tempo = t;
   }
   return ofertas;
 }
@@ -6070,6 +6074,21 @@ app.get('/hubla/regras-acesso', async (req, res) => {
       if (!a || !a.ofertaId || !ofertas[a.ofertaId]) continue;
       const c = cont[a.ofertaId] = cont[a.ofertaId] || { total: 0, ativas: new Set(), vitalicias: new Set(), vitConcedidas: new Set(), noPainel: new Set() };
       c.total++;
+      // Tempo que a Hubla deu às compras pagas desta oferta (sugestão no gestor).
+      if (a.tipo !== 'free' && (Number(a.faturasPagas) > 0 || a.ultimoPagamento)) {
+        const h = c.hubla = c.hubla || {};
+        let k;
+        if (a.tipo === 'recurring') k = 'ciclo:' + (Number(a.cicloMeses) || 0);
+        else {
+          const sh = hublaAss.calcularSituacao(a, agora, new Map());
+          if (sh.situacao === 'vitalicio') k = 'vitalicio';
+          else {
+            const b = Date.parse(a.ultimoPagamento || a.ativadaEm || a.inicio || ''), f = Date.parse(sh.fim || '');
+            k = (isNaN(b) || isNaN(f)) ? null : 'meses:' + Math.max(0, Math.round((f - b) / (30.44 * 864e5)));
+          }
+        }
+        if (k) h[k] = (h[k] || 0) + 1;
+      }
       const { situacao } = hublaAss.calcularSituacao(a, agora);
       if (!_situacaoAtiva(situacao) || !a.email) continue;
       const e = _emailNorm(a.email);
@@ -6088,6 +6107,8 @@ app.get('/hubla/regras-acesso', async (req, res) => {
         regraSalva: (salvas[o.ofertaId] && salvas[o.ofertaId].regra) || null,
         regra: hublaAss.regraAcesso(o.produtoId, o.produtoNome, o.ofertaNome, o.ofertaId),
         grupos: gruposSemAposentados((salvas[o.ofertaId] && salvas[o.ofertaId].grupos) || []),
+        tempo: (salvas[o.ofertaId] && hublaAss.normalizarTempo(salvas[o.ofertaId].tempo)) || null,
+        tempoHubla: c.hubla || {},
         assinaturas: c.total, pessoasAtivas: c.ativas.size, vitalicias: c.vitalicias.size, vitaliciasConcedidas: c.vitConcedidas.size, ativasNoPainel: c.noPainel.size,
       });
     });
@@ -6218,7 +6239,7 @@ async function _previaRegras(corpo) {
   if (_gruposBrutos) {
     try {
       const audAntes = await montarAuditoriaGrupos({});
-      const audDepois = await montarAuditoriaGrupos({ gruposRegras: hublaAss.indiceGrupos({ ofertas }) });
+      const audDepois = await montarAuditoriaGrupos({ gruposRegras: hublaAss.indiceGrupos({ ofertas }), tempos: novo ? novo.tempos : undefined });
       const porJid = new Map(audAntes.grupos.map(g => [g.jid, g]));
       grupos = audDepois.grupos.map(g => {
         const a = porJid.get(g.jid) || {};

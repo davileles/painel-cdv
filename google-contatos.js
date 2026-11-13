@@ -46,7 +46,6 @@ const SECUNDARIAS = new Set(['BAL', 'COM', 'DAP', 'TSE']);
 // Produtos que entram no nome mesmo sem dar grupo (decisão do Davi, 13/11/2026);
 // como complementos, só aparecem para quem não tem produto principal ativo.
 const SEM_GRUPO_CONTA = new Set(['DAP', 'TSE']);
-const PRAZO_FIXO_DIAS = { TSE: 365 };
 const SIGLAS_CONHECIDAS = ['BAL', 'CDV', 'CDVP', 'CIN', 'COM', 'DAP', 'EDV', 'TRC', 'TSE'];
 // Nunca dá nome, mesmo se alguém marcar grupo nela por engano.
 const NUNCA = /conteudo gravado/;
@@ -54,8 +53,6 @@ const NUNCA = /conteudo gravado/;
 // último produto de verdade. Experimental pago (ex.: R$ 597 com 1 ano) conta
 // normal como Premium (decisões do Davi, 13/11/2026).
 const TESTE = /experimental/;
-// Escola do Viajante comprada (não o conteúdo gravado, que já cai em NUNCA).
-const ESCOLA_PAGA = /escola do viajante|clube \+ escola/;
 
 function norm(s) {
   return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
@@ -104,11 +101,10 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, agora = Date.
     if (rec.gratuito && TESTE.test(norm(rec.ofertaNome))) return '';
     // Escola do Viajante vitalícia = conteúdo gravado, sem grupo; o mesmo vale para
     // qualquer oferta marcada "Só com prazo" nas Regras de acesso.
-    // Exceção: compra PAGA da Escola que a Hubla gravou como vitalícia (ofertas
-    // vendidas até ago/2024, antes de a oferta passar a 1 ano) vale 1 ano a partir
-    // da compra (rec.prazoFixoDias, decisão do Davi, 13/11/2026).
-    if (vitalicio && !rec.gratuito && ESCOLA_PAGA.test(norm(rec.ofertaNome))) rec.prazoFixoDias = 365;
-    else if (vitalicio && (/escola/.test(norm(rec.ofertaNome) + ' ' + norm(rec.produtoNome))
+    // (O prazo de compra paga — TSE 1 ano, Escola vendida como vitalícia até
+    // ago/2024 = 1 ano — vem do "tempo de acesso" da oferta nas Regras de acesso,
+    // aplicado por calcularSituacao desde 13/11/2026.)
+    if (vitalicio && (/escola/.test(norm(rec.ofertaNome) + ' ' + norm(rec.produtoNome))
       || (rec.ofertaId && ofertasRegra[rec.ofertaId] && ofertasRegra[rec.ofertaId].regra === 'prazo'))) return '';
     let daGrupo;
     if (rec.ofertaId) daGrupo = gruposDaOferta.has(rec.ofertaId);
@@ -176,22 +172,6 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, agora = Date.
     rec.inicio = x.criadoEm || x.atualizadoEm || null;
     rec.nome = x.nome; rec.email = x.email || ''; rec.telefone = x.telefone || '';
     regs.push(rec);
-  }
-
-  // Produtos que a Hubla grava como vitalícios (compra única, 10.000 dias), mas
-  // que na verdade duram um prazo fixo a partir da compra (decisão do Davi,
-  // 13/11/2026: Tudo Sobre Emissões = 1 ano; Escola do Viajante paga gravada
-  // como vitalícia = 1 ano).
-  for (let i = regs.length - 1; i >= 0; i--) {
-    const r = regs[i];
-    const dias = r.prazoFixoDias || PRAZO_FIXO_DIAS[r.sigla];
-    if (!dias || !r.vitalicio) continue;
-    const ini = ms(r.inicio);
-    if (!ini) { regs.splice(i, 1); continue; } // sem data de compra não dá para calcular
-    const fimMs = ini + dias * 86400000;
-    r.vitalicio = false;
-    r.fim = new Date(fimMs).toISOString();
-    r.ativo = fimMs >= agora;
   }
 
   // ── pessoas: mesma pessoa = mesmo e-mail ou mesmo telefone ──
