@@ -923835,7 +923835,20 @@
           "pts": 10,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-riachuelo"
+          "slug": "cupom-riachuelo",
+          "categorias": [
+            {
+              "categoria": "Feminino",
+              "pts": 10,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
         }
       },
       "links": {
@@ -926943,7 +926956,7 @@
           "dollar": false
         },
         "inter": {
-          "pts": 3,
+          "pts": 10,
           "dollar": false,
           "slug": "uber-1636"
         }
@@ -927959,7 +927972,7 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 2.5,
+          "pts": 2,
           "dollar": false,
           "ate": false,
           "slug": "cupom-oqvestir"
@@ -928100,7 +928113,7 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 2.5,
+          "pts": 2,
           "dollar": false,
           "ate": false,
           "slug": "cupom-shop2gether"
@@ -928504,7 +928517,7 @@
     "assaí": {
       "programs": {
         "inter": {
-          "pts": 3,
+          "pts": 5,
           "dollar": false,
           "slug": "assai-1389"
         }
