@@ -65,6 +65,8 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'grupos-remocao.json',
   // Grupos do Clube: qual grupo do WhatsApp é cada produto e os grupos aposentados: repo privado.
   'grupos-clube.json',
+  // Último relatório do Apps Script do Google Contatos (nomes e telefones de alunos): repo privado.
+  'contatos-sync.json',
 ]);
 // Arquivos que saíram do painel-cdv: na 1ª leitura sem cópia no repo de dados,
 // o proxy copia a versão do repo público para lá (uma vez por arquivo).
@@ -5024,6 +5026,64 @@ app.post('/hubla/acessos/ofertas', async (req, res) => {
     const r = await hublaAssinaturas.gravarOfertasAcesso(itens, 'importacao');
     res.json(Object.assign({ ok: true }, r));
   } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
+// ── Google Contatos (desde 13/11/2026, google-contatos.js) ──
+// Nome de cada aluno no padrão "<Nome> <SIGLA> <dd/mm/aa>", pela última
+// assinatura que dá acesso a grupos. Quem lê é o Apps Script da conta Google do
+// Davi (painel-cdv/google-contatos/Codigo.gs), com a chave de operador. X-CDV-Op.
+const googleContatos = require('./google-contatos');
+const CONTATOS_SYNC_PATH = 'contatos-sync.json';
+app.get('/hubla/contatos', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const [hubla, regras, exc] = await Promise.all([hublaAssinaturas.ler(), carregarRegrasAcesso(), lerExcecoesPainel()]);
+    let arquivoRegras = regras && regras.data;
+    if (!arquivoRegras) arquivoRegras = (await ghGetJson(PAINEL_REGRAS_PATH, null)).data;
+    const r = googleContatos.montarContatos({ hubla, arquivoRegras, excecoes: exc.proprias, ajustes: exc.ajustes });
+    res.json(Object.assign({ ok: true }, r));
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+// O script manda o resultado de cada rodada (ensaio ou de verdade); o gestor mostra.
+app.post('/hubla/contatos/relatorio', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const b = req.body || {};
+  const lista = (v, n) => (Array.isArray(v) ? v.slice(0, n) : []);
+  const rel = {
+    recebidoEm: new Date().toISOString(),
+    modo: b.modo === 'valendo' ? 'valendo' : 'ensaio',
+    inicio: b.inicio || null, fim: b.fim || null, completo: b.completo !== false,
+    totais: (b.totais && typeof b.totais === 'object') ? b.totais : {},
+    atualizar: lista(b.atualizar, 5000), criar: lista(b.criar, 5000), erros: lista(b.erros, 500),
+  };
+  try {
+    for (let t = 1; t <= 3; t++) {
+      try {
+        const { data, sha } = await ghGetJson(CONTATOS_SYNC_PATH, {});
+        const hist = (Array.isArray(data && data.historico) ? data.historico : []).slice(0, 29);
+        hist.unshift({ recebidoEm: rel.recebidoEm, modo: rel.modo, totais: rel.totais, erros: rel.erros.length });
+        await ghPutJson(CONTATOS_SYNC_PATH, { ultimo: rel, historico: hist }, sha, `contatos: relatório ${rel.modo}`);
+        break;
+      } catch (e) {
+        if (t < 3 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 500)); continue; }
+        throw e;
+      }
+    }
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+app.get('/hubla/contatos/relatorio', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const { data } = await ghGetJson(CONTATOS_SYNC_PATH, {});
+    res.json(Object.assign({ ok: true }, data || {}));
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
 });
 
 // Estado da integração e da última sincronização (sem dados pessoais). X-CDV-Op.

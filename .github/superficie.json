@@ -136,7 +136,9 @@
         "app.post('/hubla/grupos-remocao/excecao'",
         "async function cicloRemocaoGrupos(",
         "async function coletarGruposCdv(",
-        "app.post('/hubla/grupos-remocao/entrada'"
+        "app.post('/hubla/grupos-remocao/entrada'",
+        "app.get('/hubla/contatos'",
+        "app.post('/hubla/contatos/relatorio'"
       ]
     },
     "index.html": {
@@ -358,6 +360,12 @@
         "function auditar(",
         "const GRUPOS_IGNORADOS = [",
         "function candidatosRemocao("
+      ]
+    },
+    "google-contatos.js": {
+      "minLinhas": 150,
+      "obrigatorio": [
+        "function montarContatos("
       ]
     }
   }
