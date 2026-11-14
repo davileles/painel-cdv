@@ -1,5 +1,5 @@
 /**
- * Alunos CDV → Google Contatos  (painel-cdv/google-contatos/Codigo.gs, desde 13/11/2026)
+ * Alunos CDV → Google Contatos  (painel-cdv/google-contatos/Codigo.gs, desde 13/11/2026; telefone do exterior 14/11/2026)
  *
  * Roda na conta Google do Davi (script.google.com). Lê a lista de alunos do proxy
  * do CDV (GET /hubla/contatos) e deixa o nome de cada um como
@@ -81,7 +81,8 @@ function rodar_(modo) {
   let iguais = 0, conflitos = 0;
   dados.contatos.forEach(al => {
     const achados = {};
-    (al.chavesTelefone || []).forEach(k => (porTel[k] || []).forEach(p => { achados[p.resourceName] = p; }));
+    // Chave calculada aqui (não a do proxy), com a mesma regra usada na agenda.
+    (al.telefones || []).map(chaveTelefone_).filter(Boolean).forEach(k => (porTel[k] || []).forEach(p => { achados[p.resourceName] = p; }));
     (al.emails || []).forEach(e => (porEmail[e] || []).forEach(p => { achados[p.resourceName] = p; }));
     const lista = Object.keys(achados).map(k => achados[k]);
     if (!lista.length) {
@@ -193,15 +194,23 @@ function nomeDe_(p) {
   if (!n) return '';
   return n.displayName || [n.givenName, n.middleName, n.familyName].filter(Boolean).join(' ');
 }
-// Mesmo cruzamento do proxy: DDI 55 + DDD + 8 últimos dígitos.
+// Telefone → chave de cruzamento: DDI 55 + DDD + 8 últimos dígitos (Brasil) ou
+// os dígitos completos (exterior). Sem DDI, só é brasileiro se tiver cara de
+// brasileiro: 11 dígitos com o 9 do celular depois do DDD, ou fixo de 10 dígitos.
+// Desde 14/11/2026: antes todo número de 10/11 dígitos virava +55, e um celular
+// do Canadá (+1 647 936 9744, 11 dígitos) foi criado como +55 16 47936-9744.
+function brasileiroSemDdi_(d) {
+  return (d.length === 11 && d.charAt(2) === '9') || (d.length === 10 && /[2-8]/.test(d.charAt(2)));
+}
 function chaveTelefone_(t) {
-  const d = String(t || '').replace(/\D/g, '');
+  const s = String(t || '').trim();
+  const d = s.replace(/\D/g, '');
   if (!d) return null;
   if (d.indexOf('55') === 0 && (d.length === 12 || d.length === 13)) return d.slice(0, 4) + d.slice(-8);
-  if (d.length === 10 || d.length === 11) return '55' + d.slice(0, 2) + d.slice(-8);
+  if (s.charAt(0) !== '+' && brasileiroSemDdi_(d)) return '55' + d.slice(0, 2) + d.slice(-8);
   return d;
 }
 function comDdi_(t) {
   const d = String(t || '').replace(/\D/g, '');
-  return (d.length === 10 || d.length === 11) ? '55' + d : d;
+  return brasileiroSemDdi_(d) ? '55' + d : d;
 }
