@@ -1019,6 +1019,11 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 
 <div id="tab-comparador" class="tab-panel" style="display:none">
 
+<div class="cmp-faixa-alerta" id="cmp-faixa-alerta">
+  <div class="cmp-faixa-txt"><b>🔔 Alertas no celular</b><span id="cmp-faixa-sub">Avisamos quando um parceiro chegar na pontuação ou no cashback que você quer.</span></div>
+  <button type="button" class="cmp-faixa-btn" id="cmp-faixa-btn" onclick="cmpFaixaAbrir()">Criar alerta</button>
+</div>
+
 <div class="controls">
   <div style="position:relative;flex:1;min-width:180px;max-width:340px" id="compras-search-wrap"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="search" placeholder="Buscar parceiro ou categoria…" oninput="render()" style="width:100%;padding-left:34px"></div>
   <div style="position:relative;flex:1;min-width:180px;max-width:340px;display:none" id="transf-search-wrap"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="transf-search" placeholder="Buscar destino…" oninput="renderTransferencias()" style="width:100%;padding-left:34px"></div>
@@ -1027,7 +1032,6 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   <button id="comp-toggle-transferencias" class="comp-toggle-btn" onclick="setComparadorView('transferencias')">🔁 Transferências</button>
   <button class="fbtn-fire" id="btn-acima-media" onclick="toggleAcimaMedia()">🔥 Acima da média</button>
   <button class="fbtn-fire" id="btn-transf-ativas" onclick="toggleTransfSoAtivas()" style="display:none">🔥 Só ativas agora</button>
-  <button class="alm-abrir" id="btn-transf-alertas" type="button" onclick="almAbrir('transferencia')" style="display:none">🔔 Alertas de bônus</button>
   <select class="srt" id="sort" onchange="render()">
     <option value="pts_desc">Maior pontuação</option>
     <option value="pts_asc">Menor pontuação</option>
@@ -5204,6 +5208,8 @@ function carregarHistoricoTransferencias(){
   return historicoTransferenciasPromise;
 }
 
+let cmpFaixaVista = 'compras';
+function cmpFaixaAbrir(){ almAbrir(cmpFaixaVista==='compras' ? 'compra' : 'transferencia'); }
 function setComparadorView(view){
   const btnCompras = document.getElementById('comp-toggle-compras');
   const btnTransf = document.getElementById('comp-toggle-transferencias');
@@ -5221,8 +5227,11 @@ function setComparadorView(view){
   viewTransf.style.display = isCompras ? 'none' : '';
   acaoCompras.style.display = isCompras ? '' : 'none';
   acaoTransf.style.display = isCompras ? 'none' : '';
-  const alertaTransf = document.getElementById('btn-transf-alertas');
-  if (alertaTransf) alertaTransf.style.display = isCompras ? 'none' : '';
+  cmpFaixaVista = isCompras ? 'compras' : 'transferencias';
+  const faixaSub = document.getElementById('cmp-faixa-sub');
+  if (faixaSub) faixaSub.textContent = isCompras
+    ? 'Avisamos quando um parceiro chegar na pontuação ou no cashback que você quer.'
+    : 'Avisamos quando sair transferência bonificada com o bônus que você quer.';
   buscaCompras.style.display = isCompras ? '' : 'none';
   buscaTransf.style.display = isCompras ? 'none' : '';
   sortEl.style.display = isCompras ? '' : 'none';
@@ -12268,7 +12277,7 @@ function bvCopiarTudo(btn) {
     <div class="modal-rows" id="modal-rows"></div>
     <div style="display:flex;gap:8px;margin-top:14px">
     <button class="modal-url" id="modal-hist-btn" onclick="toggleHistorico()" style="flex:1;margin-top:0">📈 Ver histórico</button>
-    <button class="modal-url" onclick="toggleAlerta()" style="flex:1;margin-top:0;border-color:rgba(52,211,153,.4);color:#34d399">🔔 Criar alerta</button>
+    <button class="modal-url" onclick="almAbrirCompra(currentModalPartner)" style="flex:1;margin-top:0;border-color:rgba(52,211,153,.4);color:#34d399">🔔 Criar alerta</button>
   </div>
   <div id="modal-alerta-form" class="modal-alert-form" style="display:none">
     <label>E-mail</label>
@@ -12349,6 +12358,13 @@ function bvCopiarTudo(btn) {
   .alm-sug button:last-child{border-bottom:none}
   .alm-sug button small{color:var(--muted);font-weight:600;margin-left:6px}
   .alm-tipo{display:flex;gap:6px;margin-top:10px}
+  .alm-campo select{width:100%}
+  .alm-atual{font-size:12px;color:var(--muted);margin-top:6px;min-height:16px}
+  .alm-atual b{color:var(--text)}
+  .cmp-faixa-alerta{display:flex;align-items:center;gap:12px;justify-content:space-between;background:var(--surface);border:1px solid var(--border-ctrl);border-left:3px solid var(--cdv-coral);border-radius:12px;padding:12px 14px;margin:0 0 14px}
+  .cmp-faixa-txt{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:12.5px;color:var(--muted);line-height:1.35}
+  .cmp-faixa-txt b{font-size:13.5px;color:var(--text);font-weight:800}
+  .cmp-faixa-btn{flex-shrink:0;background:var(--cdv-coral);color:#fff;border:none;border-radius:10px;padding:10px 14px;font:800 13px 'Montserrat',sans-serif;cursor:pointer;white-space:nowrap}
   .alm-tipo .alm-chip{flex:1;text-align:center}
 </style>
 <script>
@@ -12373,12 +12389,23 @@ async function almListar(){
     return j;
   } catch(e) { return { passagens:[], transferencias:[], erro:true }; }
 }
+const ALM_TITULOS = { passagem:'Alertas de passagem', transferencia:'Alertas de transferência bonificada', compra:'Alertas de compra bonificada' };
+function almTitulo(t){ return ALM_TITULOS[t] || 'Alertas'; }
+// Card do parceiro → janela de alertas de compra já com o parceiro escolhido.
+let almPrefill = null;
+function almAbrirCompra(parceiro){
+  almPrefill = parceiro ? { parceiro } : null;
+  if (typeof closeModal==='function') closeModal();
+  const ov = document.getElementById('alm-overlay');
+  if (ov.classList.contains('open')) { almSeq++; document.getElementById('alm-conteudo').innerHTML=''; }
+  almAbrir('compra');
+}
 async function almAbrir(tipo){
   const ov = document.getElementById('alm-overlay');
   if (ov.classList.contains('open') && almTipo===tipo && document.getElementById('alm-conteudo').childElementCount) return;
   const seq = ++almSeq;
   almTipo = tipo; almProgSel = new Set(); almIdaVolta = false;
-  document.getElementById('alm-conteudo').innerHTML = '<div class="alm-titulo">'+(tipo==='passagem'?'Alertas de passagem':'Alertas de transferência bonificada')+'</div><div class="status-box" style="padding:30px 0"><div class="spinner"></div></div>';
+  document.getElementById('alm-conteudo').innerHTML = '<div class="alm-titulo">'+almTitulo(tipo)+'</div><div class="status-box" style="padding:30px 0"><div class="spinner"></div></div>';
   ov.classList.add('open');
   const pLista = almListar();
   if (tipo==='transferencia' && typeof carregarHistoricoTransferencias==='function') { try { await carregarHistoricoTransferencias(); } catch(e){} }
@@ -12402,11 +12429,11 @@ async function almAtualizarLista(){
 function almListaHtml(){
   const d = almDados || {};
   if (d.carregando) return '<div class="alm-vazio">Carregando seus alertas…</div>';
-  const ehPass = almTipo==='passagem';
-  const meus = (ehPass ? d.passagens : d.transferencias) || [];
+  const meus = (almTipo==='passagem' ? d.passagens : almTipo==='compra' ? d.compras : d.transferencias) || [];
+  const fn = almTipo==='passagem' ? almListaPassagem : almTipo==='compra' ? almListaCompra : almListaTransf;
   let h = '';
   if (d.erro) h += '<div class="alm-vazio" style="color:#f87171">Não foi possível carregar seus alertas agora.</div>';
-  h += meus.length ? meus.map(ehPass?almListaPassagem:almListaTransf).join('') : '<div class="alm-vazio">Nenhum alerta ainda.</div>';
+  h += meus.length ? meus.map(fn).join('') : '<div class="alm-vazio">Nenhum alerta ainda.</div>';
   return h;
 }
 function almRenderLista(){
@@ -12432,16 +12459,25 @@ function almListaPassagem(a){
   if (a.idaVolta&&(a.voltaDe||a.voltaAte)) det.push('🛬 '+(almData(a.voltaDe)||'…')+' a '+(almData(a.voltaAte)||'…'));
   return '<div class="alm-item"><div class="alm-item-txt"><div class="alm-item-rota">'+almEsc(a.origem)+' → '+almEsc(a.destino)+'</div><div class="alm-item-det">'+almEsc(det.join(' · '))+(a.totalAvisos?' · '+a.totalAvisos+' aviso(s)':'')+'</div></div><button class="alm-del" type="button" title="Apagar" onclick="almExcluir(\''+a.id+'\')">🗑</button></div>';
 }
+// Programas do Comparador: pontos (pts/R$) ou cashback (%).
+function almProg(id){ return (typeof PROGRAMS!=='undefined' ? PROGRAMS : []).find(p=>p.id===id); }
+function almUnidade(id){ const p=almProg(id); return p&&p.cashback ? '% de cashback' : 'pts/R$'; }
+function almListaCompra(a){
+  const p = almProg(a.programa);
+  return '<div class="alm-item"><div class="alm-item-txt"><div class="alm-item-rota">'+almEsc(a.parceiro)+' · '+almEsc(p?p.name:a.programa)+'</div><div class="alm-item-det">a partir de '+almEsc(String(a.minPts).replace('.',','))+' '+almUnidade(a.programa)+' · avisa uma vez</div></div><button class="alm-del" type="button" title="Apagar" onclick="almExcluir(\''+a.id+'\')">🗑</button></div>';
+}
 function almListaTransf(a){
   return '<div class="alm-item"><div class="alm-item-txt"><div class="alm-item-rota">'+almEsc(a.origem||'Qualquer origem')+' → '+almEsc(a.destino)+'</div><div class="alm-item-det">bônus a partir de '+a.bonusMin+'%'+(a.totalAvisos?' · '+a.totalAvisos+' aviso(s)':'')+'</div></div><button class="alm-del" type="button" title="Apagar" onclick="almExcluir(\''+a.id+'\')">🗑</button></div>';
 }
 function almOpcoes(lista){ return [...new Set(lista.filter(Boolean).map(s=>String(s).trim()))].sort((a,b)=>a.localeCompare(b,'pt-BR')).map(v=>'<option value="'+almEsc(v)+'">').join(''); }
 function almRender(){
   const ehPass = almTipo==='passagem';
-  let h = '<div class="alm-titulo">'+(ehPass?'Alertas de passagem':'Alertas de transferência bonificada')+'</div>';
+  let h = '<div class="alm-titulo">'+almTitulo(almTipo)+'</div>';
   h += '<div class="alm-sub">'+(ehPass
     ? 'Avisamos quando aparecer uma emissão que bata com o que você pediu.'
-    : 'Avisamos quando sair uma transferência com o bônus que você quer.')+'</div>';
+    : almTipo==='compra'
+      ? 'Avisamos quando o parceiro chegar na pontuação (ou no cashback) que você quer. Cada alerta avisa uma vez.'
+      : 'Avisamos quando sair uma transferência com o bônus que você quer.')+'</div>';
   h += '<div class="alm-secao">Seus alertas</div>';
   h += '<div id="alm-lista">'+almListaHtml()+'</div>';
   h += '<div class="alm-secao">Novo alerta</div>';
@@ -12464,19 +12500,34 @@ function almRender(){
       + '<div class="alm-campo alm-volta" style="display:none"><label>🛬 Volta até</label><input id="alm-volta-ate" type="date" data-data-de="alm-volta-de"></div>'
       + '</div>'
       + '<div class="alm-nota" style="text-align:left;margin-top:8px">Pontos por trecho e por pessoa, como nas emissões. Em "Ida e volta" só avisamos emissões que trazem datas de volta pelo mesmo valor.</div>';
+  } else if (almTipo==='compra') {
+    const lista = (typeof partners!=='undefined' && Array.isArray(partners)) ? partners : [];
+    if (!lista.length) h += '<div class="alm-vazio">Os parceiros ainda estão carregando. Feche e abra de novo em alguns segundos.</div>';
+    h += '<div class="alm-campo alm-auto"><label>Parceiro</label><input id="alm-c-parceiro" placeholder="Ex.: Amazon" autocomplete="off" autocapitalize="words" oninput="almParceiroSugerir(this)" onfocus="almParceiroSugerir(this)" onblur="almFecharSug(this);setTimeout(almParceiroEscolhido,320)" onchange="almParceiroEscolhido()"><div class="alm-sug"></div></div>'
+      + '<div class="alm-grade" style="margin-top:10px">'
+      + '<div class="alm-campo"><label>Programa</label><select id="alm-c-programa" onchange="almCompraAtual()" disabled><option value="">Escolha o parceiro</option></select></div>'
+      + '<div class="alm-campo"><label id="alm-c-meta-lbl">Avisar a partir de (pts/R$)</label><input id="alm-c-meta" type="number" inputmode="decimal" min="0.1" step="0.5" placeholder="Ex.: 10"></div>'
+      + '</div><div class="alm-atual" id="alm-c-atual"></div>';
   } else {
+    // Listas (não texto livre): o nome tem que bater com o das campanhas.
     const it = (typeof historicoTransferencias!=='undefined' && historicoTransferencias && historicoTransferencias.items) || [];
-    h += '<datalist id="alm-origens">'+almOpcoes(it.map(x=>x.origem).filter(o=>o&&o!=='Todos'&&o!=='Bancos selecionados'))+'</datalist>';
-    h += '<datalist id="alm-destinos">'+almOpcoes(it.map(x=>x.destino))+'</datalist>';
+    const ord = l => [...new Set(l.filter(Boolean).map(s=>String(s).trim()))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    const origens = ord(it.map(x=>x.origem).filter(o=>o!=='Todos'&&o!=='Bancos selecionados'));
+    const destinos = ord(it.map(x=>x.destino));
     h += '<div class="alm-grade">'
-      + '<div class="alm-campo"><label>De (vazio = qualquer)</label><input id="alm-t-origem" list="alm-origens" placeholder="Ex.: Livelo" autocomplete="off"></div>'
-      + '<div class="alm-campo"><label>Para</label><input id="alm-t-destino" list="alm-destinos" placeholder="Ex.: Smiles" autocomplete="off"></div>'
+      + '<div class="alm-campo"><label>De</label><select id="alm-t-origem"><option value="">Qualquer origem</option>'+origens.map(o=>'<option value="'+almEsc(o)+'">'+almEsc(o)+'</option>').join('')+'</select></div>'
+      + '<div class="alm-campo"><label>Para</label><select id="alm-t-destino"><option value="">Escolha o programa</option>'+destinos.map(o=>'<option value="'+almEsc(o)+'">'+almEsc(o)+'</option>').join('')+'</select></div>'
       + '<div class="alm-campo"><label>Bônus mínimo (%)</label><input id="alm-t-bonus" type="number" inputmode="numeric" min="1" max="500" placeholder="Ex.: 80"></div>'
       + '</div>';
   }
   h += '<button class="alm-salvar" id="alm-salvar" type="button" onclick="almSalvar()">🔔 Criar alerta</button><div class="alm-fb" id="alm-fb"></div>';
   h += '<div class="alm-nota" id="alm-nota">'+almNotaHtml()+'</div>';
   document.getElementById('alm-conteudo').innerHTML = h;
+  if (almTipo==='compra' && almPrefill && almPrefill.parceiro) {
+    const inp = document.getElementById('alm-c-parceiro');
+    if (inp) { inp.value = almPrefill.parceiro; almParceiroEscolhido(); }
+  }
+  almPrefill = null;
 }
 function almChave(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
 function almSetIdaVolta(sim){
@@ -12533,6 +12584,49 @@ function cdvCidadeSugerir(inp, op){
   });
   box.classList.add('on');
 }
+function almParceiroAchar(nome){
+  const k = almChave(nome);
+  return (typeof partners!=='undefined' ? partners : []).find(p=>almChave(p.name)===k) || null;
+}
+function almParceiroSugerir(inp){
+  const box=inp.parentElement.querySelector('.alm-sug'); if(!box) return;
+  const q=almChave(inp.value);
+  const base=(typeof partners!=='undefined' ? partners : []).map(p=>({n:p.name,k:almChave(p.name)}));
+  const comeca=base.filter(c=>c.k.startsWith(q)), contem=q?base.filter(c=>!c.k.startsWith(q)&&c.k.includes(q)):[];
+  const l=(q?comeca.concat(contem):[]).slice(0,8);
+  if(!l.length || (l.length===1 && l[0].k===q)){ box.classList.remove('on'); box.innerHTML=''; return; }
+  box.innerHTML=l.map(c=>'<button type="button" data-v="'+almEsc(c.n)+'">'+almEsc(c.n)+'</button>').join('');
+  box.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('mousedown',ev=>ev.preventDefault());
+    b.addEventListener('click',()=>{ inp.value=b.dataset.v; box.classList.remove('on'); almParceiroEscolhido(); });
+  });
+  box.classList.add('on');
+}
+// Parceiro escolhido → lista os programas em que ele aparece (ordem alfabética).
+function almParceiroEscolhido(){
+  const inp=document.getElementById('alm-c-parceiro'), sel=document.getElementById('alm-c-programa');
+  if(!inp||!sel) return;
+  const p=almParceiroAchar(inp.value);
+  const antes=sel.value;
+  if(!p){ sel.innerHTML='<option value="">Escolha o parceiro</option>'; sel.disabled=true; almCompraAtual(); return; }
+  inp.value=p.name;
+  const progs=Object.keys(p.programs||{}).map(id=>({id, nome:(almProg(id)||{}).name||id})).sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR'));
+  sel.innerHTML=progs.map(x=>'<option value="'+almEsc(x.id)+'">'+almEsc(x.nome)+'</option>').join('');
+  sel.disabled=false;
+  if(antes && progs.some(x=>x.id===antes)) sel.value=antes;
+  else if(p.bestProg && progs.some(x=>x.id===p.bestProg)) sel.value=p.bestProg;
+  almCompraAtual();
+}
+function almCompraAtual(){
+  const out=document.getElementById('alm-c-atual'), lbl=document.getElementById('alm-c-meta-lbl');
+  const p=almParceiroAchar((document.getElementById('alm-c-parceiro')||{}).value||'');
+  const prog=(document.getElementById('alm-c-programa')||{}).value||'';
+  if(lbl) lbl.textContent='Avisar a partir de ('+(prog&&almProg(prog)&&almProg(prog).cashback?'% de cashback':'pts/R$')+')';
+  if(!out) return;
+  const v=p&&prog&&p.programs?p.programs[prog]:null;
+  const pts=v&&typeof v==='object'?v.pts:v;
+  out.innerHTML = pts ? 'Hoje: <b>'+almEsc(String(pts).replace('.',','))+' '+almUnidade(prog)+'</b>' : '';
+}
 function almFecharSug(inp){ setTimeout(()=>{ const box=inp.parentElement.querySelector('.alm-sug'); if(box) box.classList.remove('on'); },300); }
 function almToggleProg(b){ const p=b.dataset.prog; if(almProgSel.has(p)){almProgSel.delete(p);b.classList.remove('on');}else{almProgSel.add(p);b.classList.add('on');} }
 async function almSalvar(){
@@ -12542,6 +12636,12 @@ async function almSalvar(){
   if (almTipo==='passagem') {
     alerta={ origem:v('alm-origem').trim(), destino:v('alm-destino').trim(), programas:[...almProgSel], cabine:v('alm-cabine'), maxPontos:Number(v('alm-max'))||0, idaVolta:almIdaVolta, idaDe:v('alm-ida-de'), idaAte:v('alm-ida-ate'), voltaDe:almIdaVolta?v('alm-volta-de'):'', voltaAte:almIdaVolta?v('alm-volta-ate'):'' };
     if(!alerta.origem||!alerta.destino){ fb.style.color='#f87171'; fb.textContent='Informe origem e destino.'; return; }
+  } else if (almTipo==='compra') {
+    const p=almParceiroAchar(v('alm-c-parceiro'));
+    alerta={ parceiro:p?p.name:'', programa:v('alm-c-programa'), minPts:Number(String(v('alm-c-meta')).replace(',','.'))||0 };
+    if(!alerta.parceiro){ fb.style.color='#f87171'; fb.textContent='Escolha um parceiro da lista.'; return; }
+    if(!alerta.programa){ fb.style.color='#f87171'; fb.textContent='Escolha o programa.'; return; }
+    if(!(alerta.minPts>0)){ fb.style.color='#f87171'; fb.textContent='Informe a partir de quanto avisar.'; return; }
   } else {
     alerta={ origem:v('alm-t-origem').trim(), destino:v('alm-t-destino').trim(), bonusMin:Number(v('alm-t-bonus'))||0 };
     if(!alerta.destino||!alerta.bonusMin){ fb.style.color='#f87171'; fb.textContent='Informe o programa de destino e o bônus mínimo.'; return; }
@@ -12557,7 +12657,9 @@ async function almSalvar(){
     if(fb2){
       fb2.style.color='#34d399';
       const n=j.encontrados||0;
-      fb2.textContent = !n ? '✓ Alerta criado. Avisamos quando aparecer.'
+      const jaBate = almTipo==='compra' && (()=>{ const p=almParceiroAchar(alerta.parceiro); const x=p&&p.programs?p.programs[alerta.programa]:null; const pts=x&&typeof x==='object'?x.pts:x; return pts && pts>=alerta.minPts; })();
+      fb2.textContent = jaBate ? '✓ Alerta criado. O parceiro já está nessa pontuação: o aviso chega na próxima atualização (até 1 h).'
+        : !n ? '✓ Alerta criado. Avisamos quando aparecer.'
         : almTipo==='passagem'
           ? '✓ Alerta criado. Já '+(n===1?'tem 1 emissão recente que bate':'tem '+n+' emissões recentes que batem')+' — enviamos o aviso.'
           : '✓ Alerta criado. Já tem campanha no ar com esse bônus — enviamos o aviso.';

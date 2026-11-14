@@ -67,10 +67,13 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'grupos-clube.json',
   // Último relatório do Apps Script do Google Contatos (nomes e telefones de alunos): repo privado.
   'contatos-sync.json',
+  // Alertas de compra bonificada dos membros (e-mail + parceiro + meta): repo privado
+  // desde 14/11/2026. O coletar.js lê e consome por /alertas-compra (membro-app.js).
+  'alertas.json',
 ]);
 // Arquivos que saíram do painel-cdv: na 1ª leitura sem cópia no repo de dados,
 // o proxy copia a versão do repo público para lá (uma vez por arquivo).
-const MIGRAR_DO_PUBLICO = new Set(['milhas.json']);
+const MIGRAR_DO_PUBLICO = new Set(['milhas.json', 'alertas.json']);
 const _migracoesEmCurso = new Map();
 // Migra já no boot, sem esperar o primeiro membro abrir a Gestão de Milhas.
 setTimeout(() => {
@@ -83,11 +86,9 @@ setTimeout(() => {
 // dado pessoal (são conteúdo do painel). 'milhas.json' TEM (Gestão de Milhas
 // por e-mail) e foi migrado em 13/10/2026.
 //
-// PENDENTE: 'alertas.json' contém e-mail de membro. Não migrado porque é lido
-// e reescrito por coletar.js via checkout local (git add no coletar-historico.yml).
-// Para migrar: trocar os fs.read/writeFileSync de alertas.json no coletar.js por
-// chamadas à Contents API do repo de dados, usando um secret com Contents:write,
-// e remover o arquivo do 'git add' do workflow.
+// 'alertas.json' (e-mail de membro) migrado em 14/11/2026: o coletar.js deixou
+// de ler o arquivo do checkout e passou a usar GET /alertas-compra e
+// POST /alertas-compra/consumir (X-CDV-Op), em membro-app.js.
 
 // Caminho do arquivo dentro do repo onde ele mora (ver repoDoArquivo).
 function caminhoNoRepo(filePath) {
@@ -2451,43 +2452,26 @@ app.post('/alerta', async (req, res) => {
     return res.status(500).json({ ok: false, erro: 'GITHUB_TOKEN não configurado no servidor' });
   }
 
+  // alertas.json mora no repo privado de dados (ARQUIVOS_SENSIVEIS). SHA fresco
+  // a cada tentativa: o coletar.js consome alertas pelo proxy ao mesmo tempo.
   try {
-    const apiBase = `https://api.github.com/repos/${repoDoArquivo('alertas.json')}/contents/${caminhoNoRepo('alertas.json')}`;
-    const headers = {
-      'Authorization': `Bearer ${GITHUB_TOKEN}`,
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json'
-    };
-
-    const getRes = await fetch(apiBase, { compress: false, headers });
-    const getData = await getRes.json();
-    const sha = getData.sha;
-    const alertas = JSON.parse(Buffer.from(getData.content, 'base64').toString('utf8'));
-
-    const idx = alertas.findIndex(a => a.email === email && a.parceiro === parceiro && a.programa === programa);
-    if (idx >= 0) {
-      alertas[idx].minPts = minPts;
-      alertas[idx].atualizadoEm = new Date().toISOString();
-    } else {
-      alertas.push({ email, parceiro, programa, minPts, criadoEm: new Date().toISOString() });
-    }
-
-    const putRes = await fetch(apiBase, {
-      compress: false,
-      method: 'PUT',
-      headers,
-      body: JSON.stringify({
-        message: `chore: alerta ${email} → ${parceiro} (${programa} ≥ ${minPts} pts)`,
-        content: Buffer.from(JSON.stringify(alertas, null, 2)).toString('base64'),
-        sha
-      })
-    });
-
-    if (putRes.ok) {
-      res.json({ ok: true });
-    } else {
-      const err = await putRes.json();
-      res.status(500).json({ ok: false, erro: err.message || 'Falha ao salvar no GitHub' });
+    for (let t = 0; t < 4; t++) {
+      const atual = await ghGetJson('alertas.json', []);
+      const alertas = Array.isArray(atual.data) ? atual.data : [];
+      const idx = alertas.findIndex(a => a.email === email && a.parceiro === parceiro && a.programa === programa);
+      if (idx >= 0) {
+        alertas[idx].minPts = minPts;
+        alertas[idx].atualizadoEm = new Date().toISOString();
+      } else {
+        alertas.push({ email, parceiro, programa, minPts, criadoEm: new Date().toISOString() });
+      }
+      try {
+        await ghPutJson('alertas.json', alertas, atual.sha, `chore: alerta de compra (${programa} ≥ ${minPts} pts)`);
+        return res.json({ ok: true });
+      } catch (e) {
+        if (t === 3) throw e;
+        await new Promise(ok => setTimeout(ok, 700 * (t + 1)));
+      }
     }
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });

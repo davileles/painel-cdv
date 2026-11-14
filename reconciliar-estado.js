@@ -52,7 +52,6 @@ const UNIR_LISTA_IDS = ['ofertas-processados.json'];
 // Arquivos de dono único (só os coletores escrevem): a versão do job vence.
 const SOBRESCREVER = [
   'historico.json',
-  'alertas.json',
   'variacoes-notificadas.json',
   'meliuz-lojas.json',
   'topcashback-lojas.json',

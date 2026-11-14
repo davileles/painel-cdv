@@ -24,6 +24,11 @@ const { enviarPush, pushConfigurado } = require('./push.js');
 
 const DISPOSITIVOS_PATH = 'dispositivos.json';
 const ALERTAS_PATH = 'alertas-membros.json';
+// Alertas de compra bonificada (pts/R$ ou % de cashback por parceiro). Formato
+// antigo, lido pelo coletar.js: [{ id?, email, parceiro, programa, minPts, criadoEm }].
+// Mora no repo PRIVADO de dados (ARQUIVOS_SENSIVEIS no index.js); o coletar.js
+// lê e consome por /alertas-compra (X-CDV-Op). Cada alerta dispara uma vez e sai.
+const COMPRAS_PATH = 'alertas.json';
 const CHAVE_TTL_MS = 180 * 24 * 60 * 60 * 1000;
 const MAX_ALERTAS_POR_TIPO = 20;
 const MAX_CELULARES = 10;
@@ -320,17 +325,86 @@ module.exports = function montarMembroApp(app, d) {
     };
   }
 
+  // ── Alertas de compra bonificada ──────────────────────────────────────────
+  // Alerta antigo (sem id) ganha id estável pela chave parceiro|programa.
+  function idCompra(x) {
+    return x.id || 'cp-' + hash(String(x.parceiro || '').toLowerCase().trim() + '|' + String(x.programa || '')).slice(0, 10);
+  }
+  async function salvarCompra(req, res, email, a) {
+    const parceiro = String(a.parceiro || '').trim().slice(0, 80);
+    const programa = String(a.programa || '').trim().toLowerCase().slice(0, 30);
+    const minPts = Math.round((Number(a.minPts) || 0) * 10) / 10;
+    if (!parceiro || !programa) return res.status(400).json({ ok: false, erro: 'Escolha o parceiro e o programa.' });
+    if (!(minPts > 0) || minPts > 1000) return res.status(400).json({ ok: false, erro: 'Informe a meta de pontuação.' });
+    try {
+      let idFinal = '', limite = false;
+      await mutar(COMPRAS_PATH, [], (lista) => {
+        const k = parceiro.toLowerCase();
+        const existente = lista.find((x) => String(x.email || '').toLowerCase() === email && String(x.parceiro || '').toLowerCase().trim() === k && x.programa === programa);
+        if (existente) {
+          existente.minPts = minPts; existente.atualizadoEm = new Date().toISOString();
+          if (!existente.id) existente.id = idCompra(existente);
+          idFinal = existente.id; return;
+        }
+        if (lista.filter((x) => String(x.email || '').toLowerCase() === email).length >= MAX_ALERTAS_POR_TIPO) { limite = true; return false; }
+        idFinal = novoId('cp');
+        lista.push({ id: idFinal, email, parceiro, programa, minPts, criadoEm: new Date().toISOString() });
+      }, `chore: alerta de compra de membro (${programa} ≥ ${minPts})`);
+      if (limite) return res.json({ ok: false, erro: `Limite de ${MAX_ALERTAS_POR_TIPO} alertas deste tipo. Apague algum para criar outro.` });
+      res.json({ ok: true, id: idFinal, encontrados: 0 });
+    } catch (e) {
+      console.error('[alertas/salvar compra]', e.message);
+      res.status(500).json({ ok: false, erro: 'Não foi possível salvar o alerta agora.' });
+    }
+  }
+  // coletar.js (Actions): lê todos e consome os que dispararam.
+  app.get('/alertas-compra', async (req, res) => {
+    if (!opAutorizado(req, res)) return;
+    try {
+      const { data } = await ghGetJson(COMPRAS_PATH, []);
+      res.json({ ok: true, alertas: Array.isArray(data) ? data : [] });
+    } catch (e) {
+      res.status(500).json({ ok: false, erro: e.message });
+    }
+  });
+  app.post('/alertas-compra/consumir', async (req, res) => {
+    if (!opAutorizado(req, res)) return;
+    const itens = Array.isArray((req.body || {}).itens) ? req.body.itens : [];
+    const chave = (x) => String(x.email || '').toLowerCase() + '|' + String(x.parceiro || '').toLowerCase().trim() + '|' + String(x.programa || '');
+    const alvo = new Set(itens.map(chave));
+    if (!alvo.size) return res.json({ ok: true, removidos: 0 });
+    try {
+      let removidos = 0;
+      await mutar(COMPRAS_PATH, [], (lista) => {
+        const antes = lista.length;
+        for (let i = lista.length - 1; i >= 0; i--) if (alvo.has(chave(lista[i]))) lista.splice(i, 1);
+        removidos = antes - lista.length;
+        if (!removidos) return false;
+      }, `chore: consome ${alvo.size} alerta(s) de compra disparado(s)`);
+      res.json({ ok: true, removidos });
+    } catch (e) {
+      res.status(500).json({ ok: false, erro: e.message });
+    }
+  });
+
   app.get('/membros/alertas/listar', async (req, res) => {
     const email = res.locals.membroEmail;
     try {
-      const { data } = await ghGetJson(ALERTAS_PATH, VAZIO_AL);
+      const [{ data }, comprasLidas, dd] = await Promise.all([
+        ghGetJson(ALERTAS_PATH, VAZIO_AL),
+        ghGetJson(COMPRAS_PATH, []).catch(() => ({ data: [] })),
+        ler(DISPOSITIVOS_PATH, VAZIO_DISP),
+      ]);
       const al = data || VAZIO_AL;
-      const dd = await ler(DISPOSITIVOS_PATH, VAZIO_DISP);
+      const compras = (Array.isArray(comprasLidas.data) ? comprasLidas.data : [])
+        .filter((x) => String(x.email || '').toLowerCase() === email)
+        .map((x) => ({ id: idCompra(x), parceiro: x.parceiro, programa: x.programa, minPts: x.minPts, criadoEm: x.criadoEm }));
       const meus = (l) => (l || []).filter((x) => x.email === email).map(({ email: _e, avisos, ...resto }) => ({ ...resto, totalAvisos: (avisos || []).length }));
       res.json({
         ok: true,
         passagens: meus(al.passagens),
         transferencias: meus(al.transferencias),
+        compras,
         temPush: (dd.dispositivos || []).some((x) => x.email === email && x.pushToken),
       });
     } catch (e) {
@@ -341,6 +415,7 @@ module.exports = function montarMembroApp(app, d) {
   app.post('/membros/alertas/salvar', async (req, res) => {
     const email = res.locals.membroEmail;
     const b = req.body || {};
+    if (b.tipo === 'compra') return salvarCompra(req, res, email, b.alerta || {});
     const tipo = b.tipo === 'transferencia' ? 'transferencias' : b.tipo === 'passagem' ? 'passagens' : '';
     if (!tipo) return res.status(400).json({ ok: false, erro: 'tipo inválido' });
     const campos = tipo === 'passagens' ? limparPassagem(b.alerta || {}) : limparTransferencia(b.alerta || {});
@@ -376,6 +451,18 @@ module.exports = function montarMembroApp(app, d) {
   app.post('/membros/alertas/excluir', async (req, res) => {
     const email = res.locals.membroEmail;
     const b = req.body || {};
+    if (b.tipo === 'compra') {
+      try {
+        await mutar(COMPRAS_PATH, [], (lista) => {
+          const i = lista.findIndex((x) => idCompra(x) === b.id && String(x.email || '').toLowerCase() === email);
+          if (i < 0) return false;
+          lista.splice(i, 1);
+        }, 'chore: apaga alerta de compra de membro');
+        return res.json({ ok: true });
+      } catch (e) {
+        return res.status(500).json({ ok: false, erro: e.message });
+      }
+    }
     const tipo = b.tipo === 'transferencia' ? 'transferencias' : 'passagens';
     try {
       await mutar(ALERTAS_PATH, VAZIO_AL, (al) => {
@@ -504,13 +591,19 @@ module.exports = function montarMembroApp(app, d) {
 
   // ── Casamento: transferência bonificada aprovada/publicada ────────────────
   const refTransf = (item) => item.id || (d.normalizarChaveHist(item.origem) + '>' + d.normalizarChaveHist(item.destino) + '>' + (item.prazo || ''));
+  // "Latam" casa com "LATAM Pass", "Azul" com "Azul Fidelidade" (palavra inteira
+  // do começo); acento e maiúscula já caem no normalizarChaveHist.
+  function mesmoPrograma(x, y) {
+    if (!x || !y) return false;
+    return x === y || y.startsWith(x + '_') || x.startsWith(y + '_');
+  }
   function transferenciaBate(a, item) {
     const n = d.normalizarChaveHist;
     const bonus = Number(item.bonusMax);
     if (!item.destino || !(bonus > 0)) return false;
-    if (n(a.destino) !== n(item.destino)) return false;
+    if (!mesmoPrograma(n(a.destino), n(item.destino))) return false;
     const oa = n(a.origem), origem = n(item.origem);
-    if (oa && oa !== 'todos' && origem !== 'todos' && !d.origensDaOferta(item).map(n).includes(oa)) return false;
+    if (oa && oa !== 'todos' && origem !== 'todos' && !d.origensDaOferta(item).map(n).some((o) => mesmoPrograma(oa, o))) return false;
     return bonus >= Number(a.bonusMin || 0);
   }
   async function avisarTransferencia(a, item) {

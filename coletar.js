@@ -14,7 +14,6 @@ const fs   = require('fs');
 const path = require('path');
 
 const HISTORICO_FILE  = path.join(__dirname, 'historico.json');
-const ALERTAS_FILE    = path.join(__dirname, 'alertas.json');
 const OFERTAS_FILE    = path.join(__dirname, 'ofertas.json');
 // Estado de saúde por programa entre rodadas: quais estão degradados e desde
 // quando. Sem ele não dá para saber, numa rodada boa, que a anterior era ruim —
@@ -1353,15 +1352,23 @@ async function main() {
     }
   }
 
-  // 2. Carrega alertas cadastrados
+  // 2. Carrega alertas de compra dos membros. Desde 14/11/2026 vivem no repo
+  //    PRIVADO de dados (tinham e-mail no repo público): lidos e consumidos pelo
+  //    proxy (/alertas-compra, X-CDV-Op). Sem chave ou proxy fora: pula a rodada.
   let alertas = [];
-  if (fs.existsSync(ALERTAS_FILE)) {
+  const PROXY_ALERTAS = process.env.CDV_PROXY_URL || 'https://cdv-proxy-production.up.railway.app';
+  const CHAVE_OP = process.env.CDV_OP_KEY || '';
+  if (CHAVE_OP) {
     try {
-      alertas = JSON.parse(fs.readFileSync(ALERTAS_FILE, 'utf8'));
-      if (!Array.isArray(alertas)) alertas = [];
+      const rA = await fetch(`${PROXY_ALERTAS}/alertas-compra`, { headers: { 'X-CDV-Op': CHAVE_OP } });
+      const jA = await rA.json().catch(() => ({}));
+      if (jA && jA.ok && Array.isArray(jA.alertas)) alertas = jA.alertas;
+      else console.warn('[Histórico] Alertas de compra não lidos:', rA.status, jA && jA.erro);
     } catch (e) {
-      alertas = [];
+      console.warn('[Histórico] Alertas de compra não lidos:', e.message);
     }
+  } else {
+    console.warn('[Histórico] CDV_OP_KEY ausente — alertas de compra dos membros não avaliados nesta rodada.');
   }
 
   // 3. Snapshot do dia: { "shopee": { programs: { livelo: 8, esfera: 5 } } }
@@ -1467,8 +1474,9 @@ async function main() {
   const instaveis = new Set(PROGRAMS.filter(p => p.instavel).map(p => p.id));
   await processarSaude(quedas, contagemPorPrograma, nomesPorPrograma, instaveis);
 
-  // 4. Verifica alertas e dispara os atingidos (remove após enviar)
+  // 4. Verifica alertas e dispara os atingidos (consumidos no proxy após enviar)
   const alertasRestantes = [];
+  const alertasDisparados = [];
   for (const alerta of alertas) {
     const key = (alerta.parceiro || '').toLowerCase().trim();
     const snap = snapshot[key];
@@ -1480,14 +1488,27 @@ async function main() {
       // membro tiver o app com notificações; ver membro-app.js no proxy)
       await dispararAlerta(alerta, alerta.parceiro, pts);
       await pushAlertaCompra(alerta, alerta.parceiro, pts);
+      alertasDisparados.push({ email: alerta.email, parceiro: alerta.parceiro, programa: alerta.programa });
       // Não adiciona de volta — alerta consumido após envio
       console.log(`[Histórico] Alerta removido após envio: ${alerta.email} / ${alerta.parceiro} / ${alerta.programa}`);
     } else {
       alertasRestantes.push(alerta);
     }
   }
-  // Salva alertas restantes (sem os que já foram disparados)
-  fs.writeFileSync(ALERTAS_FILE, JSON.stringify(alertasRestantes, null, 2));
+  // Consome no proxy os que dispararam (os demais seguem no repo de dados)
+  if (alertasDisparados.length && CHAVE_OP) {
+    try {
+      const rC = await fetch(`${PROXY_ALERTAS}/alertas-compra/consumir`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CDV-Op': CHAVE_OP },
+        body: JSON.stringify({ itens: alertasDisparados }),
+      });
+      const jC = await rC.json().catch(() => ({}));
+      console.log(`[Histórico] Alertas de compra consumidos: ${jC && jC.removidos}`);
+    } catch (e) {
+      console.warn('[Histórico] Falha ao consumir alertas de compra:', e.message);
+    }
+  }
 
   // 4b. Alertas de oportunidade do concierge (alvo = compra_bonificada)
   //     Vivem em davileles/concierge/alertas-concierge.json e são lidos via proxy.
