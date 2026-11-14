@@ -1019,14 +1019,10 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
 
 <div id="tab-comparador" class="tab-panel" style="display:none">
 
-<div class="cmp-faixa-alerta" id="cmp-faixa-alerta">
-  <div class="cmp-faixa-txt"><b>🔔 Alertas no celular</b><span id="cmp-faixa-sub">Avisamos quando um parceiro chegar na pontuação ou no cashback que você quer.</span></div>
-  <button type="button" class="cmp-faixa-btn" id="cmp-faixa-btn" onclick="cmpFaixaAbrir()">Criar alerta</button>
-</div>
-
 <div class="controls">
   <div style="position:relative;flex:1;min-width:180px;max-width:340px" id="compras-search-wrap"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="search" placeholder="Buscar parceiro ou categoria…" oninput="render()" style="width:100%;padding-left:34px"></div>
   <div style="position:relative;flex:1;min-width:180px;max-width:340px;display:none" id="transf-search-wrap"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none">🔎</span><input type="text" id="transf-search" placeholder="Buscar destino…" oninput="renderTransferencias()" style="width:100%;padding-left:34px"></div>
+  <button class="alm-abrir" id="cmp-alerta-btn" type="button" onclick="cmpFaixaAbrir()">🔔 Alertas</button>
   <div class="comp-acoes">
   <button id="comp-toggle-compras" class="comp-toggle-btn active" onclick="setComparadorView('compras')">🛍️ Compras</button>
   <button id="comp-toggle-transferencias" class="comp-toggle-btn" onclick="setComparadorView('transferencias')">🔁 Transferências</button>
@@ -5228,10 +5224,6 @@ function setComparadorView(view){
   acaoCompras.style.display = isCompras ? '' : 'none';
   acaoTransf.style.display = isCompras ? 'none' : '';
   cmpFaixaVista = isCompras ? 'compras' : 'transferencias';
-  const faixaSub = document.getElementById('cmp-faixa-sub');
-  if (faixaSub) faixaSub.textContent = isCompras
-    ? 'Avisamos quando um parceiro chegar na pontuação ou no cashback que você quer.'
-    : 'Avisamos quando sair transferência bonificada com o bônus que você quer.';
   buscaCompras.style.display = isCompras ? '' : 'none';
   buscaTransf.style.display = isCompras ? 'none' : '';
   sortEl.style.display = isCompras ? '' : 'none';
@@ -5361,7 +5353,7 @@ function renderTransferencias(){
   // Animação escalonada nos cards (mesmo padrão do grid de compras)
   requestAnimationFrame(()=>{
     document.querySelectorAll('#transf-grid .card').forEach((el,i)=>{
-      el.style.animationDelay = (i * 55) + 'ms';
+      cdvEntrada(el, i, 55);
       setTimeout(()=>el.classList.add('cdv-visible'), 10);
     });
   });
@@ -5841,7 +5833,7 @@ function render(){
   // Animação escalonada nos cards
   requestAnimationFrame(()=>{
     document.querySelectorAll('#grid .card').forEach((el,i)=>{
-      el.style.animationDelay = (i * 55) + 'ms';
+      cdvEntrada(el, i, 55);
       setTimeout(()=>el.classList.add('cdv-visible'), 10);
     });
   });
@@ -6224,11 +6216,10 @@ function renderHomePassagens() {
     return;
   }
   const corte = Date.now() - 3*24*60*60*1000;
-  const recent = passagensData.filter(p=>new Date(p.enviadoEm)>=corte);
+  const recent = passagensData.filter(p=>(!p.fonte||p.fonte==='alerta'||p.fonte==='emissao') && new Date(p.enviadoEm)>=corte);
   if (!recent.length) { listaEl.innerHTML = '<div style="color:var(--muted);font-size:12px">Nenhuma passagem nos últimos 3 dias.</div>'; return; }
   // Find minimum historical
-  const histMap = {};
-  passagensData.forEach(p=>{ const k=grupoKey(p); if(!histMap[k])histMap[k]=[]; histMap[k].push(p); });
+  const histMap = passHistMap();
   const sorted = recent.sort((a,b)=>(a.pontos||0)-(b.pontos||0));
   listaEl.innerHTML = sorted.slice(0,3).map((p,idx) => {
     const k = grupoKey(p);
@@ -6588,6 +6579,19 @@ async function _loadPassagensExec() {
   }
 }
 
+let _passHistCache = { dados: null, mapa: null };
+function passHistMap() {
+  if (_passHistCache.dados === passagensData && _passHistCache.mapa) return _passHistCache.mapa;
+  const m = {};
+  for (const p of passagensData) {
+    const k = grupoKey(p);
+    if (!m[k]) m[k] = [];
+    m[k].push(p);
+  }
+  _passHistCache = { dados: passagensData, mapa: m };
+  return m;
+}
+
 function buildPassFiltroPrograma() {
   const sel = document.getElementById('pass-filtro-prog');
   const progs = [...new Set(passagensData.map(p => p.programa).filter(Boolean))].sort();
@@ -6687,13 +6691,9 @@ function renderPassagens() {
     return new Date(b.enviadoEm) - new Date(a.enviadoEm);
   });
 
-  // Monta mapa de histórico por grupo (todos os dados, não só os filtrados)
-  const histMap = {};
-  for (const p of passagensData) {
-    const k = grupoKey(p);
-    if (!histMap[k]) histMap[k] = [];
-    histMap[k].push(p);
-  }
+  // Mapa de histórico por grupo (todos os dados, não só os filtrados): ~8 mil
+  // registros, montado uma vez por carga e reaproveitado (busca, filtros, Início).
+  const histMap = passHistMap();
 
   const grid = document.getElementById('pass-grid');
   const stats = document.getElementById('pass-stats');
@@ -6747,12 +6747,12 @@ function renderPassagens() {
       resumoCel = `<div class="pass-resumo-cel">Mín. 180d <b class="r-min">${minPts.toLocaleString('pt-BR')}</b> · Média <b class="r-med">${mediaPts.toLocaleString('pt-BR')}</b> ${tendCel}</div>`;
       histHtml = `<div class="pass-hist"><div class="pass-hist-stats">
         <div class="pass-stat-pill minimo">
-          <div class="pass-stat-label">🏆 Mín. 180d</div>
+          <div class="pass-stat-label"><svg class="ic" aria-hidden="true"><use href="#i-trophy"/></svg> Mín. 180d</div>
           <div class="pass-stat-val">${minPts.toLocaleString('pt-BR')}</div>
           ${minTag}
         </div>
         <div class="pass-stat-pill media">
-          <div class="pass-stat-label">📊 Média 180d</div>
+          <div class="pass-stat-label"><svg class="ic" aria-hidden="true"><use href="#i-chart-bar"/></svg> Média 180d</div>
           <div class="pass-stat-val">${mediaPts.toLocaleString('pt-BR')}</div>
           ${mediaTag}
         </div>
@@ -6774,7 +6774,7 @@ function renderPassagens() {
         <span class="pass-pts-lbl">pts</span>
       </div>
       <div class="pass-info-col" style="font-size:11px;color:var(--muted);font-weight:600">
-        ${p.programa ? `🎟️ ${p.programa}` : ''}${p.cia ? ` · ✈️ ${p.cia}` : ''}${p.cabine ? `<span class="pass-cab-cel"> · ${normalizarCabine(p.cabine)}</span>` : ''}
+        ${p.programa ? `<svg class="ic" aria-hidden="true"><use href="#i-ticket"/></svg> ${p.programa}` : ''}${p.cia ? ` · <svg class="ic" aria-hidden="true"><use href="#i-airplane"/></svg> ${p.cia}` : ''}${p.cabine ? `<span class="pass-cab-cel"> · ${normalizarCabine(p.cabine)}</span>` : ''}
       </div>
       ${histHtml}${resumoCel}
     </div>`;
@@ -6782,7 +6782,7 @@ function renderPassagens() {
   // Animação escalonada nos pass-cards
   requestAnimationFrame(()=>{
     document.querySelectorAll('#pass-grid .pass-card').forEach((el,i)=>{
-      el.style.animationDelay = (i * 55) + 'ms';
+      cdvEntrada(el, i, 55);
       setTimeout(()=>el.classList.add('cdv-visible'), 10);
     });
   });
@@ -6832,12 +6832,12 @@ function abrirPassagemModal(id) {
       : `<div class="pass-stat-sub">${fmtData(minItem?.enviadoEm||'')}</div>`;
     histHtml = `<div class="pass-hist" style="margin-top:16px"><div class="pass-hist-stats">
       <div class="pass-stat-pill minimo">
-        <div class="pass-stat-label">🏆 Mín. 180d</div>
+        <div class="pass-stat-label"><svg class="ic" aria-hidden="true"><use href="#i-trophy"/></svg> Mín. 180d</div>
         <div class="pass-stat-val">${minPts.toLocaleString('pt-BR')}</div>
         ${minTag}
       </div>
       <div class="pass-stat-pill media">
-        <div class="pass-stat-label">📊 Média 180d</div>
+        <div class="pass-stat-label"><svg class="ic" aria-hidden="true"><use href="#i-chart-bar"/></svg> Média 180d</div>
         <div class="pass-stat-val">${mediaPts.toLocaleString('pt-BR')}</div>
         ${mediaTag}
       </div>
@@ -7035,7 +7035,7 @@ function renderOfertas(){
   // Animação escalonada nos oferta-cards (container: radar-grid)
   requestAnimationFrame(()=>{
     document.querySelectorAll('#radar-grid .oferta-card').forEach((el,i)=>{
-      el.style.animationDelay = (i * 45) + 'ms';
+      cdvEntrada(el, i, 45);
       setTimeout(()=>el.classList.add('cdv-visible'), 10);
     });
   });
@@ -7185,6 +7185,13 @@ function toggleSidebar(forcar){
   document.body.style.overflow = abrir ? 'hidden' : '';
 }
 
+// Animação de entrada dos cards: só os primeiros animam; o resto aparece direto.
+// Antes cada card esperava i×55 ms — no Comparador (≈500 cards) eram ~27 s de
+// animação rodando e, nas Passagens (≈170), ~9 s: travava a troca de aba no celular.
+function cdvEntrada(el, i, passo){
+  if (i < 12) { el.style.animationDelay = (i * passo) + 'ms'; return; }
+  el.style.animation = 'none'; el.style.opacity = '1';
+}
 function switchTab(tab){
   document.querySelectorAll('.main-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   document.getElementById('tab-inicio').style.display       = tab==='inicio'       ?'block':'none';
@@ -7200,7 +7207,7 @@ function switchTab(tab){
   document.getElementById('tab-planejamento').style.display = tab==='planejamento' ?'block':'none';
   document.getElementById('tab-roteiros').style.display     = tab==='roteiros'     ?'block':'none';
   document.getElementById('tab-cartoes').style.display      = tab==='cartoes'      ?'block':'none';
-  window.scrollTo({top:0, behavior:'smooth'});
+  window.scrollTo(0, 0);
   if(tab==='inicio')       renderInicio();
   if(tab==='radar')        loadOfertas(false);
   if(tab==='passagens')    loadPassagens(false);
@@ -12361,10 +12368,7 @@ function bvCopiarTudo(btn) {
   .alm-campo select{width:100%}
   .alm-atual{font-size:12px;color:var(--muted);margin-top:6px;min-height:16px}
   .alm-atual b{color:var(--text)}
-  .cmp-faixa-alerta{display:flex;align-items:center;gap:12px;justify-content:space-between;background:var(--surface);border:1px solid var(--border-ctrl);border-left:3px solid var(--cdv-coral);border-radius:12px;padding:12px 14px;margin:0 0 14px}
-  .cmp-faixa-txt{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:12.5px;color:var(--muted);line-height:1.35}
-  .cmp-faixa-txt b{font-size:13.5px;color:var(--text);font-weight:800}
-  .cmp-faixa-btn{flex-shrink:0;background:var(--cdv-coral);color:#fff;border:none;border-radius:10px;padding:10px 14px;font:800 13px 'Montserrat',sans-serif;cursor:pointer;white-space:nowrap}
+  #cmp-alerta-btn{align-self:stretch}
   .alm-tipo .alm-chip{flex:1;text-align:center}
 </style>
 <script>

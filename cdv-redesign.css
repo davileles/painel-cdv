@@ -564,7 +564,8 @@ select.srt { padding:11px 13px; font-size:13.5px; font-weight:600; }
 @media (max-width:900px) {
   /* Comparador: busca numa linha; Compras/Transferências/Acima da média/ordem numa faixa que rola para o lado */
   #tab-comparador .controls { flex-wrap:wrap; gap:8px; padding-top:10px; padding-bottom:10px; }
-  #tab-comparador #compras-search-wrap, #tab-comparador #transf-search-wrap { flex:1 1 100%; max-width:none; min-width:0; }
+  #tab-comparador #compras-search-wrap, #tab-comparador #transf-search-wrap { flex:1 1 0; max-width:none; min-width:0; }
+  #tab-comparador #cmp-alerta-btn { flex:0 0 auto; padding:8px 12px; font-size:12.5px; }
   .comp-acoes { display:flex; flex:1 1 100%; flex-wrap:nowrap; gap:8px; overflow-x:auto; scrollbar-width:none; margin:0 -16px; padding:0 16px; -webkit-overflow-scrolling:touch; }
   .comp-acoes::-webkit-scrollbar { display:none; }
   .comp-acoes > * { flex:0 0 auto; margin:0 !important; }
