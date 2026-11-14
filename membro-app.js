@@ -424,7 +424,10 @@ module.exports = function montarMembroApp(app, d) {
       ? x.slice(0, 7) >= de.slice(0, 7) && x.slice(0, 7) <= ate.slice(0, 7)
       : x >= de && x <= ate));
   }
+  // Registro só de histórico (coleta diária do seats.aero, fonte 'coleta') não
+  // foi divulgado no grupo: não avisa o membro. Só emissão divulgada vira push.
   function passagemBate(a, p, cache) {
+    if (p.fonte === 'coleta') return false;
     if (cidade(a.origem) !== cidade(p.origem) || cidade(a.destino) !== cidade(p.destino)) return false;
     if (a.programas && a.programas.length && !a.programas.some((x) => d.chaveTexto(x) === d.chaveTexto(p.programa))) return false;
     const cab = grupoCabine(p.cabine);

@@ -6554,8 +6554,16 @@ const PASSAGENS_URL = _BASE + '/conteudo/passagens.json';
 let passagensData = [];
 let passagensLoaded = false;
 
-async function loadPassagens(force) {
-  if (passagensLoaded && !force) return;
+// Download em andamento é reaproveitado: passagens.json tem ~4 MB e a home,
+// a aba Passagens e os Alertas chamam esta função quase ao mesmo tempo.
+let _loadPassagensPromise = null;
+function loadPassagens(force) {
+  if (passagensLoaded && !force) return Promise.resolve();
+  if (_loadPassagensPromise) return _loadPassagensPromise;
+  _loadPassagensPromise = _loadPassagensExec().finally(() => { _loadPassagensPromise = null; });
+  return _loadPassagensPromise;
+}
+async function _loadPassagensExec() {
   const grid = document.getElementById('pass-grid');
   if (grid) grid.innerHTML = '<div class="status-box"><div class="spinner"></div><div style="color:var(--muted);font-size:13px">Carregando passagens…</div></div>';
   try {
@@ -6567,7 +6575,7 @@ async function loadPassagens(force) {
     buildPassFiltroPrograma();
     renderPassagens();
   } catch(e) {
-    grid.innerHTML = '<div class="status-box"><div style="font-size:30px">✈️</div><div style="color:var(--muted);font-size:13px">Nenhuma passagem registrada ainda.</div></div>';
+    if (grid) grid.innerHTML = '<div class="status-box"><div style="font-size:30px">✈️</div><div style="color:var(--muted);font-size:13px">Nenhuma passagem registrada ainda.</div></div>';
   }
 }
 
@@ -12353,19 +12361,66 @@ function almPts(n){ return Number(n||0).toLocaleString('pt-BR'); }
 function almData(iso){ const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||''); return m?m[3]+'/'+m[2]+'/'+m[1]:''; }
 const ALM_CABINES = [['economica','Econômica'],['executiva','Executiva'],['premium','Premium Economy'],['primeira','Primeira']];
 function almFechar(){ document.getElementById('alm-overlay').classList.remove('open'); }
-async function almAbrir(tipo){
-  almTipo = tipo; almProgSel = new Set(); almIdaVolta = false;
-  const ov = document.getElementById('alm-overlay');
-  document.getElementById('alm-conteudo').innerHTML = '<div class="alm-titulo">'+(tipo==='passagem'?'Alertas de passagem':'Alertas de transferência bonificada')+'</div><div class="status-box" style="padding:30px 0"><div class="spinner"></div></div>';
-  ov.classList.add('open');
-  if (tipo==='transferencia' && typeof carregarHistoricoTransferencias==='function') { try { await carregarHistoricoTransferencias(); } catch(e){} }
-  if (tipo==='passagem' && typeof loadPassagens==='function') { try { await loadPassagens(); } catch(e){} }
+// almSeq descarta respostas de aberturas anteriores (toques repetidos no botão):
+// antes cada toque redesenhava o formulário quando a sua resposta chegava,
+// apagando o que o membro já tinha tocado ou digitado.
+let almSeq = 0;
+async function almListar(){
   try {
     const r = await fetch(CDV_PROXY_AUTH + '/membros/alertas/listar');
-    almDados = await r.json();
-    if (!almDados.ok) throw new Error(almDados.erro||'falha');
-  } catch(e) { almDados = { passagens:[], transferencias:[], erro:true }; }
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.erro||'falha');
+    return j;
+  } catch(e) { return { passagens:[], transferencias:[], erro:true }; }
+}
+async function almAbrir(tipo){
+  const ov = document.getElementById('alm-overlay');
+  if (ov.classList.contains('open') && almTipo===tipo && document.getElementById('alm-conteudo').childElementCount) return;
+  const seq = ++almSeq;
+  almTipo = tipo; almProgSel = new Set(); almIdaVolta = false;
+  document.getElementById('alm-conteudo').innerHTML = '<div class="alm-titulo">'+(tipo==='passagem'?'Alertas de passagem':'Alertas de transferência bonificada')+'</div><div class="status-box" style="padding:30px 0"><div class="spinner"></div></div>';
+  ov.classList.add('open');
+  const pLista = almListar();
+  if (tipo==='transferencia' && typeof carregarHistoricoTransferencias==='function') { try { await carregarHistoricoTransferencias(); } catch(e){} }
+  if (tipo==='passagem' && typeof loadPassagens==='function') { try { await loadPassagens(); } catch(e){} }
+  if (seq !== almSeq) return;
+  almDados = { carregando:true };
   almRender();
+  const d = await pLista;
+  if (seq !== almSeq) return;
+  almDados = d;
+  almRenderLista();
+}
+// Atualiza só "Seus alertas", sem tocar no formulário.
+async function almAtualizarLista(){
+  const seq = almSeq;
+  const d = await almListar();
+  if (seq !== almSeq) return;
+  almDados = d;
+  almRenderLista();
+}
+function almListaHtml(){
+  const d = almDados || {};
+  if (d.carregando) return '<div class="alm-vazio">Carregando seus alertas…</div>';
+  const ehPass = almTipo==='passagem';
+  const meus = (ehPass ? d.passagens : d.transferencias) || [];
+  let h = '';
+  if (d.erro) h += '<div class="alm-vazio" style="color:#f87171">Não foi possível carregar seus alertas agora.</div>';
+  h += meus.length ? meus.map(ehPass?almListaPassagem:almListaTransf).join('') : '<div class="alm-vazio">Nenhum alerta ainda.</div>';
+  return h;
+}
+function almRenderLista(){
+  const el = document.getElementById('alm-lista');
+  if (el) el.innerHTML = almListaHtml();
+  const nota = document.getElementById('alm-nota');
+  if (nota) nota.innerHTML = almNotaHtml();
+}
+function almNotaHtml(){
+  const d = almDados || {};
+  const sess = (typeof lerSessao==='function' && lerSessao()) || {};
+  return window.CDV_APP
+    ? 'Você recebe uma notificação neste celular'+(d.temPush||d.carregando?'':' (assim que as notificações forem liberadas no app)')+' ou um e-mail em '+almEsc(sess.email||'')+'.'
+    : 'Você recebe por e-mail em '+almEsc(sess.email||'')+'. No app do Clube do Viajante chega também como notificação.';
 }
 function almListaPassagem(a){
   const det = [];
@@ -12382,16 +12437,13 @@ function almListaTransf(a){
 }
 function almOpcoes(lista){ return [...new Set(lista.filter(Boolean).map(s=>String(s).trim()))].sort((a,b)=>a.localeCompare(b,'pt-BR')).map(v=>'<option value="'+almEsc(v)+'">').join(''); }
 function almRender(){
-  const d = almDados || {};
   const ehPass = almTipo==='passagem';
-  const meus = (ehPass ? d.passagens : d.transferencias) || [];
   let h = '<div class="alm-titulo">'+(ehPass?'Alertas de passagem':'Alertas de transferência bonificada')+'</div>';
   h += '<div class="alm-sub">'+(ehPass
     ? 'Avisamos quando aparecer uma emissão que bata com o que você pediu.'
     : 'Avisamos quando sair uma transferência com o bônus que você quer.')+'</div>';
-  if (d.erro) h += '<div class="alm-vazio" style="color:#f87171">Não foi possível carregar seus alertas agora.</div>';
   h += '<div class="alm-secao">Seus alertas</div>';
-  h += meus.length ? meus.map(ehPass?almListaPassagem:almListaTransf).join('') : '<div class="alm-vazio">Nenhum alerta ainda.</div>';
+  h += '<div id="alm-lista">'+almListaHtml()+'</div>';
   h += '<div class="alm-secao">Novo alerta</div>';
   if (ehPass) {
     _cdvCidadesCache = null; // recalcula com as emissões carregadas
@@ -12423,10 +12475,7 @@ function almRender(){
       + '</div>';
   }
   h += '<button class="alm-salvar" id="alm-salvar" type="button" onclick="almSalvar()">🔔 Criar alerta</button><div class="alm-fb" id="alm-fb"></div>';
-  const sess = (typeof lerSessao==='function' && lerSessao()) || {};
-  h += '<div class="alm-nota">'+(window.CDV_APP
-    ? 'Você recebe uma notificação neste celular'+(d.temPush?'':' (assim que as notificações forem liberadas no app)')+' ou um e-mail em '+almEsc(sess.email||'')+'.'
-    : 'Você recebe por e-mail em '+almEsc(sess.email||'')+'. No app do Clube do Viajante chega também como notificação.')+'</div>';
+  h += '<div class="alm-nota" id="alm-nota">'+almNotaHtml()+'</div>';
   document.getElementById('alm-conteudo').innerHTML = h;
 }
 function almChave(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
@@ -12502,6 +12551,7 @@ async function almSalvar(){
     const r=await fetch(CDV_PROXY_AUTH+'/membros/alertas/salvar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo:almTipo,alerta})});
     const j=await r.json();
     if(!j.ok){ fb.style.color='#f87171'; fb.textContent=j.erro||'Não foi possível salvar.'; btn.disabled=false; return; }
+    almSeq++; document.getElementById('alm-conteudo').innerHTML='';
     await almAbrir(almTipo);
     const fb2=document.getElementById('alm-fb');
     if(fb2){
@@ -12520,7 +12570,7 @@ async function almExcluir(id){
   try{
     await fetch(CDV_PROXY_AUTH+'/membros/alertas/excluir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo:almTipo,id})});
   }catch(e){}
-  almAbrir(almTipo);
+  almAtualizarLista();
 }
 </script>
 <!-- MODAL OFERTA -->
