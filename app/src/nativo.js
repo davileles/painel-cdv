@@ -463,6 +463,8 @@
   window.cdvBiometria = {
     ativa: function () { return !!bioInfo; },
     nome: function () { return bioNome; },
+    // Conta excluída (cdvExcluirConta no index.html): apaga a chave deste celular.
+    esquecer: function () { bioEsquecer(); },
   };
 
   /* ── 7c. Notificações push (alertas do membro) ─────────────────────────── */

@@ -91,6 +91,59 @@ module.exports = function montarMembroApp(app, d) {
   const VAZIO_DISP = { dispositivos: [] };
   const VAZIO_AL = { passagens: [], transferencias: [] };
 
+  // ── Excluir conta (App Store 5.1.1(v) / Google Play) ─────────────────────
+  // O próprio membro apaga a conta pelo app: os registros dele saem de todos
+  // os arquivos do repo de dados e o cadastro sai do membros.json (perde o
+  // acesso). A assinatura da Hubla não é cancelada aqui (a cobrança é da
+  // Hubla); o pedido fica em exclusoes-conta.json para conferir/cancelar lá.
+  const ARQS_DO_MEMBRO = ['milhas.json', 'perfis.json', 'cartoes.json', 'assinaturas.json',
+    'consultorias.json', DISPOSITIVOS_PATH, ALERTAS_PATH, COMPRAS_PATH];
+  function tirarDoMembro(dados, alvo) {
+    let n = 0;
+    const filtra = (arr) => arr.filter((x) => {
+      const dele = !!x && typeof x === 'object' && String(x.email || '').toLowerCase().trim() === alvo;
+      if (dele) n++;
+      return !dele;
+    });
+    if (Array.isArray(dados)) { const resto = filtra(dados); dados.length = 0; dados.push(...resto); }
+    else if (dados && typeof dados === 'object') {
+      for (const k of Object.keys(dados)) if (Array.isArray(dados[k])) dados[k] = filtra(dados[k]);
+    }
+    return n;
+  }
+  app.post('/membros/excluir-conta', async (req, res) => {
+    const alvo = String(res.locals.membroEmail || '').toLowerCase().trim();
+    if (!alvo) return res.status(401).json({ ok: false, erro: 'Sessão expirada. Entre novamente.' });
+    const apagados = {};
+    const falhas = [];
+    for (const path of [...ARQS_DO_MEMBRO, MEMBROS_PATH]) {
+      try {
+        const r = await mutar(path, path === COMPRAS_PATH ? [] : {}, (dados) => {
+          const n = tirarDoMembro(dados, alvo);
+          if (!n) return false;
+          if (!Array.isArray(dados)) dados.atualizadoEm = new Date().toISOString();
+          return n;
+        }, 'chore: exclusão de conta de membro');
+        if (r.mudou) apagados[path] = r.resultado;
+        invalidar(path);
+      } catch (e) {
+        falhas.push(path);
+        console.error('[excluir-conta]', path, e.message);
+      }
+    }
+    try {
+      await mutar('exclusoes-conta.json', { exclusoes: [] }, (dados) => {
+        if (!Array.isArray(dados.exclusoes)) dados.exclusoes = [];
+        dados.exclusoes.push({ email: alvo, em: new Date().toISOString(), origem: 'app', apagados, falhas });
+      }, 'chore: registro de exclusão de conta');
+    } catch (e) {
+      console.error('[excluir-conta] registro', e.message);
+    }
+    console.log(`[excluir-conta] ${Object.keys(apagados).length} arquivo(s) limpos, ${falhas.length} falha(s)`);
+    if (falhas.length) return res.status(500).json({ ok: false, erro: 'Não foi possível excluir tudo agora. Tente de novo em alguns minutos ou fale com o suporte do Clube.' });
+    res.json({ ok: true });
+  });
+
   // ── Celulares ─────────────────────────────────────────────────────────────
   app.post('/membros/dispositivo/registrar', async (req, res) => {
     const email = res.locals.membroEmail;

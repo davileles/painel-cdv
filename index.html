@@ -951,6 +951,8 @@ body{scroll-padding-top:calc(var(--stick-top) + 24px)}
   <button class="main-tab" data-tab="planejamento" id="tab-btn-planejamento">🧭 Planejamento Estratégico</button>
   <button class="main-tab" data-tab="roteiros" id="tab-btn-roteiros">🗺️ Roteiros</button>
   <button class="main-tab" data-tab="cartoes" id="tab-btn-cartoes">💳 Cartões</button>
+  <div class="side-group">Minha conta</div>
+  <button type="button" id="btn-excluir-conta" onclick="cdvExcluirConta()" style="display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:9px 12px;font-size:12.5px;background:transparent;border:none;border-radius:8px;color:var(--muted);cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:600">🗑️ Excluir minha conta</button>
 </div>
 <div id="shell-main">
 
@@ -9157,6 +9159,28 @@ function fazerLogout() {
   voltarStep1();
   document.getElementById('login-email').value = '';
   document.getElementById('header-nome-membro').textContent = '';
+}
+// Exclusão de conta pelo próprio membro (exigência das lojas Apple/Google).
+// Apaga os dados do membro no servidor (milhas, perfis, cartões, alertas,
+// celulares…) e o cadastro de acesso. A assinatura é gerida na Hubla.
+async function cdvExcluirConta() {
+  if (!lerSessao()) return;
+  if (!confirm('Excluir sua conta do Clube do Viajante?\n\nSeus dados no painel (Gestão de Milhas, perfis, cartões, alertas e celulares cadastrados) serão apagados e você perderá o acesso. Isso não tem volta.')) return;
+  if (!confirm('Confirma a exclusão definitiva da sua conta?\n\nSe você tem assinatura ativa, a cobrança é feita pela Hubla: cancele também por lá.')) return;
+  const btn = document.getElementById('btn-excluir-conta');
+  if (btn) { btn.disabled = true; btn.textContent = 'Excluindo…'; }
+  try {
+    const r = await fetch(`${_BASE}/membros/excluir-conta`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || !j.ok) throw new Error(j.erro || 'Não foi possível excluir agora. Tente de novo em alguns minutos.');
+    try { if (window.cdvBiometria && window.cdvBiometria.esquecer) window.cdvBiometria.esquecer(); } catch (_) {}
+    alert('Sua conta foi excluída.');
+    fazerLogout();
+  } catch (e) {
+    alert(e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🗑️ Excluir minha conta'; }
+  }
 }
 // Verifica sessão salva ao carregar
 (function verificarSessaoSalva() {

@@ -70,6 +70,8 @@ const ARQUIVOS_SENSIVEIS = new Set([
   // Alertas de compra bonificada dos membros (e-mail + parceiro + meta): repo privado
   // desde 14/11/2026. O coletar.js lê e consome por /alertas-compra (membro-app.js).
   'alertas.json',
+  // Registro das exclusões de conta feitas pelo app (para cancelar na Hubla): repo privado.
+  'exclusoes-conta.json',
 ]);
 // Arquivos que saíram do painel-cdv: na 1ª leitura sem cópia no repo de dados,
 // o proxy copia a versão do repo público para lá (uma vez por arquivo).
@@ -246,6 +248,8 @@ const ROTAS_MEMBRO = new Set([
   // Celulares (Face ID/digital, push) e alertas pessoais — membro-app.js
   '/membros/dispositivo/registrar', '/membros/dispositivo/remover', '/membros/dispositivo/push',
   '/membros/alertas/listar', '/membros/alertas/salvar', '/membros/alertas/excluir',
+  // Exclusão de conta pelo próprio membro (exigência das lojas) — membro-app.js
+  '/membros/excluir-conta',
 ]);
 // Conteúdo do painel (o que o membro paga para ver): membro logado OU operador.
 // GET em todas; o e-mail não é sobrescrito (as rotas não dependem dele).
