@@ -335,6 +335,18 @@ module.exports = function montarMembroApp(app, d) {
     }
   });
 
+  // Contas de revisão das lojas (App Store / Google Play) para o workflow
+  // loja-revisao.yml preencher o App Store Connect sem o código ficar no repo
+  // público. Só com X-CDV-Op. Env: REVISAO_EMAIL/REVISAO_CODIGO (CDV) e
+  // REVISAO_TR_TELEFONE/REVISAO_TR_CODIGO (cópia das do serviço do Team Rausch).
+  app.get('/revisao/credenciais-lojas', (req, res) => {
+    if (!opAutorizado(req, res)) return;
+    res.json({
+      cdv: { usuario: process.env.REVISAO_EMAIL || '', codigo: process.env.REVISAO_CODIGO || '' },
+      teamrausch: { usuario: process.env.REVISAO_TR_TELEFONE || '', codigo: process.env.REVISAO_TR_CODIGO || '' },
+    });
+  });
+
   app.get('/push/status', async (req, res) => {
     if (!opAutorizado(req, res)) return;
     try {

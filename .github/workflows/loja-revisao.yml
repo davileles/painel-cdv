@@ -1,0 +1,60 @@
+# Prepara a revisão da App Store dos apps (CDV e Team Rausch) pela API do App
+# Store Connect: troca o build, grava a conta de demonstração e as Notas e,
+# se pedido, reenvia. Script: scripts/asc-revisao.mjs. Disparo manual.
+name: Loja · revisão App Store
+
+on:
+  workflow_dispatch:
+    inputs:
+      apps:
+        description: 'Quais apps'
+        type: choice
+        options: [ambos, cdv, teamrausch]
+        default: ambos
+      build_cdv:
+        description: 'Build do Clube do Viajante (vazio = não troca)'
+        required: false
+        default: ''
+      build_tr:
+        description: 'Build do Team Rausch (vazio = não troca)'
+        required: false
+        default: ''
+      video_cdv:
+        description: 'Link do vídeo do Clube do Viajante'
+        required: false
+        default: ''
+      video_tr:
+        description: 'Link do vídeo do Team Rausch'
+        required: false
+        default: ''
+      enviar:
+        description: 'Reenviar para revisão (exige o link do vídeo)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: loja-revisao
+  cancel-in-progress: false
+
+jobs:
+  revisao:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Prepara a revisão
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          CDV_OP_KEY: ${{ secrets.CDV_OP_KEY }}
+          APPS: ${{ inputs.apps }}
+          BUILD_CDV: ${{ inputs.build_cdv }}
+          BUILD_TR: ${{ inputs.build_tr }}
+          VIDEO_CDV: ${{ inputs.video_cdv }}
+          VIDEO_TR: ${{ inputs.video_tr }}
+          ENVIAR: ${{ inputs.enviar }}
+        run: node scripts/asc-revisao.mjs
