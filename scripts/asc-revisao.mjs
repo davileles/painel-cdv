@@ -52,7 +52,7 @@ async function asc(metodo, caminho, corpo) {
   let json = null;
   try { json = texto ? JSON.parse(texto) : null; } catch { /* resposta sem JSON */ }
   if (!r.ok) {
-    const erros = (json && json.errors || []).map((e) => `${e.title}: ${e.detail}`).join(' | ') || texto.slice(0, 300);
+    const erros = (json && json.errors || []).map((e) => `${e.title}: ${e.detail}${e.meta && e.meta.associatedErrors ? ' → ' + JSON.stringify(e.meta.associatedErrors) : ''}`).join(' | ') || texto.slice(0, 300);
     throw new Error(`${metodo} ${caminho} → HTTP ${r.status}: ${erros}`);
   }
   return json;
