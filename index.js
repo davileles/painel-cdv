@@ -404,6 +404,7 @@ const CONC_SERVICO_HASH  = 'da33dfbf889a93327c0f9f22c2b129bdddb2cc9e1936384aa972
 const CONC_ROTAS_PUBLICAS = new Set([
   'POST /concierge/cadastro',
   'POST /concierge/ds160',
+  'GET /concierge/ds160/rascunho',
   'GET /concierge/portal',
   'GET /concierge/portal/tema',
   'POST /concierge/portal/enviar-codigo',
@@ -7997,6 +7998,8 @@ app.post('/concierge/ds160', async (req, res) => {
     })).filter(s => s.titulo);
 
     const agora = new Date().toISOString();
+    // Formulário de familiar: o rascunho criado pelo concierge vira o registro definitivo.
+    const tokenRasc = typeof b.rascunho === 'string' && /^[a-f0-9]{32}$/.test(b.rascunho) ? b.rascunho : '';
     const registro = {
       id: 'ds-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
       recebidoEm: agora, ip, status: 'novo',
@@ -8008,11 +8011,66 @@ app.post('/concierge/ds160', async (req, res) => {
       dados, ficha
     };
 
-    await putConciergeRetry(CONCIERGE_DS160, (lista) => { lista.push(registro); return lista; });
+    await putConciergeRetry(CONCIERGE_DS160, (lista) => {
+      const k = tokenRasc ? lista.findIndex(x => x && x.status === 'rascunho' && x.token === tokenRasc) : -1;
+      if (k > -1) {
+        const r = lista[k];
+        registro.id = r.id;
+        registro.familiar = { baseId: r.baseId || '', relacao: r.relacao || '', criadoEm: r.criadoEm || '' };
+        lista[k] = registro;
+      } else lista.push(registro);
+      return lista;
+    });
     res.json({ ok: true, id: registro.id });
   } catch (e) {
     console.error('[concierge/ds160]', e.message);
     res.status(500).json({ ok: false, erro: 'Nao foi possivel registrar agora. Tente novamente em instantes.' });
+  }
+});
+
+// ── DS-160 de familiar ──────────────────────────────────────────────────
+// O painel do concierge monta, a partir do formulário de um cliente, as
+// respostas comuns da família (viagem, hotel, contato nos EUA, endereço,
+// acompanhantes, cônjuge/pais deduzidos) e cria um rascunho com token. O
+// familiar abre ds160.html?r=<token>, confere, completa e envia: o POST
+// /concierge/ds160 com `rascunho` troca o rascunho pelo registro definitivo.
+const DS160_RASC_DIAS = 60;
+// POST /concierge/ds160/familiar { baseId, relacao, rotulo, dados } (autenticada)
+app.post('/concierge/ds160/familiar', async (req, res) => {
+  try {
+    const b = req.body || {};
+    if (JSON.stringify(b).length > 150000) return res.status(413).json({ ok: false, erro: 'Grande demais.' });
+    const token = require('crypto').randomBytes(16).toString('hex');
+    const agora = new Date().toISOString();
+    const dados = ds160Limpo(b.dados || {}, 0);
+    const reg = {
+      id: 'ds-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
+      status: 'rascunho', token, criadoEm: agora, recebidoEm: agora,
+      baseId: String(b.baseId || '').slice(0, 40), relacao: String(b.relacao || '').slice(0, 40),
+      resumo: { nome: String(b.rotulo || 'Familiar').trim().slice(0, 120), chegada: dados.chegada || '', consulado: dados.consulado || '' },
+      dados, ficha: []
+    };
+    await putConciergeRetry(CONCIERGE_DS160, (lista) => { lista.push(reg); return lista; });
+    res.json({ ok: true, id: reg.id, token, link: 'https://concierge.clubedoviajante.com.br/ds160.html?r=' + token });
+  } catch (e) {
+    console.error('[concierge/ds160/familiar]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+// GET /concierge/ds160/rascunho?t=<token> (pública: o token de 128 bits é a chave)
+app.get('/concierge/ds160/rascunho', async (req, res) => {
+  try {
+    const t = String(req.query.t || '');
+    if (!/^[a-f0-9]{32}$/.test(t)) return res.status(400).json({ ok: false, erro: 'Link inválido.' });
+    const { lista } = await lerArquivoConcierge(CONCIERGE_DS160);
+    const r = (lista || []).find(x => x && x.status === 'rascunho' && x.token === t);
+    if (!r) return res.status(404).json({ ok: false, erro: 'Este link já foi usado ou não existe mais. Peça um novo à equipe.' });
+    if (Date.now() - Date.parse(r.criadoEm || 0) > DS160_RASC_DIAS * 86400000) return res.status(410).json({ ok: false, erro: 'Este link expirou. Peça um novo à equipe.' });
+    res.json({ ok: true, rotulo: (r.resumo || {}).nome || '', relacao: r.relacao || '', dados: r.dados || {} });
+  } catch (e) {
+    console.error('[concierge/ds160/rascunho]', e.message);
+    res.status(500).json({ ok: false, erro: 'Não foi possível abrir agora.' });
   }
 });
 
