@@ -737,18 +737,52 @@
   function token(){
     try { var s = JSON.parse(localStorage.getItem('cdv_auth') || 'null'); return (s && s.token) || ''; } catch(e){ return ''; }
   }
+  /* Domínio reserva (16/11/2026): algumas redes/antivírus/bloqueadores barram
+     *.up.railway.app e o membro via "Servidor indisponível". Se a chamada ao
+     proxy falhar por rede, repete pelo ir.clubedoviajante.com.br (mesmo
+     servidor) e, dando certo, usa a reserva até fechar a aba. */
+  var RESERVA = 'https://ir.clubedoviajante.com.br';
+  var _usaReserva = false;
+  try { _usaReserva = sessionStorage.getItem('cdv_proxy_reserva') === '1'; } catch(e){}
+  function _viaReserva(input, init, url){
+    var nova = RESERVA + url.slice(PROXY.length);
+    return _orig(typeof input === 'string' ? nova : new Request(nova, input), init);
+  }
+  function _comReserva(input, init, url){
+    if (_usaReserva) return _viaReserva(input, init, url);
+    return _orig(input, init).catch(function(err){
+      if (err && err.name === 'AbortError') throw err;
+      if (init && init.body && typeof init.body !== 'string' && !(init.body instanceof FormData)) throw err;
+      return _viaReserva(input, init, url).then(function(r){
+        _usaReserva = true;
+        try { sessionStorage.setItem('cdv_proxy_reserva', '1'); } catch(e){}
+        console.warn('[CDV] proxy principal inacessível nesta rede; usando domínio reserva');
+        return r;
+      }, function(){ throw err; });
+    });
+  }
+  /* Liga a reserva à mão (ping do carregamento ou login que não respondeu). */
+  window.__cdvUsarReserva = function(){
+    return _orig(RESERVA + '/ping', { cache: 'no-store' }).then(function(r){
+      if (!r.ok) return false;
+      _usaReserva = true;
+      try { sessionStorage.setItem('cdv_proxy_reserva', '1'); } catch(e){}
+      console.warn('[CDV] usando domínio reserva do proxy');
+      return true;
+    }).catch(function(){ return false; });
+  };
   window.fetch = function(input, init){
     var url = typeof input === 'string' ? input : (input && input.url) || '';
     if (url.indexOf(PROXY) !== 0) return _orig(input, init);
     var tk = token();
-    if (!tk) return _orig(input, init);
+    if (!tk) return _comReserva(input, init, url);
     var opts = Object.assign({}, init || {});
     var h = new Headers(opts.headers || (typeof input !== 'string' && input.headers) || {});
     h.set('X-CDV-Membro', tk);
     opts.headers = h;
     var caminho = url.slice(PROXY.length).split('?')[0];
     var deMembro = ROTAS.some(function(r){ return caminho.indexOf(r) === 0; }) && caminho !== '/passagens/excluir';
-    return _orig(input, opts).then(function(r){
+    return _comReserva(input, opts, url).then(function(r){
       if (r.status === 401 && deMembro && !_saindo) {
         _saindo = true;
         try { localStorage.removeItem('cdv_auth'); } catch(e){}
@@ -799,8 +833,7 @@
 
 <div id="login-screen">
   <div class="login-box">
-    <img class="login-logo" src="logocdv.png" onerror="this.style.display='none'" alt="CDV"/>
-    <div class="login-title">Painel CDV</div>
+    <img class="login-logo" src="logocdv.png" onerror="this.style.display='none'" alt="Clube do Viajante"/>
 
     <!-- Step 1: e-mail -->
     <div id="login-step1" style="width:100%;display:flex;flex-direction:column;align-items:center">
@@ -8970,7 +9003,7 @@ function calcEmissao() {
 // Acorda o servidor Railway silenciosamente ao carregar a página
 (function warmUpProxy() {
   const _wup=new AbortController();setTimeout(()=>_wup.abort(),8000);fetch(CDV_PROXY_AUTH + '/ping', { signal: _wup.signal })
-    .catch(() => {}); // silencioso — só acorda o servidor
+    .catch(() => { if (window.__cdvUsarReserva) window.__cdvUsarReserva(); }); // sem resposta: tenta o domínio reserva
 })();
 const LOGIN_KEY  = 'cdv_auth';
 const LOGIN_TTL  = 7 * 24 * 60 * 60 * 1000; // 7 dias
@@ -9056,17 +9089,21 @@ async function enviarCodigo() {
   if (!email || !email.includes('@')) { erroEl.textContent = 'Digite um e-mail válido.'; return; }
   btn.disabled = true;
   btn.textContent = 'Enviando…';
+  let etapa = 'rede';
   try {
     let res;
     try {
       res = await _postProxy('/membros/enviar-codigo', { email });
     } catch (e1) {
       erroEl.textContent = 'Conectando ao servidor…';
-      await new Promise(r => setTimeout(r, 5000));
+      etapa = 'rede2';
+      if (!(window.__cdvUsarReserva && await window.__cdvUsarReserva())) await new Promise(r => setTimeout(r, 5000));
       erroEl.textContent = '';
       res = await _postProxy('/membros/enviar-codigo', { email });
     }
+    etapa = 'http ' + res.status;
     const data = await res.json();
+    etapa = 'tela';
     if (data.ok) {
       document.getElementById('login-step1').style.display = 'none';
       const step2 = document.getElementById('login-step2');
@@ -9084,8 +9121,10 @@ async function enviarCodigo() {
       erroEl.textContent = msgs[data.motivo] || 'Não foi possível enviar o código.';
     }
   } catch (e) {
-    erroEl.textContent = 'Servidor indisponível. Tente novamente em instantes.';
-    console.error('[CDV otp-enviar]', e);
+    erroEl.textContent = etapa.indexOf('rede') === 0
+      ? 'Não conseguimos falar com o servidor a partir desta rede. Desative bloqueador de anúncios/VPN ou tente outro navegador ou o 4G. (cód. ' + etapa + ')'
+      : 'Servidor indisponível. Tente novamente em instantes. (cód. ' + etapa + ')';
+    console.error('[CDV otp-enviar]', etapa, e);
   } finally {
     btn.disabled = false;
     btn.textContent = 'Enviar código';

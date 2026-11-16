@@ -788,6 +788,11 @@ async function handleIr(req, res, slug, resto) {
 app.use(async (req, res, next) => {
   const host = String(req.hostname || '').toLowerCase();
   if (host !== LINKS_HOST) return next();
+  // Domínio reserva do painel (16/11/2026): quando a rede do membro bloqueia
+  // *.up.railway.app, o painel repete a chamada por este host. Chamada de API
+  // (método ≠ GET/HEAD ou fetch do navegador, que manda Origin) segue para as
+  // rotas normais; clique em link (navegação, sem Origin) continua no encurtador.
+  if ((req.method !== 'GET' && req.method !== 'HEAD') || req.get('origin')) return next();
   if (req.path === '/' || req.path === '') return res.redirect(302, LINKS_FALLBACK);
   const m = req.path.match(/^\/([a-zA-Z0-9\-_]{1,40})(\/.*)?$/);
   if (!m) return next();
