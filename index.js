@@ -405,6 +405,7 @@ const CONC_ROTAS_PUBLICAS = new Set([
   'POST /concierge/cadastro',
   'POST /concierge/ds160',
   'GET /concierge/ds160/rascunho',
+  'POST /concierge/ds160/rascunho',
   'GET /concierge/portal',
   'GET /concierge/portal/tema',
   'POST /concierge/portal/enviar-codigo',
@@ -8112,7 +8113,8 @@ app.post('/concierge/ds160', async (req, res) => {
       if (k > -1) {
         const r = lista[k];
         registro.id = r.id;
-        registro.familiar = { baseId: r.baseId || '', relacao: r.relacao || '', criadoEm: r.criadoEm || '' };
+        if (r.origem === 'pessoa') registro.rascunhoDesde = r.criadoEm || '';
+        else registro.familiar = { baseId: r.baseId || '', relacao: r.relacao || '', criadoEm: r.criadoEm || '' };
         lista[k] = registro;
       } else lista.push(registro);
       return lista;
@@ -8162,11 +8164,105 @@ app.get('/concierge/ds160/rascunho', async (req, res) => {
     const { lista } = await lerArquivoConcierge(CONCIERGE_DS160);
     const r = (lista || []).find(x => x && x.status === 'rascunho' && x.token === t);
     if (!r) return res.status(404).json({ ok: false, erro: 'Este link já foi usado ou não existe mais. Peça um novo à equipe.' });
-    if (Date.now() - Date.parse(r.criadoEm || 0) > DS160_RASC_DIAS * 86400000) return res.status(410).json({ ok: false, erro: 'Este link expirou. Peça um novo à equipe.' });
-    res.json({ ok: true, rotulo: (r.resumo || {}).nome || '', relacao: r.relacao || '', dados: r.dados || {} });
+    const base = Math.max(Date.parse(r.criadoEm || 0) || 0, Date.parse(r.salvoEm || 0) || 0);
+    if (Date.now() - base > DS160_RASC_DIAS * 86400000) return res.status(410).json({ ok: false, erro: 'Este link expirou. Peça um novo à equipe.' });
+    res.json({ ok: true, rotulo: (r.resumo || {}).nome || '', relacao: r.relacao || '', dados: r.dados || {},
+      proprio: r.origem === 'pessoa', etapa: Number(r.etapa) || 0, salvoEm: r.salvoEm || '' });
   } catch (e) {
     console.error('[concierge/ds160/rascunho]', e.message);
     res.status(500).json({ ok: false, erro: 'Não foi possível abrir agora.' });
+  }
+});
+
+// ── Salvar e continuar depois (desde 17/11/2026) ─────────────────────────
+// POST /concierge/ds160/rascunho { token?, etapa, dados, consentimento, website }
+// (pública). Sem token cria um rascunho novo (origem 'pessoa'); com token
+// atualiza o rascunho existente (inclusive o de familiar criado pela equipe).
+// O token de 128 bits é a chave de leitura e de escrita. Devolve o link
+// ds160.html?r=<token> e, na 1ª vez com e-mail preenchido, manda o link por e-mail.
+const _ds160RascIPs = new Map();
+function ds160RascLiberado(ip) {
+  const agora = Date.now(), janela = agora - 3600000;
+  const hist = (_ds160RascIPs.get(ip) || []).filter(t => t > janela);
+  if (hist.length >= 60) { _ds160RascIPs.set(ip, hist); return false; }
+  hist.push(agora); _ds160RascIPs.set(ip, hist);
+  if (_ds160RascIPs.size > 5000) for (const [k, v] of _ds160RascIPs) if (!v.some(t => t > janela)) _ds160RascIPs.delete(k);
+  return true;
+}
+async function emailLinkRascunho({ para, nome, assunto, titulo, texto, link, botao }) {
+  if (!para || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(para)) return false;
+  if (!RESEND_API_KEY) { console.log(`[rascunho] (sem RESEND) link para ${para}`); return false; }
+  const primeiro = String(nome || '').trim().split(/\s+/)[0] || '';
+  const e = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      compress: false, method: 'POST',
+      headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: 'Clube do Viajante <noreply@clubedoviajante.com.br>', to: [para], subject: assunto,
+        html: `
+          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0a0c12;color:#fff;border-radius:12px">
+            <h2 style="color:#FF6B5B;margin-bottom:8px">${e(titulo)}</h2>
+            <p style="color:#ddd;margin-bottom:8px">Olá${primeiro ? ', ' + e(primeiro) : ''}!</p>
+            <p style="color:#aaa;margin-bottom:24px">${e(texto)}</p>
+            <a href="${link}" style="display:block;background:#FF6B5B;color:#fff;text-decoration:none;border-radius:10px;padding:16px;text-align:center;font-weight:800;margin-bottom:24px">${e(botao || 'Continuar o preenchimento')}</a>
+            <p style="color:#666;font-size:12px">Guarde este e-mail: o link é pessoal e abre o formulário com as suas respostas. Não o encaminhe a ninguém.</p>
+          </div>`
+      })
+    });
+    return r.ok;
+  } catch (err) { console.warn('[rascunho] e-mail falhou:', err.message); return false; }
+}
+app.post('/concierge/ds160/rascunho', async (req, res) => {
+  try {
+    const ip = String(req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
+    if (!ds160RascLiberado(ip)) return res.status(429).json({ ok: false, erro: 'Muitas gravações seguidas. Tente de novo em alguns minutos.' });
+    const b = req.body || {};
+    if (String(b.website || '').trim()) return res.json({ ok: true });
+    if (JSON.stringify(b).length > 150000) return res.status(413).json({ ok: false, erro: 'Formulário grande demais.' });
+    if (b.consentimento !== true) return res.status(400).json({ ok: false, erro: 'É necessário aceitar o tratamento dos dados (LGPD).' });
+    const tokenIn = typeof b.token === 'string' && /^[a-f0-9]{32}$/.test(b.token) ? b.token : '';
+    const dados = ds160Limpo(b.dados || {}, 0);
+    const etapa = Math.max(0, Math.min(30, Number(b.etapa) || 0));
+    const agora = new Date().toISOString();
+    const nome = nomeApresentavel(String((dados.nomes || '') + ' ' + (dados.sobrenome || '')).trim());
+    const email = String(dados.email || '').trim().toLowerCase();
+    const token = tokenIn || require('crypto').randomBytes(16).toString('hex');
+    let novo = false, perdido = false, mandarEmail = false;
+    await putConciergeRetry(CONCIERGE_DS160, (lista) => {
+      perdido = false; novo = false; mandarEmail = false;
+      const k = tokenIn ? lista.findIndex(x => x && x.status === 'rascunho' && x.token === tokenIn) : -1;
+      if (tokenIn && k === -1) { perdido = true; return null; }
+      if (k > -1) {
+        const r = lista[k];
+        r.dados = dados; r.etapa = etapa; r.salvoEm = agora;
+        r.resumo = Object.assign({}, r.resumo, nome ? { nome } : {}, email ? { email } : {},
+          { tel: soDigitos(dados.tel), chegada: dados.chegada || '', consulado: dados.consulado || '' });
+        if (email && r.emailLinkPara !== email) { mandarEmail = true; r.emailLinkPara = email; }
+        return lista;
+      }
+      novo = true;
+      mandarEmail = !!email;
+      lista.push({
+        id: 'ds-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
+        status: 'rascunho', origem: 'pessoa', token, criadoEm: agora, recebidoEm: agora, salvoEm: agora, ip, etapa,
+        resumo: { nome: nome || 'Sem nome ainda', email, tel: soDigitos(dados.tel), chegada: dados.chegada || '', consulado: dados.consulado || '' },
+        emailLinkPara: email || undefined,
+        dados, ficha: []
+      });
+      return lista;
+    });
+    if (perdido) return res.status(404).json({ ok: false, erro: 'Este rascunho já foi enviado ou não existe mais.' });
+    const link = 'https://concierge.clubedoviajante.com.br/ds160.html?r=' + token;
+    let emailEnviado = false;
+    if (mandarEmail) emailEnviado = await emailLinkRascunho({ para: email, nome, link,
+      assunto: '🇺🇸 Seu formulário do visto americano (DS-160) — continue de onde parou',
+      titulo: 'Travel Concierge',
+      texto: 'Suas respostas do formulário do visto americano foram salvas. Use o botão abaixo para continuar de onde parou, em qualquer aparelho. O link vale por 60 dias desde a última gravação.' });
+    res.json({ ok: true, token, link, novo, emailEnviado, email: emailEnviado ? email : '', salvoEm: agora });
+  } catch (e) {
+    console.error('[concierge/ds160/rascunho POST]', e.message);
+    res.status(500).json({ ok: false, erro: 'Não foi possível salvar agora. Tente novamente em instantes.' });
   }
 });
 

@@ -132,6 +132,19 @@ input::placeholder { color: var(--muted2); }
 .alerta-lgpd { font-size: 12.5px; font-weight: 800; color: var(--coral-ink); text-transform: uppercase; letter-spacing: .3px; margin: 4px 0 14px; }
 
 .nav { display: flex; gap: 10px; margin-top: 20px; }
+.salvar-depois { display: block; width: 100%; margin-top: 12px; padding: 12px; background: transparent; border: 1px dashed var(--border-ctrl);
+  border-radius: 12px; color: var(--blue); font-family: var(--font); font-size: 13px; font-weight: 700; cursor: pointer; }
+.salvar-depois:hover { background: var(--blue-tint); }
+.salvar-depois:disabled { opacity: .5; cursor: wait; }
+.salvar-depois[hidden] { display: none; }
+.salvo-status { text-align: center; font-size: 11.5px; color: var(--muted2); margin-top: 8px; line-height: 1.5; }
+.salvo-box { margin-bottom: 14px; font-size: 13px; line-height: 1.6; }
+.salvo-box .linha { display: flex; gap: 8px; margin-top: 10px; }
+.salvo-box input { flex: 1; min-width: 0; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border-ctrl);
+  background: var(--field); color: var(--text); font-family: var(--font); font-size: 12.5px; }
+.salvo-box button { padding: 10px 14px; border-radius: 10px; border: 0; background: var(--accent); color: #fff;
+  font-family: var(--font); font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.salvo-box .fechar { background: transparent; color: var(--muted); padding: 10px 6px; }
 .btn { flex: 1; padding: 15px; border-radius: 12px; border: 1px solid transparent; font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer; transition: background .15s, opacity .15s; }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent2); }
@@ -172,6 +185,7 @@ footer { text-align: center; font-size: 11.5px; color: var(--muted2); margin-top
   <div class="prog" id="prog"></div>
   <div class="step-label" id="step-label"></div>
   <div class="banner" id="banner"></div>
+  <div class="box info salvo-box" id="salvo-box" hidden></div>
 
   <form id="form" novalidate autocomplete="on">
     <input class="hp" type="text" id="website" name="website" tabindex="-1" autocomplete="off"/>
@@ -322,6 +336,8 @@ footer { text-align: center; font-size: 11.5px; color: var(--muted2); margin-top
       <button type="button" class="btn btn-ghost" id="btn-voltar">Voltar</button>
       <button type="button" class="btn btn-primary" id="btn-avancar">Continuar</button>
     </div>
+    <button type="button" class="salvar-depois" id="btn-salvar" hidden>Salvar e continuar depois</button>
+    <div class="salvo-status" id="salvo-status"></div>
   </form>
 
   <section class="card done-box fade" id="done" hidden>
@@ -445,6 +461,7 @@ function lerArquivo(u, file) {
     var bytes = Math.floor(base64.length * 3 / 4);
     if (bytes > MAX_BYTES) throw new Error('grande');
     arquivos[u.id] = { base64: base64, tipo: r.tipo, nome: file.name, bytes: bytes };
+    sujo = true;
     box.classList.remove('lendo'); box.classList.add('ok');
     box.querySelector('.ic').innerHTML = r.tipo === 'application/pdf' ? ICONE_PDF : '<img alt="" src="' + r.dataUrl + '"/>';
     box.querySelector('.tx b').textContent = file.name;
@@ -485,7 +502,7 @@ function validarEtapa(n) {
     var total = 0;
     UPLOADS.forEach(function (u) {
       if (!arquivos[u.id]) { $('err-' + u.id).textContent = 'Envie este arquivo.'; marcar('arq-' + u.id, true); ok = false; }
-      else total += arquivos[u.id].bytes;
+      else if (!arquivos[u.id].salvo) total += arquivos[u.id].bytes;
     });
     if (ok && total > MAX_TOTAL) { aviso('Os arquivos somam mais de 14 MB. Troque algum PDF por uma foto ou por um arquivo menor.'); return false; }
   }
@@ -509,13 +526,20 @@ function render() {
   $('step-label').textContent = 'Etapa ' + (etapa + 1) + ' de ' + TOTAL + ' · ' + TITULOS[etapa];
   $('btn-voltar').style.display = etapa === 0 ? 'none' : '';
   $('btn-avancar').textContent = etapa === TOTAL - 1 ? 'Enviar verificação' : (etapa === 0 ? 'Começar' : 'Continuar');
+  $('btn-salvar').hidden = etapa === 0;
+  if (!RASCUNHO && etapa > 0 && !$('salvo-status').textContent) $('salvo-status').textContent = 'Ao salvar, seus dados e documentos ficam guardados com acesso restrito por até 30 dias, só para você continuar depois.';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function payload() {
   var arq = {};
-  UPLOADS.forEach(function (u) { var a = arquivos[u.id]; arq[u.id] = { base64: a.base64, tipo: a.tipo, nome: a.nome }; });
+  UPLOADS.forEach(function (u) {
+    var a = arquivos[u.id];
+    if (!a) return;
+    arq[u.id] = a.salvo ? { salvo: true } : { base64: a.base64, tipo: a.tipo, nome: a.nome };
+  });
   return {
+    rascunho: RASCUNHO || undefined,
     website: $('website').value.trim(),
     consentimento: $('consentimento').checked,
     dados: {
@@ -543,6 +567,7 @@ function enviar() {
       if (!d.ok) throw new Error(d.erro || 'Não foi possível enviar agora.');
       $('form').hidden = true; $('prog').hidden = true; $('step-label').hidden = true;
       $('banner').classList.remove('show'); $('done').hidden = false;
+      $('salvo-box').hidden = true;
       window.onbeforeunload = null;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     })
@@ -581,10 +606,137 @@ $('btn-avancar').addEventListener('click', function () {
   if (enviando) return;
   if (!validarEtapa(etapa)) return;
   $('banner').classList.remove('show');
-  if (etapa < TOTAL - 1) { etapa++; render(); return; }
+  if (etapa < TOTAL - 1) { etapa++; render(); if (RASCUNHO && sujo) salvarRascunho(false); return; }
   enviar();
 });
-window.onbeforeunload = function () { return etapa > 0 && !enviando ? 'Os dados preenchidos serão perdidos.' : undefined; };
+$('btn-voltar').addEventListener('click', function () { if (RASCUNHO && sujo) salvarRascunho(false); });
+$('btn-salvar').addEventListener('click', function () { salvarRascunho(true); });
+$('form').addEventListener('input', function () { sujo = true; });
+$('form').addEventListener('change', function () { sujo = true; });
+
+// ── SALVAR E CONTINUAR DEPOIS (desde 17/11/2026) ──────────
+// Grava dados e documentos no servidor (repo privado, rascunho com token) e devolve
+// o link /balcao/?r=<token>, que abre o formulário de onde parou em qualquer
+// aparelho. Nada fica no navegador. Documento já salvo não sobe de novo.
+var RASCUNHO = (/[?&]r=([a-f0-9]{32})/.exec(location.search) || [])[1] || '';
+var sujo = false, salvando = false;
+function quandoSalvo(iso) {
+  var t = Date.parse(iso || '');
+  if (!t) return 'anteriormente';
+  var d = new Date(t);
+  return 'em ' + d.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }) + ' às ' +
+    d.toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' });
+}
+function marcarSalvo(u, meta) {
+  var box = $('up-' + u.id);
+  if (!box || !meta) return;
+  box.classList.add('ok');
+  if (!box.querySelector('.ic img')) box.querySelector('.ic').innerHTML = meta.tipo === 'application/pdf' ? ICONE_PDF : ICONE_UP;
+  box.querySelector('.tx b').textContent = meta.nome || 'Documento enviado';
+  box.querySelector('.tx span').textContent = ((meta.bytes || 0) / 1024 / 1024).toFixed(1).replace('.', ',') + ' MB · salvo';
+  box.querySelector('.acao').textContent = 'Trocar';
+}
+function mostrarLinkSalvo(d) {
+  var box = $('salvo-box');
+  box.innerHTML = '<b>Verificação salva.</b> ' +
+    (d.emailEnviado ? 'Enviamos o link para <b>' + esc(d.email) + '</b>. ' : '') +
+    'Para continuar depois, em qualquer celular ou computador, abra este link (ele é pessoal — não compartilhe):' +
+    '<div class="linha"><input id="salvo-link" readonly value="' + esc(d.link) + '"/>' +
+    '<button type="button" id="salvo-copiar">Copiar link</button><button type="button" class="fechar" id="salvo-fechar">✕</button></div>';
+  box.hidden = false;
+  $('salvo-copiar').onclick = function () {
+    var inp = $('salvo-link'); inp.select();
+    var ok = function () { $('salvo-copiar').textContent = 'Copiado!'; };
+    if (navigator.clipboard) navigator.clipboard.writeText(inp.value).then(ok, function () { document.execCommand('copy'); ok(); });
+    else { document.execCommand('copy'); ok(); }
+  };
+  $('salvo-fechar').onclick = function () { box.hidden = true; };
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function salvarRascunho(manual) {
+  if (salvando || enviando) return;
+  salvando = true;
+  var btn = $('btn-salvar'), st = $('salvo-status');
+  var p = payload_rascunho();
+  if (manual) { btn.disabled = true; btn.textContent = p.temArquivo ? 'Salvando documentos…' : 'Salvando…'; }
+  st.textContent = 'Salvando…';
+  fetch(PROXY + '/balcao/rascunho', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p.corpo) })
+    .then(function (r) { return r.json().catch(function () { return { ok: false, erro: r.status === 413 ? 'Os arquivos ficaram grandes demais. Envie arquivos menores.' : 'Erro ' + r.status }; }); })
+    .then(function (d) {
+      if (!d.ok) throw new Error(d.erro || 'Não foi possível salvar agora.');
+      if (d.token) {
+        RASCUNHO = d.token;
+        try { history.replaceState(null, '', location.pathname + '?r=' + d.token); } catch (e) {}
+      }
+      Object.keys(d.arquivos || {}).forEach(function (k) {
+        var a = arquivos[k];
+        if (a && p.enviados.indexOf(k) > -1) a.salvo = true;
+      });
+      sujo = p.sujoDepois();
+      st.textContent = 'Salvo ' + quandoSalvo(d.salvoEm) + '.';
+      if (manual || d.novo) mostrarLinkSalvo(d);
+    })
+    .catch(function (e) {
+      st.textContent = '';
+      if (manual) aviso(e && e.message && e.message !== 'Failed to fetch' ? e.message : 'Falha de conexão. Tente salvar de novo.');
+    })
+    .then(function () { salvando = false; btn.disabled = false; btn.textContent = 'Salvar e continuar depois'; });
+}
+function payload_rascunho() {
+  var arq = {}, enviados = [], marca = {};
+  UPLOADS.forEach(function (u) {
+    var a = arquivos[u.id];
+    if (a && !a.salvo && a.base64) { arq[u.id] = { base64: a.base64, tipo: a.tipo, nome: a.nome }; enviados.push(u.id); marca[u.id] = a; }
+  });
+  var base = payload();
+  return {
+    temArquivo: enviados.length > 0, enviados: enviados,
+    // se a pessoa trocou o arquivo enquanto salvava, continua pendente
+    sujoDepois: function () { return enviados.some(function (k) { return arquivos[k] !== marca[k]; }); },
+    corpo: { token: RASCUNHO || undefined, etapa: etapa, website: base.website, dados: base.dados, arquivos: arq }
+  };
+}
+
+// Link salvo (?r=): preenche dados e documentos já enviados e volta à etapa salva.
+if (RASCUNHO) {
+  fetch(PROXY + '/balcao/rascunho?t=' + RASCUNHO, { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (!d.ok) { aviso(d.erro || 'Não foi possível abrir este link.'); RASCUNHO = ''; try { history.replaceState(null, '', location.pathname); } catch (e) {} return; }
+      var dd = d.dados || {};
+      if (dd.nome) $('f-nome').value = dd.nome;
+      if (dd.cpf) $('f-cpf').value = mCpf(dd.cpf);
+      if (dd.nascimento) $('f-nascimento').value = dd.nascimento;
+      if (dd.email) $('f-email').value = dd.email;
+      if (dd.tel) $('f-tel').value = mTel(dd.tel);
+      if (dd.pixTipo === 'cnpj') {
+        var rc = document.querySelector('input[name="pixTipo"][value="cnpj"]');
+        if (rc) { rc.checked = true; rc.dispatchEvent(new Event('change')); }
+      }
+      if (dd.pixChave) $('f-pix').value = dd.pixTipo === 'cnpj' ? mCnpj(dd.pixChave) : mCpf(dd.pixChave);
+      if (dd.pixBanco) $('f-banco').value = dd.pixBanco;
+      UPLOADS.forEach(function (u) {
+        var m = (d.arquivos || {})[u.id];
+        if (m) { arquivos[u.id] = { salvo: true, tipo: m.tipo, nome: m.nome, bytes: m.bytes || 0 }; marcarSalvo(u, m); }
+      });
+      $('leu').checked = true; $('leu-box').classList.add('on');
+      etapa = Math.max(1, Math.min(TOTAL - 1, Number(d.etapa) || 1));
+      var box = $('salvo-box');
+      box.innerHTML = '<b>Continuando de onde você parou.</b> Seus dados foram salvos ' + quandoSalvo(d.salvoEm) + '. Confira e siga preenchendo — a cada etapa concluída, gravamos de novo.';
+      box.hidden = false;
+      $('salvo-status').textContent = '';
+      sujo = false;
+      render();
+    })
+    .catch(function () { aviso('Falha de conexão ao abrir o link salvo. Recarregue a página.'); });
+}
+
+// Avisa antes de sair só quando há algo que não foi salvo no servidor.
+window.onbeforeunload = function () {
+  if (enviando || etapa < 1) return undefined;
+  if (RASCUNHO && !sujo) return undefined;
+  return 'Os dados preenchidos serão perdidos. Use "Salvar e continuar depois" para não perder nada.';
+};
 render();
 })();
 </script>

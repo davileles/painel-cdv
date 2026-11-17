@@ -10,6 +10,8 @@
 //
 // Rotas:
 //   POST /balcao/verificacao                       pública (formulário)
+//   POST /balcao/rascunho                          pública (salvar e continuar depois)
+//   GET  /balcao/rascunho?t=<token>                pública (abre o rascunho salvo)
 //   GET  /balcao/resumo                            pública (só contagens)
 //   GET  /balcao/verificacoes                      X-CDV-Op
 //   GET  /balcao/arquivo/:id/:campo                X-CDV-Op (devolve o arquivo)
@@ -54,6 +56,15 @@ const ARQUIVOS = {
 };
 const EXT = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'application/pdf': 'pdf' };
 const MAX_ARQ_BYTES = 6 * 1024 * 1024;
+// Salvar e continuar depois (desde 17/11/2026): rascunhos com token de 128 bits
+// (a chave de leitura e escrita), dados em balcao/rascunhos.json e documentos em
+// balcao/rascunhos/<token>/<campo>-<ts>.<ext>, no repo PRIVADO. No envio final
+// os documentos já salvos são reaproveitados (o registro aponta para eles) e o
+// rascunho sai da lista. Vale 30 dias desde a última gravação.
+const RASCUNHOS = 'balcao/rascunhos.json';
+const PASTA_RASC = 'balcao/rascunhos/';
+const RASC_DIAS = 30;
+const LINK_FORM = 'https://painel.clubedoviajante.com.br/balcao/';
 const STATUS = ['pendente', 'aprovado', 'reprovado'];
 
 function cnpjValido(v) {
@@ -293,6 +304,153 @@ function registrar(app, d) {
     }
   }
 
+  async function apagarArquivo(caminho, mensagem) {
+    try {
+      const url = `https://api.github.com/repos/${REPO}/contents/${caminho}`;
+      const g = await fetch(url, { headers: ghHeaders() });
+      if (!g.ok) return;
+      const { sha } = await g.json();
+      if (!sha) return;
+      await fetch(url, { method: 'DELETE', headers: { ...ghHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: mensagem, sha }) });
+    } catch (e) { console.warn('[balcao] apagar', caminho, e.message); }
+  }
+
+  // ── Rascunhos (salvar e continuar depois) ──────────────────────────────
+  const _rascIPs = new Map();
+  function rascLiberado(ip) {
+    const agora = Date.now(), janela = agora - 3600000;
+    const hist = (_rascIPs.get(ip) || []).filter(t => t > janela);
+    if (hist.length >= 40) { _rascIPs.set(ip, hist); return false; }
+    hist.push(agora); _rascIPs.set(ip, hist);
+    if (_rascIPs.size > 5000) for (const [k, v] of _rascIPs) if (!v.some(t => t > janela)) _rascIPs.delete(k);
+    return true;
+  }
+  const tokenOk = t => typeof t === 'string' && /^[a-f0-9]{32}$/.test(t);
+  const rascVivo = r => r && (Date.now() - Date.parse(r.salvoEm || r.criadoEm || 0)) <= RASC_DIAS * 86400000;
+  async function lerRascunho(token) {
+    if (!tokenOk(token)) return null;
+    const { lista } = await lerLista(RASCUNHOS);
+    const r = (lista || []).find(x => x && x.token === token);
+    return r || null;
+  }
+  async function emailLink(para, nome, link) {
+    if (!RESEND_API_KEY || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(para || '')) return false;
+    const primeiro = String(nome || '').trim().split(/\s+/)[0] || '';
+    const e = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    try {
+      const r = await fetch('https://api.resend.com/emails', {
+        compress: false, method: 'POST',
+        headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: 'Clube do Viajante <noreply@clubedoviajante.com.br>', to: [para],
+          subject: '🛡️ Sua verificação do Balcão — continue de onde parou',
+          html: `
+            <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0a0c12;color:#fff;border-radius:12px">
+              <h2 style="color:#FF6B5B;margin-bottom:8px">Clube do Viajante</h2>
+              <p style="color:#ddd;margin-bottom:8px">Olá${primeiro ? ', ' + e(primeiro) : ''}!</p>
+              <p style="color:#aaa;margin-bottom:24px">Sua verificação do Balcão foi salva. Use o botão abaixo para continuar de onde parou, em qualquer aparelho. Os documentos já enviados continuam guardados. O link vale por ${RASC_DIAS} dias desde a última gravação.</p>
+              <a href="${link}" style="display:block;background:#FF6B5B;color:#fff;text-decoration:none;border-radius:10px;padding:16px;text-align:center;font-weight:800;margin-bottom:24px">Continuar a verificação</a>
+              <p style="color:#666;font-size:12px">O link é pessoal e abre o formulário com os seus dados. Não o encaminhe a ninguém.</p>
+            </div>`
+        })
+      });
+      return r.ok;
+    } catch (err) { console.warn('[balcao] e-mail do rascunho falhou:', err.message); return false; }
+  }
+
+  // POST /balcao/rascunho { token?, etapa, dados, arquivos:{campo:{base64,tipo,nome}}, website }
+  // Só os documentos novos vêm em base64; os já salvos ficam no servidor.
+  app.post('/balcao/rascunho', async (req, res) => {
+    try {
+      const ip = String(req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
+      if (!rascLiberado(ip)) return res.status(429).json({ ok: false, erro: 'Muitas gravações seguidas. Tente de novo em alguns minutos.' });
+      const b = req.body || {};
+      if (texto(b.website)) return res.json({ ok: true });
+      const tokenIn = tokenOk(b.token) ? b.token : '';
+      const token = tokenIn || crypto.randomBytes(16).toString('hex');
+      if (tokenIn) {
+        const atual = await lerRascunho(tokenIn);
+        if (!atual || !rascVivo(atual)) return res.status(404).json({ ok: false, erro: 'Este rascunho expirou ou já foi enviado. Comece de novo.' });
+      }
+      const dd = b.dados || {};
+      const dados = {
+        nome: texto(dd.nome, 140), cpf: soDigitos(dd.cpf).slice(0, 11), nascimento: texto(dd.nascimento, 10),
+        email: texto(dd.email, 160).toLowerCase(), tel: soDigitos(dd.tel).slice(0, 15),
+        pixTipo: dd.pixTipo === 'cnpj' ? 'cnpj' : 'cpf', pixChave: soDigitos(dd.pixChave).slice(0, 14), pixBanco: texto(dd.pixBanco, 80),
+      };
+      const etapa = Math.max(0, Math.min(3, Number(b.etapa) || 0));
+      // Documentos novos
+      const arqs = b.arquivos || {};
+      const novos = [];
+      for (const campo of Object.keys(ARQUIVOS)) {
+        const a = arqs[campo];
+        if (!a || !a.base64) continue;
+        const tipo = String(a.tipo || '');
+        const base64 = String(a.base64).replace(/^data:[^,]*,/, '');
+        if (!ARQUIVOS[campo].tipos.includes(tipo)) return res.status(400).json({ ok: false, erro: `Formato não aceito em: ${ARQUIVOS[campo].rotulo}.` });
+        const bytes = Math.floor(base64.length * 3 / 4);
+        if (bytes > MAX_ARQ_BYTES) return res.status(413).json({ ok: false, erro: `Arquivo grande demais em: ${ARQUIVOS[campo].rotulo} (máx. 6 MB).` });
+        novos.push({ campo, tipo, base64, bytes, nome: texto(a.nome, 120) });
+      }
+      const gravados = {};
+      for (const n of novos) {
+        const caminho = `${PASTA_RASC}${token}/${n.campo}-${Date.now().toString(36)}.${EXT[n.tipo]}`;
+        await gravarArquivo(caminho, n.base64, `balcao: rascunho ${n.campo}`);
+        gravados[n.campo] = { caminho, tipo: n.tipo, bytes: n.bytes, nomeOriginal: n.nome };
+      }
+      const agora = new Date().toISOString();
+      let substituidos = [], perdido = false, novo = false, mandarEmail = false, arquivosFinais = {};
+      await putRetry(RASCUNHOS, (lista) => {
+        substituidos = []; perdido = false; novo = false; mandarEmail = false;
+        lista = lista.filter(rascVivo);
+        let r = lista.find(x => x && x.token === token);
+        if (tokenIn && !r) { perdido = true; return null; }
+        if (!r) {
+          novo = true;
+          r = { token, criadoEm: agora, ip, arquivos: {} };
+          lista.push(r);
+        }
+        r.salvoEm = agora; r.etapa = etapa; r.dados = dados;
+        r.arquivos = r.arquivos || {};
+        for (const campo of Object.keys(gravados)) {
+          if (r.arquivos[campo] && r.arquivos[campo].caminho) substituidos.push(r.arquivos[campo].caminho);
+          r.arquivos[campo] = gravados[campo];
+        }
+        if (dados.email && r.emailLinkPara !== dados.email) { mandarEmail = true; r.emailLinkPara = dados.email; }
+        arquivosFinais = r.arquivos;
+        return lista;
+      });
+      if (perdido) return res.status(404).json({ ok: false, erro: 'Este rascunho expirou ou já foi enviado. Comece de novo.' });
+      for (const s of substituidos) apagarArquivo(s, 'balcao: rascunho troca de documento');
+      const link = LINK_FORM + '?r=' + token;
+      const emailEnviado = mandarEmail ? await emailLink(dados.email, dados.nome, link) : false;
+      const meta = {};
+      for (const k of Object.keys(arquivosFinais)) meta[k] = { tipo: arquivosFinais[k].tipo, bytes: arquivosFinais[k].bytes, nome: arquivosFinais[k].nomeOriginal || '' };
+      res.json({ ok: true, token, link, novo, emailEnviado, email: emailEnviado ? dados.email : '', salvoEm: agora, arquivos: meta });
+    } catch (e) {
+      console.error('[balcao/rascunho POST]', e.message);
+      res.status(500).json({ ok: false, erro: 'Não foi possível salvar agora. Tente novamente em instantes.' });
+    }
+  });
+
+  // GET /balcao/rascunho?t=<token> — dados + quais documentos já foram salvos (sem o conteúdo)
+  app.get('/balcao/rascunho', async (req, res) => {
+    try {
+      const t = String(req.query.t || '');
+      if (!tokenOk(t)) return res.status(400).json({ ok: false, erro: 'Link inválido.' });
+      const r = await lerRascunho(t);
+      if (!r) return res.status(404).json({ ok: false, erro: 'Este link já foi usado ou não existe mais.' });
+      if (!rascVivo(r)) return res.status(410).json({ ok: false, erro: `Este link expirou (vale ${RASC_DIAS} dias). Preencha de novo.` });
+      const meta = {};
+      for (const k of Object.keys(r.arquivos || {})) meta[k] = { tipo: r.arquivos[k].tipo, bytes: r.arquivos[k].bytes, nome: r.arquivos[k].nomeOriginal || '' };
+      res.json({ ok: true, dados: r.dados || {}, etapa: r.etapa || 0, salvoEm: r.salvoEm || '', arquivos: meta });
+    } catch (e) {
+      console.error('[balcao/rascunho GET]', e.message);
+      res.status(500).json({ ok: false, erro: 'Não foi possível abrir agora.' });
+    }
+  });
+
   async function avisarGrupo(reg) {
     try {
       let grupo = '';
@@ -345,13 +503,16 @@ function registrar(app, d) {
       } else if (!cnpjValido(pixChave)) return res.status(400).json({ ok: false, erro: 'CNPJ da chave PIX inválido.' });
       if (!pixBanco) return res.status(400).json({ ok: false, erro: 'Informe o banco da conta PIX.' });
 
-      // Arquivos
+      // Arquivos (os já salvos no rascunho vêm só como {salvo:true})
+      const tokenRasc = tokenOk(b.rascunho) ? b.rascunho : '';
+      const rasc = tokenRasc ? await lerRascunho(tokenRasc) : null;
       const arqs = b.arquivos || {};
-      const prontos = [];
+      const prontos = [], doRascunho = {};
       for (const campo of Object.keys(ARQUIVOS)) {
         const a = arqs[campo] || {};
         const tipo = String(a.tipo || '');
         const base64 = String(a.base64 || '').replace(/^data:[^,]*,/, '');
+        if (!base64 && rasc && rasc.arquivos && rasc.arquivos[campo] && rasc.arquivos[campo].caminho) { doRascunho[campo] = rasc.arquivos[campo]; continue; }
         if (!base64) return res.status(400).json({ ok: false, erro: `Envie: ${ARQUIVOS[campo].rotulo}.` });
         if (!ARQUIVOS[campo].tipos.includes(tipo)) return res.status(400).json({ ok: false, erro: `Formato não aceito em: ${ARQUIVOS[campo].rotulo}.` });
         const bytes = Math.floor(base64.length * 3 / 4);
@@ -360,7 +521,7 @@ function registrar(app, d) {
       }
 
       const id = 'bal-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
-      const arquivos = {};
+      const arquivos = Object.assign({}, doRascunho);
       for (const p of prontos) {
         const caminho = `${PASTA_ARQ}${id}/${p.campo}.${EXT[p.tipo]}`;
         await gravarArquivo(caminho, p.base64, `balcao: ${id} ${p.campo}`);
@@ -374,11 +535,22 @@ function registrar(app, d) {
         arquivos,
         consentimento: { aceito: true, em: new Date().toISOString(), versao: '2026-11' },
       };
+      if (tokenRasc && rasc) reg.rascunhoDesde = rasc.criadoEm || '';
       await putRetry(REGISTROS, (lista) => {
         reg.reenvio = lista.some(x => x && x.cpf === cpf);
         lista.push(reg);
         return lista;
       });
+      if (tokenRasc) {
+        putRetry(RASCUNHOS, (lista) => {
+          const k = lista.findIndex(x => x && x.token === tokenRasc);
+          if (k === -1) return null;
+          const trocados = Object.keys(lista[k].arquivos || {}).filter(cp => !doRascunho[cp]).map(cp => lista[k].arquivos[cp].caminho);
+          lista.splice(k, 1);
+          trocados.forEach(cm => apagarArquivo(cm, 'balcao: rascunho enviado'));
+          return lista;
+        }).catch(e => console.warn('[balcao] limpar rascunho:', e.message));
+      }
       avisarGrupo(reg); // best-effort
       limparCache();
       setTimeout(() => vincular().catch(() => {}), 5000);
