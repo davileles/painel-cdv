@@ -13,8 +13,8 @@
 //     antiga: qualquer assinatura ativa vale.
 //   - balcao (opcional, desde 17/11/2026): { jids: Set(jid dos grupos do Balcão),
 //     aprovados: Set(chave), pendentes: Set(chave) } — no grupo do Balcão só fica
-//     quem tem a verificação APROVADA (balcao.js). Quem teria direito pelo
-//     cadastro (ativo/exceção/concierge) mas não foi aprovado vira
+//     quem tem a verificação APROVADA (balcao.js). Cliente do concierge e exceção
+//     ficam sem o formulário. Quem teria direito pela assinatura (ativo) mas não foi aprovado vira
 //     `verificacao_pendente` (formulário enviado, aguardando análise — nunca sai)
 //     ou `nao_verificado` (não enviou ou foi reprovado — sai pelo Tico, se ligado).
 //   - excecoes (opcional): Map chave de telefone → null (fica em todos os grupos:
@@ -174,8 +174,13 @@ function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, tel
         else if (k && concierge.has(k)) s = { situacao: 'concierge' };
       }
       // Balcão: o direito pelo cadastro não basta, precisa da verificação aprovada.
-      if (ehBalcao && ['ativo', 'excecao', 'concierge'].includes(s.situacao) && !(k && bal.aprovados.has(k))) {
-        s = Object.assign({}, s, { situacao: k && bal.pendentes.has(k) ? 'verificacao_pendente' : 'nao_verificado', direito: s.situacao });
+      // Cliente do concierge e exceção (inclui admins) ficam sem o formulário
+      // (decisão do Davi, 17/11/2026: cliente do concierge não é cobrado disso;
+      // funcionário/caso especial entra pela tela Exceções).
+      if (ehBalcao && s.situacao === 'ativo' && !(k && bal.aprovados.has(k))) {
+        if (excVale(k, g.jid)) s = { situacao: 'excecao' };
+        else if (k && concierge.has(k)) s = { situacao: 'concierge' };
+        else s = Object.assign({}, s,{ situacao: k && bal.pendentes.has(k) ? 'verificacao_pendente' : 'nao_verificado', direito: s.situacao });
       }
       const situacao = s.situacao;
       const campo = { sem_cadastro: 'semCadastro', sem_direito: 'semDireito', verificacao_pendente: 'verificacaoPendente', nao_verificado: 'naoVerificado' }[situacao] || situacao;
