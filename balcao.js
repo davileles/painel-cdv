@@ -453,19 +453,20 @@ function registrar(app, d) {
 
   async function avisarGrupo(reg) {
     try {
-      let grupo = '';
-      try { const { content: cfg } = await getArquivoJson('cfg.json'); grupo = (cfg && cfg.grupoAlertas) || ''; } catch (e) {}
-      if (!grupo) return;
+      // Vai para o Grupo Operador (17/11/2026; antes ia para o grupo de alertas do
+      // concierge, "Demandas Concierge"). A análise fica na tela Balcão do gestor.
       const mensagem = [
         '🛡️ *Nova verificação do Balcão*',
         `👤 ${reg.nome}`,
         reg.reenvio ? '🔁 Reenvio (já havia pedido com este CPF)' : '',
         `🆔 ${reg.id}`,
         '⏳ Prazo de validação: até 5 dias úteis',
+        '✅ Analisar: https://davileles.github.io/gestor-cdv/#balcao',
       ].filter(Boolean).join('\n');
       await fetch(`${BAILEYS_URL}/enviar`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ grupo, mensagem }),
+        body: JSON.stringify({ grupo: 'operador', mensagem, direto: true }),
+        signal: AbortSignal.timeout(25000),
       });
     } catch (e) { console.warn('[balcao] aviso WA falhou:', e.message); }
   }
