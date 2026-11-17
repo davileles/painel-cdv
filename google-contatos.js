@@ -21,7 +21,11 @@
 //     Emissões (TSE) são complementos: só aparecem para quem não tem outro
 //     produto ativo (DAP e TSE entram mesmo sem dar grupo, e só para quem não tem
 //     nenhum outro produto, nem vencido);
-//   - vitalício sai com "VIT" no lugar da data.
+//   - vitalício sai com "VIT" no lugar da data;
+//   - Travel Concierge pago fora da Hubla (desde 17/11/2026): os períodos de
+//     contrato registrados no painel do concierge (clientes[].contratos) entram
+//     como registros TRC, com o fim do período mais recente — a renovação feita
+//     por transferência/Pix atualiza o nome sem passar pela Hubla.
 //
 // CommonJS. Usa as regras de situação de hubla-assinaturas.js.
 const { calcularSituacao, membroAtivo, nomeProprio } = require('./hubla-assinaturas');
@@ -78,7 +82,7 @@ function soDigitos(t) { return String(t || '').replace(/\D/g, ''); }
 
 // arquivoRegras = painel-regras-acesso.json; excecoes = lista única de
 // painel-excecoes.json (lerExcecoesPainel().proprias); ajustes = ajustes de cadastro.
-function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, agora = Date.now() }) {
+function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, clientesConcierge, agora = Date.now() }) {
   const ofertasRegra = (arquivoRegras && arquivoRegras.ofertas) || {};
   const gruposDaOferta = new Map();   // ofertaId → nº de grupos
   const gruposDoProduto = new Map();  // produtoId → nº de grupos (união, p/ acesso sem oferta)
@@ -172,6 +176,21 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, agora = Date.
     rec.inicio = x.criadoEm || x.atualizadoEm || null;
     rec.nome = x.nome; rec.email = x.email || ''; rec.telefone = x.telefone || '';
     regs.push(rec);
+  }
+
+  // Clientes do concierge com contrato registrado no painel (pago fora da Hubla).
+  for (const cli of (Array.isArray(clientesConcierge) ? clientesConcierge : [])) {
+    if (!cli || !(cli.email || cli.tel)) continue;
+    const per = (Array.isArray(cli.contratos) ? cli.contratos : [])
+      .filter(k => k && /^\d{4}-\d{2}-\d{2}$/.test(String(k.fim || '')))
+      .sort((a, b) => String(b.fim).localeCompare(String(a.fim)))[0];
+    if (!per) continue;
+    const fimMs = new Date(per.fim + 'T23:59:59-03:00').getTime();
+    if (!Number.isFinite(fimMs)) continue;
+    const iniMs = /^\d{4}-\d{2}-\d{2}$/.test(String(per.inicio || '')) ? new Date(per.inicio + 'T00:00:00-03:00').getTime() : null;
+    regs.push({ fonte: 'concierge', ofertaId: '', produtoId: '', ofertaNome: 'Travel Concierge', produtoNome: 'Travel Concierge', gratuito: false,
+      sigla: 'TRC', ativo: fimMs >= agora, vitalicio: false, fim: new Date(fimMs).toISOString(),
+      inicio: iniMs ? new Date(iniMs).toISOString() : null, nome: cli.nome, email: cli.email || '', telefone: cli.tel || '' });
   }
 
   // ── pessoas: mesma pessoa = mesmo e-mail ou mesmo telefone ──

@@ -5055,7 +5055,9 @@ app.get('/hubla/contatos', async (req, res) => {
     const [hubla, regras, exc] = await Promise.all([hublaAssinaturas.ler(), carregarRegrasAcesso(), lerExcecoesPainel()]);
     let arquivoRegras = regras && regras.data;
     if (!arquivoRegras) arquivoRegras = (await ghGetJson(PAINEL_REGRAS_PATH, null)).data;
-    const r = googleContatos.montarContatos({ hubla, arquivoRegras, excecoes: exc.proprias, ajustes: exc.ajustes });
+    let clientesConcierge = [];
+    try { clientesConcierge = (await getConciergeFile('clientes.json')).content || []; } catch (e) { /* sem concierge, segue */ }
+    const r = googleContatos.montarContatos({ hubla, arquivoRegras, excecoes: exc.proprias, ajustes: exc.ajustes, clientesConcierge });
     res.json(Object.assign({ ok: true }, r));
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
@@ -5805,6 +5807,11 @@ async function painelSemAssinatura() {
     const { situacao } = hublaAss.calcularSituacao(a, agora);
     if (situacao === 'vigente' || situacao === 'teste' || situacao === 'vitalicio') vigentes.add(_emailNorm(a.email));
   }
+  // Cliente do concierge com contrato vigente (pago fora da Hubla) mantém o painel.
+  try {
+    const cl = (await getConciergeFile('clientes.json')).content || [];
+    for (const x of (Array.isArray(cl) ? cl : [])) if (x && x.email && fimContratoConcierge(x) >= agora) vigentes.add(_emailNorm(x.email));
+  } catch (e) { /* sem concierge, segue */ }
   const admins = new Set(ADMIN_EMAILS.map(_emailNorm));
   const alias = ajusteAliasPainel(exc.ajustes);
   const membrosLista = (mdata && mdata.membros) || [];
@@ -7624,8 +7631,34 @@ function clienteNormalizado(c) {
     grupo:         t(c.grupo),
     ativo:         c.ativo === true,
     origem:        t(c.origem) || 'planilha',
+    contratos:     contratosNormalizados(c.contratos),
     atualizadoEm:  t(c.atualizadoEm) || new Date().toISOString()
   };
+}
+
+// Validade do contrato do concierge (desde 17/11/2026): o Travel Concierge é pago
+// fora da Hubla, então os períodos (contrato + renovações) são registrados no
+// painel do concierge. Datas AAAA-MM-DD; o fim vale até o fim do dia (SP).
+// Usados no nome do Google Contatos (google-contatos.js, sigla TRC) e para não
+// tirar o painel de quem tem contrato vigente (painelSemAssinatura).
+function contratosNormalizados(v) {
+  const t = (x) => String(x == null ? '' : x).trim();
+  const d = (x) => (/^\d{4}-\d{2}-\d{2}$/.test(t(x)) ? t(x) : '');
+  return (Array.isArray(v) ? v : []).filter(k => k && d(k.fim)).slice(0, 50).map(k => ({
+    id: t(k.id).slice(0, 40) || ('CT-' + d(k.fim)),
+    inicio: d(k.inicio), fim: d(k.fim), pagoEm: d(k.pagoEm),
+    forma: t(k.forma).slice(0, 40), obs: t(k.obs).slice(0, 300),
+    registradoEm: t(k.registradoEm) || new Date().toISOString(),
+  }));
+}
+// Fim do contrato mais recente do cliente (ms, fim do dia SP) ou 0.
+function fimContratoConcierge(cli) {
+  let max = 0;
+  for (const k of contratosNormalizados(cli && cli.contratos)) {
+    const ms = new Date(k.fim + 'T23:59:59-03:00').getTime();
+    if (ms > max) max = ms;
+  }
+  return max;
 }
 
 async function lerClientesConcierge() {
