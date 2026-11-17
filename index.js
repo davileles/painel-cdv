@@ -8158,6 +8158,13 @@ function nomeApresentavel(v) {
   ).join(' ');
 }
 
+// ── Balcão do CDV: formulário de verificação (balcao.js; página balcao/index.html) ──
+require('./balcao').registrar(app, {
+  fetch, GITHUB_TOKEN, REPO: CONCIERGE_DADOS_REPO,
+  putRetry: putConciergeRetry, lerLista: lerArquivoConcierge, getArquivoJson: getConciergeFile,
+  cpfValido, soDigitos, nomeApresentavel, limiteIp: cadastroLiberado, opAutorizado, BAILEYS_URL,
+});
+
 // Merge de cadastro reaprovado. O formulario e a fonte mais recente, mas so
 // sobrescreve campo que veio preenchido — o resto do registro fica intacto.
 // `id`, `grupo` e `ativo` sao gestao interna (o formulario nunca os traz).
