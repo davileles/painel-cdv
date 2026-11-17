@@ -67,7 +67,7 @@ function chaveTel(t) {
   if (!d) return null;
   if (d.startsWith('55') && (d.length === 12 || d.length === 13)) return d.slice(0, 4) + d.slice(-8);
   if (d.length === 10 || d.length === 11) return '55' + d.slice(0, 2) + d.slice(-8);
-  return null;
+  return d.length >= 8 ? d : null; // estrangeiro (ex.: +351): mesma chave da auditoria dos grupos
 }
 const quando = r => String((r && (r.statusEm || r.recebidoEm)) || '');
 const tokensNome = s => normNome(s).split(' ').filter(t => t && !['de', 'da', 'do', 'das', 'dos', 'e'].includes(t));
