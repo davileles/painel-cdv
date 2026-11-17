@@ -105,7 +105,7 @@ function situacaoPorCpf(lista) {
 function registrar(app, d) {
   const { fetch, GITHUB_TOKEN, REPO, putRetry, lerLista, getArquivoJson, cpfValido, soDigitos,
           nomeApresentavel, limiteIp, opAutorizado, BAILEYS_URL, hublaArquivo, pagadoresPorDocumento,
-          grupoBalcao, direitoBalcao, RESEND_API_KEY, adminEmails } = d;
+          grupoBalcao, direitoBalcao, RESEND_API_KEY, adminEmails, ajustesCadastro } = d;
 
   // ── Cache dos registros (a auditoria dos grupos lê a cada rodada) ─────────
   let _cache = null;
@@ -169,6 +169,18 @@ function registrar(app, d) {
         catch (e) { faturasFalharam = true; console.warn('[balcao] faturas da Hubla:', e.message); }
       }
       const pag = (_pagadores && _pagadores.mapa) || new Map();
+      // Ajustes de cadastro (visão Exceções do gestor): telefone novo de quem usa
+      // outro número nos grupos vale também para a verificação do Balcão.
+      const telAjuste = new Map();
+      if (ajustesCadastro) {
+        try {
+          for (const a of (await ajustesCadastro()) || []) {
+            const e = String(a.emailHubla || '').toLowerCase().trim();
+            if (!e || !a.telefone) continue;
+            const l = telAjuste.get(e) || new Set(); l.add(String(a.telefone)); telAjuste.set(e, l);
+          }
+        } catch (e) { console.warn('[balcao] ajustes de cadastro:', e.message); }
+      }
       // Sem as faturas (falha da API), NUNCA desfaz o vínculo por CPF já feito:
       // em 17/11/2026 uma leitura sem faturas apagou 228 vínculos e o Tico tirou
       // verificados do grupo. Tenta de novo em 15 min.
@@ -191,6 +203,7 @@ function registrar(app, d) {
           fontes.add('cpf');
         }
         for (const e of emails) for (const t of (telPorEmail.get(e) || [])) { tels.add(t); fontes.add('email'); }
+        for (const e of emails) for (const t of (telAjuste.get(e) || [])) { tels.add(t); fontes.add('ajuste'); }
         return { emails: [...emails].sort(), telefones: [...tels].sort(), fontes: [...fontes].sort() };
       };
       // Sugestões (desde 17/11/2026): quem continua sem telefone ganha até 3

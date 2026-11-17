@@ -8224,6 +8224,7 @@ var BALCAO = require('./balcao').registrar(app, {
   cpfValido, soDigitos, nomeApresentavel, limiteIp: cadastroLiberado, opAutorizado, BAILEYS_URL,
   hublaArquivo: async () => (await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {})).data,
   pagadoresPorDocumento: () => hublaAssinaturas.pagadoresPorDocumento(),
+  ajustesCadastro: async () => { const { data } = await ghGetJson(PAINEL_EXCECOES_PATH, { excecoes: [] }); return Array.isArray(data && data.ajustes) ? data.ajustes : []; },
   grupoBalcao: (o) => grupoBalcao(o),
   direitoBalcao: (chaves) => direitoBalcao(chaves),
   RESEND_API_KEY, adminEmails: () => ADMIN_EMAILS,
