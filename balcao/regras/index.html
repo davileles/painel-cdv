@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Regras do Balcão · Clube do Viajante</title>
+<meta name="description" content="Regras do Balcão de Milhas do Clube do Viajante: como pedir, ofertar, aceitar e fechar negociações de milhas com segurança."/>
+<link rel="icon" type="image/png" href="../../logocdv.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#eef1f8; --card:#ffffff; --field:#f7f9fd;
+  --border:#e3e8f4; --border-ctrl:#cfd8ea;
+  --text:#17203a; --muted:#5f6d8c; --muted2:#8a97b1;
+  --accent:#ff585e; --accent2:#e0484e; --coral-tint:#ffe9ea; --coral-line:#ffd2d4; --coral-ink:#c93a40;
+  --green:#12864a; --green-tint:#f2fbf6; --amber:#9a6200; --amber-tint:#fff6e3; --amber-line:#f5dfa8;
+  --shadow:0 8px 24px rgba(23,32,58,.08);
+  --font:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:#141a29; --card:#232c42; --field:#1a2132;
+    --border:#2c3651; --border-ctrl:#3b4767;
+    --text:#eef2fa; --muted:#a4b1cd; --muted2:#7f8dab;
+    --coral-tint:rgba(255,88,94,.14); --coral-line:rgba(255,88,94,.38); --coral-ink:#ff8085;
+    --green:#3ccf86; --green-tint:rgba(60,207,134,.10);
+    --amber:#f3c065; --amber-tint:rgba(243,192,101,.10); --amber-line:rgba(243,192,101,.35);
+    --shadow:0 8px 24px rgba(0,0,0,.25);
+  }
+}
+html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 720px; margin: 0 auto; padding: 28px 18px 80px; }
+header { text-align: center; margin-bottom: 22px; }
+.logo { display: inline-flex; background: #fff; border-radius: 14px; padding: 10px 16px; box-shadow: var(--shadow); margin-bottom: 18px; }
+.logo img { height: 44px; width: auto; display: block; }
+.tag { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--coral-ink); background: var(--coral-tint); border: 1px solid var(--coral-line); border-radius: 99px; padding: 5px 12px; margin-bottom: 12px; }
+h1 { font-size: 24px; font-weight: 800; letter-spacing: -.2px; }
+.sub { font-size: 13.5px; color: var(--muted); margin-top: 8px; line-height: 1.7; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; box-shadow: var(--shadow); margin-bottom: 14px; }
+.card-h { font-size: 17px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+.card-h svg { width: 22px; height: 22px; color: var(--accent); flex-shrink: 0; }
+.card p, .card li { font-size: 14px; color: var(--muted); line-height: 1.75; }
+.card p + p { margin-top: 8px; }
+.card b { color: var(--text); }
+.regras { list-style: none; counter-reset: r; }
+.regras > li { counter-increment: r; position: relative; padding: 16px 0 16px 46px; border-bottom: 1px solid var(--border); }
+.regras > li:first-child { padding-top: 4px; }
+.regras > li:last-child { border-bottom: none; padding-bottom: 4px; }
+.regras > li::before { content: counter(r); position: absolute; left: 0; top: 14px; width: 32px; height: 32px; border-radius: 10px;
+  background: var(--coral-tint); color: var(--coral-ink); font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.regras > li:first-child::before { top: 2px; }
+.regras h3 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.regras ul { margin: 8px 0 0 18px; }
+.ex { margin-top: 10px; background: var(--field); border: 1px dashed var(--border-ctrl); border-radius: 10px; padding: 10px 12px;
+  font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.6; }
+.ex small { display: block; font-size: 10.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted2); margin-bottom: 3px; }
+.alerta { background: var(--amber-tint); border: 1px solid var(--amber-line); border-radius: 12px; padding: 12px 14px; margin-top: 10px; font-size: 13.5px; color: var(--amber); line-height: 1.65; font-weight: 600; }
+.dicas { list-style: none; }
+.dicas li { position: relative; padding: 8px 0 8px 28px; }
+.dicas li svg { position: absolute; left: 0; top: 11px; width: 18px; height: 18px; color: var(--green); }
+.links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+.links a { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 13px; border-radius: 12px; text-decoration: none;
+  font-size: 13.5px; font-weight: 700; text-align: center; }
+.links a svg { width: 18px; height: 18px; flex-shrink: 0; }
+.links .pri { background: var(--accent); color: #fff; }
+.links .pri:hover { background: var(--accent2); }
+.links .sec { background: var(--green-tint); color: var(--green); border: 1px solid var(--border); }
+@media (max-width: 520px) { .links { grid-template-columns: 1fr; } }
+.rodape { font-size: 12px; color: var(--muted2); text-align: center; margin-top: 18px; line-height: 1.7; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-storefront" viewBox="0 0 256 256" fill="currentColor"><path d="M232,96a7.89,7.89,0,0,0-.3-2.2L217.35,43.6A16.07,16.07,0,0,0,202,32H54A16.07,16.07,0,0,0,38.65,43.6L24.31,93.8A7.89,7.89,0,0,0,24,96v16a40,40,0,0,0,16,32v64a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V144a40,40,0,0,0,16-32ZM54,48H202l11.42,40H42.61Zm50,56h48v8a24,24,0,0,1-48,0Zm-16,0v8a24,24,0,0,1-48,0v-8ZM200,208H56V151.2a40.57,40.57,0,0,0,8,.8,40,40,0,0,0,32-16,40,40,0,0,0,64,0,40,40,0,0,0,32,16,40.57,40.57,0,0,0,8-.8Zm-8-72a24,24,0,0,1-24-24v-8h48v8A24,24,0,0,1,192,136Z"/></symbol>
+  <symbol id="i-list" viewBox="0 0 256 256" fill="currentColor"><path d="M224,128a8,8,0,0,1-8,8H104a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM104,72H216a8,8,0,0,0,0-16H104a8,8,0,0,0,0,16ZM216,184H104a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM64,116H40a8,8,0,0,0,0,16H64a8,8,0,0,0,0-16Zm0-64H40a8,8,0,0,0,0,16H64a8,8,0,0,0,0-16Zm0,128H40a8,8,0,0,0,0,16H64a8,8,0,0,0,0-16Z"/></symbol>
+  <symbol id="i-lightbulb" viewBox="0 0 256 256" fill="currentColor"><path d="M176,232a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,232Zm40-128a87.55,87.55,0,0,1-33.64,69.21A16.24,16.24,0,0,0,176,186v6a16,16,0,0,1-16,16H96a16,16,0,0,1-16-16v-6a16,16,0,0,0-6.23-12.66A87.59,87.59,0,0,1,40,104.49C39.74,56.83,78.26,17.14,125.88,16A88,88,0,0,1,216,104Zm-16,0a72,72,0,0,0-73.74-72c-39,.92-70.47,33.39-70.26,72.39a71.65,71.65,0,0,0,27.64,56.3A32,32,0,0,1,96,186v6h64v-6a32.15,32.15,0,0,1,12.47-25.35A71.65,71.65,0,0,0,200,104Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 256 256" fill="currentColor"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 256 256" fill="currentColor"><path d="M208,40H48A16,16,0,0,0,32,56v56c0,52.72,25.52,84.67,46.93,102.19,23.06,18.86,46,25.27,47,25.53a8,8,0,0,0,4.2,0c1-.26,23.91-6.67,47-25.53C198.48,196.67,224,164.72,224,112V56A16,16,0,0,0,208,40Zm0,72c0,37.07-13.66,67.16-40.6,89.42A129.3,129.3,0,0,1,128,223.62a128.25,128.25,0,0,1-38.92-21.81C61.82,179.51,48,149.3,48,112l0-56,160,0ZM82.34,141.66a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32l-56,56a8,8,0,0,1-11.32,0Z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 256 256" fill="currentColor"><path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"/></symbol>
+</svg>
+
+<div class="wrap">
+  <header>
+    <div class="logo"><img src="../../logocdv.png" alt="Clube do Viajante"/></div><br/>
+    <span class="tag">Balcão do Clube do Viajante</span>
+    <h1>Regras do Balcão</h1>
+    <p class="sub">Como pedir, ofertar e fechar negociações de milhas entre os membros do Clube.</p>
+  </header>
+
+  <section class="card">
+    <div class="card-h"><svg><use href="#i-storefront"/></svg>Para que serve o Balcão</div>
+    <p>O Balcão conecta quem tem <b>milhas sobrando</b> com quem <b>precisa de milhas</b> para emitir passagens.</p>
+    <p>Quem vende consegue valores melhores que os sites de compra de milhas (ou condições de recebimento melhores). Quem compra economiza na emissão das passagens.</p>
+    <div class="alerta">Só membros com a verificação <b>aprovada</b> e a assinatura em dia podem negociar no Balcão. Antes de fechar qualquer negócio, confira se a pessoa está na lista de membros aprovados.</div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><svg><use href="#i-list"/></svg>Regras do grupo</div>
+    <ol class="regras">
+      <li>
+        <h3>Só pedidos de compra</h3>
+        <p>No grupo só podem ser publicados <b>pedidos de compra</b> de milhas. Não é permitido anunciar venda (“tenho milhas, quem quer?”).</p>
+        <div class="ex"><small>Exemplo</small>COMPRO 80 mil milhas Smiles para 2 CPFs por 16,50 o milheiro.</div>
+      </li>
+      <li>
+        <h3>Responsabilidade e golpes</h3>
+        <p>Comprador e vendedor são <b>totalmente responsáveis</b> pelas suas negociações. O Clube do Viajante e o Davi Leles não se responsabilizam por golpes. Em caso de golpe, os dados pessoais de quem aplicou poderão ser repassados às autoridades, mas não haverá envolvimento na negociação.</p>
+        <p>Golpe comprovado = <b>expulsão de todos os grupos</b> da comunidade.</p>
+      </li>
+      <li>
+        <h3>O que todo pedido de compra precisa ter</h3>
+        <ul>
+          <li>Quantidade de milhas</li>
+          <li>Programa de fidelidade</li>
+          <li>Quantidade de CPFs</li>
+          <li>Valor do milheiro</li>
+        </ul>
+        <p style="margin-top:8px">Na <b>Azul</b>, informe “Azul Interline” quando o voo for de parceira. Só “Azul” indica emissão direta em voo Azul, o que pode limitar a quantidade de CPFs.</p>
+      </li>
+      <li>
+        <h3>Contraproposta</h3>
+        <p>Se quiser vender por um valor diferente do pedido, <b>responda a mensagem do comprador</b> com o seu valor do milheiro. Nunca oferte por um valor <b>menor</b> que o sugerido pelo comprador, para evitar leilão entre vendedores.</p>
+        <p>As ofertas são feitas <b>no grupo</b>, e não no privado.</p>
+      </li>
+      <li>
+        <h3>Aceite da oferta</h3>
+        <p>O comprador responde “<b>Aceito</b>” na mensagem do vendedor escolhido e depois chama esse vendedor no privado para finalizar.</p>
+      </li>
+      <li>
+        <h3>Informe a negociação concluída</h3>
+        <p>Depois de fechar, volte ao grupo e informe que a negociação foi concluída. Isso forma um histórico do preço médio do mercado e ajuda a construir a credibilidade de cada membro.</p>
+      </li>
+      <li>
+        <h3>Pedidos de cotação específicos</h3>
+        <p>Pedidos vagos (“quanto fica Nova York no dia X?”) não são recomendados. Pesquise antes qual é o melhor programa e quantas milhas são necessárias. Pedidos vagos continuam permitidos, mas têm muito menos chance de resposta. Para cotações genéricas, use o modelo de cotação do grupo.</p>
+      </li>
+      <li>
+        <h3>Negociação começa no grupo</h3>
+        <p>Toda negociação começa no grupo, onde os outros membros podem dar referências sobre cada pessoa. Não aceite negociação no privado que pule a etapa de cotação no grupo, e <b>denuncie</b> quem tentar negociar só no privado.</p>
+      </li>
+      <li>
+        <h3>Detalhes da emissão no privado</h3>
+        <p>Depois do aceite, os detalhes da emissão (dados dos passageiros, voos, pagamento) são tratados no privado, para não poluir o grupo.</p>
+      </li>
+      <li>
+        <h3>Suporte do vendedor em alterações</h3>
+        <p>O vendedor também é responsável por remarcações e cancelamentos e deve ajudar o comprador no que for preciso.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><svg><use href="#i-lightbulb"/></svg>Dicas para negociar com segurança</div>
+    <ul class="dicas">
+      <li><svg><use href="#i-check"/></svg>Aceite pagamento por <b>PIX no CPF do próprio negociador</b>.</li>
+      <li><svg><use href="#i-check"/></svg>Passagens emitidas com <b>menos de 7 dias</b> para o embarque não podem ser canceladas.</li>
+      <li><svg><use href="#i-check"/></svg>Se o pagamento não cair em até <b>24 horas</b>, cancele a emissão dentro desse prazo para ter reembolso integral e sem custo (vale só para programas nacionais).</li>
+      <li><svg><use href="#i-check"/></svg>Confira sempre se a pessoa está na <b>lista de membros aprovados</b> antes de negociar.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><svg><use href="#i-shield"/></svg>Verificação e lista de aprovados</div>
+    <p>Ainda não fez a verificação? Preencha o formulário para poder negociar no Balcão. Já é aprovado? Consulte quem mais está habilitado.</p>
+    <div class="links">
+      <a class="pri" href="../"><svg><use href="#i-shield"/></svg>Fazer a verificação</a>
+      <a class="sec" href="../aprovados/"><svg><use href="#i-users"/></svg>Membros aprovados</a>
+    </div>
+  </section>
+
+  <p class="rodape">Balcão do Clube do Viajante · O descumprimento das regras pode levar à remoção do grupo.</p>
+</div>
+</body>
+</html>
