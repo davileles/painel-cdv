@@ -207,10 +207,23 @@ function registrar(app, d) {
           if (!r) continue;
           const v = calc(r);
           const ant = r.vinculo || {};
+          if (!v.telefones.length && (ant.fontes || []).includes('duplicado')) continue; // revisto no passo dos duplicados
           if (JSON.stringify([ant.emails, ant.telefones, ant.fontes]) !== JSON.stringify([v.emails, v.telefones, v.fontes])) {
             r.vinculo = Object.assign(v, { em: new Date().toISOString() });
             mudou++;
           }
+        }
+        // Mesma pessoa que reenviou o formulário com o CPF digitado errado (desde
+        // 17/11/2026): mesmo nome + mesma data de nascimento + CPF diferente em até
+        // 2 dígitos (ou CPF inválido) → herda os telefones do registro que já tem vínculo.
+        const difCpf = (a, b) => { a = soDigitos(a); b = soDigitos(b); if (a.length !== 11 || b.length !== 11) return 99; let d = 0; for (let i = 0; i < 11; i++) if (a[i] !== b[i]) d++; return d; };
+        for (const r of lista) {
+          if (!r || telefonesDo(r).size || !r.nascimento) continue;
+          const irmao = lista.find(o => o && o !== r && o.nascimento === r.nascimento && normNome(o.nome) === normNome(r.nome) && (difCpf(o.cpf, r.cpf) <= 2 || !cpfValido(r.cpf)) && (o.vinculo && (o.vinculo.telefones || []).length));
+          if (!irmao) continue;
+          const v = r.vinculo || { emails: [], telefones: [], fontes: [] };
+          r.vinculo = { emails: [...new Set([...(v.emails || []), ...(irmao.vinculo.emails || [])])].sort(), telefones: [...new Set([...(v.telefones || []), ...irmao.vinculo.telefones])].sort(), fontes: [...new Set([...(v.fontes || []), 'duplicado'])].sort(), duplicadoDe: irmao.id, em: new Date().toISOString() };
+          mudou++;
         }
         // telefones já usados por alguma verificação não viram sugestão de outra
         const usados = new Set();
