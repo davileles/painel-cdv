@@ -82,7 +82,9 @@ function soDigitos(t) { return String(t || '').replace(/\D/g, ''); }
 
 // arquivoRegras = painel-regras-acesso.json; excecoes = lista única de
 // painel-excecoes.json (lerExcecoesPainel().proprias); ajustes = ajustes de cadastro.
-function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, clientesConcierge, agora = Date.now() }) {
+// hotmart = registros de hotmart-vendas.js (registrosContatos): vendas antigas da
+// Hotmart, só para quem não tem nenhum outro registro (desde 17/11/2026).
+function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, clientesConcierge, hotmart, agora = Date.now() }) {
   const ofertasRegra = (arquivoRegras && arquivoRegras.ofertas) || {};
   const gruposDaOferta = new Map();   // ofertaId → nº de grupos
   const gruposDoProduto = new Map();  // produtoId → nº de grupos (união, p/ acesso sem oferta)
@@ -193,6 +195,11 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, clientesConci
       inicio: iniMs ? new Date(iniMs).toISOString() : null, nome: cli.nome, email: cli.email || '', telefone: cli.tel || '' });
   }
 
+  // Vendas antigas da Hotmart (antes da Hubla): já vêm com sigla e fim de 1 ano.
+  for (const h of (Array.isArray(hotmart) ? hotmart : [])) {
+    if (h && h.sigla && (h.email || h.telefone)) regs.push(Object.assign({}, h, { fonte: 'hotmart' }));
+  }
+
   // ── pessoas: mesma pessoa = mesmo e-mail ou mesmo telefone ──
   const extrasTel = new Map(); // e-mail da Hubla → telefones dos Ajustes de cadastro
   const extrasEmail = new Map(); // e-mail da Hubla → e-mail do painel
@@ -227,7 +234,10 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, clientesConci
   }
 
   const contatos = [];
-  for (const lista0 of grupos.values()) {
+  for (const todos of grupos.values()) {
+    // Hotmart nunca sobrescreve: quem tem qualquer registro da Hubla, do concierge
+    // ou das exceções segue só por eles (a venda antiga nem entra no nome).
+    const lista0 = todos.some(r => r.fonte !== 'hotmart') ? todos.filter(r => r.fonte !== 'hotmart') : todos;
     // DAP/TSE (cursos sem grupo) só dão nome a quem não tem nenhum outro registro:
     // um curso vitalício não pode esconder a data do Clube vencido.
     const comGrupo = lista0.filter(r => !SEM_GRUPO_CONTA.has(r.sigla));

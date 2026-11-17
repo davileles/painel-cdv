@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Importar vendas da Hotmart · CDV</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#1e2535; --surface:#2a3246; --surface2:#323c54; --border:#3d4a66; --accent:#ff585e; --accent2:#e04449; --blue:#126eff; --text:#eeeeee; --muted:#8a9bbf; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:Montserrat, system-ui, sans-serif; }
+  main { max-width:720px; margin:0 auto; padding:32px 20px 60px; }
+  h1 { font-size:22px; margin:0 0 6px; }
+  p { color:var(--muted); line-height:1.5; font-size:14px; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; margin-top:18px; }
+  label { display:block; font-size:13px; font-weight:600; margin-bottom:6px; }
+  input[type=password], input[type=file] { width:100%; padding:10px 12px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; color:var(--text); font:inherit; }
+  button { margin-top:14px; padding:11px 18px; border:0; border-radius:10px; background:var(--accent); color:#fff; font:inherit; font-weight:700; cursor:pointer; }
+  button.sec { background:var(--surface2); border:1px solid var(--border); }
+  button:disabled { opacity:.5; cursor:default; }
+  table { width:100%; border-collapse:collapse; margin-top:10px; font-size:14px; }
+  td { padding:7px 4px; border-bottom:1px solid var(--border); }
+  td:last-child { text-align:right; font-weight:700; }
+  .msg { margin-top:12px; font-size:14px; }
+  .erro { color:var(--accent); }
+  .ok { color:#5fd38d; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Importar vendas antigas da Hotmart</h1>
+  <p>Envie o CSV exportado da Hotmart. Entram só <b>Tudo Sobre Milhas</b> (vira Escola do Viajante) e <b>Grupos Exclusivos Tudo Sobre Milhas</b> (vira Clube do Viajante), cada venda valendo 1 ano a partir da compra. Travel Concierge e outros produtos são ignorados. Quem comprou depois na Hubla continua pela Hubla: a Hotmart fica só como histórico. Nada aqui dá acesso ao painel nem aos grupos.</p>
+
+  <div class="card">
+    <label for="chave">Chave de operador (a mesma do gestor)</label>
+    <input type="password" id="chave" autocomplete="off">
+    <label for="arq" style="margin-top:14px">Arquivo CSV da Hotmart</label>
+    <input type="file" id="arq" accept=".csv,text/csv">
+    <button id="btn-ensaio">Conferir antes</button>
+    <button id="btn-importar" class="sec" disabled>Importar</button>
+    <div id="msg" class="msg"></div>
+    <table id="tab" hidden></table>
+  </div>
+</main>
+<script>
+(function () {
+  var PROXY = 'https://cdv-proxy-production.up.railway.app';
+  var chaveEl = document.getElementById('chave');
+  var arqEl = document.getElementById('arq');
+  var msg = document.getElementById('msg');
+  var tab = document.getElementById('tab');
+  var btnE = document.getElementById('btn-ensaio');
+  var btnI = document.getElementById('btn-importar');
+  var dados = null;
+  try { chaveEl.value = localStorage.getItem('cdv_op_key') || ''; } catch (e) {}
+
+  // CSV com aspas ("a, b" e "" dentro de aspas).
+  function lerCsv(t) {
+    t = t.replace(/^﻿/, '');
+    var linhas = [], l = [], f = '', q = false;
+    for (var i = 0; i < t.length; i++) {
+      var c = t[i];
+      if (q) {
+        if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; }
+        else f += c;
+      } else if (c === '"') q = true;
+      else if (c === ',') { l.push(f); f = ''; }
+      else if (c === '\n') { l.push(f.replace(/\r$/, '')); linhas.push(l); l = []; f = ''; }
+      else f += c;
+    }
+    if (f || l.length) { l.push(f.replace(/\r$/, '')); linhas.push(l); }
+    return linhas;
+  }
+  function aviso(t, cls) { msg.className = 'msg ' + (cls || ''); msg.textContent = t; }
+  function linha(rot, val) {
+    var tr = document.createElement('tr');
+    var a = document.createElement('td'); a.textContent = rot;
+    var b = document.createElement('td'); b.textContent = val;
+    tr.appendChild(a); tr.appendChild(b); tab.appendChild(tr);
+  }
+  function mostrar(r) {
+    tab.innerHTML = ''; tab.hidden = false;
+    linha('Vendas que entram', r.vendas);
+    Object.keys(r.porProduto || {}).sort().forEach(function (k) { linha('· ' + k, r.porProduto[k]); });
+    linha('Pessoas', r.pessoas);
+    linha('Já compraram na Hubla (seguem pela Hubla)', r.pessoasComCompraNaHubla);
+    linha('Só na Hotmart (ficam registradas como ex-alunos)', r.pessoasSoHotmart);
+    var ig = r.ignorados || {};
+    Object.keys(ig.produto || {}).sort().forEach(function (k) { linha('Ignorado · ' + k, ig.produto[k]); });
+    if (ig.status) linha('Ignorado · status não aprovado', ig.status);
+    if (ig.semContato) linha('Ignorado · sem e-mail e sem telefone', ig.semContato);
+    if (ig.semData) linha('Ignorado · sem data de venda', ig.semData);
+    if (r.novas !== undefined) { linha('Novas na base', r.novas); linha('Atualizadas (já estavam)', r.atualizadas); }
+  }
+  async function enviar(ensaio) {
+    var chave = chaveEl.value.trim();
+    if (!chave) return aviso('Informe a chave de operador.', 'erro');
+    if (!dados) {
+      var f = arqEl.files && arqEl.files[0];
+      if (!f) return aviso('Escolha o arquivo CSV.', 'erro');
+      var linhas = lerCsv(await f.text());
+      dados = { cabecalho: linhas[0] || [], linhas: linhas.slice(1) };
+    }
+    try { localStorage.setItem('cdv_op_key', chave); } catch (e) {}
+    btnE.disabled = btnI.disabled = true;
+    aviso(ensaio ? 'Conferindo…' : 'Importando…');
+    try {
+      var res = await fetch(PROXY + '/hubla/hotmart/importar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CDV-Op': chave },
+        body: JSON.stringify({ cabecalho: dados.cabecalho, linhas: dados.linhas, ensaio: ensaio }),
+      });
+      var j = await res.json().catch(function () { return {}; });
+      if (!res.ok || !j.ok) throw new Error(j.erro || ('HTTP ' + res.status));
+      mostrar(j.resumo || {});
+      aviso(ensaio ? 'Confira os números e clique em Importar.' : 'Importação concluída.', 'ok');
+      btnI.disabled = !ensaio;
+    } catch (e) {
+      aviso('Erro: ' + e.message, 'erro');
+      btnI.disabled = true;
+    } finally {
+      btnE.disabled = false;
+    }
+  }
+  arqEl.addEventListener('change', function () { dados = null; btnI.disabled = true; tab.hidden = true; aviso(''); });
+  btnE.addEventListener('click', function () { enviar(true); });
+  btnI.addEventListener('click', function () { enviar(false); });
+})();
+</script>
+</body>
+</html>

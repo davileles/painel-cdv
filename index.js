@@ -51,6 +51,8 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'consultorias.json',
   // Assinaturas da Hubla (nome, e-mail, telefone, início/fim): repo privado.
   'hubla-assinaturas.json',
+  // Vendas antigas da Hotmart (nome, contato, cidade): repo privado.
+  'hotmart-vendas.json',
   // Tokens de usuário do Méliuz (access + refresh rotacionado): repo privado.
   'meliuz-token.json',
   // Celulares dos membros (chave do Face ID/digital em hash + token de push): repo privado.
@@ -5025,7 +5027,82 @@ app.get('/hubla/assinaturas', async (req, res) => {
   try {
     const r = await hublaAssinaturas.listar({ situacao: req.query.situacao, painel: req.query.painel, email: req.query.email });
     for (const a of ((r && r.assinaturas) || [])) if (a && a.nome) a.nome = hublaAss.nomeProprio(a.nome);
+    // Vendas antigas da Hotmart (só histórico; ?hotmart=0 tira). Não entram em ?painel=1.
+    if (req.query.hotmart !== '0' && req.query.painel !== '1') {
+      try {
+        let hl = hotmartVendas.linhasAssinaturas((await ghGetJson(HOTMART_VENDAS_PATH, {})).data);
+        if (req.query.situacao) { const quer = new Set(String(req.query.situacao).split(',')); hl = hl.filter(a => quer.has(a.situacao)); }
+        if (req.query.email) { const e = String(req.query.email).toLowerCase().trim(); hl = hl.filter(a => a.email === e); }
+        r.assinaturas = (r.assinaturas || []).concat(hl);
+        r.total = r.assinaturas.length;
+        r.hotmart = hl.length;
+      } catch (e) { console.warn('[hotmart] leitura falhou:', e.message); }
+    }
     res.json(Object.assign({ ok: true }, r));
+  } catch (err) {
+    res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
+// ── Vendas antigas da Hotmart (desde 17/11/2026, hotmart-vendas.js) ──
+// POST /hubla/hotmart/importar {cabecalho:[...], linhas:[[...]], ensaio?} (X-CDV-Op)
+// recebe o CSV de vendas da Hotmart já dividido em colunas (página
+// importar-hotmart/). Só "Tudo Sobre Milhas" (→ Escola do Viajante) e "Grupos
+// Exclusivos Tudo Sobre Milhas" (→ Clube do Viajante); o resto é ignorado.
+// Grava/atualiza por transação em hotmart-vendas.json (nunca apaga venda já
+// importada). Só histórico: não dá painel nem grupo. `ensaio` = só conta.
+const hotmartVendas = require('./hotmart-vendas');
+const HOTMART_VENDAS_PATH = 'hotmart-vendas.json';
+app.post('/hubla/hotmart/importar', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const b = req.body || {};
+  if (!Array.isArray(b.cabecalho) || !Array.isArray(b.linhas) || !b.linhas.length) return res.status(400).json({ ok: false, erro: 'cabecalho e linhas obrigatórios' });
+  if (b.linhas.length > 20000) return res.status(400).json({ ok: false, erro: 'máximo 20.000 linhas' });
+  try {
+    const agoraIso = new Date().toISOString();
+    const { vendas, ignorados } = hotmartVendas.normalizarCsv(b.cabecalho, b.linhas, agoraIso);
+    // Quem tem algum registro na Hubla (mesmo e-mail ou telefone): no Google
+    // Contatos segue a Hubla; a venda da Hotmart fica só no histórico.
+    const chaveTel = require('./hubla-grupos-auditoria').chaveTelefone;
+    const hubla = await hublaAssinaturas.ler();
+    const emails = new Set(), tels = new Set();
+    const ver = (e, t) => { if (e) emails.add(String(e).toLowerCase().trim()); const k = chaveTel(t); if (k) tels.add(k); };
+    for (const a of Object.values((hubla && hubla.assinaturas) || {})) if (a) ver(a.email, a.telefone);
+    for (const p of Object.values((hubla && hubla.acessosPorProduto) || {})) for (const [e, m] of Object.entries((p && p.membros) || {})) ver(e, m && m.telefone);
+    const pessoas = new Map();
+    for (const v of Object.values(vendas)) {
+      const k = v.email || chaveTel(v.telefone) || v.id;
+      const naHubla = (v.email && emails.has(v.email)) || tels.has(chaveTel(v.telefone));
+      const x = pessoas.get(k) || { naHubla: false };
+      x.naHubla = x.naHubla || !!naHubla; pessoas.set(k, x);
+    }
+    const porProduto = {};
+    for (const v of Object.values(vendas)) porProduto[v.produto] = (porProduto[v.produto] || 0) + 1;
+    const resumo = {
+      vendas: Object.keys(vendas).length, porProduto, pessoas: pessoas.size,
+      pessoasComCompraNaHubla: [...pessoas.values()].filter(x => x.naHubla).length,
+      pessoasSoHotmart: [...pessoas.values()].filter(x => !x.naHubla).length,
+      ignorados,
+    };
+    if (b.ensaio) return res.json({ ok: true, ensaio: true, resumo });
+    let novas = 0, atualizadas = 0;
+    for (let t = 1; t <= 3; t++) {
+      try {
+        const { data, sha } = await ghGetJson(HOTMART_VENDAS_PATH, { vendas: {} });
+        const atual = Object.assign({}, (data && data.vendas) || {});
+        novas = 0; atualizadas = 0;
+        for (const [id, v] of Object.entries(vendas)) {
+          if (atual[id]) { atualizadas++; v.importadoEm = atual[id].importadoEm || v.importadoEm; } else novas++;
+          atual[id] = v;
+        }
+        await ghPutJson(HOTMART_VENDAS_PATH, { atualizadoEm: agoraIso, vendas: atual }, sha, `hotmart: importa ${Object.keys(vendas).length} vendas antigas`);
+        break;
+      } catch (e) {
+        if (t < 3 && String(e.message).includes('but expected')) { await new Promise(r => setTimeout(r, t * 500)); continue; }
+        throw e;
+      }
+    }
+    res.json({ ok: true, resumo: Object.assign(resumo, { novas, atualizadas }) });
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }
@@ -5058,7 +5135,9 @@ app.get('/hubla/contatos', async (req, res) => {
     if (!arquivoRegras) arquivoRegras = (await ghGetJson(PAINEL_REGRAS_PATH, null)).data;
     let clientesConcierge = [];
     try { clientesConcierge = (await getConciergeFile('clientes.json')).content || []; } catch (e) { /* sem concierge, segue */ }
-    const r = googleContatos.montarContatos({ hubla, arquivoRegras, excecoes: exc.proprias, ajustes: exc.ajustes, clientesConcierge });
+    let hotmart = [];
+    try { hotmart = hotmartVendas.registrosContatos((await ghGetJson(HOTMART_VENDAS_PATH, {})).data); } catch (e) { /* sem arquivo, segue */ }
+    const r = googleContatos.montarContatos({ hubla, arquivoRegras, excecoes: exc.proprias, ajustes: exc.ajustes, clientesConcierge, hotmart });
     res.json(Object.assign({ ok: true }, r));
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
