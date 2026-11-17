@@ -5248,12 +5248,80 @@ function chavesExcecao(base, excecoes) {
   for (const p of Object.values((base && base.acessosPorProduto) || {})) for (const [e, m] of Object.entries(p.membros || {})) ver(e, m.telefone);
   return out;
 }
+// Acompanhantes do concierge (desde 17/11/2026, decisão do Davi): quem está no
+// grupo de WhatsApp de um cliente do concierge (nome "Travel Concierge…" ou
+// "Consultoria…") e não é admin nem número da casa ganha o mesmo direito do
+// titular nos grupos do CDV, com a mesma validade (contratos do titular; grupo
+// com mais de um cliente → o de contrato que vai mais longe). Não entra no
+// Google Contatos (não temos o nome).
+// Cache de 30 min; uma chamada ao baileys por grupo, com pausa entre elas.
+let _acompConcierge = null;
+let _acompConciergeEmVoo = null;
+async function membrosGruposConcierge(jids) {
+  if (_acompConcierge && Date.now() - _acompConcierge.em < 30 * 60 * 1000) return _acompConcierge.porJid;
+  if (_acompConciergeEmVoo) return _acompConciergeEmVoo;
+  _acompConciergeEmVoo = (async () => {
+    const nomes = new Map();
+    try {
+      const rg = await fetch(`${BAILEYS_URL}/grupos`, { timeout: 30000 });
+      const dg = await rg.json().catch(() => ({}));
+      for (const g of (dg.grupos || [])) nomes.set(g.id || g.jid, g.nome || '');
+    } catch (e) { console.warn('[concierge] acompanhantes, lista de grupos:', e.message); }
+    const porJid = new Map();
+    for (const jid of jids) {
+      const n = String(nomes.get(jid) || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+      if (!/^(consultoria|travel concierge)/.test(n)) continue; // nunca o Grupo Operador nem grupo do CDV
+      try {
+        const r = await fetch(`${BAILEYS_URL}/grupos-gestao/membros?jid=${encodeURIComponent(jid)}`, { timeout: 60000 });
+        const d = await r.json().catch(() => ({}));
+        if (d.ok) porJid.set(jid, d.membros || []);
+      } catch (e) { console.warn('[concierge] acompanhantes', jid, e.message); }
+      await new Promise(res => setTimeout(res, 600));
+    }
+    _acompConcierge = { em: Date.now(), porJid };
+    return porJid;
+  })().finally(() => { _acompConciergeEmVoo = null; });
+  return _acompConciergeEmVoo;
+}
+async function acompanhantesConcierge(clientes) {
+  const lista = Array.isArray(clientes) ? clientes : [];
+  const porGrupo = new Map();
+  for (const c of lista) if (c && String(c.grupo || '').endsWith('g.us')) {
+    const l = porGrupo.get(c.grupo) || []; l.push(c); porGrupo.set(c.grupo, l);
+  }
+  if (!porGrupo.size) return [];
+  let membros;
+  try { membros = await membrosGruposConcierge([...porGrupo.keys()]); } catch (e) { console.warn('[concierge] acompanhantes:', e.message); return []; }
+  const jaCliente = new Set(lista.map(c => hublaAuditoria.chaveTelefone(c && c.tel)).filter(Boolean));
+  const out = [];
+  const vistos = new Set();
+  for (const [jid, cls] of porGrupo) {
+    // Titular de referência: contrato que vai mais longe; sem contrato, o primeiro ativo.
+    const tit = cls.slice().sort((a, b) => (fimContratoConcierge(b) - fimContratoConcierge(a)) || ((b.ativo !== false) - (a.ativo !== false)))[0];
+    const algumAtivo = cls.some(c => c.ativo !== false);
+    for (const m of (membros.get(jid) || [])) {
+      if (!m || m.conta || m.admin) continue;
+      const k = hublaAuditoria.chaveTelefone(m.telefone);
+      if (!k || jaCliente.has(k) || vistos.has(k)) continue;
+      vistos.add(k);
+      out.push({ nome: 'Acompanhante de ' + (tit.nome || 'cliente do concierge'), tel: String(m.telefone),
+        ativo: algumAtivo, contratos: fimContratoConcierge(tit) ? tit.contratos : [], acompanhante: true, titularId: tit.id || null, grupo: jid });
+    }
+  }
+  return out;
+}
+async function clientesConciergeComAcompanhantes() {
+  let clientes = [];
+  try { clientes = (await getConciergeFile('clientes.json')).content || []; } catch (e) { return []; }
+  if (!Array.isArray(clientes)) return [];
+  return clientes.concat(await acompanhantesConcierge(clientes));
+}
 async function montarAuditoriaGrupos({ forcar = false, gruposRegras, tempos } = {}) {
   const bruto = await coletarGruposCdv(forcar);
   const [{ data: hubla }, exc, { data: rem }] = await Promise.all([ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}), lerExcecoesPainel(),
     ghGetJson('grupos-remocao.json', null)]);
-  let clientes = [];
-  try { clientes = (await getConciergeFile('clientes.json')).content || []; } catch (e) { /* sem concierge, segue */ }
+  // Clientes do concierge + acompanhantes do grupo de cada um (mesma validade).
+  const clientes = await clientesConciergeComAcompanhantes();
   // Lista única de exceções (inclui as antigas por telefone do grupos-remocao.json).
   void rem;
   const excecoes = chavesExcecao(hubla, exc.excecoes);
@@ -5307,8 +5375,7 @@ async function direitoBalcao(chaves) {
   const jids = [...jidsBalcao(grupos)];
   if (!jids.length) throw new Error('grupo do Balcão não encontrado');
   const [{ data: hubla }, exc] = await Promise.all([ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}), lerExcecoesPainel()]);
-  let clientes = [];
-  try { clientes = (await getConciergeFile('clientes.json')).content || []; } catch (e) { /* sem concierge, segue */ }
+  const clientes = await clientesConciergeComAcompanhantes();
   return hublaAuditoria.direitoNosGrupos({ hubla, jids, chaves, clientesConcierge: clientes,
     telefonesExtras: ajusteTelefones(exc.ajustes), gruposRegras: hublaAss.gruposAcesso(), excecoes: chavesExcecao(hubla, exc.excecoes) });
 }
