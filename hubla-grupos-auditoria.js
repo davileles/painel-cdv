@@ -11,6 +11,12 @@
 //     Map produtoId→Set(jid), mapeados: Set(jid) } — quais grupos cada oferta dá
 //     (painel-regras-acesso.json). Grupo que nenhuma oferta marca segue a regra
 //     antiga: qualquer assinatura ativa vale.
+//   - balcao (opcional, desde 17/11/2026): { jids: Set(jid dos grupos do Balcão),
+//     aprovados: Set(chave), pendentes: Set(chave) } — no grupo do Balcão só fica
+//     quem tem a verificação APROVADA (balcao.js). Quem teria direito pelo
+//     cadastro (ativo/exceção/concierge) mas não foi aprovado vira
+//     `verificacao_pendente` (formulário enviado, aguardando análise — nunca sai)
+//     ou `nao_verificado` (não enviou ou foi reprovado — sai pelo Tico, se ligado).
 //   - excecoes (opcional): Map chave de telefone → null (fica em todos os grupos:
 //     admins e exceção sem oferta) ou [{ofertaId, produtoId}] (fica só nos grupos
 //     que essas ofertas dão; grupo sem regra aceita). Set ainda vale (= todos).
@@ -128,7 +134,8 @@ function situacaoNoGrupo(regs, jid, regras) {
   return { situacao: 'sem_cadastro' };
 }
 
-function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, telefonesExtras, tempos, agora = Date.now() }) {
+function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, telefonesExtras, tempos, balcao, agora = Date.now() }) {
+  const bal = balcao && balcao.jids instanceof Set ? balcao : null;
   const porChave = indicePorTelefone(hubla, agora, telefonesExtras, tempos);
   const regras = gruposRegras || null;
   const exc = excecoes instanceof Map ? excecoes
@@ -152,7 +159,9 @@ function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, tel
   for (const g of (grupos || [])) {
     if (grupoIgnorado(g.nome)) { ignorados.push(g.nome); continue; }
     const mapeado = !!(regras && regras.mapeados && regras.mapeados.has(g.jid));
-    const r = { jid: g.jid, nome: g.nome, mapeado, participantes: 0, ativo: 0, excecao: 0, concierge: 0, vencido: 0, semDireito: 0, semCadastro: 0, admins: 0 };
+    const ehBalcao = !!(bal && bal.jids.has(g.jid));
+    const r = { jid: g.jid, nome: g.nome, mapeado, balcao: ehBalcao || undefined, participantes: 0, ativo: 0, excecao: 0, concierge: 0, vencido: 0, semDireito: 0, semCadastro: 0, admins: 0 };
+    if (ehBalcao) { r.verificacaoPendente = 0; r.naoVerificado = 0; }
     for (const m of (g.membros || [])) {
       if (m.conta) continue;                 // números da casa
       r.participantes++;
@@ -164,12 +173,16 @@ function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, tel
         if (excVale(k, g.jid)) s = { situacao: 'excecao' };
         else if (k && concierge.has(k)) s = { situacao: 'concierge' };
       }
+      // Balcão: o direito pelo cadastro não basta, precisa da verificação aprovada.
+      if (ehBalcao && ['ativo', 'excecao', 'concierge'].includes(s.situacao) && !(k && bal.aprovados.has(k))) {
+        s = Object.assign({}, s, { situacao: k && bal.pendentes.has(k) ? 'verificacao_pendente' : 'nao_verificado', direito: s.situacao });
+      }
       const situacao = s.situacao;
-      const campo = { sem_cadastro: 'semCadastro', sem_direito: 'semDireito' }[situacao] || situacao;
+      const campo = { sem_cadastro: 'semCadastro', sem_direito: 'semDireito', verificacao_pendente: 'verificacaoPendente', nao_verificado: 'naoVerificado' }[situacao] || situacao;
       r[campo]++;
       if (situacao === 'ativo') continue;
       const qualquer = (regs || [])[0] || {};
-      const nome = nomeProprio(situacao === 'concierge' ? concierge.get(k) : (qualquer.nome || ''));
+      const nome = nomeProprio(situacao === 'concierge' || s.direito === 'concierge' ? concierge.get(k) : (qualquer.nome || ''));
       const email = qualquer.email || '';
       const produtos = [...new Set((s.registros || []).map(x => x.produto).filter(Boolean))].sort();
       const diasDesde = s.venceuEm ? Math.floor((agora - new Date(s.venceuEm).getTime()) / DIA) : null;
@@ -190,12 +203,12 @@ function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, tel
   }
   resumoGrupos.sort((a, b) => b.participantes - a.participantes);
   const lista = [...pessoas.values()];
-  const ordem = { sem_cadastro: 0, vencido: 1, sem_direito: 2, concierge: 3, excecao: 4 };
+  const ordem = { sem_cadastro: 0, vencido: 1, sem_direito: 2, nao_verificado: 3, verificacao_pendente: 4, concierge: 5, excecao: 6 };
   lista.sort((a, b) => (ordem[a.situacao] - ordem[b.situacao]) || (b.grupos.length - a.grupos.length)
     || String(a.nome || a.telefone).localeCompare(String(b.nome || b.telefone), 'pt-BR'));
   for (const l of lista) { l.grupos.sort((a, b) => a.localeCompare(b, 'pt-BR')); l.produtos.sort(); }
 
-  const unicos = { vencido: 0, sem_direito: 0, sem_cadastro: 0, concierge: 0, excecao: 0 };
+  const unicos = { vencido: 0, sem_direito: 0, sem_cadastro: 0, concierge: 0, excecao: 0, nao_verificado: 0, verificacao_pendente: 0 };
   for (const l of lista) unicos[l.situacao]++;
   return {
     geradoEm: new Date(agora).toISOString(),
@@ -218,8 +231,11 @@ function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, tel
 //     (vistos = { 'jid|chave': ISO }, ver atualizarVistos).
 // Exceção (do painel, dos admins ou por telefone), concierge, admin e número da
 // casa nunca saem. Devolve uma linha por pessoa com os grupos de onde sai.
+//   - nao_verificado (grupo do Balcão), se balcaoExigirVerificacao, depois de
+//     esperaVerificacaoH horas desde que o sistema o viu assim (vistos 'nv|jid|chave').
+//     verificacao_pendente nunca sai (a análise é nossa).
 function candidatosRemocao(aud, { carenciaDias = 3, incluirSemDireito = false, incluirSemCadastro = false,
-  esperaSemCadastroH = 24, vistos = null, agora = Date.now() } = {}) {
+  esperaSemCadastroH = 24, balcaoExigirVerificacao = false, esperaVerificacaoH = 48, vistos = null, agora = Date.now() } = {}) {
   const porPessoa = new Map();
   for (const d of ((aud && aud.detalhe) || [])) {
     if (!d.mapeado || !d.chave || !d.telefone) continue;
@@ -233,6 +249,10 @@ function candidatosRemocao(aud, { carenciaDias = 3, incluirSemDireito = false, i
       desde = (vistos && vistos[d.jid + '|' + d.chave]) || null;
       if (!desde || agora - new Date(desde).getTime() < esperaSemCadastroH * 3600e3) continue;
       motivo = 'sem_cadastro';
+    } else if (d.situacao === 'nao_verificado' && balcaoExigirVerificacao) {
+      desde = (vistos && vistos['nv|' + d.jid + '|' + d.chave]) || null;
+      if (!desde || agora - new Date(desde).getTime() < esperaVerificacaoH * 3600e3) continue;
+      motivo = 'nao_verificado';
     } else continue;
     const x = porPessoa.get(d.chave) || { chave: d.chave, telefone: d.telefone, nome: d.nome, email: d.email, grupos: [], motivos: [] };
     x.grupos.push({ jid: d.jid, nome: d.grupo, motivo, venceuEm: d.venceuEm, dias: d.diasDesdeVencimento, vistoDesde: desde });
@@ -249,8 +269,11 @@ function atualizarVistos(aud, antigos, agora = Date.now()) {
   const ant = antigos && typeof antigos === 'object' ? antigos : {};
   const vistos = {};
   for (const d of ((aud && aud.detalhe) || [])) {
-    if (d.situacao !== 'sem_cadastro' || !d.mapeado || !d.chave) continue;
-    const k = d.jid + '|' + d.chave;
+    if (!d.mapeado || !d.chave) continue;
+    let k;
+    if (d.situacao === 'sem_cadastro') k = d.jid + '|' + d.chave;
+    else if (d.situacao === 'nao_verificado') k = 'nv|' + d.jid + '|' + d.chave;
+    else continue;
     vistos[k] = ant[k] || new Date(agora).toISOString();
   }
   const ka = Object.keys(ant), kn = Object.keys(vistos);

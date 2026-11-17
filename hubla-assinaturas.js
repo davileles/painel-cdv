@@ -1179,8 +1179,31 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
       produtosExcluidos: [...excluidos].sort((a, b) => a.localeCompare(b, 'pt-BR')), assinaturas: lista };
   }
 
+  // Pagadores por documento (CPF/CNPJ só dígitos → [{email, telefone, nome}]),
+  // lidos de todas as faturas. Usado pela verificação do Balcão (balcao.js) para
+  // achar o e-mail/telefone de quem preencheu o formulário só com CPF. O
+  // documento fica só na memória: nada disso é gravado.
+  async function pagadoresPorDocumento() {
+    const faturas = await paginar(p => api('POST', '/v1/invoices/list', {
+      filters: { dateStart: '2018-01-01T00:00:00.000Z', dateEnd: new Date().toISOString(), dateRangeBy: 'createdAt', orderBy: 'createdAt', orderDir: 'ASC' },
+      pagination: { page: p, pageSize: 200 },
+    }), 500);
+    const mapa = new Map();
+    for (const f of faturas) {
+      const doc = String((f && f.payer && f.payer.document) || '').replace(/\D/g, '');
+      if (doc.length !== 11 && doc.length !== 14) continue;
+      const pessoa = pessoaDe(f.payer);
+      if (!pessoa.email && !pessoa.telefone) continue;
+      const l = mapa.get(doc) || [];
+      if (!l.some(x => x.email === pessoa.email && x.telefone === pessoa.telefone)) l.push(pessoa);
+      mapa.set(doc, l);
+    }
+    return mapa;
+  }
+
   return {
     registrarEvento, sincronizar, sincronizarMembros, listar, ler, resumir, progresso, sondarApi, gravarOfertasAcesso,
+    pagadoresPorDocumento,
     temChaveApi: () => !!apiKey(),
   };
 }

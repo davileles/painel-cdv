@@ -5254,10 +5254,44 @@ async function montarAuditoriaGrupos({ forcar = false, gruposRegras, tempos } = 
   // Lista única de exceções (inclui as antigas por telefone do grupos-remocao.json).
   void rem;
   const excecoes = chavesExcecao(hubla, exc.excecoes);
+  // Grupo do Balcão (desde 17/11/2026): só fica quem tem a verificação aprovada (balcao.js).
+  let balcao = null;
+  try {
+    const jids = jidsBalcao(bruto.grupos);
+    if (jids.size && BALCAO) balcao = Object.assign({ jids }, await BALCAO.dadosAuditoria());
+  } catch (e) { console.warn('[balcao] auditoria sem verificação:', e.message); }
   const aud = hublaAuditoria.auditar({ hubla, grupos: bruto.grupos, clientesConcierge: clientes, telefonesExtras: ajusteTelefones(exc.ajustes),
-    gruposRegras: gruposRegras || hublaAss.gruposAcesso(), excecoes, tempos });
+    gruposRegras: gruposRegras || hublaAss.gruposAcesso(), excecoes, tempos, balcao });
   aud.gruposLidosEm = new Date(bruto.em).toISOString();
   return aud;
+}
+// Grupos do Balcão: o papel "balcao" de grupos-clube.json (e, por segurança,
+// qualquer grupo do CDV com "balcao" no nome). Sem nenhum, a regra não vale.
+function jidsBalcao(grupos) {
+  const s = new Set();
+  const papel = (_gruposClube.papeis || {}).balcao;
+  if (papel) s.add(papel);
+  for (const g of (grupos || [])) {
+    const n = String(g.nome || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    if (/\bbalcao\b/.test(n) && !grupoAposentado(g.jid)) s.add(g.jid);
+  }
+  return s;
+}
+// Tela Balcão do gestor: quem está no grupo do Balcão e por quê (só leitura).
+async function grupoBalcao({ forcar = false } = {}) {
+  const aud = await montarAuditoriaGrupos({ forcar });
+  const bruto = await coletarGruposCdv(false);
+  const jids = jidsBalcao(bruto.grupos);
+  const { estado, cfg } = await lerEstadoRemocao();
+  const grupos = (aud.grupos || []).filter(g => jids.has(g.jid));
+  const pessoas = (aud.detalhe || []).filter(d => jids.has(d.jid)).map(d => {
+    const visto = (estado.vistos || {})['nv|' + d.jid + '|' + d.chave] || null;
+    const saiEm = d.situacao === 'nao_verificado' && visto ? new Date(new Date(visto).getTime() + cfg.esperaVerificacaoH * 3600e3).toISOString() : null;
+    return { jid: d.jid, grupo: d.grupo, telefone: d.telefone, chave: d.chave, nome: d.nome, email: d.email,
+      situacao: d.situacao, produtos: d.produtos, vistoDesde: visto, saiEm };
+  });
+  return { grupos, pessoas, gruposLidosEm: aud.gruposLidosEm,
+    config: { modo: cfg.modo, balcaoExigirVerificacao: cfg.balcaoExigirVerificacao, esperaVerificacaoH: cfg.esperaVerificacaoH, pausado: estado.pausado || null } };
 }
 app.get('/hubla/grupos-auditoria', async (req, res) => {
   if (!opAutorizado(req, res)) return;
@@ -5295,7 +5329,10 @@ const GRUPOS_REMOCAO_PATH = 'grupos-remocao.json';
 // casa e o teto diário POR TICO do baileys (proteção das contas).
 const MOTIVOS_INVASOR = new Set(['sem_cadastro', 'sem_direito']);
 const REMOCAO_PADRAO = { modo: 'sombra', carenciaDias: 3, limiteDia: 10, incluirSemDireito: false,
-  incluirSemCadastro: false, esperaSemCadastroH: 24, janelaIni: 9, janelaFim: 20, invasorImediato: true };
+  incluirSemCadastro: false, esperaSemCadastroH: 24, janelaIni: 9, janelaFim: 20, invasorImediato: true,
+  // Balcão (17/11/2026): quem está no grupo do Balcão sem verificação aprovada sai
+  // depois de esperaVerificacaoH horas (pendente de análise nunca sai).
+  balcaoExigirVerificacao: true, esperaVerificacaoH: 48 };
 function _remCfg(estado) {
   const c = Object.assign({}, REMOCAO_PADRAO, (estado && estado.config) || {});
   c.modo = ['off', 'sombra', 'on'].includes(c.modo) ? c.modo : 'sombra';
@@ -5307,6 +5344,8 @@ function _remCfg(estado) {
   c.janelaIni = Math.max(0, Math.min(23, parseInt(c.janelaIni, 10) || REMOCAO_PADRAO.janelaIni));
   c.janelaFim = Math.max(c.janelaIni + 1, Math.min(24, parseInt(c.janelaFim, 10) || REMOCAO_PADRAO.janelaFim));
   c.invasorImediato = c.invasorImediato !== false;
+  c.balcaoExigirVerificacao = c.balcaoExigirVerificacao !== false;
+  c.esperaVerificacaoH = Math.max(1, Math.min(720, parseInt(c.esperaVerificacaoH, 10) || REMOCAO_PADRAO.esperaVerificacaoH));
   return c;
 }
 function _diaSP(t = Date.now()) { return new Date(t - 3 * 3600e3).toISOString().slice(0, 10); }
@@ -5356,7 +5395,7 @@ async function candidatosRemocaoAgora(estado, cfg, forcar) {
     if (!estado.invasorDesde) novoDesde = new Date(agora).toISOString(); // quem está lá agora fica de fora (> estrito)
     const desde = new Date(estado.invasorDesde || novoDesde).getTime();
     inv = hublaAuditoria.candidatosRemocao(aud, Object.assign({}, cfg, { carenciaDias: 1e9, incluirSemDireito: false,
-      incluirSemCadastro: true, esperaSemCadastroH: 0, vistos, agora }))
+      incluirSemCadastro: true, esperaSemCadastroH: 0, balcaoExigirVerificacao: false, vistos, agora }))
       .map(x => Object.assign({}, x, { motivos: ['sem_cadastro'], invasorNovo: true,
         grupos: x.grupos.filter(g => g.vistoDesde && new Date(g.vistoDesde).getTime() > desde) }))
       .filter(x => x.grupos.length && !falhouAgora.has(x.chave));
@@ -5559,7 +5598,8 @@ app.post('/hubla/grupos-remocao/config', async (req, res) => {
     const e = await salvarEstadoRemocao(est => {
       const atual = _remCfg(est);
       const novo = Object.assign({}, atual);
-      for (const k of ['modo', 'carenciaDias', 'limiteDia', 'incluirSemDireito', 'incluirSemCadastro', 'esperaSemCadastroH', 'janelaIni', 'janelaFim']) if (b[k] !== undefined) novo[k] = b[k];
+      for (const k of ['modo', 'carenciaDias', 'limiteDia', 'incluirSemDireito', 'incluirSemCadastro', 'esperaSemCadastroH', 'janelaIni', 'janelaFim',
+        'balcaoExigirVerificacao', 'esperaVerificacaoH']) if (b[k] !== undefined) novo[k] = b[k];
       est.config = _remCfg({ config: novo });
     }, 'grupos: configuração da remoção pelo Tico');
     console.log('[remocao-grupos] config:', JSON.stringify(e.config));
@@ -8159,10 +8199,14 @@ function nomeApresentavel(v) {
 }
 
 // ── Balcão do CDV: formulário de verificação (balcao.js; página balcao/index.html) ──
-require('./balcao').registrar(app, {
+// BALCAO (var: lido por montarAuditoriaGrupos, definida antes desta linha).
+var BALCAO = require('./balcao').registrar(app, {
   fetch, GITHUB_TOKEN, REPO: CONCIERGE_DADOS_REPO,
   putRetry: putConciergeRetry, lerLista: lerArquivoConcierge, getArquivoJson: getConciergeFile,
   cpfValido, soDigitos, nomeApresentavel, limiteIp: cadastroLiberado, opAutorizado, BAILEYS_URL,
+  hublaArquivo: async () => (await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {})).data,
+  pagadoresPorDocumento: () => hublaAssinaturas.pagadoresPorDocumento(),
+  grupoBalcao: (o) => grupoBalcao(o),
 });
 
 // Merge de cadastro reaprovado. O formulario e a fonte mais recente, mas so
