@@ -17,6 +17,17 @@
 //   POST /balcao/verificacoes/telefone {id, telefone, remover?}  X-CDV-Op (vínculo manual)
 //   POST /balcao/vincular                          X-CDV-Op (refaz os vínculos agora)
 //   GET  /balcao/grupo                             X-CDV-Op (quem está no grupo do Balcão)
+//   POST /balcao/lista/enviar-codigo {email}       pública (código no e-mail)
+//   POST /balcao/lista/verificar-codigo {email, codigo}  pública → token (7 dias)
+//   GET  /balcao/lista                             X-CDV-Balcao (token) → nome + telefone
+//
+// Lista de aprovados (desde 17/11/2026, página balcao/aprovados/): nome e
+// telefone de quem tem a verificação APROVADA e, HOJE, direito ao grupo do
+// Balcão pela assinatura (mesma regra da auditoria dos grupos: oferta ativa que
+// dá o grupo, exceção ou cliente do concierge). Assinatura vencida = sai da lista.
+// Só abre com login por código no e-mail, e só para quem está na própria lista
+// (e-mail do formulário, do vínculo ou da Hubla nesse telefone) ou é admin. O
+// acesso é reconferido a cada leitura: venceu a assinatura, perde a lista.
 //
 // Grupo do Balcão (desde 17/11/2026): só fica quem tem assinatura que dá o grupo
 // E verificação APROVADA. O vínculo pessoa ↔ telefone do WhatsApp sai de:
@@ -29,6 +40,7 @@
 // Registros importados da planilha antiga do Google Forms: origem 'forms', os
 // documentos ficam como link do Google Drive (arquivos[campo].link).
 
+const crypto = require('crypto');
 const REGISTROS = 'balcao/verificacoes.json';
 const PASTA_ARQ = 'balcao/arquivos/';
 
@@ -93,7 +105,7 @@ function situacaoPorCpf(lista) {
 function registrar(app, d) {
   const { fetch, GITHUB_TOKEN, REPO, putRetry, lerLista, getArquivoJson, cpfValido, soDigitos,
           nomeApresentavel, limiteIp, opAutorizado, BAILEYS_URL, hublaArquivo, pagadoresPorDocumento,
-          grupoBalcao } = d;
+          grupoBalcao, direitoBalcao, RESEND_API_KEY, adminEmails } = d;
 
   // ── Cache dos registros (a auditoria dos grupos lê a cada rodada) ─────────
   let _cache = null;
@@ -103,7 +115,7 @@ function registrar(app, d) {
     _cache = { em: Date.now(), lista };
     return lista;
   }
-  const limparCache = () => { _cache = null; };
+  const limparCache = () => { _cache = null; _aprovados = null; };
 
   // Telefones de um registro: formulário + vínculo automático + manuais.
   function telefonesDo(r) {
@@ -506,6 +518,146 @@ function registrar(app, d) {
       }
       res.json({ ok: true, contagem: cont });
     } catch (e) { res.status(500).json({ ok: false, erro: 'indisponível' }); }
+  });
+
+  // ── Lista de aprovados com assinatura em dia ─────────────────────────────
+  const LISTA_OTP_TTL = 10 * 60 * 1000, LISTA_OTP_MAX = 5, LISTA_OTP_INTERVALO = 45 * 1000;
+  const LISTA_SESSAO_TTL = 7 * 24 * 3600 * 1000;
+  const listaOtp = new Map();   // email → { codigo, expira, tentativas, enviadoEm }
+  const listaIps = new Map();   // ip → [ts] (máx. 10 pedidos de código por hora)
+  setInterval(() => { const a = Date.now(); for (const [k, v] of listaOtp) if (a > v.expira) listaOtp.delete(k); }, 15 * 60 * 1000);
+  const segredoLista = () => {
+    const base = process.env.MEMBRO_SESSION_SECRET || process.env.CONCIERGE_SESSION_SECRET || GITHUB_TOKEN || '';
+    return base ? crypto.createHash('sha256').update('balcao-lista-v1|' + base).digest() : null;
+  };
+  function assinarLista(email) {
+    const s = segredoLista(); if (!s) return null;
+    const p = Buffer.from(JSON.stringify({ tipo: 'balcao-lista', email, exp: Date.now() + LISTA_SESSAO_TTL })).toString('base64url');
+    return p + '.' + crypto.createHmac('sha256', s).update(p).digest('base64url');
+  }
+  function emailDaLista(token) {
+    const s = segredoLista(); if (!s || !token) return null;
+    const [p, a] = String(token).split('.'); if (!p || !a) return null;
+    const esp = crypto.createHmac('sha256', s).update(p).digest();
+    let rec; try { rec = Buffer.from(a, 'base64url'); } catch (e) { return null; }
+    if (rec.length !== esp.length || !crypto.timingSafeEqual(rec, esp)) return null;
+    let d2; try { d2 = JSON.parse(Buffer.from(p, 'base64url').toString('utf8')); } catch (e) { return null; }
+    return d2 && d2.tipo === 'balcao-lista' && d2.email && Number(d2.exp) > Date.now() ? d2.email : null;
+  }
+  const normEmail = e => String(e || '').toLowerCase().trim();
+  const ehAdmin = e => ((adminEmails && adminEmails()) || []).map(normEmail).includes(normEmail(e));
+  function telefoneBonito(t) {
+    let x = String(t || '').replace(/\D/g, '');
+    if (x.startsWith('55') && (x.length === 12 || x.length === 13)) x = x.slice(2);
+    if (x.length === 11) return `(${x.slice(0, 2)}) ${x.slice(2, 7)}-${x.slice(7)}`;
+    if (x.length === 10) return `(${x.slice(0, 2)}) ${x.slice(2, 6)}-${x.slice(6)}`;
+    return x ? '+' + x : '';
+  }
+
+  let _aprovados = null; // { em, pessoas, emails }
+  async function aprovadosVigentes(forcar) {
+    if (!forcar && _aprovados && Date.now() - _aprovados.em < 5 * 60 * 1000) return _aprovados;
+    const lista = await registros();
+    const base = [];
+    for (const { situacao, regs } of situacaoPorCpf(lista).values()) {
+      if (situacao !== 'aprovado') continue;
+      const ord = regs.slice().sort((a, b) => quando(b).localeCompare(quando(a)));
+      const chaves = new Set(), emails = new Set();
+      for (const r of regs) {
+        for (const k of telefonesDo(r)) chaves.add(k);
+        if (r.email) emails.add(normEmail(r.email));
+        for (const e of (((r.vinculo || {}).emails) || [])) emails.add(normEmail(e));
+      }
+      const ref = ord.find(r => r.status === 'aprovado') || ord[0];
+      const tel = (ord.find(r => chaveTel(r.tel)) || {}).tel || [...chaves][0] || '';
+      base.push({ nome: ref.nome || '', tel, chaves: [...chaves], emails });
+    }
+    const todas = [...new Set(base.flatMap(p => p.chaves))];
+    const direito = await direitoBalcao(todas);
+    const pessoas = [], emailsOk = new Set();
+    for (const p of base) {
+      const vale = p.chaves.filter(k => ['ativo', 'excecao', 'concierge'].includes(((direito.get(k) || {}).situacao)));
+      if (!vale.length) continue;
+      for (const k of vale) for (const e of ((direito.get(k) || {}).emails || [])) p.emails.add(e);
+      for (const e of p.emails) emailsOk.add(e);
+      const nome = nomeApresentavel(p.nome);
+      pessoas.push({ nome, telefone: telefoneBonito(p.tel), whatsapp: String(p.tel || '').replace(/\D/g, '') });
+    }
+    // mesmo telefone em dois CPFs (raro): uma linha só
+    const vistos = new Set();
+    const unicas = pessoas.filter(p => { const k = chaveTel(p.whatsapp) || p.nome; if (vistos.has(k)) return false; vistos.add(k); return true; });
+    unicas.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    _aprovados = { em: Date.now(), pessoas: unicas, emails: emailsOk };
+    return _aprovados;
+  }
+
+  app.post('/balcao/lista/enviar-codigo', async (req, res) => {
+    const email = normEmail((req.body || {}).email);
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || email.length > 200) return res.status(400).json({ ok: false, erro: 'E-mail inválido.' });
+    const ip = String(req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
+    const hist = (listaIps.get(ip) || []).filter(t => Date.now() - t < 3600e3);
+    if (hist.length >= 10) return res.status(429).json({ ok: false, erro: 'Muitas tentativas. Tente novamente em uma hora.' });
+    hist.push(Date.now()); listaIps.set(ip, hist);
+    const ant = listaOtp.get(email);
+    if (ant && Date.now() - ant.enviadoEm < LISTA_OTP_INTERVALO) return res.json({ ok: false, motivo: 'aguarde', erro: 'Aguarde alguns segundos para pedir um novo código.' });
+    try {
+      const { emails } = await aprovadosVigentes();
+      if (!emails.has(email) && !ehAdmin(email)) {
+        return res.json({ ok: false, motivo: 'sem_acesso', erro: 'Este e-mail não está entre os membros aprovados do Balcão com assinatura em dia. Use o e-mail da sua compra na Hubla.' });
+      }
+      const codigo = String(crypto.randomInt(100000, 1000000));
+      listaOtp.set(email, { codigo, expira: Date.now() + LISTA_OTP_TTL, tentativas: 0, enviadoEm: Date.now() });
+      if (!RESEND_API_KEY) { console.log(`[BALCAO-OTP-DEV] ${email} → ${codigo}`); return res.json({ ok: true }); }
+      const r = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: 'Clube do Viajante <noreply@clubedoviajante.com.br>',
+          to: [email],
+          subject: `Seu código do Balcão: ${codigo}`,
+          html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0a0c12;color:#fff;border-radius:12px">
+            <h2 style="color:#FF6B5B;margin-bottom:8px">Balcão · Clube do Viajante</h2>
+            <p style="color:#aaa;margin-bottom:24px">Use o código abaixo para ver a lista de membros aprovados do Balcão. Ele expira em <strong>10 minutos</strong>.</p>
+            <div style="background:#1a1d2e;border-radius:10px;padding:24px;text-align:center;letter-spacing:12px;font-size:32px;font-weight:900;color:#FF6B5B;margin-bottom:24px">${codigo}</div>
+            <p style="color:#666;font-size:12px">Se você não solicitou este código, ignore este e-mail.</p></div>`,
+        }),
+      });
+      if (!r.ok) { console.error('[balcao/lista OTP]', await r.text()); listaOtp.delete(email); return res.status(500).json({ ok: false, erro: 'Falha ao enviar o e-mail. Tente de novo.' }); }
+      res.json({ ok: true });
+    } catch (e) {
+      console.error('[balcao/lista/enviar-codigo]', e.message);
+      res.status(503).json({ ok: false, erro: 'Lista indisponível agora. Tente novamente em instantes.' });
+    }
+  });
+
+  app.post('/balcao/lista/verificar-codigo', (req, res) => {
+    const email = normEmail((req.body || {}).email);
+    const codigo = String((req.body || {}).codigo || '').trim();
+    if (!email || !codigo) return res.status(400).json({ ok: false, erro: 'E-mail e código obrigatórios.' });
+    const ent = listaOtp.get(email);
+    if (!ent || Date.now() > ent.expira) { listaOtp.delete(email); return res.json({ ok: false, erro: 'Código expirado. Peça um novo.' }); }
+    if (++ent.tentativas > LISTA_OTP_MAX) { listaOtp.delete(email); return res.json({ ok: false, erro: 'Tentativas demais. Peça um novo código.' }); }
+    const a = Buffer.from(codigo), b = Buffer.from(ent.codigo);
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return res.json({ ok: false, erro: 'Código incorreto.' });
+    listaOtp.delete(email);
+    const token = assinarLista(email);
+    if (!token) return res.status(500).json({ ok: false, erro: 'Serviço indisponível.' });
+    res.json({ ok: true, token, email });
+  });
+
+  app.get('/balcao/lista', async (req, res) => {
+    const email = emailDaLista(req.headers['x-cdv-balcao']);
+    if (!email) return res.status(401).json({ ok: false, motivo: 'sessao' });
+    try {
+      const ap = await aprovadosVigentes(req.query.forcar === '1' && ehAdmin(email));
+      if (!ap.emails.has(email) && !ehAdmin(email)) return res.status(403).json({ ok: false, motivo: 'sem_acesso', erro: 'Sua assinatura não está em dia ou sua verificação não está aprovada.' });
+      res.setHeader('Cache-Control', 'no-store');
+      res.json({ ok: true, atualizadoEm: new Date(ap.em).toISOString(), total: ap.pessoas.length,
+        membros: ap.pessoas.map(p => ({ nome: p.nome, telefone: p.telefone, whatsapp: p.whatsapp })) });
+    } catch (e) {
+      console.error('[balcao/lista]', e.message);
+      res.status(503).json({ ok: false, erro: 'Lista indisponível agora. Tente novamente em instantes.' });
+    }
   });
 
   return { dadosAuditoria, vincular };

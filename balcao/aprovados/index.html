@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<title>Membros aprovados do Balcão · Clube do Viajante</title>
+<link rel="icon" type="image/png" href="../../logocdv.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#eef1f8; --card:#ffffff; --field:#f7f9fd;
+  --border:#e3e8f4; --border-ctrl:#cfd8ea;
+  --text:#17203a; --muted:#5f6d8c; --muted2:#8a97b1;
+  --accent:#ff585e; --accent2:#e0484e; --coral-tint:#ffe9ea; --coral-line:#ffd2d4; --coral-ink:#c93a40;
+  --green:#12864a; --green-tint:#f2fbf6;
+  --shadow:0 8px 24px rgba(23,32,58,.08);
+  --font:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:#141a29; --card:#232c42; --field:#1a2132;
+    --border:#2c3651; --border-ctrl:#3b4767;
+    --text:#eef2fa; --muted:#a4b1cd; --muted2:#7f8dab;
+    --coral-tint:rgba(255,88,94,.14); --coral-line:rgba(255,88,94,.38); --coral-ink:#ff8085;
+    --green:#3ccf86; --green-tint:rgba(60,207,134,.10);
+    --shadow:0 8px 24px rgba(0,0,0,.25);
+  }
+}
+html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; -webkit-font-smoothing: antialiased; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.wrap { max-width: 680px; margin: 0 auto; padding: 28px 18px 80px; }
+header { text-align: center; margin-bottom: 22px; }
+.logo { display: inline-flex; background: #fff; border-radius: 14px; padding: 10px 16px; box-shadow: var(--shadow); margin-bottom: 18px; }
+.logo img { height: 44px; width: auto; display: block; }
+.tag { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--coral-ink); background: var(--coral-tint); border: 1px solid var(--coral-line); border-radius: 99px; padding: 5px 12px; margin-bottom: 12px; }
+h1 { font-size: 23px; font-weight: 800; letter-spacing: -.2px; }
+.sub { font-size: 13.5px; color: var(--muted); margin-top: 8px; line-height: 1.7; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 22px; box-shadow: var(--shadow); }
+.card-h { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.card-d { font-size: 13.5px; color: var(--muted); line-height: 1.75; margin-bottom: 18px; }
+label { display: block; font-size: 12px; font-weight: 700; letter-spacing: .4px; margin-bottom: 7px; }
+input { width: 100%; background: var(--field); border: 1px solid var(--border-ctrl); border-radius: 10px;
+  padding: 12px 13px; color: var(--text); font-family: var(--font); font-size: 15px; }
+input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--coral-tint); }
+input::placeholder { color: var(--muted2); }
+input.codigo { letter-spacing: 8px; text-align: center; font-size: 22px; font-weight: 800; }
+.btn { width: 100%; margin-top: 14px; padding: 15px; border-radius: 12px; border: none; background: var(--accent); color: #fff;
+  font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer; }
+.btn:hover { background: var(--accent2); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.lnk { background: none; border: none; color: var(--coral-ink); font-family: var(--font); font-size: 12.5px; font-weight: 700; cursor: pointer; margin-top: 12px; }
+.msg { font-size: 13px; font-weight: 600; margin-top: 12px; line-height: 1.6; display: none; }
+.msg.erro { color: var(--coral-ink); display: block; }
+.msg.ok { color: var(--green); display: block; }
+.spin { display: inline-block; width: 13px; height: 13px; vertical-align: -2px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; margin-right: 8px; }
+.topo { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.cont { font-size: 13px; color: var(--muted); font-weight: 600; }
+.cont b { color: var(--text); }
+.busca { margin-bottom: 14px; }
+.lista { list-style: none; }
+.lista li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 2px; border-bottom: 1px solid var(--border); }
+.lista li:last-child { border-bottom: none; }
+.lista .nm { font-size: 14px; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.lista a { flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--green);
+  background: var(--green-tint); border-radius: 99px; padding: 6px 11px; text-decoration: none; white-space: nowrap; }
+.lista a svg { width: 15px; height: 15px; }
+.vazio { text-align: center; color: var(--muted); font-size: 13.5px; padding: 20px 0; }
+.rodape { font-size: 12px; color: var(--muted2); text-align: center; margin-top: 16px; line-height: 1.7; }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><img src="../../logocdv.png" alt="Clube do Viajante"/></div><br/>
+    <span class="tag">Balcão do CDV</span>
+    <h1>Membros aprovados</h1>
+    <p class="sub">Quem tem a verificação aprovada e a assinatura em dia. Antes de negociar, confira se a pessoa está nesta lista.</p>
+  </header>
+
+  <!-- Login: e-mail -->
+  <section class="card" id="v-email">
+    <div class="card-h">Entrar</div>
+    <p class="card-d">Digite o e-mail que você usou na compra da Hubla. Vamos enviar um código de acesso.</p>
+    <label for="email">E-mail</label>
+    <input type="email" id="email" placeholder="seu@email.com" autocomplete="email"/>
+    <button class="btn" id="b-enviar">Enviar código</button>
+    <div class="msg" id="m-email"></div>
+  </section>
+
+  <!-- Login: código -->
+  <section class="card hidden" id="v-codigo">
+    <div class="card-h">Digite o código</div>
+    <p class="card-d">Enviamos um código de 6 dígitos para <b id="email-mostra"></b>. Ele vale por 10 minutos.</p>
+    <input type="text" id="codigo" class="codigo" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code"/>
+    <button class="btn" id="b-verificar">Entrar</button>
+    <button class="lnk" id="b-voltar">Usar outro e-mail</button>
+    <div class="msg" id="m-codigo"></div>
+  </section>
+
+  <!-- Lista -->
+  <section class="card hidden" id="v-lista">
+    <div class="topo">
+      <div class="cont" id="cont"></div>
+      <button class="lnk" id="b-sair" style="margin:0">Sair</button>
+    </div>
+    <input type="search" id="busca" class="busca" placeholder="Buscar por nome ou telefone"/>
+    <ul class="lista" id="lista"></ul>
+    <div class="vazio hidden" id="vazio">Ninguém encontrado com essa busca.</div>
+    <div class="msg" id="m-lista"></div>
+  </section>
+
+  <p class="rodape">Lista de uso exclusivo dos membros do Balcão. Não compartilhe nomes e telefones fora do grupo.</p>
+</div>
+
+<script>
+var PROXY = 'https://cdv-proxy-production.up.railway.app';
+var CHAVE = 'cdv_balcao_lista';
+var IC_WA = '<svg viewBox="0 0 256 256" fill="currentColor"><path d="M187.58,144.84l-32-16a8,8,0,0,0-8,.5l-14.69,9.8a40.55,40.55,0,0,1-16-16l9.8-14.69a8,8,0,0,0,.5-8l-16-32A8,8,0,0,0,104,64a40,40,0,0,0-40,40,88.1,88.1,0,0,0,88,88,40,40,0,0,0,40-40A8,8,0,0,0,187.58,144.84ZM152,176a72.08,72.08,0,0,1-72-72A24,24,0,0,1,99.29,80.46l11.48,23L101,118a8,8,0,0,0-.73,7.51,56.47,56.47,0,0,0,30.15,30.15A8,8,0,0,0,138,155l14.61-9.74,23,11.48A24,24,0,0,1,152,176ZM128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm0,192a87.87,87.87,0,0,1-44.06-11.81,8,8,0,0,0-6.54-.67L40,216,52.47,178.6a8,8,0,0,0-.66-6.54A88,88,0,1,1,128,216Z"/></svg>';
+var membros = [];
+
+function $(id) { return document.getElementById(id); }
+function mostrar(v) { ['v-email', 'v-codigo', 'v-lista'].forEach(function (x) { $(x).classList.toggle('hidden', x !== v); }); }
+function msg(id, texto, tipo) { var m = $(id); m.textContent = texto || ''; m.className = 'msg' + (texto ? ' ' + (tipo || 'erro') : ''); }
+function ocupado(b, sim, texto) { b.disabled = sim; b.innerHTML = sim ? '<span class="spin"></span>Aguarde…' : texto; }
+function sessao() { try { return JSON.parse(localStorage.getItem(CHAVE) || 'null'); } catch (e) { return null; } }
+function salvarSessao(s) { try { s ? localStorage.setItem(CHAVE, JSON.stringify(s)) : localStorage.removeItem(CHAVE); } catch (e) {} }
+function semAcento(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+function esc(s) { return String(s || '').replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+function post(rota, corpo) {
+  return fetch(PROXY + rota, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) })
+    .then(function (r) { return r.json().catch(function () { return { ok: false, erro: 'Resposta inválida (' + r.status + ').' }; }); });
+}
+
+$('b-enviar').onclick = function () {
+  var email = $('email').value.trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return msg('m-email', 'Digite um e-mail válido.');
+  var b = this; ocupado(b, true); msg('m-email', '');
+  post('/balcao/lista/enviar-codigo', { email: email }).then(function (d) {
+    ocupado(b, false, 'Enviar código');
+    if (!d.ok) return msg('m-email', d.erro || 'Não foi possível enviar o código.');
+    $('email-mostra').textContent = email; $('codigo').value = ''; msg('m-codigo', '');
+    mostrar('v-codigo'); $('codigo').focus();
+  }).catch(function () { ocupado(b, false, 'Enviar código'); msg('m-email', 'Sem conexão. Tente de novo.'); });
+};
+$('email').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('b-enviar').click(); });
+
+$('b-verificar').onclick = function () {
+  var email = $('email').value.trim().toLowerCase();
+  var codigo = $('codigo').value.replace(/\D/g, '');
+  if (codigo.length !== 6) return msg('m-codigo', 'O código tem 6 dígitos.');
+  var b = this; ocupado(b, true); msg('m-codigo', '');
+  post('/balcao/lista/verificar-codigo', { email: email, codigo: codigo }).then(function (d) {
+    ocupado(b, false, 'Entrar');
+    if (!d.ok) return msg('m-codigo', d.erro || 'Código inválido.');
+    salvarSessao({ email: d.email, token: d.token });
+    carregar();
+  }).catch(function () { ocupado(b, false, 'Entrar'); msg('m-codigo', 'Sem conexão. Tente de novo.'); });
+};
+$('codigo').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('b-verificar').click(); });
+$('b-voltar').onclick = function () { mostrar('v-email'); };
+$('b-sair').onclick = function () { salvarSessao(null); membros = []; $('lista').innerHTML = ''; mostrar('v-email'); };
+
+function carregar() {
+  var s = sessao();
+  if (!s || !s.token) return mostrar('v-email');
+  mostrar('v-lista'); msg('m-lista', ''); $('cont').textContent = 'Carregando…'; $('lista').innerHTML = '';
+  fetch(PROXY + '/balcao/lista', { headers: { 'X-CDV-Balcao': s.token } })
+    .then(function (r) { return r.json().then(function (d) { d.status = r.status; return d; }).catch(function () { return { ok: false, status: r.status }; }); })
+    .then(function (d) {
+      if (d.status === 401) { salvarSessao(null); return mostrar('v-email'); }
+      if (!d.ok) { $('cont').textContent = ''; return msg('m-lista', d.erro || 'Não foi possível carregar a lista.'); }
+      membros = d.membros || [];
+      var em = d.atualizadoEm ? new Date(d.atualizadoEm).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' }) : '';
+      $('cont').innerHTML = '<b>' + membros.length + '</b> membros aprovados' + (em ? ' · atualizado ' + esc(em) : '');
+      desenhar();
+    })
+    .catch(function () { $('cont').textContent = ''; msg('m-lista', 'Sem conexão. Tente de novo.'); });
+}
+
+function desenhar() {
+  var q = semAcento($('busca').value.trim());
+  var qd = q.replace(/\D/g, '');
+  var vis = membros.filter(function (m) {
+    if (!q) return true;
+    return semAcento(m.nome).indexOf(q) !== -1 || (qd && String(m.whatsapp || '').indexOf(qd) !== -1);
+  });
+  $('lista').innerHTML = vis.map(function (m) {
+    var d = String(m.whatsapp || '');
+    if (d.length === 10 || d.length === 11) d = '55' + d;
+    var wa = d ? '<a href="https://wa.me/' + d + '" target="_blank" rel="noopener">' + IC_WA + esc(m.telefone) + '</a>' : '';
+    return '<li><span class="nm">' + esc(m.nome) + '</span>' + wa + '</li>';
+  }).join('');
+  $('vazio').classList.toggle('hidden', vis.length > 0 || !membros.length);
+}
+$('busca').addEventListener('input', desenhar);
+
+carregar();
+</script>
+</body>
+</html>

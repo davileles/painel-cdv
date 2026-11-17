@@ -133,7 +133,7 @@ app.use(express.json({ limit: '20mb' }));
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env, X-CDV-Op, X-CDV-Auth, X-CDV-Servico, X-CDV-Portal, X-CDV-Membro, X-CDV-Roteiros');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env, X-CDV-Op, X-CDV-Auth, X-CDV-Servico, X-CDV-Portal, X-CDV-Membro, X-CDV-Roteiros, X-CDV-Balcao');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
@@ -5293,6 +5293,20 @@ async function grupoBalcao({ forcar = false } = {}) {
   return { grupos, pessoas, gruposLidosEm: aud.gruposLidosEm,
     config: { modo: cfg.modo, balcaoExigirVerificacao: cfg.balcaoExigirVerificacao, esperaVerificacaoH: cfg.esperaVerificacaoH, pausado: estado.pausado || null } };
 }
+// Lista de aprovados do Balcão (desde 17/11/2026): direito ao grupo do Balcão de
+// cada telefone, mesmo de quem não está no grupo (mesmas regras da auditoria).
+async function direitoBalcao(chaves) {
+  await carregarGruposClube();
+  let grupos = [];
+  try { grupos = (await coletarGruposCdv(false)).grupos || []; } catch (e) { console.warn('[balcao] grupos:', e.message); }
+  const jids = [...jidsBalcao(grupos)];
+  if (!jids.length) throw new Error('grupo do Balcão não encontrado');
+  const [{ data: hubla }, exc] = await Promise.all([ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}), lerExcecoesPainel()]);
+  let clientes = [];
+  try { clientes = (await getConciergeFile('clientes.json')).content || []; } catch (e) { /* sem concierge, segue */ }
+  return hublaAuditoria.direitoNosGrupos({ hubla, jids, chaves, clientesConcierge: clientes,
+    telefonesExtras: ajusteTelefones(exc.ajustes), gruposRegras: hublaAss.gruposAcesso(), excecoes: chavesExcecao(hubla, exc.excecoes) });
+}
 app.get('/hubla/grupos-auditoria', async (req, res) => {
   if (!opAutorizado(req, res)) return;
   try {
@@ -8211,6 +8225,8 @@ var BALCAO = require('./balcao').registrar(app, {
   hublaArquivo: async () => (await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {})).data,
   pagadoresPorDocumento: () => hublaAssinaturas.pagadoresPorDocumento(),
   grupoBalcao: (o) => grupoBalcao(o),
+  direitoBalcao: (chaves) => direitoBalcao(chaves),
+  RESEND_API_KEY, adminEmails: () => ADMIN_EMAILS,
 });
 
 // Merge de cadastro reaprovado. O formulario e a fonte mais recente, mas so

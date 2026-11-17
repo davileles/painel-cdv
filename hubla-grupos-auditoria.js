@@ -221,6 +221,46 @@ function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, tel
   };
 }
 
+// Direito de cada telefone (chave 55+DDD+8) a um conjunto de grupos, sem
+// precisar que a pessoa esteja no grupo (desde 17/11/2026: lista de aprovados do
+// Balcão). Mesmas regras do auditar(): oferta ativa que dá o grupo → 'ativo';
+// senão exceção que vale no grupo → 'excecao'; senão cliente do concierge →
+// 'concierge'; senão a situação de situacaoNoGrupo (vencido, sem_direito,
+// sem_cadastro). Basta um dos grupos dar direito. Devolve Map chave →
+// { situacao, emails:[e-mails da Hubla com registro ativo nesse telefone] }.
+function direitoNosGrupos({ hubla, jids, chaves, clientesConcierge, gruposRegras, excecoes, telefonesExtras, tempos, agora = Date.now() }) {
+  const porChave = indicePorTelefone(hubla, agora, telefonesExtras, tempos);
+  const regras = gruposRegras || null;
+  const exc = excecoes instanceof Map ? excecoes : new Map();
+  const excVale = (k, jid) => {
+    if (!k || !exc.has(k)) return false;
+    const v = exc.get(k);
+    if (v === null) return true;
+    return v.some(o => registroDaGrupo({ tipo: 'assinatura', ofertaId: o.ofertaId, produtoId: o.produtoId }, jid, regras));
+  };
+  const concierge = new Set();
+  for (const c of (Array.isArray(clientesConcierge) ? clientesConcierge : [])) {
+    const k = chaveTelefone(c && c.tel);
+    if (k && c.ativo !== false) concierge.add(k);
+  }
+  const ordem = ['ativo', 'excecao', 'concierge', 'vencido', 'sem_direito', 'sem_cadastro'];
+  const out = new Map();
+  for (const k of (chaves || [])) {
+    if (!k || out.has(k)) continue;
+    const regs = porChave.get(k) || [];
+    let melhor = 'sem_cadastro';
+    for (const jid of (jids || [])) {
+      let s = situacaoNoGrupo(regs, jid, regras).situacao;
+      if (s !== 'ativo') { if (excVale(k, jid)) s = 'excecao'; else if (concierge.has(k)) s = 'concierge'; }
+      if (ordem.indexOf(s) < ordem.indexOf(melhor)) melhor = s;
+      if (melhor === 'ativo') break;
+    }
+    const emails = [...new Set(regs.filter(r => r.ativo && r.email).map(r => String(r.email).toLowerCase().trim()))];
+    out.set(k, { situacao: melhor, emails });
+  }
+  return out;
+}
+
 // Quem o Tico tira, a partir do detalhe da auditoria. Só em grupo com regra de
 // grupos (mapeado), só com telefone conhecido (LID sem telefone nunca sai) e:
 //   - vencido há pelo menos carenciaDias; ou
@@ -281,4 +321,4 @@ function atualizarVistos(aud, antigos, agora = Date.now()) {
   return { vistos, mudou };
 }
 
-module.exports = { auditar, candidatosRemocao, atualizarVistos, chaveTelefone, grupoIgnorado, GRUPOS_IGNORADOS };
+module.exports = { auditar, direitoNosGrupos, candidatosRemocao, atualizarVistos, chaveTelefone, grupoIgnorado, GRUPOS_IGNORADOS };
