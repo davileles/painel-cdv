@@ -54,6 +54,37 @@ function maisRecente(a, b) {
 }
 function grupoIgnorado(nome) { const n = norm(nome); return GRUPOS_IGNORADOS.some(re => re.test(n)); }
 
+// Clientes do concierge nos grupos (desde 17/11/2026, decisão do Davi): quem tem
+// contrato registrado (clientes[].contratos) vale até o fim do período mais
+// recente; quem ainda não tem nenhum período segue a regra antiga (ativo !== false).
+// A lista pode trazer acompanhantes (index.js → acompanhantesConcierge: números do
+// grupo do concierge que não são admins), com os contratos do titular.
+// Devolve { vale: Map chave → nome, vencido: Map chave → { nome, venceuEm } }.
+function fimContratoMs(c) {
+  let max = null;
+  for (const k of ((c && Array.isArray(c.contratos)) ? c.contratos : [])) {
+    if (!k || !/^\d{4}-\d{2}-\d{2}$/.test(String(k.fim || ''))) continue;
+    const ms = new Date(k.fim + 'T23:59:59-03:00').getTime();
+    if (Number.isFinite(ms) && (max === null || ms > max)) max = ms;
+  }
+  return max;
+}
+function conciergePorChave(clientesConcierge, agora) {
+  const vale = new Map(), vencido = new Map();
+  for (const c of (Array.isArray(clientesConcierge) ? clientesConcierge : [])) {
+    const k = chaveTelefone(c && c.tel);
+    if (!k) continue;
+    const fim = fimContratoMs(c);
+    if (fim === null ? c.ativo !== false : fim >= agora) { if (!vale.has(k)) vale.set(k, c.nome || ''); continue; }
+    if (fim === null) continue;
+    const iso = new Date(fim).toISOString();
+    const ant = vencido.get(k);
+    vencido.set(k, { nome: (ant && ant.nome) || c.nome || '', venceuEm: maisRecente(ant && ant.venceuEm, iso) });
+  }
+  for (const k of vale.keys()) vencido.delete(k);
+  return { vale, vencido };
+}
+
 // Registros por telefone: cada assinatura/acesso com produto, oferta, se está
 // ativo e quando acabou (só datas passadas).
 // telefonesExtras (opcional): Map e-mail da Hubla → [telefones] dos Ajustes de
@@ -146,11 +177,7 @@ function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, tel
     if (v === null) return true;
     return v.some(o => registroDaGrupo({ tipo: 'assinatura', ofertaId: o.ofertaId, produtoId: o.produtoId }, jid, regras));
   };
-  const concierge = new Map();
-  for (const c of (Array.isArray(clientesConcierge) ? clientesConcierge : [])) {
-    const k = chaveTelefone(c && c.tel);
-    if (k && c.ativo !== false) concierge.set(k, c.nome || '');
-  }
+  const { vale: concierge, vencido: conciergeVencido } = conciergePorChave(clientesConcierge, agora);
 
   const resumoGrupos = [];
   const ignorados = [];
@@ -172,6 +199,11 @@ function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, tel
       if (s.situacao !== 'ativo') {
         if (excVale(k, g.jid)) s = { situacao: 'excecao' };
         else if (k && concierge.has(k)) s = { situacao: 'concierge' };
+        // Contrato do concierge vencido (titular ou acompanhante) e nada na Hubla:
+        // entra como vencido (carência + aviso de renovação), não como sem cadastro.
+        else if (k && s.situacao === 'sem_cadastro' && conciergeVencido.has(k)) {
+          s = { situacao: 'vencido', venceuEm: conciergeVencido.get(k).venceuEm, registros: [{ produto: 'Travel Concierge' }] };
+        }
       }
       // Balcão: o direito pelo cadastro não basta, precisa da verificação aprovada.
       // Fica sem o formulário só cliente do concierge e quem tem, na tela Exceções,
@@ -188,7 +220,8 @@ function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, tel
       r[campo]++;
       if (situacao === 'ativo') continue;
       const qualquer = (regs || [])[0] || {};
-      const nome = nomeProprio(situacao === 'concierge' || s.direito === 'concierge' ? concierge.get(k) : (qualquer.nome || ''));
+      const nome = nomeProprio(situacao === 'concierge' || s.direito === 'concierge' ? concierge.get(k)
+        : (qualquer.nome || (conciergeVencido.get(k) || {}).nome || ''));
       const email = qualquer.email || '';
       const produtos = [...new Set((s.registros || []).map(x => x.produto).filter(Boolean))].sort();
       const diasDesde = s.venceuEm ? Math.floor((agora - new Date(s.venceuEm).getTime()) / DIA) : null;
@@ -244,11 +277,7 @@ function direitoNosGrupos({ hubla, jids, chaves, clientesConcierge, gruposRegras
     if (v === null) return true;
     return v.some(o => registroDaGrupo({ tipo: 'assinatura', ofertaId: o.ofertaId, produtoId: o.produtoId }, jid, regras));
   };
-  const concierge = new Set();
-  for (const c of (Array.isArray(clientesConcierge) ? clientesConcierge : [])) {
-    const k = chaveTelefone(c && c.tel);
-    if (k && c.ativo !== false) concierge.add(k);
-  }
+  const concierge = conciergePorChave(clientesConcierge, agora).vale;
   const ordem = ['ativo', 'excecao', 'concierge', 'vencido', 'sem_direito', 'sem_cadastro'];
   const out = new Map();
   for (const k of (chaves || [])) {
@@ -327,4 +356,4 @@ function atualizarVistos(aud, antigos, agora = Date.now()) {
   return { vistos, mudou };
 }
 
-module.exports = { auditar, direitoNosGrupos, candidatosRemocao, atualizarVistos, chaveTelefone, grupoIgnorado, GRUPOS_IGNORADOS };
+module.exports = { auditar, direitoNosGrupos, conciergePorChave, candidatosRemocao, atualizarVistos, chaveTelefone, grupoIgnorado, GRUPOS_IGNORADOS };
