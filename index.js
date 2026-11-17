@@ -5331,8 +5331,10 @@ const MOTIVOS_INVASOR = new Set(['sem_cadastro', 'sem_direito']);
 const REMOCAO_PADRAO = { modo: 'sombra', carenciaDias: 3, limiteDia: 10, incluirSemDireito: false,
   incluirSemCadastro: false, esperaSemCadastroH: 24, janelaIni: 9, janelaFim: 20, invasorImediato: true,
   // Balcão (17/11/2026): quem está no grupo do Balcão sem verificação aprovada sai
-  // depois de esperaVerificacaoH horas (pendente de análise nunca sai).
-  balcaoExigirVerificacao: true, esperaVerificacaoH: 48 };
+  // (pendente de análise nunca sai). esperaVerificacaoH = 0 (padrão, decisão do
+  // Davi): entra na fila de remoção na hora; quem ENTRA sem verificação sai na
+  // hora, como o invasor.
+  balcaoExigirVerificacao: true, esperaVerificacaoH: 0 };
 function _remCfg(estado) {
   const c = Object.assign({}, REMOCAO_PADRAO, (estado && estado.config) || {});
   c.modo = ['off', 'sombra', 'on'].includes(c.modo) ? c.modo : 'sombra';
@@ -5345,7 +5347,8 @@ function _remCfg(estado) {
   c.janelaFim = Math.max(c.janelaIni + 1, Math.min(24, parseInt(c.janelaFim, 10) || REMOCAO_PADRAO.janelaFim));
   c.invasorImediato = c.invasorImediato !== false;
   c.balcaoExigirVerificacao = c.balcaoExigirVerificacao !== false;
-  c.esperaVerificacaoH = Math.max(1, Math.min(720, parseInt(c.esperaVerificacaoH, 10) || REMOCAO_PADRAO.esperaVerificacaoH));
+  const ev = parseInt(c.esperaVerificacaoH, 10);
+  c.esperaVerificacaoH = Number.isFinite(ev) ? Math.max(0, Math.min(720, ev)) : REMOCAO_PADRAO.esperaVerificacaoH;
   return c;
 }
 function _diaSP(t = Date.now()) { return new Date(t - 3 * 3600e3).toISOString().slice(0, 10); }
@@ -5539,7 +5542,8 @@ async function removerInvasoresNaHora(jid, telefones) {
   const alvos = new Map();
   for (const d of (aud.detalhe || [])) {
     if (d.jid !== jid || !d.mapeado || !d.telefone || !chaves.has(d.chave)) continue;
-    if (!(d.situacao === 'sem_cadastro' || (d.situacao === 'sem_direito' && cfg.incluirSemDireito))) continue;
+    if (!(d.situacao === 'sem_cadastro' || (d.situacao === 'sem_direito' && cfg.incluirSemDireito)
+      || (d.situacao === 'nao_verificado' && cfg.balcaoExigirVerificacao))) continue; // Balcão sem verificação: sai na hora
     alvos.set(d.chave, { chave: d.chave, telefone: d.telefone, nome: d.nome, email: d.email, motivos: [d.situacao],
       grupos: [{ jid, nome: d.grupo, motivo: d.situacao }] });
   }

@@ -232,10 +232,10 @@ function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, tel
 // Exceção (do painel, dos admins ou por telefone), concierge, admin e número da
 // casa nunca saem. Devolve uma linha por pessoa com os grupos de onde sai.
 //   - nao_verificado (grupo do Balcão), se balcaoExigirVerificacao, depois de
-//     esperaVerificacaoH horas desde que o sistema o viu assim (vistos 'nv|jid|chave').
+//     esperaVerificacaoH horas (padrão 0 = na hora) desde que o sistema o viu assim (vistos 'nv|jid|chave').
 //     verificacao_pendente nunca sai (a análise é nossa).
 function candidatosRemocao(aud, { carenciaDias = 3, incluirSemDireito = false, incluirSemCadastro = false,
-  esperaSemCadastroH = 24, balcaoExigirVerificacao = false, esperaVerificacaoH = 48, vistos = null, agora = Date.now() } = {}) {
+  esperaSemCadastroH = 24, balcaoExigirVerificacao = false, esperaVerificacaoH = 0, vistos = null, agora = Date.now() } = {}) {
   const porPessoa = new Map();
   for (const d of ((aud && aud.detalhe) || [])) {
     if (!d.mapeado || !d.chave || !d.telefone) continue;
