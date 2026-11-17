@@ -596,6 +596,21 @@ function registrar(app, d) {
       const nome = nomeApresentavel(p.nome);
       pessoas.push({ nome, telefone: telefoneBonito(p.tel), whatsapp: String(p.tel || '').replace(/\D/g, '') });
     }
+    // Quem está no grupo do Balcão sem o formulário porque é cliente do concierge
+    // ou exceção (desde 17/11/2026) também aparece na lista.
+    try {
+      const jaListados = new Set(pessoas.map(p => chaveTel(p.whatsapp)).filter(Boolean));
+      const g = await grupoBalcao({});
+      for (const d of (g.pessoas || [])) {
+        if (!['concierge', 'excecao'].includes(d.situacao)) continue;
+        const k = chaveTel(d.telefone);
+        if (!k || jaListados.has(k)) continue;
+        jaListados.add(k);
+        if (d.email) emailsOk.add(normEmail(d.email));
+        const tel = String(d.telefone || '').replace(/\D/g, '');
+        pessoas.push({ nome: nomeApresentavel(d.nome || ''), telefone: telefoneBonito(tel), whatsapp: tel });
+      }
+    } catch (e) { console.warn('[balcao] lista (concierge/exceção):', e.message); }
     // mesmo telefone em dois CPFs (raro): uma linha só
     const vistos = new Set();
     const unicas = pessoas.filter(p => { const k = chaveTel(p.whatsapp) || p.nome; if (vistos.has(k)) return false; vistos.add(k); return true; });
