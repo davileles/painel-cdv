@@ -5260,7 +5260,9 @@ async function montarAuditoriaGrupos({ forcar = false, gruposRegras, tempos } = 
   let balcao = null;
   try {
     const jids = jidsBalcao(bruto.grupos);
-    if (jids.size && BALCAO) balcao = Object.assign({ jids }, await BALCAO.dadosAuditoria());
+    if (jids.size && BALCAO) balcao = Object.assign({ jids,
+      liberados: new Set(chavesExcecao(hubla, (exc.excecoes || []).filter(x => x && x.balcaoSemVerificacao)).keys()) },
+      await BALCAO.dadosAuditoria());
   } catch (e) { console.warn('[balcao] auditoria sem verificação:', e.message); }
   const aud = hublaAuditoria.auditar({ hubla, grupos: bruto.grupos, clientesConcierge: clientes, telefonesExtras: ajusteTelefones(exc.ajustes),
     gruposRegras: gruposRegras || hublaAss.gruposAcesso(), excecoes, tempos, balcao });
@@ -5900,6 +5902,9 @@ app.post('/hubla/painel/excecoes', async (req, res) => {
       const novo = { id: (ant && ant.id) || _excId(), nome: nome || (ant && ant.nome) || '', email: email || '', telefone,
         ofertaId: oferta ? oferta.ofertaId : '', ofertaNome: oferta ? oferta.ofertaNome : '', produtoId: oferta ? oferta.produtoId : '', produtoNome: oferta ? oferta.produtoNome : '',
         fim: fim || '', justificativa, criadoEm: (ant && ant.criadoEm) || agora, atualizadoEm: agora };
+      // Balcão sem o formulário de verificação (desde 17/11/2026): só com a marca explícita.
+      const flagBalcao = b.balcaoSemVerificacao === undefined ? !!(ant && ant.balcaoSemVerificacao) : !!b.balcaoSemVerificacao;
+      if (flagBalcao) novo.balcaoSemVerificacao = true;
       if (idx >= 0) lista[idx] = novo; else lista.push(novo);
       salvo = novo;
     }, 'exceções: inclui/atualiza');

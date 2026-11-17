@@ -174,11 +174,12 @@ function auditar({ hubla, grupos, clientesConcierge, gruposRegras, excecoes, tel
         else if (k && concierge.has(k)) s = { situacao: 'concierge' };
       }
       // Balcão: o direito pelo cadastro não basta, precisa da verificação aprovada.
-      // Cliente do concierge e exceção (inclui admins) ficam sem o formulário
-      // (decisão do Davi, 17/11/2026: cliente do concierge não é cobrado disso;
-      // funcionário/caso especial entra pela tela Exceções).
-      if (ehBalcao && s.situacao === 'ativo' && !(k && bal.aprovados.has(k))) {
-        if (excVale(k, g.jid)) s = { situacao: 'excecao' };
+      // Fica sem o formulário só cliente do concierge e quem tem, na tela Exceções,
+      // a marca "Liberado no Balcão sem verificação" (bal.liberados; inclui ADMIN_EMAILS).
+      // Exceção sem a marca (ex.: vitalício concedido) também precisa da verificação
+      // (decisão do Davi, 17/11/2026).
+      if (ehBalcao && (s.situacao === 'ativo' || s.situacao === 'excecao') && !(k && bal.aprovados.has(k))) {
+        if (k && bal.liberados && bal.liberados.has(k)) s = { situacao: 'excecao' };
         else if (k && concierge.has(k)) s = { situacao: 'concierge' };
         else s = Object.assign({}, s,{ situacao: k && bal.pendentes.has(k) ? 'verificacao_pendente' : 'nao_verificado', direito: s.situacao });
       }
