@@ -5458,6 +5458,161 @@ async function direitoBalcao(chaves) {
   return hublaAuditoria.direitoNosGrupos({ hubla, jids, chaves, clientesConcierge: clientes,
     telefonesExtras: ajusteTelefones(exc.ajustes), gruposRegras: hublaAss.gruposAcesso(), excecoes: chavesExcecao(hubla, exc.excecoes) });
 }
+// ── Inclusão nos grupos pelo WhatsApp (desde 18/11/2026) ─────────────────────
+// O baileys-server conversa com quem pede para voltar aos grupos (link wa.me do
+// tico-02 com "Quero entrar nos grupos do Clube do Viajante") e pergunta aqui a
+// que grupos aquele telefone tem direito, com as mesmas regras da auditoria
+// (oferta ativa que dá o grupo, exceção, concierge). Só entram grupos com regra
+// de grupos salva (mapeados). Balcão: direito + verificação aprovada (ou cliente
+// do concierge / exceção liberada). Telefone fora da base: a pessoa informa o
+// e-mail da compra, recebe um código nele e, confirmado, o telefone novo vira
+// Ajuste de cadastro (o telefone que conversa é o que entra nos grupos).
+// Remetente do e-mail do código: env EMAIL_REMETENTE (mesmo remetente dos outros
+// e-mails do proxy). Sem ela o código não sai e o caso vai para o grupo do operador.
+const INCL_REMETENTE = String(process.env.EMAIL_REMETENTE || '').trim();
+const _inclCodigos = new Map(); // email|chave → { codigo, expira, tentativas, enviadoEm }
+const INCL_CODIGO_TTL = 15 * 60 * 1000;
+function _inclNome(hubla, chave, email) {
+  const e = _emailNorm(email);
+  for (const a of Object.values((hubla && hubla.assinaturas) || {})) {
+    if (!a || !a.nome) continue;
+    if ((chave && hublaAuditoria.chaveTelefone(a.telefone) === chave) || (e && _emailNorm(a.email) === e)) return hublaAss.nomeProprio(a.nome);
+  }
+  for (const p of Object.values((hubla && hubla.acessosPorProduto) || {})) {
+    for (const [em, m] of Object.entries(p.membros || {})) {
+      if (!m || !m.nome) continue;
+      if ((chave && hublaAuditoria.chaveTelefone(m.telefone) === chave) || (e && _emailNorm(em) === e)) return hublaAss.nomeProprio(m.nome);
+    }
+  }
+  return '';
+}
+function _inclEmailNaBase(hubla, email) {
+  const e = _emailNorm(email);
+  if (!e) return false;
+  if (Object.values((hubla && hubla.assinaturas) || {}).some(a => a && _emailNorm(a.email) === e)) return true;
+  return Object.values((hubla && hubla.acessosPorProduto) || {}).some(p => Object.keys(p.membros || {}).some(em => _emailNorm(em) === e));
+}
+async function direitoInclusao({ telefone, email }) {
+  const chave = hublaAuditoria.chaveTelefone(telefone);
+  if (!chave) throw new Error('telefone inválido');
+  await carregarGruposClube();
+  const lista = (await listaGruposCdv()).filter(g => !hublaAuditoria.grupoIgnorado(g.nome));
+  const regras = hublaAss.gruposAcesso();
+  const grupos = lista.filter(g => regras.mapeados.has(g.jid));
+  const [{ data: hubla }, exc] = await Promise.all([ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}), lerExcecoesPainel()]);
+  const clientes = await clientesConciergeComAcompanhantes();
+  const extras = ajusteTelefones(exc.ajustes);
+  const e = _emailNorm(email);
+  if (e) { const l = extras.get(e) || []; l.push(String(telefone)); extras.set(e, l); }
+  const excecoes = chavesExcecao(hubla, exc.excecoes);
+  const liberados = new Set(chavesExcecao(hubla, (exc.excecoes || []).filter(x => x && x.balcaoSemVerificacao)).keys());
+  const balcaoJids = jidsBalcao(lista);
+  let bal = null;
+  if (balcaoJids.size && BALCAO) { try { bal = await BALCAO.dadosAuditoria(); } catch (err) { console.warn('[inclusao] balcão:', err.message); } }
+  const base = { hubla, chaves: [chave], clientesConcierge: clientes, telefonesExtras: extras, gruposRegras: regras, excecoes };
+  const ordem = ['ativo', 'excecao', 'concierge', 'vencido', 'sem_direito', 'sem_cadastro'];
+  let melhor = 'sem_cadastro';
+  const out = [];
+  for (const g of grupos) {
+    const r = hublaAuditoria.direitoNosGrupos(Object.assign({}, base, { jids: [g.jid] })).get(chave) || { situacao: 'sem_cadastro' };
+    if (ordem.indexOf(r.situacao) < ordem.indexOf(melhor)) melhor = r.situacao;
+    const item = { jid: g.jid, nome: g.nome, situacao: r.situacao, direito: ['ativo', 'excecao', 'concierge'].includes(r.situacao) };
+    if (balcaoJids.has(g.jid)) {
+      item.balcao = true;
+      if (item.direito) {
+        item.verificado = r.situacao === 'concierge' || liberados.has(chave) || !!(bal && bal.aprovados.has(chave));
+        item.verificacaoPendente = !item.verificado && !!(bal && bal.pendentes.has(chave));
+      }
+    }
+    out.push(item);
+  }
+  return { encontrado: melhor !== 'sem_cadastro', situacao: melhor, nome: _inclNome(hubla, chave, e), grupos: out,
+    formularioBalcao: 'https://painel.clubedoviajante.com.br/balcao/' };
+}
+function _inclMascararEmail(e) {
+  const [u, d] = String(e || '').split('@');
+  if (!d) return e;
+  return (u.length <= 2 ? u[0] + '*' : u.slice(0, 2) + '*'.repeat(Math.min(6, u.length - 2))) + '@' + d;
+}
+app.post('/cdv/inclusao/consultar', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try { res.json(Object.assign({ ok: true }, await direitoInclusao({ telefone: (req.body || {}).telefone }))); }
+  catch (err) { res.status(err.message === 'telefone inválido' ? 400 : 502).json({ ok: false, erro: err.message }); }
+});
+// {telefone, email}: o e-mail tem compra na Hubla e, nesse telefone, daria algum
+// grupo? Manda um código de 6 dígitos para ele (15 min, 5 tentativas). Nada muda
+// até o /confirmar.
+app.post('/cdv/inclusao/codigo', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const b = req.body || {};
+  const email = _emailNorm(b.email), chave = hublaAuditoria.chaveTelefone(b.telefone);
+  if (!chave) return res.status(400).json({ ok: false, erro: 'telefone inválido' });
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ ok: false, erro: 'e-mail inválido' });
+  try {
+    const { data: hubla } = await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {});
+    if (!_inclEmailNaBase(hubla, email)) return res.json({ ok: true, encontrado: false });
+    const d = await direitoInclusao({ telefone: b.telefone, email });
+    if (!d.grupos.some(g => g.direito)) return res.json({ ok: true, encontrado: true, semDireito: true, situacao: d.situacao, nome: d.nome });
+    if (!RESEND_API_KEY || !INCL_REMETENTE) return res.json({ ok: true, encontrado: true, semEmail: true, nome: d.nome });
+    const k = email + '|' + chave;
+    const ant = _inclCodigos.get(k);
+    if (ant && Date.now() - ant.enviadoEm < 45 * 1000) return res.json({ ok: true, encontrado: true, enviado: true, emailMascarado: _inclMascararEmail(email), repetido: true });
+    const codigo = gerarCodigo();
+    _inclCodigos.set(k, { codigo, expira: Date.now() + INCL_CODIGO_TTL, tentativas: 0, enviadoEm: Date.now() });
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST', compress: false,
+      headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: INCL_REMETENTE, to: [email],
+        subject: `Código para entrar nos grupos: ${codigo}`,
+        html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0a0c12;color:#fff;border-radius:12px">
+          <h2 style="color:#FF6B5B;margin-bottom:8px">Clube do Viajante</h2>
+          <p style="color:#aaa;margin-bottom:24px">Você pediu pelo WhatsApp para entrar nos grupos com um número novo. Responda a conversa com o código abaixo. Ele vale por <strong>15 minutos</strong>.</p>
+          <div style="background:#1a1d2e;border-radius:10px;padding:24px;text-align:center;letter-spacing:12px;font-size:32px;font-weight:900;color:#FF6B5B;margin-bottom:24px">${codigo}</div>
+          <p style="color:#666;font-size:12px">Se não foi você, ignore este e-mail: nada muda no seu cadastro.</p></div>`,
+      }),
+    });
+    if (!r.ok) { _inclCodigos.delete(k); return res.status(502).json({ ok: false, erro: 'e-mail não saiu (Resend ' + r.status + ')' }); }
+    res.json({ ok: true, encontrado: true, enviado: true, emailMascarado: _inclMascararEmail(email) });
+  } catch (err) { res.status(502).json({ ok: false, erro: err.message }); }
+});
+// {telefone, email, codigo}: código certo → grava o telefone como Ajuste de
+// cadastro do e-mail da Hubla e devolve os grupos a que ele tem direito.
+app.post('/cdv/inclusao/confirmar', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  const b = req.body || {};
+  const email = _emailNorm(b.email), chave = hublaAuditoria.chaveTelefone(b.telefone);
+  const k = email + '|' + chave;
+  const reg = _inclCodigos.get(k);
+  if (!reg || Date.now() > reg.expira) { _inclCodigos.delete(k); return res.json({ ok: false, motivo: 'expirado' }); }
+  if (String(b.codigo || '').replace(/\D/g, '') !== reg.codigo) {
+    reg.tentativas++;
+    if (reg.tentativas >= 5) { _inclCodigos.delete(k); return res.json({ ok: false, motivo: 'tentativas' }); }
+    return res.json({ ok: false, motivo: 'errado', restam: 5 - reg.tentativas });
+  }
+  _inclCodigos.delete(k);
+  try {
+    let telefone = String(b.telefone || '').replace(/\D/g, '');
+    if (telefone.length <= 11) telefone = '55' + telefone;
+    const { data: hubla } = await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {});
+    const agora = new Date().toISOString();
+    const dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10).split('-').reverse().join('/');
+    let anterior = null;
+    await salvarAjustes(lista => {
+      const idx = lista.findIndex(x => _emailNorm(x.emailHubla) === email);
+      const ant = idx >= 0 ? lista[idx] : null;
+      if (ant && hublaAuditoria.chaveTelefone(ant.telefone) === chave) return false;
+      anterior = ant && ant.telefone ? ant.telefone : null;
+      const salvo = Object.assign({}, ant || {}, { id: (ant && ant.id) || ('aj-' + Date.now().toString(36)),
+        nome: (ant && ant.nome) || _inclNome(hubla, null, email), emailHubla: email, emailPainel: (ant && ant.emailPainel) || '',
+        telefone, justificativa: 'Telefone novo confirmado por código no e-mail, no pedido de inclusão pelo WhatsApp (' + dia + ')',
+        criadoEm: (ant && ant.criadoEm) || agora, atualizadoEm: agora, origem: 'inclusao-whatsapp' });
+      if (idx >= 0) lista[idx] = salvo; else lista.push(salvo);
+    }, 'ajustes: telefone novo pela inclusão nos grupos');
+    const d = await direitoInclusao({ telefone, email });
+    res.json(Object.assign({ ok: true, ajusteGravado: true, telefoneAnterior: anterior }, d));
+  } catch (err) { res.status(502).json({ ok: false, erro: err.message }); }
+});
 app.get('/hubla/grupos-auditoria', async (req, res) => {
   if (!opAutorizado(req, res)) return;
   try {
