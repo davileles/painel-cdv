@@ -7660,13 +7660,27 @@ app.get('/concierge/demandas', async (req, res) => {
 });
 
 // POST /concierge/demandas
+// Demandas criadas pelo lembrete-voo.js (`auto: true`, ex.: check-in de voo)
+// entram em demandas.json enquanto o painel pode estar aberto com a lista
+// antiga. Como o painel grava o array inteiro, o save dele apagaria a demanda
+// nova: aqui ela é preservada, a menos que o painel diga que a removeu
+// (`removidos`, ids excluídos na sessão).
+function preservarDemandasAuto(remoto, novo, removidos) {
+  if (!Array.isArray(remoto)) return novo;
+  const ids = new Set(novo.map(d => d && d.id).filter(Boolean));
+  const rem = new Set(Array.isArray(removidos) ? removidos : []);
+  const extras = remoto.filter(d => d && d.auto === true && d.id && !ids.has(d.id) && !rem.has(d.id));
+  if (extras.length) console.log(`[concierge/demandas] ${extras.length} demanda(s) automática(s) preservada(s)`);
+  return extras.length ? [...extras, ...novo] : novo;
+}
+
 app.post('/concierge/demandas', async (req, res) => {
-  const { data } = req.body;
+  const { data, removidos } = req.body;
   if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
   for (let tentativa = 0; tentativa < 3; tentativa++) {
     try {
-      const { sha } = await getConciergeFile('demandas.json');
-      await putConciergeFile('demandas.json', data, sha);
+      const { content: remoto, sha } = await getConciergeFile('demandas.json');
+      await putConciergeFile('demandas.json', preservarDemandasAuto(remoto, data, removidos), sha);
       return res.json({ ok: true });
     } catch(e) {
       // 409 = SHA desatualizado (escrita concorrente venceu a corrida) — refaz com SHA fresco
