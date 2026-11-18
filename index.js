@@ -5510,13 +5510,24 @@ async function direitoInclusao({ telefone, email }) {
   let bal = null;
   if (balcaoJids.size && BALCAO) { try { bal = await BALCAO.dadosAuditoria(); } catch (err) { console.warn('[inclusao] balcão:', err.message); } }
   const base = { hubla, chaves: [chave], clientesConcierge: clientes, telefonesExtras: extras, gruposRegras: regras, excecoes };
+  // Grupos de onde o Tico tirou essa pessoa (histórico da remoção): para ela o
+  // link de convite não abre, a boas-vindas manda pela inclusão.
+  const removidoDe = new Set();
+  try {
+    const { estado } = await lerEstadoRemocao();
+    for (const h of estado.historico || []) {
+      if (!h || hublaAuditoria.chaveTelefone(h.telefone) !== chave) continue;
+      for (const g of h.grupos || []) if (g && g.jid && g.estado === 'ok') removidoDe.add(g.jid);
+    }
+  } catch (err) { console.warn('[inclusao] histórico da remoção:', err.message); }
   const ordem = ['ativo', 'excecao', 'concierge', 'vencido', 'sem_direito', 'sem_cadastro'];
   let melhor = 'sem_cadastro';
   const out = [];
   for (const g of grupos) {
     const r = hublaAuditoria.direitoNosGrupos(Object.assign({}, base, { jids: [g.jid] })).get(chave) || { situacao: 'sem_cadastro' };
     if (ordem.indexOf(r.situacao) < ordem.indexOf(melhor)) melhor = r.situacao;
-    const item = { jid: g.jid, nome: g.nome, situacao: r.situacao, direito: ['ativo', 'excecao', 'concierge'].includes(r.situacao) };
+    const item = { jid: g.jid, nome: g.nome, situacao: r.situacao, direito: ['ativo', 'excecao', 'concierge'].includes(r.situacao),
+      removidoPeloTico: removidoDe.has(g.jid) };
     if (balcaoJids.has(g.jid)) {
       item.balcao = true;
       if (item.direito) {
