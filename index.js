@@ -7813,6 +7813,24 @@ function fimContratoConcierge(cli) {
   return max;
 }
 
+// Junta os periodos de contrato do arquivo atual com os da lista recebida
+// (por id do cliente e id do periodo), menos os ids em `remover`.
+function mesclarContratosConcierge(recebida, atual, remover) {
+  const porId = new Map((Array.isArray(atual) ? atual : []).filter(c => c && c.id).map(c => [String(c.id), c]));
+  return recebida.map(c => {
+    const velho = c && c.id ? porId.get(String(c.id)) : null;
+    if (!velho) return c;
+    const vistos = new Set();
+    const juntos = [];
+    for (const k of contratosNormalizados(c.contratos).concat(contratosNormalizados(velho.contratos))) {
+      if (remover.has(k.id) || vistos.has(k.id)) continue;
+      vistos.add(k.id); juntos.push(k);
+    }
+    juntos.sort((a, b) => String(a.inicio || a.fim).localeCompare(String(b.inicio || b.fim)));
+    return Object.assign({}, c, { contratos: juntos });
+  });
+}
+
 async function lerClientesConcierge() {
   try {
     const { content, sha } = await getConciergeFile(CONCIERGE_CLIENTES, CONCIERGE_DADOS_REPO);
@@ -8055,10 +8073,16 @@ app.get('/concierge/clientes', async (req, res) => {
 app.post('/concierge/clientes', async (req, res) => {
   const { data } = req.body;
   if (!Array.isArray(data)) return res.status(400).json({ ok: false, erro: 'data deve ser um array' });
-  const lista = data.filter(c => c && String(c.nome || '').trim()).map(clienteNormalizado);
+  const lista0 = data.filter(c => c && String(c.nome || '').trim()).map(clienteNormalizado);
+  // Periodos de contrato excluidos de proposito (botao ✕ do painel). Fora isso,
+  // nenhum periodo que ja esta no arquivo some: uma aba antiga do painel que
+  // salve a lista inteira nao apaga contratos registrados depois que ela abriu
+  // (17/11/2026: 31 contratos sumiram assim).
+  const remover = new Set((Array.isArray(req.body.removerContratos) ? req.body.removerContratos : []).map(x => String(x || '').trim()).filter(Boolean));
   for (let tentativa = 0; tentativa < 3; tentativa++) {
     try {
-      const { sha } = await lerClientesConcierge();
+      const { lista: atual, sha } = await lerClientesConcierge();
+      const lista = mesclarContratosConcierge(lista0, atual, remover);
       await putConciergeFile(CONCIERGE_CLIENTES, lista, sha, CONCIERGE_DADOS_REPO);
       return res.json({ ok: true, total: lista.length });
     } catch(e) {
