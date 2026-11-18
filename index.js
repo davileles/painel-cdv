@@ -5520,6 +5520,34 @@ async function direitoInclusao({ telefone, email }) {
       for (const g of h.grupos || []) if (g && g.jid && g.estado === 'ok') removidoDe.add(g.jid);
     }
   } catch (err) { console.warn('[inclusao] histórico da remoção:', err.message); }
+  // Ex-aluno (decisão do Davi, 18/11/2026): a última assinatura encerrada há 3+
+  // dias, sem outra que a emendasse (renovação dentro de 3 dias), diz em que
+  // grupos a pessoa estava e de onde já saiu nesse intervalo — o link não abre
+  // para ela, então esses grupos vão pela inclusão. Vale mesmo antes do
+  // histórico de remoções existir.
+  const exAlunoDe = new Set();
+  try {
+    const agora = Date.now(), FOLGA = 3 * 86400e3;
+    const emailsDoTel = new Set(e ? [e] : []);
+    for (const [em, tels] of extras) if ((tels || []).some(t => hublaAuditoria.chaveTelefone(t) === chave)) emailsDoTel.add(em);
+    const daPessoa = Object.values((hubla && hubla.assinaturas) || {}).filter(a => a &&
+      (hublaAuditoria.chaveTelefone(a.telefone) === chave || emailsDoTel.has(_emailNorm(a.email))));
+    const comSit = daPessoa.map(a => ({ a, s: hublaAss.calcularSituacao(a, agora) }));
+    let ultima = null;
+    for (const x of comSit) {
+      if (x.s.situacao !== 'encerrada' || !x.s.fim) continue;
+      const fimMs = new Date(x.s.fim).getTime();
+      if (!(agora - fimMs >= FOLGA)) continue;
+      const emendada = comSit.some(y => y !== x && y.a.inicio && new Date(y.a.inicio).getTime() <= fimMs + FOLGA
+        && new Date(y.a.inicio).getTime() >= fimMs - 400 * 86400e3 && (!y.s.fim || new Date(y.s.fim).getTime() > fimMs + FOLGA));
+      if (emendada) continue;
+      if (!ultima || fimMs > ultima.fimMs) ultima = { a: x.a, fimMs };
+    }
+    if (ultima) {
+      const gs = regras.porOferta.get(String(ultima.a.ofertaId || '')) || regras.porProduto.get(String(ultima.a.produtoId || '')) || new Set();
+      gs.forEach(j => exAlunoDe.add(j));
+    }
+  } catch (err) { console.warn('[inclusao] ex-aluno:', err.message); }
   const ordem = ['ativo', 'excecao', 'concierge', 'vencido', 'sem_direito', 'sem_cadastro'];
   let melhor = 'sem_cadastro';
   const out = [];
@@ -5527,7 +5555,7 @@ async function direitoInclusao({ telefone, email }) {
     const r = hublaAuditoria.direitoNosGrupos(Object.assign({}, base, { jids: [g.jid] })).get(chave) || { situacao: 'sem_cadastro' };
     if (ordem.indexOf(r.situacao) < ordem.indexOf(melhor)) melhor = r.situacao;
     const item = { jid: g.jid, nome: g.nome, situacao: r.situacao, direito: ['ativo', 'excecao', 'concierge'].includes(r.situacao),
-      removidoPeloTico: removidoDe.has(g.jid) };
+      removidoPeloTico: removidoDe.has(g.jid), exAluno: exAlunoDe.has(g.jid) };
     if (balcaoJids.has(g.jid)) {
       item.balcao = true;
       if (item.direito) {
