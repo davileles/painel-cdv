@@ -5153,7 +5153,7 @@ app.post('/hubla/contatos/relatorio', async (req, res) => {
     modo: b.modo === 'valendo' ? 'valendo' : 'ensaio',
     inicio: b.inicio || null, fim: b.fim || null, completo: b.completo !== false,
     totais: (b.totais && typeof b.totais === 'object') ? b.totais : {},
-    atualizar: lista(b.atualizar, 5000), criar: lista(b.criar, 5000), erros: lista(b.erros, 500),
+    atualizar: lista(b.atualizar, 5000), criar: lista(b.criar, 5000), complementar: lista(b.complementar, 5000), erros: lista(b.erros, 500),
   };
   try {
     for (let t = 1; t <= 3; t++) {

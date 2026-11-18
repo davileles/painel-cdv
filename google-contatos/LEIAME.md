@@ -34,6 +34,10 @@ não tem outro produto ativo) · vitalício sai com **VIT** no lugar da data.
 
 - Acha o contato pelo telefone (DDD + 8 últimos dígitos, com ou sem o 9) ou pelo e-mail.
 - Contato existente: o nome fica igual ao do sistema (Hubla) + sigla + data.
+- Contato existente que bate com um único contato da agenda: ganha os telefones e e-mails
+  do aluno que ainda não tem (ex.: o número novo de um Ajuste de cadastro), sem apagar
+  nada do que já está lá (desde 18/11/2026). Para valer, cole o `Codigo.gs` novo no
+  projeto do Apps Script.
 - Aluno que não está na agenda: cria o contato com nome, telefone e e-mail.
 - Marca cada aluno com "Alunos CDV · Ativos" ou "Alunos CDV · Vencidos".
 - Nunca apaga contato e nunca mexe em quem não é aluno.

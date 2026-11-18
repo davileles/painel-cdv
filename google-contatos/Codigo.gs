@@ -6,6 +6,9 @@
  *     "<Nome> <SIGLA> <dd/mm/aa>"      ex.: "William Camargo CDV 16/09/27"
  * - acha o contato pelo telefone (DDD + 8 últimos dígitos) ou pelo e-mail;
  * - contato que já existe: o nome passa a ser o do sistema (Hubla) + sigla + data;
+ * - contato que já existe e só bate com UM contato da agenda: ganha os telefones e
+ *   e-mails do aluno que ainda não tem (ex.: número novo de um Ajuste de cadastro),
+ *   sem tirar nada do que já está lá (desde 18/11/2026);
  * - aluno que não está na agenda: cria o contato (nome, telefone, e-mail);
  * - marca cada aluno com "Alunos CDV · Ativos" ou "Alunos CDV · Vencidos";
  * - nunca apaga contato e nunca mexe em quem não é aluno.
@@ -75,7 +78,7 @@ function rodar_(modo) {
   });
 
   // 2. O que muda
-  const atualizar = [], criar = [], erros = [];
+  const atualizar = [], criar = [], complementar = [], erros = [];
   const usados = {};
   const rotulo = {}; // resourceName → 'ativos' | 'vencidos'
   let iguais = 0, conflitos = 0;
@@ -99,28 +102,51 @@ function rodar_(modo) {
       let base = dados.usarNomeDoSistema === false ? atual.replace(reSufixo, '').trim() : al.nome;
       if (!base || reInvalido.test(base)) base = al.nome;
       const novo = (base + ' ' + al.sufixo).trim();
-      if (novo === atual) { iguais++; return; }
-      atualizar.push({ rn: p.resourceName, etag: p.etag, de: atual, para: novo });
+      // Telefones e e-mails do aluno que o contato ainda não tem. Só quando o aluno
+      // bate com um único contato (com dois ou mais, não dá para saber qual é o certo).
+      const falta = lista.length === 1 ? faltando_(p, al) : { telefones: [], emails: [] };
+      const mudaNome = novo !== atual;
+      if (!mudaNome && !falta.telefones.length && !falta.emails.length) { iguais++; return; }
+      const item = { rn: p.resourceName, etag: p.etag, de: atual, para: novo, mudaNome: mudaNome, pessoa: p, falta: falta };
+      if (mudaNome) atualizar.push(item);
+      if (falta.telefones.length || falta.emails.length) complementar.push(item);
     });
   });
 
   const totais = { alunos: dados.contatos.length, contatosNaAgenda: pessoas.length,
-    atualizar: atualizar.length, criar: criar.length, iguais: iguais, conflitos: conflitos };
+    atualizar: atualizar.length, criar: criar.length, complementar: complementar.length, iguais: iguais, conflitos: conflitos };
   let completo = true;
 
   // 3. Grava (só no modo valendo)
   if (modo === 'valendo') {
-    let feitosAt = 0, feitosCr = 0;
-    for (let i = 0; i < atualizar.length; i += LOTE) {
-      if (Date.now() - t0 > TEMPO_MAX_MS) { completo = false; break; }
-      const contatos = {};
-      atualizar.slice(i, i + LOTE).forEach(a => { contatos[a.rn] = { etag: a.etag, names: [{ givenName: a.para }] }; });
-      try {
-        People.People.batchUpdateContacts({ contacts: contatos, updateMask: 'names', readMask: 'names' });
-        feitosAt += Object.keys(contatos).length;
-      } catch (e) { erros.push({ tipo: 'atualizar', lote: i, erro: String(e.message || e).slice(0, 300) }); }
-      Utilities.sleep(PAUSA_MS);
-    }
+    let feitosAt = 0, feitosCr = 0, feitosCo = 0;
+    // Uma gravação por contato com tudo o que muda nele (nome e/ou telefones e e-mails).
+    // O updateMask é um só por chamada, então os lotes saem separados por tipo de mudança.
+    const porMascara = {};
+    const vistos = {};
+    atualizar.concat(complementar).forEach(a => {
+      if (vistos[a.rn]) return; vistos[a.rn] = true;
+      const campos = [];
+      if (a.mudaNome) campos.push('names');
+      if (a.falta.telefones.length) campos.push('phoneNumbers');
+      if (a.falta.emails.length) campos.push('emailAddresses');
+      const m = campos.join(',');
+      (porMascara[m] = porMascara[m] || []).push(a);
+    });
+    Object.keys(porMascara).forEach(mascara => {
+      const itens = porMascara[mascara];
+      for (let i = 0; i < itens.length; i += LOTE) {
+        if (Date.now() - t0 > TEMPO_MAX_MS) { completo = false; break; }
+        const contatos = {};
+        const lote = itens.slice(i, i + LOTE);
+        lote.forEach(a => { contatos[a.rn] = corpoAtualizacao_(a); });
+        try {
+          People.People.batchUpdateContacts({ contacts: contatos, updateMask: mascara, readMask: 'names' });
+          lote.forEach(a => { if (a.mudaNome) feitosAt++; if (a.falta.telefones.length || a.falta.emails.length) feitosCo++; });
+        } catch (e) { erros.push({ tipo: 'atualizar', campos: mascara, lote: i, erro: String(e.message || e).slice(0, 300) }); }
+        Utilities.sleep(PAUSA_MS);
+      }
+    });
     for (let i = 0; i < criar.length; i += LOTE) {
       if (Date.now() - t0 > TEMPO_MAX_MS) { completo = false; break; }
       const lote = criar.slice(i, i + LOTE);
@@ -143,12 +169,15 @@ function rodar_(modo) {
     try { aplicarMarcadores_(rotulo, pessoas); } catch (e) { erros.push({ tipo: 'marcadores', erro: String(e.message || e).slice(0, 300) }); }
     totais.atualizados = feitosAt;
     totais.criados = feitosCr;
+    totais.complementados = feitosCo;
   }
 
   // 4. Relatório (aparece no gestor → Assinaturas → Google Contatos)
   const relatorio = { modo: modo, inicio: inicio, fim: new Date().toISOString(), completo: completo, totais: totais,
     atualizar: atualizar.map(a => ({ de: a.de, para: a.para })),
     criar: criar.map(c => ({ nome: c.nome, telefone: (c.telefones || [])[0] || '', email: (c.emails || [])[0] || '' })),
+    complementar: complementar.map(a => ({ contato: a.mudaNome ? a.para : a.de,
+      telefones: a.falta.telefones.map(t => t.value), emails: a.falta.emails.map(e => e.value) })),
     erros: erros };
   UrlFetchApp.fetch(PROXY + '/hubla/contatos/relatorio', {
     method: 'post', contentType: 'application/json', headers: { 'X-CDV-Op': chave },
@@ -157,6 +186,8 @@ function rodar_(modo) {
 
   Logger.log((modo === 'ensaio' ? 'ENSAIO (nada foi mudado). ' : '') + JSON.stringify(totais));
   atualizar.slice(0, 30).forEach(a => Logger.log('  ' + a.de + '  →  ' + a.para));
+  complementar.slice(0, 30).forEach(a => Logger.log('  + ' + (a.mudaNome ? a.para : a.de) + ': ' +
+    a.falta.telefones.map(t => t.value).concat(a.falta.emails.map(e => e.value)).join(', ')));
   if (criar.length) Logger.log('Novos contatos: ' + criar.slice(0, 30).map(c => c.nome).join(', ') + (criar.length > 30 ? '…' : ''));
   if (!completo) Logger.log('Parou no limite de tempo; a próxima rodada continua do ponto em que está.');
   return totais;
@@ -189,6 +220,37 @@ function aplicarMarcadores_(rotulo, pessoas) {
   modificar(gV, addV, remV);
 }
 
+// Telefones/e-mails do aluno que o contato ainda não tem (mesma chave de
+// cruzamento da busca: DDD + 8 últimos dígitos no Brasil).
+function faltando_(p, al) {
+  const temTel = {}, temEmail = {};
+  (p.phoneNumbers || []).forEach(n => { const k = chaveTelefone_(n.canonicalForm || n.value); if (k) temTel[k] = true; });
+  (p.emailAddresses || []).forEach(e => { const k = String(e.value || '').toLowerCase().trim(); if (k) temEmail[k] = true; });
+  const telefones = [], emails = [];
+  (al.telefones || []).forEach(t => {
+    const k = chaveTelefone_(t);
+    if (!k || temTel[k]) return;
+    temTel[k] = true;
+    telefones.push({ value: '+' + comDdi_(t) });
+  });
+  (al.emails || []).forEach(e => {
+    const k = String(e || '').toLowerCase().trim();
+    if (!k || temEmail[k]) return;
+    temEmail[k] = true;
+    emails.push({ value: k });
+  });
+  return { telefones: telefones, emails: emails };
+}
+// O People API troca a lista inteira do campo: manda a lista atual (sem os
+// metadados de leitura) + o que falta, para não apagar nada do contato.
+function corpoAtualizacao_(a) {
+  const corpo = { etag: a.etag };
+  if (a.mudaNome) corpo.names = [{ givenName: a.para }];
+  const limpar = (x, campos) => { const o = {}; campos.forEach(c => { if (x[c] != null) o[c] = x[c]; }); return o; };
+  if (a.falta.telefones.length) corpo.phoneNumbers = (a.pessoa.phoneNumbers || []).map(n => limpar(n, ['value', 'type'])).concat(a.falta.telefones);
+  if (a.falta.emails.length) corpo.emailAddresses = (a.pessoa.emailAddresses || []).map(e => limpar(e, ['value', 'type', 'displayName'])).concat(a.falta.emails);
+  return corpo;
+}
 function nomeDe_(p) {
   const n = (p.names || [])[0];
   if (!n) return '';
