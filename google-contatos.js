@@ -21,6 +21,9 @@
 //     Emissões (TSE) são complementos: só aparecem para quem não tem outro
 //     produto ativo (DAP e TSE entram mesmo sem dar grupo, e só para quem não tem
 //     nenhum outro produto, nem vencido);
+//   - Travel Concierge ATIVO vence tudo (desde 17/11/2026): quem tem concierge
+//     vigente e outro produto (ex.: Clube até 10/11/27, concierge até 09/09/27)
+//     fica "TRC 09/09/27"; vencido o concierge sem renovação, vale o próximo ativo;
 //   - vitalício sai com "VIT" no lugar da data;
 //   - Travel Concierge pago fora da Hubla (desde 17/11/2026): os períodos de
 //     contrato registrados no painel do concierge (clientes[].contratos) entram
@@ -252,7 +255,14 @@ function montarContatos({ hubla, arquivoRegras, excecoes, ajustes, clientesConci
     const princ = r => !SECUNDARIAS.has(r.sigla);
     const encerradas = lista.filter(r => !r.ativo).sort(ordFim);
     const encP = encerradas.find(princ), encS = encerradas.find(r => !princ(r));
-    const escolhido = reais.filter(r => r.ativo && princ(r)).sort(ordAtivo)[0]
+    // Concierge ativo vence qualquer outro produto (decisão do Davi, 17/11/2026):
+    // cliente do concierge que também assina o Clube/Escola aparece como
+    // "TRC <fim do concierge>"; quando o concierge vence sem renovar, o nome
+    // volta para o produto ativo seguinte (ex.: CDV) pelas regras abaixo.
+    const trcAtivo = lista.filter(r => r.ativo && r.sigla === 'TRC')
+      .sort((a, b) => ((a.fonte === 'excecao') - (b.fonte === 'excecao')) || ordFim(a, b))[0];
+    const escolhido = trcAtivo
+      || reais.filter(r => r.ativo && princ(r)).sort(ordAtivo)[0]
       || excs.filter(r => r.ativo && princ(r)).sort(ordAtivo)[0]
       || lista.filter(r => r.ativo).sort(ordAtivo)[0]
       || (encP && encS && ms(encS.fim) - ms(encP.fim) > 30 * 86400000 ? encS : (encP || encS));
