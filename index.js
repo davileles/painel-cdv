@@ -5871,7 +5871,8 @@ async function executarRemocaoTico({ alvo, grupos, invasor = false, total = 1, g
       fetch(`${BAILEYS_URL}/cdv/balcao/aviso-removido`, {
         method: 'POST', timeout: 20000,
         headers: { 'Content-Type': 'application/json', 'X-CDV-Op': process.env.CAMPANHAS_KEY },
-        body: JSON.stringify({ telefone, nome: alvo.nome || '', grupo: (nomes.get(saiuBalcao[0].jid) || {}).nome || saiuBalcao[0].nome || '' }),
+        body: JSON.stringify({ telefone, nome: alvo.nome || '', grupo: (nomes.get(saiuBalcao[0].jid) || {}).nome || saiuBalcao[0].nome || '',
+          formulario: 'https://painel.clubedoviajante.com.br/balcao/' }),
       }).then(r => r.json().catch(() => ({}))).then(d => { if (d && d.ok === false) console.warn('[balcao] aviso ao removido: ' + (d.erro || '?')); })
         .catch(e => console.warn('[balcao] aviso ao removido falhou: ' + e.message));
     }

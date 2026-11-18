@@ -602,25 +602,57 @@ function registrar(app, d) {
     }
   });
 
+  // Aviso de aprovação pelo baileys (best-effort: falha aqui não desfaz a aprovação).
+  // Telefones em ordem de confiança: vinculados à mão, vínculo da Hubla, formulário.
+  async function avisarAprovado(r) {
+    const vistos = new Set(), telefones = [];
+    for (const t of [...(r.telefonesManuais || []), ...(((r.vinculo || {}).telefones) || []), r.tel]) {
+      const dig = String(t || '').replace(/\D/g, ''), k = chaveTel(dig);
+      if (!k || vistos.has(k)) continue;
+      vistos.add(k); telefones.push(dig);
+    }
+    if (!telefones.length) return { ok: false, erro: 'sem telefone vinculado: avise a pessoa manualmente' };
+    if (!process.env.CAMPANHAS_KEY) return { ok: false, erro: 'CAMPANHAS_KEY não definida no proxy' };
+    try {
+      const resp = await fetch(`${BAILEYS_URL}/cdv/balcao/aviso-aprovado`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CDV-Op': process.env.CAMPANHAS_KEY },
+        body: JSON.stringify({ telefones, nome: r.nome || '' }), signal: AbortSignal.timeout(20000),
+      });
+      const d = await resp.json().catch(() => null);
+      if (!d) return { ok: false, erro: 'baileys respondeu HTTP ' + resp.status };
+      return d;
+    } catch (e) {
+      console.warn('[balcao] aviso de aprovação falhou:', e.message);
+      return { ok: false, erro: e.message };
+    }
+  }
+
   // ── POST /balcao/verificacoes/status (operador) ─────────────────────────
   app.post('/balcao/verificacoes/status', async (req, res) => {
     if (!opAutorizado(req, res)) return;
     const { id, status } = req.body || {};
     if (!id || !STATUS.includes(status)) return res.status(400).json({ ok: false, erro: 'id e status (pendente|aprovado|reprovado) obrigatórios' });
     try {
-      let achou = false;
+      let achou = false, antes = null, reg = null;
       await putRetry(REGISTROS, (lista) => {
         const k = lista.findIndex(x => x && x.id === id);
         if (k === -1) return null;
         achou = true;
+        antes = lista[k].status;
         lista[k].status = status;
         lista[k].statusEm = new Date().toISOString();
         lista[k].obs = texto(req.body.obs, 1000);
+        reg = lista[k];
         return lista;
       });
       if (!achou) return res.status(404).json({ ok: false, erro: 'verificação não encontrada' });
       limparCache();
-      res.json({ ok: true });
+      // Aprovou (18/11/2026): o tico-02 avisa a pessoa no privado e cuida da entrada
+      // no grupo do Balcão (link para quem nunca saiu; inclusão com "salve o número
+      // e responda SIM" para quem foi retirado). Rotina em inclusao-cdv.js do baileys.
+      let aviso = null;
+      if (status === 'aprovado' && antes !== 'aprovado' && reg) aviso = await avisarAprovado(reg);
+      res.json({ ok: true, aviso });
     } catch (e) {
       console.error('[balcao/verificacoes/status]', e.message);
       res.status(500).json({ ok: false, erro: e.message });
