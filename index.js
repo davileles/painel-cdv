@@ -5824,6 +5824,18 @@ async function executarRemocaoTico({ alvo, grupos, invasor = false, total = 1, g
       if (pausar) e.pausado = { em: new Date().toISOString(), motivo: pausar };
     }, `grupos: Tico removeu ${feitos} (${alvo.motivos.join('/')})`);
     if (feitos) _gruposBrutos = null; // relê os participantes na próxima rodada
+    // Saiu do Balcão por falta de verificação (18/11/2026): o baileys manda no
+    // privado o passo a passo para voltar (formulário → aprovação → pedir a
+    // inclusão pela conversa). Best-effort: falha aqui não mexe na remoção.
+    const saiuBalcao = resultados.filter(r => r.estado === 'ok' && (nomes.get(r.jid) || {}).motivo === 'nao_verificado');
+    if (saiuBalcao.length && process.env.CAMPANHAS_KEY) {
+      fetch(`${BAILEYS_URL}/cdv/balcao/aviso-removido`, {
+        method: 'POST', timeout: 20000,
+        headers: { 'Content-Type': 'application/json', 'X-CDV-Op': process.env.CAMPANHAS_KEY },
+        body: JSON.stringify({ telefone, nome: alvo.nome || '', grupo: (nomes.get(saiuBalcao[0].jid) || {}).nome || saiuBalcao[0].nome || '' }),
+      }).then(r => r.json().catch(() => ({}))).then(d => { if (d && d.ok === false) console.warn('[balcao] aviso ao removido: ' + (d.erro || '?')); })
+        .catch(e => console.warn('[balcao] aviso ao removido falhou: ' + e.message));
+    }
     console.log(`[remocao-grupos] ${invasor ? 'INVASOR ' : ''}${alvo.telefone}: ${feitos}/${grupos.length} removido(s)${imediata ? ' (na hora)' : ''}${erro ? ' — ' + erro : ''}${pausar ? ' — PAUSADA: ' + pausar : ''}`);
     return { ok: true, removidos: feitos, erro, pausado: pausar };
   }
