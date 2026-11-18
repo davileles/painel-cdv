@@ -15,6 +15,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { textoDataHoje, corrigirAnoPrazo } = require('./prazo-ano');
 
 const PROXY = 'https://cdv-proxy-production.up.railway.app/fetch';
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
@@ -304,7 +305,7 @@ Formato exato de saída (todos os campos sempre presentes, mesmo que vazios):
     ? linkCandidatos.map((c) => `- ${c.href}  (texto do link: "${c.texto}")`).join('\n')
     : '(nenhum link encontrado na página)';
 
-  const userPrompt = `Categoria do feed de origem (pista, mas reavalie pelo conteúdo): ${categoriaFeed}\n\nTítulo original da notícia (apenas para contexto, não usar literalmente): ${titulo}\n\nConteúdo completo extraído da página:\n${textoArtigo}\n\nCandidatos a link da oferta (escolha um destes para "link", ou deixe "" se nenhum servir):\n${candidatosTxt}`;
+  const userPrompt = `${textoDataHoje()}\n\nCategoria do feed de origem (pista, mas reavalie pelo conteúdo): ${categoriaFeed}\n\nTítulo original da notícia (apenas para contexto, não usar literalmente): ${titulo}\n\nConteúdo completo extraído da página:\n${textoArtigo}\n\nCandidatos a link da oferta (escolha um destes para "link", ou deixe "" se nenhum servir):\n${candidatosTxt}`;
 
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -448,7 +449,7 @@ async function main() {
         resumo: ia.resumo || '',
         programa: ia.programa || '',
         bonus: ia.bonus || '',
-        prazo: ia.prazo || '',
+        prazo: corrigirAnoPrazo(ia.prazo || '', String(c.title || '') + ' ' + String(ia.resumo || '')),
         categoria,
         loja: categoria === 'compra_bonificada' ? (ia.loja || '') : '',
         cupom: ia.cupom || '',

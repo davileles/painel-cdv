@@ -2925,6 +2925,7 @@ function idDeChave(chave) {
   return hash.toString(36);
 }
 
+const { corrigirAnoPrazo } = require('./prazo-ano');
 app.post('/ofertas/pendentes', async (req, res) => {
   const { item, chaveDedup, fonte, grupoOrigem, grupoNome, conteudoOriginal } = req.body || {};
   if (!item || !item.titulo) return res.status(400).json({ ok: false, erro: 'Campo obrigatório: item.titulo' });
@@ -2956,7 +2957,9 @@ app.post('/ofertas/pendentes', async (req, res) => {
       resumo:            String(item.resumo || ''),
       programa:          String(item.programa || ''),
       bonus:             String(item.bonus || ''),
-      prazo:             String(item.prazo || ''),
+      // Ano chutado pela IA ("02 de dezembro" -> 2025) volta para o ano certo.
+      prazo:             corrigirAnoPrazo(String(item.prazo || ''),
+                           String(conteudoOriginal || '') + ' ' + String(item.titulo || '')),
       categoria:         item.categoria || 'geral',
       loja:              String(item.loja || ''),
       cupom:             String(item.cupom || ''),
