@@ -255,6 +255,17 @@
   .modal-cat{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:20px}
   .modal-rows{display:flex;flex-direction:column;gap:10px}
   #hist-chart{height:200px!important}
+  .transf-hist{margin-top:16px;padding-top:14px;border-top:1px solid var(--border-ctrl)}
+  .transf-hist-tit{font-size:13px;font-weight:800;color:var(--text)}
+  .transf-hist-sub{font-size:11px;color:var(--muted);margin:2px 0 10px}
+  .transf-hist-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .transf-hist-chip{font:inherit;font-size:11px;font-weight:700;padding:5px 10px;border-radius:999px;border:1px solid var(--border-ctrl);background:transparent;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .transf-hist-chip .dot{width:8px;height:8px;border-radius:50%;display:inline-block;opacity:.35}
+  .transf-hist-chip.on{color:var(--text);border-color:currentColor}
+  .transf-hist-chip.on .dot{opacity:1}
+  .transf-hist-canvas{position:relative;height:230px}
+  .transf-hist-empty{text-align:center;font-size:12px;color:var(--muted);padding:16px 0}
+  #transf-modal-rows .modal-row{cursor:pointer}
   .modal-row{background:var(--card);border:1px solid var(--border-ctrl);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;transition:border-color .15s,background .15s}
   .modal-row:hover{background:var(--card);border-color:var(--muted)}
   .modal-row.best:hover{border-color:var(--cdv-coral);background:var(--modal-best-hover)}
@@ -5416,9 +5427,9 @@ function abrirModalTransf(destinoEncoded){
       : s.atrasada
       ? `<div style="font-size:10px;color:#fbbf24;font-weight:700;margin-top:2px">⏰ Atrasada — sobe a cada ~${s.freqMediaDias} dias · era esperada em ${formatarDataBRTransf(s.proximaEstimada)}</div>`
       : `<div style="font-size:10px;color:var(--muted2);margin-top:2px">Sobe a cada ~${s.freqMediaDias} dias · possível próxima: ${formatarDataBRTransf(s.proximaEstimada)}</div>`;
-    return `<div class="modal-row" style="cursor:default">
+    return `<div class="modal-row" onclick="transfHistSo('${encodeURIComponent(o.origem)}')" title="Ver só ${o.origem} no gráfico">
       <div class="modal-prog">
-        <div class="modal-prog-dot" style="background:#ff585e"></div>
+        <div class="modal-prog-dot" style="background:${transfHistCor(o.origem)}"></div>
         <div>
           <div class="modal-prog-name">${o.origem}</div>
           ${statusHtml}
@@ -5433,6 +5444,149 @@ function abrirModalTransf(destinoEncoded){
   }).join('');
 
   document.getElementById('transf-modal-overlay').classList.add('open');
+  transfHistAbrir(destino);
+}
+
+// ── Gráfico de histórico de bônus por parceiro (modal de transferência) ──
+let transfHistChart = null;
+let transfHistDestino = null;
+let transfHistSel = new Set();
+let transfHistOrigens = [];
+const TRANSF_HIST_CORES = ['#ff585e','#126eff','#34d399','#fbbf24','#a78bfa','#f472b6','#22d3ee','#fb923c','#84cc16','#e879f9','#60a5fa','#f87171','#2dd4bf','#facc15','#c084fc','#94a3b8','#4ade80','#fda4af'];
+
+function transfHistRegistros(destino){
+  return (((historicoTransferencias||{}).items)||[]).filter(r => r && r.destino===destino && r.dataInicio && typeof r.bonusMax==='number');
+}
+function transfHistCor(origem){
+  const i = transfHistOrigens.indexOf(origem);
+  return i<0 ? '#ff585e' : TRANSF_HIST_CORES[i % TRANSF_HIST_CORES.length];
+}
+function transfHistAbrir(destino){
+  transfHistDestino = destino;
+  const regs = transfHistRegistros(destino);
+  const cont = {};
+  regs.forEach(r => { cont[r.origem] = (cont[r.origem]||0)+1; });
+  // Cores fixas por ordem alfabética ("Todos" primeiro)
+  transfHistOrigens = Object.keys(cont).sort((a,b)=>{
+    if (a==='Todos') return -1; if (b==='Todos') return 1;
+    return a.localeCompare(b,'pt-BR');
+  });
+  // Padrão: os 5 parceiros com mais campanhas
+  const top = Object.keys(cont).sort((a,b)=> cont[b]-cont[a] || a.localeCompare(b,'pt-BR')).slice(0,5);
+  transfHistSel = new Set(top);
+  // Recolore os pontos das linhas do modal com a cor do parceiro no gráfico
+  document.querySelectorAll('#transf-modal-rows .modal-row').forEach(el=>{
+    const nome = (el.querySelector('.modal-prog-name')||{}).textContent;
+    const dot = el.querySelector('.modal-prog-dot');
+    if (dot && nome) dot.style.background = transfHistCor(nome);
+  });
+  const wrap = document.getElementById('transf-hist');
+  if (wrap) wrap.style.display = regs.length ? '' : 'none';
+  transfHistRender();
+}
+function transfHistToggle(enc){
+  const o = decodeURIComponent(enc);
+  if (transfHistSel.has(o)) transfHistSel.delete(o); else transfHistSel.add(o);
+  transfHistRender();
+}
+function transfHistSo(enc){
+  const o = decodeURIComponent(enc);
+  transfHistSel = (transfHistSel.size===1 && transfHistSel.has(o)) ? new Set(transfHistOrigens) : new Set([o]);
+  transfHistRender();
+  const el = document.getElementById('transf-hist');
+  if (el && el.scrollIntoView) el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function transfHistRender(){
+  const chipsEl = document.getElementById('transf-hist-chips');
+  const canvas = document.getElementById('transf-hist-chart');
+  const emptyEl = document.getElementById('transf-hist-empty');
+  if (!chipsEl || !canvas || !transfHistDestino) return;
+  const todasOn = transfHistSel.size === transfHistOrigens.length;
+  chipsEl.innerHTML = (transfHistOrigens.length>1
+      ? `<button type="button" class="transf-hist-chip${todasOn?' on':''}" onclick="transfHistSel=new Set(${todasOn?'':'transfHistOrigens'});transfHistRender()">${todasOn?'Limpar':'Todos os parceiros'}</button>`
+      : '')
+    + transfHistOrigens.map(o=>{
+      const cor = transfHistCor(o);
+      const on = transfHistSel.has(o);
+      return `<button type="button" class="transf-hist-chip${on?' on':''}" style="${on?'color:'+cor:''}" onclick="transfHistToggle('${encodeURIComponent(o)}')"><span class="dot" style="background:${cor}"></span>${o==='Todos'?'Todos os bancos':o}</button>`;
+    }).join('');
+
+  if (transfHistChart){ transfHistChart.destroy(); transfHistChart = null; }
+  const regs = transfHistRegistros(transfHistDestino).filter(r => transfHistSel.has(r.origem));
+  if (!regs.length || typeof Chart==='undefined'){
+    canvas.style.display='none'; emptyEl.style.display='block'; return;
+  }
+  canvas.style.display='block'; emptyEl.style.display='none';
+
+  const ts = iso => new Date(iso+'T12:00:00Z').getTime();
+  const fmt = v => { const d=new Date(v); return String(d.getUTCDate()).padStart(2,'0')+'/'+String(d.getUTCMonth()+1).padStart(2,'0')+'/'+String(d.getUTCFullYear()).slice(2); };
+  const datasets = transfHistOrigens.filter(o=>transfHistSel.has(o)).map(o=>{
+    const cor = transfHistCor(o);
+    const pts = transfHistRegistros(transfHistDestino).filter(r=>r.origem===o)
+      .sort((a,b)=> a.dataInicio.localeCompare(b.dataInicio))
+      .map(r => ({ x: ts(r.dataInicio), y: r.bonusMax, reg: r }));
+    return {
+      label: o==='Todos' ? 'Todos os bancos' : o,
+      data: pts,
+      borderColor: cor, backgroundColor: cor,
+      borderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
+      showLine: true, tension: 0, spanGaps: true,
+    };
+  }).filter(d => d.data.length);
+
+  const css = getComputedStyle(document.documentElement);
+  const corTxt = (css.getPropertyValue('--muted')||'').trim() || '#8a9bbf';
+  const corGrade = 'rgba(138,155,191,.18)';
+  const xs = regs.map(r=>ts(r.dataInicio));
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const folga = Math.max(3*86400000, (maxX-minX)*0.03);
+
+  transfHistChart = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: { datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 300 },
+      parsing: false,
+      interaction: { mode: 'nearest', intersect: true },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#2a3246', titleColor: '#eeeeee', bodyColor: '#cfd8ea',
+          borderColor: '#3d4a66', borderWidth: 1,
+          callbacks: {
+            title: items => items.length ? fmt(items[0].parsed.x) : '',
+            label: ctx => {
+              const r = ctx.raw && ctx.raw.reg || {};
+              const ate = r.prazo ? ' · até ' + formatarDataBRTransf(r.prazo) : '';
+              const tipo = r.tipoBonus==='pontos_de_volta' ? ' (pontos de volta)' : '';
+              return ` ${ctx.dataset.label}: ${ctx.parsed.y}%${tipo}${ate}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'linear', min: minX-folga, max: maxX+folga,
+          // Marcas no 1º dia de cada mês (jan/26, fev/26…)
+          afterBuildTicks: ax => {
+            const out = []; const d = new Date(ax.min); d.setUTCDate(1); d.setUTCHours(12,0,0,0);
+            if (d.getTime() < ax.min) d.setUTCMonth(d.getUTCMonth()+1);
+            while (d.getTime() <= ax.max){ out.push({ value: d.getTime() }); d.setUTCMonth(d.getUTCMonth()+1); }
+            if (out.length) ax.ticks = out;
+          },
+          ticks: { color: corTxt, font:{family:'Montserrat',size:10}, maxRotation: 0, autoSkip: true,
+            callback: v => { const d=new Date(v); return ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][d.getUTCMonth()]+'/'+String(d.getUTCFullYear()).slice(2); } },
+          grid: { color: corGrade }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { color: corTxt, font:{family:'Montserrat',size:10}, callback: v => v+'%' },
+          grid: { color: corGrade }
+        }
+      }
+    }
+  });
 }
 document.addEventListener('DOMContentLoaded', () => {
   const closeBtn = document.getElementById('transf-modal-close-btn');
@@ -12374,6 +12528,13 @@ function bvCopiarTudo(btn) {
     <div class="modal-name" id="transf-modal-name"></div>
     <div class="modal-cat" id="transf-modal-cat"></div>
     <div class="modal-rows" id="transf-modal-rows"></div>
+    <div id="transf-hist" class="transf-hist">
+      <div class="transf-hist-tit">📈 Histórico de bônus por parceiro</div>
+      <div class="transf-hist-sub">Cada ponto é uma campanha (início). Toque nos parceiros para comparar — ou numa origem acima para ver só ela.</div>
+      <div id="transf-hist-chips" class="transf-hist-chips"></div>
+      <div class="transf-hist-canvas"><canvas id="transf-hist-chart"></canvas></div>
+      <div id="transf-hist-empty" class="transf-hist-empty" style="display:none">Selecione ao menos um parceiro.</div>
+    </div>
   </div>
 </div>
 
