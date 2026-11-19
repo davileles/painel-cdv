@@ -38,14 +38,23 @@ let _cert = null;      // { keyPem, certPem, chainPem, certB64, titular, cnpj, v
 let _certErro = null;
 let _agente = null;
 
+let _certPainel = null;   // { pfx, senha } enviado pela tela (vale mais que a env)
+
+function lerPfx(b64, senha) {
+  if (!forge) throw new Error('dependência node-forge não instalada');
+  const der = forge.util.decode64(b64);
+  let p12;
+  try { p12 = forge.pkcs12.pkcs12FromAsn1(forge.asn1.fromDer(der), senha); }
+  catch (e) { throw new Error(/mac|password|senha|Invalid/i.test(e.message) ? 'senha do certificado errada' : 'arquivo .pfx ilegível: ' + e.message); }
+  return p12;
+}
+
 function carregarCertificado() {
   if (_cert || _certErro) return _cert;
   try {
-    if (!forge) throw new Error('dependência node-forge não instalada');
-    const b64 = String(process.env.NFSE_CERT_PFX || '').replace(/\s+/g, '');
-    if (!b64) throw new Error('NFSE_CERT_PFX não configurada no Railway');
-    const der = forge.util.decode64(b64);
-    const p12 = forge.pkcs12.pkcs12FromAsn1(forge.asn1.fromDer(der), String(process.env.NFSE_CERT_SENHA || ''));
+    const b64 = _certPainel ? _certPainel.pfx : String(process.env.NFSE_CERT_PFX || '').replace(/\s+/g, '');
+    if (!b64) throw new Error('nenhum certificado: envie o .pfx na configuração (ou NFSE_CERT_PFX no Railway)');
+    const p12 = lerPfx(b64, _certPainel ? _certPainel.senha : String(process.env.NFSE_CERT_SENHA || ''));
     const bagsK = []
       .concat(p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag })[forge.pki.oids.pkcs8ShroudedKeyBag] || [])
       .concat(p12.getBags({ bagType: forge.pki.oids.keyBag })[forge.pki.oids.keyBag] || []);
@@ -67,6 +76,7 @@ function carregarCertificado() {
       cnpj: m ? m[1] : '',
       validoDe: folha.validity.notBefore.toISOString(),
       validoAte: folha.validity.notAfter.toISOString(),
+      origem: _certPainel ? 'painel' : 'env',
     };
   } catch (e) {
     _certErro = e.message;
@@ -79,7 +89,44 @@ function estadoCertificado() {
   const c = carregarCertificado();
   if (!c) return { ok: false, erro: _certErro || 'sem certificado' };
   const dias = Math.floor((new Date(c.validoAte).getTime() - Date.now()) / 864e5);
-  return { ok: true, titular: c.titular, cnpj: c.cnpj, validoDe: c.validoDe, validoAte: c.validoAte, diasRestantes: dias };
+  return { ok: true, titular: c.titular, cnpj: c.cnpj, validoDe: c.validoDe, validoAte: c.validoAte, diasRestantes: dias, origem: c.origem };
+}
+
+// Certificado enviado pela tela (19/11/2026).
+function testarPfx(b64, senha) {
+  const salvo = { cert: _cert, erro: _certErro, painel: _certPainel, agente: _agente };
+  _cert = null; _certErro = null; _certPainel = { pfx: b64, senha };
+  try {
+    const c = carregarCertificado();
+    if (!c) throw new Error(_certErro || 'certificado não abre');
+    if (new Date(c.validoAte).getTime() < Date.now()) throw new Error('certificado vencido em ' + c.validoAte.slice(0, 10));
+    return estadoCertificado();
+  } finally { _cert = salvo.cert; _certErro = salvo.erro; _certPainel = salvo.painel; _agente = salvo.agente; }
+}
+function usarPfx(b64, senha) {
+  _certPainel = { pfx: b64, senha };
+  _cert = null; _certErro = null;
+  if (_agente) { try { _agente.destroy(); } catch (e) {} }
+  _agente = null;
+  return carregarCertificado();
+}
+function chaveCert() {
+  const seg = process.env.NFSE_CERT_CHAVE || process.env.CONCIERGE_SESSION_SECRET || process.env.GITHUB_TOKEN || '';
+  if (!seg) throw new Error('servidor sem segredo para cifrar o certificado');
+  return crypto.createHash('sha256').update('nfse-cert|' + seg).digest();
+}
+function cifrarCert(pfx, senha) {
+  const iv = crypto.randomBytes(12);
+  const c = crypto.createCipheriv('aes-256-gcm', chaveCert(), iv);
+  const dados = Buffer.concat([c.update(JSON.stringify({ pfx, senha }), 'utf8'), c.final()]);
+  return 'v1:' + iv.toString('base64') + ':' + c.getAuthTag().toString('base64') + ':' + dados.toString('base64');
+}
+function decifrarCert(s) {
+  const [v, iv, tag, dados] = String(s || '').split(':');
+  if (v !== 'v1') throw new Error('formato desconhecido');
+  const d = crypto.createDecipheriv('aes-256-gcm', chaveCert(), Buffer.from(iv, 'base64'));
+  d.setAuthTag(Buffer.from(tag, 'base64'));
+  return JSON.parse(Buffer.concat([d.update(Buffer.from(dados, 'base64')), d.final()]).toString('utf8'));
 }
 
 // AC extra para o TLS do servidor (cadeia ICP-Brasil), se o Railway não confiar
@@ -181,11 +228,15 @@ function montarDps(dados) {
   const info = limpar(srv.infoCompl, 2000);
   if (info) serv += '<infoCompl>' + el('xInfComp', info) + '</infoCompl>';
 
-  const pTot = Number(emp.pTotTribSN);
+  // Tributos do produto fiscal (19/11/2026, mesma regra do Tica Promos): CST vazio =
+  // sem PIS/COFINS na nota; alíquota vazia = "não informado" (indTotTrib 0).
+  const pTotTxt = srv.pTotTribSN != null ? String(srv.pTotTribSN).trim() : String(emp.pTotTribSN == null ? '' : emp.pTotTribSN);
+  const pTot = Number(pTotTxt.replace(',', '.'));
+  const cst = srv.cstPisCofins != null ? soDig(srv.cstPisCofins) : '00';
   const valores = '<vServPrest>' + el('vServ', valor2(dados.valor)) + '</vServPrest>' +
-    '<trib><tribMun>' + el('tribISSQN', 1) + el('tpRetISSQN', 1) + '</tribMun>' +
-    '<tribFed><piscofins>' + el('CST', '00') + el('tpRetPisCofins', 0) + '</piscofins></tribFed>' +
-    '<totTrib>' + el('pTotTribSN', valor2(pTot > 0 ? pTot : 0)) + '</totTrib></trib>';
+    '<trib><tribMun>' + el('tribISSQN', soDig(srv.tribISSQN) || 1) + el('tpRetISSQN', soDig(srv.tpRetISSQN) || 1) + '</tribMun>' +
+    (cst ? '<tribFed><piscofins>' + el('CST', cst) + el('tpRetPisCofins', soDig(srv.tpRetPisCofins) || 0) + '</piscofins></tribFed>' : '') +
+    '<totTrib>' + (pTot > 0 ? el('pTotTribSN', valor2(pTot)) : el('indTotTrib', 0)) + '</totTrib></trib>';
 
   const corpo = el('tpAmb', tpAmb) + el('dhEmi', dados.dhEmi || dhEmiAgora()) + el('verAplic', 'CDV_1.0') +
     el('serie', String(Number(dados.serie))) + el('nDPS', String(Number(dados.numero))) +
@@ -347,5 +398,5 @@ async function baixarDanfse(ambiente, chave) {
 
 module.exports = {
   estadoCertificado, carregarCertificado, montarDps, assinar, emitir, cancelar, consultarDps, baixarNfse, baixarDanfse,
-  idDps, dataSP, dhEmiAgora, URLS,
+  idDps, dataSP, dhEmiAgora, URLS, testarPfx, usarPfx, cifrarCert, decifrarCert,
 };

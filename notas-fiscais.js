@@ -30,15 +30,18 @@ const STATUS_REEMBOLSO_TOTAL = new Set(['refunded', 'chargeback', 'chargedback',
 const DIA = 864e5;
 const soDig = (s) => String(s == null ? '' : s).replace(/\D/g, '');
 
+// Produto fiscal: mesmos campos do Tica Promos (baileys-server/notas-shopee.js),
+// decisão do Davi de 19/11/2026. Lá a descrição se chama xDescServ/xInfComp.
+const TRIBUTOS_PADRAO = { pTotTribSN: '', tribISSQN: '1', tpRetISSQN: '1', cstPisCofins: '00', tpRetPisCofins: '0', competencia: '', codigosConfirmados: false };
 const PRODUTOS_PADRAO = [
-  { id: 'milhas', nome: 'Produtos de milhas', cTribNac: '080201', cTribMun: '001', cNBS: '122051900',
-    descricao: '{produto}', infoCompl: 'Valor aprox dos tributos: 7,47% Fonte: IBPT 115C76.', ativo: true },
+  Object.assign({}, TRIBUTOS_PADRAO, { id: 'milhas', nome: 'Produtos de milhas', cTribNac: '080201', cTribMun: '001', cNBS: '122051900',
+    descricao: '{produto}', infoCompl: 'Valor aprox dos tributos: 7,47% Fonte: IBPT 115C76.', ativo: true, pTotTribSN: '7.47', codigosConfirmados: true }),
 ];
 
 function padrao() {
   return {
     versao: 1,
-    config: { modo: 'desligado', emitirDesde: null, diasEspera: 7, serie: '900', competencia: 'emissao', produtoPadrao: 'milhas', loteMax: 15, cancelarReembolso: true },
+    config: { modo: 'desligado', emitirAuto: true, minimo: 0, emitirDesde: null, diasEspera: 7, serie: '900', competencia: 'emissao', produtoPadrao: 'milhas', loteMax: 15, cancelarReembolso: true },
     empresa: { cnpj: '34379496000178', im: '11662870013', razao: 'Tudo Sobre Milhas Curso Online Ltda', cMun: '3106200',
       fone: '', email: '', opSimpNac: 3, regApTribSN: 1, regEspTrib: 0, pTotTribSN: 7.47 },
     produtos: PRODUTOS_PADRAO.map(p => Object.assign({}, p)),
@@ -65,6 +68,14 @@ function normalizar(d) {
   const usado = (id) => o.config.produtoPadrao === id || Object.values(o.ofertas).includes(id) ||
     o.notas.some(n => n.produtoFiscalId === id) || o.testes.some(n => n.produtoFiscalId === id);
   if (o.produtos.length > 1 && !usado('afiliados')) o.produtos = o.produtos.filter(x => x.id !== 'afiliados');
+  // Tributos por produto (19/11/2026, iguais aos do Tica Promos). Produto gravado antes
+  // disso já estava em uso: herda a alíquota da empresa e os códigos contam como confirmados.
+  o.produtos = o.produtos.map(x => {
+    const y = Object.assign({}, TRIBUTOS_PADRAO, x);
+    if (x.pTotTribSN == null) y.pTotTribSN = Number(o.empresa.pTotTribSN) > 0 ? String(o.empresa.pTotTribSN) : '';
+    if (x.codigosConfirmados == null) y.codigosConfirmados = true;
+    return y;
+  });
   return o;
 }
 
@@ -128,6 +139,17 @@ function itensDe(f, ofertasHubla) {
   return out;
 }
 
+// Data de competência (mesma regra do Tica Promos): nota com data própria → produto
+// fiscal → padrão da Emissão. 'pagamento' = dia do pagamento; 'mes' = último dia do
+// mês do pagamento.
+function competenciaDa(base, pf, n) {
+  if (n.competencia) return n.competencia;
+  const m = (pf && pf.competencia) || base.config.competencia;
+  const pg = n.pagaEm ? nfse.dataSP(n.pagaEm) : null;
+  if (m === 'pagamento' && pg) return pg;
+  if (m === 'mes' && pg) { const [a, mm] = pg.split('-').map(Number); return new Date(Date.UTC(a, mm, 0)).toISOString().slice(0, 10); }
+  return nfse.dataSP();
+}
 function produtoFiscal(base, id) { return (base.produtos || []).find(p => p.id === id) || null; }
 function produtoFiscalDaNota(base, itens) {
   for (const it of itens || []) if (it.ofertaId && base.ofertas[it.ofertaId]) return base.ofertas[it.ofertaId];
@@ -215,6 +237,7 @@ function criarNotasFiscais(deps) {
         const valor = totalDe(f);
         const pagaEm = pagaEmDe(f) || isoOuNull(f.saleDate) || isoOuNull(f.createdAt);
         if (!(valor > 0) || !pagaEm) continue;
+        const minimo = Number(base.config.minimo) || 0;
         if (nfse.dataSP(pagaEm) < desdeCfg) continue;
         const payer = f.payer || {};
         const doc = soDig(payer.document);
@@ -229,7 +252,8 @@ function criarNotasFiscais(deps) {
             email: String(payer.email || '').toLowerCase().trim(), fone: payer.phone || '',
           },
           itens, produtoFiscalId: produtoFiscalDaNota(base, itens),
-          status: docValido(doc) ? 'pendente' : 'erro',
+          status: minimo > 0 && valor < minimo ? 'ignorada' : docValido(doc) ? 'pendente' : 'erro',
+          motivo: minimo > 0 && valor < minimo ? 'abaixo do valor mínimo (R$ ' + minimo.toFixed(2) + ')' : undefined,
           erros: docValido(doc) ? [] : [{ codigo: 'SEM_DOC', descricao: 'A fatura não tem CPF/CNPJ válido do comprador. Corrija o documento e reative.' }],
           tentativas: 0,
         };
@@ -254,6 +278,7 @@ function criarNotasFiscais(deps) {
       const pf = produtoFiscal(base, n.produtoFiscalId);
       if (!pf) throw new Error('produto fiscal "' + n.produtoFiscalId + '" não existe');
       if (pf.ativo === false) throw new Error('produto fiscal "' + pf.nome + '" está desligado');
+      if (ambiente === 'producao' && !pf.codigosConfirmados) throw new Error('códigos de "' + pf.nome + '" não confirmados com o contador');
       if (!docValido(n.tomador && n.tomador.doc)) throw new Error('tomador sem CPF/CNPJ válido');
       if (!n.nDps) {
         base.contadores[ambiente] = (Number(base.contadores[ambiente]) || 0) + 1;
@@ -261,10 +286,11 @@ function criarNotasFiscais(deps) {
         n.serie = String(base.config.serie || '900');
       }
       idDpsAnterior = n.status === 'verificar' || n.status === 'enviando' ? n.idDps : null;
-      const comp = n.competencia || (base.config.competencia === 'pagamento' && n.pagaEm ? nfse.dataSP(n.pagaEm) : nfse.dataSP());
+      const comp = competenciaDa(base, pf, n);
       dados = {
         serie: n.serie, numero: n.nDps, competencia: comp, empresa: base.empresa, tomador: n.tomador, valor: n.valor,
-        servico: { cTribNac: pf.cTribNac, cTribMun: pf.cTribMun, cNBS: pf.cNBS, descricao: descricaoDa(pf, n), infoCompl: pf.infoCompl },
+        servico: { cTribNac: pf.cTribNac, cTribMun: pf.cTribMun, cNBS: pf.cNBS, descricao: descricaoDa(pf, n), infoCompl: pf.infoCompl,
+          pTotTribSN: pf.pTotTribSN, tribISSQN: pf.tribISSQN, tpRetISSQN: pf.tpRetISSQN, cstPisCofins: pf.cstPisCofins, tpRetPisCofins: pf.tpRetPisCofins },
       };
       n.idDps = nfse.idDps({ cMun: base.empresa.cMun, cnpj: base.empresa.cnpj, serie: n.serie, numero: n.nDps });
       n.status = 'enviando'; n.enviandoEm = new Date().toISOString(); n.competenciaUsada = comp; n.descricaoUsada = dados.servico.descricao;
@@ -395,7 +421,7 @@ function criarNotasFiscais(deps) {
       const modo = base.config.modo;
       if (modo === 'desligado') { rodada.pulou = 'desligado'; return rodada; }
       try { Object.assign(rodada, await planejar()); } catch (e) { rodada.erroFila = e.message; }
-      if (modo === 'producao') {
+      if (modo === 'producao' && base.config.emitirAuto !== false) {
         const { base: b2 } = await ler();
         const agora = Date.now();
         const vez = b2.notas.filter(n => (n.status === 'pendente' || n.status === 'verificar' ||
@@ -516,7 +542,9 @@ function registrar(app, deps) {
           if (c.modo === 'producao' && !nfse.estadoCertificado().ok) throw new Error('certificado indisponível: ' + nfse.estadoCertificado().erro);
           c.diasEspera = Math.max(0, Math.min(60, Number(c.diasEspera) || 0));
           c.serie = String(soDig(c.serie) || '900').slice(0, 5);
-          c.competencia = c.competencia === 'pagamento' ? 'pagamento' : 'emissao';
+          c.competencia = ['pagamento', 'mes'].includes(c.competencia) ? c.competencia : 'emissao';
+          c.emitirAuto = c.emitirAuto !== false;
+          c.minimo = Math.max(0, Number(String(c.minimo == null ? 0 : c.minimo).replace(',', '.')) || 0);
           c.loteMax = Math.max(1, Math.min(50, Number(c.loteMax) || 15));
           c.cancelarReembolso = c.cancelarReembolso !== false;
           if (c.produtoPadrao && !(b.produtos || base.produtos).some(p => p.id === c.produtoPadrao)) throw new Error('produto padrão inválido');
@@ -536,12 +564,21 @@ function registrar(app, deps) {
           base.produtos = b.produtos.map(p => {
             const id = String(p.id || '').trim() || ('pf-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5));
             if (ids.has(id)) throw new Error('produto fiscal repetido: ' + id); ids.add(id);
+            const antes = base.produtos.find(q => q.id === id);
             const x = { id, nome: String(p.nome || '').trim(), cTribNac: soDig(p.cTribNac), cTribMun: soDig(p.cTribMun) || '001',
-              cNBS: soDig(p.cNBS), descricao: String(p.descricao || '').trim(), infoCompl: String(p.infoCompl || '').trim(), ativo: p.ativo !== false };
+              cNBS: soDig(p.cNBS), descricao: String(p.descricao || '').trim(), infoCompl: String(p.infoCompl || '').trim(), ativo: p.ativo !== false,
+              pTotTribSN: String(p.pTotTribSN == null ? '' : p.pTotTribSN).trim().replace(',', '.'),
+              tribISSQN: soDig(p.tribISSQN) || '1', tpRetISSQN: soDig(p.tpRetISSQN) || '1',
+              cstPisCofins: soDig(p.cstPisCofins), tpRetPisCofins: soDig(p.tpRetPisCofins) || '0',
+              competencia: ['emissao', 'pagamento', 'mes'].includes(p.competencia) ? p.competencia : '',
+              codigosConfirmados: p.codigosConfirmados === true };
             if (!x.nome) throw new Error('produto fiscal sem nome');
             if (x.cTribNac.length !== 6) throw new Error(x.nome + ': código de tributação nacional precisa de 6 dígitos');
             if (x.cNBS.length !== 9) throw new Error(x.nome + ': NBS precisa de 9 dígitos');
             if (!x.descricao) throw new Error(x.nome + ': descrição da nota vazia');
+            if (x.pTotTribSN && !/^\d{1,2}(\.\d{1,2})?$/.test(x.pTotTribSN)) throw new Error(x.nome + ': alíquota do Simples inválida');
+            // Mexeu nos códigos: precisa confirmar de novo com o contador.
+            if (antes && ['cTribNac', 'cTribMun', 'cNBS'].some(k => antes[k] !== x[k]) && p.codigosConfirmados !== true) x.codigosConfirmados = false;
             return x;
           });
         }
@@ -718,6 +755,27 @@ function registrar(app, deps) {
     if (!op(req, res)) return;
     res.json(Object.assign({ ok: true }, nfse.estadoCertificado()));
   });
+  // Envio do certificado pela tela (19/11/2026, igual ao Tica Promos). Fica no
+  // notas-fiscais.json (repo de dados, privado) com o .pfx e a senha cifrados
+  // (AES-256-GCM, chave do servidor); vale mais que NFSE_CERT_PFX/NFSE_CERT_SENHA.
+  app.post('/notas/certificado', async (req, res) => {
+    if (!op(req, res)) return;
+    const b = req.body || {};
+    try {
+      const pfx = String(b.pfxB64 || '').replace(/^data:[^,]*,/, '').replace(/\s+/g, '');
+      if (!pfx) throw new Error('arquivo .pfx vazio');
+      const est = nfse.testarPfx(pfx, String(b.senha || ''));
+      await nf.mutar(base => { base.certificadoCifrado = nfse.cifrarCert(pfx, String(b.senha || '')); base.certificadoEnviadoEm = new Date().toISOString(); }, 'notas: certificado');
+      nfse.usarPfx(pfx, String(b.senha || ''), 'painel');
+      res.json(Object.assign({ ok: true }, est));
+    } catch (e) { erro(res, e); }
+  });
+  // Certificado enviado pela tela: carrega no boot.
+  nf.ler().then(({ base }) => {
+    if (!base.certificadoCifrado) return;
+    try { const c = nfse.decifrarCert(base.certificadoCifrado); nfse.usarPfx(c.pfx, c.senha, 'painel'); }
+    catch (e) { console.warn('[notas] certificado salvo não abre:', e.message); }
+  }).catch(() => {});
 
   // Agenda: a cada 30 min (primeira rodada 2 min após o boot).
   setTimeout(() => nf.ciclo('boot').catch(() => {}), 2 * 60 * 1000);
