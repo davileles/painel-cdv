@@ -22,6 +22,7 @@
 const crypto = require('crypto');
 const zlib = require('zlib');
 const nfse = require('./nfse');
+const danfse = require('./danfse.cjs');
 
 const ARQ = 'notas-fiscais.json';
 // Status de fatura da Hubla que são devolução total (a nota emitida é cancelada).
@@ -795,11 +796,18 @@ function registrar(app, deps) {
         res.setHeader('Content-Disposition', `attachment; filename="${nome}.xml"`);
         return res.send(zlib.gunzipSync(Buffer.from(n.xmlGz, 'base64')));
       }
-      const r = await nfse.baixarDanfse(amb, n.chave);
-      if (!r.ok) throw new Error('DANFSe indisponível no Emissor Nacional (HTTP ' + r.status + ')');
+      // PDF montado aqui a partir do XML autorizado (danfse.cjs, igual ao Tica Promos):
+      // a API de DANFSe do ADN foi desligada em 03/08/2026 (NT 008) e responde 503.
+      let xml = n.xmlGz ? zlib.gunzipSync(Buffer.from(n.xmlGz, 'base64')).toString('utf8') : '';
+      if (!xml) {
+        const r = await nfse.baixarNfse(amb, n.chave);
+        if (!r.ok) throw new Error('XML da nota não guardado e a Sefin não o devolveu agora (HTTP ' + r.status + '). A nota segue emitida; o PDF oficial sai na Consulta Pública do Portal Nacional com a chave ' + n.chave + '.');
+        xml = r.xml;
+      }
+      const pdf = danfse.gerarDanfse(xml, { cancelada: n.status === 'cancelada' });
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `inline; filename="${nome}.pdf"`);
-      res.send(r.pdf);
+      res.send(pdf);
     } catch (e) { erro(res, e); }
   });
 

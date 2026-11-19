@@ -390,13 +390,10 @@ async function cancelar(ambiente, { cnpj, chave, motivo, justificativa }, _versa
   return { ok: false, status: r.status, ambiguo: r.status >= 500, jaCancelada, erros };
 }
 
-async function baixarDanfse(ambiente, chave) {
-  const r = await requisicao(URLS[ambiente].adn + '/danfse/' + encodeURIComponent(chave), { aceitar: 'application/pdf', timeout: 90000 });
-  if (r.status === 200 && r.corpo.length > 100) return { ok: true, pdf: r.corpo };
-  return { ok: false, status: r.status, texto: r.corpo.toString('utf8').slice(0, 300) };
-}
+// O PDF (DANFSe) não vem mais do ADN: a API foi desligada em 03/08/2026 (NT 008).
+// Ele é montado a partir do XML autorizado em danfse.cjs.
 
 module.exports = {
-  estadoCertificado, carregarCertificado, montarDps, assinar, emitir, cancelar, consultarDps, baixarNfse, baixarDanfse,
+  estadoCertificado, carregarCertificado, montarDps, assinar, emitir, cancelar, consultarDps, baixarNfse,
   idDps, dataSP, dhEmiAgora, URLS, testarPfx, usarPfx, cifrarCert, decifrarCert,
 };
