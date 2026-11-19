@@ -486,6 +486,42 @@ function criarNotasFiscais(deps) {
     return id;
   }
 
+  // ── Emitir de novo uma nota cancelada (mesma regra do Tica Promos, 19/11/2026) ──
+  // A nota nova assume o lugar da cancelada (mesmo ref: reembolso e fila da Hubla
+  // passam a apontar para ela); a cancelada fica no histórico com o ref renomeado.
+  // ajustes: competencia (AAAA-MM-DD, vazio = regra do produto), valor.
+  async function reemitirUma(id, ambiente, ajustes = {}) {
+    const comp = String(ajustes.competencia || '').trim();
+    if (comp && !/^\d{4}-\d{2}-\d{2}$/.test(comp)) throw new Error('competência inválida (use AAAA-MM-DD)');
+    if (comp && comp > nfse.dataSP()) throw new Error('a competência não pode ser depois de hoje');
+    let valor = null;
+    if (ajustes.valor != null && String(ajustes.valor).trim() !== '') {
+      valor = Math.round(Number(String(ajustes.valor).replace(',', '.')) * 100) / 100;
+      if (!(valor > 0)) throw new Error('valor inválido');
+    }
+    let novoIdNota = null;
+    await mutar(base => {
+      const l = listaDe(base, ambiente);
+      const n = l.find(x => x.id === id);
+      if (!n) throw new Error('nota não encontrada');
+      if (n.status !== 'cancelada') throw new Error('só nota cancelada pode ser emitida de novo');
+      if (n.substituidaPor) throw new Error('esta nota já foi emitida de novo');
+      const agora = new Date().toISOString();
+      const nova = {
+        id: novoId(ambiente === 'producao' ? 'NF' : 'T'), ref: n.ref, origem: n.origem, faturaId: n.faturaId || null,
+        criadaEm: agora, previstaPara: agora, pagaEm: n.pagaEm || null,
+        valor: valor != null ? valor : n.valor, tomador: Object.assign({}, n.tomador || {}),
+        itens: (n.itens || []).map(i => Object.assign({}, i)), produtoFiscalId: n.produtoFiscalId,
+        descricao: n.descricao || null, competencia: comp || null,
+        status: 'pendente', erros: [], tentativas: 0, deNota: n.deNota || null, reemissaoDe: n.id,
+      };
+      n.ref = String(n.ref || '') + '#substituida:' + nova.id;
+      n.substituidaPor = nova.id; n.atualizadaEm = agora;
+      l.push(nova); novoIdNota = nova.id;
+    }, `notas: emitir de novo ${id}`);
+    return novoIdNota;
+  }
+
   async function estado(todas) {
     const { base } = await ler();
     let ofertasHubla = [];
@@ -514,7 +550,7 @@ function criarNotasFiscais(deps) {
     };
   }
 
-  return { ler, mutar, planejar, emitirUma, cancelarUma, aoEventoHubla, ciclo, criarAvulsa, estado };
+  return { ler, mutar, planejar, emitirUma, cancelarUma, reemitirUma, aoEventoHubla, ciclo, criarAvulsa, estado };
 }
 
 // ── Rotas (todas com X-CDV-Op) ───────────────────────────────────────────────
@@ -682,6 +718,20 @@ function registrar(app, deps) {
     try {
       const amb = b.teste ? 'homologacao' : 'producao';
       res.json(Object.assign({ ok: true }, await nf.cancelarUma(String(b.id || ''), amb, b.motivo, String(b.justificativa || ''), 'manual')));
+    } catch (e) { erro(res, e); }
+  });
+
+  // Emitir de novo uma nota cancelada (com competência/valor ajustados). Em produção
+  // sai na hora só com o modo Produção; senão fica pendente na fila.
+  app.post('/notas/reemitir', async (req, res) => {
+    if (!op(req, res)) return;
+    const b = req.body || {};
+    try {
+      const amb = b.teste ? 'homologacao' : 'producao';
+      const id = await nf.reemitirUma(String(b.id || ''), amb, { competencia: b.competencia, valor: b.valor });
+      const { base } = await nf.ler();
+      if (amb === 'producao' && base.config.modo !== 'producao') return res.json({ ok: true, id, naFila: true, aviso: 'A emissão está em ' + base.config.modo + ': a nota nova ficou pendente na fila' });
+      res.json(Object.assign({ ok: true, id }, await nf.emitirUma(id, amb)));
     } catch (e) { erro(res, e); }
   });
 
