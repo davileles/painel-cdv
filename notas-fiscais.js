@@ -31,8 +31,6 @@ const DIA = 864e5;
 const soDig = (s) => String(s == null ? '' : s).replace(/\D/g, '');
 
 const PRODUTOS_PADRAO = [
-  { id: 'afiliados', nome: 'Comissão de afiliados', cTribNac: '170601', cTribMun: '001', cNBS: '114061900',
-    descricao: 'Comissões de afiliados', infoCompl: '', ativo: true },
   { id: 'milhas', nome: 'Produtos de milhas', cTribNac: '080201', cTribMun: '001', cNBS: '122051900',
     descricao: '{produto}', infoCompl: 'Valor aprox dos tributos: 7,47% Fonte: IBPT 115C76.', ativo: true },
 ];
@@ -62,6 +60,11 @@ function normalizar(d) {
   o.contadores = Object.assign({}, p.contadores, d.contadores || {});
   o.notas = Array.isArray(d.notas) ? d.notas : [];
   o.testes = Array.isArray(d.testes) ? d.testes : [];
+  // 'Comissão de afiliados' saiu dos produtos do Clube do Viajante (19/11/2026): comissão de
+  // afiliados é do Tica Promos e fica nos produtos fiscais de lá. Só some se ninguém usa.
+  const usado = (id) => o.config.produtoPadrao === id || Object.values(o.ofertas).includes(id) ||
+    o.notas.some(n => n.produtoFiscalId === id) || o.testes.some(n => n.produtoFiscalId === id);
+  if (o.produtos.length > 1 && !usado('afiliados')) o.produtos = o.produtos.filter(x => x.id !== 'afiliados');
   return o;
 }
 
