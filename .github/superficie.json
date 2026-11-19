@@ -377,7 +377,8 @@
         "app.post('/notas/config'",
         "app.post('/notas/emitir'",
         "app.post('/notas/teste'",
-        "app.get('/notas/arquivo/:id/:tipo'"
+        "app.get('/notas/arquivo/:id/:tipo'",
+        "app.post('/notas/cancelar'"
       ]
     },
     "nfse.js": {
@@ -385,7 +386,8 @@
       "obrigatorio": [
         "function montarDps(",
         "function assinar(",
-        "async function emitir("
+        "async function emitir(",
+        "async function cancelar("
       ]
     }
   }

@@ -197,21 +197,27 @@ function montarDps(dados) {
   return { id, nt009, infDps, infDpsC14n: `<infDPS xmlns="${NS_NFSE}" Id="${id}">${corpo}</infDPS>` };
 }
 
-function assinar(m) {
+// Assinatura XMLDSig do elemento `c14n` (texto canônico, com o namespace herdado
+// declarado) referenciado por `id`. Devolve o elemento <Signature>.
+function assinatura(id, c14n) {
   const c = carregarCertificado();
   if (!c) throw new Error(_certErro || 'certificado indisponível');
-  const digest = crypto.createHash('sha1').update(m.infDpsC14n, 'utf8').digest('base64');
+  const digest = crypto.createHash('sha1').update(c14n, 'utf8').digest('base64');
   const signedInfo = (ns) => `<SignedInfo${ns ? ` xmlns="${NS_DSIG}"` : ''}>` +
     `<CanonicalizationMethod Algorithm="${C14N}"></CanonicalizationMethod>` +
     `<SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></SignatureMethod>` +
-    `<Reference URI="#${m.id}"><Transforms>` +
+    `<Reference URI="#${id}"><Transforms>` +
     `<Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"></Transform>` +
     `<Transform Algorithm="${C14N}"></Transform></Transforms>` +
     `<DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"></DigestMethod>` +
     `<DigestValue>${digest}</DigestValue></Reference></SignedInfo>`;
-  const assinatura = crypto.sign('sha1', Buffer.from(signedInfo(true), 'utf8'), c.keyPem).toString('base64');
-  const sig = `<Signature xmlns="${NS_DSIG}">${signedInfo(false)}<SignatureValue>${assinatura}</SignatureValue>` +
+  const valor = crypto.sign('sha1', Buffer.from(signedInfo(true), 'utf8'), c.keyPem).toString('base64');
+  return `<Signature xmlns="${NS_DSIG}">${signedInfo(false)}<SignatureValue>${valor}</SignatureValue>` +
     `<KeyInfo><X509Data><X509Certificate>${c.certB64}</X509Certificate></X509Data></KeyInfo></Signature>`;
+}
+
+function assinar(m) {
+  const sig = assinatura(m.id, m.infDpsC14n);
   return `<?xml version="1.0" encoding="UTF-8"?><DPS xmlns="${NS_NFSE}" versao="${m.nt009 ? '1.01' : '1.00'}">${m.infDps}${sig}</DPS>`;
 }
 
@@ -299,6 +305,40 @@ async function baixarNfse(ambiente, chave) {
   return { ok: false, status: r.status, erros: errosDe(j) };
 }
 
+// ── Cancelamento (evento e101101) ────────────────────────────────────────────
+// motivo: 1 = erro na emissão, 2 = serviço não prestado, 9 = outros.
+// justificativa: 15 a 255 caracteres. Resultado: {ok, xml?} | {ok:false, erros, jaCancelada?}.
+async function cancelar(ambiente, { cnpj, chave, motivo, justificativa }, _versao) {
+  const versao = _versao || '1.01';
+  const ch = soDig(chave);
+  if (ch.length !== 50) throw new Error('chave de acesso inválida');
+  const mot = [1, 2, 9].includes(Number(motivo)) ? Number(motivo) : 9;
+  const just = limpar(justificativa, 255);
+  if (just.length < 15) throw new Error('a justificativa precisa de pelo menos 15 caracteres');
+  const id = 'PRE' + ch + '101101';
+  const corpo = el('tpAmb', ambiente === 'producao' ? 1 : 2) + el('verAplic', 'CDV_1.0') + el('dhEvento', dhEmiAgora()) +
+    el('CNPJAutor', soDig(cnpj)) + el('chNFSe', ch) +
+    '<e101101>' + el('xDesc', 'Cancelamento de NFS-e') + el('cMotivo', mot) + el('xMotivo', just) + '</e101101>';
+  const sig = assinatura(id, `<infPedReg xmlns="${NS_NFSE}" Id="${id}">${corpo}</infPedReg>`);
+  const xml = `<?xml version="1.0" encoding="UTF-8"?><pedRegEvento xmlns="${NS_NFSE}" versao="${versao}"><infPedReg Id="${id}">${corpo}</infPedReg>${sig}</pedRegEvento>`;
+  let r;
+  try {
+    r = await requisicao(URLS[ambiente].sefin + '/nfse/' + ch + '/eventos', { metodo: 'POST',
+      corpo: { pedidoRegistroEventoXmlGZipB64: zlib.gzipSync(Buffer.from(xml, 'utf8')).toString('base64') } });
+  } catch (e) {
+    return { ok: false, ambiguo: true, erros: [{ codigo: e.code || 'REDE', descricao: e.message }] };
+  }
+  const j = json(r.corpo);
+  if ((r.status === 200 || r.status === 201) && j && j.eventoXmlGZipB64) return { ok: true, xml: gunzipB64(j.eventoXmlGZipB64) };
+  const erros = errosDe(j);
+  if (!_versao && erros.some(e => /esquema|schema|vers[aã]o/i.test(e.descricao + ' ' + e.complemento))) {
+    return cancelar(ambiente, { cnpj, chave, motivo, justificativa }, '1.00');
+  }
+  if (!erros.length) erros.push({ codigo: 'HTTP' + r.status, descricao: r.corpo.toString('utf8').slice(0, 400) });
+  const jaCancelada = erros.some(e => /j[aá] (est[aá] )?cancelad|evento j[aá] (registrad|vinculad)/i.test(e.descricao + ' ' + e.complemento));
+  return { ok: false, status: r.status, ambiguo: r.status >= 500, jaCancelada, erros };
+}
+
 async function baixarDanfse(ambiente, chave) {
   const r = await requisicao(URLS[ambiente].adn + '/danfse/' + encodeURIComponent(chave), { aceitar: 'application/pdf', timeout: 90000 });
   if (r.status === 200 && r.corpo.length > 100) return { ok: true, pdf: r.corpo };
@@ -306,6 +346,6 @@ async function baixarDanfse(ambiente, chave) {
 }
 
 module.exports = {
-  estadoCertificado, carregarCertificado, montarDps, assinar, emitir, consultarDps, baixarNfse, baixarDanfse,
+  estadoCertificado, carregarCertificado, montarDps, assinar, emitir, cancelar, consultarDps, baixarNfse, baixarDanfse,
   idDps, dataSP, dhEmiAgora, URLS,
 };

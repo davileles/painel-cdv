@@ -24,6 +24,9 @@ const zlib = require('zlib');
 const nfse = require('./nfse');
 
 const ARQ = 'notas-fiscais.json';
+// Status de fatura da Hubla que são devolução total (a nota emitida é cancelada).
+// Outro status diferente de "paid" (ex.: reembolso parcial) só fica marcado para conferir.
+const STATUS_REEMBOLSO_TOTAL = new Set(['refunded', 'chargeback', 'chargedback', 'charged_back', 'canceled', 'cancelled']);
 const DIA = 864e5;
 const soDig = (s) => String(s == null ? '' : s).replace(/\D/g, '');
 
@@ -37,7 +40,7 @@ const PRODUTOS_PADRAO = [
 function padrao() {
   return {
     versao: 1,
-    config: { modo: 'desligado', emitirDesde: null, diasEspera: 7, serie: '900', competencia: 'emissao', produtoPadrao: 'milhas', loteMax: 15 },
+    config: { modo: 'desligado', emitirDesde: null, diasEspera: 7, serie: '900', competencia: 'emissao', produtoPadrao: 'milhas', loteMax: 15, cancelarReembolso: true },
     empresa: { cnpj: '34379496000178', im: '11662870013', razao: 'Tudo Sobre Milhas Curso Online Ltda', cMun: '3106200',
       fone: '', email: '', opSimpNac: 3, regApTribSN: 1, regEspTrib: 0, pTotTribSN: 7.47 },
     produtos: PRODUTOS_PADRAO.map(p => Object.assign({}, p)),
@@ -199,7 +202,8 @@ function criarNotasFiscais(deps) {
               existente.status = 'venda_reembolsada'; existente.statusFatura = status; existente.atualizadaEm = new Date().toISOString();
               resumo.reembolsadas++; mudou = true;
             } else if (existente.status === 'emitida' && !existente.vendaReembolsadaEm) {
-              existente.vendaReembolsadaEm = new Date().toISOString(); existente.statusFatura = status; mudou = true;
+              existente.vendaReembolsadaEm = new Date().toISOString(); existente.statusFatura = status;
+              existente.reembolsoTotal = STATUS_REEMBOLSO_TOTAL.has(status); mudou = true;
             }
           }
           continue;
@@ -306,6 +310,35 @@ function criarNotasFiscais(deps) {
     return r.ok ? { ok: true, chave: r.chave, numero: r.numero } : { ok: false, ambiguo: !!r.ambiguo, erros: r.erros };
   }
 
+  // ── Cancelamento (evento e101101 no Emissor Nacional) ─────────────────────
+  async function cancelarUma(id, ambiente, motivo, justificativa, origem) {
+    const { base } = await ler();
+    const n = listaDe(base, ambiente).find(x => x.id === id);
+    if (!n) throw new Error('nota não encontrada');
+    if (n.status === 'cancelada') return { ok: true, jaCancelada: true };
+    if (n.status !== 'emitida' || !n.chave) throw new Error('só nota emitida pode ser cancelada');
+    let r;
+    try { r = await nfse.cancelar(ambiente, { cnpj: base.empresa.cnpj, chave: n.chave, motivo, justificativa }); }
+    catch (e) { r = { ok: false, erros: [{ codigo: 'LOCAL', descricao: e.message }] }; }
+    await mutar(b => {
+      const x = listaDe(b, ambiente).find(y => y.id === id);
+      if (!x) return false;
+      const agora = new Date().toISOString();
+      x.cancelamentoTentativas = (Number(x.cancelamentoTentativas) || 0) + 1;
+      x.cancelamentoTentadoEm = agora;
+      if (r.ok || r.jaCancelada) {
+        x.status = 'cancelada'; x.canceladaEm = agora; x.canceladaPor = origem || 'manual';
+        x.motivoCancelamento = Number(motivo) || 9; x.motivo = justificativa; x.cancelamentoErros = [];
+        if (r.xml) x.eventoXmlGz = zlib.gzipSync(Buffer.from(r.xml, 'utf8')).toString('base64');
+      } else {
+        x.cancelamentoErros = r.erros || [];
+      }
+    }, `notas: cancelamento ${id} ${r.ok ? 'ok' : 'erro'}`);
+    if (r.ok) log.log(`[notas] ${ambiente} nota ${n.numero || id} cancelada (${origem || 'manual'})`);
+    else log.warn(`[notas] cancelamento ${id} recusado:`, JSON.stringify(r.erros || []).slice(0, 400));
+    return r.ok || r.jaCancelada ? { ok: true } : { ok: false, erros: r.erros };
+  }
+
   // ── Ciclo automático ──────────────────────────────────────────────────────
   let _rodando = false;
   async function ciclo(motivo) {
@@ -331,6 +364,22 @@ function criarNotasFiscais(deps) {
             if (r.ok) rodada.emitidas++; else rodada.erros++;
           } catch (e) { rodada.erros++; log.warn('[notas] emitir', n.id, e.message); }
           await new Promise(x => setTimeout(x, 2500));
+        }
+        // Venda reembolsada (devolução total) depois da nota emitida: cancela a nota.
+        if (b2.config.cancelarReembolso !== false) {
+          const { base: b3 } = await ler();
+          const cancelar = b3.notas.filter(n => n.status === 'emitida' && n.vendaReembolsadaEm && n.reembolsoTotal &&
+            (Number(n.cancelamentoTentativas) || 0) < 3 &&
+            (!n.cancelamentoTentadoEm || agora - new Date(n.cancelamentoTentadoEm).getTime() > 6 * 3600 * 1000)).slice(0, 10);
+          rodada.canceladas = 0;
+          for (const n of cancelar) {
+            try {
+              const r = await cancelarUma(n.id, 'producao', 2,
+                'Venda cancelada com reembolso integral ao cliente (fatura ' + (n.statusFatura || 'reembolsada') + ' na Hubla).', 'reembolso');
+              if (r.ok) rodada.canceladas++; else rodada.erros++;
+            } catch (e) { rodada.erros++; log.warn('[notas] cancelar', n.id, e.message); }
+            await new Promise(x => setTimeout(x, 2500));
+          }
         }
       }
       return rodada;
@@ -376,7 +425,8 @@ function criarNotasFiscais(deps) {
         .sort((a, b) => (a.produtoNome + ' ' + a.nome).localeCompare(b.produtoNome + ' ' + b.nome, 'pt-BR'));
     } catch (e) { log.warn('[notas] ofertas', e.message); }
     const limpa = (n) => {
-      const x = Object.assign({}, n); delete x.xmlGz;
+      const x = Object.assign({}, n); delete x.xmlGz; delete x.eventoXmlGz;
+      x.temEvento = !!n.eventoXmlGz;
       x.tomador = Object.assign({}, n.tomador || {}, { docMascarado: mascararDoc(n.tomador && n.tomador.doc) });
       x.temXml = !!n.xmlGz;
       return x;
@@ -393,7 +443,7 @@ function criarNotasFiscais(deps) {
     };
   }
 
-  return { ler, mutar, planejar, emitirUma, ciclo, criarAvulsa, estado };
+  return { ler, mutar, planejar, emitirUma, cancelarUma, ciclo, criarAvulsa, estado };
 }
 
 // ── Rotas (todas com X-CDV-Op) ───────────────────────────────────────────────
@@ -423,6 +473,7 @@ function registrar(app, deps) {
           c.serie = String(soDig(c.serie) || '900').slice(0, 5);
           c.competencia = c.competencia === 'pagamento' ? 'pagamento' : 'emissao';
           c.loteMax = Math.max(1, Math.min(50, Number(c.loteMax) || 15));
+          c.cancelarReembolso = c.cancelarReembolso !== false;
           if (c.produtoPadrao && !(b.produtos || base.produtos).some(p => p.id === c.produtoPadrao)) throw new Error('produto padrão inválido');
           base.config = c;
         }
@@ -502,6 +553,16 @@ function registrar(app, deps) {
     } catch (e) { erro(res, e); }
   });
 
+  // Cancela a nota no Emissor Nacional (evento e101101). Nota de teste cancela em homologação.
+  app.post('/notas/cancelar', async (req, res) => {
+    if (!op(req, res)) return;
+    const b = req.body || {};
+    try {
+      const amb = b.teste ? 'homologacao' : 'producao';
+      res.json(Object.assign({ ok: true }, await nf.cancelarUma(String(b.id || ''), amb, b.motivo, String(b.justificativa || ''), 'manual')));
+    } catch (e) { erro(res, e); }
+  });
+
   // ignorar (não emitir), reativar (volta para a fila), cancelada (cancelada no Emissor Nacional),
   // produto (troca o produto fiscal), tomador (corrige CPF/nome antes de emitir).
   app.post('/notas/situacao', async (req, res) => {
@@ -547,8 +608,15 @@ function registrar(app, deps) {
       const teste = base.testes.find(x => x.id === req.params.id);
       const n = teste || base.notas.find(x => x.id === req.params.id);
       if (!n || !n.chave) throw new Error('nota sem chave de acesso');
+      if (!['xml', 'pdf', 'evento'].includes(req.params.tipo)) throw new Error('tipo inválido');
       const amb = teste ? 'homologacao' : 'producao';
       const nome = `nfse-${n.numero || n.chave}`;
+      if (req.params.tipo === 'evento') {
+        if (!n.eventoXmlGz) throw new Error('XML do cancelamento não guardado');
+        res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+        res.setHeader('Content-Disposition', `attachment; filename="${nome}-cancelamento.xml"`);
+        return res.send(zlib.gunzipSync(Buffer.from(n.eventoXmlGz, 'base64')));
+      }
       if (req.params.tipo === 'xml') {
         if (!n.xmlGz) throw new Error('XML não guardado');
         res.setHeader('Content-Type', 'application/xml; charset=utf-8');
@@ -582,6 +650,10 @@ function registrar(app, deps) {
           descricao: 'Teste de integração (homologação)', origem: 'autoteste' }, 'homologacao');
         const r = await nf.emitirUma(id, 'homologacao');
         console.log('[notas] autoteste resultado:', JSON.stringify(r).slice(0, 1500));
+        if (r.ok) {
+          const rc = await nf.cancelarUma(id, 'homologacao', 1, 'Teste de cancelamento da integração (homologação).', 'autoteste');
+          console.log('[notas] autoteste cancelamento:', JSON.stringify(rc).slice(0, 1500));
+        }
       } catch (e) { console.error('[notas] autoteste falhou:', e.message, e.code || ''); }
     }, 70 * 1000);
   }
