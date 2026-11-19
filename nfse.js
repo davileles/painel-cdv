@@ -134,7 +134,18 @@ function valor2(v) { return (Math.round(Number(v) * 100) / 100).toFixed(2); }
 //   tomador: {doc, nome, fone, email},
 //   servico: {cTribNac, cTribMun, cNBS, descricao, infoCompl},
 //   valor }
+// Leiaute NT-009 (finNFSe em infDPS e cNBS antes de xDescServ): a produção
+// restrita já exige; a produção (11/2026) ainda aceita o anterior, que é o das
+// notas autorizadas da empresa. Env NFSE_LEIAUTE_NT009 = 1|0 força um dos dois
+// na produção; emitir() troca de leiaute sozinho se a Sefin recusar o esquema.
+function usaNt009(ambiente) {
+  const env = String(process.env.NFSE_LEIAUTE_NT009 || '').trim();
+  if (ambiente === 'producao') return env === '1';
+  return env !== '0';
+}
+
 function montarDps(dados) {
+  const nt009 = dados.nt009 != null ? !!dados.nt009 : usaNt009(dados.ambiente);
   const emp = dados.empresa || {};
   const tom = dados.tomador || {};
   const srv = dados.servico || {};
@@ -166,7 +177,7 @@ function montarDps(dados) {
 
   let serv = '<locPrest>' + el('cLocPrestacao', cMun) + '</locPrest>' +
     '<cServ>' + el('cTribNac', soDig(srv.cTribNac)) + el('cTribMun', soDig(srv.cTribMun) || '001') +
-    el('xDescServ', descricao) + el('cNBS', soDig(srv.cNBS)) + '</cServ>';
+    (nt009 ? el('cNBS', soDig(srv.cNBS)) + el('xDescServ', descricao) : el('xDescServ', descricao) + el('cNBS', soDig(srv.cNBS))) + '</cServ>';
   const info = limpar(srv.infoCompl, 2000);
   if (info) serv += '<infoCompl>' + el('xInfComp', info) + '</infoCompl>';
 
@@ -178,12 +189,12 @@ function montarDps(dados) {
 
   const corpo = el('tpAmb', tpAmb) + el('dhEmi', dados.dhEmi || dhEmiAgora()) + el('verAplic', 'CDV_1.0') +
     el('serie', String(Number(dados.serie))) + el('nDPS', String(Number(dados.numero))) +
-    el('dCompet', dados.competencia || dataSP()) + el('tpEmit', 1) + el('cLocEmi', cMun) +
+    el('dCompet', dados.competencia || dataSP()) + el('tpEmit', 1) + (nt009 ? el('finNFSe', 0) : '') + el('cLocEmi', cMun) +
     '<prest>' + prest + '</prest>' + '<toma>' + toma + '</toma>' +
     '<serv>' + serv + '</serv>' + '<valores>' + valores + '</valores>';
 
   const infDps = `<infDPS Id="${id}">${corpo}</infDPS>`;
-  return { id, infDps, infDpsC14n: `<infDPS xmlns="${NS_NFSE}" Id="${id}">${corpo}</infDPS>` };
+  return { id, nt009, infDps, infDpsC14n: `<infDPS xmlns="${NS_NFSE}" Id="${id}">${corpo}</infDPS>` };
 }
 
 function assinar(m) {
@@ -201,7 +212,7 @@ function assinar(m) {
   const assinatura = crypto.sign('sha1', Buffer.from(signedInfo(true), 'utf8'), c.keyPem).toString('base64');
   const sig = `<Signature xmlns="${NS_DSIG}">${signedInfo(false)}<SignatureValue>${assinatura}</SignatureValue>` +
     `<KeyInfo><X509Data><X509Certificate>${c.certB64}</X509Certificate></X509Data></KeyInfo></Signature>`;
-  return `<?xml version="1.0" encoding="UTF-8"?><DPS xmlns="${NS_NFSE}" versao="1.00">${m.infDps}${sig}</DPS>`;
+  return `<?xml version="1.0" encoding="UTF-8"?><DPS xmlns="${NS_NFSE}" versao="${m.nt009 ? '1.01' : '1.00'}">${m.infDps}${sig}</DPS>`;
 }
 
 // ── HTTP com mTLS ────────────────────────────────────────────────────────────
@@ -244,7 +255,7 @@ function infoNfse(xml) {
 // Envia a DPS. Resultado: {ok:true, chave, numero, xml} | {ok:false, erros, status,
 // ambiguo?} — ambiguo = não sabemos se a Sefin registrou (rede/timeout/5xx):
 // conferir depois com consultarDps antes de reenviar.
-async function emitir(ambiente, dados) {
+async function emitir(ambiente, dados, _trocou) {
   const m = montarDps(Object.assign({}, dados, { ambiente }));
   const xml = assinar(m);
   const corpo = { dpsXmlGZipB64: zlib.gzipSync(Buffer.from(xml, 'utf8')).toString('base64') };
@@ -261,6 +272,10 @@ async function emitir(ambiente, dados) {
     return { ok: true, idDps: m.id, chave: j.chaveAcesso || i.chave, numero: i.numero, autorizadaEm: i.autorizadaEm || j.dataHoraProcessamento || null, xml: nf, alertas: j.alertas || null };
   }
   const erros = errosDe(j);
+  // Esquema recusado por causa do leiaute (finNFSe/cNBS): tenta o outro uma vez.
+  if (!_trocou && erros.some(e => /esquema|schema/i.test(e.descricao + e.complemento) && /finNFSe|cNBS|xDescServ|cLocEmi/.test(e.complemento))) {
+    return emitir(ambiente, Object.assign({}, dados, { nt009: !m.nt009 }), true);
+  }
   if (!erros.length) erros.push({ codigo: 'HTTP' + r.status, descricao: r.corpo.toString('utf8').slice(0, 400) });
   return { ok: false, idDps: m.id, status: r.status, ambiguo: r.status >= 500 || r.status === 0, erros };
 }
