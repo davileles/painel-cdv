@@ -138,7 +138,8 @@
         "async function coletarGruposCdv(",
         "app.post('/hubla/grupos-remocao/entrada'",
         "app.get('/hubla/contatos'",
-        "app.post('/hubla/contatos/relatorio'"
+        "app.post('/hubla/contatos/relatorio'",
+        "require('./notas-fiscais').registrar(app"
       ]
     },
     "index.html": {
@@ -367,6 +368,24 @@
       "minLinhas": 150,
       "obrigatorio": [
         "function montarContatos("
+      ]
+    },
+    "notas-fiscais.js": {
+      "minLinhas": 300,
+      "obrigatorio": [
+        "app.get('/notas/estado'",
+        "app.post('/notas/config'",
+        "app.post('/notas/emitir'",
+        "app.post('/notas/teste'",
+        "app.get('/notas/arquivo/:id/:tipo'"
+      ]
+    },
+    "nfse.js": {
+      "minLinhas": 200,
+      "obrigatorio": [
+        "function montarDps(",
+        "function assinar(",
+        "async function emitir("
       ]
     }
   }

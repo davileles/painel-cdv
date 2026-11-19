@@ -74,6 +74,8 @@ const ARQUIVOS_SENSIVEIS = new Set([
   'alertas.json',
   // Registro das exclusões de conta feitas pelo app (para cancelar na Hubla): repo privado.
   'exclusoes-conta.json',
+  // Notas fiscais (NFS-e Nacional): CPF/nome/e-mail dos compradores + XML das notas: repo privado.
+  'notas-fiscais.json',
 ]);
 // Arquivos que saíram do painel-cdv: na 1ª leitura sem cópia no repo de dados,
 // o proxy copia a versão do repo público para lá (uma vez por arquivo).
@@ -8756,6 +8758,15 @@ var BALCAO = require('./balcao').registrar(app, {
   grupoBalcao: (o) => grupoBalcao(o),
   direitoBalcao: (chaves) => direitoBalcao(chaves),
   RESEND_API_KEY, adminEmails: () => ADMIN_EMAILS,
+});
+
+// ── Notas fiscais (NFS-e Nacional, desde 18/11/2026; notas-fiscais.js + nfse.js) ──
+// Vendas pagas na Hubla viram NFS-e no Emissor Nacional ao fim dos 7 dias de
+// desistência. Certificado A1 em NFSE_CERT_PFX/NFSE_CERT_SENHA. Aba Notas fiscais do gestor.
+require('./notas-fiscais').registrar(app, {
+  ghGetJson, ghPutJson, opAutorizado,
+  hubla: hublaAssinaturas,
+  hublaArquivo: async () => (await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {})).data,
 });
 
 // Merge de cadastro reaprovado. O formulario e a fonte mais recente, mas so

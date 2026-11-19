@@ -1201,9 +1201,18 @@ function criarHublaAssinaturas({ ghGetJson, ghPutJson, fetch, log = console }) {
     return mapa;
   }
 
+  // Faturas criadas desde `desdeIso` (notas fiscais, notas-fiscais.js). Devolve
+  // as faturas cruas da API (payer com documento, amount, status, items).
+  async function faturasDesde(desdeIso) {
+    return paginar(p => api('POST', '/v1/invoices/list', {
+      filters: { dateStart: desdeIso, dateEnd: new Date().toISOString(), dateRangeBy: 'createdAt', orderBy: 'createdAt', orderDir: 'ASC' },
+      pagination: { page: p, pageSize: 200 },
+    }), 100);
+  }
+
   return {
     registrarEvento, sincronizar, sincronizarMembros, listar, ler, resumir, progresso, sondarApi, gravarOfertasAcesso,
-    pagadoresPorDocumento,
+    pagadoresPorDocumento, faturasDesde,
     temChaveApi: () => !!apiKey(),
   };
 }
