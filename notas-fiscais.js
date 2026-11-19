@@ -667,6 +667,8 @@ function registrar(app, deps) {
     const b = req.body || {};
     try {
       if (!b.confirmar) throw new Error('confirmação ausente');
+      const { base } = await nf.ler();
+      if (base.config.modo !== 'producao') throw new Error('A emissão está em ' + base.config.modo + ': ligue o modo produção para emitir notas válidas');
       if (!nfse.estadoCertificado().ok) throw new Error('certificado indisponível');
       const id = await nf.criarAvulsa(b, 'producao');
       res.json(Object.assign({ ok: true, id }, await nf.emitirUma(id, 'producao')));
