@@ -959059,7 +959059,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 6,
+          "pts": 30,
           "dollar": false
         },
         "azul": {
@@ -959189,6 +959189,10 @@
         "livelo": {
           "pts": 15,
           "dollar": false
+        },
+        "latam": {
+          "pts": 6,
+          "dollar": true
         }
       }
     },
@@ -959234,6 +959238,10 @@
         "azul": {
           "pts": 27,
           "dollar": false
+        },
+        "latam": {
+          "pts": 6,
+          "dollar": true
         }
       }
     },
@@ -959460,7 +959468,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 1,
+          "pts": 8,
           "dollar": false
         },
         "meliuz": {
@@ -959538,6 +959546,10 @@
       "programs": {
         "livelo": {
           "pts": 8,
+          "dollar": false
+        },
+        "latam": {
+          "pts": 1,
           "dollar": false
         }
       }
@@ -959745,7 +959757,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 1,
+          "pts": 6,
           "dollar": false
         }
       }
@@ -959813,20 +959825,7 @@
           "pts": 7,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-hoteiscom",
-          "categorias": [
-            {
-              "categoria": "Demais categorias",
-              "pts": 7,
-              "principal": true
-            },
-            {
-              "categoria": "Demais categorias",
-              "pts": 3,
-              "principal": true
-            }
-          ],
-          "ptsBase": 7
+          "slug": "cupom-hoteiscom"
         }
       },
       "links": {
@@ -960024,7 +960023,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 2,
+          "pts": 5,
           "dollar": false
         },
         "smiles": {
@@ -960176,6 +960175,10 @@
           "pts": 4,
           "dollar": false
         },
+        "latam": {
+          "pts": 6,
+          "dollar": true
+        },
         "meliuz": {
           "pts": 3.5,
           "dollar": false,
@@ -960243,6 +960246,10 @@
         "livelo": {
           "pts": 4,
           "dollar": false
+        },
+        "latam": {
+          "pts": 6,
+          "dollar": true
         },
         "meliuz": {
           "pts": 1,
@@ -961549,6 +961556,10 @@
           "pts": 1,
           "dollar": false
         },
+        "latam": {
+          "pts": 1,
+          "dollar": false
+        },
         "meliuz": {
           "pts": 1,
           "dollar": false,
@@ -962599,7 +962610,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 1,
+          "pts": 6,
           "dollar": false
         },
         "inter": {
@@ -962693,6 +962704,23 @@
           "pts": 1,
           "dollar": false
         }
+      }
+    },
+    "emma": {
+      "programs": {
+        "esfera": {
+          "pts": 5,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 1.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "emma"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/emma"
       }
     },
     "polishop": {
@@ -962916,6 +962944,14 @@
         }
       }
     },
+    "darkness": {
+      "programs": {
+        "esfera": {
+          "pts": 2,
+          "dollar": false
+        }
+      }
+    },
     "decor colors": {
       "programs": {
         "esfera": {
@@ -962975,6 +963011,14 @@
         }
       }
     },
+    "integral médica": {
+      "programs": {
+        "esfera": {
+          "pts": 2,
+          "dollar": false
+        }
+      }
+    },
     "lyor": {
       "programs": {
         "esfera": {
@@ -963017,6 +963061,14 @@
       }
     },
     "my sous vide": {
+      "programs": {
+        "esfera": {
+          "pts": 2,
+          "dollar": false
+        }
+      }
+    },
+    "nutrify": {
       "programs": {
         "esfera": {
           "pts": 2,
@@ -963089,14 +963141,6 @@
         }
       }
     },
-    "darkness": {
-      "programs": {
-        "esfera": {
-          "pts": 3,
-          "dollar": false
-        }
-      }
-    },
     "dux": {
       "programs": {
         "esfera": {
@@ -963106,22 +963150,6 @@
       }
     },
     "farmácias são joão": {
-      "programs": {
-        "esfera": {
-          "pts": 3,
-          "dollar": false
-        }
-      }
-    },
-    "integral médica": {
-      "programs": {
-        "esfera": {
-          "pts": 3,
-          "dollar": false
-        }
-      }
-    },
-    "nutrify": {
       "programs": {
         "esfera": {
           "pts": 3,
@@ -963338,23 +963366,6 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-e-lens"
-      }
-    },
-    "emma": {
-      "programs": {
-        "esfera": {
-          "pts": 1,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 1.5,
-          "dollar": false,
-          "ate": false,
-          "slug": "emma"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/emma"
       }
     },
     "eótica": {
@@ -964076,6 +964087,70 @@
         "meliuz": "https://www.meliuz.com.br/desconto/estoque"
       }
     },
+    "alamo": {
+      "programs": {
+        "latam": {
+          "pts": 6,
+          "dollar": true
+        }
+      }
+    },
+    "nomad": {
+      "programs": {
+        "latam": {
+          "pts": 5,
+          "dollar": true
+        }
+      }
+    },
+    "revo": {
+      "programs": {
+        "latam": {
+          "pts": 3,
+          "dollar": false
+        }
+      }
+    },
+    "ifriend": {
+      "programs": {
+        "latam": {
+          "pts": 2,
+          "dollar": false
+        }
+      }
+    },
+    "rappi": {
+      "programs": {
+        "latam": {
+          "pts": 2,
+          "dollar": true
+        },
+        "inter": {
+          "pts": 15,
+          "dollar": false,
+          "slug": "rappi-1662"
+        }
+      },
+      "links": {
+        "inter": "https://shopping.inter.co/gift-card/rappi-1662"
+      }
+    },
+    "picpay": {
+      "programs": {
+        "latam": {
+          "pts": 0.5,
+          "dollar": false
+        }
+      }
+    },
+    "elite internacional realty": {
+      "programs": {
+        "latam": {
+          "pts": 0.07,
+          "dollar": true
+        }
+      }
+    },
     "assaí": {
       "programs": {
         "inter": {
@@ -964206,18 +964281,6 @@
       },
       "links": {
         "inter": "https://shopping.inter.co/gift-card/the-legend-of-zelda-ocarina-of-time-4596"
-      }
-    },
-    "rappi": {
-      "programs": {
-        "inter": {
-          "pts": 15,
-          "dollar": false,
-          "slug": "rappi-1662"
-        }
-      },
-      "links": {
-        "inter": "https://shopping.inter.co/gift-card/rappi-1662"
       }
     },
     "fortnite": {
