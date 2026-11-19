@@ -143,9 +143,15 @@ function criarNotasFiscais(deps) {
   // ── Leitura/gravação (uma de cada vez; 409 = relê e reaplica) ─────────────
   let _fila = Promise.resolve();
   function serial(fn) { const p = _fila.then(fn); _fila = p.catch(() => {}); return p; }
+  // Cache da última versão lida/gravada: a API do GitHub pode devolver a versão
+  // anterior logo depois de um PUT (leitura atrasada), e só este proxy escreve
+  // o arquivo. Vale por 2 min; depois relê do GitHub.
+  let _cache = null; // { json, sha, em }
   async function ler() {
+    if (_cache && Date.now() - _cache.em < 2 * 60 * 1000) return { base: normalizar(JSON.parse(_cache.json)), sha: _cache.sha };
     const { data, sha } = await ghGetJson(ARQ, null);
     if (!data && sha) throw new Error('leitura de ' + ARQ + ' falhou (tente de novo)');
+    _cache = { json: JSON.stringify(data || null), sha, em: Date.now() };
     return { base: normalizar(data), sha };
   }
   async function mutar(fn, msg) {
@@ -154,9 +160,12 @@ function criarNotasFiscais(deps) {
       const r = await fn(base);
       if (r === false) return { base, mudou: false };
       try {
-        await ghPutJson(ARQ, base, sha, msg);
+        const put = await ghPutJson(ARQ, base, sha, msg);
+        const novoSha = put && put.content && put.content.sha;
+        _cache = novoSha ? { json: JSON.stringify(base), sha: novoSha, em: Date.now() } : null;
         return { base, mudou: true, r };
       } catch (e) {
+        _cache = null;
         if (t < 5 && /409|sha|conflict|does not match|expected/i.test(String(e.message))) { await new Promise(x => setTimeout(x, 600 * t)); continue; }
         throw e;
       }
