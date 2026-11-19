@@ -50,6 +50,7 @@ function padrao() {
     contadores: { producao: 0, homologacao: 0 },
     notas: [],
     testes: [],
+    transicao: [],
     rodada: null,
   };
 }
@@ -64,6 +65,7 @@ function normalizar(d) {
   o.contadores = Object.assign({}, p.contadores, d.contadores || {});
   o.notas = Array.isArray(d.notas) ? d.notas : [];
   o.testes = Array.isArray(d.testes) ? d.testes : [];
+  o.transicao = Array.isArray(d.transicao) ? d.transicao : [];
   // 'Comissão de afiliados' saiu dos produtos do Clube do Viajante (19/11/2026): comissão de
   // afiliados é do Tica Promos e fica nos produtos fiscais de lá. Só some se ninguém usa.
   const usado = (id) => o.config.produtoPadrao === id || Object.values(o.ofertas).includes(id) ||
@@ -113,6 +115,45 @@ function pagaEmDe(f) {
   const st = Array.isArray(f.statusAt) ? f.statusAt : [];
   const p = st.filter(s => s && s.status === 'paid').map(s => s.when).sort().pop();
   return isoOuNull(p);
+}
+// Corte eNotas → sistema (19/11/2026): venda paga antes de `emitirDesde` é do eNotas
+// e nunca sai daqui, mesmo que já esteja na fila (montada antes, em homologação ou
+// com outra data). Vale para a fila, para a rodada e para o "emitir agora".
+function antesDoCorte(n, cfg) {
+  if (!n || n.origem !== 'hubla' || !cfg || !cfg.emitirDesde || !n.pagaEm) return false;
+  return nfse.dataSP(n.pagaEm) < cfg.emitirDesde;
+}
+// Quando a fatura entrou no status atual (histórico statusAt da Hubla).
+function statusEmDe(f, status) {
+  const st = Array.isArray(f && f.statusAt) ? f.statusAt : [];
+  const w = st.filter(s => s && String(s.status || '').toLowerCase() === status).map(s => s.when).sort().pop();
+  return isoOuNull(w);
+}
+// Reembolso, depois do corte, de venda paga antes dele (ainda em garantia no eNotas, que
+// não fica mais sabendo depois que a integração Hubla → eNotas é desligada): entra na lista
+// "transicao" para o Davi cancelar no eNotas. Só vendas pagas até 10 dias antes do corte.
+function registrarTransicao(base, f, status, quando) {
+  const cfg = base.config || {};
+  if (!cfg.emitirDesde || !f || !f.id || !status || status === 'paid') return false;
+  const pagaEm = pagaEmDe(f);
+  if (!pagaEm) return false;
+  const dia = nfse.dataSP(pagaEm);
+  if (dia >= cfg.emitirDesde) return false;
+  if (new Date(pagaEm).getTime() < new Date(cfg.emitirDesde + 'T00:00:00-03:00').getTime() - 10 * DIA) return false;
+  const em = quando || statusEmDe(f, status);
+  if (em && nfse.dataSP(em) < cfg.emitirDesde) return false;   // reembolso antes do corte: o eNotas soube
+  base.transicao = Array.isArray(base.transicao) ? base.transicao : [];
+  const ex = base.transicao.find(x => x.faturaId === f.id);
+  if (ex) { if (ex.statusFatura === status) return false; ex.statusFatura = status; ex.atualizadaEm = new Date().toISOString(); return true; }
+  const payer = f.payer || {};
+  base.transicao.push({
+    faturaId: f.id, pagaEm, reembolsoEm: em || new Date().toISOString(), statusFatura: status,
+    valor: Math.round(totalDe(f) * 100) / 100,
+    nome: [payer.firstName, payer.lastName].filter(Boolean).join(' ') || payer.fullName || payer.name || '',
+    email: String(payer.email || '').toLowerCase().trim(), doc: soDig(payer.document),
+    vistaEm: new Date().toISOString(), resolvidaEm: null,
+  });
+  return true;
 }
 function totalDe(f) {
   const a = f.amount || {};
@@ -217,11 +258,25 @@ function criarNotasFiscais(deps) {
     await mutar(base => {
       const porRef = new Map(base.notas.map(n => [n.ref, n]));
       let mudou = false;
+      // Corte: o que já está na fila e foi pago antes de "emitir a partir de" sai da fila
+      // (fica com o eNotas); se a data voltar para trás, volta para a fila.
+      for (const n of base.notas) {
+        if (n.origem !== 'hubla') continue;
+        if ((n.status === 'pendente' || n.status === 'erro') && !n.nDps && antesDoCorte(n, base.config)) {
+          n.statusAntesCorte = n.status; n.status = 'antes_do_corte';
+          n.motivo = 'paga antes de "emitir a partir de" (' + base.config.emitirDesde.split('-').reverse().join('/') + '): fica com o eNotas';
+          n.atualizadaEm = new Date().toISOString(); resumo.antesDoCorte = (resumo.antesDoCorte || 0) + 1; mudou = true;
+        } else if (n.status === 'antes_do_corte' && !antesDoCorte(n, base.config)) {
+          n.status = n.statusAntesCorte === 'erro' || !docValido(n.tomador && n.tomador.doc) ? 'erro' : 'pendente';
+          delete n.statusAntesCorte; n.motivo = undefined; n.atualizadaEm = new Date().toISOString(); mudou = true;
+        }
+      }
       for (const f of faturas) {
         if (!f || !f.id) continue;
         const ref = 'hubla:' + f.id;
         const existente = porRef.get(ref);
         const status = String(f.status || '');
+        if (status !== 'paid' && registrarTransicao(base, f, status.toLowerCase())) { resumo.transicao = (resumo.transicao || 0) + 1; mudou = true; }
         if (existente) {
           if (status !== 'paid') {
             if (existente.status === 'pendente' || existente.status === 'erro') {
@@ -276,6 +331,7 @@ function criarNotasFiscais(deps) {
       if (!n) throw new Error('nota não encontrada');
       if (n.status === 'emitida') { aguardar = true; return false; }
       if (!['pendente', 'erro', 'verificar', 'enviando'].includes(n.status)) throw new Error('nota não está na fila (' + n.status + ')');
+      if (ambiente === 'producao' && !n.nDps && antesDoCorte(n, base.config)) throw new Error('venda paga antes de "emitir a partir de": a nota é do eNotas');
       const pf = produtoFiscal(base, n.produtoFiscalId);
       if (!pf) throw new Error('produto fiscal "' + n.produtoFiscalId + '" não existe');
       if (pf.ativo === false) throw new Error('produto fiscal "' + pf.nome + '" está desligado');
@@ -391,7 +447,10 @@ function criarNotasFiscais(deps) {
       alvo = null;
       modo = base.config.modo; cancelarAuto = base.config.cancelarReembolso !== false;
       const n = base.notas.find(x => x.ref === ref);
-      if (!n) return false;
+      if (!n || n.status === 'antes_do_corte') {
+        if (registrarTransicao(base, inv, status, new Date().toISOString())) { alvo = { acao: 'transicao' }; return; }
+        return false;
+      }
       const agora = new Date().toISOString();
       if (n.status === 'pendente' || n.status === 'erro' || n.status === 'verificar') {
         n.status = 'venda_reembolsada'; n.statusFatura = status; n.atualizadaEm = agora;
@@ -404,6 +463,7 @@ function criarNotasFiscais(deps) {
       } else return false;
     }, `notas: webhook ${status} ${inv.id}`);
     if (!alvo) return { ignorado: 'sem nota' };
+    if (alvo.acao === 'transicao') { log.log(`[notas] webhook Hubla ${type}: venda do eNotas (antes do corte) ${status}, fatura ${inv.id} — cancelar no eNotas`); return alvo; }
     log.log(`[notas] webhook Hubla ${type}: fatura ${status}, nota ${alvo.id} (${alvo.acao})`);
     if (alvo.acao !== 'emitida' || modo !== 'producao' || !cancelarAuto || !STATUS_REEMBOLSO_TOTAL.has(status)) return alvo;
     const r = await cancelarUma(alvo.id, 'producao', 2,
@@ -425,7 +485,7 @@ function criarNotasFiscais(deps) {
       if (modo === 'producao' && base.config.emitirAuto !== false) {
         const { base: b2 } = await ler();
         const agora = Date.now();
-        const vez = b2.notas.filter(n => (n.status === 'pendente' || n.status === 'verificar' ||
+        const vez = b2.notas.filter(n => !(antesDoCorte(n, b2.config) && !n.nDps) && (n.status === 'pendente' || n.status === 'verificar' ||
           (n.status === 'enviando' && agora - new Date(n.enviandoEm || 0).getTime() > 10 * 60 * 1000)) &&
           new Date(n.previstaPara || 0).getTime() <= agora)
           .sort((a, c) => String(a.previstaPara).localeCompare(String(c.previstaPara)))
@@ -548,6 +608,8 @@ function criarNotasFiscais(deps) {
       contagem: notas.reduce((m, n) => { m[n.status] = (m[n.status] || 0) + 1; return m; }, {}),
       notas: (todas ? notas : notas.slice(0, 400)).map(limpa),
       testes: ord(base.testes).slice(0, 50).map(limpa),
+      transicao: (base.transicao || []).slice().sort((a, b) => String(b.reembolsoEm).localeCompare(String(a.reembolsoEm)))
+        .map(x => Object.assign({}, x, { doc: undefined, docMascarado: mascararDoc(x.doc) })),
     };
   }
 
@@ -738,6 +800,22 @@ function registrar(app, deps) {
 
   // ignorar (não emitir), reativar (volta para a fila), cancelada (cancelada no Emissor Nacional),
   // produto (troca o produto fiscal), tomador (corrige CPF/nome antes de emitir).
+  // Reembolso de venda do eNotas (antes do corte): marcar como resolvido (já cancelado no eNotas) ou reabrir.
+  app.post('/notas/transicao', async (req, res) => {
+    if (!op(req, res)) return;
+    const b = req.body || {};
+    try {
+      await nf.mutar(base => {
+        const x = (base.transicao || []).find(t => t.faturaId === b.faturaId);
+        if (!x) throw new Error('reembolso não encontrado');
+        if (b.acao === 'resolvido') x.resolvidaEm = new Date().toISOString();
+        else if (b.acao === 'reabrir') x.resolvidaEm = null;
+        else throw new Error('ação inválida');
+      }, `notas: transição ${b.acao} ${b.faturaId}`);
+      res.json({ ok: true });
+    } catch (e) { erro(res, e); }
+  });
+
   app.post('/notas/situacao', async (req, res) => {
     if (!op(req, res)) return;
     const b = req.body || {};
@@ -752,6 +830,7 @@ function registrar(app, deps) {
           n.status = 'ignorada'; n.motivo = String(b.motivo || '').trim() || null;
         } else if (b.acao === 'reativar') {
           if (n.status === 'emitida') throw new Error('nota já emitida');
+          if (!b.teste && antesDoCorte(n, base.config)) throw new Error('venda paga antes de "emitir a partir de": a nota é do eNotas');
           n.status = 'pendente'; n.erros = [];
         } else if (b.acao === 'cancelada') {
           if (n.status !== 'emitida') throw new Error('só nota emitida pode ser marcada como cancelada');
