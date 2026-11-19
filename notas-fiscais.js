@@ -476,7 +476,7 @@ function criarNotasFiscais(deps) {
     const ord = (l) => l.slice().sort((a, b) => String(b.pagaEm || b.criadaEm).localeCompare(String(a.pagaEm || a.criadaEm)));
     const notas = ord(base.notas);
     return {
-      config: base.config, empresa: base.empresa, produtos: base.produtos, ofertas: base.ofertas, contadores: base.contadores,
+      config: base.config, empresa: base.empresa, empresaAtualizada: base.empresaAtualizada || null, produtos: base.produtos, ofertas: base.ofertas, contadores: base.contadores,
       rodada: base.rodada, certificado: nfse.estadoCertificado(), hublaApi: !!(deps.hubla && deps.hubla.temChaveApi()),
       ofertasHubla,
       contagem: notas.reduce((m, n) => { m[n.status] = (m[n.status] || 0) + 1; return m; }, {}),
@@ -524,6 +524,8 @@ function registrar(app, deps) {
           if (!cnpjValido(e.cnpj)) throw new Error('CNPJ da empresa inválido');
           e.cnpj = soDig(e.cnpj); e.im = soDig(e.im); e.cMun = soDig(e.cMun) || '3106200'; e.fone = soDig(e.fone);
           e.pTotTribSN = Math.max(0, Number(String(e.pTotTribSN).replace(',', '.')) || 0);
+          if (['cnpj', 'im', 'razao', 'cMun', 'fone', 'email', 'opSimpNac', 'regApTribSN', 'regEspTrib'].some(k => String(e[k]) !== String(base.empresa[k])))
+            base.empresaAtualizada = { em: new Date().toISOString(), por: 'gestor-cdv' };   // o Tica Promos puxa daqui
           base.empresa = e;
         }
         if (Array.isArray(b.produtos)) {
@@ -547,6 +549,42 @@ function registrar(app, deps) {
         }
       }, 'notas: configuração');
       res.json({ ok: true, config: base.config, empresa: base.empresa, produtos: base.produtos, ofertas: base.ofertas });
+    } catch (e) { erro(res, e); }
+  });
+
+  // ── Empresa compartilhada (19/11/2026) ──────────────────────────────────────
+  // Cadastro ÚNICO da empresa emissora para o Gestão CDV e para o Notas Fiscais
+  // do Tica Promos (baileys-server/notas-shopee.js, que lê e grava por aqui com
+  // a chave de operador). Só os dados da empresa: a alíquota do Simples
+  // (pTotTribSN) continua em cada sistema.
+  const CAMPOS_EMPRESA_COMP = ['cnpj', 'im', 'razao', 'cMun', 'fone', 'email', 'opSimpNac', 'regApTribSN', 'regEspTrib'];
+  app.get('/notas/empresa', async (req, res) => {
+    if (!op(req, res)) return;
+    try {
+      const { base } = await nf.ler();
+      const empresa = {};
+      for (const k of CAMPOS_EMPRESA_COMP) empresa[k] = base.empresa[k] == null ? '' : base.empresa[k];
+      res.json({ ok: true, empresa, atualizada: base.empresaAtualizada || null });
+    } catch (e) { erro(res, e, 500); }
+  });
+  app.post('/notas/empresa', async (req, res) => {
+    if (!op(req, res)) return;
+    const b = req.body || {};
+    try {
+      const { base } = await nf.mutar(base => {
+        const e = Object.assign({}, base.empresa);
+        for (const k of CAMPOS_EMPRESA_COMP) if (b.empresa && b.empresa[k] != null && String(b.empresa[k]).trim() !== '') e[k] = b.empresa[k];
+        if (!cnpjValido(e.cnpj)) throw new Error('CNPJ da empresa inválido');
+        e.cnpj = soDig(e.cnpj); e.im = soDig(e.im); e.cMun = soDig(e.cMun) || '3106200'; e.fone = soDig(e.fone);
+        e.razao = String(e.razao || '').trim(); e.email = String(e.email || '').trim();
+        for (const k of ['opSimpNac', 'regApTribSN', 'regEspTrib']) e[k] = Number(e[k]) || 0;
+        if (CAMPOS_EMPRESA_COMP.every(k => String(e[k]) === String(base.empresa[k]))) return false;
+        base.empresa = e;
+        base.empresaAtualizada = { em: new Date().toISOString(), por: String(b.origem || 'api').slice(0, 30) };
+      }, 'notas: empresa (' + String(b.origem || 'api').slice(0, 30) + ')');
+      const empresa = {};
+      for (const k of CAMPOS_EMPRESA_COMP) empresa[k] = base.empresa[k] == null ? '' : base.empresa[k];
+      res.json({ ok: true, empresa, atualizada: base.empresaAtualizada || null });
     } catch (e) { erro(res, e); }
   });
 
