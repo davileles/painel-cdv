@@ -48,6 +48,7 @@ Presentes em painel-cdv, baileys-server, gestor-cdv, concierge, tudo-sobre-promo
 - Cards de revisão no Telegram: **sem blocos expansíveis/colapsáveis**.
 - Painel do membro CDV: ícones **Phosphor** (sprite SVG `#i-*`) em vez de emoji de interface.
 - Preferir soluções **sem novo serviço externo**.
+- **Mesma função em mais de um sistema = mesmo código de comportamento** (decisão do Davi, 19/11/2026). Ex.: 🧾 Notas Fiscais do `tudo-sobre-promos` e 📄 Notas fiscais do `gestor-cdv`; vale também para Buscar voos, alertas, campanhas e o que mais existir nos dois lados. As duas telas têm **as mesmas opções de configuração, na mesma ordem, com os mesmos nomes**, e o servidor de cada uma trata essas opções do mesmo jeito. Diferença entre os sistemas só pode vir de **configuração** (valor escolhido na tela), nunca de comportamento fixo no código. Ao mexer num lado, aplicar no outro no mesmo pedido; o que só existe por natureza de um lado (ex.: fonte das vendas — Hubla × relatórios de afiliados) fica num cartão próprio no fim da tela, e a regra de como ele usa as opções comuns continua igual.
 - Horário: sempre `America/Sao_Paulo` (`-03:00` fixo, sem horário de verão).
 
 ---
