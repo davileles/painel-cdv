@@ -4953,6 +4953,9 @@ setInterval(carregarRegrasAcesso, 5 * 60 * 1000);
 const _hublaIdempotencia = new Map(); // x-hubla-idempotency → quando (evita reprocessar reenvio)
 let _hublaAcessoFila = Promise.resolve(); // um evento de acesso por vez (membros.json)
 
+// Módulo de notas fiscais (registrado mais abaixo): o webhook avisa cada evento
+// de fatura para cancelar a nota de venda cancelada/reembolsada na Hubla.
+let notasFiscais = null;
 app.post('/webhook/hubla-assinaturas', async (req, res) => {
   const tokenRecebido = req.headers['x-hubla-token'] || req.headers['authorization'];
   if (HUBLA_TOKEN && tokenRecebido !== HUBLA_TOKEN) {
@@ -4992,6 +4995,12 @@ app.post('/webhook/hubla-assinaturas', async (req, res) => {
   }
 
   registrarWebhookHubla({ recebidoEm: new Date().toISOString(), type, email, assinaturaId, liberaPainel, event });
+
+  // Venda cancelada/reembolsada na Hubla: a nota fiscal sai da fila ou é cancelada
+  // no Emissor Nacional (segundo plano; não atrasa o 200 da Hubla).
+  if (event.invoice && notasFiscais && String(type).startsWith('invoice.')) {
+    notasFiscais.aoEventoHubla(type, event).catch(e => console.warn('[notas] webhook:', e.message));
+  }
 
   const resposta = { ok: true, type, email, oferta: po.ofertaNome, liberaPainel };
 
@@ -8763,7 +8772,7 @@ var BALCAO = require('./balcao').registrar(app, {
 // ── Notas fiscais (NFS-e Nacional, desde 18/11/2026; notas-fiscais.js + nfse.js) ──
 // Vendas pagas na Hubla viram NFS-e no Emissor Nacional ao fim dos 7 dias de
 // desistência. Certificado A1 em NFSE_CERT_PFX/NFSE_CERT_SENHA. Aba Notas fiscais do gestor.
-require('./notas-fiscais').registrar(app, {
+notasFiscais = require('./notas-fiscais').registrar(app, {
   ghGetJson, ghPutJson, opAutorizado,
   hubla: hublaAssinaturas,
   hublaArquivo: async () => (await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {})).data,

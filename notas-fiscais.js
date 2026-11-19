@@ -339,6 +339,48 @@ function criarNotasFiscais(deps) {
     return r.ok || r.jaCancelada ? { ok: true } : { ok: false, erros: r.erros };
   }
 
+  // ── Webhook da Hubla: venda cancelada/reembolsada → nota cancelada na hora ──
+  // Chamado pelo /webhook/hubla-assinaturas em todo evento de fatura. Fatura que
+  // deixou de estar paga: nota ainda na fila sai da fila; nota já emitida é
+  // cancelada no Emissor Nacional (produção, reembolso total, cancelarReembolso).
+  async function aoEventoHubla(type, event) {
+    const inv = (event && event.invoice) || null;
+    if (!inv || !inv.id) return { ignorado: 'sem fatura' };
+    const t = String(type || '').toLowerCase();
+    let status = String(inv.status || '').toLowerCase();
+    if (!status || status === 'paid') {
+      if (/partial/.test(t)) status = 'partially_refunded';
+      else if (/refund/.test(t)) status = 'refunded';
+      else if (/charge_?back|dispute/.test(t)) status = 'chargeback';
+      else if (/cancel/.test(t)) status = 'canceled';
+    }
+    if (!status || status === 'paid') return { ignorado: 'fatura paga' };
+    const ref = 'hubla:' + inv.id;
+    let alvo = null, modo = null, cancelarAuto = true;
+    await mutar(base => {
+      alvo = null;
+      modo = base.config.modo; cancelarAuto = base.config.cancelarReembolso !== false;
+      const n = base.notas.find(x => x.ref === ref);
+      if (!n) return false;
+      const agora = new Date().toISOString();
+      if (n.status === 'pendente' || n.status === 'erro' || n.status === 'verificar') {
+        n.status = 'venda_reembolsada'; n.statusFatura = status; n.atualizadaEm = agora;
+        alvo = { id: n.id, acao: 'fila' };
+      } else if (n.status === 'emitida') {
+        alvo = { id: n.id, acao: 'emitida' };
+        if (n.vendaReembolsadaEm && n.statusFatura === status) return false;
+        n.vendaReembolsadaEm = n.vendaReembolsadaEm || agora; n.statusFatura = status;
+        n.reembolsoTotal = STATUS_REEMBOLSO_TOTAL.has(status);
+      } else return false;
+    }, `notas: webhook ${status} ${inv.id}`);
+    if (!alvo) return { ignorado: 'sem nota' };
+    log.log(`[notas] webhook Hubla ${type}: fatura ${status}, nota ${alvo.id} (${alvo.acao})`);
+    if (alvo.acao !== 'emitida' || modo !== 'producao' || !cancelarAuto || !STATUS_REEMBOLSO_TOTAL.has(status)) return alvo;
+    const r = await cancelarUma(alvo.id, 'producao', 2,
+      'Venda cancelada com reembolso integral ao cliente (fatura ' + status + ' na Hubla).', 'reembolso');
+    return Object.assign(alvo, { cancelada: !!r.ok, erros: r.erros });
+  }
+
   // ── Ciclo automático ──────────────────────────────────────────────────────
   let _rodando = false;
   async function ciclo(motivo) {
@@ -443,7 +485,7 @@ function criarNotasFiscais(deps) {
     };
   }
 
-  return { ler, mutar, planejar, emitirUma, cancelarUma, ciclo, criarAvulsa, estado };
+  return { ler, mutar, planejar, emitirUma, cancelarUma, aoEventoHubla, ciclo, criarAvulsa, estado };
 }
 
 // ── Rotas (todas com X-CDV-Op) ───────────────────────────────────────────────
