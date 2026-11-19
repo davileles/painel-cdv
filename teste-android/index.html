@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<title>Teste do app Android · Clube do Viajante</title>
+<link rel="icon" type="image/png" href="../logocdv.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#eef1f8; --surface:#ffffff; --card:#ffffff; --field:#f7f9fd;
+  --border:#e3e8f4; --border-ctrl:#cfd8ea;
+  --text:#17203a; --muted:#5f6d8c; --muted2:#8a97b1;
+  --accent:#ff585e; --accent2:#e0484e; --coral-tint:#ffe9ea; --coral-line:#ffd2d4; --coral-ink:#c93a40;
+  --green:#12864a; --green-tint:#f2fbf6; --green-line:#d6f0e2;
+  --blue:#1b64d1; --blue-tint:#eaf1fd;
+  --amber:#a2560a; --amber-tint:#fff4e2;
+  --shadow:0 8px 24px rgba(23,32,58,.08);
+  --font:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:#141a29; --surface:#1c2438; --card:#232c42; --field:#1a2132;
+    --border:#2c3651; --border-ctrl:#3b4767;
+    --text:#eef2fa; --muted:#a4b1cd; --muted2:#7f8dab;
+    --coral-tint:rgba(255,88,94,.14); --coral-line:rgba(255,88,94,.38); --coral-ink:#ff8085;
+    --green:#3ccf86; --green-tint:rgba(60,207,134,.10); --green-line:rgba(60,207,134,.32);
+    --blue:#6ea5ff; --blue-tint:rgba(110,165,255,.12);
+    --amber:#f0b45a; --amber-tint:rgba(240,180,90,.12);
+    --shadow:0 8px 24px rgba(0,0,0,.25);
+  }
+}
+html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; -webkit-font-smoothing: antialiased; }
+@keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform:none; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+.fade { animation: fadeUp .35s cubic-bezier(.16,1,.3,1) both; }
+.wrap { max-width: 620px; margin: 0 auto; padding: 28px 18px 80px; }
+header { text-align: center; margin-bottom: 22px; }
+.logo { display: inline-flex; background: #fff; border-radius: 14px; padding: 10px 16px; box-shadow: var(--shadow); margin-bottom: 18px; }
+.logo img { height: 44px; width: auto; display: block; }
+.tag { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--coral-ink); background: var(--coral-tint); border: 1px solid var(--coral-line); border-radius: 99px; padding: 5px 12px; margin-bottom: 12px; }
+h1 { font-size: 23px; font-weight: 800; letter-spacing: -.2px; }
+.sub { font-size: 13.5px; color: var(--muted); margin-top: 8px; line-height: 1.7; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 22px; box-shadow: var(--shadow); }
+.box { border-radius: 12px; padding: 14px 16px; font-size: 13.5px; line-height: 1.75; margin: 0 0 18px; }
+.box.warn { background: var(--amber-tint); color: var(--text); }
+.box.info { background: var(--blue-tint); color: var(--text); }
+.box .t { font-weight: 700; display: block; margin-bottom: 2px; }
+.field { margin-bottom: 16px; }
+label { display: block; font-size: 12px; font-weight: 700; letter-spacing: .4px; color: var(--text); margin-bottom: 7px; }
+.field[data-req] > label::after { content: ' *'; color: var(--accent); }
+input[type=text], input[type=email], input[type=tel] {
+  width: 100%; background: var(--field); border: 1px solid var(--border-ctrl); border-radius: 10px;
+  padding: 12px 13px; color: var(--text); font-family: var(--font); font-size: 15px; transition: border-color .15s, box-shadow .15s; }
+input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--coral-tint); }
+input::placeholder { color: var(--muted2); }
+.hint { font-size: 12.5px; color: var(--muted); margin-top: 6px; line-height: 1.6; }
+.err-msg { font-size: 12px; color: var(--coral-ink); margin-top: 6px; display: none; font-weight: 600; }
+.field.bad input, .field.bad .consent { border-color: var(--accent); }
+.field.bad .err-msg { display: block; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.consent { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; background: var(--field); border: 1px solid var(--border-ctrl); border-radius: 12px; padding: 15px; transition: all .15s; margin: 0; letter-spacing: 0; }
+.consent.on { border-color: var(--green-line); background: var(--green-tint); }
+.consent input { margin-top: 3px; accent-color: var(--accent); width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; }
+.consent span { font-size: 13.5px; line-height: 1.7; font-weight: 600; }
+.btn { width: 100%; margin-top: 6px; padding: 15px; border-radius: 12px; border: 0; font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer; background: var(--accent); color: #fff; transition: background .15s, opacity .15s; }
+.btn:hover { background: var(--accent2); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.spin { display: inline-block; width: 13px; height: 13px; vertical-align: -2px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; margin-right: 8px; }
+.banner { border-radius: 12px; padding: 13px 15px; font-size: 13px; line-height: 1.6; margin-bottom: 16px; display: none; background: var(--coral-tint); color: var(--coral-ink); border: 1px solid var(--coral-line); font-weight: 600; }
+.banner.show { display: block; }
+.done-box { text-align: center; padding: 40px 22px; }
+.done-icon { width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 50%; background: var(--green-tint); color: var(--green); display: flex; align-items: center; justify-content: center; }
+.done-icon svg { width: 32px; height: 32px; }
+.done-box h2 { font-size: 19px; font-weight: 800; margin-bottom: 10px; }
+.done-box p { font-size: 14px; color: var(--muted); line-height: 1.8; max-width: 420px; margin: 0 auto 8px; }
+footer { text-align: center; font-size: 11.5px; color: var(--muted2); margin-top: 26px; line-height: 1.7; }
+@media (max-width: 560px) {
+  .wrap { padding: 20px 13px 60px; }
+  .card { padding: 20px 16px; }
+  h1 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo"><img src="../logocdv.png" alt="Clube do Viajante"/></div>
+    <div><span class="tag">App do Clube do Viajante · Android</span></div>
+    <h1>Seja testador do app no Android</h1>
+    <p class="sub">Estamos liberando o app do Clube do Viajante na Google Play. Antes do lançamento, um grupo de membros testa o app no próprio celular. Preencha seus dados para participar.</p>
+  </header>
+
+  <div class="banner" id="banner"></div>
+
+  <form class="card fade" id="form" novalidate autocomplete="on">
+    <input class="hp" type="text" id="website" name="website" tabindex="-1" autocomplete="off"/>
+
+    <div class="box warn">
+      <span class="t">Exclusivo para assinantes do Clube do Viajante Premium</span>
+      O app só libera o acesso para quem tem a assinatura do <b>Clube do Viajante Premium</b> ativa. Conferimos a sua assinatura na hora, pelo e-mail ou pelo telefone que você informar.
+    </div>
+
+    <div class="field" data-req id="f-nome">
+      <label for="nome">Nome completo</label>
+      <input type="text" id="nome" autocomplete="name" placeholder="Seu nome e sobrenome"/>
+      <div class="err-msg">Informe seu nome completo.</div>
+    </div>
+
+    <div class="field" data-req id="f-email">
+      <label for="email">E-mail da sua conta Google</label>
+      <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="voce@gmail.com"/>
+      <div class="hint">Use o mesmo e-mail (Gmail) que está conectado à Play Store do seu celular Android — é por ele que o Google libera o teste para você.</div>
+      <div class="err-msg">Informe um e-mail válido.</div>
+    </div>
+
+    <div class="field" data-req id="f-tel">
+      <label for="tel">Telefone (WhatsApp)</label>
+      <input type="tel" id="tel" autocomplete="tel" inputmode="tel" placeholder="(31) 99999-9999"/>
+      <div class="hint">Use o telefone cadastrado na sua compra na Hubla — se o seu Gmail não for o e-mail da assinatura, é por ele que encontramos você.</div>
+      <div class="err-msg">Informe o telefone com DDD.</div>
+    </div>
+
+    <div class="field" id="f-premium">
+      <label class="consent" id="consent">
+        <input type="checkbox" id="premium"/>
+        <span>Confirmo que sou assinante do Clube do Viajante Premium e que uso um celular Android.</span>
+      </label>
+      <div class="err-msg">É preciso ser assinante do Clube do Viajante Premium para participar.</div>
+    </div>
+
+    <div class="box info">
+      <span class="t">Como funciona</span>
+      Assim que sua inscrição for liberada, você recebe o convite para baixar o app pela Google Play. Entre com o mesmo e-mail da sua assinatura e conte para a gente o que achou.
+    </div>
+
+    <button type="submit" class="btn" id="btn">Quero testar o app</button>
+  </form>
+
+  <section class="card done-box fade" id="done" hidden>
+    <div class="done-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <h2>Inscrição recebida!</h2>
+    <p>Obrigado por ajudar a testar o app do Clube do Viajante.</p>
+    <p>Em breve você recebe o convite para baixar o app na Google Play. Lembre-se: o acesso é liberado para assinantes do Clube do Viajante Premium.</p>
+  </section>
+
+  <footer>Clube do Viajante · seus dados são usados só para liberar o teste do app.</footer>
+</div>
+
+<script>
+var PROXY = 'https://cdv-proxy-production.up.railway.app';
+var $ = function (id) { return document.getElementById(id); };
+
+function mascaraTel(v) {
+  var d = String(v).replace(/\D/g, '').slice(0, 11);
+  if (d.length <= 2) return d ? '(' + d : '';
+  if (d.length <= 6) return '(' + d.slice(0, 2) + ') ' + d.slice(2);
+  if (d.length <= 10) return '(' + d.slice(0, 2) + ') ' + d.slice(2, 6) + '-' + d.slice(6);
+  return '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
+}
+$('tel').addEventListener('input', function (e) { e.target.value = mascaraTel(e.target.value); });
+$('premium').addEventListener('change', function (e) { $('consent').classList.toggle('on', e.target.checked); $('f-premium').classList.remove('bad'); });
+['nome', 'email', 'tel'].forEach(function (id) { $(id).addEventListener('input', function () { $('f-' + id).classList.remove('bad'); }); });
+
+function aviso(msg) { var b = $('banner'); b.textContent = msg || ''; b.classList.toggle('show', !!msg); if (msg) b.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+
+function validar() {
+  var ok = true;
+  var nome = $('nome').value.trim();
+  var email = $('email').value.trim();
+  var tel = $('tel').value.replace(/\D/g, '');
+  function marca(id, bom) { $('f-' + id).classList.toggle('bad', !bom); if (!bom) ok = false; }
+  marca('nome', nome.split(/\s+/).length >= 2);
+  marca('email', /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email));
+  marca('tel', tel.length >= 10);
+  marca('premium', $('premium').checked);
+  return ok;
+}
+
+$('form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  aviso('');
+  if (!validar()) return;
+  var btn = $('btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Enviando…';
+  var corpo = {
+    nome: $('nome').value.trim(),
+    email: $('email').value.trim(),
+    tel: $('tel').value,
+    premium: $('premium').checked,
+    website: $('website').value,
+  };
+  fetch(PROXY + '/app/teste-android', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) })
+    .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+    .then(function (d) {
+      if (!d || !d.ok) throw new Error((d && d.erro) || 'Não foi possível enviar agora. Tente novamente em instantes.');
+      $('form').hidden = true;
+      $('done').hidden = false;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    })
+    .catch(function (err) {
+      aviso(err.message || 'Não foi possível enviar agora. Tente novamente em instantes.');
+      btn.disabled = false;
+      btn.textContent = 'Quero testar o app';
+    });
+});
+</script>
+</body>
+</html>

@@ -8769,6 +8769,13 @@ var BALCAO = require('./balcao').registrar(app, {
   RESEND_API_KEY, adminEmails: () => ADMIN_EMAILS,
 });
 
+// ── Teste do app Android: candidatura de testadores (teste-android.js; página teste-android/) ──
+require('./teste-android').registrar(app, {
+  fetch, putRetry: putConciergeRetry, lerLista: lerArquivoConcierge,
+  soDigitos, nomeApresentavel, limiteIp: cadastroLiberado, opAutorizado, BAILEYS_URL,
+  hublaArquivo: async () => (await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {})).data,
+});
+
 // ── Notas fiscais (NFS-e Nacional, desde 18/11/2026; notas-fiscais.js + nfse.js) ──
 // Vendas pagas na Hubla viram NFS-e no Emissor Nacional ao fim dos 7 dias de
 // desistência. Certificado A1 em NFSE_CERT_PFX/NFSE_CERT_SENHA. Aba Notas fiscais do gestor.
