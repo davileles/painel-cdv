@@ -137,7 +137,7 @@ app.use(express.json({ limit: '20mb' }));
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env, X-CDV-Op, X-CDV-Auth, X-CDV-Servico, X-CDV-Portal, X-CDV-Membro, X-CDV-Roteiros, X-CDV-Balcao');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env, X-CDV-Op, X-CDV-Auth, X-CDV-Servico, X-CDV-Robo, X-CDV-Portal, X-CDV-Membro, X-CDV-Roteiros, X-CDV-Balcao');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
@@ -455,6 +455,16 @@ function sessaoConciergeValida(token) {
   return dados.email;
 }
 
+// Robô de check-in (extensão do Concierge no Chrome do Davi): chave própria,
+// colada uma vez nas opções da extensão, que só abre as rotas
+// /concierge/checkin/*. Aqui fica só o SHA-256; a chave nunca vai para o código.
+const CONC_ROBO_HASH = '9d56bc683999bb94c6eb942799613bbc37432ac25180dd1fe9b48737adb835c8';
+function roboCheckinValido(chave) {
+  if (!chave) return false;
+  const h = crypto.createHash('sha256').update(String(chave)).digest();
+  return crypto.timingSafeEqual(h, Buffer.from(CONC_ROBO_HASH, 'hex'));
+}
+
 function servicoConciergeValido(chave) {
   if (!chave) return false;
   const h = crypto.createHash('sha256').update(String(chave)).digest();
@@ -467,6 +477,7 @@ app.use((req, res, next) => {
   const email = sessaoConciergeValida(req.headers['x-cdv-auth']);
   if (email) { res.locals.conciergeEmail = email; return next(); }
   if (servicoConciergeValido(req.headers['x-cdv-servico'])) { res.locals.conciergeServico = true; return next(); }
+  if (req.path.startsWith('/concierge/checkin/') && roboCheckinValido(req.headers['x-cdv-robo'])) { res.locals.conciergeRobo = true; return next(); }
   if (!CONC_AUTH_EXIGIR) return next();
   return res.status(401).json({ ok: false, erro: 'nao autorizado', motivo: 'sessao' });
 });
@@ -7892,6 +7903,10 @@ function preservarDemandasAuto(remoto, novo, removidos) {
   const rem = new Set(Array.isArray(removidos) ? removidos : []);
   const extras = remoto.filter(d => d && d.auto === true && d.id && !ids.has(d.id) && !rem.has(d.id));
   if (extras.length) console.log(`[concierge/demandas] ${extras.length} demanda(s) automática(s) preservada(s)`);
+  // Demanda concluída pelo robô de check-in depois que o painel abriu: a cópia
+  // antiga do painel (ainda pendente) não pode reabri-la.
+  const peloRobo = new Map(remoto.filter(d => d && d.concluidaPeloRobo && d.status === 'concluida').map(d => [d.id, d]));
+  if (peloRobo.size) novo = novo.map(d => (d && peloRobo.has(d.id) && d.status !== 'concluida') ? { ...d, status: 'concluida', concluidaPeloRobo: peloRobo.get(d.id).concluidaPeloRobo } : d);
   return extras.length ? [...extras, ...novo] : novo;
 }
 
@@ -7911,6 +7926,75 @@ app.post('/concierge/demandas', async (req, res) => {
     }
   }
 });
+
+// ── Check-in automático (fila do robô da extensão) ─────────────────────
+// O lembrete-voo.js (concierge) grava cada check-in da Azul em
+// concierge/checkin-fila.json no momento do alerta. Quem executa é a extensão
+// do Concierge no Chrome do Davi (a Azul barra acesso vindo de servidor), com a
+// chave X-CDV-Robo. Status: pendente → feito | falhou (desistiu) ; tentativas
+// conta as falhas. GET devolve só o que ainda dá tempo de fazer.
+const CHECKIN_MAX_TENTATIVAS = 3;
+app.get('/concierge/checkin/fila', async (req, res) => {
+  try {
+    const { content } = await getConciergeFile('checkin-fila.json');
+    const agora = Date.now();
+    const lista = (Array.isArray(content) ? content : []).filter(x => x && x.status === 'pendente' &&
+      (!x.partidaEm || Date.parse(x.partidaEm) - agora > 60 * 60 * 1000));
+    res.json({ ok: true, data: lista });
+  } catch (e) {
+    if (e.status === 404) return res.json({ ok: true, data: [] });
+    console.error('[concierge/checkin/fila]', e.message);
+    res.status(500).json({ ok: false, erro: e.message });
+  }
+});
+
+app.post('/concierge/checkin/resultado', async (req, res) => {
+  const { id, ok, erro, cartoes, definitivo } = req.body || {};
+  if (!id) return res.status(400).json({ ok: false, erro: 'id obrigatório' });
+  const agora = new Date().toISOString();
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    try {
+      const { content, sha } = await getConciergeFile('checkin-fila.json');
+      const lista = Array.isArray(content) ? content : [];
+      const item = lista.find(x => x && x.id === id);
+      if (!item) return res.status(404).json({ ok: false, erro: 'item não está na fila' });
+      if (ok) {
+        Object.assign(item, { status: 'feito', feitoEm: agora, cartoes: Number(cartoes) || 0, erro: '' });
+      } else {
+        item.tentativas = (Number(item.tentativas) || 0) + 1;
+        item.erro = String(erro || 'falha sem motivo').slice(0, 300);
+        item.ultimaTentativaEm = agora;
+        if (definitivo || item.tentativas >= CHECKIN_MAX_TENTATIVAS) item.status = 'falhou';
+      }
+      await putConciergeFile('checkin-fila.json', lista, sha);
+      if (ok && item.demandaId) await concluirDemandaRobo(item.demandaId, agora);
+      return res.json({ ok: true, status: item.status, tentativas: item.tentativas || 0 });
+    } catch (e) {
+      if ((e.status === 409 || e.status === 422) && tentativa < 2) continue;
+      console.error('[concierge/checkin/resultado]', e.message);
+      return res.status(500).json({ ok: false, erro: e.message });
+    }
+  }
+});
+
+async function concluirDemandaRobo(demandaId, quando) {
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    try {
+      const { content, sha } = await getConciergeFile('demandas.json');
+      const lista = Array.isArray(content) ? content : [];
+      const d = lista.find(x => x && x.id === demandaId);
+      if (!d || d.status === 'concluida') return;
+      d.status = 'concluida';
+      d.concluidaPeloRobo = quando;
+      await putConciergeFile('demandas.json', lista, sha);
+      return;
+    } catch (e) {
+      if ((e.status === 409 || e.status === 422) && tentativa < 2) continue;
+      console.error('[concierge/checkin] concluir demanda:', e.message);
+      return;
+    }
+  }
+}
 
 // ── Alertas do seats.aero (fila do concierge) ─────────────────────────
 // A aba "Seats.aero" do painel do concierge cadastra os alertas aqui; quem cria
