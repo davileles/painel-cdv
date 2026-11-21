@@ -1395,6 +1395,9 @@ const RL_RE_PATH    = /^\/([a-z]{2,20})\/([0-9A-Za-z]{5})-([A-Z0-9]{2,3})\/?$/;
 const RL_FALLBACK   = process.env.RASTREIO_FALLBACK || 'https://ticapromos.com.br/';
 const RL_FLUSH_MS   = 5 * 60 * 1000;
 const RL_UNICO_MS   = 30 * 60 * 1000;
+// Anti-monitor em MODO OBSERVACAO: so registra quem seria barrado (anti-monitor.js)
+const antiMonitor   = require('./anti-monitor.js');
+antiMonitor.iniciar({ fetch, ghGetJson, ghPutJson });
 const rlCache       = new Map();   // base -> registro {url, enviadoEm, grupos:{suf:{destino}}}
 const rlShards      = new Map();   // dia -> { ts, links }
 const rlUnicos      = new Map();   // hash -> expira
@@ -1451,6 +1454,7 @@ function rlContar(req, base, suf, reg, classe = 'humano') {
   // Nao-humano: registra em 'b' e para por aqui — nao entra em t/u/h.
   if (classe !== 'humano') { c.b = (c.b || 0) + 1; rlDirty = true; return; }
   const rajada = vigiaEhRajada(req, codigo);
+  req._rlRajada = rajada;
   if (rajada) { c.v = (c.v || 0) + 1; vigiaRegistrar('rajada', req, codigo); }
   c.t++;
   const ip = ipDoPedido(req);
@@ -1517,6 +1521,8 @@ const rlTimer = setInterval(rlFlush, RL_FLUSH_MS);
 if (rlTimer.unref) rlTimer.unref();
 
 async function rlHandle(req, res, base, suf) {
+  const t0 = process.hrtime.bigint();
+  const origem = rlCache.has(base) ? 'cache' : 'rede';
   let reg = null;
   try { reg = await rlResolver(base); }
   catch (e) { console.error('[links] resolver', base, e.message); }
@@ -1525,15 +1531,23 @@ async function rlHandle(req, res, base, suf) {
   const destino = rlDestinoValido(g.destino || reg.url);
   if (!destino) return res.redirect(302, RL_FALLBACK);
   // Todo mundo segue para o destino; so a contagem distingue gente de robo.
-  const classe = classificarTrafego(req);
-  try {
-    if (classe !== 'humano') vigiaRegistrar(classe, req, base + '-' + suf);
-    else vigiaRegistrar('humano', req, base + '-' + suf);
-    rlContar(req, base, suf, reg, classe);
-  } catch (e) { console.error('[links] contar', e.message); }
+  // A resposta sai PRIMEIRO; contagem e anti-monitor rodam depois (setImmediate),
+  // para o cliente nunca esperar por elas.
   res.set('Cache-Control', 'no-store');
   res.set('X-Robots-Tag', 'noindex, nofollow');
-  return res.redirect(302, destino);
+  res.redirect(302, destino);
+  try { antiMonitor.registrarLatencia(Number(process.hrtime.bigint() - t0) / 1e6, origem); } catch (e) { /* so medida */ }
+  setImmediate(() => {
+    try {
+      const codigo = base + '-' + suf;
+      const classe = classificarTrafego(req);
+      vigiaRegistrar(classe, req, codigo);
+      rlContar(req, base, suf, reg, classe);
+      const ip = ipDoPedido(req);
+      antiMonitor.observar({ ip, ipHash: vigiaHashIp(ip), ua: req.headers['user-agent'], metodo: req.method,
+        classe, rajada: req._rlRajada === true, codigo, grupo: suf });
+    } catch (e) { console.error('[links] contar', e.message); }
+  });
 }
 
 app.use((req, res, next) => {
@@ -1621,6 +1635,16 @@ app.get('/links-stats', async (req, res) => {
   }
 });
 
+// Anti-monitor (observacao): quem seria barrado se o bloqueio fosse ligado.
+// ?dia=AAAA-MM-DD (padrao hoje) &top=50 (IPs, max 500). IP so em hash.
+app.get('/links/monitor', async (req, res) => {
+  try {
+    const rel = await antiMonitor.relatorio(req.query.dia, parseInt(req.query.top, 10) || 50);
+    res.set('Cache-Control', 'no-store');
+    res.json({ ok: true, ...antiMonitor.estado(), ...rel });
+  } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
 app.post('/links-stats/flush', async (req, res) => {
   try { await rlFlush(); res.json({ ok: true }); }
   catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
@@ -1631,7 +1655,7 @@ app.post('/links-stats/flush', async (req, res) => {
 process.once('SIGTERM', () => {
   const sair = () => process.exit(0);
   const teto = setTimeout(sair, 8000);
-  Promise.allSettled([rlFlush(), flushCliques()]).finally(() => { clearTimeout(teto); sair(); });
+  Promise.allSettled([rlFlush(), flushCliques(), antiMonitor.flush()]).finally(() => { clearTimeout(teto); sair(); });
 });
 
 // Base publica que o painel de gestao exibe/copia. Sai do GG_HOSTS para nao
