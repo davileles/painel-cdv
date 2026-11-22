@@ -1350,6 +1350,43 @@ const GG_HOSTS = new Set(String(process.env.GG_HOSTS ||
 // esta se perdendo por link quebrado.
 const GG_HOME = process.env.GG_HOME || 'https://grupos.ticapromos.com.br/?o=fallback';
 
+// ══ ROTEADOR DO TICO (22/11/2026) ════════════════════════════════════════════
+// ir.ticapromos.com.br/tico[?text=...] → wa.me de um dos numeros do Tico.
+// Motivo: o link wa.me direto para um numero so, divulgado em todos os grupos,
+// derrubou o tico-02 (pico de conversas novas). Quem escolhe o numero e o
+// baileys-server (GET /avisos-preco/rodizio): so numero conectado e com o QR do
+// envio logado, o com mais folga no dia. O cookie tico_c guarda o numero da
+// pessoa: quem ja falou com um Tico volta sempre para ele (se ele estiver no ar).
+// Baileys fora do ar: usa a ultima resposta boa (2 h); sem nada, a pagina dos alertas.
+const TICO_TEXTO_PADRAO = 'Oi, Tico! Quero criar um alerta de preço';
+let ticoUltimo = null;   // { conta, numero, em }
+function ticoCookie(req) {
+  const m = /(?:^|;\s*)tico_c=([a-z0-9_-]{2,24})/i.exec(String(req.headers.cookie || ''));
+  return m ? m[1].toLowerCase() : '';
+}
+app.use(async (req, res, next) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+  if (!GG_HOSTS.has(String(req.hostname || '').toLowerCase())) return next();
+  if (!/^\/tico\/?$/i.test(req.path)) return next();
+  const atual = ticoCookie(req);
+  const preview = classificarTrafego(req) !== 'humano';
+  let r = null;
+  try {
+    const u = GG_BAILEYS + '/avisos-preco/rodizio?atual=' + encodeURIComponent(atual) + (preview ? '&preview=1' : '');
+    const resp = await fetch(u, { timeout: 2500 });
+    const j = await resp.json().catch(() => null);
+    if (j && j.ok && j.numero) { r = j; ticoUltimo = { conta: j.conta, numero: j.numero, em: Date.now() }; }
+  } catch (e) { /* cai no ultimo bom */ }
+  if (!r && ticoUltimo && Date.now() - ticoUltimo.em < 2 * 3600000) r = ticoUltimo;
+  res.set('Cache-Control', 'no-store');
+  if (!r) return res.redirect(302, 'https://ticapromos.com.br/avisos/');
+  const texto = String(req.query.text || req.query.t || TICO_TEXTO_PADRAO).slice(0, 500);
+  if (!preview && r.conta) {
+    res.append('Set-Cookie', 'tico_c=' + r.conta + '; Max-Age=31536000; Path=/; Domain=.ticapromos.com.br; SameSite=Lax; Secure');
+  }
+  return res.redirect(302, 'https://wa.me/' + String(r.numero).replace(/\D/g, '') + '?text=' + encodeURIComponent(texto));
+});
+
 app.use(async (req, res, next) => {
   if (!GG_HOSTS.has(String(req.hostname || '').toLowerCase())) return next();
   if (req.path === '/' || req.path === '') return res.redirect(302, GG_HOME);
