@@ -41,29 +41,66 @@ function somarDiasIso(iso, n) {
   return d.toISOString().slice(0, 10);
 }
 
-// Devolve { registro, motivo } do registro que e a MESMA campanha, ou null.
-// 1) mesma chave + mesmo prazo;
-// 2) campanha registrada ainda vigente (inicio <= hoje <= prazo) — pega o
-//    lembrete com prazo escrito diferente ou sem prazo;
-// 3) oferta sem prazo + mesma chave registrada nos ultimos 5 dias.
-function registroMesmaCampanha(items, chave, prazoIso, hojeIso) {
-  const hoje = hojeIso || hojeIsoSP();
+// Prazo com o ano errado (a IA completou "24/11" com 2024 em nov/2026) nunca
+// casava com o mesmo prazo escrito certo e nem contava como vigente: a mesma
+// campanha saiu de novo (23/11/2026, Livelo → LATAM Pass 27%). Prazo anterior
+// a data de referencia (inicio do registro ou hoje) ganha o primeiro ano em
+// que nao fica antes dela — so quando passou de 60 dias antes (mesmo corte do
+// prazo-ano.js; vencida ha pouco e captura atrasada, nao ano errado).
+function prazoIsoAjustado(prazoIso, refIso) {
+  if (!prazoIso || !refIso || prazoIso >= somarDiasIso(refIso, -60)) return prazoIso || '';
+  const m = prazoIso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return prazoIso;
+  let ano = Number(m[1]);
+  let iso = prazoIso;
+  for (let i = 0; i < 5 && iso < refIso; i++) iso = `${++ano}-${m[2]}-${m[3]}`;
+  return iso;
+}
+
+// Chave do par na direcao contraria (latam_pass→livelo ⇄ livelo→latam_pass).
+// A IA as vezes inverte origem e destino ("entre Livelo e LATAM Pass").
+function chaveInvertida(chave) {
+  const p = String(chave || '').split('→');
+  return p.length === 2 ? `${p[1]}→${p[0]}` : '';
+}
+
+function _mesmaCampanhaNaChave(items, chave, prazoIso, hoje) {
   const daChave = (items || []).filter((h) => h && h.chave === chave);
   if (!daChave.length) return null;
+  const prazoDe = (h) => prazoIsoAjustado(h.prazo, h.dataInicio);
   if (prazoIso) {
-    const igual = daChave.find((h) => h.prazo === prazoIso);
+    const igual = daChave.find((h) => prazoDe(h) === prazoIso);
     if (igual) return { registro: igual, motivo: 'mesmo prazo' };
   }
-  const vigente = daChave.find((h) => h.prazo && h.prazo >= hoje
+  const vigente = daChave.find((h) => h.prazo && prazoDe(h) >= hoje
     && h.dataInicio && h.dataInicio <= hoje
     && (!prazoIso || prazoIso >= h.dataInicio));
   if (vigente) return { registro: vigente, motivo: 'campanha registrada ainda vigente' };
-  if (!prazoIso) {
-    const corte = somarDiasIso(hoje, -JANELA_REENVIO_SEM_PRAZO_DIAS);
-    const recente = daChave.find((h) => h.dataInicio && h.dataInicio >= corte);
-    if (recente) return { registro: recente, motivo: 'registrada há poucos dias (oferta sem prazo)' };
-  }
+  // Registro sem prazo (ou oferta sem prazo) dos ultimos 5 dias. Antes so valia
+  // quando a oferta NOVA nao tinha prazo: o registro sem prazo de uma fonte e a
+  // mesma campanha com prazo de outra fonte viravam duas campanhas.
+  const corte = somarDiasIso(hoje, -JANELA_REENVIO_SEM_PRAZO_DIAS);
+  const recente = daChave.find((h) => h.dataInicio && h.dataInicio >= corte
+    && (!prazoIso || !h.prazo) && (!prazoIso || prazoIso >= h.dataInicio));
+  if (recente) return { registro: recente, motivo: prazoIso ? 'registrada há poucos dias sem prazo' : 'registrada há poucos dias (oferta sem prazo)' };
   return null;
+}
+
+// Devolve { registro, motivo } do registro que e a MESMA campanha, ou null.
+// 1) mesma chave + mesmo prazo (ano corrigido);
+// 2) campanha registrada ainda vigente (inicio <= hoje <= prazo) — pega o
+//    lembrete com prazo escrito diferente ou sem prazo;
+// 3) oferta ou registro sem prazo + mesma chave registrada nos ultimos 5 dias;
+// 4) as mesmas regras no par invertido (origem/destino trocados pela IA).
+function registroMesmaCampanha(items, chave, prazoIso, hojeIso) {
+  const hoje = hojeIso || hojeIsoSP();
+  const prazo = prazoIsoAjustado(prazoIso, hoje);
+  const m = _mesmaCampanhaNaChave(items, chave, prazo, hoje);
+  if (m) return m;
+  const inv = chaveInvertida(chave);
+  if (!inv || inv === chave) return null;
+  const mi = _mesmaCampanhaNaChave(items, inv, prazo, hoje);
+  return mi ? { registro: mi.registro, motivo: mi.motivo + ' (origem e destino invertidos)', invertida: true } : null;
 }
 
 function periodoHistorico(h) {
@@ -204,5 +241,6 @@ module.exports = {
   chaveHistorico,
   prazoParaIso,
   registroMesmaCampanha,
+  prazoIsoAjustado,
   situacaoHistoricoTransferencia,
 };

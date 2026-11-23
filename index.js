@@ -2678,8 +2678,9 @@ async function atualizarHistoricoTransferencia(item) {
   const origensReg = transfHist.origensDaOferta(item);
   if (!origensReg.length) return;
 
-  const prazoIso = prazoParaIso(item.prazo);
   const dataInicio = (item.publicadoEm ? item.publicadoEm.slice(0, 10) : new Date().toISOString().slice(0, 10));
+  // Ano errado no prazo (IA completou "24/11" com 2024) nao vai para o historico.
+  const prazoIso = transfHist.prazoIsoAjustado(prazoParaIso(item.prazo), dataInicio) || null;
 
   const hist = await ghGetJson(HISTORICO_TRANSFERENCIAS_PATH, {
     geradoEm: null,
