@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-11-23T18:02:44.353Z",
+  "coletadoEm": "2026-11-23T19:02:42.101Z",
   "items": {
     "agaxturcruzeiros": {
       "id": "AGX",
@@ -576,6 +576,18 @@
       "parityClub": 3,
       "parityBau": 1,
       "campanha": "PROMOTION"
+    },
+    "mondaine": {
+      "id": "MDN",
+      "nome": "Mondaine",
+      "categorias": null,
+      "legalTerms": "Campanha válida de 23 a 27/11/2026. Ganhe 10 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo em produtos selecionados; 8 pontos por real demais clientes na lista selecionada e 2 pontos por real demais itens. Consulte o regulamento.",
+      "dateStart": "2026-11-23",
+      "dateEnd": "2026-11-27",
+      "parity": 8,
+      "parityClub": 10,
+      "parityBau": 2,
+      "campanha": "PROMOTION_CLUB"
     },
     "montecarlo": {
       "id": "MCV",
