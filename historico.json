@@ -983331,14 +983331,6 @@
         "inter": "https://shopping.inter.co/gift-card/mcdonalds-2913"
       }
     },
-    "mobills": {
-      "programs": {
-        "livelo": {
-          "pts": 10,
-          "dollar": false
-        }
-      }
-    },
     "mondaine": {
       "programs": {
         "livelo": {
@@ -986019,7 +986011,7 @@
           "slug": "cupom-kabum",
           "categorias": [
             {
-              "categoria": "Todos os produtos vendidos, produzidos e entregues por KaBuM!",
+              "categoria": "Todos os produtos produzidos, vendidos e entregues por KaBuM!",
               "pts": 10,
               "principal": false
             },
@@ -986188,14 +986180,6 @@
       }
     },
     "mapfre seguro auto": {
-      "programs": {
-        "livelo": {
-          "pts": 1,
-          "dollar": false
-        }
-      }
-    },
-    "maxracer": {
       "programs": {
         "livelo": {
           "pts": 1,
@@ -987534,10 +987518,23 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 4,
+          "pts": 12,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-madeiramadeira"
+          "ate": true,
+          "slug": "cupom-madeiramadeira",
+          "categorias": [
+            {
+              "categoria": "Seleção Black de móveis",
+              "pts": 12,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 4,
+              "principal": true
+            }
+          ],
+          "ptsBase": 4
         }
       },
       "links": {
