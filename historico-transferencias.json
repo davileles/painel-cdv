@@ -4,34 +4,6 @@
   "regrasDedup": "Duas ofertas com a mesma chave origem→destino e o MESMO prazo de encerramento são consideradas a mesma campanha (ex: reenvio/lembrete) e não geram novo registro — apenas anexam o ofertaId ao registro existente. Prazo diferente = campanha nova = novo registro.",
   "items": [
     {
-      "chave": "latam_pass→livelo",
-      "origem": "LATAM Pass",
-      "destino": "Livelo",
-      "origemTipo": "especifica",
-      "bonusMax": 27,
-      "tipoBonus": "percentual_direto",
-      "dataInicio": "2026-11-23",
-      "prazo": "2026-11-24",
-      "ofertaIds": [
-        "nw9isl"
-      ],
-      "observacao": ""
-    },
-    {
-      "chave": "latam_pass→livelo",
-      "origem": "LATAM Pass",
-      "destino": "Livelo",
-      "origemTipo": "especifica",
-      "bonusMax": 27,
-      "tipoBonus": "percentual_direto",
-      "dataInicio": "2026-11-23",
-      "prazo": "",
-      "ofertaIds": [
-        "xjeing"
-      ],
-      "observacao": ""
-    },
-    {
       "chave": "livelo→latam_pass",
       "origem": "Livelo",
       "destino": "LATAM Pass",
@@ -41,24 +13,13 @@
       "dataInicio": "2026-11-23",
       "prazo": "2026-11-24",
       "ofertaIds": [
+        "nw9isl",
+        "xjeing",
         "nophe4",
-        "wtmf5s"
-      ],
-      "observacao": ""
-    },
-    {
-      "chave": "livelo→latam_pass",
-      "origem": "Livelo",
-      "destino": "LATAM Pass",
-      "origemTipo": "especifica",
-      "bonusMax": 27,
-      "tipoBonus": "percentual_direto",
-      "dataInicio": "2026-11-23",
-      "prazo": "2024-11-24",
-      "ofertaIds": [
+        "wtmf5s",
         "1rs5tam"
       ],
-      "observacao": ""
+      "observacao": "Juntado em 23/11/2026: a mesma campanha tinha sido registrada 4 vezes (prazo com ano errado e origem/destino invertidos)"
     },
     {
       "chave": "livelo→smiles",
