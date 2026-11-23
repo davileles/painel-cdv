@@ -983078,6 +983078,44 @@
         }
       }
     },
+    "insider store": {
+      "programs": {
+        "livelo": {
+          "pts": 17,
+          "dollar": false
+        },
+        "esfera": {
+          "pts": 14,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 1,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 7,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-insider-store",
+          "categorias": [
+            {
+              "categoria": "Compra de produtos com uso de cupom Méliuz ou sem o uso de cupom",
+              "pts": 7,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1.5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1.5
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-insider-store"
+      }
+    },
     "ciclic seguro viagem": {
       "programs": {
         "livelo": {
@@ -983153,44 +983191,6 @@
           "pts": 6,
           "dollar": true
         }
-      }
-    },
-    "insider store": {
-      "programs": {
-        "livelo": {
-          "pts": 14,
-          "dollar": false
-        },
-        "esfera": {
-          "pts": 14,
-          "dollar": false
-        },
-        "azul": {
-          "pts": 1,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 7,
-          "dollar": false,
-          "ate": true,
-          "slug": "cupom-insider-store",
-          "categorias": [
-            {
-              "categoria": "Compra de produtos com uso de cupom Méliuz ou sem o uso de cupom",
-              "pts": 7,
-              "principal": false
-            },
-            {
-              "categoria": "Demais categorias",
-              "pts": 1.5,
-              "principal": true
-            }
-          ],
-          "ptsBase": 1.5
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-insider-store"
       }
     },
     "bulbe energia": {
@@ -983315,6 +983315,22 @@
         }
       }
     },
+    "mcdonald's": {
+      "programs": {
+        "livelo": {
+          "pts": 10,
+          "dollar": false
+        },
+        "inter": {
+          "pts": 2,
+          "dollar": false,
+          "slug": "mcdonalds-2913"
+        }
+      },
+      "links": {
+        "inter": "https://shopping.inter.co/gift-card/mcdonalds-2913"
+      }
+    },
     "mobills": {
       "programs": {
         "livelo": {
@@ -983413,7 +983429,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 6,
+          "pts": 1,
           "dollar": false
         },
         "meliuz": {
@@ -983642,7 +983658,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 7,
+          "pts": 1,
           "dollar": false
         }
       }
@@ -984010,7 +984026,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 4,
+          "pts": 1,
           "dollar": false
         },
         "meliuz": {
@@ -984113,6 +984129,10 @@
       "programs": {
         "livelo": {
           "pts": 4,
+          "dollar": false
+        },
+        "esfera": {
+          "pts": 15,
           "dollar": false
         }
       }
@@ -984483,21 +984503,8 @@
         "meliuz": {
           "pts": 14,
           "dollar": false,
-          "ate": true,
-          "slug": "cupom-riachuelo",
-          "categorias": [
-            {
-              "categoria": "Feminino",
-              "pts": 15,
-              "principal": false
-            },
-            {
-              "categoria": "Demais categorias",
-              "pts": 14,
-              "principal": true
-            }
-          ],
-          "ptsBase": 14
+          "ate": false,
+          "slug": "cupom-riachuelo"
         }
       },
       "links": {
@@ -984792,7 +984799,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 5,
+          "pts": 2,
           "dollar": false
         },
         "smiles": {
@@ -986000,7 +986007,7 @@
           "slug": "cupom-kabum",
           "categorias": [
             {
-              "categoria": "Ar e Ventilação produzidos, vendidos e entregues por KaBuM!, Áudio - 2P, Celular e Smartphone 2P, Computadores produzidos, vendidos e entregues por KaBuM!, Eletrodomésticos produzidos, vendidos e entregues por KaBuM!, Eletroportáteis produzidos, vendidos e entregues por KaBuM!, Escritório produzidos, vendidos e entregues por KaBuM!, Espaço Gamer produzidos, vendidos e entregues por KaBuM!, Games - Produzidos, vendidos e entregues por KaBuM!, Hardware produzidos, vendidos e entregues por KaBuM!, Monitores produzidos, vendidos e entregues por KaBuM!, Notebook produzidos, vendidos e entregues por KaBuM!, PC produzidos, vendidos e entregues por KaBuM! e Periféricos produzidos, vendidos e entregues por KaBuM!",
+              "categoria": "Todos os produtos vendidos, produzidos e entregues por KaBuM!",
               "pts": 10,
               "principal": false
             },
@@ -986212,7 +986219,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 8,
+          "pts": 1,
           "dollar": false
         },
         "meliuz": {
@@ -986673,40 +986680,6 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/polishop"
-      }
-    },
-    "oqvestir": {
-      "programs": {
-        "esfera": {
-          "pts": 6,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 2,
-          "dollar": false,
-          "ate": false,
-          "slug": "cupom-oqvestir"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-oqvestir"
-      }
-    },
-    "shop2gether": {
-      "programs": {
-        "esfera": {
-          "pts": 6,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 2,
-          "dollar": false,
-          "ate": false,
-          "slug": "cupom-shop2gether"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-shop2gether"
       }
     },
     "adidas": {
@@ -987576,6 +987549,23 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-magicfeet"
       }
     },
+    "oqvestir": {
+      "programs": {
+        "esfera": {
+          "pts": 1,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-oqvestir"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-oqvestir"
+      }
+    },
     "pague menos": {
       "programs": {
         "esfera": {
@@ -987689,6 +987679,23 @@
       },
       "links": {
         "inter": "https://shopping.inter.co/gift-card/schutz-1678"
+      }
+    },
+    "shop2gether": {
+      "programs": {
+        "esfera": {
+          "pts": 1,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 2,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-shop2gether"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-shop2gether"
       }
     },
     "stanley": {
@@ -988617,18 +988624,6 @@
       },
       "links": {
         "inter": "https://shopping.inter.co/gift-card/perfect-world-161"
-      }
-    },
-    "mcdonald's": {
-      "programs": {
-        "inter": {
-          "pts": 2,
-          "dollar": false,
-          "slug": "mcdonalds-2913"
-        }
-      },
-      "links": {
-        "inter": "https://shopping.inter.co/gift-card/mcdonalds-2913"
       }
     },
     "cupom petz": {
