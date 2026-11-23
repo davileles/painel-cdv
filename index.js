@@ -5422,8 +5422,16 @@ function chavesExcecao(base, excecoes) {
 // Cache de 30 min; uma chamada ao baileys por grupo, com pausa entre elas.
 let _acompConcierge = null;
 let _acompConciergeEmVoo = null;
-async function membrosGruposConcierge(jids) {
+// rapido (23/11/2026): a consulta da inclusão (/cdv/inclusao/consultar), que
+// segura a resposta do Tico no WhatsApp, não espera a releitura (~30 s, uma
+// chamada por grupo): com cache vencido devolve o que tem e relê por trás. A
+// auditoria/remoção continua esperando a leitura fresca.
+async function membrosGruposConcierge(jids, { rapido = false } = {}) {
   if (_acompConcierge && Date.now() - _acompConcierge.em < 30 * 60 * 1000) return _acompConcierge.porJid;
+  if (rapido && _acompConcierge) {
+    if (!_acompConciergeEmVoo) membrosGruposConcierge(jids).catch(e => console.warn('[concierge] acompanhantes (releitura):', e.message));
+    return _acompConcierge.porJid;
+  }
   if (_acompConciergeEmVoo) return _acompConciergeEmVoo;
   _acompConciergeEmVoo = (async () => {
     const nomes = new Map();
@@ -5448,7 +5456,7 @@ async function membrosGruposConcierge(jids) {
   })().finally(() => { _acompConciergeEmVoo = null; });
   return _acompConciergeEmVoo;
 }
-async function acompanhantesConcierge(clientes) {
+async function acompanhantesConcierge(clientes, opcoes = {}) {
   const lista = Array.isArray(clientes) ? clientes : [];
   const porGrupo = new Map();
   for (const c of lista) if (c && String(c.grupo || '').endsWith('g.us')) {
@@ -5456,7 +5464,7 @@ async function acompanhantesConcierge(clientes) {
   }
   if (!porGrupo.size) return [];
   let membros;
-  try { membros = await membrosGruposConcierge([...porGrupo.keys()]); } catch (e) { console.warn('[concierge] acompanhantes:', e.message); return []; }
+  try { membros = await membrosGruposConcierge([...porGrupo.keys()], opcoes); } catch (e) { console.warn('[concierge] acompanhantes:', e.message); return []; }
   const jaCliente = new Set(lista.map(c => hublaAuditoria.chaveTelefone(c && c.tel)).filter(Boolean));
   const out = [];
   const vistos = new Set();
@@ -5475,12 +5483,15 @@ async function acompanhantesConcierge(clientes) {
   }
   return out;
 }
-async function clientesConciergeComAcompanhantes() {
+async function clientesConciergeComAcompanhantes(opcoes = {}) {
   let clientes = [];
   try { clientes = (await getConciergeFile('clientes.json')).content || []; } catch (e) { return []; }
   if (!Array.isArray(clientes)) return [];
-  return clientes.concat(await acompanhantesConcierge(clientes));
+  return clientes.concat(await acompanhantesConcierge(clientes, opcoes));
 }
+// Aquece o cache dos acompanhantes depois do boot, para a 1ª consulta da
+// inclusão (resposta do Tico) não pagar a leitura inteira.
+setTimeout(() => { clientesConciergeComAcompanhantes().catch(() => {}); }, 90 * 1000).unref?.();
 async function montarAuditoriaGrupos({ forcar = false, gruposRegras, tempos } = {}) {
   const bruto = await coletarGruposCdv(forcar);
   const [{ data: hubla }, exc, { data: rem }] = await Promise.all([ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}), lerExcecoesPainel(),
@@ -5586,7 +5597,7 @@ async function direitoInclusao({ telefone, email }) {
   const regras = hublaAss.gruposAcesso();
   const grupos = lista.filter(g => regras.mapeados.has(g.jid));
   const [{ data: hubla }, exc] = await Promise.all([ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {}), lerExcecoesPainel()]);
-  const clientes = await clientesConciergeComAcompanhantes();
+  const clientes = await clientesConciergeComAcompanhantes({ rapido: true });
   const extras = ajusteTelefones(exc.ajustes);
   const e = _emailNorm(email);
   if (e) { const l = extras.get(e) || []; l.push(String(telefone)); extras.set(e, l); }
