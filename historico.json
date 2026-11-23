@@ -983360,7 +983360,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 4,
+          "pts": 12,
           "dollar": false
         },
         "meliuz": {
@@ -983453,7 +983453,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 5,
+          "pts": 6,
           "dollar": false
         },
         "inter": {
@@ -983700,7 +983700,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 4,
+          "pts": 5,
           "dollar": false
         },
         "meliuz": {
@@ -983955,7 +983955,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 1,
+          "pts": 3,
           "dollar": false
         },
         "inter": {
@@ -983990,7 +983990,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 1,
+          "pts": 4,
           "dollar": false
         },
         "meliuz": {
@@ -984270,6 +984270,14 @@
       }
     },
     "civitatis": {
+      "programs": {
+        "livelo": {
+          "pts": 3,
+          "dollar": false
+        }
+      }
+    },
+    "farmácia pague menos": {
       "programs": {
         "livelo": {
           "pts": 3,
@@ -984626,7 +984634,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 1,
+          "pts": 6,
           "dollar": false
         },
         "meliuz": {
@@ -985099,7 +985107,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 1,
+          "pts": 6,
           "dollar": false
         },
         "meliuz": {
@@ -985388,7 +985396,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 2,
+          "pts": 8,
           "dollar": false
         },
         "azul": {
@@ -986008,7 +986016,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 1,
+          "pts": 6,
           "dollar": false
         },
         "meliuz": {
@@ -986050,7 +986058,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 1,
+          "pts": 6,
           "dollar": false
         }
       }
@@ -986062,7 +986070,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 1,
+          "pts": 6,
           "dollar": false
         }
       }
@@ -986474,7 +986482,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 6,
+          "pts": 5,
           "dollar": false
         },
         "inter": {
@@ -986629,6 +986637,23 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-shop2gether"
       }
     },
+    "adidas": {
+      "programs": {
+        "esfera": {
+          "pts": 5,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 12,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-adidas"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-adidas"
+      }
+    },
     "jo malone": {
       "programs": {
         "esfera": {
@@ -986657,7 +986682,7 @@
     "trussardi": {
       "programs": {
         "esfera": {
-          "pts": 4,
+          "pts": 5,
           "dollar": false
         },
         "meliuz": {
@@ -986669,23 +986694,6 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/trussardi"
-      }
-    },
-    "adidas": {
-      "programs": {
-        "esfera": {
-          "pts": 3,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 12,
-          "dollar": false,
-          "ate": false,
-          "slug": "cupom-adidas"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-adidas"
       }
     },
     "elens": {
