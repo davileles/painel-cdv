@@ -25,6 +25,25 @@ function textoDataHoje(agora) {
     + '. Quando a origem trouxer data sem ano (ex.: "02 de dezembro"), use o ano em que essa data ainda não passou.';
 }
 
+const MESES_PT = ['janeiro', 'fevereiro', 'marco', 'abril', 'maio', 'junho', 'julho',
+  'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+
+// O ano esta escrito na origem colado nesta data? Aceita 24/11/2024, 24-11-24,
+// 24.11.2024, "24 de novembro de 2024", "24 nov 2024" e "novembro de 2024".
+function anoEscritoNaData(origem, dia, mes, ano) {
+  const t = String(origem || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  if (!t) return false;
+  const a4 = String(ano), a2 = a4.slice(2);
+  const d = '0?' + dia, m = '0?' + mes;
+  const nome = MESES_PT[mes - 1], abrev = nome.slice(0, 3);
+  const res = [
+    `\\b${d}\\s*[/.-]\\s*${m}\\s*[/.-]\\s*(?:${a4}|${a2})\\b`,
+    `\\b${d}\\s*(?:de\\s*)?(?:${nome}|${abrev})\\.?\\s*(?:de\\s*)?${a4}\\b`,
+    `\\b(?:${nome}|${abrev})\\.?\\s*(?:de\\s*)?${a4}\\b`,
+  ];
+  return res.some((r) => new RegExp(r).test(t));
+}
+
 function corrigirAnoPrazo(prazo, textoOrigem, agora) {
   const s = String(prazo || '');
   if (!s) return s;
@@ -41,12 +60,14 @@ function corrigirAnoPrazo(prazo, textoOrigem, agora) {
     // de ano (meses no passado) e corrigido.
     const diasPassados = (Date.UTC(h.ano, h.mes - 1, h.dia) - Date.UTC(ano, mes - 1, dia)) / 864e5;
     if (diasPassados <= 60) return tudo;
-    // Ano escrito na origem: vencida de verdade, nao mexe.
-    if (new RegExp('\\b' + ano + '\\b').test(origem)) return tudo;
+    // Ano escrito na origem JUNTO da data: vencida de verdade, nao mexe.
+    // Antes bastava o ano aparecer em qualquer lugar do texto (ex. "como em
+    // 2024, a Livelo...") e o "24/11/2024" chutado pela IA passava (23/11/2026).
+    if (anoEscritoNaData(origem, dia, mes, ano)) return tudo;
     let novo = h.ano;
     if (novo * 10000 + mes * 100 + dia < hojeNum) novo += 1;
     return dd + '/' + mm + '/' + novo;
   });
 }
 
-module.exports = { hojeSP, textoDataHoje, corrigirAnoPrazo };
+module.exports = { hojeSP, textoDataHoje, corrigirAnoPrazo, anoEscritoNaData };
