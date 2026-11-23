@@ -8933,6 +8933,13 @@ require('./teste-android').registrar(app, {
   hublaArquivo: async () => (await ghGetJson(hublaAss.ARQUIVO_HUBLA_ASSINATURAS, {})).data,
 });
 
+// ── Anexos das reservas → pasta de documentos do roteiro (roteiro-anexos.js, desde 23/11/2026) ──
+// Vouchers/bilhetes das reservas ligadas à viagem vão para <_slug>/docs do repo roteiros
+// (público). Rodada a cada 30 min + POST /concierge/roteiro/anexos + depois de /roteiros/publicar.
+const roteiroAnexos = require('./roteiro-anexos').registrar(app, {
+  fetch, GITHUB_TOKEN, getConciergeFile, CONCIERGE_DADOS_REPO, CONCIERGE_PASTA,
+});
+
 // ── Notas fiscais (NFS-e Nacional, desde 18/11/2026; notas-fiscais.js + nfse.js) ──
 // Vendas pagas na Hubla viram NFS-e no Emissor Nacional ao fim dos 7 dias de
 // desistência. Certificado A1 em NFSE_CERT_PFX/NFSE_CERT_SENHA. Aba Notas fiscais do gestor.
@@ -10420,6 +10427,11 @@ app.post('/roteiros/publicar', async (req, res) => {
           viagens[idx].urlRoteiro  = url;
           viagens[idx].roteiroPubEm = new Date().toISOString().split('T')[0];
           await putConciergeFile('viagens.json', viagens, viagensSha);
+          // Leva os anexos das reservas da viagem para a pasta de documentos (segundo plano)
+          setTimeout(() => {
+            roteiroAnexos.sincronizar({ viagemId, forcar: true })
+              .catch(e => console.warn('[roteiros/publicar] anexos:', e.message));
+          }, 5000);
         }
       } catch(e) {
         console.warn('[roteiros/publicar] Aviso: não atualizou viagem no concierge:', e.message);

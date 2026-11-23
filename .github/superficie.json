@@ -392,6 +392,13 @@
         "async function emitir(",
         "async function cancelar("
       ]
+    },
+    "roteiro-anexos.js": {
+      "minLinhas": 200,
+      "obrigatorio": [
+        "app.post('/concierge/roteiro/anexos'",
+        "async function sincronizarViagem("
+      ]
     }
   }
 }
