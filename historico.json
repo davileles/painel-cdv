@@ -989991,7 +989991,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 1,
+          "pts": 4,
           "dollar": false
         },
         "meliuz": {
@@ -992806,10 +992806,23 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 8,
+          "pts": 15,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-adidas"
+          "ate": true,
+          "slug": "cupom-adidas",
+          "categorias": [
+            {
+              "categoria": "Todos calçados de corrida",
+              "pts": 15,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 3,
+              "principal": true
+            }
+          ],
+          "ptsBase": 3
         }
       },
       "links": {
