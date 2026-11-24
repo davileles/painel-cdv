@@ -136,7 +136,7 @@ app.use(express.json({ limit: '20mb' }));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSP-Token, X-CDV-Env, X-CDV-Op, X-CDV-Auth, X-CDV-Servico, X-CDV-Robo, X-CDV-Portal, X-CDV-Membro, X-CDV-Roteiros, X-CDV-Balcao');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();

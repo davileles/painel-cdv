@@ -18,7 +18,8 @@
 //  Nunca copia duas vezes: cada anexo copiado entra em docs-meta._importados
 //  (<RES-id>_<n>:<sha>). Arquivo removido na página não volta; cartão removido
 //  na página (_deletedCards) não recebe mais anexos. Anexo trocado na reserva
-//  (sha novo) é copiado de novo.
+//  (sha novo) é copiado de novo. Reserva com anexosNoRoteiro:false (chave
+//  desmarcada na Nova Reserva) não manda arquivo para o roteiro.
 //
 //  Quando roda: a cada 30 min para todas as viagens com roteiro (só lê página e
 //  docs-meta se o conjunto de anexos mudou desde a última rodada), logo depois
@@ -180,6 +181,7 @@ function registrar(app, { fetch, GITHUB_TOKEN, getConciergeFile, CONCIERGE_DADOS
     const itens = [];
     for (const id of ids) {
       const r = reservasPorId.get(id);
+      if (r && r.anexosNoRoteiro === false) continue; // desmarcado na Nova Reserva do concierge
       for (const an of anexosPorReserva[String(id).replace(/[^a-zA-Z0-9\-_]/g, '')] || []) {
         itens.push({ reserva: r || { id, tipo: '' }, ...an, chave: `${id}_${an.idx}:${String(an.sha).slice(0, 10)}` });
       }
