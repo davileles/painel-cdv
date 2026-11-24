@@ -10542,180 +10542,163 @@ app.get('/roteiros/dados', async (req, res) => {
 
 
 // ══════════════════════════════════════════════════════════════
-//  POST /roteiros/doc-upload
-//  Body: { slug, docId, nome, tipo, base64, mediaType }
-//  Salva o arquivo em davileles/roteiros/{slug}/docs/{docId}
-//  e atualiza docs-meta.json com metadados
+//  Pasta de documentos dos roteiros (páginas públicas no repo de roteiros)
+//  POST   /roteiros/doc-upload  { slug, docId, nome, tipo, base64, mediaType }
+//  DELETE /roteiros/doc-upload  { slug, docId }
+//  GET    /roteiros/doc-upload?slug=xxx  → docs-meta.json
+//  POST   /roteiros/doc-meta    { slug, meta }  (só _deletedCards/_extraCards)
+//
+//  Desde 24/11/2026 toda gravação de um mesmo roteiro passa por uma fila
+//  (uma por vez) e o docs-meta.json é relido e regravado com nova tentativa
+//  em conflito. Antes, apagar vários arquivos em sequência fazia as
+//  gravações do docs-meta brigarem pelo SHA: o arquivo sumia, mas só uma
+//  remoção chegava ao docs-meta e as outras "voltavam" ao recarregar.
 // ══════════════════════════════════════════════════════════════
+const ROTEIROS_DOCS_REPO = 'davileles/roteiros';
+const _filaDocsRoteiro = new Map(); // slug → Promise
+
+function _ghRoteirosHeaders(extra) {
+  return Object.assign({
+    'Authorization': `token ${GITHUB_TOKEN}`,
+    'User-Agent': 'cdv-proxy',
+    'Accept': 'application/vnd.github+json',
+    'Content-Type': 'application/json'
+  }, extra || {});
+}
+
+function _slugDocsValido(slug) {
+  return typeof slug === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9\-_\/]{0,120}$/.test(slug) && !slug.includes('..');
+}
+
+// Executa fn() na fila do slug (uma operação por vez por roteiro).
+function _naFilaDocs(slug, fn) {
+  const anterior = _filaDocsRoteiro.get(slug) || Promise.resolve();
+  const atual = anterior.catch(() => {}).then(fn);
+  const guarda = atual.catch(() => {});
+  _filaDocsRoteiro.set(slug, guarda);
+  guarda.then(() => { if (_filaDocsRoteiro.get(slug) === guarda) _filaDocsRoteiro.delete(slug); });
+  return atual;
+}
+
+const _esperaMs = ms => new Promise(r => setTimeout(r, ms));
+
+async function _lerDocsMeta(slug) {
+  const r = await fetch(`https://api.github.com/repos/${ROTEIROS_DOCS_REPO}/contents/${slug}/docs-meta.json?ref=main&_=${Date.now()}`,
+    { headers: _ghRoteirosHeaders({ 'Cache-Control': 'no-cache' }) });
+  if (r.status === 404) return { meta: {}, sha: null };
+  if (!r.ok) { const e = new Error(`leitura do docs-meta (${r.status})`); e.status = r.status; throw e; }
+  const d = await r.json();
+  let meta = {};
+  try { meta = JSON.parse(Buffer.from(String(d.content || '').replace(/\n/g, ''), 'base64').toString('utf-8')) || {}; } catch (e) { meta = {}; }
+  return { meta, sha: d.sha };
+}
+
+// Relê o docs-meta, aplica alterar(meta) e grava; em conflito (409/422) tenta de novo.
+async function _alterarDocsMeta(slug, alterar, mensagem) {
+  let ultimoErro;
+  for (let t = 0; t < 6; t++) {
+    const { meta, sha } = await _lerDocsMeta(slug);
+    const novo = alterar(meta) || meta;
+    const r = await fetch(`https://api.github.com/repos/${ROTEIROS_DOCS_REPO}/contents/${slug}/docs-meta.json`, {
+      method: 'PUT', headers: _ghRoteirosHeaders(),
+      body: JSON.stringify({ message: mensagem || `doc-meta: ${slug}`, content: Buffer.from(JSON.stringify(novo, null, 2)).toString('base64'), ...(sha ? { sha } : {}) })
+    });
+    if (r.ok) return novo;
+    ultimoErro = new Error(`gravação do docs-meta (${r.status}) ${(await r.text()).slice(0, 160)}`);
+    if (r.status !== 409 && r.status !== 422) throw ultimoErro;
+    await _esperaMs(400 * (t + 1) + Math.floor(Math.random() * 300));
+  }
+  throw ultimoErro;
+}
+
+// PUT/DELETE de um arquivo com SHA fresco e nova tentativa em conflito.
+async function _gravarArquivoRoteiro(caminho, { base64, apagar }, mensagem) {
+  const url = `https://api.github.com/repos/${ROTEIROS_DOCS_REPO}/contents/${caminho}`;
+  let ultimoErro;
+  for (let t = 0; t < 5; t++) {
+    let sha;
+    const chk = await fetch(`${url}?ref=main&_=${Date.now()}`, { headers: _ghRoteirosHeaders({ 'Cache-Control': 'no-cache' }) });
+    if (chk.ok) { const d = await chk.json(); sha = d.sha; }
+    if (apagar && !sha) return false; // já não existe
+    const r = await fetch(url, {
+      method: apagar ? 'DELETE' : 'PUT', headers: _ghRoteirosHeaders(),
+      body: JSON.stringify(apagar ? { message: mensagem, sha } : { message: mensagem, content: base64, ...(sha ? { sha } : {}) })
+    });
+    if (r.ok) return true;
+    if (apagar && r.status === 404) return false;
+    ultimoErro = new Error(`${apagar ? 'remoção' : 'gravação'} de ${caminho} (${r.status}) ${(await r.text()).slice(0, 160)}`);
+    if (r.status !== 409 && r.status !== 422) throw ultimoErro;
+    await _esperaMs(400 * (t + 1) + Math.floor(Math.random() * 300));
+  }
+  throw ultimoErro;
+}
+
 app.post('/roteiros/doc-upload', async (req, res) => {
   try {
-    const { slug, docId, nome, tipo, base64: fileB64, mediaType } = req.body;
+    const { slug, docId, nome, tipo, base64: fileB64, mediaType } = req.body || {};
     if (!slug || !docId || !fileB64) return res.status(400).json({ ok: false, erro: 'Parâmetros incompletos' });
-
-    const ROTEIROS_REPO = 'davileles/roteiros';
-    const GH = 'https://api.github.com';
-    const headers = {
-      'Authorization': `token ${GITHUB_TOKEN}`,
-      'User-Agent': 'cdv-proxy',
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json'
-    };
-
-    // 1. Salvar arquivo binário
+    if (!_slugDocsValido(slug) || !/^[\w.\-]{1,160}$/.test(docId)) return res.status(400).json({ ok: false, erro: 'Parâmetros inválidos' });
     const filePath = `${slug}/docs/${docId}`;
-    let fileSha;
-    try {
-      const checkRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${filePath}`, { headers });
-      if (checkRes.ok) { const d = await checkRes.json(); fileSha = d.sha; }
-    } catch(e) {}
-
-    const filePayload = { message: `doc: ${slug}/${docId}`, content: fileB64, ...(fileSha ? { sha: fileSha } : {}) };
-    const fileRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${filePath}`, {
-      method: 'PUT', headers, body: JSON.stringify(filePayload)
+    await _naFilaDocs(slug, async () => {
+      await _gravarArquivoRoteiro(filePath, { base64: fileB64 }, `doc: ${slug}/${docId}`);
+      await _alterarDocsMeta(slug, meta => {
+        meta[docId] = { nome: nome || docId, tipo: tipo || '', mediaType: mediaType || 'application/octet-stream', uploadEm: new Date().toISOString() };
+        return meta;
+      }, `doc-meta: ${slug}`);
     });
-    if (!fileRes.ok) throw new Error('Erro ao salvar arquivo: ' + (await fileRes.text()));
-
-    // 2. Atualizar docs-meta.json
-    const metaPath = `${slug}/docs-meta.json`;
-    let meta = {}, metaSha;
-    try {
-      const metaRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${metaPath}`, { headers });
-      if (metaRes.ok) {
-        const d = await metaRes.json();
-        metaSha = d.sha;
-        meta = JSON.parse(Buffer.from(d.content.replace(/\n/g,''), 'base64').toString('utf-8'));
-      }
-    } catch(e) {}
-
-    meta[docId] = { nome: nome||docId, tipo: tipo||'', mediaType: mediaType||'application/octet-stream', uploadEm: new Date().toISOString() };
-    const metaB64 = Buffer.from(JSON.stringify(meta, null, 2)).toString('base64');
-    const metaPayload = { message: `doc-meta: ${slug}`, content: metaB64, ...(metaSha ? { sha: metaSha } : {}) };
-    await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${metaPath}`, {
-      method: 'PUT', headers, body: JSON.stringify(metaPayload)
-    });
-
-    const rawUrl = `https://raw.githubusercontent.com/${ROTEIROS_REPO}/main/${filePath}`;
-    res.json({ ok: true, rawUrl, docId });
-  } catch(e) {
+    res.json({ ok: true, rawUrl: `https://raw.githubusercontent.com/${ROTEIROS_DOCS_REPO}/main/${filePath}`, docId });
+  } catch (e) {
+    console.error('[roteiros/doc-upload]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
 
-// ══════════════════════════════════════════════════════════════
-//  DELETE /roteiros/doc-upload
-//  Body: { slug, docId }
-//  Remove o arquivo e atualiza docs-meta.json
-// ══════════════════════════════════════════════════════════════
 app.delete('/roteiros/doc-upload', async (req, res) => {
   try {
-    const { slug, docId } = req.body;
+    const { slug, docId } = req.body || {};
     if (!slug || !docId) return res.status(400).json({ ok: false, erro: 'Parâmetros incompletos' });
-
-    const ROTEIROS_REPO = 'davileles/roteiros';
-    const GH = 'https://api.github.com';
-    const headers = {
-      'Authorization': `token ${GITHUB_TOKEN}`,
-      'User-Agent': 'cdv-proxy',
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json'
-    };
-
-    // Deletar arquivo
-    const filePath = `${slug}/docs/${docId}`;
-    try {
-      const checkRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${filePath}`, { headers });
-      if (checkRes.ok) {
-        const d = await checkRes.json();
-        await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${filePath}`, {
-          method: 'DELETE', headers,
-          body: JSON.stringify({ message: `doc-remove: ${slug}/${docId}`, sha: d.sha })
-        });
-      }
-    } catch(e) {}
-
-    // Atualizar meta
-    const metaPath = `${slug}/docs-meta.json`;
-    let meta = {}, metaSha;
-    try {
-      const metaRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${metaPath}`, { headers });
-      if (metaRes.ok) {
-        const d = await metaRes.json();
-        metaSha = d.sha;
-        meta = JSON.parse(Buffer.from(d.content.replace(/\n/g,''), 'base64').toString('utf-8'));
-      }
-    } catch(e) {}
-
-    delete meta[docId];
-    const metaB64 = Buffer.from(JSON.stringify(meta, null, 2)).toString('base64');
-    await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${metaPath}`, {
-      method: 'PUT', headers,
-      body: JSON.stringify({ message: `doc-meta: ${slug}`, content: metaB64, ...(metaSha ? { sha: metaSha } : {}) })
+    if (!_slugDocsValido(slug) || !/^[\w.\-]{1,160}$/.test(docId)) return res.status(400).json({ ok: false, erro: 'Parâmetros inválidos' });
+    await _naFilaDocs(slug, async () => {
+      await _gravarArquivoRoteiro(`${slug}/docs/${docId}`, { apagar: true }, `doc-remove: ${slug}/${docId}`);
+      // Mantém _importados: anexo de reserva removido aqui não é copiado de novo.
+      await _alterarDocsMeta(slug, meta => { delete meta[docId]; return meta; }, `doc-meta: ${slug}`);
     });
-
     res.json({ ok: true });
-  } catch(e) {
+  } catch (e) {
+    console.error('[roteiros/doc-upload DELETE]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
 
-// ══════════════════════════════════════════════════════════════
-//  GET /roteiros/doc-upload?slug=xxx
-//  Retorna docs-meta.json do roteiro
-// ══════════════════════════════════════════════════════════════
 app.get('/roteiros/doc-upload', async (req, res) => {
   try {
     const { slug } = req.query;
     if (!slug) return res.status(400).json({ ok: false, erro: 'slug obrigatório' });
-
-    const ROTEIROS_REPO = 'davileles/roteiros';
-    const GH = 'https://api.github.com';
-    const headers = { 'Authorization': `token ${GITHUB_TOKEN}`, 'User-Agent': 'cdv-proxy', 'Accept': 'application/vnd.github+json', 'Cache-Control': 'no-cache' };
-
-    const metaRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${slug}/docs-meta.json`, { headers });
-    if (!metaRes.ok) return res.json({ ok: true, docs: {} });
-    const d = await metaRes.json();
-    const meta = JSON.parse(Buffer.from(d.content.replace(/\n/g,''), 'base64').toString('utf-8'));
+    if (!_slugDocsValido(slug)) return res.status(400).json({ ok: false, erro: 'slug inválido' });
+    const { meta } = await _lerDocsMeta(slug);
     res.json({ ok: true, docs: meta });
-  } catch(e) {
+  } catch (e) {
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
 
-
-// ══════════════════════════════════════════════════════════════
-//  POST /roteiros/doc-meta
-//  Body: { slug, meta }
-//  Salva o docs-meta.json completo (inclui _deletedCards, _extraCards)
-// ══════════════════════════════════════════════════════════════
+// A página manda o docs-meta inteiro que leu, mas só mexe em _deletedCards e
+// _extraCards. O resto (arquivos e _importados) vem sempre do que está gravado,
+// para uma cópia antiga da página não ressuscitar arquivo removido.
 app.post('/roteiros/doc-meta', async (req, res) => {
   try {
-    const { slug, meta } = req.body;
-    if (!slug || !meta) return res.status(400).json({ ok: false, erro: 'Parâmetros incompletos' });
-
-    const ROTEIROS_REPO = 'davileles/roteiros';
-    const GH = 'https://api.github.com';
-    const headers = {
-      'Authorization': `token ${GITHUB_TOKEN}`,
-      'User-Agent': 'cdv-proxy',
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json'
-    };
-
-    const metaPath = `${slug}/docs-meta.json`;
-    let metaSha;
-    try {
-      const checkRes = await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${metaPath}`, { headers });
-      if (checkRes.ok) { const d = await checkRes.json(); metaSha = d.sha; }
-    } catch(e) {}
-
-    const metaB64 = Buffer.from(JSON.stringify(meta, null, 2)).toString('base64');
-    const payload = { message: `doc-meta: ${slug}`, content: metaB64, ...(metaSha ? { sha: metaSha } : {}) };
-    await fetch(`${GH}/repos/${ROTEIROS_REPO}/contents/${metaPath}`, {
-      method: 'PUT', headers, body: JSON.stringify(payload)
-    });
-
+    const { slug, meta } = req.body || {};
+    if (!slug || !meta || typeof meta !== 'object') return res.status(400).json({ ok: false, erro: 'Parâmetros incompletos' });
+    if (!_slugDocsValido(slug)) return res.status(400).json({ ok: false, erro: 'slug inválido' });
+    await _naFilaDocs(slug, () => _alterarDocsMeta(slug, atual => {
+      for (const k of ['_deletedCards', '_extraCards']) {
+        if (Array.isArray(meta[k])) atual[k] = meta[k];
+      }
+      return atual;
+    }, `doc-meta: ${slug}`));
     res.json({ ok: true });
-  } catch(e) {
+  } catch (e) {
+    console.error('[roteiros/doc-meta]', e.message);
     res.status(500).json({ ok: false, erro: e.message });
   }
 });
