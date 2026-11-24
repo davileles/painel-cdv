@@ -989164,6 +989164,10 @@
         "azul": {
           "pts": 27,
           "dollar": false
+        },
+        "latam": {
+          "pts": 6,
+          "dollar": true
         }
       }
     },
@@ -989283,6 +989287,10 @@
         },
         "esfera": {
           "pts": 2,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 6,
           "dollar": false
         },
         "azul": {
@@ -989862,6 +989870,10 @@
         "livelo": {
           "pts": 5,
           "dollar": false
+        },
+        "latam": {
+          "pts": 6,
+          "dollar": true
         }
       }
     },
@@ -989957,6 +989969,10 @@
           "pts": 4,
           "dollar": false
         },
+        "latam": {
+          "pts": 6,
+          "dollar": true
+        },
         "meliuz": {
           "pts": 3.5,
           "dollar": false,
@@ -990022,6 +990038,10 @@
           "pts": 2,
           "dollar": false
         },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
         "meliuz": {
           "pts": 6,
           "dollar": false,
@@ -990046,6 +990066,10 @@
         "livelo": {
           "pts": 4,
           "dollar": false
+        },
+        "latam": {
+          "pts": 6,
+          "dollar": true
         },
         "meliuz": {
           "pts": 1,
@@ -990078,6 +990102,10 @@
         },
         "esfera": {
           "pts": 2,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
           "dollar": false
         },
         "azul": {
@@ -990232,6 +990260,10 @@
           "pts": 2,
           "dollar": false
         },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
         "meliuz": {
           "pts": 5.5,
           "dollar": false,
@@ -990335,6 +990367,10 @@
         },
         "esfera": {
           "pts": 1,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 6,
           "dollar": false
         },
         "azul": {
@@ -990606,6 +990642,10 @@
         },
         "esfera": {
           "pts": 1,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
           "dollar": false
         },
         "azul": {
@@ -991019,6 +991059,10 @@
           "pts": 3,
           "dollar": false
         },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
         "azul": {
           "pts": 3,
           "dollar": false
@@ -991289,6 +991333,10 @@
           "pts": 1,
           "dollar": false
         },
+        "latam": {
+          "pts": 0.5,
+          "dollar": false
+        },
         "meliuz": {
           "pts": 1,
           "dollar": false,
@@ -991539,6 +991587,10 @@
         "livelo": {
           "pts": 1,
           "dollar": false
+        },
+        "latam": {
+          "pts": 1,
+          "dollar": false
         }
       }
     },
@@ -991637,6 +991689,10 @@
           "pts": 1,
           "dollar": false
         },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
         "azul": {
           "pts": 2,
           "dollar": false
@@ -991728,7 +991784,7 @@
           "dollar": false
         },
         "esfera": {
-          "pts": 1,
+          "pts": 4,
           "dollar": false
         },
         "meliuz": {
@@ -991825,6 +991881,10 @@
       "programs": {
         "livelo": {
           "pts": 1,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
           "dollar": false
         },
         "azul": {
@@ -992327,6 +992387,10 @@
           "pts": 1,
           "dollar": false
         },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
         "azul": {
           "pts": 2,
           "dollar": false
@@ -992337,6 +992401,10 @@
       "programs": {
         "livelo": {
           "pts": 1,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
           "dollar": false
         },
         "azul": {
@@ -992668,6 +992736,27 @@
         }
       }
     },
+    "polishop": {
+      "programs": {
+        "esfera": {
+          "pts": 6,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 5,
+          "dollar": false,
+          "ate": false,
+          "slug": "polishop"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/polishop"
+      }
+    },
     "jo malone": {
       "programs": {
         "esfera": {
@@ -992708,6 +992797,23 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/trussardi"
+      }
+    },
+    "adidas": {
+      "programs": {
+        "esfera": {
+          "pts": 3,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 8,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-adidas"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-adidas"
       }
     },
     "elens": {
@@ -992759,23 +992865,6 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-mobly"
-      }
-    },
-    "polishop": {
-      "programs": {
-        "esfera": {
-          "pts": 3,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 5,
-          "dollar": false,
-          "ate": false,
-          "slug": "polishop"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/polishop"
       }
     },
     "temu": {
@@ -993022,23 +993111,6 @@
           "pts": 3,
           "dollar": false
         }
-      }
-    },
-    "adidas": {
-      "programs": {
-        "esfera": {
-          "pts": 1,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 8,
-          "dollar": false,
-          "ate": false,
-          "slug": "cupom-adidas"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-adidas"
       }
     },
     "agaxtur viagens e turismo": {
@@ -993678,6 +993750,10 @@
         "esfera": {
           "pts": 1,
           "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
         }
       }
     },
@@ -993905,6 +993981,30 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-drogaria-araujo"
       }
     },
+    "diageo": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
+    "top store": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
+    "tramontina": {
+      "programs": {
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        }
+      }
+    },
     "easy live vouchers": {
       "programs": {
         "azul": {
@@ -993944,6 +994044,78 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/estoque"
+      }
+    },
+    "alamo": {
+      "programs": {
+        "latam": {
+          "pts": 6,
+          "dollar": true
+        }
+      }
+    },
+    "europcar": {
+      "programs": {
+        "latam": {
+          "pts": 6,
+          "dollar": true
+        }
+      }
+    },
+    "nomad": {
+      "programs": {
+        "latam": {
+          "pts": 5,
+          "dollar": true
+        }
+      }
+    },
+    "revo": {
+      "programs": {
+        "latam": {
+          "pts": 3,
+          "dollar": false
+        }
+      }
+    },
+    "ifriend": {
+      "programs": {
+        "latam": {
+          "pts": 2,
+          "dollar": false
+        }
+      }
+    },
+    "rappi": {
+      "programs": {
+        "latam": {
+          "pts": 2,
+          "dollar": true
+        },
+        "inter": {
+          "pts": 15,
+          "dollar": false,
+          "slug": "rappi-1662"
+        }
+      },
+      "links": {
+        "inter": "https://shopping.inter.co/gift-card/rappi-1662"
+      }
+    },
+    "picpay": {
+      "programs": {
+        "latam": {
+          "pts": 0.5,
+          "dollar": false
+        }
+      }
+    },
+    "elite internacional realty": {
+      "programs": {
+        "latam": {
+          "pts": 0.07,
+          "dollar": true
+        }
       }
     },
     "assaí": {
@@ -994076,18 +994248,6 @@
       },
       "links": {
         "inter": "https://shopping.inter.co/gift-card/the-legend-of-zelda-ocarina-of-time-4596"
-      }
-    },
-    "rappi": {
-      "programs": {
-        "inter": {
-          "pts": 15,
-          "dollar": false,
-          "slug": "rappi-1662"
-        }
-      },
-      "links": {
-        "inter": "https://shopping.inter.co/gift-card/rappi-1662"
       }
     },
     "fortnite": {
