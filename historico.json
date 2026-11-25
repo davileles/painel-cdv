@@ -998867,7 +998867,20 @@
           "pts": 5,
           "dollar": false,
           "ate": false,
-          "slug": "polishop"
+          "slug": "polishop",
+          "categorias": [
+            {
+              "categoria": "Tecnologia",
+              "pts": 1,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 5
         }
       },
       "links": {
