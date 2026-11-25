@@ -1,8 +1,232 @@
 {
-  "geradoEm": "2026-11-25T14:07:49.382Z",
+  "geradoEm": "2026-11-25T14:10:27.632Z",
   "descricao": "Histórico de ofertas de transferência bonificada entre programas, usado para comparar novas ofertas do Radar com o padrão histórico (bônus médio e frequência). Dois tipos de registro: origem específica→destino específica, ou origem 'Todos' (quando a campanha vale para todos/quase todos os bancos parceiros)→destino específica. Nomes de origem/destino alinhados às listas fixas usadas no dropdown do gerador-cdv (2026-07-18). Backfill adicional (113 registros) importado da planilha histórica do Davi em 2026-07-18, cobrindo 02/01 a 30/06/2026.",
   "regrasDedup": "Duas ofertas com a mesma chave origem→destino e o MESMO prazo de encerramento são consideradas a mesma campanha (ex: reenvio/lembrete) e não geram novo registro — apenas anexam o ofertaId ao registro existente. Prazo diferente = campanha nova = novo registro.",
   "items": [
+    {
+      "chave": "unicred→latam_pass",
+      "origem": "Unicred",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "sisprime→latam_pass",
+      "origem": "Sisprime",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "sicoob→latam_pass",
+      "origem": "Sicoob",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "revolut→latam_pass",
+      "origem": "Revolut",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "picpay→latam_pass",
+      "origem": "PicPay",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "nubank→latam_pass",
+      "origem": "Nubank",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "itau→latam_pass",
+      "origem": "Itaú",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "credicard→latam_pass",
+      "origem": "Credicard",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "c6→latam_pass",
+      "origem": "C6",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "btg→latam_pass",
+      "origem": "BTG",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "banrisul→latam_pass",
+      "origem": "Banrisul",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "banpara→latam_pass",
+      "origem": "Banpará",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "banestes→latam_pass",
+      "origem": "Banestes",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "banco_mercantil→latam_pass",
+      "origem": "Banco Mercantil",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "banco_industrial→latam_pass",
+      "origem": "Banco Industrial",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
+    {
+      "chave": "banco_do_nordeste→latam_pass",
+      "origem": "Banco do Nordeste",
+      "destino": "LATAM Pass",
+      "origemTipo": "especifica",
+      "bonusMax": 25,
+      "tipoBonus": "percentual_direto",
+      "dataInicio": "2026-11-25",
+      "prazo": "2026-11-29",
+      "ofertaIds": [
+        "4soznt"
+      ],
+      "observacao": "Campanha de bancos selecionados (16 bancos)"
+    },
     {
       "chave": "livelo→smiles",
       "origem": "Livelo",
