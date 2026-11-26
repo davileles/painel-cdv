@@ -1001194,6 +1001194,14 @@
         }
       }
     },
+    "ciclic seguro viagem": {
+      "programs": {
+        "livelo": {
+          "pts": 25,
+          "dollar": false
+        }
+      }
+    },
     "petlove saúde": {
       "programs": {
         "livelo": {
@@ -1001214,14 +1001222,6 @@
       "programs": {
         "livelo": {
           "pts": 18,
-          "dollar": false
-        }
-      }
-    },
-    "ciclic seguro viagem": {
-      "programs": {
-        "livelo": {
-          "pts": 15,
           "dollar": false
         }
       }
@@ -1002250,7 +1002250,7 @@
           "dollar": true
         },
         "meliuz": {
-          "pts": 4.5,
+          "pts": 5,
           "dollar": false,
           "ate": false,
           "slug": "cupom-booking"
@@ -1002373,7 +1002373,7 @@
           "dollar": true
         },
         "meliuz": {
-          "pts": 12,
+          "pts": 15,
           "dollar": false,
           "ate": false,
           "slug": "cupom-aliexpress"
@@ -1002572,7 +1002572,7 @@
           "dollar": false
         },
         "azul": {
-          "pts": 1,
+          "pts": 14,
           "dollar": false
         },
         "meliuz": {
@@ -1002865,7 +1002865,7 @@
           "dollar": false
         },
         "azul": {
-          "pts": 1,
+          "pts": 2,
           "dollar": false
         },
         "inter": {
@@ -1002901,7 +1002901,7 @@
           "slug": "centauro-1652"
         },
         "meliuz": {
-          "pts": 15,
+          "pts": 18,
           "dollar": false,
           "ate": false,
           "slug": "cupom-centauro"
@@ -1004018,7 +1004018,20 @@
           "pts": 5,
           "dollar": false,
           "ate": true,
-          "slug": "cupom-electrolux"
+          "slug": "cupom-electrolux",
+          "categorias": [
+            {
+              "categoria": "Lava Louças",
+              "pts": 5,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 0.5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 0.5
         }
       },
       "links": {
@@ -1004342,7 +1004355,7 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 1,
+          "pts": 8,
           "dollar": false,
           "ate": false,
           "slug": "cupom-loja-do-mecanico"
@@ -1004611,6 +1004624,10 @@
     "sephora": {
       "programs": {
         "livelo": {
+          "pts": 1,
+          "dollar": false
+        },
+        "esfera": {
           "pts": 1,
           "dollar": false
         },
@@ -1005031,7 +1005048,7 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 5,
+          "pts": 7,
           "dollar": false,
           "ate": false,
           "slug": "emma"
@@ -1006838,7 +1006855,7 @@
           "slug": "americanas-1957"
         },
         "meliuz": {
-          "pts": 6,
+          "pts": 7,
           "dollar": false,
           "ate": false,
           "slug": "cupom-americanas"
@@ -1007032,7 +1007049,7 @@
           "slug": "o-boticario-3988"
         },
         "meliuz": {
-          "pts": 11,
+          "pts": 12,
           "dollar": false,
           "ate": false,
           "slug": "cupom-boticario"
