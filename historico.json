@@ -1003251,10 +1003251,23 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 1.5,
+          "pts": 3,
           "dollar": false,
-          "ate": false,
-          "slug": "cupom-desconto-mercado-livre"
+          "ate": true,
+          "slug": "cupom-desconto-mercado-livre",
+          "categorias": [
+            {
+              "categoria": "Categoria Moda",
+              "pts": 3,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1.5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1.5
         }
       },
       "links": {
@@ -1004156,7 +1004169,7 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 3,
+          "pts": 7,
           "dollar": false,
           "ate": false,
           "slug": "cupom-hoteiscom"
