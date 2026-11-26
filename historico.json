@@ -1002090,10 +1002090,17 @@
           "pts": 2,
           "dollar": false,
           "slug": "bagaggio-3111"
+        },
+        "meliuz": {
+          "pts": 0.5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-bagaggio"
         }
       },
       "links": {
-        "inter": "https://shopping.inter.co/gift-card/bagaggio-3111"
+        "inter": "https://shopping.inter.co/gift-card/bagaggio-3111",
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-bagaggio"
       }
     },
     "budget": {
@@ -1003416,22 +1003423,16 @@
           "slug": "cupom-petz",
           "categorias": [
             {
-              "categoria": "Clientes que nunca compraram em Petz e Clientes que nunca compraram no app de Petz",
+              "categoria": "Novos Usuários",
               "pts": 3,
               "principal": false
             },
             {
-              "categoria": "Clientes que já compraram em Petz, Cliente que já compraram no app de Petz, Clientes que já compraram no app de Petz e Default",
+              "categoria": "Usuários Recorrentes",
               "pts": 2,
               "principal": false
-            },
-            {
-              "categoria": "Demais categorias",
-              "pts": 2,
-              "principal": true
             }
-          ],
-          "ptsBase": 2
+          ]
         }
       },
       "links": {
