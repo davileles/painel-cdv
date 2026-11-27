@@ -1007465,7 +1007465,7 @@
           "slug": "centauro-1652"
         },
         "meliuz": {
-          "pts": 15,
+          "pts": 8,
           "dollar": false,
           "ate": false,
           "slug": "cupom-centauro"
@@ -1008522,7 +1008522,7 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 11,
+          "pts": 10,
           "dollar": false,
           "ate": false,
           "slug": "cupom-reserva"
@@ -1010978,6 +1010978,40 @@
         }
       }
     },
+    "polishop": {
+      "programs": {
+        "esfera": {
+          "pts": 8,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 5,
+          "dollar": false,
+          "ate": false,
+          "slug": "polishop",
+          "categorias": [
+            {
+              "categoria": "Tecnologia",
+              "pts": 1,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 5
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/polishop"
+      }
+    },
     "adidas": {
       "programs": {
         "esfera": {
@@ -1011173,40 +1011207,6 @@
       "links": {
         "inter": "https://shopping.inter.co/gift-card/pague-menos-172",
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-pague-menos"
-      }
-    },
-    "polishop": {
-      "programs": {
-        "esfera": {
-          "pts": 3,
-          "dollar": false
-        },
-        "smiles": {
-          "pts": 4,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 5,
-          "dollar": false,
-          "ate": false,
-          "slug": "polishop",
-          "categorias": [
-            {
-              "categoria": "Tecnologia",
-              "pts": 1,
-              "principal": false
-            },
-            {
-              "categoria": "Demais categorias",
-              "pts": 5,
-              "principal": true
-            }
-          ],
-          "ptsBase": 5
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/polishop"
       }
     },
     "babystock": {
@@ -1014469,6 +1014469,18 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-yamamura"
+      }
+    },
+    "carrefour posto": {
+      "programs": {
+        "inter": {
+          "pts": 2,
+          "dollar": false,
+          "slug": "carrefour-posto-4464"
+        }
+      },
+      "links": {
+        "inter": "https://shopping.inter.co/gift-card/carrefour-posto-4464"
       }
     }
   }
