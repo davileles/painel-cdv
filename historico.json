@@ -1008001,18 +1008001,6 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-camicado"
       }
     },
-    "cea": {
-      "programs": {
-        "livelo": {
-          "pts": 10,
-          "dollar": false
-        },
-        "esfera": {
-          "pts": 8,
-          "dollar": false
-        }
-      }
-    },
     "crocs": {
       "programs": {
         "livelo": {
@@ -1009329,6 +1009317,35 @@
         }
       }
     },
+    "magazine luiza": {
+      "programs": {
+        "livelo": {
+          "pts": 4,
+          "dollar": false
+        },
+        "esfera": {
+          "pts": 1,
+          "dollar": false
+        },
+        "smiles": {
+          "pts": 4,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 14,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 5,
+          "dollar": false,
+          "ate": false,
+          "slug": "cupom-magazine-luiza"
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-magazine-luiza"
+      }
+    },
     "mizuno": {
       "programs": {
         "livelo": {
@@ -1009668,6 +1009685,18 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-buser"
       }
     },
+    "cea": {
+      "programs": {
+        "livelo": {
+          "pts": 2,
+          "dollar": false
+        },
+        "esfera": {
+          "pts": 8,
+          "dollar": false
+        }
+      }
+    },
     "coliseu": {
       "programs": {
         "livelo": {
@@ -1009839,35 +1009868,6 @@
           "pts": 2,
           "dollar": false
         }
-      }
-    },
-    "magazine luiza": {
-      "programs": {
-        "livelo": {
-          "pts": 2,
-          "dollar": false
-        },
-        "esfera": {
-          "pts": 1,
-          "dollar": false
-        },
-        "smiles": {
-          "pts": 4,
-          "dollar": false
-        },
-        "azul": {
-          "pts": 14,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 5,
-          "dollar": false,
-          "ate": false,
-          "slug": "cupom-magazine-luiza"
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-magazine-luiza"
       }
     },
     "mercado livre": {
@@ -1010989,14 +1010989,14 @@
           "dollar": false
         },
         "meliuz": {
-          "pts": 5,
+          "pts": 7,
           "dollar": false,
-          "ate": false,
+          "ate": true,
           "slug": "polishop",
           "categorias": [
             {
-              "categoria": "Tecnologia",
-              "pts": 1,
+              "categoria": "Todos os produtos, exceto Impressora 3D",
+              "pts": 7,
               "principal": false
             },
             {

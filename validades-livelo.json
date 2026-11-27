@@ -1,5 +1,5 @@
 {
-  "coletadoEm": "2026-11-27T17:02:33.084Z",
+  "coletadoEm": "2026-11-27T18:02:29.294Z",
   "items": {
     "abcdaconstrucao": {
       "id": "ABC",
@@ -311,6 +311,18 @@
       "parity": 3,
       "parityClub": 3,
       "parityBau": 1,
+      "campanha": "PROMOTION"
+    },
+    "cea": {
+      "id": "CEA",
+      "nome": "CEA",
+      "categorias": null,
+      "legalTerms": "Campanha válida a partir das 12h01, horário de Brasília, do dia 30/11 até 29/11/2026. Ganhe 10 pontos por real em produtos selecionados e 2 pontos por real nos demais itens. Consulte o regulamento.",
+      "dateStart": "2026-11-27",
+      "dateEnd": "2026-11-30",
+      "parity": 10,
+      "parityClub": 10,
+      "parityBau": 2,
       "campanha": "PROMOTION"
     },
     "camicado": {
@@ -1217,13 +1229,13 @@
       "id": "CPX",
       "nome": "PneuStore",
       "categorias": null,
-      "legalTerms": "Campanha válida de 27 a 29/11/2026. Ganhe 3 pontos a cada real gasto, exclusivo para assinantes do Clube Livelo em produtos selecionados; 2 pontos por real demais clientes na lista selecionada e 1 ponto por real demais itens. Utilize o cupom LIVELO. Consulte o regulamento.",
+      "legalTerms": "Campanha válida de 27 a 30/11/2026. Ganhe 4 pontos a cada real gasto em produtos selecionados e 1 ponto por real demais itens. Utilize o cupom LIVELO. Consulte o regulamento.",
       "dateStart": "2026-11-27",
       "dateEnd": "2026-11-29",
-      "parity": 2,
-      "parityClub": 3,
+      "parity": 4,
+      "parityClub": 4,
       "parityBau": 1,
-      "campanha": "PROMOTION_CLUB"
+      "campanha": "PROMOTION"
     },
     "portoservico": {
       "id": "PTO",
