@@ -1557,12 +1557,6 @@ async function rlFlush() {
 const rlTimer = setInterval(rlFlush, RL_FLUSH_MS);
 if (rlTimer.unref) rlTimer.unref();
 
-// Pagina que o monitor recebe no lugar do redirecionamento: sem o destino.
-const RL_PAGINA_GENERICA = '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">' +
-  '<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">' +
-  '<title>Tica Promos</title></head><body style="font-family:sans-serif;text-align:center;padding:48px 16px;color:#2E3348">' +
-  '<h1 style="font-size:22px">Tica Promos</h1><p>As ofertas do Tico ficam no site do Tica Promos.</p></body></html>';
-
 async function rlHandle(req, res, base, suf) {
   const t0 = process.hrtime.bigint();
   const origem = rlCache.has(base) ? 'cache' : 'rede';
@@ -1585,7 +1579,7 @@ async function rlHandle(req, res, base, suf) {
   try { bloq = antiMonitor.decidir({ ip, ipHash, metodo: req.method, classe }) || bloq; } catch (e) { /* libera */ }
   res.set('Cache-Control', 'no-store');
   res.set('X-Robots-Tag', 'noindex, nofollow');
-  if (bloq.bloquear) res.status(200).type('html').send(RL_PAGINA_GENERICA);
+  if (bloq.bloquear) res.status(200).type('html').send(antiMonitor.paginaBloqueio(ipHash));
   else res.redirect(302, destino);
   try { antiMonitor.registrarLatencia(Number(process.hrtime.bigint() - t0) / 1e6, origem); } catch (e) { /* so medida */ }
   setImmediate(() => {
@@ -1694,6 +1688,29 @@ app.get('/links/monitor', async (req, res) => {
     const rel = await antiMonitor.relatorio(req.query.dia, parseInt(req.query.top, 10) || 50);
     res.set('Cache-Control', 'no-store');
     res.json({ ok: true, ...antiMonitor.estado(), ...rel });
+  } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
+// Codigo que a pessoa bloqueada mandou ao suporte: motivo, grupos e cliques
+// do IP nos ultimos 7 dias (?dias=, max 14). Operador (X-CDV-Op).
+app.get('/links/monitor/codigo/:codigo', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const r = await antiMonitor.buscarCodigo(req.params.codigo, parseInt(req.query.dias, 10) || 7);
+    if (!r) return res.status(404).json({ ok: false, erro: 'codigo nao encontrado' });
+    res.set('Cache-Control', 'no-store');
+    res.json({ ok: true, ...r });
+  } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
+});
+
+// Libera o IP do codigo (gente de verdade) ou bloqueia de novo ({desfazer:true}).
+// Body: { codigo, obs?, desfazer? }. Operador (X-CDV-Op).
+app.post('/links/monitor/liberar', async (req, res) => {
+  if (!opAutorizado(req, res)) return;
+  try {
+    const b = req.body || {};
+    const r = await antiMonitor.liberar(b.codigo, b.obs, b.desfazer === true);
+    res.status(r.ok ? 200 : 404).json(r);
   } catch (e) { res.status(500).json({ ok: false, erro: e.message }); }
 });
 

@@ -41,6 +41,16 @@
 // Previa (WhatsApp etc.) e robo da Meta nunca sao barrados. Erro = libera.
 // Kill switch: ANTI_MONITOR_MODO=observacao volta ao modo so de registro;
 // ANTI_MONITOR_LIMIAR muda o limiar de cliques de servidor.
+//
+// SUPORTE NA PAGINA DE BLOQUEIO (ideia de um conhecido, 27/11/2026): a pagina
+// mostra um codigo (6 letras, tirado do hash do IP) e um botao que abre o
+// WhatsApp do suporte (env ANTI_MONITOR_SUPORTE_WA, so numeros) com a mensagem
+// pronta. Quem mandar: o operador consulta o codigo (GET /links/monitor/codigo)
+// e ve motivo, grupos e cliques. Gente de verdade -> POST /links/monitor/liberar
+// (o IP nunca mais cai em servidor_repetido); monitor -> tirar do grupo.
+// Sem a env, a pagina mostra so o codigo.
+
+const crypto = require('crypto');
 
 const FONTES = [
   { id: 'aws', url: 'https://ip-ranges.amazonaws.com/ip-ranges.json',
@@ -298,6 +308,85 @@ async function carregarReincidentes() {
   console.log('[anti-monitor] modo', MODO, '- reincidentes', reincidentes.size);
 }
 
+// ── Suporte: codigo na pagina de bloqueio e IPs liberados ────────────────────
+const ALFABETO = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   // sem 0/O/1/I
+function codigoDe(ipHash) {
+  const b = crypto.createHash('sha1').update('suporte|' + String(ipHash || '')).digest();
+  let s = '';
+  for (let i = 0; i < 6; i++) s += ALFABETO[b[i] % ALFABETO.length];
+  return s;
+}
+const ARQ_LIBERADOS = 'tsp/anti-monitor-liberados.json';
+let liberados = new Map();   // hash -> { codigo, em, obs }
+
+async function carregarLiberados() {
+  if (!gh) return;
+  try {
+    const { data } = await gh.get(ARQ_LIBERADOS, null);
+    const novo = new Map();
+    for (const x of ((data && data.liberados) || [])) if (x && x.hash) novo.set(x.hash, x);
+    liberados = novo;
+  } catch (e) { console.error('[anti-monitor] liberados', e.message); }   // mantem os de memoria
+}
+
+// Procura o codigo nos ultimos `dias` arquivos do dia (so IPs com motivo).
+async function buscarCodigo(codigo, dias = 7) {
+  const cod = String(codigo || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (cod.length !== 6) return null;
+  let dia = hojeSP();
+  const achados = [];
+  for (let i = 0; i < Math.min(14, Math.max(1, dias)); i++) {
+    let d = diaVazio(dia);
+    if (gh) { try { const { data } = await gh.get(arquivoDoDia(dia), null); if (data && data.dia) d = JSON.parse(JSON.stringify(data)); } catch (e) { /* segue */ } }
+    if (i === 0) d = somarDia(d, buffer[dia] || diaVazio(dia));
+    for (const [h, x] of Object.entries(d.ips || {})) {
+      if (codigoDe(h) !== cod) continue;
+      achados.push({ dia, cliques: x.cliques, seriaBarrado: x.seriaBarrado, bloqueados: x.bloqueados || 0,
+        motivos: x.motivos, grupos: x.grupos, links: x.links, provedor: x.provedor || null, ua: x.ua || null,
+        primeiro: x.primeiro || null, ultimo: x.ultimo || null, _hash: h });
+    }
+    dia = diaAnterior(dia);
+  }
+  if (!achados.length) return null;
+  const hash = achados[0]._hash;
+  for (const a of achados) delete a._hash;
+  return { codigo: cod, ipHash: hash, liberado: liberados.has(hash), reincidente: reincidentes.has(hash), dias: achados };
+}
+
+// Libera (ou volta a bloquear, com desfazer) o IP de um codigo.
+async function liberar(codigo, obs, desfazer) {
+  const achado = await buscarCodigo(codigo, 14);
+  if (!achado) return { ok: false, erro: 'codigo nao encontrado nos ultimos 14 dias' };
+  const hash = achado.ipHash;
+  const { data, sha } = await gh.get(ARQ_LIBERADOS, null);   // SHA fresco
+  const lista = ((data && data.liberados) || []).filter(x => x && x.hash !== hash);
+  if (!desfazer) lista.push({ hash, codigo: achado.codigo, em: new Date().toISOString(), obs: String(obs || '').slice(0, 200) });
+  await gh.put(ARQ_LIBERADOS, { atualizadoEm: new Date().toISOString(), liberados: lista }, sha,
+    'vigia: anti-monitor ' + (desfazer ? 'bloqueia de novo ' : 'libera ') + achado.codigo);
+  liberados = new Map(lista.map(x => [x.hash, x]));
+  if (!desfazer) reincidentes.delete(hash);
+  return { ok: true, codigo: achado.codigo, liberado: !desfazer, totalLiberados: lista.length };
+}
+
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+// Pagina que quem foi bloqueado recebe no lugar do redirecionamento (sem o destino).
+function paginaBloqueio(ipHash) {
+  const cod = codigoDe(ipHash);
+  const num = String(process.env.ANTI_MONITOR_SUPORTE_WA || '').replace(/\D/g, '');
+  const texto = 'Oi! Tentei abrir uma oferta do Tica Promos e não consegui. Código: ' + cod;
+  const botao = num.length >= 10
+    ? '<p><a href="https://wa.me/' + num + '?text=' + encodeURIComponent(texto) + '" style="display:inline-block;background:#FA5150;color:#fff;' +
+      'text-decoration:none;font-weight:700;padding:14px 22px;border-radius:12px">Falar com o suporte no WhatsApp</a></p>'
+    : '';
+  return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">' +
+    '<title>Tica Promos</title></head><body style="font-family:sans-serif;text-align:center;padding:48px 16px;color:#2E3348;max-width:420px;margin:auto">' +
+    '<h1 style="font-size:22px">Não foi possível abrir esta oferta</h1>' +
+    '<p>Sua conexão foi identificada como acesso automático. Se foi engano, fale com a gente e informe o código abaixo.</p>' +
+    '<p style="font-size:28px;font-weight:700;letter-spacing:4px;margin:24px 0">' + esc(cod) + '</p>' + botao +
+    '</body></html>';
+}
+
 // Chamado pelo index.js ANTES do redirecionamento. Sincrono e barato.
 // p = { ip, ipHash, metodo, classe } -> { bloquear, motivo }
 function decidir(p) {
@@ -307,6 +396,7 @@ function decidir(p) {
     if (p.classe === 'preview' || p.classe === 'meta') return { bloquear: false };
     if (p.classe === 'robo') return { bloquear: true, motivo: 'programa' };
     if (p.metodo === 'HEAD') return { bloquear: true, motivo: 'head' };
+    if (p.ipHash && liberados.has(p.ipHash)) return { bloquear: false };   // gente de verdade liberada pelo suporte
     if (p.ipHash && reincidentes.has(p.ipHash)) return { bloquear: true, motivo: 'servidor_repetido' };
     const rede = classificarIp(p.ip);
     if (rede.rede !== 'servidor') return { bloquear: false };
@@ -426,6 +516,8 @@ function estado() {
     modo: MODO,
     limiarServidor: LIMIAR_SERVIDOR,
     reincidentes: reincidentes.size,
+    liberados: liberados.size,
+    suporteWhatsapp: String(process.env.ANTI_MONITOR_SUPORTE_WA || '').replace(/\D/g, '').length >= 10,
     custoDecisaoUs: { n: custoDecisao.n, media: custoDecisao.n ? Math.round(100 * custoDecisao.totalUs / custoDecisao.n) / 100 : 0,
       max: Math.round(custoDecisao.maxUs * 100) / 100 },
     listas: FONTES.map(f => { const r = redes[f.id] || {}; return { id: f.id, excecao: !!f.excecao, faixas: r.faixas || 0,
@@ -443,10 +535,10 @@ function iniciar({ fetch, ghGetJson, ghPutJson }) {
   const t2 = setInterval(() => carregarTudo(fetch), ATUALIZAR_MS); if (t2.unref) t2.unref();
   const t3 = setInterval(() => { flush().catch(() => {}); }, FLUSH_MS); if (t3.unref) t3.unref();
   if (MODO === 'bloqueio') {
-    const t4 = setTimeout(() => { carregarReincidentes().catch(() => {}); }, 5 * 1000); if (t4.unref) t4.unref();
-    const t5 = setInterval(() => { carregarReincidentes().catch(() => {}); }, RECARREGAR_MS); if (t5.unref) t5.unref();
+    const t4 = setTimeout(() => { carregarLiberados().then(carregarReincidentes).catch(() => {}); }, 5 * 1000); if (t4.unref) t4.unref();
+    const t5 = setInterval(() => { carregarLiberados().then(carregarReincidentes).catch(() => {}); }, RECARREGAR_MS); if (t5.unref) t5.unref();
   }
 }
 
-module.exports = { iniciar, decidir, observar, registrarLatencia, flush, relatorio, estado, classificarIp,
+module.exports = { iniciar, decidir, paginaBloqueio, buscarCodigo, liberar, codigoDe, observar, registrarLatencia, flush, relatorio, estado, classificarIp,
   _teste: { servidorHoje, carregarReincidentes, faixa, juntar, contem, v6Big, v4Int, carregarFonte, redes, FONTES, somarDia, diaVazio } };
