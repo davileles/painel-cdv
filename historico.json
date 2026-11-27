@@ -1007791,6 +1007791,44 @@
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-individual"
       }
     },
+    "insider store": {
+      "programs": {
+        "livelo": {
+          "pts": 12,
+          "dollar": false
+        },
+        "esfera": {
+          "pts": 15,
+          "dollar": false
+        },
+        "azul": {
+          "pts": 25,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 11,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-insider-store",
+          "categorias": [
+            {
+              "categoria": "Compra de produtos com uso de cupom Méliuz ou sem o uso de cupom",
+              "pts": 11,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 1.5,
+              "principal": true
+            }
+          ],
+          "ptsBase": 1.5
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-insider-store"
+      }
+    },
     "john john": {
       "programs": {
         "livelo": {
@@ -1007879,6 +1007917,14 @@
         }
       }
     },
+    "farmacias app": {
+      "programs": {
+        "livelo": {
+          "pts": 11,
+          "dollar": false
+        }
+      }
+    },
     "piatan natural": {
       "programs": {
         "livelo": {
@@ -1007953,6 +1007999,18 @@
       "links": {
         "inter": "https://shopping.inter.co/gift-card/camicado-3639",
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-camicado"
+      }
+    },
+    "cea": {
+      "programs": {
+        "livelo": {
+          "pts": 10,
+          "dollar": false
+        },
+        "esfera": {
+          "pts": 8,
+          "dollar": false
+        }
       }
     },
     "crocs": {
@@ -1008433,6 +1008491,40 @@
       },
       "links": {
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-truss"
+      }
+    },
+    "beleza na web": {
+      "programs": {
+        "livelo": {
+          "pts": 7,
+          "dollar": false
+        },
+        "esfera": {
+          "pts": 7,
+          "dollar": false
+        },
+        "meliuz": {
+          "pts": 15,
+          "dollar": false,
+          "ate": true,
+          "slug": "cupom-beleza-na-web",
+          "categorias": [
+            {
+              "categoria": "Todos os produtos da marca TRUSS",
+              "pts": 15,
+              "principal": false
+            },
+            {
+              "categoria": "Demais categorias",
+              "pts": 10,
+              "principal": true
+            }
+          ],
+          "ptsBase": 10
+        }
+      },
+      "links": {
+        "meliuz": "https://www.meliuz.com.br/desconto/cupom-beleza-na-web"
       }
     },
     "bombay herbs & spices": {
@@ -1009533,40 +1009625,6 @@
         }
       }
     },
-    "beleza na web": {
-      "programs": {
-        "livelo": {
-          "pts": 2,
-          "dollar": false
-        },
-        "esfera": {
-          "pts": 7,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 15,
-          "dollar": false,
-          "ate": true,
-          "slug": "cupom-beleza-na-web",
-          "categorias": [
-            {
-              "categoria": "Todos os produtos da marca TRUSS",
-              "pts": 15,
-              "principal": false
-            },
-            {
-              "categoria": "Demais categorias",
-              "pts": 10,
-              "principal": true
-            }
-          ],
-          "ptsBase": 10
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-beleza-na-web"
-      }
-    },
     "bradesco capitalização": {
       "programs": {
         "livelo": {
@@ -1009608,18 +1009666,6 @@
       "links": {
         "inter": "https://shopping.inter.co/gift-card/buser-141",
         "meliuz": "https://www.meliuz.com.br/desconto/cupom-buser"
-      }
-    },
-    "cea": {
-      "programs": {
-        "livelo": {
-          "pts": 2,
-          "dollar": false
-        },
-        "esfera": {
-          "pts": 8,
-          "dollar": false
-        }
       }
     },
     "coliseu": {
@@ -1010396,14 +1010442,6 @@
         "inter": "https://shopping.inter.co/gift-card/extra-2616"
       }
     },
-    "farmacias app": {
-      "programs": {
-        "livelo": {
-          "pts": 1,
-          "dollar": false
-        }
-      }
-    },
     "granado": {
       "programs": {
         "livelo": {
@@ -1010461,44 +1010499,6 @@
           "pts": 1,
           "dollar": false
         }
-      }
-    },
-    "insider store": {
-      "programs": {
-        "livelo": {
-          "pts": 1,
-          "dollar": false
-        },
-        "esfera": {
-          "pts": 15,
-          "dollar": false
-        },
-        "azul": {
-          "pts": 25,
-          "dollar": false
-        },
-        "meliuz": {
-          "pts": 11,
-          "dollar": false,
-          "ate": true,
-          "slug": "cupom-insider-store",
-          "categorias": [
-            {
-              "categoria": "Compra de produtos com uso de cupom Méliuz ou sem o uso de cupom",
-              "pts": 11,
-              "principal": false
-            },
-            {
-              "categoria": "Demais categorias",
-              "pts": 1.5,
-              "principal": true
-            }
-          ],
-          "ptsBase": 1.5
-        }
-      },
-      "links": {
-        "meliuz": "https://www.meliuz.com.br/desconto/cupom-insider-store"
       }
     },
     "kabum!": {
@@ -1012441,7 +1012441,7 @@
     "gta vi - grand theft auto": {
       "programs": {
         "inter": {
-          "pts": 10,
+          "pts": 15,
           "dollar": false,
           "slug": "gta-vi---grand-theft-auto-4216"
         }
