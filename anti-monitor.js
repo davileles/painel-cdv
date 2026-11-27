@@ -28,6 +28,19 @@
 //
 // Registro do dia: memoria + tsp/vigia-monitor_<dia>.json (repo de dados) a
 // cada 5 min e no SIGTERM. IP so em hash. Leitura: GET /links/monitor.
+//
+// BLOQUEIO (desde 27/11/2026, aprovado depois de 6 dias de observacao):
+// decidir() roda ANTES do 302 e custa microssegundos (lista em memoria).
+// Recebe a pagina generica (200, sem o destino) so quem tem sinal forte:
+//   programa          - user-agent de biblioteca/robo
+//   head              - pedido HEAD
+//   servidor_repetido - IP de servidor com LIMIAR+ cliques no dia (padrao 5),
+//                       ou que ja bateu o limiar hoje/ontem (reincidente,
+//                       lido do arquivo do dia no boot e de hora em hora)
+// Clique isolado de servidor (VPN, rede de empresa) continua liberado.
+// Previa (WhatsApp etc.) e robo da Meta nunca sao barrados. Erro = libera.
+// Kill switch: ANTI_MONITOR_MODO=observacao volta ao modo so de registro;
+// ANTI_MONITOR_LIMIAR muda o limiar de cliques de servidor.
 
 const FONTES = [
   { id: 'aws', url: 'https://ip-ranges.amazonaws.com/ip-ranges.json',
@@ -47,6 +60,9 @@ const FONTES_EXCECAO_PRIMEIRO = [...FONTES.filter(f => f.excecao), ...FONTES.fil
 const ATUALIZAR_MS = 24 * 60 * 60 * 1000;
 const PRIMEIRA_MS  = 45 * 1000;
 const FLUSH_MS     = 5 * 60 * 1000;
+const MODO = String(process.env.ANTI_MONITOR_MODO || 'bloqueio').toLowerCase() === 'observacao' ? 'observacao' : 'bloqueio';
+const LIMIAR_SERVIDOR = Math.max(2, parseInt(process.env.ANTI_MONITOR_LIMIAR, 10) || 5);
+const RECARREGAR_MS = 60 * 60 * 1000;
 const MAX_IPS      = 1000;   // IPs distintos guardados por dia
 const LAT_AMOSTRAS = 2000;
 
@@ -197,17 +213,18 @@ const custoClassificacao = { n: 0, totalUs: 0, maxUs: 0 };
 // ── Registro do dia ──────────────────────────────────────────────────────────
 function hojeSP() { return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }); }
 function diaVazio(dia) {
-  return { dia, cliques: 0, seriaBarrado: 0, relayLiberado: 0, desconhecido: 0, motivos: {}, grupos: {}, ips: {} };
+  return { dia, cliques: 0, seriaBarrado: 0, bloqueados: 0, relayLiberado: 0, desconhecido: 0, motivos: {}, grupos: {}, ips: {} };
 }
 let buffer = {};        // dia -> parcial ainda nao gravado
 let sujo = false;
 
 function somarDia(acc, d) {
-  for (const k of ['cliques', 'seriaBarrado', 'relayLiberado', 'desconhecido']) acc[k] = (acc[k] || 0) + (d[k] || 0);
+  for (const k of ['cliques', 'seriaBarrado', 'bloqueados', 'relayLiberado', 'desconhecido']) acc[k] = (acc[k] || 0) + (d[k] || 0);
   for (const [k, n] of Object.entries(d.motivos || {})) acc.motivos[k] = (acc.motivos[k] || 0) + n;
   for (const [g, x] of Object.entries(d.grupos || {})) {
     const a = acc.grupos[g] || (acc.grupos[g] = { cliques: 0, seriaBarrado: 0 });
     a.cliques += x.cliques || 0; a.seriaBarrado += x.seriaBarrado || 0;
+    if (x.bloqueados) a.bloqueados = (a.bloqueados || 0) + x.bloqueados;
   }
   for (const [h, x] of Object.entries(d.ips || {})) {
     let a = acc.ips[h];
@@ -216,6 +233,7 @@ function somarDia(acc, d) {
       a = acc.ips[h] = { cliques: 0, seriaBarrado: 0, motivos: {}, grupos: {}, links: 0 };
     }
     a.cliques += x.cliques || 0; a.seriaBarrado += x.seriaBarrado || 0;
+    if (x.bloqueados) a.bloqueados = (a.bloqueados || 0) + x.bloqueados;
     for (const [k, n] of Object.entries(x.motivos || {})) a.motivos[k] = (a.motivos[k] || 0) + n;
     for (const [g, n] of Object.entries(x.grupos || {})) a.grupos[g] = (a.grupos[g] || 0) + n;
     a.links = Math.max(a.links || 0, x.links || 0);
@@ -236,8 +254,78 @@ function somarDia(acc, d) {
 // Links distintos por IP no dia (so em memoria, para "abriu N ofertas")
 const linksPorIp = new Map();   // dia|hash -> Set(codigo)
 
+// ── Bloqueio ─────────────────────────────────────────────────────────────────
+const servidorHoje = new Map();   // dia|hash -> cliques de servidor no dia
+let reincidentes = new Set();     // hashes que bateram o limiar hoje ou ontem
+let reincidentesDia = null;
+const custoDecisao = { n: 0, totalUs: 0, maxUs: 0 };
+// Dia de SP com cache de 1 s (toLocaleDateString custa ~30 us por chamada)
+let diaCache = { em: 0, dia: null };
+function hojeRapido() {
+  const agora = Date.now();
+  if (agora - diaCache.em > 1000) diaCache = { em: agora, dia: hojeSP() };
+  return diaCache.dia;
+}
+
+function diaAnterior(dia) {
+  return new Date(new Date(dia + 'T12:00:00Z').getTime() - 86400000).toISOString().slice(0, 10);
+}
+function cliquesDeServidor(x) {
+  let n = 0;
+  for (const [k, v] of Object.entries((x && x.motivos) || {})) if (k.startsWith('servidor:')) n = Math.max(n, v);
+  return n;
+}
+// Le hoje e ontem do repo de dados: quem bateu o limiar vira reincidente
+// (vale mesmo antes das listas de rede carregarem, depois de um reinicio).
+async function carregarReincidentes() {
+  if (!gh) return;
+  const hoje = hojeSP();
+  const novo = new Set();
+  for (const dia of [hoje, diaAnterior(hoje)]) {
+    try {
+      const { data } = await gh.get(arquivoDoDia(dia), null);
+      const base = data && data.dia ? JSON.parse(JSON.stringify(data)) : diaVazio(dia);
+      const d = somarDia(base, dia === hoje ? (buffer[dia] || diaVazio(dia)) : diaVazio(dia));
+      for (const [h, x] of Object.entries(d.ips || {})) {
+        const n = cliquesDeServidor(x);
+        if (n >= LIMIAR_SERVIDOR) novo.add(h);
+        if (dia === hoje && n) { const k = hoje + '|' + h; servidorHoje.set(k, Math.max(servidorHoje.get(k) || 0, n)); }
+      }
+    } catch (e) { console.error('[anti-monitor] reincidentes', dia, e.message); }
+  }
+  if (reincidentesDia === hoje) for (const h of reincidentes) novo.add(h);   // nao perde os de hoje
+  reincidentes = novo; reincidentesDia = hoje;
+  console.log('[anti-monitor] modo', MODO, '- reincidentes', reincidentes.size);
+}
+
+// Chamado pelo index.js ANTES do redirecionamento. Sincrono e barato.
+// p = { ip, ipHash, metodo, classe } -> { bloquear, motivo }
+function decidir(p) {
+  if (MODO !== 'bloqueio') return { bloquear: false };
+  const t0 = process.hrtime.bigint();
+  try {
+    if (p.classe === 'preview' || p.classe === 'meta') return { bloquear: false };
+    if (p.classe === 'robo') return { bloquear: true, motivo: 'programa' };
+    if (p.metodo === 'HEAD') return { bloquear: true, motivo: 'head' };
+    if (p.ipHash && reincidentes.has(p.ipHash)) return { bloquear: true, motivo: 'servidor_repetido' };
+    const rede = classificarIp(p.ip);
+    if (rede.rede !== 'servidor') return { bloquear: false };
+    const k = hojeRapido() + '|' + p.ipHash;
+    const n = (servidorHoje.get(k) || 0) + 1;
+    servidorHoje.set(k, n);
+    if (servidorHoje.size > 20000) servidorHoje.delete(servidorHoje.keys().next().value);
+    if (n >= LIMIAR_SERVIDOR) { reincidentes.add(p.ipHash); return { bloquear: true, motivo: 'servidor_repetido' }; }
+    return { bloquear: false };
+  } catch (e) {
+    return { bloquear: false };                    // na duvida, libera
+  } finally {
+    const us = Number(process.hrtime.bigint() - t0) / 1000;
+    custoDecisao.n++; custoDecisao.totalUs += us; if (us > custoDecisao.maxUs) custoDecisao.maxUs = us;
+  }
+}
+
 // Chamado pelo index.js DEPOIS de o redirecionamento sair.
-// p = { ip, ipHash, ua, metodo, classe ('humano'|'preview'|'meta'|'robo'), rajada, codigo, grupo }
+// p = { ip, ipHash, ua, metodo, classe ('humano'|'preview'|'meta'|'robo'), rajada, codigo, grupo, bloqueado, motivoBloqueio }
 function observar(p) {
   if (p.classe === 'meta') return;
   const t0 = process.hrtime.bigint();
@@ -264,9 +352,11 @@ function observar(p) {
     const gg = d.grupos[g] || (d.grupos[g] = { cliques: 0, seriaBarrado: 0 });
     gg.cliques++;
     if (barrado) { d.seriaBarrado++; gg.seriaBarrado++; }
+    if (p.bloqueado) { d.bloqueados++; gg.bloqueados = (gg.bloqueados || 0) + 1; }
     if (rede.rede === 'relay') d.relayLiberado++;
     if (rede.rede === 'desconhecido') d.desconhecido++;
   }
+  if (p.bloqueado) motivos.push('bloqueado:' + (p.motivoBloqueio || '?'));
   for (const m of motivos) d.motivos[m] = (d.motivos[m] || 0) + 1;
   sujo = true;
   if (!motivos.length) return;                     // gente comum: so a contagem
@@ -277,7 +367,7 @@ function observar(p) {
   set.add(p.codigo);
   const agora = new Date().toISOString();
   const x = d.ips[p.ipHash] || (d.ips[p.ipHash] = { cliques: 0, seriaBarrado: 0, motivos: {}, grupos: {}, links: 0, primeiro: agora });
-  x.cliques++; if (barrado) x.seriaBarrado++;
+  x.cliques++; if (barrado) x.seriaBarrado++; if (p.bloqueado) x.bloqueados = (x.bloqueados || 0) + 1;
   for (const m of motivos) x.motivos[m] = (x.motivos[m] || 0) + 1;
   x.grupos[g] = (x.grupos[g] || 0) + 1;
   x.links = set.size;
@@ -297,7 +387,7 @@ async function flush() {
       const { data, sha } = await gh.get(arquivoDoDia(dia), null);   // SHA fresco
       const acc = somarDia(data && data.dia ? data : diaVazio(dia), pend[dia]);
       acc.atualizadoEm = new Date().toISOString();
-      await gh.put(arquivoDoDia(dia), acc, sha, 'vigia: anti-monitor (observacao) ' + dia);
+      await gh.put(arquivoDoDia(dia), acc, sha, 'vigia: anti-monitor (' + MODO + ') ' + dia);
     } catch (e) {
       console.error('[anti-monitor] flush', dia, e.message);
       buffer[dia] = somarDia(buffer[dia] || diaVazio(dia), pend[dia]);   // devolve
@@ -320,8 +410,9 @@ async function relatorio(diaPedido, top) {
     .sort((a, b) => b.seriaBarrado - a.seriaBarrado);
   return {
     dia,
-    modo: 'observacao',
+    modo: MODO,
     resumo: { cliques: d.cliques, seriaBarrado: d.seriaBarrado, pctSeriaBarrado: d.cliques ? Math.round(1000 * d.seriaBarrado / d.cliques) / 10 : 0,
+      bloqueados: d.bloqueados || 0,
       relayLiberado: d.relayLiberado, ipDesconhecido: d.desconhecido, motivos: d.motivos },
     grupos, ips,
     atualizadoEm: d.atualizadoEm || null,
@@ -332,7 +423,11 @@ function estado() {
   const porOrigem = {};
   for (const x of latencias) (porOrigem[x.origem] = porOrigem[x.origem] || []).push(x);
   return {
-    modo: 'observacao',
+    modo: MODO,
+    limiarServidor: LIMIAR_SERVIDOR,
+    reincidentes: reincidentes.size,
+    custoDecisaoUs: { n: custoDecisao.n, media: custoDecisao.n ? Math.round(100 * custoDecisao.totalUs / custoDecisao.n) / 100 : 0,
+      max: Math.round(custoDecisao.maxUs * 100) / 100 },
     listas: FONTES.map(f => { const r = redes[f.id] || {}; return { id: f.id, excecao: !!f.excecao, faixas: r.faixas || 0,
       v4: (r.v4 || []).length, v6: (r.v6 || []).length, em: r.em || null, erro: r.erro || null }; }),
     latenciaRedirecionamentoMs: { geral: percentis(latencias),
@@ -347,7 +442,11 @@ function iniciar({ fetch, ghGetJson, ghPutJson }) {
   const t1 = setTimeout(() => carregarTudo(fetch), PRIMEIRA_MS); if (t1.unref) t1.unref();
   const t2 = setInterval(() => carregarTudo(fetch), ATUALIZAR_MS); if (t2.unref) t2.unref();
   const t3 = setInterval(() => { flush().catch(() => {}); }, FLUSH_MS); if (t3.unref) t3.unref();
+  if (MODO === 'bloqueio') {
+    const t4 = setTimeout(() => { carregarReincidentes().catch(() => {}); }, 5 * 1000); if (t4.unref) t4.unref();
+    const t5 = setInterval(() => { carregarReincidentes().catch(() => {}); }, RECARREGAR_MS); if (t5.unref) t5.unref();
+  }
 }
 
-module.exports = { iniciar, observar, registrarLatencia, flush, relatorio, estado, classificarIp,
-  _teste: { faixa, juntar, contem, v6Big, v4Int, carregarFonte, redes, FONTES, somarDia, diaVazio } };
+module.exports = { iniciar, decidir, observar, registrarLatencia, flush, relatorio, estado, classificarIp,
+  _teste: { servidorHoje, carregarReincidentes, faixa, juntar, contem, v6Big, v4Int, carregarFonte, redes, FONTES, somarDia, diaVazio } };

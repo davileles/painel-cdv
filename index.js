@@ -1432,7 +1432,7 @@ const RL_RE_PATH    = /^\/([a-z]{2,20})\/([0-9A-Za-z]{5})-([A-Z0-9]{2,3})\/?$/;
 const RL_FALLBACK   = process.env.RASTREIO_FALLBACK || 'https://ticapromos.com.br/';
 const RL_FLUSH_MS   = 5 * 60 * 1000;
 const RL_UNICO_MS   = 30 * 60 * 1000;
-// Anti-monitor em MODO OBSERVACAO: so registra quem seria barrado (anti-monitor.js)
+// Anti-monitor: bloqueia so sinal forte antes do 302 e registra o resto (anti-monitor.js)
 const antiMonitor   = require('./anti-monitor.js');
 antiMonitor.iniciar({ fetch, ghGetJson, ghPutJson });
 const rlCache       = new Map();   // base -> registro {url, enviadoEm, grupos:{suf:{destino}}}
@@ -1557,6 +1557,12 @@ async function rlFlush() {
 const rlTimer = setInterval(rlFlush, RL_FLUSH_MS);
 if (rlTimer.unref) rlTimer.unref();
 
+// Pagina que o monitor recebe no lugar do redirecionamento: sem o destino.
+const RL_PAGINA_GENERICA = '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">' +
+  '<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">' +
+  '<title>Tica Promos</title></head><body style="font-family:sans-serif;text-align:center;padding:48px 16px;color:#2E3348">' +
+  '<h1 style="font-size:22px">Tica Promos</h1><p>As ofertas do Tico ficam no site do Tica Promos.</p></body></html>';
+
 async function rlHandle(req, res, base, suf) {
   const t0 = process.hrtime.bigint();
   const origem = rlCache.has(base) ? 'cache' : 'rede';
@@ -1567,22 +1573,31 @@ async function rlHandle(req, res, base, suf) {
   const g = (reg.grupos && reg.grupos[suf]) || {};
   const destino = rlDestinoValido(g.destino || reg.url);
   if (!destino) return res.redirect(302, RL_FALLBACK);
-  // Todo mundo segue para o destino; so a contagem distingue gente de robo.
-  // A resposta sai PRIMEIRO; contagem e anti-monitor rodam depois (setImmediate),
+  // Anti-monitor (anti-monitor.js): so sinal forte recebe a pagina generica
+  // (programa, HEAD, servidor com 5+ cliques no dia). Decisao em memoria, em
+  // microssegundos; erro = libera. Todo o resto segue para o destino.
+  // A resposta sai PRIMEIRO; contagem e registro rodam depois (setImmediate),
   // para o cliente nunca esperar por elas.
+  const ip = ipDoPedido(req);
+  const ipHash = vigiaHashIp(ip);
+  const classe = classificarTrafego(req);
+  let bloq = { bloquear: false };
+  try { bloq = antiMonitor.decidir({ ip, ipHash, metodo: req.method, classe }) || bloq; } catch (e) { /* libera */ }
   res.set('Cache-Control', 'no-store');
   res.set('X-Robots-Tag', 'noindex, nofollow');
-  res.redirect(302, destino);
+  if (bloq.bloquear) res.status(200).type('html').send(RL_PAGINA_GENERICA);
+  else res.redirect(302, destino);
   try { antiMonitor.registrarLatencia(Number(process.hrtime.bigint() - t0) / 1e6, origem); } catch (e) { /* so medida */ }
   setImmediate(() => {
     try {
       const codigo = base + '-' + suf;
-      const classe = classificarTrafego(req);
-      vigiaRegistrar(classe, req, codigo);
-      rlContar(req, base, suf, reg, classe);
-      const ip = ipDoPedido(req);
-      antiMonitor.observar({ ip, ipHash: vigiaHashIp(ip), ua: req.headers['user-agent'], metodo: req.method,
-        classe, rajada: req._rlRajada === true, codigo, grupo: suf });
+      // Bloqueado nao conta como clique de gente (vai para 'b', como robo)
+      const classeConta = bloq.bloquear && classe === 'humano' ? 'robo' : classe;
+      vigiaRegistrar(classeConta, req, codigo);
+      rlContar(req, base, suf, reg, classeConta);
+      antiMonitor.observar({ ip, ipHash, ua: req.headers['user-agent'], metodo: req.method,
+        classe, rajada: req._rlRajada === true, codigo, grupo: suf,
+        bloqueado: bloq.bloquear === true, motivoBloqueio: bloq.motivo });
     } catch (e) { console.error('[links] contar', e.message); }
   });
 }
@@ -1672,7 +1687,7 @@ app.get('/links-stats', async (req, res) => {
   }
 });
 
-// Anti-monitor (observacao): quem seria barrado se o bloqueio fosse ligado.
+// Anti-monitor: quem seria barrado e quem foi bloqueado (modo em ANTI_MONITOR_MODO).
 // ?dia=AAAA-MM-DD (padrao hoje) &top=50 (IPs, max 500). IP so em hash.
 app.get('/links/monitor', async (req, res) => {
   try {
